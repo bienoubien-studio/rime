@@ -232,7 +232,7 @@ class SelectOneFieldBuilder extends FormFieldBuilder<ComboBoxField | RadioField>
 }
 
 class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
-	to(table: GetRegisterType<'PrototypeSlug'>) {
+	to(table: GetRegisterType<'CollectionSlug'>) {
 		this.field.relationTo = table;
 		return this;
 	}
