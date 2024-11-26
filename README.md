@@ -113,7 +113,11 @@ const Pages: CollectionConfig = {
 	name: 'Pages',
 	asTitle: 'title',
 	group: 'content',
-	fields: [text('title').required(), relation('parent').to('pages'), richText('intro')],
+	fields: [
+	  text('title').required(),
+		relation('parent').to('pages'),
+		richText('intro')
+	],
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -141,7 +145,9 @@ const Medias = {
 	name: 'Medias',
 	upload: true,
 	group: 'content',
-	fields: [text('alt')]
+	fields: [
+	  text('alt')
+	]
 };
 
 const config = {
@@ -151,14 +157,10 @@ const config = {
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),
 		users: {
 			roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
-			fields: [text('website')],
-			group: 'settings',
-			access: {
-				read: (user) => !!user,
-				create: (user) => access.isAdmin(user),
-				delete: (user) => access.isAdmin(user),
-				update: (user, { id }) => access.isAdminOrMyself(user, id)
-			}
+			fields: [
+			  text('website')
+			],
+			group: 'settings'
 		}
 	}
 };
@@ -170,9 +172,9 @@ export default config;
 > - Icons must be imported from `lucide-svelte` (other icon packages are not tested)
 > - Detailed configuration documentation is in development. Feel free to open issues for questions!
 
-## Locals
+## Retrieve data
 
-You now have access to some usefull tools in your routes handlers :
+### In routes handlers :
 
 ```ts
 export const load = async (event: LayoutServerLoadEvent) => {
@@ -193,6 +195,12 @@ export const load = async (event: LayoutServerLoadEvent) => {
 	//...
 };
 ```
+
+### From the API :
+```ts
+
+```
+
 
 ## 🛠️ CLI Commands
 
