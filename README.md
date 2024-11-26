@@ -198,7 +198,7 @@ export const load = async (event: LayoutServerLoadEvent) => {
 
 ### From the API :
 ```ts
-
+const { docs } = await fetch('https://my-url/api/pages').then(r => r.json())
 ```
 
 
