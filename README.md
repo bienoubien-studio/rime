@@ -55,7 +55,7 @@ npm install
 
 ```bash
 npm install rizom
-npm run rizom init
+npx rizom init
 ```
 
 The `init` command will automatically:
@@ -89,6 +89,10 @@ const init = async () => {
 init();
 
 export const handle = sequence(...handlers);
+```
+```
+#.env
+RIZOM_SECRET=super_secret
 ```
 
 ### 3. Visit Admin Panel
@@ -215,7 +219,7 @@ rizom reset [options]
   -f, --force  # Skip confirmation
 ```
 
-**Deleted Items:**
+**This will delete all these items:**
 
 - `.rizom` directory
 - `src/routes/(rizom)` directory
