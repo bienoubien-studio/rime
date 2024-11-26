@@ -1,0 +1,38 @@
+node_modules
+
+# Output
+.output
+.vercel
+/.svelte-kit
+/build
+/dist
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+#Rizom
+.rizom
+.cache
+db/*
+src/config
+src/routes
+drizzle.config.ts
+src/app.generated.d.ts
+rizom.config.browser.js
+src/lib/server/schema.ts
+src/routes/(rizom)
+static/medias
+src/config
+test-results
+pnpm-lock.yaml
