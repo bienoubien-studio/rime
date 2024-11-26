@@ -25,7 +25,7 @@ export default function (slug: PrototypeSlug) {
 		const token = await rizom.auth.createForgotPasswordToken(slug, user.id || null);
 
 		if (user) {
-			const link = `${env.PUBLIC_BEAM_URL}/reset-password?token=${token}&slug=${slug}&id=${user.id}`;
+			const link = `${env.PUBLIC_RIZOM_URL}/reset-password?token=${token}&slug=${slug}&id=${user.id}`;
 			rizom.mailer
 				.sendMail({
 					from: rizom.mailer.options.from,

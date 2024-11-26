@@ -5,10 +5,10 @@ const PACKAGE = 'rizom';
 export const env = () => `RIZOM_SECRET=${random.randomId(32)}
 PUBLIC_RIZOM_URL=http://localhost:5173
 
-# BEAM_SMTP_USER=user@mail.com
-# BEAM_SMTP_PASSWORD=supersecret
-# BEAM_SMTP_HOST=smtphost.com
-# BEAM_SMTP_PORT=465
+# RIZOM_SMTP_USER=user@mail.com
+# RIZOM_SMTP_PASSWORD=supersecret
+# RIZOM_SMTP_HOST=smtphost.com
+# RIZOM_SMTP_PORT=465
 `;
 
 export const emptyConfig = `

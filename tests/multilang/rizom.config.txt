@@ -99,10 +99,10 @@ const Informations: GlobalConfig = {
 		read: () => true
 	},
 	url: (doc) => {
-		return `${process.env.PUBLIC_BEAM_URL}/${doc.locale}/about`;
+		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: (doc) => {
-		return `${process.env.PUBLIC_BEAM_URL}/live?src=${process.env.PUBLIC_BEAM_URL}/${doc.locale}/about&slug=infos&id=${doc.id}&locale=${doc.locale}`;
+		return `${process.env.PUBLIC_RIZOM_URL}/live?src=${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about&slug=infos&id=${doc.id}&locale=${doc.locale}`;
 	}
 };
 
@@ -221,10 +221,10 @@ const Pages: CollectionConfig = {
 	group: 'Content',
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo)],
 	url: (doc) => {
-		return `${process.env.PUBLIC_BEAM_URL}/${doc.locale}/${doc.slug}`;
+		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.slug}`;
 	},
 	live: (doc) => {
-		return `${process.env.PUBLIC_BEAM_URL}/live?src=${process.env.PUBLIC_BEAM_URL}/${doc.locale}/${doc.slug}&slug=pages&id=${doc.id}&locale=${doc.locale}`;
+		return `${process.env.PUBLIC_RIZOM_URL}/live?src=${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.slug}&slug=pages&id=${doc.id}&locale=${doc.locale}`;
 	},
 	access: {
 		read: () => true,
@@ -262,7 +262,7 @@ const Medias: CollectionConfig = {
 
 const config: Config = {
 	//
-	siteUrl: process.env.PUBLIC_BEAM_URL,
+	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages, Medias],
 	globals: [Settings, Informations, Menu],
