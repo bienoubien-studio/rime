@@ -56,7 +56,9 @@ const templateRegister = (
 		'\tinterface Register {',
 		`\t\tPrototypeSlug: ${slugs.map((slug) => `'${slug}'`).join(' | ')};`,
 		`\t\tCollectionSlug: ${collectionSlugs.map((slug) => `'${slug}'`).join(' | ')};`,
-		`\t\tGlobalSlug: ${globalSlugs.map((slug) => `'${slug}'`).join(' | ')};`,
+		globalSlugs.length
+			? `\t\tGlobalSlug: ${globalSlugs.map((slug) => `'${slug}'`).join(' | ')};`
+			: '',
 		'\t}',
 		'}'
 	].join('\n');
