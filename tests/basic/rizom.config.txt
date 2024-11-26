@@ -1,0 +1,50 @@
+import { relation, richText, text, toggle } from '$lib/config/fields/index.js';
+import type { CollectionConfig, GlobalConfig } from 'rizom';
+import { access } from '$lib/access/index.js';
+import { Settings2 } from 'lucide-svelte';
+import { cache } from '../plugins/cache';
+
+const Pages: CollectionConfig = {
+	slug: 'pages',
+	name: 'Pages',
+	asTitle: 'title',
+	group: 'content',
+	fields: [text('title').required(), relation('parent').to('pages'), richText('intro')],
+	access: {
+		read: () => true,
+		create: (user) => access.isAdmin(user),
+		update: (user) => access.hasRoles(user, 'admin', 'editor')
+	}
+};
+
+const Settings: GlobalConfig = {
+	name: 'Settings',
+	slug: 'settings',
+	icon: Settings2,
+	group: 'informations',
+	fields: [
+		toggle('minimalFooter').label('Minimal footer'),
+		toggle('stickyHeader').label('Sticky header'),
+		text('legalMention').label('Legals mentions'),
+		relation('logo').to('medias')
+	],
+
+	access: {
+		read: (user) => access.hasRoles(user, 'admin')
+	}
+};
+
+const Medias = {
+	slug: 'medias',
+	name: 'Medias',
+	upload: true,
+	group: 'content',
+	fields: [text('alt')]
+};
+
+const config = {
+	collections: [Pages, Medias],
+	globals: [Settings],
+	plugins: [cache({ enabled: true })]
+};
+export default config;

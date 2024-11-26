@@ -1,0 +1,72 @@
+/**************************************/
+/* Trigger
+/**************************************/
+
+.rz-tabs-trigger {
+	display: inline-flex;
+	height: var(--rz-size-6);
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	border-radius: var(--rz-radius-md);
+	font-size: var(--rz-text-sm);
+	transition: all 0.2s ease;
+	--rz-ring-opacity: 0;
+	@mixin ring var(--rz-color-ring);
+	@mixin px var(--rz-size-3);
+}
+.rz-tabs-trigger[data-state='active'] {
+	background-color: hsl(var(--rz-ground-6));
+	box-shadow: var(--rz-shadow-sm);
+}
+.rz-tabs-trigger[data-state='active']:not([data-error='true']) {
+	color: hsl(var(--rz-color-fg));
+}
+.rz-tabs-trigger[data-error='true'] {
+	@mixin color color-error;
+}
+.rz-tabs-trigger[data-state='inactive'] {
+	opacity: 0.8;
+}
+
+.rz-tabs-trigger:focus-visible {
+	--rz-ring-offset: 2px;
+	--rz-ring-opacity: 1;
+	@mixin ring var(--rz-color-ring);
+	outline: none;
+}
+.rz-tabs-trigger:disabled {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+/**************************************/
+/* Content
+/**************************************/
+
+.rz-tabs-content {
+	margin-top: var(--rz-size-2);
+}
+.rz-tabs-content:focus-visible {
+	outline: none;
+	border-radius: var(--rz-radius-sm);
+	--rz-ring-offset: 8px;
+	@mixin ring var(--rz-color-ring);
+}
+
+/**************************************/
+/* List
+/**************************************/
+
+.rz-tabs-list {
+	@mixin bg color-input;
+	@mixin color ground-2;
+	height: var(--rz-size-19);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rz-size-1);
+	border-radius: var(--rz-radius-lg);
+	border: var(--rz-border);
+	padding: var(--rz-size-1-5);
+}

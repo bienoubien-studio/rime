@@ -1,0 +1,5 @@
+import { pagesLoad, pagesActions } from 'rizom/panel/pages';
+
+
+export const load = pagesLoad.init;
+export const actions = pagesActions.init;

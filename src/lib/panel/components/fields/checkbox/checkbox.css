@@ -1,0 +1,16 @@
+.rz-checkbox-field {
+	display: flex;
+	align-items: center;
+	gap: var(--rz-size-2);
+	margin-top: var(--rz-size-3);
+	margin-bottom: var(--rz-size-3);
+}
+
+.rz-checkbox-field__input {
+	width: var(--rz-size-5);
+	height: var(--rz-size-5);
+}
+
+.rz-checkbox--error {
+	@mixin bg color-error;
+}

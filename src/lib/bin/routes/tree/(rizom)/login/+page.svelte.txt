@@ -1,0 +1,6 @@
+<script lang="ts">
+  import { Login } from 'rizom/panel';
+  const { data } = $props();
+</script>
+
+<Login form={data.form} />

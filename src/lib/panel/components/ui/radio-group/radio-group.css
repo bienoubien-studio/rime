@@ -1,0 +1,27 @@
+.rz-radio-group {
+	display: grid;
+	gap: var(--rz-size-2);
+}
+
+.rz-radio-group-item {
+	--border-color: var(--rz-ground-3);
+	--border-opacity: 1;
+	border: 1px solid hsl(var(--border-color) / var(--border-opacity));
+	background-color: hsl(var(--rz-ground-3));
+	border-radius: var(--rz-radius-full);
+	transition: all 0.1s ease-in-out;
+	@mixin size var(--rz-size-5);
+	flex-shrink: 0;
+	cursor: pointer;
+}
+.rz-radio-group-item:hover {
+	--border-color: var(--rz-ground-2);
+	--border-opacity: 0.3;
+	border-width: 4px;
+}
+.rz-radio-group-item[data-state='checked'] {
+	--border-color: var(--rz-color-primary);
+	--border-opacity: 1;
+	border-width: 6px;
+	background-color: hsl(var(--rz-ground-6));
+}

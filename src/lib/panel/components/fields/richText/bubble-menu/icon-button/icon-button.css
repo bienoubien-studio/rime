@@ -1,0 +1,24 @@
+.rz-icon-button {
+	display: flex;
+	width: var(--rz-size-9);
+	height: var(--rz-size-9);
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--rz-radius-lg);
+	padding: var(--rz-size-2);
+	color: hsl(var(--rz-color-fg));
+}
+
+.rz-icon-button:hover,
+.rz-icon-button--active {
+	background-color: hsl(var(--rz-ground-3));
+}
+
+.rz-icon-button__icon {
+	opacity: 0.8;
+}
+
+.rz-icon-button__icon--active {
+	color: hsl(var(--rz-color-primary));
+	opacity: 1;
+}

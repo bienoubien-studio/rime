@@ -1,0 +1,9 @@
+.rz-toggle-field {
+	@mixin my var(--rz-size-3);
+	display: flex;
+	align-items: center;
+
+	& > * + * {
+		margin-left: var(--rz-size-2);
+	}
+}

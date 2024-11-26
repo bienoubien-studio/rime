@@ -1,0 +1,38 @@
+:root {
+	--rz-spacing-scale: 0.85;
+	--rz-size-0: 0px;
+	--rz-size-px: calc(var(--rz-spacing-scale) * 1px);
+	--rz-size-0-5: calc(var(--rz-spacing-scale) * 0.125rem);
+	--rz-size-1: calc(var(--rz-spacing-scale) * 0.25rem);
+	--rz-size-1-5: calc(var(--rz-spacing-scale) * 0.375rem);
+	--rz-size-2: calc(var(--rz-spacing-scale) * 0.5rem);
+	--rz-size-2-5: calc(var(--rz-spacing-scale) * 0.625rem);
+	--rz-size-3: calc(var(--rz-spacing-scale) * 0.75rem);
+	--rz-size-3-5: calc(var(--rz-spacing-scale) * 0.875rem);
+	--rz-size-4: calc(var(--rz-spacing-scale) * 1rem);
+	--rz-size-5: calc(var(--rz-spacing-scale) * 1.25rem);
+	--rz-size-6: calc(var(--rz-spacing-scale) * 1.5rem);
+	--rz-size-7: calc(var(--rz-spacing-scale) * 1.75rem);
+	--rz-size-8: calc(var(--rz-spacing-scale) * 2rem);
+	--rz-size-9: calc(var(--rz-spacing-scale) * 2.25rem);
+	--rz-size-10: calc(var(--rz-spacing-scale) * 2.5rem);
+	--rz-size-11: calc(var(--rz-spacing-scale) * 2.75rem);
+	--rz-size-12: calc(var(--rz-spacing-scale) * 3rem);
+	--rz-size-14: calc(var(--rz-spacing-scale) * 3.5rem);
+	--rz-size-16: calc(var(--rz-spacing-scale) * 4rem);
+	--rz-size-20: calc(var(--rz-spacing-scale) * 5rem);
+	--rz-size-24: calc(var(--rz-spacing-scale) * 6rem);
+	--rz-size-28: calc(var(--rz-spacing-scale) * 7rem);
+	--rz-size-32: calc(var(--rz-spacing-scale) * 8rem);
+	--rz-size-36: calc(var(--rz-spacing-scale) * 9rem);
+	--rz-size-40: calc(var(--rz-spacing-scale) * 10rem);
+	--rz-size-44: calc(var(--rz-spacing-scale) * 11rem);
+	--rz-size-48: calc(var(--rz-spacing-scale) * 12rem);
+	--rz-size-52: calc(var(--rz-spacing-scale) * 13rem);
+	--rz-size-56: calc(var(--rz-spacing-scale) * 14rem);
+	--rz-size-60: calc(var(--rz-spacing-scale) * 15rem);
+	--rz-size-64: calc(var(--rz-spacing-scale) * 16rem);
+	--rz-size-72: calc(var(--rz-spacing-scale) * 18rem);
+	--rz-size-80: calc(var(--rz-spacing-scale) * 20rem);
+	--rz-size-96: calc(var(--rz-spacing-scale) * 24rem);
+}

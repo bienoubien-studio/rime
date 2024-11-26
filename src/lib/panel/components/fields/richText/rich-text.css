@@ -1,0 +1,114 @@
+.rz-rich-text__editor [contenteditable='true'] {
+	line-height: 1.5;
+	max-width: 100%;
+	min-height: var(--rz-size-24);
+	@mixin py var(--rz-size-1);
+}
+.rz-rich-text__editor {
+	line-height: 1.5;
+	min-height: var(--rz-size-24);
+	@mixin py var(--rz-size-1);
+}
+
+.rz-rich-text__editor [contenteditable='false'] {
+	color: hsl(var(--rz-color-fg) / 0.5);
+	cursor: no-drop;
+}
+
+.ProseMirror-focused {
+	outline: none;
+}
+
+.rz-rich-text__editor:has(.ProseMirror-focused) {
+	@mixin ring var(--rz-color-ring);
+}
+
+.rz-rich-text__editor[data-error]:has(.ProseMirror-focused) {
+	@mixin ring var(--rz-color-error);
+}
+
+.rz-rich-text__editor .ProseMirror-trailingBreak {
+	content: '&nbsp;';
+	display: inline-block;
+}
+
+.rz-rich-text__editor .ProseMirror {
+	height: 100%;
+}
+
+.rz-rich-text__editor .ProseMirror .is-empty::before {
+	content: attr(data-placeholder);
+	color: hsl(var(--rz-ground-3));
+	float: left;
+	pointer-events: none;
+	height: 0;
+}
+
+.rz-rich-text__editor .ProseMirror {
+	& > * + * {
+		margin-top: var(--rz-size-4);
+	}
+	p:not(:last-of-type) {
+		margin-bottom: var(--rz-size-3);
+	}
+	h2 {
+		display: block;
+		margin-bottom: var(--rz-size-3);
+		font-family: var(--rz-font-sans);
+		font-size: var(--rz-text-lg);
+		@mixin font-semibold;
+	}
+	h3 {
+		display: block;
+		margin-bottom: var(--rz-size-3);
+		font-family: var(--rz-font-sans);
+		@mixin font-semibold;
+	}
+	ol {
+		display: block;
+		margin-bottom: var(--rz-size-3);
+		li {
+			& > p {
+				display: inline;
+				margin: 0;
+			}
+			margin-left: var(--rz-size-5);
+			list-style-type: decimal;
+		}
+	}
+	ul {
+		display: block;
+		margin-bottom: var(--rz-size-3);
+		li {
+			& > p,
+			&::marker {
+				display: inline;
+				margin: 0;
+			}
+			margin-left: var(--rz-size-5);
+			list-style-type: disc;
+		}
+	}
+	blockquote {
+		margin-top: var(--rz-size-5);
+		margin-bottom: var(--rz-size-5);
+		border-left: 2px solid hsl(var(--rz-color-border) / 1);
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-left: var(--rz-size-4);
+		font-family: var(--rz-font-sans);
+		@mixin font-medium;
+	}
+}
+
+/* Overwrite tippy-box original max-width */
+
+.tippy-box {
+	max-width: 400px !important;
+}
+
+.rz-rich-text-link {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}

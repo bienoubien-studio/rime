@@ -1,0 +1,6 @@
+<script lang="ts">
+  import { ForgotPassword } from 'rizom/panel';
+  const { data } = $props();
+</script>
+
+<ForgotPassword form={data.form} />

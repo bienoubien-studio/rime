@@ -1,0 +1,13 @@
+<script lang="ts">
+  import { Live } from 'rizom/panel';
+
+    async function loadConfig() {
+    	return await import('../../../lib/rizom.config.browser.js').then((module) => module.default);
+    }
+
+  const { data } = $props();
+</script>
+
+{#await loadConfig() then config}
+    <Live {data} config={config} />
+{/await}

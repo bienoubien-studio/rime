@@ -1,0 +1,6 @@
+<script lang="ts">
+	import { Init } from 'rizom/panel';
+	const { data } = $props();
+</script>
+
+<Init form={data.form} />

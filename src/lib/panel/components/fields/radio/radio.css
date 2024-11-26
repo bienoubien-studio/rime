@@ -1,0 +1,18 @@
+.rz-radio {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rz-size-2);
+}
+
+.rz-radio__option {
+	display: flex;
+	align-items: center;
+}
+
+.rz-radio__input {
+	margin-right: var(--rz-size-2);
+}
+
+.rz-radio__label {
+	cursor: pointer;
+}

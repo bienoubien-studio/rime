@@ -1,0 +1,242 @@
+import { omit } from '../utils/object.js';
+import { getTableColumns } from 'drizzle-orm';
+import { unflatten } from 'flat';
+import { toPascalCase } from '../utils/string.js';
+import type { Relation } from './relations.js';
+import deepmerge from 'deepmerge';
+import { privateFieldNames } from '../auth/usersConfig.server.js';
+import { isUploadConfig } from '../config/utils.js';
+import { buildConfigMap } from '../operations/preprocess/config/map.js';
+import { safeFlattenDoc } from '../utils/doc.js';
+
+import { postprocessFields } from '../operations/postprocess/fields.server.js';
+import type { GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { ConfigInterface } from 'rizom/config/index.server.js';
+import type {
+	AdapterBlocksInterface,
+	TransformContext,
+	TransformManyContext
+} from 'rizom/types/adapter.js';
+import type { Dic } from 'rizom/types/utility.js';
+
+/////////////////////////////////////////////
+// Types
+//////////////////////////////////////////////
+
+type CreateTransformInterfaceArgs = {
+	configInterface: ConfigInterface;
+	tables: any;
+	blocksInterface: AdapterBlocksInterface;
+};
+export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
+
+/////////////////////////////////////////////
+// Interface
+//////////////////////////////////////////////
+
+export const databaseTransformInterface = ({
+	configInterface,
+	tables,
+	blocksInterface
+}: CreateTransformInterfaceArgs) => {
+	const transformDocs = async <T extends GenericDoc = GenericDoc>({
+		docs: rawDocs,
+		slug,
+		locale,
+		api,
+		event,
+		depth = 0
+	}: TransformManyContext<T>) => {
+		const docs: GenericDoc[] = await Promise.all(
+			rawDocs.map((doc) => transformDoc({ doc, slug, locale, event, api, depth }))
+		);
+		return docs as T[];
+	};
+
+	const transformDoc = async <T extends GenericDoc = GenericDoc>({
+		doc,
+		slug,
+		locale,
+		api,
+		event,
+		depth = 0
+	}: TransformContext<Dic>) => {
+		//
+		const user = event?.locals.user;
+		const tableNameRelationFields = `${slug}Rels`;
+		const tableNameLocales = `${slug}Locales`;
+		const isLive = event && event.url.pathname.startsWith('/live');
+		const isPanel = event && (event.url.pathname.startsWith('/panel') || isLive);
+		const documentPrototype = configInterface.getDocumentPrototype(slug);
+		const docLocalAPI = api[documentPrototype](slug);
+		const config = docLocalAPI.config;
+		const empty = docLocalAPI.emptyDoc();
+
+		/** Add localized fields */
+		if (locale && tableNameLocales in tables) {
+			const localizedColumns = Object.keys(
+				omit(['parentId', 'locale'], getTableColumns(tables[tableNameLocales as PrototypeSlug]))
+			);
+
+			const defaultLocalizedValues: Dic = {};
+			for (const column of localizedColumns) {
+				defaultLocalizedValues[column] = null;
+			}
+
+			doc = { ...defaultLocalizedValues, ...doc[tableNameLocales][0], ...doc };
+
+			delete doc[tableNameLocales];
+			delete doc.parentId;
+		}
+
+		let flatDoc: Dic = safeFlattenDoc(doc);
+
+		/** Place relations */
+		if (tableNameRelationFields in tables) {
+			for (const relation of doc[tableNameRelationFields]) {
+				/** Relation collection */
+				const relationToIdKey = Object.keys(relation).filter(
+					(key) => key.endsWith('Id') && key !== 'parentId' && relation[key] !== null
+				)[0] as PrototypeSlug;
+
+				const relationToId = relation[relationToIdKey];
+				const relationPath = relation.path;
+				let relationOutput: Relation | GenericDoc;
+
+				/** Get relation if depth > 0 */
+				if (depth > 0) {
+					const relationSlug = relationToIdKey.replace('Id', '') as PrototypeSlug;
+					relationOutput = await api
+						.collection(relationSlug)
+						.findById({ id: relationToId, locale: relation.locale, depth: depth - 1 });
+				} else {
+					/** Clean relation */
+					for (const key of Object.keys(relation)) {
+						/** Delete empty [table]Id */
+						if (relation[key] === null) {
+							delete relation[key];
+						} else if (key.endsWith('Id') && key !== 'parentId') {
+							relation.relationTo = key.replace('Id', '');
+							relation.relationId = relation[key];
+							delete relation[key];
+						}
+					}
+					if (!isPanel) {
+						delete relation.position;
+						delete relation.parentId;
+						delete relation.path;
+					}
+					relationOutput = relation;
+				}
+
+				/** Assign relation */
+				if (!relation.locale) {
+					flatDoc[relationPath] = [...(flatDoc[relationPath] || []), relationOutput];
+				} else if (relation.locale === locale) {
+					flatDoc[relationPath] = [...(flatDoc[relationPath] || []), relationOutput];
+				}
+			}
+			// delete doc[tableNameRelationFields];
+		}
+
+		/** Extract all blocks  */
+		const blocksTables = blocksInterface.getBlocksTableNames(slug);
+		const blocks: Dic[] = [].concat(...blocksTables.map((blockTable) => doc[blockTable]));
+
+		/** Place each block in its path */
+		for (let block of blocks) {
+			if (!(block.path in flatDoc)) {
+				flatDoc[block.path] = [];
+			}
+			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
+			if (locale && blockLocaleTableName in tables) {
+				block = {
+					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
+					...block
+				};
+			}
+			/** Clean */
+			const { position, path } = block;
+			if (!isPanel) {
+				delete block.position;
+				delete block.path;
+				delete block.parentId;
+				delete block.locale;
+			}
+			delete block[blockLocaleTableName];
+			/** Assign */
+			flatDoc[path][position] = block;
+			// If block has been delete in DB or block type doesn't exist anymore
+			// Remove empy element
+			flatDoc[path] = flatDoc[path].filter(Boolean);
+		}
+
+		/** Add folder prefix to url in an upload doc */
+		if (config.type === 'collection' && isUploadConfig(config)) {
+			if ('imageSizes' in config && config.imageSizes) {
+				for (const size of config.imageSizes) {
+					if (flatDoc[size.name]) {
+						flatDoc[size.name] = `/medias/${flatDoc[size.name]}`;
+					}
+				}
+			}
+			flatDoc.url = `/medias/${flatDoc.filename}`;
+		}
+
+		let unflatted: Dic = unflatten(flatDoc);
+
+		/** Remove blocks table keys */
+		const omits: string[] = blocksTables;
+		if (tableNameRelationFields in unflatted) {
+			omits.push(tableNameRelationFields);
+		}
+
+		/** Remove passwords and auth fields */
+		omits.push(...privateFieldNames);
+		if (!isPanel) {
+			omits.push('authUserId');
+		}
+		unflatted = omit(omits, unflatted);
+
+		const configMap = buildConfigMap(unflatted, config.fields);
+
+		flatDoc = await postprocessFields({
+			flatDoc: safeFlattenDoc(unflatted),
+			configMap,
+			locale,
+			api,
+			user
+		});
+
+		doc = unflatten(flatDoc);
+		doc = deepmerge(empty, doc);
+
+		if (locale) {
+			doc.locale = locale;
+		}
+
+		doc._prototype = config.type;
+		doc._type = config.slug;
+
+		if (!('title' in doc)) {
+			doc = {
+				title: doc[config.asTitle],
+				...doc
+			};
+		}
+
+		if (config.url) {
+			doc._url = config.url(doc as T);
+		}
+		if (config.live && user) {
+			doc._live = config.live(doc as T);
+		}
+
+		return doc as T;
+	};
+
+	return {
+		doc: transformDoc,
+		docs: transformDocs
+	};
+};

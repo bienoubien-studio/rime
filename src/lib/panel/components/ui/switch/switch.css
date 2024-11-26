@@ -1,0 +1,50 @@
+.rz-switch {
+	--rz-ring-offset: 1px;
+	display: inline-flex;
+	height: 16px;
+	width: 26px;
+	flex-shrink: 0;
+	cursor: pointer;
+	align-items: center;
+	border-radius: var(--rz-radius-full);
+	border: 2px solid transparent;
+	box-shadow: var(--rz-shadow-sm);
+	transition: all 0.1s ease;
+	outline: none;
+}
+.rz-switch[data-state='checked'] {
+	background-color: hsl(var(--rz-color-primary));
+}
+.rz-switch[data-state='unchecked'] {
+	background-color: hsl(var(--rz-ground-3));
+}
+
+.rz-switch[data-error] {
+	@mixin bg color-error;
+}
+
+.rz-switch:focus-visible {
+	@mixin ring var(--rz-color-ring);
+}
+.rz-switch:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.rz-switch__thumb {
+	height: 12px;
+	width: 12px;
+	pointer-events: none;
+	display: block;
+	transition: translate 0.25s ease;
+	border-radius: var(--rz-radius-full);
+	box-shadow: var(--rz-shadow-lg);
+	background-color: hsl(var(--rz-ground-6));
+	@mixin ring var(--rz-color-ring), 0;
+}
+.rz-switch__thumb[data-state='checked'] {
+	translate: 10px;
+}
+.rz-switch__thumb[data-state='unchecked'] {
+	translate: 0px;
+}

@@ -1,0 +1,12 @@
+.rz-bubble-menu {
+	z-index: 0;
+	display: flex;
+	width: fit-content;
+	gap: var(--rz-size-1);
+	border-radius: var(--rz-radius-xl);
+	border: var(--rz-border);
+	background-color: hsl(var(--rz-ground-6));
+	padding: var(--rz-size-1);
+	box-shadow: var(--rz-shadow-xl);
+	visibility: hidden;
+}

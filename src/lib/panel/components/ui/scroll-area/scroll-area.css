@@ -1,0 +1,40 @@
+.rz-scroll-area {
+	position: relative;
+	overflow: hidden;
+}
+.rz-scroll-area__viewport {
+	height: 100%;
+	width: 100%;
+}
+
+/**************************************/
+/* ScrollBar
+/**************************************/
+
+.rz-scroll-area-scroll-bar {
+	display: flex;
+	touch-action: none;
+	user-select: none;
+	transition-property: background-color, border-color, fill, stroke;
+	padding: 1px;
+}
+.rz-scroll-area-scroll-bar--horizontal {
+	height: var(--rz-size-2-5);
+	width: 100%;
+	border-top: 1px solid transparent;
+}
+.rz-scroll-area-scroll-bar--vertical {
+	width: var(--rz-size-2-5);
+	height: 100%;
+	border-left: 1px solid transparent;
+}
+
+.rz-scroll-area-scroll-bar--vertical .rz-scroll-area-scroll-bar__thumb {
+	flex: 1;
+}
+
+.rz-scroll-area-scroll-bar__thumb {
+	@mixin bg color-border;
+	position: relative;
+	border-radius: var(--raidus-full);
+}

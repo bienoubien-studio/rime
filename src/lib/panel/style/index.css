@@ -1,0 +1,53 @@
+@import './reset.css';
+@import './font.css';
+@import './size.css';
+@import './palette.css';
+@import './shadow.css';
+
+:root {
+	--rz-opacity-border: 1;
+	--rz-opacity-bg: 1;
+	--rz-opacity-fg: 1;
+	--rz-opacity-ring: 1;
+	--rz-base-radius: 0.165rem;
+	--rz-radius-none: 0;
+	--rz-radius-sm: calc(var(--rz-base-radius) * 1);
+	--rz-radius-md: calc(var(--rz-base-radius) * 1.5);
+	--rz-radius-lg: calc(var(--rz-base-radius) * 2);
+	--rz-radius-xl: calc(var(--rz-base-radius) * 4);
+	--rz-radius-full: 999999px;
+	--rz-border: 1px solid hsl(var(--rz-color-border) / 1);
+}
+
+body {
+	min-height: 100vh;
+	background-color: hsl(var(--rz-color-bg));
+	color: hsl(var(--rz-color-fg));
+}
+
+.rz-panel {
+	font-size: var(--rz-text-base);
+}
+
+::selection {
+	background-color: hsl(var(--rz-color-primary) / 0.5);
+	color: hsl(var(--rz-color-fg));
+}
+
+hr {
+	border-color: hsl(var(--rz-color-border));
+	margin-top: var(--rz-size-4);
+	margin-bottom: var(--rz-size-4);
+}
+
+.rz-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}

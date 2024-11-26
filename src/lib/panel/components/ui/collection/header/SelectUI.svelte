@@ -1,0 +1,49 @@
+<script lang="ts">
+	import { getContext } from 'svelte';
+	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import { ListChecks, SquareCheck, SquareMinus, Trash } from 'lucide-svelte';
+	import Button from '../../button/button.svelte';
+
+	const collection = getContext<CollectionContext>('collectionList');
+
+	const isAllSelected = $derived(collection.selected.length === collection.docs.length);
+	const selectedCount = $derived(collection.selected.length);
+	const pluralSuffix = $derived(selectedCount > 1 ? 's' : '');
+	const activeListClass = $derived(collection.selectMode ? 'rz-header-select__icon--active' : '');
+</script>
+
+<div class="rz-header-select">
+	<Button
+		size="icon-sm"
+		variant="ghost"
+		onclick={() => (collection.selectMode = !collection.selectMode)}
+		disabled={collection.length === 0}
+	>
+		<ListChecks size={17} class="rz-header-select__icon {activeListClass}" />
+	</Button>
+
+	{#if collection.selectMode}
+		{#if isAllSelected}
+			<Button variant="text" icon={SquareMinus} onclick={() => (collection.selected = [])}>
+				Deselect All
+			</Button>
+		{:else}
+			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>Select All</Button>
+		{/if}
+		<Button
+			disabled={selectedCount === 0}
+			icon={Trash}
+			variant="text"
+			onclick={collection.deleteSelection}
+		>
+			Delete {selectedCount} doc{pluralSuffix}
+		</Button>
+	{/if}
+</div>
+
+<style type="postcss" global>
+	.rz-header-select {
+		display: flex;
+		align-items: center;
+	}
+</style>
