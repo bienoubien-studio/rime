@@ -27,6 +27,7 @@ import { PACKAGE_NAME } from 'rizom/constant.js';
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
 /* -------------------------------------------------------------------------- */
+console.log('ouep');
 
 const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 

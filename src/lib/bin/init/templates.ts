@@ -2,8 +2,8 @@ import { random } from '$lib/utils/index.js';
 
 const PACKAGE = 'rizom';
 
-export const env = () => `BEAM_SECRET=${random.randomId(32)}
-PUBLIC_BEAM_URL=http://localhost:5173
+export const env = () => `RIZOM_SECRET=${random.randomId(32)}
+PUBLIC_RIZOM_URL=http://localhost:5173
 
 # BEAM_SMTP_USER=user@mail.com
 # BEAM_SMTP_PASSWORD=supersecret
