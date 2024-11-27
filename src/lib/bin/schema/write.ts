@@ -31,7 +31,7 @@ const write = (schema: string[]) => {
 			console.error(err);
 		} else {
 			taskLogger.done('Schema: generated at src/lib/server/schema.ts');
-			spawnSync('pnpm', ['drizzle-kit', 'push'], { stdio: 'inherit' });
+			spawnSync('npx', ['drizzle-kit', 'push'], { stdio: 'inherit' });
 		}
 	});
 };
