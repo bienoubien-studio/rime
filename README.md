@@ -109,7 +109,6 @@ import { access } from 'rizom/access';
 
 const Pages: CollectionConfig = {
   slug: 'pages',
-  name: 'Pages',
   asTitle: 'title',
   group: 'content',
   fields: [
@@ -125,7 +124,6 @@ const Pages: CollectionConfig = {
 };
 
 const Settings: GlobalConfig = {
-	name: 'Settings',
 	slug: 'settings',
 	icon: Settings2,
 	group: 'settings',
@@ -141,7 +139,10 @@ const Settings: GlobalConfig = {
 
 const Medias = {
   slug: 'medias',
-  name: 'Medias',
+  label: {
+    singular: 'Media',
+    plural: 'Medias',
+  },
   upload: true,
   group: 'content',
   fields: [
