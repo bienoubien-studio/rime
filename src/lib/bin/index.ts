@@ -1,7 +1,6 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { program } from 'commander';
 import { init } from './init/index.js';
-import { generate } from './generate.js';
 import { execSync } from 'child_process';
 import { confirm, outro } from '@clack/prompts';
 
@@ -21,7 +20,10 @@ program
 	.command('generate')
 	.description('Generate schema, types and routes from config file')
 	.option('-f, --force', 'Force generation overwriting existing files', false)
-	.action((args) => generate(args.force));
+	.action(async (args) => {
+		const { generate } = await import('./generate.js');
+		generate(args.force);
+	});
 
 program
 	.command('reset')
