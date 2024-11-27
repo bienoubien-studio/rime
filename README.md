@@ -3,7 +3,7 @@
 A modern headless CMS powered by SvelteKit, designed for developer flexibility and ease of use.
 _Currently in Alpha - Not recommended for production use_
 
-## ✨ Key Features
+## Key Features
 
 - Easy configuration
 - TypeScript
@@ -13,7 +13,7 @@ _Currently in Alpha - Not recommended for production use_
   - API endpoints
   - TypeScript types
   - Database schema
-  - Route handlers
+  - Admin panel Routes
 - Media management
 - Granular access control
 - i18n support
@@ -36,20 +36,14 @@ Rich set of field types:
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Node.js
-- Bun (required for CLI commands)
-
 ### 1. Create a SvelteKit Project
 
 ```bash
-npx create-svelte@latest my-app
+npx sv create my-app
 cd my-app
-npm install
 ```
-
-> ⚠️ Make sure to select TypeScript when prompted
+> [!NOTE]
+> Make sure to select TypeScript when prompted
 
 ### 2. Install Rizom
 
@@ -62,9 +56,10 @@ The `init` command will automatically:
 
 - Create `src/hooks.server.ts` with the required initialization code
 - Add the Rizom plugin to `vite.config.ts`
-- Create/populate `.env` file with a `RIZOM_SECRET` variable
+- Create/populate `.env` file
 
-> 💡 Verify that these files have been properly configured:
+> [!NOTE]
+> Please check that these files have been properly configured:
 
 ```ts
 // vite.config.ts
@@ -93,6 +88,7 @@ export const handle = sequence(...handlers);
 ```
 #.env
 RIZOM_SECRET=super_secret
+PUBLIC_RIZOM_URL=http://localhost:5173
 ```
 
 ### 3. Visit Admin Panel
@@ -167,12 +163,11 @@ const config = {
 export default config;
 ```
 
-> ⚠️ **Important Notes:**
->
-> - Icons must be imported from `lucide-svelte` (other icon packages are not tested)
-> - Detailed configuration documentation is in development. Feel free to open issues for questions!
+> [!NOTE]
+> Icons must be imported from `lucide-svelte` (other icon packages are not tested)
+> Detailed configuration documentation is in development. Feel free to open issues for questions!
 
-## Retrieve data
+## Retrieve your data
 
 ### In routes handlers :
 
@@ -200,48 +195,6 @@ export const load = async (event: LayoutServerLoadEvent) => {
 ```ts
 const { docs } = await fetch('https://my-url/api/pages').then(r => r.json())
 ```
-
-
-## 🛠️ CLI Commands
-
-### `rizom init` - Setup
-
-```bash
-rizom init [options]
-  -f, --force         # Force default setup
-  -s, --skip-install  # Skip dependency installation
-  -n, --name <name>   # Custom project name
-```
-
-### `rizom generate` - Code Generation
-
-```bash
-rizom generate [options]
-  -f, --force  # Overwrite existing files
-```
-
-### `rizom reset` - Clean up Installation
-
-```bash
-rizom reset [options]
-  -f, --force  # Skip confirmation
-```
-
-**This will delete all these items:**
-
-- `.rizom` directory
-- `src/routes/(rizom)` directory
-- `db` directory
-- `static/medias` directory
-- `src/app.generated.d.ts`
-- `src/lib/rizom.config.browser.js`
-- `src/lib/server/schema.ts`
-- `drizzle.config.ts`
-
-## ⚠️ Known Limitations
-
-- Requires Bun for CLI operations (temporary requirement)
-- Alpha status: APIs might change
 
 ## 🙏 Acknowledgments
 
