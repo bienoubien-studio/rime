@@ -7,7 +7,7 @@
 	type Props = WithoutChildrenOrChild<SheetPrimitive.ContentProps> & {
 		side?: Side;
 		children: Snippet;
-		showCloseButton: boolean;
+		showCloseButton?: boolean;
 	};
 
 	let {

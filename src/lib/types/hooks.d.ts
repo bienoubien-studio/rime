@@ -103,9 +103,9 @@ export type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = Hook
 >;
 
 export type CollectionHooks = {
-	beforeCreate?: (CollectionHookBeforeCreate | CollectionHook)[];
+	beforeCreate?: (CollectionHookBeforeCreate | CollectionHookBeforeUpsert | CollectionHook)[];
 	afterCreate?: (CollectionHookAfterCreate | CollectionHook)[];
-	beforeUpdate?: (CollectionHookBeforeUpdate | CollectionHook)[];
+	beforeUpdate?: (CollectionHookBeforeUpdate | CollectionHookBeforeUpsert | CollectionHook)[];
 	beforeRead?: (CollectionHookBeforeRead | CollectionHook)[];
 	beforeDelete?: (CollectionHookBeforeDelete | CollectionHook)[];
 	afterDelete?: (CollectionHookAfterDelete | CollectionHook)[];

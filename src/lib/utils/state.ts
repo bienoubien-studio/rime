@@ -1,3 +1,5 @@
+import type { Dic } from 'rizom/types/utility';
+
 export const snapshot = (state: any) => {
 	function unProxy(object: any) {
 		if (object && object.constructor === Proxy) {

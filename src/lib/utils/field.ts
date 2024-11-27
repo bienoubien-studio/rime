@@ -24,6 +24,7 @@ import type {
 	TextField,
 	ToggleField
 } from 'rizom/types/fields.js';
+import type { Dic } from 'rizom/types/utility.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;
 
