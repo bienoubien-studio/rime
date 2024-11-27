@@ -1,7 +1,10 @@
-# RIZOM
+# Rizom
 
-A modern headless CMS powered by SvelteKit, designed for developer flexibility and ease of use.
-_Currently in Alpha - Not recommended for production use_
+Headless CMS powered by SvelteKit.
+> [!NOTE]
+> Currently in Alpha - Not recommended for production use
+
+![alt backend capture](https://github.com/bienoubien-studio/rizom/blob/main/rizom.png?raw=true)
 
 ## Key Features
 
@@ -13,16 +16,18 @@ _Currently in Alpha - Not recommended for production use_
   - API endpoints
   - TypeScript types
   - Database schema
-  - Admin panel Routes
+  - Admin panel
 - Media management
-- Granular access control
+- Document and fields access control
 - i18n support
+- Fields custom validation
+- CRUD hooks on documents
+- Configuration Hot reload in dev mode
 - Optional SMTP integration
 
 ### Content Management
 
-Rich set of field types:
-
+Fields types:
 - Blocks
 - Rich Text (TipTap)
 - Relations
@@ -31,8 +36,6 @@ Rich set of field types:
 - Email
 - Select/Radio/Checkbox
 - And more...
-
-![alt backend capture](https://github.com/bienoubien-studio/rizom/blob/main/rizom.png?raw=true)
 
 ## 🚀 Quick Start
 
@@ -68,7 +71,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { rizom } from './src/lib/vite';
 
 export default defineConfig({
-	plugins: [rizom(), sveltekit()] // <- plugin here
+  plugins: [rizom(), sveltekit()]
 });
 ```
 
@@ -78,7 +81,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { handlers, rizom } from 'rizom';
 
 const init = async () => {
-	await rizom.init();
+  await rizom.init();
 };
 
 init();
@@ -105,11 +108,11 @@ import { relation, richText, text, toggle } from 'rizom/fields';
 import { access } from 'rizom/access';
 
 const Pages: CollectionConfig = {
-	slug: 'pages',
-	name: 'Pages',
-	asTitle: 'title',
-	group: 'content',
-	fields: [
+  slug: 'pages',
+  name: 'Pages',
+  asTitle: 'title',
+  group: 'content',
+  fields: [
 	  text('title').required(),
 		relation('parent').to('pages'),
 		richText('intro')
@@ -127,38 +130,38 @@ const Settings: GlobalConfig = {
 	icon: Settings2,
 	group: 'settings',
 	fields: [
-		toggle('stickyHeader').label('Sticky header'),
-		link('about').label('About'),
-		relation('logo').to('medias')
-	],
-	access: {
-		read: (user) => true
-	}
+    toggle('stickyHeader').label('Sticky header'),
+    link('about').label('About'),
+    relation('logo').to('medias')
+  ],
+  access: {
+    read: (user) => true
+  }
 };
 
 const Medias = {
-	slug: 'medias',
-	name: 'Medias',
-	upload: true,
-	group: 'content',
-	fields: [
-	  text('alt')
-	]
+  slug: 'medias',
+  name: 'Medias',
+  upload: true,
+  group: 'content',
+  fields: [
+    text('alt')
+  ]
 };
 
 const config = {
-	collections: [Pages, Medias],
-	globals: [Settings],
-	panel: {
-		access: (user) => access.hasRoles(user, 'admin', 'editor'),
-		users: {
-			roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
-			fields: [
-			  text('website')
-			],
-			group: 'settings'
-		}
-	}
+  collections: [Pages, Medias],
+  globals: [Settings],
+  panel: {
+    access: (user) => access.hasRoles(user, 'admin', 'editor'),
+    users: {
+      roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
+      fields: [
+        text('website')
+      ],
+      group: 'settings'
+    }
+  }
 };
 export default config;
 ```
@@ -173,28 +176,39 @@ export default config;
 
 ```ts
 export const load = async (event: LayoutServerLoadEvent) => {
-	const { api, rizom } = event.locals;
-	// Get a global document
-	const menu = await api.global('menu').find<MenuDoc>();
-	// Get all pages documents
-	const pages = await api.collection('pages').findAll<PagesDoc>({ locale: 'en' });
-	// Get a page byId
-	const home = await api.collection('pages').findById<PagesDoc>({ locale: 'en', id: 'some-id' });
-	// Get a user with a query
-	const [user] = await api.collection('users').find<UsersDoc>({
-		query: `where[email][equals]=some@email.com` // qs query or ParsedQsQuery
-	});
-	// Get some config values
-	const languages = rizom.config.getLocalesCodes();
-	const collections = rizom.config.collections;
-	//...
+  const { api, rizom } = event.locals;
+  // Get a global document
+  const menu = await api.global('menu').find<MenuDoc>();
+  // Get all pages documents
+  const pages = await api.collection('pages').findAll<PagesDoc>({ locale: 'en' });
+  // Get a page byId
+  const home = await api.collection('pages').findById<PagesDoc>({ locale: 'en', id: 'some-id' });
+  // Get a user with a query
+  const [user] = await api.collection('users').find<UsersDoc>({
+    query: `where[email][equals]=some@email.com` // qs query or ParsedQsQuery
+  });
+  // Get some config values
+  const languages = rizom.config.getLocalesCodes();
+  const collections = rizom.config.collections;
+  //...
 };
 ```
 
 ### From the API :
 ```ts
-const { docs } = await fetch('https://my-url/api/pages').then(r => r.json())
+const { docs } = await fetch('http://localhost:5173/api/pages').then(r => r.json())
+const { docs } = await fetch('http://localhost:5173/api/pages?sort=title&limit=1').then(r => r.json())
+const { docs } = await fetch('http://localhost:5173/api/pages?where[author][in_array]=some-id&locale=en`;').then(r => r.json())
 ```
+
+## ROADMAP
+
+[] Document version
+[] Document locked while being edited by another user
+[] Working Live Edit system (in developpment)
+[] cmd-K menu in admin Panel
+
+Feel free to open a discussion for features request.
 
 ## 🙏 Acknowledgments
 
