@@ -2,7 +2,7 @@ import { panelUsersCollection } from '$lib/auth/usersConfig.server.js';
 import { usersFields } from '$lib/auth/usersFields.js';
 import { hasProps } from 'rizom/utils/object.js';
 import { isFormField, isRolesField } from '../../utils/field.js';
-import { toCamelCase } from '$lib/utils/string.js';
+import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
 import { augment } from './fields/augment.server.js';
 import { compile } from './fields/compile.server.js';
@@ -133,6 +133,9 @@ export const buildCollection = async (
 	return {
 		...collection,
 		slug: collection.slug as PrototypeSlug,
+		label: collection.label
+			? collection.label
+			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug) },
 		asTitle: addAsTitle(),
 		type: 'collection',
 		fields: buildFields(collection),

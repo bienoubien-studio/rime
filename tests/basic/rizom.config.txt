@@ -6,7 +6,7 @@ import { cache } from '../plugins/cache';
 
 const Pages: CollectionConfig = {
 	slug: 'pages',
-	name: 'Pages',
+	label: { singular: 'Page', plural : 'Pages' },
 	asTitle: 'title',
 	group: 'content',
 	fields: [text('title').required(), relation('parent').to('pages'), richText('intro')],
@@ -18,7 +18,6 @@ const Pages: CollectionConfig = {
 };
 
 const Settings: GlobalConfig = {
-	name: 'Settings',
 	slug: 'settings',
 	icon: Settings2,
 	group: 'informations',
@@ -36,7 +35,7 @@ const Settings: GlobalConfig = {
 
 const Medias = {
 	slug: 'medias',
-	name: 'Medias',
+	label: { singular: 'Media', plural : 'Medias' },
 	upload: true,
 	group: 'content',
 	fields: [text('alt')]

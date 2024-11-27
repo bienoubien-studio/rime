@@ -1,5 +1,5 @@
 import { flatten, unflatten } from 'flat';
-import { capitalize } from '../../utils/string';
+
 import { diff } from 'deep-object-diff';
 import { applyAction, deserialize } from '$app/forms';
 import { toast } from 'svelte-sonner';
@@ -56,7 +56,7 @@ function createDocumentFormState({
 
 	function initTitle() {
 		if (config.type === 'global') {
-			return config.label || capitalize(config.slug);
+			return config.label;
 		} else {
 			$effect(() => (title = doc[config.asTitle] || '[undefined]'));
 			return doc && doc[config.asTitle] ? doc[config.asTitle] : '[undefined]';

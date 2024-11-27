@@ -122,7 +122,7 @@
 			variant="secondary"
 			size="sm"
 		>
-			Create new {relationConfig.label || relationConfig.slug}
+			Create new {relationConfig.label.singular || relationConfig.slug}
 		</Button>
 	{/if}
 

@@ -1,5 +1,6 @@
 import type { User } from 'rizom/types/auth';
 import type { BuiltConfig } from 'rizom/types/config';
+import type { Dic } from 'rizom/types/utility';
 
 const buildNavigation = (config: BuiltConfig, user: User | undefined): Dic => {
 	//
@@ -10,7 +11,7 @@ const buildNavigation = (config: BuiltConfig, user: User | undefined): Dic => {
 	for (const collection of config.collections) {
 		if (user && collection.access.read(user)) {
 			const route = {
-				title: collection.name,
+				title: collection.label.plural,
 				icon: collection.slug,
 				path: `/panel/${collection.slug}`
 			};
@@ -28,7 +29,7 @@ const buildNavigation = (config: BuiltConfig, user: User | undefined): Dic => {
 	for (const global of config.globals) {
 		if (user && global.access.read(user)) {
 			const route = {
-				title: global.name,
+				title: global.label,
 				icon: global.slug,
 				path: `/panel/${global.slug}`
 			};

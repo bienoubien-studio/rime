@@ -11,7 +11,6 @@ import type { GenericDoc } from 'rizom/types/doc.js';
 import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
 import type { WithRequired } from 'rizom/types/utility.js';
-import { capitalize } from 'rizom/utils/string.js';
 
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid';
@@ -224,7 +223,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		},
 
 		get title() {
-			return config.label ? config.label : capitalize(config.slug);
+			return config.label.singular;
 		},
 
 		/////////////////////////////////////////////

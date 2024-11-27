@@ -110,12 +110,12 @@
 <div class="rz-relation-upload__actions">
 	{#if !isFull}
 		<Button onclick={() => (open = true)} variant="outline">
-			Select {relationConfig.label || relationConfig.slug}
+			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
 	{/if}
 	{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
 		<Button onclick={() => (create = true)} variant="secondary">
-			Create new {relationConfig.label || relationConfig.slug}
+			Create new {relationConfig.label.singular || relationConfig.slug}
 		</Button>
 	{/if}
 </div>
@@ -123,12 +123,12 @@
 <Command.Dialog bind:open onOpenChange={(val) => (open = val)}>
 	<Command.Input
 		class="rz-relation-upload__search"
-		placeholder="Search {relationConfig.label || relationConfig.slug}..."
+		placeholder="Search a {relationConfig.label.singular || relationConfig.slug}..."
 	/>
 
 	<Command.List class="rz-relation-upload__command-list">
 		<Command.Empty>No results found.</Command.Empty>
-		<Command.Group heading={relationConfig.label || relationConfig.slug}>
+		<Command.Group heading={relationConfig.label.plural || relationConfig.slug}>
 			{#each items as item}
 				<Command.Item
 					class="rz-relation-upload__command-item"
@@ -147,7 +147,7 @@
 
 <Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
 	<Sheet.Trigger />
-	<Sheet.Content class="rz-relation-upload__sheet" side="right">
+	<Sheet.Content showCloseButton={false} class="rz-relation-upload__sheet" side="right">
 		<Doc
 			doc={makeEmptyDoc(relationConfig)}
 			readOnly={false}

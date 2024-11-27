@@ -95,13 +95,16 @@ export type LocaleConfig = {
 	bcp47: string;
 };
 
+type CollectionConfigLabel = {
+	singular: string;
+	plural: string;
+};
+
 type BaseDocConfig = {
-	name: string;
 	slug: string;
 	group?: string;
 	fields: UserDefinedField[];
 	asTitle?: string;
-	label?: string;
 	icon?: ComponentType;
 	access?: Access;
 	url?: <T extends GenericDoc>(doc: T) => string;
@@ -109,6 +112,7 @@ type BaseDocConfig = {
 };
 
 export type BaseCollectionConfig = {
+	label?: CollectionConfigLabel;
 	auth?: true;
 	upload?: boolean;
 	hooks?: CollectionHooks;
@@ -118,6 +122,7 @@ export type CollectionConfig = BaseCollectionConfig | UploadCollectionConfig;
 
 export type GlobalConfig = BaseDocConfig & {
 	hooks?: GlobalHooks;
+	label?: string;
 };
 
 export type DocConfig = CollectionConfig | GlobalConfig;
@@ -155,6 +160,7 @@ export type CustomPanelRoute = {
 
 export type BuiltCollectionConfig = Omit<CollectionConfig, 'fields'> & {
 	type: 'collection';
+	label: CollectionConfigLabel;
 	slug: DocTables;
 	asTitle: string;
 	fields: AnyField[];
@@ -163,6 +169,7 @@ export type BuiltCollectionConfig = Omit<CollectionConfig, 'fields'> & {
 
 export type BuiltGlobalConfig = Omit<GlobalConfig, 'fields'> & {
 	type: 'global';
+	label: string;
 	slug: DocTables;
 	asTitle: string;
 	fields: AnyField[];

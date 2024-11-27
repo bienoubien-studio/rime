@@ -32,7 +32,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 							slug: collection.slug,
 							canCreate: user && collection.access.create(user),
 							link: `/panel/${collection.slug}`,
-							title: collection.label || capitalize(collection.slug),
+							title: collection.label.singular,
 							lastEdited: docs.length ? docs.at(0) : undefined
 						})
 					)

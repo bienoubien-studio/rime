@@ -82,8 +82,8 @@ test.describe('Login form', () => {
 	});
 });
 
-test.describe('Admin panel pages should be accessible', () => {
-	test('should login successfully with valid credentials', async ({ page }) => {
+test.describe('Admin panel', () => {
+	test('Should visit all ', async ({ page }) => {
 		// Navigate to the login page
 		await page.goto('/login');
 
@@ -105,30 +105,36 @@ test.describe('Admin panel pages should be accessible', () => {
 		// Wait for navigation after login
 		await page.waitForNavigation();
 
-		// Add assertions based on successful login
-		// For example, check if redirected to dashboard or check for success message
-		expect(page.url()).toBe(`${BASE_URL}/panel`); // Adjust URL based on your app
+		expect(page.url()).toBe(`${BASE_URL}/panel`);
 
-		let response = await page.goto('/panel/pages');
-		expect(response?.status()).toBe(200);
+		const collections = [
+			{ slug: 'pages', singular: 'Page', plural: 'Pages' },
+			{ slug: 'medias', singular: 'Media', plural: 'Medias' },
+			{ slug: 'users', singular: 'User', plural: 'Users' }
+		];
 
-		response = await page.goto('/panel/pages/create');
-		expect(response?.status()).toBe(200);
+		for (const { slug, singular, plural } of collections) {
+			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
+			expect(await navButton.innerText()).toBe(plural);
 
-		response = await page.goto('/panel/pages/create');
-		expect(response?.status()).toBe(200);
+			let response = await page.goto(`/panel/${slug}`);
+			expect(response?.status()).toBe(200);
 
-		response = await page.goto('/panel/medias');
-		expect(response?.status()).toBe(200);
+			const createButton = page.locator(`a[href="/panel/${slug}/create"]`);
+			expect(await createButton.innerText()).toBe('New ' + singular);
 
-		response = await page.goto('/panel/medias/create');
-		expect(response?.status()).toBe(200);
+			response = await page.goto(`/panel/${slug}/create`);
+			expect(response?.status()).toBe(200);
+		}
 
-		response = await page.goto('/panel/users');
-		expect(response?.status()).toBe(200);
+		const globals = [{ slug: 'settings', label: 'Settings' }];
 
-		response = await page.goto('/panel/settings');
-		expect(response?.status()).toBe(200);
+		for (const { slug, label } of globals) {
+			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
+			expect(await navButton.innerText()).toBe(label);
+			const response = await page.goto(`/panel/${slug}`);
+			expect(response?.status()).toBe(200);
+		}
 
 		await page.click('form.rz-logout-form button[type="submit"]');
 		await page.waitForNavigation();

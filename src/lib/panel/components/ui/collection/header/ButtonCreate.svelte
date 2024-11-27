@@ -11,7 +11,7 @@
 	const isSmallSize = $derived(size === 'sm');
 	const buttonVariant = $derived(isSmallSize ? 'ghost' : 'default');
 	const buttonSize = $derived(isSmallSize ? 'icon-sm' : 'default');
-	const buttonLabel = $derived(`New ${collection.title}`);
+	const buttonLabel = $derived(`New ${collection.config.label.singular}`);
 </script>
 
 {#if collection.canCreate}

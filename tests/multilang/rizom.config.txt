@@ -28,7 +28,6 @@ import { cache } from '../plugins/cache';
 //////////////////////////////////////////////
 
 const Settings: GlobalConfig = {
-	name: 'Settings',
 	slug: 'settings',
 	icon: Settings2,
 	group: 'informations',
@@ -70,7 +69,6 @@ const nav = blocks('nav').blocks(
 );
 
 const Menu: GlobalConfig = {
-	name: 'Menu',
 	slug: 'menu',
 	group: 'Content',
 	icon: ListTree,
@@ -85,7 +83,6 @@ const Menu: GlobalConfig = {
 //////////////////////////////////////////////
 
 const Informations: GlobalConfig = {
-	name: 'Informations',
 	slug: 'infos',
 	icon: ReceiptText,
 	group: 'informations',
@@ -214,7 +211,6 @@ const tabSeo = tab('Seo').fields(
 );
 
 const Pages: CollectionConfig = {
-	name: 'Pages',
 	slug: 'pages',
 	icon: Newspaper,
 	asTitle: 'title',
@@ -242,7 +238,6 @@ const Pages: CollectionConfig = {
 //////////////////////////////////////////////
 
 const Medias: CollectionConfig = {
-	name: 'Medias',
 	slug: 'medias',
 	icon: Images,
 	group: 'Medias',

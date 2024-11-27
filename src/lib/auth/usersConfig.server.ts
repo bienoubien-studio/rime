@@ -14,7 +14,7 @@ export const hashedPassword: TextField = {
 
 export const panelUsersCollection: CollectionConfig = {
 	slug: 'users',
-	name: 'Users',
+	label: { singular: 'User', plural: 'Users' },
 	auth: true,
 	asTitle: 'email',
 	icon: UsersRound,
