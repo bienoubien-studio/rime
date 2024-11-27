@@ -1,4 +1,4 @@
-import { RizomError } from './error.server';
+import { RizomError } from './error.server.js';
 
 class RizomUploadError extends RizomError {
 	// constructor(message = '', ...args: any) {
