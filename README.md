@@ -204,6 +204,7 @@ const { docs } = await fetch('http://localhost:5173/api/pages?where[author][in_a
 
 ## ROADMAP
 
+- [ ] Documentation
 - [ ] Document version
 - [ ] Document locked while being edited by another user
 - [ ] Working Live Edit system (in developpment)
