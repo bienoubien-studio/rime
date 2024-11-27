@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
@@ -19,6 +19,7 @@
 		"test": "pnpm test:multilang && pnpm test:basic",
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/"
 	},
+	"license": "MIT",
 	"bin": "./dist/bin/index.js",
 	"exports": {
 		".": {
@@ -119,7 +120,7 @@
 		"@tiptap/extension-placeholder": "^2.8.0",
 		"@tiptap/starter-kit": "^2.8.0",
 		"autoprefixer": "^10.4.20",
-		"better-sqlite3": "^11.3.0",
+		"better-sqlite3": "^11.6.0",
 		"bits-ui": "1.0.0-next.40",
 		"camelcase": "^8.0.0",
 		"chalk": "^5.3.0",
@@ -131,11 +132,13 @@
 		"deepmerge": "^4.3.1",
 		"dotenv": "^16.4.5",
 		"drizzle-orm": "0.31.4",
+		"esbuild": "^0.24.0",
+		"esbuild-register": "^3.6.0",
 		"flat": "^6.0.1",
 		"js-cookie": "^3.0.5",
 		"loglevel": "^1.9.2",
 		"loglevel-plugin-prefix": "^0.8.4",
-		"lucia": "^3.2.0",
+		"lucia": "^3.2.2",
 		"lucide-svelte": "^0.363.0",
 		"mode-watcher": "^0.4.1",
 		"nodemailer": "^6.9.15",
