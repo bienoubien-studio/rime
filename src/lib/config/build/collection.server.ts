@@ -1,7 +1,7 @@
 import { panelUsersCollection } from '$lib/auth/usersConfig.server.js';
 import { usersFields } from '$lib/auth/usersFields.js';
 import { hasProps } from 'rizom/utils/object.js';
-import { isFormField, isRolesField } from '../../utils/field.js';
+import { hasMaybeTitle, isFormField, isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
 import { augment } from './fields/augment.server.js';
@@ -101,9 +101,12 @@ const buildFields = (collection: CollectionConfig): AnyField[] => {
 export const buildCollection = async (
 	collection: CollectionConfig
 ): Promise<BuiltCollectionConfig> => {
+	const fields: AnyField[] = buildFields(collection);
+
 	// Add generic documents title field if not defined
 	const addAsTitle = () => {
-		if (collection.asTitle) return collection.asTitle;
+		const fieldTitle = fields.filter(hasMaybeTitle).find((field) => field.isTitle);
+		if (fieldTitle) return fieldTitle.name;
 		if (collection.upload) return 'filename';
 		if (collection.auth) return 'email';
 		return 'id';
@@ -138,7 +141,7 @@ export const buildCollection = async (
 			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug) },
 		asTitle: addAsTitle(),
 		type: 'collection',
-		fields: buildFields(collection),
+		fields,
 		hooks,
 		access: {
 			create: (user?: User) => !!user,

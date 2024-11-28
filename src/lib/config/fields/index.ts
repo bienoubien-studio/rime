@@ -1,4 +1,4 @@
-import type { ComponentType, Snippet } from 'svelte';
+import type { Component } from 'svelte';
 import { capitalize } from 'rizom/utils/string.js';
 import type {
 	AnyField,
@@ -121,6 +121,11 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 		this.field.slugify = fieldName;
 		return this;
 	}
+
+	isTitle() {
+		this.field.isTitle = true;
+		return this;
+	}
 }
 
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
@@ -133,12 +138,20 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		this.field.defaultValue = value;
 		return this;
 	}
+	isTitle() {
+		this.field.isTitle = true;
+		return this;
+	}
 }
 
 class DateFieldBuilder extends FormFieldBuilder<DateField> {
 	//
 	defaultValue(value: Date) {
 		this.field.defaultValue = value;
+		return this;
+	}
+	isTitle() {
+		this.field.isTitle = true;
 		return this;
 	}
 }
@@ -185,6 +198,10 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	}
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
+		return this;
+	}
+	isTitle() {
+		this.field.isTitle = true;
 		return this;
 	}
 }
@@ -295,6 +312,8 @@ class GroupBuilder extends FieldBuilder<GroupField> {
 		}
 	}
 	fields(...fields: UserDefinedField[]) {
+		// @ts-expect-error GroupField.fields is AnyField[] after config built
+		// But need to type it as UserDefinedField for user definition
 		this.field.fields = fields;
 		return this;
 	}
@@ -302,7 +321,7 @@ class GroupBuilder extends FieldBuilder<GroupField> {
 
 class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 	//
-	constructor(component: Snippet) {
+	constructor(component: Component) {
 		super('component');
 		this.field.component = component;
 	}
@@ -319,7 +338,7 @@ class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 export const blocks = (name: string) => new BlocksBuilder(name);
 export const date = (name: string) => new DateFieldBuilder(name, 'date');
 export const combobox = (name: string) => new SelectOneFieldBuilder(name, 'combobox');
-export const component = (component: Snippet) => new ComponentFieldBuilder(component);
+export const component = (component: Component) => new ComponentFieldBuilder(component);
 export const email = (name: string) => new EmailFieldBuilder(name, 'email');
 export const group = (label?: string) => new GroupBuilder(label);
 export const link = (name: string) => new LinkFieldBuilder(name, 'link');
@@ -349,6 +368,8 @@ class TabBuiler {
 		return this;
 	}
 	fields(...fields: UserDefinedField[]) {
+		// @ts-expect-error TabField.fields is AnyField[] after config built
+		// But need to type it as UserDefinedField for user definition
 		this.#tab.fields = fields;
 		return this.#tab;
 	}
@@ -361,7 +382,7 @@ class BlockBuilder {
 	constructor(name: string) {
 		this.#block = { name, fields: [] };
 	}
-	icon(component: ComponentType) {
+	icon(component: Component) {
 		this.#block.icon = component;
 		return this;
 	}
@@ -378,6 +399,8 @@ class BlockBuilder {
 		return this;
 	}
 	fields(...fields: UserDefinedField[]) {
+		// @ts-expect-error BlockField.fields is AnyField[] after config built
+		// But need to type it as UserDefinedField for user definition
 		this.#block.fields = fields;
 		return { ...this.#block };
 	}

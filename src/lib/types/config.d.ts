@@ -104,7 +104,6 @@ type BaseDocConfig = {
 	slug: string;
 	group?: string;
 	fields: UserDefinedField[];
-	asTitle?: string;
 	icon?: ComponentType;
 	access?: Access;
 	url?: <T extends GenericDoc>(doc: T) => string;

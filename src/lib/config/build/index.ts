@@ -18,6 +18,7 @@ import type { PrototypeSlug } from 'rizom/types/doc.js';
 import { RizomError } from 'rizom/errors/error.server.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { capitalize } from 'rizom/utils/string.js';
+import { hasMaybeTitle } from 'rizom/utils/field.js';
 
 const dev = process.env.NODE_ENV === 'development';
 const execFromCommandLine =
@@ -121,12 +122,14 @@ const buildGlobal = (global: GlobalConfig): BuiltGlobalConfig => {
 		{ name: 'updatedAt', type: 'date', hidden: true }
 	];
 
+	const fieldTitle = fields.filter(hasMaybeTitle).find((field) => field.isTitle);
+
 	return {
 		...global,
 		slug: global.slug as PrototypeSlug,
 		type: 'global',
 		label: global.label ? global.label : capitalize(global.slug),
-		asTitle: global.asTitle ? global.asTitle : 'id',
+		asTitle: fieldTitle ? fieldTitle.name : 'id',
 		fields,
 		access: {
 			create: (user) => !!user,

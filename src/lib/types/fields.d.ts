@@ -1,4 +1,3 @@
-import type { ComponentType } from 'svelte';
 import type { FieldBuilder } from '../config/fields';
 import type { User } from './auth';
 import type { GenericDoc } from './doc';
@@ -68,6 +67,7 @@ export type TextField = FormField & {
 	type: 'text';
 	defaultValue?: string;
 	unique?: boolean;
+	isTitle?: true;
 };
 
 type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'PrototypeSlug'>;
@@ -82,12 +82,14 @@ export type EmailField = FormField & {
 	type: 'email';
 	defaultValue?: string;
 	unique?: boolean;
+	isTitle?: true;
 };
 
 export type SlugField = FormField & {
 	type: 'slug';
 	slugify?: string;
 	unique?: boolean;
+	isTitle?: true;
 };
 
 export type RelationField = FormField & {
@@ -120,6 +122,7 @@ export type DateField = FormField & {
 	type: 'date';
 	defaultValue?: Date | (() => Date);
 	unique?: boolean;
+	isTitle?: true;
 };
 
 type RichTextFieldMark = 'bold' | 'italic' | 'underline' | 'strike' | false;
@@ -176,14 +179,14 @@ export type BlocksFieldBlock = {
 	name: string;
 	label?: string;
 	description?: string;
-	icon?: ComponentType;
+	icon?: Component;
 	renderTitle?: BlocksFieldBlockRenderTitle;
 	fields: AnyField[];
 };
 
 export type ComponentField = BaseField & {
 	type: 'component';
-	component: ComponentType;
+	component: Component;
 };
 
 export type AnyFormField =

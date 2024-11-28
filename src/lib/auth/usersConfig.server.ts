@@ -16,7 +16,6 @@ export const panelUsersCollection: CollectionConfig = {
 	slug: 'users',
 	label: { singular: 'User', plural: 'Users' },
 	auth: true,
-	asTitle: 'email',
 	icon: UsersRound,
 	fields: [usersFields.name, usersFields.email, usersFields.roles, hashedPassword],
 	access: {

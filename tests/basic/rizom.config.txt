@@ -6,10 +6,9 @@ import { cache } from '../plugins/cache';
 
 const Pages: CollectionConfig = {
 	slug: 'pages',
-	label: { singular: 'Page', plural : 'Pages' },
-	asTitle: 'title',
+	label: { singular: 'Page', plural: 'Pages' },
 	group: 'content',
-	fields: [text('title').required(), relation('parent').to('pages'), richText('intro')],
+	fields: [text('title').isTitle().required(), relation('parent').to('pages'), richText('intro')],
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -35,7 +34,7 @@ const Settings: GlobalConfig = {
 
 const Medias = {
 	slug: 'medias',
-	label: { singular: 'Media', plural : 'Medias' },
+	label: { singular: 'Media', plural: 'Medias' },
 	upload: true,
 	group: 'content',
 	fields: [text('alt')]
@@ -44,6 +43,11 @@ const Medias = {
 const config = {
 	collections: [Pages, Medias],
 	globals: [Settings],
+	panel: {
+	   users: {
+			roles: [{ value: 'admin' }, { value: 'editor' }]
+		}
+	},
 	plugins: [cache({ enabled: true })]
 };
 export default config;
