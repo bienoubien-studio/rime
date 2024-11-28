@@ -6,6 +6,7 @@ import {
 	isGroupField,
 	isLinkField,
 	isNumberField,
+	isRadioField,
 	isSelectField,
 	isTabsField
 } from '$lib/utils/field.js';
@@ -39,7 +40,7 @@ export const augment = (prev: any[], curr: any) => {
 			...curr,
 			fields: curr.fields.reduce(augment, [])
 		};
-	} else if (isSelectField(curr) || isComboBoxField(curr)) {
+	} else if (isSelectField(curr) || isComboBoxField(curr) || isRadioField(curr)) {
 		curr = {
 			...curr,
 			options: curr.options.map((option) => {
@@ -61,7 +62,7 @@ export const augment = (prev: any[], curr: any) => {
 	} else if (isDateField(curr)) {
 		curr = {
 			defaultValue: () => {
-				let date = new Date();
+				const date = new Date();
 				date.setHours(0, 0, 0, 0);
 				return date;
 			},
