@@ -77,6 +77,11 @@ export const isSlugField = (field: AnyField): field is SlugField => field.type =
 export const isRolesField = (field: AnyField): field is SelectField =>
 	isFormField(field) && isSelectField(field) && field.name === 'roles';
 
+export const hasMaybeTitle = (
+	field: AnyField
+): field is TextField | DateField | SlugField | EmailField =>
+	['text', 'date', 'slug', 'email'].includes(field.type);
+
 export const isRelationResolved = <T>(value: any): value is T => {
 	return value && isObjectLiteral(value) && hasProps(value, ['title', '_prototype', '_type']);
 };
