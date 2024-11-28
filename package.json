@@ -139,7 +139,7 @@
 		"loglevel": "^1.9.2",
 		"loglevel-plugin-prefix": "^0.8.4",
 		"lucia": "^3.2.2",
-		"lucide-svelte": "^0.363.0",
+		"lucide-svelte": "^0.462.0",
 		"mode-watcher": "^0.4.1",
 		"nodemailer": "^6.9.15",
 		"oslo": "^1.2.1",
