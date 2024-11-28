@@ -10,31 +10,31 @@ import { RizomError } from 'rizom/errors/error.server';
 import { isObjectLiteral } from 'rizom/utils/object';
 import type { OperationQuery } from 'rizom/types';
 
-type BuildWhere = (args: {
+type BuildWhereArgs = {
 	query: OperationQuery | string;
 	slug: PrototypeSlug;
 	locale?: string;
 	db: BetterSQLite3Database<any>;
-}) => any;
+};
 
-export const buildWhereParam: BuildWhere = ({ query: incomingQuery, slug, db, locale }) => {
+export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: BuildWhereArgs) => {
 	let query: OperationQuery;
 
 	if (typeof incomingQuery === 'string') {
 		try {
 			query = qs.parse(incomingQuery);
 		} catch (err: any) {
-			throw new RizomError('Unable to parse given query ' + err.message);
+			throw new RizomError('1 Unable to parse given query ' + err.message);
 		}
 	} else {
 		if (!isObjectLiteral(incomingQuery)) {
-			throw new RizomError('Unable to parse given query');
+			throw new RizomError('2 Unable to parse given query');
 		}
 		query = incomingQuery;
 	}
 
 	if (!query.where) {
-		throw new RizomError('Unable to parse given query');
+		return false;
 	}
 
 	const table = rizom.adapter.tables[slug];
