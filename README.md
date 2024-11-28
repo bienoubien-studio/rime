@@ -94,7 +94,7 @@ RIZOM_SECRET=super_secret
 PUBLIC_RIZOM_URL=http://localhost:5173
 ```
 
-### 3. Visit Admin Panel
+### 3. Create your first admin user
 
 Once initialized, navigate to `http://localhost:5173/panel` to create your first admin user.
 
@@ -109,25 +109,24 @@ import { access } from 'rizom/access';
 
 const Pages: CollectionConfig = {
   slug: 'pages',
-  asTitle: 'title',
   group: 'content',
   fields: [
-	  text('title').required(),
-		relation('parent').to('pages'),
-		richText('intro')
-	],
-	access: {
-		read: () => true,
-		create: (user) => access.isAdmin(user),
-		update: (user) => access.hasRoles(user, 'admin', 'editor')
-	}
+    text('title').isTitle().required(),
+    relation('parent').to('pages'),
+    richText('intro')
+  ],
+  access: {
+    read: () => true,
+    create: (user) => access.isAdmin(user),
+    update: (user) => access.hasRoles(user, 'admin', 'editor')
+  }
 };
 
 const Settings: GlobalConfig = {
-	slug: 'settings',
-	icon: Settings2,
-	group: 'settings',
-	fields: [
+  slug: 'settings',
+  icon: Settings2,
+  group: 'settings',
+  fields: [
     toggle('stickyHeader').label('Sticky header'),
     link('about').label('About'),
     relation('logo').to('medias')
