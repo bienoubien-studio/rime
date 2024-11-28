@@ -1,21 +1,18 @@
 <script lang="ts">
-  import { getLiveContext } from '$src/lib/cms/panel/context/live.svelte';
-  import Page from '$lib/front/components/containers/Page.svelte';
-  import type { PageData } from '../../../(front)/[[locale]]/[[id]]/$types';
+	import { getLiveContext } from '$lib/panel/context/live.svelte';
 
-  type Props = { data: PageData };
+	let { data } = $props();
+	const live = getLiveContext();
+	const doc = $derived(live.doc || data.doc);
 
-  let { data }: Props = $props();
-
-  const live = getLiveContext();
-
-  $effect(() => {
-    if (live.enabled) {
-      live.doc = data.doc;
-    }
-  });
-
-  const doc = $derived(live.doc || data.doc);
+	$effect(() => {
+		if (live.enabled) {
+			live.doc = data.doc;
+		}
+	});
+	//
 </script>
 
-<Page {doc} />
+{#if doc._live && !live.enabled}
+	<a href={doc._live}>Edit Live</a>
+{/if}
