@@ -40,8 +40,8 @@
 		& :global([data-active]),
 		:global(:disabled) {
 			opacity: 1;
-			@mixin bg color-primary, 0.1;
-			@mixin color color-primary;
+			@mixin bg ground-5;
+			@mixin color ground-2;
 		}
 
 		& :global(button) {

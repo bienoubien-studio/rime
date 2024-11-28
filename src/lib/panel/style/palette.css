@@ -1,10 +1,10 @@
 :root {
-	--rz-ground-0: 30deg 35% 4%;
-	--rz-ground-1: 30deg 35% 21%;
+	--rz-ground-0: 30deg 4% 4%;
+	--rz-ground-1: 30deg 4% 21%;
 	--rz-ground-2: 30deg 5% 62%;
 	--rz-ground-3: 30deg 7% 86%;
-	--rz-ground-4: 30deg 0% 90%;
-	--rz-ground-5: 30deg 8% 94%;
+	--rz-ground-4: 30deg 3% 90%;
+	--rz-ground-5: 30deg 3% 94%;
 	--rz-ground-6: 30deg 1% 98%;
 	--rz-ground-7: 30deg 0% 100%;
 
@@ -15,11 +15,11 @@
 	--rz-color-input: var(--rz-ground-5);
 	--rz-color-border: var(--rz-ground-4);
 
-	--rz-color-primary: 251deg 89% 51%;
+	--rz-color-primary: 241deg 3% 0%;
 	--rz-color-primary-fg: 200 4% 100%;
 
-	--rz-color-secondary: var(--rz-ground-4);
-	--rz-color-secondary-fg: var(--rz-ground-0);
+	--rz-color-secondary: var(--rz-ground-5);
+	--rz-color-secondary-fg: var(--rz-ground-1);
 
 	--rz-color-accent: var(--rz-ground-3);
 	--rz-color-accent-fg: var(--rz-ground-6);

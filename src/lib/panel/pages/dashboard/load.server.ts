@@ -6,10 +6,11 @@ import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 export type DashboardEntry = {
 	slug: PrototypeSlug;
 	title: string;
+	titleSingular?: string;
 	link: string;
 	canCreate?: boolean;
 	prototype: DocPrototype;
-	lastEdited?: GenericDoc;
+	lastEdited?: GenericDoc[];
 };
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
@@ -22,7 +23,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 			? api
 					.collection(collection.slug)
 					.findAll({
-						limit: 1,
+						limit: 4,
 						sort: '-updatedAt',
 						locale
 					})
@@ -32,8 +33,9 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 							slug: collection.slug,
 							canCreate: user && collection.access.create(user),
 							link: `/panel/${collection.slug}`,
+							titleSingular: collection.label.singular,
 							title: collection.label.singular,
-							lastEdited: docs.length ? docs.at(0) : undefined
+							lastEdited: docs
 						})
 					)
 			: false

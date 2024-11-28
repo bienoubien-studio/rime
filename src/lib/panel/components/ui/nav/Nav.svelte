@@ -1,24 +1,32 @@
 <script lang="ts">
-	import Logo from './logo/Logo.svelte';
 	import NavItem from './NavItem.svelte';
 	import NavGroup from './NavGroup.svelte';
 	import UserButton from './UserButton.svelte';
 	import type { Route } from 'rizom/types/panel';
 
+	import { PanelsTopLeft } from 'lucide-svelte';
+
 	type Props = { isCollapsed: boolean; routes: Record<string, Route[]> };
 	const { isCollapsed, routes: routesGroups }: Props = $props();
+
+	const dashBoardRoute: Route = {
+		title: 'Dashboard',
+		path: '/panel',
+		icon: PanelsTopLeft
+	};
 </script>
 
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
 	<div class="rz-nav__content">
-		<div class="rz-nav__header">
+		<!-- <div class="rz-nav__header">
 			<a href="/panel">
 				<Logo />
 			</a>
-		</div>
+		</div> -->
 
 		<div class="rz-nav__body">
 			<nav class="rz-nav__nav">
+				<NavItem href={dashBoardRoute.path} {isCollapsed} route={dashBoardRoute} />
 				{#each Object.entries(routesGroups) as [groupName, routes]}
 					{#if groupName !== 'none'}
 						<NavGroup name={groupName} navCollapsed={isCollapsed}>
@@ -42,13 +50,13 @@
 
 <style type="postcss">
 	.rz-nav {
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-ground-5) / 0.7);
 		position: fixed;
 		bottom: 0;
 		left: 0;
 		top: 0;
 		border-right: var(--rz-border);
-		width: var(--rz-size-60);
+		width: var(--rz-size-72);
 	}
 	.rz-nav--collapsed {
 		width: var(--rz-size-20);
@@ -57,8 +65,9 @@
 		display: flex;
 		height: 100%;
 		flex-direction: column;
+		padding-top: var(--rz-size-2);
 	}
-	.rz-nav__header {
+	/* .rz-nav__header {
 		display: flex;
 		margin-top: 2px;
 		height: var(--rz-size-16);
@@ -67,7 +76,7 @@
 		justify-content: space-between;
 		padding-right: var(--rz-size-4);
 		padding-left: var(--rz-size-6);
-	}
+	} */
 	.rz-nav__body {
 		display: flex;
 		height: 100%;

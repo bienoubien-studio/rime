@@ -147,12 +147,13 @@
 	}
 
 	.rz-button--secondary {
-		background-color: hsl(var(--rz-color-secondary));
-		color: hsl(var(--rz-color-secondary-fg));
+		background-color: hsl(var(--rz-ground-6));
+		color: hsl(var(--rz-ground-0));
+		/* border: 1px solid hsl(var(--rz-ground-3)); */
+		box-shadow: var(--rz-shadow-sm);
 		&:hover {
 			background-color: hsl(var(--rz-color-secondary) / 0.7);
 		}
-		/* secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/70', */
 	}
 
 	.rz-button--link {
@@ -162,11 +163,10 @@
 		&:hover {
 			text-decoration: underline;
 		}
-		/* link: 'text-primary underline-offset-4 hover:underline', */
 	}
 
 	.rz-button--text {
-		--opacity: 0.7 padding-left: 0;
+		--opacity: 0.1 padding-left: 0;
 		padding-right: 0;
 		background-color: transparent;
 		color: hsl(var(--rz-color-fg) / var(--opacity));
@@ -178,7 +178,6 @@
 		&:disabled {
 			--opacity: 0.4;
 		}
-		/* text: 'px-0 text-foreground/70 hover:text-foreground font-medium inline-flex items-center gap-2 disabled:text-foreground/40' */
 	}
 
 	/**************************************/

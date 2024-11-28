@@ -16,11 +16,15 @@
 
 	const { config } = getConfigContext();
 
-	const RouteIcon = config.icons[route.icon] || File;
+	const RouteIcon =
+		typeof route.icon === 'function' ? route.icon : config.icons[route.icon] || File;
 
 	let pathname = $page.url.pathname;
 
 	let active = $derived.by(() => {
+		if (route.path === '/panel') {
+			return pathname === '/panel';
+		}
 		const reg = new RegExp(`^${route.path}(/.*)?$`);
 		return reg.test(pathname);
 	});

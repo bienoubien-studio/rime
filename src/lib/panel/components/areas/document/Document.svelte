@@ -3,7 +3,7 @@
 	import * as DocUpload from '$lib/panel/components/ui/doc-upload';
 	import * as DocAuth from '$lib/panel/components/ui/doc-auth';
 	import RenderFields from '../../fields/RenderFields.svelte';
-	import PageHeader from '../../ui/page-header/PageHeader.svelte';
+	import Header from './Header.svelte';
 	import { setDocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import { isAuthConfig, isUploadConfig } from '$lib/config/utils.js';
@@ -122,7 +122,7 @@
 	method="post"
 >
 	<ScrollArea>
-		<PageHeader panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></PageHeader>
+		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 
 		<div class="rz-document__fields">
 			{#if config.type === 'collection' && isUploadConfig(config)}

@@ -72,7 +72,7 @@
 	}
 	@container rz-panel (min-width:1024px) {
 		.rz-panel-root__right {
-			margin-left: var(--rz-size-60);
+			margin-left: var(--rz-size-72);
 		}
 	}
 </style>

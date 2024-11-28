@@ -5,7 +5,7 @@
 	type Props = {
 		icon: ComponentType;
 		type?: 'submit' | 'button';
-		active: boolean;
+		active?: boolean;
 		class?: string;
 		[x: string]: any;
 	};

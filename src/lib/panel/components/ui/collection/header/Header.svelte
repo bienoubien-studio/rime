@@ -54,7 +54,7 @@
 		align-items: center;
 		justify-content: space-between;
 		border-bottom: var(--rz-border);
-		@mixin px var(--rz-size-5);
+		@mixin px var(--rz-size-6);
 		font-size: var(--rz-text-sm);
 	}
 
