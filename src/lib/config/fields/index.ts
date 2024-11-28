@@ -1,4 +1,4 @@
-import type { Component } from 'svelte';
+import type { Component, ComponentType } from 'svelte';
 import { capitalize } from 'rizom/utils/string.js';
 import type {
 	AnyField,
@@ -382,7 +382,13 @@ class BlockBuilder {
 	constructor(name: string) {
 		this.#block = { name, fields: [] };
 	}
-	icon(component: Component) {
+	/**
+	 * Sets the icon, must be a lucide-svelte component
+	 * @example
+	 * import { Home } from 'lucide-svelte'
+	 * block('home').icon(Home)
+	 */
+	icon(component: ComponentType) {
 		this.#block.icon = component;
 		return this;
 	}

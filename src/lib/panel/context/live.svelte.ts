@@ -7,9 +7,9 @@ import type { Dic } from 'rizom/types/utility.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
-function createStore(src: string) {
+function createStore<T extends GenericDoc = GenericDoc>(src: string) {
 	let enabled = $state(false);
-	let doc = $state<GenericDoc>();
+	let doc = $state<T>();
 	const callbacks: any[] = [];
 	let currentFocusedElement = $state<HTMLElement>();
 
@@ -21,8 +21,6 @@ function createStore(src: string) {
 			}
 		}
 	};
-
-	// $effect(() => console.log(live));
 
 	const onMessage = async (e: any) => {
 		/////////////////////////////////////////////
@@ -61,7 +59,7 @@ function createStore(src: string) {
 					}
 				}
 			}
-			doc = mergeData({ path: e.data.path, value });
+			doc = mergeData({ path: e.data.path, value }) as T;
 		} else if (
 			e.data.focus &&
 			typeof e.data.focus === 'string' &&
@@ -116,22 +114,15 @@ function createStore(src: string) {
 	};
 }
 
-export function setLiveContext(src: string) {
-	const store = createStore(src);
+export function setLiveContext<T extends GenericDoc = GenericDoc>(src: string) {
+	const store = createStore<T>(src);
 	return setContext(LIVE_KEY, store);
 }
 
-export function getLiveContext() {
-	return getContext<ReturnType<typeof setLiveContext>>(LIVE_KEY);
+export function getLiveContext<T extends GenericDoc = GenericDoc>() {
+	type ContextType = ReturnType<typeof setLiveContext<T>>;
+	return getContext<ContextType>(LIVE_KEY);
 }
 
 type OnDataCallback = (args: { path: string; value: any }) => void;
 type MergeData = (args: { path: string; value: any }) => GenericDoc;
-
-// wrapper tell iframe it's live
-// iframe send it's src
-// wrapper receive src
-// if src !== data.src
-//
-// wrapper tell iframe it's live
-// ...

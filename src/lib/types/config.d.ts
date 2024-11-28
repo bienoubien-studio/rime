@@ -107,7 +107,7 @@ type BaseDocConfig = {
 	icon?: ComponentType;
 	access?: Access;
 	url?: <T extends GenericDoc>(doc: T) => string;
-	live?: (doc: GenericDoc) => string;
+	live?: boolean;
 };
 
 export type BaseCollectionConfig = {

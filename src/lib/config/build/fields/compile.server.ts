@@ -1,30 +1,29 @@
 import { FieldBuilder } from '$lib/config/fields/index.js';
-import type { GenericBlock } from 'rizom/types/doc';
+import type { BlocksFieldBlock, TabsFieldTab } from 'rizom/types';
+
+import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field';
 
 export const compile = (prev: any[], curr: any) => {
-	// console.log('-----------');
-	// console.log(curr);
-	// console.log(curr instanceof FieldBuilder);
 	if (curr instanceof FieldBuilder) {
 		curr = curr.toField();
 	}
-	if (curr.type === 'tabs') {
+	if (isTabsField(curr)) {
 		curr = {
 			...curr,
-			tabs: curr.tabs.map((tab: any) => ({
+			tabs: curr.tabs.map((tab: TabsFieldTab) => ({
 				...tab,
 				fields: tab.fields.reduce(compile, [])
 			}))
 		};
-	} else if (curr.type === 'group') {
+	} else if (isGroupField(curr)) {
 		curr = {
 			...curr,
 			fields: curr.fields.reduce(compile, [])
 		};
-	} else if (curr.type === 'blocks') {
+	} else if (isBlocksField(curr)) {
 		curr = {
 			...curr,
-			blocks: curr.blocks.map((block: GenericBlock) => ({
+			blocks: curr.blocks.map((block: BlocksFieldBlock) => ({
 				...block,
 				fields: [...block.fields].reduce(compile, [])
 			}))
