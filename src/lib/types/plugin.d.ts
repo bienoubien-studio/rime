@@ -1,8 +1,4 @@
-import type { BuiltConfig } from './config';
-
-// interface PluginOptions {
-// 	enabled: boolean | (({ event }: { event: RequestEvent }) => boolean);
-// }
+import type { BuiltConfig, RouteConfig } from './config';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 

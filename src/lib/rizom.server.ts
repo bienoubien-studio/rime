@@ -116,10 +116,10 @@ function createRizom() {
 			const defaultLocale = config.getDefaultLocale();
 			const locale = paramLocale || searchParamLocale || cookieLocale;
 			if (locale && config.getLocalesCodes().includes(locale)) {
-				event.cookies.set('Locale', locale, { path: '.' });
+				// event.cookies.set('Locale', locale, { path: '.' });
 				return locale;
 			}
-			event.cookies.set('Locale', defaultLocale, { path: '.' });
+			// event.cookies.set('Locale', defaultLocale, { path: '.' });
 			return defaultLocale;
 		},
 
