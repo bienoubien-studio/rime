@@ -1,4 +1,5 @@
 import { toPascalCase } from '$lib/utils/string.js';
+import type { Dic } from 'rizom/types/utility.js';
 import {
 	templateRelationFieldsTable,
 	templateRelationMany,
