@@ -103,6 +103,14 @@ export async function createConfigInterface() {
 		getLocalesCodes() {
 			return config.localization ? config.localization.locales.map((locale) => locale.code) : [];
 		},
+
+		isValidLocale(locale: any) {
+			const locales = config.localization
+				? config.localization.locales.map((locale) => locale.code)
+				: [];
+			return locales.includes(locale);
+		},
+
 		getDocumentPrototype,
 		getGlobal,
 		getCollection,
