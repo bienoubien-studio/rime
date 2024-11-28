@@ -60,6 +60,7 @@
 <svelte:window onmessage={onIframeMessage} />
 
 <div class="rz-live-container">
+	<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
 	<!-- {#await loadConfig() then config} -->
 	<div class="rz-live-container__side-panel">
 		{#key data.src + data.doc.id + data.locale + data.slug}
@@ -75,8 +76,6 @@
 		{/key}
 	</div>
 	<!-- {/await} -->
-
-	<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
 </div>
 
 <style>
@@ -87,7 +86,7 @@
 		width: 26rem;
 		flex-shrink: 0;
 		flex-grow: 0;
-		border-right: var(--rz-border);
+		border-left: var(--rz-border);
 	}
 	.rz-live-container iframe {
 		flex: 1;

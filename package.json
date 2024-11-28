@@ -16,7 +16,8 @@
 		"format": "prettier --write .",
 		"test:multilang": "playwright test -c ./playwright.config.multilang.ts",
 		"test:basic": "playwright test --ui -c ./playwright.config.basic.ts",
-		"test": "pnpm test:multilang && pnpm test:basic",
+		"test:live": "playwright test --ui -c ./playwright.config.live.ts",
+		"test": "pnpm test:multilang && pnpm test:basic && pnpm test:live",
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/"
 	},
 	"license": "MIT",
