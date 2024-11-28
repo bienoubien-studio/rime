@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @ts-check
 import { program } from 'commander';
 import { init } from './init/index.js';
 import { execSync } from 'child_process';
@@ -30,13 +31,14 @@ program
 	.description('Reset CMS')
 	.option('-f, --force', 'Force generation overwriting existing files', false)
 	.action(async (args) => {
-		let confirmed = true;
+		let shouldProceed = true;
 		if (!args.force) {
-			confirmed = (await confirm({
+			const response = await confirm({
 				message: `Are you sure you want to delete all related rizom files, including the static/medias folder and database ?`
-			})) as boolean;
+			});
+			shouldProceed = response === true;
 		}
-		if (!confirmed) {
+		if (!shouldProceed) {
 			return outro('Operation cancelled. Goodbye!');
 		}
 		execSync('rm -fr ./.rizom');
