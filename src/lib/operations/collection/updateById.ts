@@ -4,7 +4,7 @@ import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server.js';
 import { extractRelations } from '../preprocess/extract/relations.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
-import { RizomAccessError } from '../../errors/access.js';
+import { RizomAccessError } from '../../errors/access.server.js';
 import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server';
 import type { Adapter } from 'rizom/types/adapter.js';
@@ -12,7 +12,7 @@ import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
-import { RizomHookError } from 'rizom/errors/hook.js';
+import { RizomHookError } from 'rizom/errors/hook.server.js';
 import type { Dic } from 'rizom/types/utility.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {

@@ -4,7 +4,7 @@ import { extractRelations } from '../preprocess/extract/relations.server.js';
 import { safeFlattenDoc } from '../../utils/doc.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { preprocessFields } from '../preprocess/fields.server.js';
-import { RizomAccessError } from '../../errors/access.js';
+import { RizomAccessError } from '../../errors/access.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';

@@ -1,5 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { RizomAccessError } from '../../errors/access.js';
+import { RizomAccessError } from '../../errors/access.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';

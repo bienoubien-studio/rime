@@ -5,7 +5,7 @@ import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server';
 import { extractRelations } from '../preprocess/extract/relations.server';
 import { makeEmptyDoc, safeFlattenDoc } from '../../utils/doc.js';
-import { RizomAccessError } from '../../errors/access.js';
+import { RizomAccessError } from '../../errors/access.server.js';
 import { isUploadConfig } from '../../config/utils.js';
 import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server.js';
@@ -15,7 +15,7 @@ import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
 import type { BuiltCollectionConfig } from 'rizom/types/config';
-import { RizomHookError } from 'rizom/errors/hook.js';
+import { RizomHookError } from 'rizom/errors/hook.server.js';
 import logger from 'rizom/logger/index.js';
 import type {
 	CollectionHookAfterCreateArgs,

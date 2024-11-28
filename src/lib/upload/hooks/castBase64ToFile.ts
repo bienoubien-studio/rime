@@ -1,5 +1,5 @@
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import { RizomUploadError } from 'rizom/errors/upload';
+import { RizomUploadError } from 'rizom/errors/upload.server.js';
 import { isFile } from 'rizom/utils/file';
 import { jsonFileToFile } from '../utils/converter';
 import type { UploadDoc } from 'rizom/types';

@@ -1,4 +1,4 @@
-import { RizomUploadError } from 'rizom/errors/upload';
+import { RizomUploadError } from 'rizom/errors/upload.server.js';
 import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../utils/mime.js';
 import type { JsonFile } from 'rizom/types/upload';
 import { readFile } from 'fs/promises';

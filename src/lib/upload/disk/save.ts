@@ -3,7 +3,7 @@ import type { UploadDoc } from 'rizom';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { randomId } from 'rizom/utils/random';
-import { RizomUploadError } from 'rizom/errors/upload';
+import { RizomUploadError } from 'rizom/errors/upload.server.js';
 import { pick } from 'rizom/utils/object';
 import sharp from 'sharp';
 import { toCamelCase } from 'rizom/utils/string';
