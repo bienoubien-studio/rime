@@ -2,8 +2,9 @@
 // @ts-check
 import { program } from 'commander';
 import { init } from './init/index.js';
-import { execSync } from 'child_process';
 import { confirm, outro } from '@clack/prompts';
+import { rmSync } from 'fs';
+import path from 'path';
 
 program.version('0.1').description('CMS utilities');
 
@@ -41,18 +42,22 @@ program
 		if (!shouldProceed) {
 			return outro('Operation cancelled. Goodbye!');
 		}
-		execSync('rm -fr ./.rizom');
-		execSync('rm -fr ./src/routes/\\(rizom\\)');
-		execSync('rm -fr ./db');
-		execSync('rm -fr ./static/medias');
-		execSync('rm -f ./src/app.generated.d.ts');
-		execSync('rm -f ./src/lib/rizom.config.browser.js');
-		execSync('rm -f ./src/lib/server/schema.ts');
-		execSync('rm -f ./drizzle.config.ts');
+
+		// Remove directories
+		rmSync(path.join('.rizom'), { recursive: true, force: true });
+		rmSync(path.join('src', 'routes', '(rizom)'), { recursive: true, force: true });
+		rmSync(path.join('db'), { recursive: true, force: true });
+		rmSync(path.join('static', 'medias'), { recursive: true, force: true });
+		// Remove files
+		rmSync(path.join('src', 'app.generated.d.ts'), { force: true });
+		rmSync(path.join('src', 'lib', 'rizom.config.browser.js'), { force: true });
+		rmSync(path.join('src', 'lib', 'server', 'schema.ts'), { force: true });
+		rmSync(path.join('drizzle.config.ts'), { force: true });
+
 		if (args.force) {
 			return console.log('rizom cleaned');
 		} else {
-			return outro('Everything deleted Goodbye!');
+			return outro('rizom cleaned');
 		}
 	});
 
