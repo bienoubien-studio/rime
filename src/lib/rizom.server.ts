@@ -35,7 +35,7 @@ function createRizom() {
 
 	const init = async () => {
 		if (dev && !hasRunInitCommand()) {
-			throw new RizomInitError('Missing required files, please run ```rzyom init```');
+			throw new RizomInitError('Missing required files, please run `rizom init` first');
 		}
 		// Initialize config
 		config = await createConfigInterface();
