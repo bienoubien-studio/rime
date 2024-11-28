@@ -40,7 +40,7 @@ export interface BaseRegister {
 	Plugins: object;
 }
 
-export type GetRegisterType<K extends keyof BaseRegister> = import('rizom').Register[K];
+export type GetRegisterType<K extends keyof BaseRegister> = import('../index.js').Register[K];
 export type PrototypeSlug = GetRegisterType<'PrototypeSlug'>;
 export type CollectionSlug = GetRegisterType<'CollectionSlug'>;
 export type GlobalSlug = GetRegisterType<'GlobalSlug'>;
