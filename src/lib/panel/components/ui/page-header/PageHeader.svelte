@@ -47,12 +47,12 @@
 	</div>
 
 	<div class="rz-page-header__right">
-		{#if config.url && !liveEditing}
-			<Button target="_blank" href={config.url(form.doc)} variant="secondary">View page</Button>
+		{#if config.url && !liveEditing && form.doc._url}
+			<Button target="_blank" href={form.doc._url} variant="secondary">View page</Button>
 		{/if}
 
-		{#if config.live && !liveEditing}
-			<Button target="_blank" href={config.live(form.doc)} variant="secondary">Live edit</Button>
+		{#if config.live && !liveEditing && form.doc._live}
+			<Button target="_blank" href={form.doc._live} variant="secondary">Live edit</Button>
 		{/if}
 
 		<Button type="submit" disabled={!form.canSubmit}>
