@@ -68,7 +68,7 @@ The `init` command will automatically:
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rizom } from './src/lib/vite';
+import { rizom } from 'rizom/vite';
 
 export default defineConfig({
   plugins: [rizom(), sveltekit()]
