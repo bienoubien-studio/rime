@@ -107,12 +107,20 @@ function createRizom() {
 		},
 
 		defineLocale({ event }: { event: RequestEvent }) {
-			const params = event.url.searchParams;
-			const hasParams = params.toString();
-			const paramLocale = hasParams && params.get('locale');
+			const params = event.params;
+			const searchParams = event.url.searchParams;
+			const hasParams = searchParams.toString();
+			const paramLocale = params.locale;
+			const searchParamLocale = hasParams && searchParams.get('locale');
 			const cookieLocale = event.cookies.get('Locale');
 			const defaultLocale = config.getDefaultLocale();
-			return paramLocale || cookieLocale || defaultLocale;
+			const locale = paramLocale || searchParamLocale || cookieLocale;
+			if (locale && config.getLocalesCodes().includes(locale)) {
+				event.cookies.set('Locale', locale, { path: '.' });
+				return locale;
+			}
+			event.cookies.set('Locale', defaultLocale, { path: '.' });
+			return defaultLocale;
 		},
 
 		get plugins() {
