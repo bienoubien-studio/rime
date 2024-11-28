@@ -186,7 +186,7 @@ const tabHero = tab('hero').fields(
 );
 
 const tabAttributes = tab('Attributes').fields(
-	text('title').localized().required(),
+	text('title').isTitle().localized().required(),
 	toggle('home').table({ position: 2, sort: true }).live(false),
 	slug('slug')
 		.slugify('title')
@@ -213,7 +213,6 @@ const tabSeo = tab('Seo').fields(
 const Pages: CollectionConfig = {
 	slug: 'pages',
 	icon: Newspaper,
-	asTitle: 'title',
 	group: 'Content',
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo)],
 	url: (doc) => {
