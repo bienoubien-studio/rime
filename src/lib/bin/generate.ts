@@ -8,28 +8,28 @@ import { existsSync, mkdirSync, rmSync } from 'fs';
 import { buildConfig } from '../config/build/index.js';
 
 export const generate = async (force?: boolean) => {
-	const pathToSchema = path.resolve(process.cwd(), './src/lib/server/schema.ts');
+	const pathToSchema = path.join(process.cwd(), 'src', 'lib', 'server', 'schema.ts');
 	if (!existsSync(pathToSchema)) {
-		throw new Error('pas de schema run init man...');
+		throw new Error('No schema found run rizom init');
 	}
 
 	if (force) {
 		try {
-			rmSync(path.resolve(process.cwd(), './.rizom'), { recursive: true });
-			mkdirSync(path.resolve(process.cwd(), './.rizom'));
+			rmSync(path.join(process.cwd(), '.rizom'), { recursive: true });
+			mkdirSync(path.join(process.cwd(), '.rizom'));
 		} catch (err: any) {
 			console.log(err.message);
 		}
 		try {
-			rmSync(path.resolve(process.cwd(), './src/routes/(rizom)'), { recursive: true });
+			rmSync(path.join(process.cwd(), 'src', 'routes', '(rizom)'), { recursive: true });
 		} catch (err: any) {
 			console.log(err.message);
 		}
 	}
 
 	if (!cache.get('error')) {
-		const configPath = path.resolve(process.cwd(), './src/config/rizom.config.ts');
-		const configPathJS = path.resolve(process.cwd(), './src/config/rizom.config.js');
+		const configPath = path.join(process.cwd(), 'src', 'config', 'rizom.config.ts');
+		const configPathJS = path.join(process.cwd(), 'src', 'config', 'rizom.config.js');
 
 		if (!existsSync(configPath)) {
 			throw new Error('Unable to find config, did you run rizom init');

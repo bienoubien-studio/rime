@@ -64,8 +64,8 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 	}
 
 	function setConfig() {
-		const configDirPath = path.resolve(process.cwd(), './src/config');
-		const configPath = path.resolve(configDirPath, './rizom.config.ts');
+		const configDirPath = path.join(process.cwd(), 'src', 'config');
+		const configPath = path.join(configDirPath, 'rizom.config.ts');
 
 		if (!existsSync(configPath)) {
 			if (!existsSync(configDirPath)) {
@@ -76,23 +76,23 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 	}
 
 	function setDatabase() {
-		const dbPath = path.resolve(process.cwd(), './db');
+		const dbPath = path.join(process.cwd(), 'db');
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
 		}
 	}
 
 	function setDrizzle(name: string) {
-		const drizzleConfigPath = path.resolve(process.cwd(), './drizzle.config.ts');
+		const drizzleConfigPath = path.join(process.cwd(), 'drizzle.config.ts');
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
 		}
 	}
 
 	function setSchema() {
-		const schemaPath = path.resolve(process.cwd(), './src/lib/server/schema.ts');
+		const schemaPath = path.join(process.cwd(), 'src', 'lib', 'server', 'schema.ts');
 		if (!existsSync(schemaPath)) {
-			const libServerPath = path.resolve(process.cwd(), './src/lib/server');
+			const libServerPath = path.join(process.cwd(), 'src', 'lib', 'server');
 			if (!existsSync(libServerPath)) {
 				mkdirSync(libServerPath);
 			}
@@ -182,10 +182,13 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setSchema();
 		setHooks();
 		configureVite();
-		const s = spinner();
-		s.start('Installing dependencies');
-		installDeps();
-		s.stop('Depencies installed');
+
+		if (!skipInstall) {
+			const s = spinner();
+			s.start('Installing dependencies');
+			installDeps();
+			s.stop('Depencies installed');
+		}
 
 		outro('done !');
 	}
