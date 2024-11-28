@@ -1,4 +1,3 @@
-// import { tables } from '$src/lib/server/schema';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/utils/field.js';

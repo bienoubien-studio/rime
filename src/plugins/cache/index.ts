@@ -1,7 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { Cache } from './cache.server';
 import type { Plugin } from 'rizom/types/plugin';
-import type { BuiltConfig } from 'rizom/types';
 
 const clearCache = (): ReturnType<RequestHandler> => {
 	Cache.clear();

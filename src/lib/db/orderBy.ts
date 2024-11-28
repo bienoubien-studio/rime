@@ -1,4 +1,3 @@
-// import { tables } from '$src/lib/server/schema';
 import type { PrototypeSlug } from 'rizom/types/doc';
 import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';

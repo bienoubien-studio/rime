@@ -230,7 +230,6 @@ export const databaseTransformInterface = ({
 		}
 
 		if (config.live && user && config.url) {
-			// doc._live = config.live(doc as T);
 			doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc._url}&slug=${config.slug}&id=${doc.id}`;
 			doc._live += locale ? `&locale=${locale}` : '';
 		}
