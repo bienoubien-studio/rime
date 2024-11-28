@@ -62,21 +62,21 @@ test.describe('Login form', () => {
 
 	test('forgot password link works', async ({ page }) => {
 		await page.goto('/login');
-		await page.waitForNavigation();
 		// Click forgot password link
 		await page.click('a[href="/forgot-password?slug=users"]');
-		await page.waitForNavigation();
+		await page.waitForLoadState('networkidle');
 		// Verify navigation to forgot password page
 		expect(page.url()).toContain('/forgot-password');
 	});
 
 	test('forgot password form works', async ({ page }) => {
 		await page.goto('/login');
-		await page.waitForNavigation();
 		// Click forgot password link
 		await page.click('a[href="/forgot-password?slug=users"]');
 		await page.fill('input[name="email"]', 'admin@bienoubien.studio');
 		await page.click('button[type="submit"]');
+		await page.waitForLoadState('networkidle');
+
 		const message = page.locator('.rz-card-title');
 		expect(message).toHaveText('Email successfully sent');
 	});
@@ -125,6 +125,39 @@ test.describe('Admin panel', () => {
 
 			response = await page.goto(`/panel/${slug}/create`);
 			expect(response?.status()).toBe(200);
+
+			const saveButton = page.locator('.rz-page-header button[type="submit"]');
+			await expect(saveButton).toBeDisabled();
+
+			if (slug === 'pages') {
+				const inputTitle = page.locator(`input.rz-input[name="title"]`);
+				await inputTitle.pressSequentially('Home', { delay: 100 });
+				await expect(saveButton).toBeEnabled();
+				await saveButton.click();
+				await page.waitForLoadState('networkidle');
+
+				const h1 = page.locator('.rz-page-header__title');
+				expect(await h1.innerText()).toBe('Home');
+			}
+
+			if (slug === 'users') {
+				const inputTitle = page.locator(`input.rz-input[name="email"]`);
+				const inputPassword = page.locator(`input.rz-input[name="password"]`);
+				const inputConfirmPassword = page.locator(`input.rz-input[name="confirmPassword"]`);
+				const inputName = page.locator(`input.rz-input[name="name"]`);
+
+				await inputTitle.pressSequentially('user@bienoubien.studio', { delay: 100 });
+				await inputName.pressSequentially('User', { delay: 100 });
+				await inputPassword.pressSequentially('a&1Aa&1A', { delay: 100 });
+				await inputConfirmPassword.pressSequentially('a&1Aa&1A', { delay: 100 });
+
+				await expect(saveButton).toBeEnabled();
+				await saveButton.click();
+				await page.waitForLoadState('networkidle');
+
+				const h1 = page.locator('.rz-page-header__title');
+				expect(await h1.innerText()).toBe('user@bienoubien.studio');
+			}
 		}
 
 		const globals = [{ slug: 'settings', label: 'Settings' }];
@@ -132,8 +165,24 @@ test.describe('Admin panel', () => {
 		for (const { slug, label } of globals) {
 			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
 			expect(await navButton.innerText()).toBe(label);
+
 			const response = await page.goto(`/panel/${slug}`);
 			expect(response?.status()).toBe(200);
+
+			const saveButton = page.locator('.rz-page-header button[type="submit"]');
+			await expect(saveButton).toBeDisabled();
+
+			const footerToggle = page.locator('.rz-field-label-for[for="minimalfooter"]');
+			await footerToggle.click();
+
+			await expect(saveButton).toBeEnabled();
+			await saveButton.click();
+
+			await page.waitForLoadState('networkidle');
+
+			const sonner = page.locator('[data-sonner-toast] [data-title]');
+			expect(await sonner.innerText()).toBe('Document succesfully updated');
+			await expect(saveButton).toBeDisabled();
 		}
 
 		await page.click('form.rz-logout-form button[type="submit"]');
