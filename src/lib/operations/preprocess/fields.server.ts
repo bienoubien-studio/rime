@@ -1,5 +1,12 @@
 import { unflatten } from 'flat';
-import { isDateField, isEmptyValue, isRichTextField } from '$lib/utils/field.js';
+import {
+	isComboBoxField,
+	isDateField,
+	isEmptyValue,
+	isRadioField,
+	isRichTextField,
+	isSelectField
+} from '$lib/utils/field.js';
 import { RizomError } from '$lib/errors/error.server.js';
 import type { Rizom } from '$lib/rizom.server.js';
 import type { ConfigMap } from './config/map.js';
@@ -66,6 +73,29 @@ export const preprocessFields: PreprocessFields = async ({
 			}
 		}
 
+		/////////////////////////////////////////////
+		// Validate
+		//////////////////////////////////////////////
+
+		// Validate Select/Combo/Radio fields
+		// Not validate in a field.validate function as we need the config here,
+		// TODO probably in a future, pass the config.options in validation metas
+		if (isSelectField(config) || isComboBoxField(config) || isRadioField(config)) {
+			const selected = flatData[key];
+			const validValues = config.options.map((o) => o.value);
+			if (selected && Array.isArray(selected)) {
+				for (const value of selected) {
+					if (!validValues.includes(value)) {
+						errors[key] = `${key} field : value should be one of these : ${validValues.join('|')}`;
+					}
+				}
+			} else if (selected !== undefined) {
+				if (!validValues.includes(selected)) {
+					errors[key] = `${key} field : value should be one of these : ${validValues.join('|')}`;
+				}
+			}
+		}
+
 		// Validate
 		if (config.validate) {
 			try {
@@ -111,10 +141,10 @@ export const preprocessFields: PreprocessFields = async ({
 		}
 
 		if (config.access && config.access.create && operation === 'create') {
-			const authorizedFieldUpdate = config.access.create(user, {
-				id: documentId
+			const authorizedFieldCreate = config.access.create(user, {
+				id: undefined
 			});
-			if (!authorizedFieldUpdate) {
+			if (!authorizedFieldCreate) {
 				delete flatData[key];
 			}
 		}
