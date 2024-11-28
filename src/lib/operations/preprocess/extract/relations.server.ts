@@ -1,12 +1,13 @@
 import { isRelationField } from '$lib/utils/field.js';
 import type { Relation } from '$lib/db/relations.js';
 import type { ConfigMap } from '../config/map.js';
+import type { Dic } from 'rizom/types/utility.js';
 
 type Args = { flatData: Dic; configMap: ConfigMap; locale: string | undefined };
 type BeforeOperationRelation = Omit<Relation, 'parentId'>;
 
 export const extractRelations = ({ flatData, configMap, locale }: Args) => {
-	let relations: BeforeOperationRelation[] = [];
+	const relations: BeforeOperationRelation[] = [];
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
