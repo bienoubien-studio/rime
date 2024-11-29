@@ -6,5 +6,10 @@ export default defineConfig({
 	plugins: [rizom(), sveltekit()],
 	server: {
 		host: 'local.rizom'
+	},
+	build: {
+		rollupOptions: {
+			external: ['@node-rs/argon2']
+		}
 	}
 });

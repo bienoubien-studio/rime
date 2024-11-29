@@ -13,6 +13,9 @@ export function rizom(): Plugin {
 						ignored: ['./src/config/**']
 					}
 				},
+				optimizeDeps: {
+					exclude: ['@node-rs/argon2']
+				},
 				build: {
 					rollupOptions: {
 						external: ['./src/lib/rizom.config.browser.js']
