@@ -11,5 +11,8 @@ export default defineConfig({
 		rollupOptions: {
 			external: ['@node-rs/argon2']
 		}
+	},
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
 	}
 });

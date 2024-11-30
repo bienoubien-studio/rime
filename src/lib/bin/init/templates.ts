@@ -1,4 +1,5 @@
 import { random } from '$lib/utils/index.js';
+import dedent from 'dedent';
 
 const PACKAGE = 'rizom';
 
@@ -35,7 +36,7 @@ export const config: Config = {
 export default defineConfig(config);
 `;
 
-export const emptySchema = `
+export const emptySchema = dedent`
   const schema = {}
   export const relationFieldsMap = {};
   export const tables = {}

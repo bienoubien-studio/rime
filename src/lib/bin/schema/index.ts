@@ -11,8 +11,9 @@ import {
 } from './templates.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import type { Dic } from 'rizom/types/utility.js';
+import dedent from 'dedent';
 
-const generateSchema = (config: BuiltConfig) => {
+export const generateSchemaString = (config: BuiltConfig) => {
 	const schema: string[] = [];
 	let enumTables: string[] = [];
 	let enumRelations: string[] = [];
@@ -106,18 +107,23 @@ const generateSchema = (config: BuiltConfig) => {
 	schema.push(templateExportTables([...enumTables, 'authUsers', 'sessions']));
 	schema.push(templateExportRelationsFieldsToTable(relationFieldsExportDic));
 
-	schema.push(`
+	schema.push(dedent`
     const schema = {
-      ${enumTables.join(',\n')},
-      ${enumRelations.length ? enumRelations.join(',\n') + ',' : ''}
+      ${enumTables.join(',\n      ')},
+      ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
       authUsers,
       sessions
   }
+
   export type Schema = typeof schema
   export default schema
   `);
 
-	write(schema);
+	return schema.join('\n').replace(/\n{3,}/g, '\n\n');
 };
+
+function generateSchema(config: BuiltConfig) {
+	return write(generateSchemaString(config));
+}
 
 export default generateSchema;
