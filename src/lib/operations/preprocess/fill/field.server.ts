@@ -15,7 +15,7 @@ import type {
 	SelectField,
 	TextField,
 	ToggleField
-} from 'rizom/types/fields';
+} from 'rizom/fields/types';
 
 type GetDefaultValue = (args: {
 	key: string;

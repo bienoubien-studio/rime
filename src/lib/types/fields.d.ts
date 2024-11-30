@@ -1,7 +1,7 @@
 import type { FieldBuilder } from '../config/fields';
 import type { User } from './auth';
 import type { GenericDoc } from './doc';
-import type { GetRegisterType } from './doc';
+import type { GetRegisterType } from 'rizom/types/register';
 import type { FieldPanelTableConfig } from './panel';
 
 export type UserDefinedField = AnyField | FieldBuilder<AnyField>;
@@ -43,169 +43,14 @@ type FormField = BaseField & {
 	table?: FieldPanelTableConfig | boolean;
 };
 
-export type SeparatorField = BaseField & {
-	type: 'separator';
-};
-
-export type GroupField = BaseField & {
-	type: 'group';
-	label: string;
-	fields: AnyField[];
-};
-
-export type TabsFieldTab = {
-	label: string;
-	fields: AnyField[];
-};
-
-export type TabsField = BaseField & {
-	type: 'tabs';
-	tabs: TabsFieldTab[];
-};
-
-export type TextField = FormField & {
-	type: 'text';
-	defaultValue?: string;
-	unique?: boolean;
-	isTitle?: true;
-};
-
-type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'PrototypeSlug'>;
-export type LinkField = FormField & {
-	type: 'link';
-	defaultValue?: string;
-	unique?: boolean;
-	types?: LinkType[];
-};
-
-export type EmailField = FormField & {
-	type: 'email';
-	defaultValue?: string;
-	unique?: boolean;
-	isTitle?: true;
-};
-
-export type SlugField = FormField & {
-	type: 'slug';
-	slugify?: string;
-	unique?: boolean;
-	isTitle?: true;
-};
-
-export type RelationField = FormField & {
-	type: 'relation';
-	relationTo: GetRegisterType<'PrototypeSlug'>;
-	layout?: 'tags' | 'list';
-	many?: boolean;
-	defaultValue?: string | string[];
-};
-
-export type ToggleField = FormField & {
-	type: 'toggle';
-	defaultValue?: boolean;
-};
-
-export type CheckboxField = FormField & {
-	type: 'checkbox';
-	defaultValue?: boolean;
-	unique?: boolean;
-};
-
-export type NumberField = FormField & {
-	type: 'number';
-	min?: number;
-	max?: number;
-	defaultValue?: number;
-};
-
-export type DateField = FormField & {
-	type: 'date';
-	defaultValue?: Date | (() => Date);
-	unique?: boolean;
-	isTitle?: true;
-};
-
-type RichTextFieldMark = 'bold' | 'italic' | 'underline' | 'strike' | false;
-type RichTextFieldNode = 'p' | 'h2' | 'h3' | 'ul' | 'ol' | 'blockquote' | 'a' | false;
-export type RichTextField = FormField & {
-	type: 'richText';
-	marks: RichTextFieldMark[];
-	nodes: RichTextFieldNode[];
-	defaultValue?: { type: 'doc'; content: any[] };
-};
-
-export type RichTextMark = { type: string; attrs?: Record<string, any> };
-export type RichTextNode<T extends string = string> = {
-	type: T;
-	content?: RichTextNode;
-	text?: string;
-	marks?: RichTextMark[];
-} & (T extends 'heading' ? { attrs: Record<string, any> } : { attrs?: Record<string, any> }) &
-	(T extends 'link' ? { url: string } : Record<never, never>);
-
-export type SelectField = FormField & {
-	type: 'select';
-	options: Option[];
-	defaultValue: string | string[];
-	many?: boolean;
-};
-
-export type ComboBoxField = FormField & {
-	type: 'combobox';
-	options: Option[];
-	defaultValue: string;
-	unique?: boolean;
-};
-
-export type RadioField = FormField & {
-	type: 'radio';
-	options: Option[];
-	defaultValue: string;
-};
-
 export type Option = {
 	value: string;
 	label?: string;
 };
 
-export type BlocksField = FormField & {
-	type: 'blocks';
-	blocks: BlocksFieldBlock[];
-};
+export type AnyFormField = GetRegisterType<'AnyFormField'>;
 
-export type BlocksFieldBlockRenderTitle = ({ fields: Dic, position: number }) => string;
-
-export type BlocksFieldBlock = {
-	name: string;
-	label?: string;
-	description?: string;
-	icon?: Component;
-	renderTitle?: BlocksFieldBlockRenderTitle;
-	fields: AnyField[];
-};
-
-export type ComponentField = BaseField & {
-	type: 'component';
-	component: Component;
-};
-
-export type AnyFormField =
-	| BlocksField
-	| CheckboxField
-	| ComboBoxField
-	| DateField
-	| EmailField
-	| LinkField
-	| NumberField
-	| RadioField
-	| RelationField
-	| RichTextField
-	| SelectField
-	| SlugField
-	| TextField
-	| ToggleField;
-
-export type AnyField = AnyFormField | ComponentField | SeparatorField | GroupField | TabsField;
+export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;
 
 export type FieldsType =
 	| 'blocks'
@@ -226,11 +71,3 @@ export type FieldsType =
 	| 'tabs'
 	| 'separator'
 	| 'text';
-
-export type Link = {
-	label: string;
-	type: LinkType;
-	link: string;
-	target: string;
-	_url?: string;
-};

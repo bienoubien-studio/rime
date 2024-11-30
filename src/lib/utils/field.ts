@@ -2,15 +2,12 @@ import type { GenericBlock } from 'rizom/types/doc.js';
 import type { Relation } from '../db/relations.js';
 import { hasProps, isObjectLiteral } from './object.js';
 import type {
-	AnyField,
-	AnyFormField,
 	BlocksField,
 	CheckboxField,
 	ComboBoxField,
 	ComponentField,
 	DateField,
 	EmailField,
-	FieldsType,
 	GroupField,
 	LinkField,
 	NumberField,
@@ -23,8 +20,9 @@ import type {
 	TabsField,
 	TextField,
 	ToggleField
-} from 'rizom/types/fields.js';
+} from 'rizom/fields/types';
 import type { Dic } from 'rizom/types/utility.js';
+import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;
 

@@ -1,3 +1,4 @@
+import type { GetRegisterType } from './register';
 import type { Dic } from './utility';
 
 export type DocPrototype = 'global' | 'collection';
@@ -33,14 +34,6 @@ export type UploadDoc = BaseDoc & {
 	sizes?: { [key: string]: string };
 } & Dic;
 
-export interface BaseRegister {
-	PrototypeSlug: string;
-	CollectionSlug: string;
-	GlobalSlug: string;
-	Plugins: object;
-}
-
-export type GetRegisterType<K extends keyof BaseRegister> = import('../index.js').Register[K];
 export type PrototypeSlug = GetRegisterType<'PrototypeSlug'>;
 export type CollectionSlug = GetRegisterType<'CollectionSlug'>;
 export type GlobalSlug = GetRegisterType<'GlobalSlug'>;

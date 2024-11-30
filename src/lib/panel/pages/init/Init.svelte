@@ -5,8 +5,9 @@
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import { toast } from 'svelte-sonner';
 	import { Toaster } from 'rizom/panel/components/ui/sonner';
-	import { Fields } from 'rizom/panel/components/fields';
 	import validate from 'rizom/utils/validate';
+	import Email from 'rizom/fields/email/component/Email.svelte';
+	import Text from 'rizom/fields/text/component/Text.svelte';
 
 	import type { FormErrors } from 'rizom/types';
 
@@ -30,8 +31,8 @@
 				<Card.Title>Create the first admin user</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Fields.Text config={{ name: 'name', type: 'text', required: true }} form={context} />
-				<Fields.Email
+				<Text config={{ name: 'name', type: 'text', required: true }} form={context} />
+				<Email
 					config={{
 						name: 'email',
 						type: 'email',
@@ -41,7 +42,7 @@
 					form={context}
 				/>
 
-				<Fields.Text
+				<Text
 					type="password"
 					config={{ name: 'password', type: 'text', required: true }}
 					form={context}

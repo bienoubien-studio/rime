@@ -2,7 +2,7 @@ import { RizomError } from '../../errors/error.server.js';
 import { CollectionInterface } from './Collection.js';
 import { GlobalInterface } from './Global.js';
 import type { Rizom } from '../../rizom.server.js';
-import type { GetRegisterType, PrototypeSlug } from 'rizom/types/doc.js';
+import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { LocalAPI as LocalAPIType, LocalAPIConstructorArgs } from 'rizom/types/api.js';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -29,7 +29,7 @@ export class LocalAPI implements LocalAPIType {
 		return this;
 	}
 
-	collection(slug: GetRegisterType<'PrototypeSlug'>) {
+	collection(slug: PrototypeSlug) {
 		const collectionConfig = this.#rizom.config.getCollection(slug);
 		if (!collectionConfig) {
 			throw new RizomError(`${slug} is not a collection`);

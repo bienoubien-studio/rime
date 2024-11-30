@@ -2,7 +2,7 @@ import { isAuthConfig } from '$lib/config/utils.js';
 import extractData from '$lib/operations/preprocess/extract/data.server.js';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { handleAPIError } from '../handleError';
-import type { GetRegisterType } from 'rizom/types';
+import type { GetRegisterType } from 'rizom/types/register';
 import type { AsyncReturnType } from 'rizom/types/utility';
 
 export default function (slug: GetRegisterType<'PrototypeSlug'>) {

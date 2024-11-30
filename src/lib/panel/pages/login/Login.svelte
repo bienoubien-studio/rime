@@ -2,7 +2,8 @@
 	import * as Card from '$lib/panel/components/ui/card';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { Fields } from '$lib/panel/components/fields';
+	import Email from 'rizom/fields/email/component/Email.svelte';
+	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
@@ -40,7 +41,7 @@
 				<Card.Title>Connexion</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Fields.Email
+				<Email
 					config={{
 						name: 'email',
 						type: 'email',
@@ -49,7 +50,7 @@
 					}}
 					form={context}
 				/>
-				<Fields.Text
+				<Text
 					type="password"
 					config={{ name: 'password', type: 'text', required: true }}
 					form={context}
