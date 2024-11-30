@@ -128,6 +128,7 @@
 		"clone-deep": "^4.0.1",
 		"command-score": "^0.1.2",
 		"commander": "^12.1.0",
+		"dedent": "^1.5.3",
 		"deep-object-diff": "^1.1.9",
 		"deepcopy": "^2.1.0",
 		"deepmerge": "^4.3.1",

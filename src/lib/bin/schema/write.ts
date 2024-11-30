@@ -11,22 +11,21 @@ import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-co
 const pk = () => text("id").primaryKey().$defaultFn(() => crypto.randomUUID());
 `;
 
-const write = (schema: string[]) => {
-	const schemaString = schema.join('\n');
+const write = (schema: string) => {
 	const cachedSchema = cache.get('schema');
 
-	if (cachedSchema && cachedSchema === schemaString) {
+	if (cachedSchema && cachedSchema === schema) {
 		// taskLogger.info('-  schema   :: No change detected');
 		return;
 	} else {
-		cache.set('schema', schemaString);
+		cache.set('schema', schema);
 	}
 
 	if (!fs.existsSync('./src/lib/server')) {
 		fs.mkdirSync('./src/lib/server');
 	}
 
-	fs.writeFile('./src/lib/server/schema.ts', [head, ...schema].join('\n\n'), (err) => {
+	fs.writeFile('./src/lib/server/schema.ts', [head, schema].join('\n\n'), (err) => {
 		if (err) {
 			console.error(err);
 		} else {

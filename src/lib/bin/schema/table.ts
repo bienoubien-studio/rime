@@ -209,10 +209,10 @@ const buildTable = ({
 		if (hasAuth) {
 			strUnlocalizedFields.push(templateHasAuth);
 		}
-		table = templateTable(tableName, strUnlocalizedFields.join('\n'));
+		table = templateTable(tableName, strUnlocalizedFields.join('\n  '));
 		table += templateTable(
 			tableNameLocales,
-			[...strLocalizedFields, templateLocale(), templateParent(tableName)].join('\n')
+			[...strLocalizedFields, templateLocale(), templateParent(tableName)].join('\n  ')
 		);
 	} else {
 		const strFields = traverseFields(incomingFields);
@@ -222,7 +222,7 @@ const buildTable = ({
 		if (hasAuth) {
 			strFields.push(templateHasAuth);
 		}
-		table = templateTable(tableName, strFields.join('\n'));
+		table = templateTable(tableName, strFields.join('\n  '));
 	}
 
 	return {

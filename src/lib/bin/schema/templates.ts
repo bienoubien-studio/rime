@@ -12,6 +12,7 @@ import type {
 	TextField
 } from 'rizom/types/fields';
 import toSnakeCase from 'to-snake-case';
+import dedent from 'dedent';
 const s = toSnakeCase;
 
 /** Templates Tables / Fields */
@@ -89,18 +90,18 @@ export const templateUniqueRequired = (
 /** Template rows Relation */
 
 export const templateRelationOne = ({ name, table, parent }: RelationOneArgs): string => `
-  export const ${name} = relations(${table}, ({ one }) => ({
-    ${parent} : one(${parent}, {
-      fields: [${table}.parentId],
-      references: [${parent}.id],
-    }),
-  }))
+export const ${name} = relations(${table}, ({ one }) => ({
+  ${parent} : one(${parent}, {
+    fields: [${table}.parentId],
+    references: [${parent}.id],
+  }),
+}))
 `;
 
 export const templateRelationMany = ({ name, table, many }: RelationManyArgs): string => `
-    export const ${name} = relations(${table}, ({ many }) => ({
-      ${many.map((child) => `${child}: many(${child}),`).join('\n')}
-    }))
+export const ${name} = relations(${table}, ({ many }) => ({
+  ${many.map((child) => `${child}: many(${child}),`).join('\n')}
+}))
 `;
 
 /** Templates Field Relations */
@@ -114,31 +115,32 @@ export const templateRelationFieldsTable = ({
 	relations,
 	hasLocale
 }: FieldsRelationTableArgs) => `
-  export const ${table}Rels = sqliteTable('${s(table)}_rels', {
-    id: pk(),
-    path: text('path'),
-    position: integer('position'),
-    ${templateParent(table)}
-    ${relations.map((rel) => templateFieldRelationColumn(rel)).join(',\n')},
-    ${hasLocale ? `locale: text('locale'),` : ''}
-  })
+export const ${table}Rels = sqliteTable('${s(table)}_rels', {
+  id: pk(),
+  path: text('path'),
+  position: integer('position'),
+  ${templateParent(table)}
+  ${relations.map((rel) => templateFieldRelationColumn(rel)).join(',\n')},
+  ${hasLocale ? `locale: text('locale'),` : ''}
+})
 `;
 
 export const templateExportRelationsFieldsToTable = (relationFieldsDic: Record<string, string>) => {
 	const content = [];
 	for (const [table, dic] of Object.entries(relationFieldsDic)) {
-		content.push(`
+		content.push(dedent`
       ${table} : ${JSON.stringify(dic)}
     `);
 	}
-	return `
+	return dedent`
     export const relationFieldsMap: Record<string, any> = {
-      ${content.join(',\n')}
+      ${content.join(',\n      ')}
     }
   `;
 };
 
-export const templateExportTables = (tables: string[]): string => `
+export const templateExportTables = (tables: string[]): string => dedent`
+
   type GenericColumn = SQLiteColumn<
     ColumnBaseConfig<ColumnDataType, string>,
     Record<string, unknown>
@@ -155,7 +157,7 @@ export const templateExportTables = (tables: string[]): string => `
   type Tables = Record<string, GenericTable | SQLiteTableWithColumns<any>>;
 
   export const tables: Tables = {
-    ${tables.join(',\n')}
+    ${tables.join(',\n    ')}
   }
 `;
 
@@ -173,7 +175,7 @@ export const sessions = sqliteTable('sessions', {
   expiresAt: integer('expires_at').notNull()
 })`;
 
-export const templateHead = (slug: string) => `
+export const templateHead = (slug: string) => dedent`
   /** ${slug} ============================================== **/`;
 
 type RelationOneArgs = {
