@@ -36,3 +36,5 @@ static/medias
 src/config
 test-results
 pnpm-lock.yaml
+
+.auto
