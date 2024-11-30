@@ -5,7 +5,7 @@ import rawConfig from './config';
 import { readFileSync } from 'fs';
 import path from 'path';
 
-describe('Test operations', async () => {
+describe('Test schema generation', async () => {
 	// const config = await import()
 	// 	.then((module) => module.default)
 	// 	.then(async (config) => await buildConfig(config));

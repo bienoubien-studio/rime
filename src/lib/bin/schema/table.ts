@@ -33,7 +33,7 @@ import {
 	templateToggleField
 } from './templates.js';
 import type { LocaleConfig } from 'rizom/types/config.js';
-// import logger from 'rizom/logger/index.js';
+import type { RelationFieldsMap } from './relations/definition.js';
 const p = toPascalCase;
 
 type BuildTableArgs = {
@@ -42,14 +42,14 @@ type BuildTableArgs = {
 	rootName: string;
 	locales?: LocaleConfig[];
 	hasParent?: boolean;
-	relationFieldsDic?: Record<string, any>;
+	relationFieldsMap?: RelationFieldsMap;
 	relationsDic?: Record<string, string[]>;
 	hasAuth?: boolean;
 };
 
 type BuildTableReturn = {
 	content: string;
-	relationFieldsDic: Record<string, any>;
+	relationFieldsMap: RelationFieldsMap;
 	relationsDic: Record<string, string[]>;
 	relationFieldsHasLocale: boolean;
 };
@@ -60,7 +60,7 @@ const buildTable = ({
 	rootName,
 	hasParent,
 	locales,
-	relationFieldsDic = {},
+	relationFieldsMap = {},
 	relationsDic = {},
 	hasAuth
 }: BuildTableArgs): BuildTableReturn => {
@@ -91,7 +91,7 @@ const buildTable = ({
 
 	const traverseFields = (fields: AnyField[], withLocalized?: boolean): string[] => {
 		// Change here
-		let returningFields: string[] = [];
+		let templates: string[] = [];
 
 		const checkLocalized = (config: AnyFormField) => {
 			return (
@@ -104,67 +104,66 @@ const buildTable = ({
 		for (const field of fields) {
 			if (isTextField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateTextField(field));
+					templates.push(templateTextField(field));
 				}
 			} else if (isEmailField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateTextField(field));
+					templates.push(templateTextField(field));
 				}
 			} else if (isSlugField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateTextField(field));
+					templates.push(templateTextField(field));
 				}
 			} else if (isRadioField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateRadioField(field));
+					templates.push(templateRadioField(field));
 				}
 			} else if (isSelectField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateSelectField(field));
+					templates.push(templateSelectField(field));
 				}
 			} else if (isComboBoxField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateTextField(field));
+					templates.push(templateTextField(field));
 				}
 			} else if (isToggleField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateToggleField(field));
+					templates.push(templateToggleField(field));
 				}
 			} else if (isDateField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateDateField(field));
+					templates.push(templateDateField(field));
 				}
 			} else if (isRichTextField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateRichTextField(field));
+					templates.push(templateRichTextField(field));
 				}
 			} else if (isLinkField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateLinkField(field));
+					templates.push(templateLinkField(field));
 				}
 			} else if (isNumberField(field)) {
 				if (checkLocalized(field)) {
-					returningFields.push(templateNumberField(field));
+					templates.push(templateNumberField(field));
 				}
 			} else if (isGroupField(field)) {
-				returningFields = [...returningFields, ...traverseFields(field.fields, withLocalized)];
+				templates = [...templates, ...traverseFields(field.fields, withLocalized)];
 			} else if (isTabsField(field)) {
 				for (const tab of field.tabs) {
-					returningFields = [...returningFields, ...traverseFields(tab.fields, withLocalized)];
+					templates = [...templates, ...traverseFields(tab.fields, withLocalized)];
 				}
 			} else if (isRelationField(field)) {
 				if (field.localized) {
 					relationFieldsHasLocale = true;
 				}
-				relationFieldsDic = {
-					...relationFieldsDic,
+				relationFieldsMap = {
+					...relationFieldsMap,
 					[field.name]: {
 						to: field.relationTo,
 						localized: field.localized
 					}
 				};
 			} else if (isBlocksField(field)) {
-				// console.log(field);
 				for (const block of field.blocks) {
 					const blockTableName = `${rootName}Blocks${p(block.name)}`;
 					if (!registeredBlocks.includes(blockTableName)) {
@@ -175,25 +174,30 @@ const buildTable = ({
 						const {
 							content: blockTable,
 							relationsDic: nestedRelationsDic,
-							relationFieldsDic: nestedRelationFieldsDic
+							relationFieldsMap: nestedRelationFieldsDic
 						} = buildTable({
 							fields: block.fields,
 							tableName: blockTableName,
 							hasParent: true,
 							relationsDic,
-							relationFieldsDic,
+							relationFieldsMap,
 							locales,
 							rootName
+							// fieldsMap
 						});
 						relationsDic = nestedRelationsDic;
-						relationFieldsDic = nestedRelationFieldsDic;
+						relationFieldsMap = nestedRelationFieldsDic;
 						registeredBlocks.push(blockTableName);
 						blocksTables.push(blockTable);
 					}
 				}
+				// } else if (field.type in fieldsMap) {
+				// 	if (isFormField(field) && checkLocalized(field)) {
+				// 		templates.push(fieldsMap[field.type].toSchema(field) + ',');
+				// 	}
 			}
 		}
-		return returningFields;
+		return templates;
 	};
 
 	let table: string;
@@ -227,7 +231,7 @@ const buildTable = ({
 
 	return {
 		content: [table, ...blocksTables].join('\n\n'),
-		relationFieldsDic,
+		relationFieldsMap,
 		relationFieldsHasLocale,
 		relationsDic
 	};
