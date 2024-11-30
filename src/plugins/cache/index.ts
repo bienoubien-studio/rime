@@ -35,12 +35,10 @@ export const cache: Plugin<CacheArgs> = ({ enabled }) => {
 };
 
 declare module 'rizom' {
-	interface Register {
-		Plugins: {
-			cache: {
-				get: <T>(name: string, get: () => Promise<T>) => Promise<T>;
-				clear: typeof clearCache;
-			};
+	interface RegisterPluginsActions {
+		cache: {
+			get: <T>(name: string, get: () => Promise<T>) => Promise<T>;
+			clear: typeof clearCache;
 		};
 	}
 }

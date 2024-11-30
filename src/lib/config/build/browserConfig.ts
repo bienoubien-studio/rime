@@ -8,13 +8,15 @@ import type { BuiltConfig } from 'rizom/types/config.js';
 let hasEnv = false;
 
 const resolveModule = (path: string) => {
+	console.log(path);
+	if (path.endsWith('.svelte') && !path.includes('node_modules')) return resolveComponent(path);
 	const compPath = path.split('node_modules/').pop() ?? '';
 	return `await import('${compPath.replace('dist/', '').replace('.svelte', '')}').then(module => module.default)`;
 };
 
 const resolveComponent = (path: string) => {
 	const componentPath = path.split('src/').pop() ?? '';
-	return `await import('./${componentPath}').then(module => module.default)`;
+	return `await import('../${componentPath}').then(module => module.default)`;
 };
 
 const parseArray = (value: any[]): string => {
@@ -60,6 +62,10 @@ const parseStringValue = (key: string, value: string): string => {
 };
 
 const parseValue = (key: string, value: any): string | boolean | number => {
+	if (['toSchema', 'toType'].includes(key)) return 'null';
+	if (key === 'component') {
+		console.log(typeof value);
+	}
 	if (Array.isArray(value)) return parseArray(value);
 	if (typeof value === 'function') return parseFunctionValue(value);
 	if (typeof value === 'object') return parseObjectValue(key, value);

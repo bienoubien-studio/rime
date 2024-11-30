@@ -13,12 +13,12 @@ import {
 	link,
 	relation,
 	richText,
-	slug,
 	tab,
 	tabs,
 	text,
-	toggle
-} from 'rizom/config/fields/index.js';
+	toggle,
+	slug
+} from 'rizom/fields/index.js';
 
 const Informations: GlobalConfig = {
 	slug: 'infos',

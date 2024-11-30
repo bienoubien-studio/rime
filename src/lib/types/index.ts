@@ -50,12 +50,10 @@ export type {
 // Doc types
 export type {
 	BaseDoc,
-	BaseRegister,
 	CollectionSlug,
 	DocPrototype,
 	GenericBlock,
 	GenericDoc,
-	GetRegisterType,
 	PrototypeSlug,
 	UploadDoc
 } from './doc';
@@ -64,33 +62,9 @@ export type {
 export type {
 	AnyField,
 	AnyFormField,
-	BlocksField,
-	BlocksFieldBlock,
-	BlocksFieldBlockRenderTitle,
-	CheckboxField,
-	ComboBoxField,
-	ComponentField,
-	DateField,
-	EmailField,
 	FieldsType,
 	FormField,
-	GroupField,
-	Link,
-	LinkField,
-	NumberField,
 	Option,
-	RadioField,
-	RelationField,
-	RichTextField,
-	RichTextMark,
-	RichTextNode,
-	SelectField,
-	SeparatorField,
-	SlugField,
-	TabsField,
-	TabsFieldTab,
-	TextField,
-	ToggleField,
 	UserDefinedField
 } from './fields';
 

@@ -3,10 +3,11 @@
 	import * as Card from '$lib/panel/components/ui/card';
 	import { enhance } from '$app/forms';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { Fields } from 'rizom/panel/components/fields';
+
 	import type { FormErrors } from 'rizom/types';
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import validate from '$lib/utils/validate';
+	import Text from 'rizom/fields/text/component/Text.svelte';
 
 	import { toast } from 'svelte-sonner';
 
@@ -41,12 +42,12 @@
 				<Card.Title>Reset password</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Fields.Text
+				<Text
 					type="password"
 					config={{ name: 'password', validate: validate.password, type: 'text', required: true }}
 					form={context}
 				/>
-				<Fields.Text
+				<Text
 					type="password"
 					config={{
 						name: 'confirmPassword',

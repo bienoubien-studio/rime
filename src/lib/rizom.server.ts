@@ -9,7 +9,7 @@ import { dev } from '$app/environment';
 import { RizomInitError } from './errors/init.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/utility.js';
-import type { GetRegisterType } from './types/doc.js';
+import type { GetRegisterType } from 'rizom/types/register';
 
 function createRizom() {
 	//

@@ -1,6 +1,6 @@
 import { type RequestHandler } from '@sveltejs/kit';
 import type { Plugin } from 'rizom/types/plugin';
-import type { GetRegisterType } from 'rizom/types';
+import type { GetRegisterType } from 'rizom/types/register';
 import logger from 'rizom/logger';
 
 type SitemapPluginArgs = {

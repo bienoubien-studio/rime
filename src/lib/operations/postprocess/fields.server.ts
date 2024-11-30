@@ -2,8 +2,8 @@ import type { ConfigMap } from '../preprocess/config/map.js';
 import { isLinkField, isRichTextField } from '../../utils/field.js';
 import rizom from '$lib/rizom.server.js';
 import type { User } from 'rizom/types/auth.js';
-import type { Link, LinkType } from 'rizom/types/fields.js';
-import type { GetRegisterType } from 'rizom/types/doc.js';
+import type { Link, LinkType } from 'rizom/fields/link/index.js';
+import type { GetRegisterType } from 'rizom/types/register';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Dic } from 'rizom/types/utility.js';
 

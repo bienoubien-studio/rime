@@ -103,7 +103,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		.sort((a, b) => a.table.position - b.table.position);
 
 	return {
-		columns,
+		columns: columns as WithRequired<AnyFormField, 'table'>[],
 		canCreate,
 
 		/////////////////////////////////////////////

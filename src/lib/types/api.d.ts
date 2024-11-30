@@ -1,5 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc, GetRegisterType, PrototypeSlug } from 'rizom/types/doc.js';
+import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { GetRegisterType } from 'rizom/types/register';
 import type { Rizom } from 'rizom/rizom.server.js';
 import type { BuiltCollectionConfig, BuiltGlobalConfig } from 'rizom/types/config';
 import type { FormErrors } from './panel';

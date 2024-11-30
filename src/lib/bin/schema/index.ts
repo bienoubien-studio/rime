@@ -1,4 +1,4 @@
-import buildTable from './table.js';
+import buildRootTable from './root.js';
 import write from './write.js';
 import { toSnakeCase } from '$lib/utils/string.js';
 
@@ -23,13 +23,18 @@ export function generateSchemaString(config: BuiltConfig): string {
 	for (const collection of config.collections) {
 		const collectionSlug = toSnakeCase(collection.slug);
 
-		const { content, relationsDic, relationFieldsMap, relationFieldsHasLocale } = buildTable({
+		const {
+			schema: collectionSchema,
+			relationsDic,
+			relationFieldsMap,
+			relationFieldsHasLocale
+		} = buildRootTable({
 			fields: collection.fields,
 			rootName: collectionSlug,
 			locales: config.localization?.locales || [],
 			hasAuth: !!collection.auth,
-			tableName: collectionSlug
-			// fieldsMap: config.fieldsMap
+			tableName: collectionSlug,
+			blueprints: config.blueprints
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
@@ -56,7 +61,12 @@ export function generateSchemaString(config: BuiltConfig): string {
 			[collectionSlug]: relationFieldsMap
 		};
 
-		schema.push(templateHead(collection.slug), content, junctionTable, relationsDefinitions);
+		schema.push(
+			templateHead(collection.slug),
+			collectionSchema,
+			junctionTable,
+			relationsDefinitions
+		);
 	}
 
 	/**
@@ -65,12 +75,17 @@ export function generateSchemaString(config: BuiltConfig): string {
 	for (const global of config.globals) {
 		const globalSlug = toSnakeCase(global.slug);
 
-		const { content, relationsDic, relationFieldsMap, relationFieldsHasLocale } = buildTable({
+		const {
+			schema: globalSchema,
+			relationsDic,
+			relationFieldsMap,
+			relationFieldsHasLocale
+		} = buildRootTable({
 			fields: global.fields,
 			rootName: globalSlug,
 			locales: config.localization?.locales || [],
-			tableName: globalSlug
-			// fieldsMap: config.fieldsMap
+			tableName: globalSlug,
+			blueprints: config.blueprints
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
@@ -97,7 +112,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 			[globalSlug]: relationFieldsMap
 		};
 
-		schema.push(templateHead(global.slug), content, junctionTable, relationsDefinitions);
+		schema.push(templateHead(global.slug), globalSchema, junctionTable, relationsDefinitions);
 	}
 
 	schema.push(templateHead('Auth'), templateAuth);

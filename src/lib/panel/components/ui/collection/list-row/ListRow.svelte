@@ -3,12 +3,10 @@
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { getPanelThumbnailKey, isUploadConfig } from '$lib/config/utils.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
-	import { FieldsCell } from '$lib/panel/components/fields/index.js';
-	import { toPascalCase } from '$lib/utils/string.js';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
-
-	import type { GenericDoc, AnyField } from 'rizom/types';
+	import type { GenericDoc, FieldsType } from 'rizom/types';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 
 	type Props = {
 		checked: boolean;
@@ -20,12 +18,10 @@
 	const { checked, doc, active, compact }: Props = $props();
 	const collection = getContext<CollectionContext>('collectionList');
 	const locale = getLocaleContext();
+	const config = getConfigContext();
 
-	const getCellComponent = (fieldType: AnyField['type']) => {
-		const compName = `${toPascalCase(fieldType)}Cell`;
-		if (compName in FieldsCell) {
-			return FieldsCell[compName as keyof typeof FieldsCell];
-		}
+	const getCellComponent = (fieldType: FieldsType) => {
+		return config.config.blueprints[fieldType].cell || null;
 	};
 
 	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
@@ -62,7 +58,7 @@
 				{#if column.table?.cell}
 					{@const ColumnTableCell = column.table.cell}
 					<ColumnTableCell value={doc[column.name]} />
-				{:else if `${toPascalCase(column.type)}Cell` in FieldsCell}
+				{:else if getCellComponent(column.type)}
 					{@const Cell = getCellComponent(column.type)}
 					<Cell value={doc[column.name]} />
 				{:else}

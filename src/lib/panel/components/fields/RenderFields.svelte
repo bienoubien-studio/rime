@@ -1,12 +1,10 @@
 <script lang="ts">
-	import { toPascalCase } from '$lib/utils/string.js';
-	import { Fields, type FieldsComponents } from './index.js';
 	import { isComponentField, isLiveField, isNotHidden, isPresentative } from '$lib/utils/field.js';
-	import Tabs from '$lib/panel/components/fields/tabs/Tabs.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
 	import RenderFields from './RenderFields.svelte';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
 
 	type Props = {
 		path?: string;
@@ -18,10 +16,10 @@
 	const { form, fields, path: initialPath = '', framed = false }: Props = $props();
 
 	const user = getUserContext();
+	const config = getConfigContext();
 
 	const fieldComponent = (type: FieldsType): any => {
-		const key = toPascalCase(type) as FieldsComponents;
-		return Fields[key];
+		return config.config.blueprints[type].component || null;
 	};
 
 	const authorizedFields = $derived(
@@ -39,6 +37,8 @@
 	const widthClassModifier = (field: AnyFormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
 
+	const Tabs = config.config.blueprints.tabs.component;
+	const Separator = config.config.blueprints.separator.component;
 	//
 </script>
 
@@ -60,7 +60,7 @@
 					{:else if field.type === 'tabs'}
 						<Tabs config={field} {path} {form} />
 					{:else}
-						<Fields.Separator />
+						<Separator />
 					{/if}
 				</div>
 			{:else if isNotHidden(field)}

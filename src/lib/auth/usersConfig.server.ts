@@ -2,7 +2,7 @@ import { UsersRound } from 'lucide-svelte';
 import { access } from '../access/index.js';
 import { usersFields } from './usersFields.js';
 
-import type { TextField } from 'rizom/types/fields.js';
+import type { TextField } from 'rizom/fields/text';
 import type { CollectionConfig } from 'rizom';
 
 export const hashedPassword: TextField = {

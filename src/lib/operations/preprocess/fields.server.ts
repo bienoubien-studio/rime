@@ -97,7 +97,7 @@ export const preprocessFields: PreprocessFields = async ({
 		}
 
 		// Validate
-		if (config.validate) {
+		if (config.validate && flatData[key]) {
 			try {
 				const valid = config.validate(flatData[key], {
 					data,

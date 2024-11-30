@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Fields } from '$lib/panel/components/fields';
 	import Button from '../button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { usersFields } from '$lib/auth/usersFields.js';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 
 	type Props = { create: boolean; form: DocumentFormContext };
 	const { create, form }: Props = $props();
@@ -27,20 +27,20 @@
 			form.errors.delete('__form');
 		}
 	});
+
+	const config = getConfigContext();
+
+	const Email = config.config.blueprints.email.component;
+	const Text = config.config.blueprints.text.component;
 </script>
 
 <div class="rz-doc-auth-header">
-	<Fields.Email {form} config={usersFields.email} path="email" />
+	<Email {form} config={usersFields.email} path="email" />
 
 	{#if changingPassword}
-		<Fields.Text {form} type="password" config={usersFields.password} path="password" />
+		<Text {form} type="password" config={usersFields.password} path="password" />
 
-		<Fields.Text
-			{form}
-			type="password"
-			config={usersFields.confirmPassword}
-			path="confirmPassword"
-		/>
+		<Text {form} type="password" config={usersFields.confirmPassword} path="confirmPassword" />
 
 		{#if !create && !form.readOnly}
 			<div class="rz-doc-auth-header__buttons">

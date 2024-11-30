@@ -2,7 +2,6 @@
 import rizom from './rizom.server.js';
 import handlers from './handlers/index.js';
 import { buildConfig } from './config/build/index.js';
-import type { BaseRegister } from './types/doc.js';
 
 export { rizom, handlers, buildConfig };
 
@@ -11,7 +10,7 @@ export { rizom, handlers, buildConfig };
 /* -------------------------------------------------------------------------- */
 
 export type { Config, CollectionConfig, GlobalConfig, BrowserConfig } from './types/config.js';
-export type { RichTextNode, Link, LinkField } from './types/fields.js';
+export type { Link } from './types/fields.js';
 export type { UploadDoc, BaseDoc } from './types/doc.js';
 export type { User } from 'rizom/types/auth.js';
 export type { Plugin } from 'rizom/types/plugin.js';
@@ -21,5 +20,21 @@ export type { Navigation } from './panel/navigation.js';
 
 declare module 'rizom' {
 	// eslint-disable-next-line
-	export interface Register extends BaseRegister {}
+	interface RegisterFieldsType {}
+	// eslint-disable-next-line
+	interface RegisterFormFields {}
+	// eslint-disable-next-line
+	interface RegisterFields {}
+	// eslint-disable-next-line
+	interface RegisterPluginsActions {}
+
+	export interface Register {
+		PrototypeSlug: string;
+		CollectionSlug: string;
+		GlobalSlug: string;
+		Plugins: RegisterPluginsActions;
+		FieldsType: keyof RegisterFieldsType;
+		AnyFormField: RegisterFormFields[keyof RegisterFormFields];
+		AnyField: RegisterFields[keyof RegisterFields];
+	}
 }

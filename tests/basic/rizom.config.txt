@@ -1,8 +1,7 @@
-import { relation, richText, text, toggle } from '$lib/config/fields/index.js';
+import { relation, richText, text, toggle } from 'rizom/fields/index.js';
 import type { CollectionConfig, GlobalConfig } from 'rizom';
 import { access } from '$lib/access/index.js';
 import { Settings2 } from 'lucide-svelte';
-import { cache } from '../plugins/cache';
 
 const Pages: CollectionConfig = {
 	slug: 'pages',
@@ -44,10 +43,9 @@ const config = {
 	collections: [Pages, Medias],
 	globals: [Settings],
 	panel: {
-	   users: {
+		users: {
 			roles: [{ value: 'admin' }, { value: 'editor' }]
 		}
-	},
-	plugins: [cache({ enabled: true })]
+	}
 };
 export default config;

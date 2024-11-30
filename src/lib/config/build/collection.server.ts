@@ -4,8 +4,6 @@ import { hasProps } from 'rizom/utils/object.js';
 import { isFormField, isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
-import { augment } from './fields/augment.server.js';
-import { compile } from './fields/compile.server.js';
 import type { User } from 'rizom/types/auth.js';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type {
@@ -14,9 +12,11 @@ import type {
 	ImageSizesConfig,
 	PanelUsersConfig
 } from 'rizom/types/config.js';
-import type { AnyField, TextField } from 'rizom/types/fields.js';
+import type { AnyField } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
+import { FieldBuilder } from 'rizom/fields/field-builder.js';
+import type { TextField } from 'rizom/fields/text/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
 	let hooks: CollectionHooks = { ...collection.hooks };
@@ -45,7 +45,10 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 
 const buildFields = (collection: CollectionConfig): AnyField[] => {
 	//
-	let fields: AnyField[] = collection.fields.reduce(compile, []).reduce(augment, []);
+	// let fields: AnyField[] = collection.fields.reduce(compile, []).reduce(augment, []);
+	let fields: AnyField[] = collection.fields.map((field) =>
+		field instanceof FieldBuilder ? field.toField() : field
+	);
 
 	if (collection.auth) {
 		const isNotPanelUsersCollection = !(collection.slug === 'users');

@@ -1,16 +1,3 @@
-import type {
-	AnyFormField,
-	ComboBoxField,
-	DateField,
-	EmailField,
-	LinkField,
-	NumberField,
-	RadioField,
-	RichTextField,
-	SelectField,
-	SlugField,
-	TextField
-} from 'rizom/types/fields';
 import toSnakeCase from 'to-snake-case';
 import dedent from 'dedent';
 const s = toSnakeCase;
@@ -23,47 +10,6 @@ export const ${table} = sqliteTable( '${s(table)}', {
   ${content}
 })
 `;
-
-export const templateNumberField = (field: NumberField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: real('${columnName}'),`;
-};
-
-export const templateTextField = (field: TextField | ComboBoxField | SlugField | EmailField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: text('${columnName}')${templateUniqueRequired(field)},`;
-};
-
-export const templateLinkField = (field: LinkField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: text('${columnName}', { mode: 'json' }),`;
-};
-
-export const templateRadioField = (field: RadioField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: text('${columnName}'),`;
-};
-
-export const templateRichTextField = (field: RichTextField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: text('${columnName}'),`;
-};
-
-export const templateSelectField = (field: SelectField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: text('${columnName}', { mode: 'json' }),`;
-	// return `${field.name}: text('${columnName}', { enum: [${field.options.map(option => `'${option.value}'`).join(', ')}] }),`;
-};
-
-export const templateToggleField = (field: AnyFormField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: integer('${columnName}', { mode : 'boolean' }),`;
-};
-
-export const templateDateField = (field: DateField) => {
-	const columnName = toSnakeCase(field.name);
-	return `${field.name}: integer('${columnName}', { mode : 'timestamp' })${templateUniqueRequired(field)},`;
-};
 
 export const templateLocale = () => 'locale: text("locale"),';
 
@@ -80,9 +26,7 @@ export const templateHasAuth = `
   authUserId: text("auth_user_id").references(() => authUsers.id, { onDelete: 'cascade' }).notNull(),
 `;
 
-export const templateUniqueRequired = (
-	field: DateField | TextField | EmailField | SlugField | ComboBoxField
-) => {
+export const templateUniqueRequired = (field: { unique?: boolean; required?: boolean }) => {
 	const { unique, required } = field;
 	return `${unique ? '.unique()' : ''}${required ? '.notNull()' : ''}`;
 };

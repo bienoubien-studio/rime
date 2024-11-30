@@ -6,6 +6,7 @@ import type { CollectionHooks, GlobalHooks } from './hooks';
 import type { ComponentType } from 'svelte';
 import type { AtLeastOne, WithRequired } from './utility';
 import type { MaybeAsyncFunction, Plugin } from './plugin';
+import type { FieldBluePrint } from 'rizom/fields';
 
 export type DocumentPrototype = 'collection' | 'global';
 
@@ -146,6 +147,7 @@ export type BuiltConfig = {
 		access: (user: User) => boolean;
 	};
 	smtp?: SMTPConfig;
+	blueprints: Record<string, FieldBluePrint>;
 };
 
 export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'smtp' | 'routes'>;
