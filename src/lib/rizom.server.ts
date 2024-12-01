@@ -1,9 +1,8 @@
 import createAdapter from '$lib/db/index.server.js';
 import path from 'path';
-import { taskLogger } from './logger/index.js';
+
 import { randomId } from './utils/random.js';
 import { createConfigInterface } from './config/index.server.js';
-import { createMailerInterface } from './mailer/index.server.js';
 import { existsSync } from 'fs';
 import { dev } from '$app/environment';
 import { RizomInitError } from './errors/init.server.js';
@@ -16,7 +15,6 @@ function createRizom() {
 	let initialized = false;
 	let adapter: ReturnType<typeof createAdapter>;
 	let config: AsyncReturnType<typeof createConfigInterface>;
-	let mailerInterface: ReturnType<typeof createMailerInterface>;
 	const key: string = randomId(12);
 
 	//////////////////////////////////////////////
@@ -40,9 +38,6 @@ function createRizom() {
 		// Initialize config
 		config = await createConfigInterface();
 
-		// Initialize mailer
-		mailerInterface = createMailerInterface(config.get());
-
 		// Initialize DB
 		const schema = await getSchema();
 		const drizzleKitConfig = await getDrizzleConfig();
@@ -50,7 +45,7 @@ function createRizom() {
 
 		// Done
 		initialized = true;
-		taskLogger.done('CMS Initialized');
+		// taskLogger.done('CMS Initialized');
 	};
 
 	const getSchema = async () => {
@@ -78,7 +73,6 @@ function createRizom() {
 
 	const reloadConfig = async () => {
 		await config.reload();
-		mailerInterface.init(config.get());
 	};
 
 	return {
@@ -88,10 +82,6 @@ function createRizom() {
 
 		get initialized() {
 			return initialized;
-		},
-
-		get mailer() {
-			return mailerInterface.mailer;
 		},
 
 		get auth() {
@@ -142,7 +132,7 @@ const getInstance = () => {
 	}
 	instance = createRizom();
 
-	taskLogger.info('Create CMS instance ' + instance.key);
+	// taskLogger.info('Create CMS instance ' + instance.key);
 
 	return instance;
 };

@@ -1,5 +1,5 @@
 import { fail, redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
-import logger from 'rizom/logger';
+import logger from 'rizom/utils/logger';
 import extractData from 'rizom/operations/preprocess/extract/data.server';
 import type { PrototypeSlug } from 'rizom/types/doc';
 import type { PanelActionFailure } from 'rizom/types/panel';

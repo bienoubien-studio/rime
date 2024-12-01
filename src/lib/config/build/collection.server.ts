@@ -1,5 +1,5 @@
-import { panelUsersCollection } from '$lib/auth/usersConfig.server.js';
-import { usersFields } from '$lib/auth/usersFields.js';
+import { hashedPassword, panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
+import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { hasProps } from 'rizom/utils/object.js';
 import { isFormField, isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
@@ -15,13 +15,15 @@ import type {
 import type { AnyField } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
-import { FieldBuilder } from 'rizom/fields/field-builder.js';
-import type { TextField } from 'rizom/fields/text/index.js';
+import { text } from 'rizom/fields/text/index.js';
+import { compileField } from 'rizom/fields/compile.js';
+import { SelectFieldBuilder } from 'rizom/fields/_builders/index.js';
+import { date } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
 	let hooks: CollectionHooks = { ...collection.hooks };
 	if (collection.auth) {
-		const authHooks = await import('$lib/auth/hooks.server.js');
+		const authHooks = await import('$lib/collection/auth/hooks.server.js');
 		const { beforeUpdate, beforeCreate, beforeDelete } = authHooks;
 		hooks = {
 			...hooks,
@@ -31,7 +33,7 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 		};
 	}
 	if (collection.upload) {
-		const uploadHooks = await import('../../upload/hooks/index.server.js');
+		const uploadHooks = await import('rizom/collection/upload/hooks/index.server.js');
 		const { castBase64ToFile, processFileUpload, beforeDelete } = uploadHooks;
 		hooks = {
 			...hooks,
@@ -45,20 +47,12 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 
 const buildFields = (collection: CollectionConfig): AnyField[] => {
 	//
-	// let fields: AnyField[] = collection.fields.reduce(compile, []).reduce(augment, []);
-	let fields: AnyField[] = collection.fields.map((field) =>
-		field instanceof FieldBuilder ? field.toField() : field
-	);
+	let fields: AnyField[] = collection.fields.map(compileField);
 
 	if (collection.auth) {
 		const isNotPanelUsersCollection = !(collection.slug === 'users');
 		if (isNotPanelUsersCollection) {
-			fields.push(usersFields.email, {
-				name: 'hashedPassword',
-				type: 'text',
-				required: true,
-				hidden: true
-			});
+			fields.push(usersFields.email, hashedPassword);
 			const rolesField = fields.find(isRolesField);
 			if (!rolesField) {
 				fields.push(usersFields.roles);
@@ -68,15 +62,14 @@ const buildFields = (collection: CollectionConfig): AnyField[] => {
 
 	if (collection.upload) {
 		if ('imageSizes' in collection && collection.imageSizes?.length) {
-			const sizesFields: TextField[] = collection.imageSizes.map((size: ImageSizesConfig) => ({
-				name: toCamelCase(size.name),
-				type: 'text',
-				hidden: true
-			}));
+			const sizesFields = collection.imageSizes.map((size: ImageSizesConfig) =>
+				text(toCamelCase(size.name)).hidden().toField()
+			);
 			fields = [...fields, ...sizesFields];
 		}
 
-		const mimeType: TextField = { name: 'mimeType', type: 'text', hidden: true };
+		const mimeType = text('mimeType').hidden().toField();
+
 		if ('accept' in collection) {
 			mimeType.validate = (value: string) => {
 				return (
@@ -88,16 +81,12 @@ const buildFields = (collection: CollectionConfig): AnyField[] => {
 		fields = [
 			...fields,
 			mimeType,
-			{ name: 'filename', type: 'text', hidden: true },
-			{ name: 'filesize', type: 'text', hidden: true }
+			text('filename').hidden().toField(),
+			text('filesize').hidden().toField()
 		];
 	}
 
-	fields = [
-		...fields,
-		{ name: 'createdAt', type: 'date', hidden: true },
-		{ name: 'updatedAt', type: 'date', hidden: true }
-	];
+	fields = [...fields, date('createdAt').hidden().toField(), date('updatedAt').hidden().toField()];
 
 	return fields;
 };
@@ -175,11 +164,11 @@ export const mergePanelUsersCollectionWithDefault = ({
 		}
 		collection.fields = [
 			...collection.fields.filter(isFormField).filter((f) => f.name !== 'roles'),
-			roleField
+			SelectFieldBuilder.normalizeOptions(roleField)
 		];
 	}
 	if (fields) {
-		collection.fields.push(...fields);
+		collection.fields.push(...fields.map(compileField));
 	}
 	if (access) {
 		collection.access = {

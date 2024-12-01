@@ -9,11 +9,11 @@ import type { RequestEvent } from '@sveltejs/kit';
 export class LocalAPI implements LocalAPIType {
 	//
 	#requestEvent: RequestEvent | undefined;
-	#rizom: Rizom;
+	rizom: Rizom;
 	hasGrantedPrivilege: boolean = false;
 
 	constructor({ rizom, event }: LocalAPIConstructorArgs) {
-		this.#rizom = rizom;
+		this.rizom = rizom;
 		this.#requestEvent = event;
 	}
 
@@ -30,7 +30,7 @@ export class LocalAPI implements LocalAPIType {
 	}
 
 	collection(slug: PrototypeSlug) {
-		const collectionConfig = this.#rizom.config.getCollection(slug);
+		const collectionConfig = this.rizom.config.getCollection(slug);
 		if (!collectionConfig) {
 			throw new RizomError(`${slug} is not a collection`);
 		}
@@ -40,14 +40,14 @@ export class LocalAPI implements LocalAPIType {
 		return new CollectionInterface({
 			event: this.#requestEvent,
 			config: collectionConfig,
-			adapter: this.#rizom.adapter,
+			adapter: this.rizom.adapter,
 			api: this as LocalAPIType,
-			defaultLocale: this.#rizom.config.getDefaultLocale()
+			defaultLocale: this.rizom.config.getDefaultLocale()
 		});
 	}
 
 	global(slug: PrototypeSlug) {
-		const globalConfig = this.#rizom.config.getGlobal(slug);
+		const globalConfig = this.rizom.config.getGlobal(slug);
 		if (!globalConfig) {
 			throw new RizomError(`${slug} is not a global`);
 		}
@@ -59,9 +59,9 @@ export class LocalAPI implements LocalAPIType {
 		return new GlobalInterface({
 			event: this.#requestEvent,
 			config: globalConfig,
-			adapter: this.#rizom.adapter,
+			adapter: this.rizom.adapter,
 			api: this as LocalAPIType,
-			defaultLocale: this.#rizom.config.getDefaultLocale()
+			defaultLocale: this.rizom.config.getDefaultLocale()
 		});
 	}
 }

@@ -1,6 +1,6 @@
 import type { Adapter } from 'rizom/types/adapter.js';
 import { safeFlattenDoc } from '$lib/utils/doc.js';
-import { isEmptyValue } from '$lib/utils/field.js';
+
 import { unflatten } from 'flat';
 import type { ConfigMap } from '../config/map.js';
 import { getDefaultValue } from './field.server.js';
@@ -12,7 +12,14 @@ export const addDefaultValues: AddDefaultValues = async (args) => {
 
 	for (const [key, config] of Object.entries(configMap)) {
 		const hasDefaultValue = 'defaultValue' in config;
-		const isEmpty = isEmptyValue(flatData[key], config.type);
+		let isEmpty;
+		try {
+			isEmpty = config.isEmpty(flatData[key]);
+		} catch (err: any) {
+			isEmpty = false;
+			console.log(config);
+			console.log(err.message);
+		}
 		if (hasDefaultValue && isEmpty) {
 			flatData[key] = await getDefaultValue({ key, config, adapter });
 		}

@@ -6,7 +6,7 @@ import createAdapterAuthInterface from './auth.js';
 import { type Config } from 'drizzle-kit';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { taskLogger } from '../logger/index.js';
+import { taskLogger } from 'rizom/utils/logger/index.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import { databaseTransformInterface } from './transform.js';
 
@@ -16,7 +16,7 @@ const createAdapter = ({ schema, drizzleKitConfig, configInterface }: CreateAdap
 	const db = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
 	// @ts-expect-error config.dbCredentials.url
-	taskLogger.info('Using db at ' + drizzleKitConfig.dbCredentials.url);
+	// taskLogger.info('Using db at ' + drizzleKitConfig.dbCredentials.url);
 
 	const auth = createAdapterAuthInterface({
 		db,

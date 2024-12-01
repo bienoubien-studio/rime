@@ -11,7 +11,6 @@ import { getCollectionContext } from './collection.svelte.js';
 import { randomId } from '../../utils/random.js';
 import { getUserContext } from './user.svelte.js';
 import { getValueFromPath } from '../../utils/doc.js';
-import { isEmptyValue } from '../../utils/field.js';
 import { getPanelThumbnailKey, isUploadConfig } from '../../config/utils.js';
 import { snapshot } from '../../utils/state.js';
 import { getLocaleContext } from './locale.svelte.js';
@@ -172,7 +171,7 @@ function createDocumentFormState({
 		const parts = $derived(path.split('.'));
 
 		const validate = (value: any) => {
-			if (config.required && isEmptyValue(value, config.type)) {
+			if (config.required && config.isEmpty(value)) {
 				errors.value[path] = 'required::This field is required';
 				return 'required';
 			}
@@ -183,7 +182,8 @@ function createDocumentFormState({
 					locale: locale.code,
 					id: doc.id ?? undefined,
 					operation: doc.id ? 'update' : 'create',
-					user: user.attributes
+					user: user.attributes,
+					config
 				});
 				if (validated !== true) {
 					errors.value[path] = validated;

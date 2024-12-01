@@ -2,7 +2,7 @@ import { RizomInitError } from '$lib/errors/init.server';
 import extractData from '$lib/operations/preprocess/extract/data.server.js';
 import { error, json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import { validate } from 'rizom/utils';
-import logger from '../logger/index.js';
+import logger from 'rizom/utils/logger/index.js';
 
 const apiInit: RequestHandler = async (event: RequestEvent) => {
 	const { rizom } = event.locals;

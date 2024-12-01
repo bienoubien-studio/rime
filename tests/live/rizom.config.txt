@@ -1,4 +1,4 @@
-import { access } from '$lib/access/index.js';
+import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
 import type { CollectionConfig } from 'rizom';

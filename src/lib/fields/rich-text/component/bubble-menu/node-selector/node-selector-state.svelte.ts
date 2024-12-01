@@ -4,10 +4,10 @@ import Heading3 from 'lucide-svelte/icons/heading-3';
 import TextQuote from 'lucide-svelte/icons/text-quote';
 import TextIcon from 'lucide-svelte/icons/text';
 import ListOrdered from 'lucide-svelte/icons/list-ordered';
-import { Code } from 'lucide-svelte';
+// import { Code } from 'lucide-svelte';
 import Asterisk from 'lucide-svelte/icons/asterisk';
 import type { ComponentType } from 'svelte';
-import type { RichTextFieldNode } from 'rizom/types/fields';
+import type { RichTextFieldNode } from 'rizom/fields/types';
 
 type Node = {
 	name: RichTextFieldNode;

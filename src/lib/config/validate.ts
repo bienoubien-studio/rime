@@ -1,9 +1,10 @@
-import type { AnyFormField, BlocksFieldBlock } from 'rizom/types/fields';
-import cache from '../bin/cache';
-import { taskLogger } from '../logger';
+import type { BlocksFieldBlock } from 'rizom/fields/types';
+import cache from './generate/cache';
+import { taskLogger } from 'rizom/utils/logger';
 import { isBlocksField, isFormField, toFormFields } from '../utils/field';
 import { isAuthConfig } from './utils';
 import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizom/types/config';
+import type { AnyFormField } from 'rizom/types';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];

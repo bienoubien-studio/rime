@@ -3,7 +3,6 @@ import type { ActionResult, SubmitFunction } from '@sveltejs/kit';
 import { applyAction } from '$app/forms';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte';
-import { isEmptyValue } from '../../utils/field';
 import type { AnyFormField } from 'rizom/types/fields';
 import type { Dic } from 'rizom/types/utility';
 
@@ -27,7 +26,15 @@ function createFormStore(initial: Dic, key: string) {
 		path = path || config.name;
 		//
 		const validate = (value: any) => {
-			if (config.required && isEmptyValue(value, config.type)) {
+			let isEmpty;
+			try {
+				isEmpty = config.isEmpty(value);
+			} catch (err: any) {
+				console.log(config);
+				console.log(err.message);
+				throw new Error(config.type + ' ' + err.message);
+			}
+			if (config.required && isEmpty) {
 				errors.value[path] = 'required::This field is required';
 				return false;
 			}
@@ -38,7 +45,8 @@ function createFormStore(initial: Dic, key: string) {
 					id: undefined,
 					operation: undefined,
 					user: undefined,
-					locale: undefined
+					locale: undefined,
+					config
 				});
 
 				if (validated !== true) {

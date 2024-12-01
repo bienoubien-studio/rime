@@ -2,6 +2,7 @@ import { getValueFromPath } from '$lib/utils/doc.js';
 import { isBlocksField } from '$lib/utils/field.js';
 import type { GenericBlock } from 'rizom/types/doc.js';
 import type { ConfigMap } from '../config/map.js';
+import type { Dic } from 'rizom/types/utility.js';
 
 export const extractBlocks = (doc: Dic, configMap: ConfigMap) => {
 	const blocks = [];

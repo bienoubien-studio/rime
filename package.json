@@ -6,7 +6,7 @@
 		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
 		"rizom:use": "bun ./src/scripts/useConfig.js",
-		"rizom": "bun ./src/lib/bin/index.ts",
+		"rizom": "bun ./src/lib/config/generate/index.ts",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -21,15 +21,11 @@
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/"
 	},
 	"license": "MIT",
-	"bin": "./dist/bin/index.js",
+	"bin": "./dist/config/generate/index.js",
 	"exports": {
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
-		},
-		"./access": {
-			"types": "./dist/access/index.d.ts",
-			"import": "./dist/access/index.js"
 		},
 		"./utils": {
 			"types": "./dist/utils/index.d.ts",
@@ -43,8 +39,8 @@
 			"import": "./dist/panel/style/index.css"
 		},
 		"./fields": {
-			"types": "./dist/config/fields/index.d.ts",
-			"import": "./dist/config/fields/index.js"
+			"types": "./dist/fields/types.d.ts",
+			"import": "./dist/fields/index.js"
 		},
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",

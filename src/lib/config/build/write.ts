@@ -1,6 +1,6 @@
 import { flatten } from 'flat';
-import cache from '../../bin/cache/index.js';
-import { taskLogger } from '../../logger/index.js';
+import cache from 'rizom/config/generate/cache/index.js';
+import { taskLogger } from 'rizom/utils/logger/index.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { RizomConfigError } from 'rizom/errors/config.server.js';
 import type { Dic } from 'rizom/types/utility.js';

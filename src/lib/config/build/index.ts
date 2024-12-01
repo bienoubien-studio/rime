@@ -1,9 +1,9 @@
 import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
-import { access } from 'rizom/access/index.js';
-import buildBrowserConfig from './browserConfig.js';
-import generateSchema from 'rizom/bin/schema/index.js';
-import generateRoutes from 'rizom/bin/routes/index.js';
-import generateTypes from 'rizom/bin/types/index.js';
+import { access } from 'rizom/utils/access/index.js';
+import buildBrowserConfig from './browser.js';
+import generateSchema from 'rizom/config/generate/schema/index.js';
+import generateRoutes from 'rizom/config/generate/routes/index.js';
+import generateTypes from 'rizom/config/generate/types/index.js';
 import type {
 	BuiltCollectionConfig,
 	BuiltConfig,
@@ -74,6 +74,7 @@ const buildConfig = async (config: Config): Promise<BuiltConfig> => {
 		},
 		collections,
 		plugins: {},
+		//@ts-expect-error will fix it
 		blueprints,
 		globals,
 		icons
@@ -93,11 +94,9 @@ const buildConfig = async (config: Config): Promise<BuiltConfig> => {
 		if (!execFromCommandLine) {
 			const writeMemo = await import('./write.js').then((module) => module.default);
 			const changed = writeMemo(builtConfig);
-
 			if (changed) {
 				const validate = await import('../validate.js').then((module) => module.default);
 				const valid = validate(builtConfig);
-
 				if (valid) {
 					buildBrowserConfig(builtConfig);
 					generateSchema(builtConfig);

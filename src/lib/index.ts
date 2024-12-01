@@ -1,4 +1,3 @@
-// Reexport your entry components here
 import rizom from './rizom.server.js';
 import handlers from './handlers/index.js';
 import { buildConfig } from './config/build/index.js';
@@ -10,7 +9,7 @@ export { rizom, handlers, buildConfig };
 /* -------------------------------------------------------------------------- */
 
 export type { Config, CollectionConfig, GlobalConfig, BrowserConfig } from './types/config.js';
-export type { Link } from './types/fields.js';
+export type { Link } from 'rizom/fields/link';
 export type { UploadDoc, BaseDoc } from './types/doc.js';
 export type { User } from 'rizom/types/auth.js';
 export type { Plugin } from 'rizom/types/plugin.js';
@@ -26,13 +25,13 @@ declare module 'rizom' {
 	// eslint-disable-next-line
 	interface RegisterFields {}
 	// eslint-disable-next-line
-	interface RegisterPluginsActions {}
+	interface RegisterPlugins {}
 
 	export interface Register {
 		PrototypeSlug: string;
 		CollectionSlug: string;
 		GlobalSlug: string;
-		Plugins: RegisterPluginsActions;
+		Plugins: RegisterPlugins;
 		FieldsType: keyof RegisterFieldsType;
 		AnyFormField: RegisterFormFields[keyof RegisterFormFields];
 		AnyField: RegisterFields[keyof RegisterFields];

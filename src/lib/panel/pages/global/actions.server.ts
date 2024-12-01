@@ -2,7 +2,7 @@ import { fail, type RequestEvent } from '@sveltejs/kit';
 import extractData from '$lib/operations/preprocess/extract/data.server';
 import type { PrototypeSlug } from '$lib/types';
 import type { PanelActionFailure } from 'rizom/types/panel';
-import logger from 'rizom/logger';
+import logger from 'rizom/utils/logger';
 
 export default function (slug: PrototypeSlug) {
 	const actions = {

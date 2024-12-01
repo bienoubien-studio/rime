@@ -4,7 +4,7 @@ import { unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import { privateFieldNames } from '../auth/usersConfig.server.js';
+import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
 import { isUploadConfig } from '../config/utils.js';
 import { buildConfigMap } from '../operations/preprocess/config/map.js';
 import { safeFlattenDoc } from '../utils/doc.js';

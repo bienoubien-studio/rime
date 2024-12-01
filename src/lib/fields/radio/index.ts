@@ -1,7 +1,22 @@
 import type { Option } from 'rizom/types';
 import type { FormField } from 'rizom/types';
+import { SelectFieldBuilder } from '../_builders/index.js';
+import toSnakeCase from 'to-snake-case';
+import type { AnyField } from 'rizom/types';
+import Radio from './component/Radio.svelte';
 
-export { radio, blueprint } from './field.js';
+export const blueprint = {
+	component: Radio,
+	toSchema(field: RadioField) {
+		const { name } = field;
+		const snake_name = toSnakeCase(name);
+		return `${name}: text('${snake_name}')`;
+	},
+	toType: (field: RadioField) => `${field.name}: string`,
+	match: (field: AnyField): field is RadioField => field.type === 'radio'
+};
+
+export const radio = (name: string) => new SelectFieldBuilder<RadioField>(name, 'radio');
 
 /////////////////////////////////////////////
 // Type

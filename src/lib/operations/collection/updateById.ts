@@ -1,5 +1,5 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
-import { usersFields } from '$lib/auth/usersFields.js';
+import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server.js';
 import { extractRelations } from '../preprocess/extract/relations.server';
@@ -70,7 +70,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 		user: event?.locals.user,
 		slug: config.slug,
 		locale,
-		rizom
+		api
 	});
 
 	if (errors) {

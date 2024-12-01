@@ -1,5 +1,3 @@
-import type { AnyField } from 'rizom/types';
-
 export { blocks, block } from './blocks/index.js';
 export { checkbox } from './checkbox/index.js';
 export { combobox } from './combobox/index.js';
@@ -18,13 +16,3 @@ export { slug } from './slug/index.js';
 export { tabs, tab } from './tabs/index.js';
 export { text } from './text/index.js';
 export { toggle } from './toggle/index.js';
-
-export type FieldBluePrint<T extends AnyField = AnyField> = {
-	component: any;
-	cell?: any;
-	toSchema?: (field: T) => string;
-	toType?: (field: T) => string;
-	match: (field: AnyField) => field is T;
-	defaultValue?: any;
-	validate?: any;
-};

@@ -1,6 +1,21 @@
 import type { FormField } from 'rizom/types';
+import toSnakeCase from 'to-snake-case';
+import { BooleanFieldBuilder } from '../_builders/boolean.js';
+import type { FieldBluePrint } from 'rizom/types/fields';
+import Toggle from './component/Toggle.svelte';
 
-export { toggle, blueprint } from './field.js';
+export const blueprint: FieldBluePrint<ToggleField> = {
+	component: Toggle,
+	toSchema(field) {
+		const { name } = field;
+		const snake_name = toSnakeCase(name);
+		return `${name}: integer('${snake_name}', { mode : 'boolean' })`;
+	},
+	toType: (field) => `${field.name}: boolean`,
+	match: (field): field is ToggleField => field.type === 'toggle'
+};
+
+export const toggle = (name: string) => new BooleanFieldBuilder<ToggleField>(name, 'toggle');
 
 /////////////////////////////////////////////
 // Type

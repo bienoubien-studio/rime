@@ -1,4 +1,4 @@
-export type { BlocksField } from './blocks';
+export type { BlocksField, BlocksFieldBlock } from './blocks';
 export type { CheckboxField } from './checkbox';
 export type { ComboBoxField } from './combobox';
 export type { ComponentField } from './component';
@@ -9,7 +9,7 @@ export type { LinkField } from './link';
 export type { NumberField } from './number';
 export type { RadioField } from './radio';
 export type { RelationField } from './relation';
-export type { RichTextField } from './rich-text';
+export type { RichTextField, RichTextFieldNode, RichTextFieldMark } from './rich-text';
 export type { SelectField } from './select';
 export type { SeparatorField } from './separator';
 export type { SlugField } from './slug';

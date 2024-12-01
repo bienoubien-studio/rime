@@ -1,15 +1,20 @@
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
 import type { BaseDoc, PrototypeSlug, User } from 'rizom/types';
+import type { MailerPlugin } from 'rizom/types/plugin';
 
 export default function (slug: PrototypeSlug) {
 	//
 	async function POST(event: RequestEvent) {
 		const { rizom, api } = event.locals;
 
-		if (!rizom.mailer) {
-			return error(400, 'missing smtp configuration');
+		if (!('mailer' in rizom.plugins)) {
+			return error(400, 'missing mailer plugin');
 		}
+
+		const mailer = rizom.plugins.mailer as MailerPlugin;
+		const sendMail = mailer.sendMail;
+		const from = mailer.options.from;
 
 		const data = await event.request.json();
 		const { email } = data;
@@ -26,14 +31,13 @@ export default function (slug: PrototypeSlug) {
 
 		if (user) {
 			const link = `${env.PUBLIC_RIZOM_URL}/reset-password?token=${token}&slug=${slug}&id=${user.id}`;
-			rizom.mailer
-				.sendMail({
-					from: rizom.mailer.options.from,
-					to: user.email,
-					subject: 'Reset Password',
-					text: `You have request a password reset, please follow this link ${link}`,
-					html: `<html><body><p>You have request a password reset, please follow this link ${link}</p></body></html>`
-				})
+			sendMail({
+				from,
+				to: user.email,
+				subject: 'Reset Password',
+				text: `You have request a password reset, please follow this link ${link}`,
+				html: `<html><body><p>You have request a password reset, please follow this link ${link}</p></body></html>`
+			})
 				.then(() => {
 					console.log('mail sent');
 				})

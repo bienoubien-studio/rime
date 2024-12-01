@@ -10,7 +10,8 @@
 	import type { RelationFieldItem } from './types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import type { Relation } from '$lib/db/relations.js';
-	import type { RelationField, GenericDoc } from 'rizom/types';
+	import type { GenericDoc } from 'rizom/types';
+	import type { RelationField } from '../index';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };

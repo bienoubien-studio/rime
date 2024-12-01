@@ -1,5 +1,5 @@
 import deepmerge from 'deepmerge';
-import { usersFields } from '$lib/auth/usersFields.js';
+import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { addDefaultValues } from '../preprocess/fill/index.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server';
@@ -16,7 +16,7 @@ import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
 import type { BuiltCollectionConfig } from 'rizom/types/config';
 import { RizomHookError } from 'rizom/errors/hook.server.js';
-import logger from 'rizom/logger/index.js';
+import logger from 'rizom/utils/logger/index.js';
 import type {
 	CollectionHookAfterCreateArgs,
 	CollectionHookBeforeCreateArgs
@@ -93,7 +93,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 		user: event?.locals.user,
 		slug: config.slug,
 		locale,
-		rizom
+		api
 	});
 
 	if (errors) {

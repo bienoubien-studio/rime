@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { RizomAccessError } from 'rizom/errors/access.server.js';
 import { RizomLoginError, RizomLoginLockedError } from 'rizom/errors/login.server.js';
 import { RizomNotFoundError } from 'rizom/errors/notFound.server.js';
-import logger from 'rizom/logger';
+import logger from 'rizom/utils/logger/index.js';
 
 export function handleAPIError(err: any, serverErrorMessage?: string) {
 	logger.error(err);

@@ -7,9 +7,10 @@
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import validate from '$lib/utils/validate';
 	import { classList } from 'rizom/utils/classList.js';
 	import type { FormErrors } from 'rizom/types';
+	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { text } from 'rizom/fields';
 
 	type Props = { form?: { email?: string; password?: string; errors?: FormErrors } };
 	let { form }: Props = $props();
@@ -41,20 +42,8 @@
 				<Card.Title>Connexion</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Email
-					config={{
-						name: 'email',
-						type: 'email',
-						validate: validate.email,
-						required: true
-					}}
-					form={context}
-				/>
-				<Text
-					type="password"
-					config={{ name: 'password', type: 'text', required: true }}
-					form={context}
-				/>
+				<Email config={usersFields.email} form={context} />
+				<Text type="password" config={text('password').required().toField()} form={context} />
 			</Card.Content>
 			<Card.Footer>
 				<Button size="lg" disabled={!context.canSubmit} type="submit">Login</Button>
@@ -71,16 +60,16 @@
 		height: 100vh;
 		width: 100vw;
 
-		& :global(.rz-card) {
+		:global(.rz-card) {
 			width: var(--rz-size-96);
 		}
-		& :global(.rz-card-content > * + *) {
+		:global(.rz-card-content > * + *) {
 			margin-top: var(--rz-size-4);
 		}
-		& :global(.rz-card-footer) {
+		:global(.rz-card-footer) {
 			display: grid;
 		}
-		& :global(.rz-card-footer .rz-button--link) {
+		:global(.rz-card-footer .rz-button--link) {
 			@mixin color ground-2;
 			margin-top: var(--rz-size-3);
 			font-size: var(--rz-text-xs);

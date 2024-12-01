@@ -1,19 +1,12 @@
 import { unflatten } from 'flat';
-import {
-	isComboBoxField,
-	isDateField,
-	isEmptyValue,
-	isRadioField,
-	isRichTextField,
-	isSelectField
-} from '$lib/utils/field.js';
+
 import { RizomError } from '$lib/errors/error.server.js';
-import type { Rizom } from '$lib/rizom.server.js';
 import type { ConfigMap } from './config/map.js';
 import type { User } from 'rizom/types/auth.js';
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { FormErrors } from 'rizom/types/panel.js';
 import type { Dic } from 'rizom/types/utility.js';
+import type { LocalAPI } from 'rizom/types/api.js';
 
 export const preprocessFields: PreprocessFields = async ({
 	data,
@@ -24,11 +17,11 @@ export const preprocessFields: PreprocessFields = async ({
 	user,
 	slug,
 	locale,
-	rizom
+	api
 }) => {
 	const errors: FormErrors = {};
-	const { adapter } = rizom;
-	const isCollection = rizom.config.getDocumentPrototype(slug);
+	const { adapter } = api.rizom;
+	const isCollection = api.rizom.config.getDocumentPrototype(slug);
 
 	for (const [key, config] of Object.entries(configMap)) {
 		if (key === 'hashedPassword') {
@@ -48,7 +41,7 @@ export const preprocessFields: PreprocessFields = async ({
 		//////////////////////////////////////////////
 
 		// Required
-		if (config.required && isEmptyValue(flatData[key], config.type)) {
+		if (config.required && config.isEmpty(flatData[key])) {
 			errors[key] = `Field ${config.name} is required`;
 		}
 
@@ -65,11 +58,11 @@ export const preprocessFields: PreprocessFields = async ({
 		// Transform before validate
 		//////////////////////////////////////////////
 
-		// convert date string to data
-		if (isDateField(config)) {
-			const value = flatData[key];
-			if (value) {
-				flatData[key] = new Date(value);
+		if (config.hooks?.beforeValidate) {
+			if (flatData[key]) {
+				for (const hook of config.hooks.beforeValidate) {
+					flatData[key] = await hook(flatData[key], { config, api, locale });
+				}
 			}
 		}
 
@@ -77,26 +70,6 @@ export const preprocessFields: PreprocessFields = async ({
 		// Validate
 		//////////////////////////////////////////////
 
-		// Validate Select/Combo/Radio fields
-		// Not validate in a field.validate function as we need the config here,
-		// TODO probably in a future, pass the config.options in validation metas
-		if (isSelectField(config) || isComboBoxField(config) || isRadioField(config)) {
-			const selected = flatData[key];
-			const validValues = config.options.map((o) => o.value);
-			if (selected && Array.isArray(selected)) {
-				for (const value of selected) {
-					if (!validValues.includes(value)) {
-						errors[key] = `${key} field : value should be one of these : ${validValues.join('|')}`;
-					}
-				}
-			} else if (selected !== undefined) {
-				if (!validValues.includes(selected)) {
-					errors[key] = `${key} field : value should be one of these : ${validValues.join('|')}`;
-				}
-			}
-		}
-
-		// Validate
 		if (config.validate && flatData[key]) {
 			try {
 				const valid = config.validate(flatData[key], {
@@ -104,7 +77,8 @@ export const preprocessFields: PreprocessFields = async ({
 					operation,
 					id: documentId,
 					user,
-					locale
+					locale,
+					config
 				});
 				if (valid !== true) {
 					errors[key] = valid;
@@ -119,11 +93,11 @@ export const preprocessFields: PreprocessFields = async ({
 		// Transform to DB compliency
 		//////////////////////////////////////////////
 
-		// convert JSON to string
-		if (isRichTextField(config)) {
-			const value = flatData[key];
-			if (value) {
-				flatData[key] = JSON.stringify(value);
+		if (config.hooks?.beforeSave) {
+			if (flatData[key]) {
+				for (const hook of config.hooks.beforeSave) {
+					flatData[key] = await hook(flatData[key], { config, api, locale });
+				}
 			}
 		}
 
@@ -166,7 +140,7 @@ type PreprocessFields = (args: {
 	locale: string | undefined;
 	documentId: string | undefined;
 	slug: PrototypeSlug;
-	rizom: Rizom;
+	api: LocalAPI;
 }) => Promise<{
 	errors: FormErrors | null;
 	validFlatData: Dic;

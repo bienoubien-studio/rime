@@ -5,7 +5,7 @@ import { Lucia } from 'lucia';
 import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
 import crypto from 'crypto';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { hash, verifyHash } from '../auth/utils.server.js';
+import { hash, verifyHash } from 'rizom/collection/auth/utils.server.js';
 import { RizomInitError } from '../errors/init.server.js';
 import {
 	RizomLoginEmailError,

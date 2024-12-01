@@ -3,7 +3,6 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
-	import validate from '$lib/utils/validate';
 	import type { FormErrors } from 'rizom/types';
 
 	type Props = { form?: { email?: string; errors?: FormErrors } };
@@ -12,6 +11,7 @@
 	const context = setFormContext(form || {}, 'forgot-password');
 
 	import Email from 'rizom/fields/email/component/Email.svelte';
+	import { usersFields } from 'rizom/collection/auth/usersFields';
 </script>
 
 <div class="rz-forgot-password-container">
@@ -37,15 +37,7 @@
 					<Card.Title>Request a password reset</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<Email
-						form={context}
-						config={{
-							name: 'email',
-							type: 'email',
-							validate: validate.email,
-							required: true
-						}}
-					/>
+					<Email form={context} config={usersFields.email} />
 				</Card.Content>
 				<Card.Footer>
 					<Button type="submit" size="lg">Request a password reset</Button>

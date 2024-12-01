@@ -1,8 +1,9 @@
 <script lang="ts">
 	import Button from '../button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { usersFields } from '$lib/auth/usersFields.js';
+	import { usersFields } from '$lib/collection/auth/usersFields.js';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
+	import { text } from 'rizom/fields/index.js';
 
 	type Props = { create: boolean; form: DocumentFormContext };
 	const { create, form }: Props = $props();
@@ -38,7 +39,7 @@
 	<Email {form} config={usersFields.email} path="email" />
 
 	{#if changingPassword}
-		<Text {form} type="password" config={usersFields.password} path="password" />
+		<Text {form} type="password" config={text('password').required().toField()} path="password" />
 
 		<Text {form} type="password" config={usersFields.confirmPassword} path="confirmPassword" />
 

@@ -1,4 +1,4 @@
-import { access } from '$lib/access/index.js';
+import { access } from '$lib/utils/access/index.js';
 import {
 	block,
 	blocks,
@@ -21,7 +21,7 @@ import type { Config } from 'rizom';
 import type { GlobalConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
-import { cache } from '../plugins/cache';
+
 
 /////////////////////////////////////////////
 // Settings
@@ -291,7 +291,7 @@ const config: Config = {
 		}
 	},
 
-	plugins: [cache({ enabled: true })]
+
 };
 
 export default config;

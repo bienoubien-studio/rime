@@ -1,5 +1,6 @@
 import { asc, eq } from 'drizzle-orm';
 import { rizom } from '$lib/index.js';
+import type { Dic } from 'rizom/types/utility';
 
 type BuildWithParamArgs = {
 	slug: string;

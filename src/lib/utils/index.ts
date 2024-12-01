@@ -7,6 +7,7 @@ import * as state from './state.js';
 import * as string from './string.js';
 import * as validate from './validate.js';
 import * as file from './file.js';
+import * as access from './access/index.js';
 import { classList } from './classList.js';
 
-export { array, file, doc, field, object, random, state, string, validate, classList };
+export { access, array, file, doc, field, object, random, state, string, validate, classList };

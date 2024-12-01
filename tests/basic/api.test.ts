@@ -1,6 +1,6 @@
 import test, { expect } from '@playwright/test';
 import path from 'path';
-import { filePathToBase64 } from 'rizom/upload/utils/converter';
+import { filePathToBase64 } from 'rizom/collection/upload/utils/converter';
 
 const BASE_URL = 'http://local.rizom:5173';
 const API_BASE_URL = `${BASE_URL}/api`;

@@ -1,4 +1,4 @@
-import type { FieldBluePrint } from 'rizom/fields';
+import type { FieldBluePrint } from 'rizom/types/fields';
 import type { AnyField, BuiltConfig, Config } from 'rizom/types';
 
 type Args = {

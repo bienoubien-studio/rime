@@ -22,7 +22,7 @@ import type {
 	ToggleField
 } from 'rizom/fields/types.js';
 import type { Dic } from 'rizom/types/utility.js';
-import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
+import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;
 
@@ -125,39 +125,39 @@ export const richTextJSONToText = (value: string): string => {
 
 // };
 
-export const isEmptyValue = (value: any, type: FieldsType) => {
-	if (value === null || value === undefined) return true;
-	switch (type) {
-		case 'text':
-			return value === '';
-		case 'slug':
-			return value === '';
-		case 'blocks':
-			return Array.isArray(value) && value.length === 0;
-		case 'link':
-			return !value.link || !value.label;
-		case 'select':
-			return Array.isArray(value) && value.length === 0;
-		case 'relation':
-			return Array.isArray(value) && value.length === 0;
-		case 'richText': {
-			const reduceText = (prev: string, curr: any) => {
-				if ('text' in curr) {
-					prev += curr.text;
-				} else if ('content' in curr) {
-					return curr.content.reduce(reduceText, prev);
-				}
-				return prev;
-			};
-			return (
-				isObjectLiteral(value) &&
-				'content' in value &&
-				Array.isArray(value.content) &&
-				value.content.reduce(reduceText, '') === ''
-			);
-		}
-	}
-};
+// export const isEmptyValue = (value: any, type: FieldsType) => {
+// 	if (value === null || value === undefined) return true;
+// 	switch (type) {
+// 		case 'text':
+// 			return value === '';
+// 		case 'slug':
+// 			return value === '';
+// 		case 'blocks':
+// 			return Array.isArray(value) && value.length === 0;
+// 		case 'link':
+// 			return !value.link || !value.label;
+// 		case 'select':
+// 			return Array.isArray(value) && value.length === 0;
+// 		case 'relation':
+// 			return Array.isArray(value) && value.length === 0;
+// 		case 'richText': {
+// 			const reduceText = (prev: string, curr: any) => {
+// 				if ('text' in curr) {
+// 					prev += curr.text;
+// 				} else if ('content' in curr) {
+// 					return curr.content.reduce(reduceText, prev);
+// 				}
+// 				return prev;
+// 			};
+// 			return (
+// 				isObjectLiteral(value) &&
+// 				'content' in value &&
+// 				Array.isArray(value.content) &&
+// 				value.content.reduce(reduceText, '') === ''
+// 			);
+// 		}
+// 	}
+// };
 
 export function toFormFields(prev: any[], curr: any) {
 	if (curr.type === 'tabs') {

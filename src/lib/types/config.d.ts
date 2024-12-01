@@ -6,7 +6,7 @@ import type { CollectionHooks, GlobalHooks } from './hooks';
 import type { ComponentType } from 'svelte';
 import type { AtLeastOne, WithRequired } from './utility';
 import type { MaybeAsyncFunction, Plugin } from './plugin';
-import type { FieldBluePrint } from 'rizom/fields';
+import type { FieldBluePrint } from 'rizom/types/fields';
 
 export type DocumentPrototype = 'collection' | 'global';
 

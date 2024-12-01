@@ -18,6 +18,7 @@ export interface LocalAPI {
 	grantAdminPrivilege(): LocalAPI;
 	enforceLocale(locale: string): void;
 	hasGrantedPrivilege: boolean;
+	readonly rizom: Rizom;
 }
 
 export type LocalAPIConstructorArgs = {

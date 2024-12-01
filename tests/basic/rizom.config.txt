@@ -1,6 +1,6 @@
 import { relation, richText, text, toggle } from 'rizom/fields/index.js';
 import type { CollectionConfig, GlobalConfig } from 'rizom';
-import { access } from '$lib/access/index.js';
+import { access } from '$lib/utils/access/index.js';
 import { Settings2 } from 'lucide-svelte';
 
 const Pages: CollectionConfig = {

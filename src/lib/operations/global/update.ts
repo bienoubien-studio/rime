@@ -74,7 +74,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		user: event?.locals.user,
 		slug: config.slug,
 		locale,
-		rizom
+		api
 	});
 
 	if (errors) {
