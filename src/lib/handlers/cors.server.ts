@@ -4,7 +4,7 @@ import { dev } from '$app/environment';
 export const handleCORS: Handle = async ({ event, resolve }) => {
 	const { rizom } = event.locals;
 
-	const allowedHosts = [...(rizom.config.get().cors || [])];
+	const allowedHosts = [...(rizom.config.raw.cors || [])];
 	let cors;
 	const origin = event.request.headers.get('origin');
 	if (origin) {

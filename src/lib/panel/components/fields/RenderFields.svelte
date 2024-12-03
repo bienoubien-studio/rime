@@ -19,7 +19,7 @@
 	const config = getConfigContext();
 
 	const fieldComponent = (type: FieldsType): any => {
-		return config.config.blueprints[type].component || null;
+		return config.raw.blueprints[type].component || null;
 	};
 
 	const authorizedFields = $derived(
@@ -37,8 +37,8 @@
 	const widthClassModifier = (field: AnyFormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
 
-	const Tabs = config.config.blueprints.tabs.component;
-	const Separator = config.config.blueprints.separator.component;
+	const Tabs = config.raw.blueprints.tabs.component;
+	const Separator = config.raw.blueprints.separator.component;
 	//
 </script>
 

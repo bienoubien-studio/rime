@@ -14,21 +14,20 @@
 	const { entries }: Props = $props();
 
 	const configContext = getConfigContext();
-	const { config } = configContext;
+	const config = configContext;
 
 	const locale = getLocaleContext();
 </script>
 
 <div class="rz-dashboard">
-	<!-- <DashboardSearch /> -->
 	<PageHeader>
-		<Button variant="text" icon={Eye} href={config.siteUrl}>View site</Button>
+		<Button variant="text" icon={Eye} href={config.raw.siteUrl}>View site</Button>
 		<LanguageSwitcher />
 	</PageHeader>
 
 	<div class="rz-dashboard__content">
 		{#each entries as entry}
-			{@const Icon = config.icons[entry.slug]}
+			{@const Icon = config.raw.icons[entry.slug]}
 			<section>
 				<header>
 					<a href={entry.link}>

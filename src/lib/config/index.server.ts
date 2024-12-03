@@ -70,6 +70,13 @@ export async function createConfigInterface() {
 
 	return {
 		//
+		get raw() {
+			if (!config) {
+				throw new RizomError('config not loaded yet');
+			}
+			return config;
+		},
+
 		get(path?: string) {
 			if (!config) {
 				throw new RizomError('config not loaded yet');

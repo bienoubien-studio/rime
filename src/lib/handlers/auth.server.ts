@@ -69,11 +69,10 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 
 	//
 	if (event.url.pathname.startsWith('/panel')) {
-		const config = rizom.config.get();
 		if (!user) {
 			return redirect(302, '/login');
 		}
-		const authorized = config.panel?.access?.(user);
+		const authorized = rizom.config.raw.panel?.access?.(user);
 		if (!authorized) {
 			throw error(401, 'unauthorized');
 		}

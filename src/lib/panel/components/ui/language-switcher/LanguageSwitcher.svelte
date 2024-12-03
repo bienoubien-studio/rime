@@ -6,8 +6,8 @@
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 
 	const locale = getLocaleContext();
-	const { config } = getConfigContext();
-	const locales = $state(config.localization?.locales || []);
+	const config = getConfigContext();
+	const locales = $state(config.raw.localization?.locales || []);
 
 	function setLocale(code: string) {
 		locale.code = code;

@@ -19,7 +19,7 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 	}
 
 	if (event.url.pathname?.startsWith('/panel') && event.request.method === 'GET') {
-		event.locals.routes = buildNavigation(rizom.config.get(), user);
+		event.locals.routes = buildNavigation(rizom.config.raw, user);
 	}
 
 	if (event.url.pathname === '/api/init' && event.request.method === 'POST') {

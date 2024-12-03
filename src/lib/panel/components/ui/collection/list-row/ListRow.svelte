@@ -21,7 +21,7 @@
 	const config = getConfigContext();
 
 	const getCellComponent = (fieldType: FieldsType) => {
-		return config.config.blueprints[fieldType].cell || null;
+		return config.raw.blueprints[fieldType].cell || null;
 	};
 
 	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');

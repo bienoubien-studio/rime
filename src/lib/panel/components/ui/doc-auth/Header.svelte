@@ -31,8 +31,8 @@
 
 	const config = getConfigContext();
 
-	const Email = config.config.blueprints.email.component;
-	const Text = config.config.blueprints.text.component;
+	const Email = config.raw.blueprints.email.component;
+	const Text = config.raw.blueprints.text.component;
 </script>
 
 <div class="rz-doc-auth-header">

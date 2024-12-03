@@ -16,7 +16,9 @@ function createConfigStore(config: BrowserConfig) {
 	}
 
 	return {
-		config,
+		get raw() {
+			return config;
+		},
 		getGlobalConfig,
 		getCollectionConfig,
 		getDocumentConfig

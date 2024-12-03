@@ -14,10 +14,10 @@
 	};
 	const { isCollapsed, route, ...rest }: Props = $props();
 
-	const { config } = getConfigContext();
+	const config = getConfigContext();
 
 	const RouteIcon =
-		typeof route.icon === 'function' ? route.icon : config.icons[route.icon] || File;
+		typeof route.icon === 'function' ? route.icon : config.raw.icons[route.icon] || File;
 
 	let pathname = $page.url.pathname;
 
