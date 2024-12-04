@@ -12,7 +12,6 @@ program
 	.command('init')
 	.description('Initialize CMS')
 	.option('-f, --force', 'Force init with default package name', false)
-	.option('-s, --skip-install', 'Skip dependencies installation', false)
 	.option('-n, --name <name>', 'Specify the name')
 	.action((args) => {
 		init(args);

@@ -11,7 +11,6 @@ import { RizomInitError } from 'rizom/errors/init.server.js';
 
 type Args = {
 	force?: boolean;
-	skipInstall?: boolean;
 	name?: string;
 };
 
@@ -22,7 +21,7 @@ type EnvVarConfig = {
 
 const PACKAGE = 'rizom';
 
-export const init = async ({ force, skipInstall, name: incomingName }: Args) => {
+export const init = async ({ force, name: incomingName }: Args) => {
 	cache.clear();
 	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
@@ -58,8 +57,10 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			});
 
 			writeFileSync(envPath, envContent);
+			console.log('│- .env file populated');
 		} else {
 			writeFileSync(envPath, templates.env());
+			console.log('│- .env file created');
 		}
 	}
 
@@ -73,6 +74,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			}
 			writeFileSync(configPath, templates.emptyConfig);
 		}
+		console.log('│- Empty rizom.config.ts created');
 	}
 
 	function setDatabase() {
@@ -80,6 +82,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
 		}
+		console.log('│- Created db folder');
 	}
 
 	function setDrizzle(name: string) {
@@ -87,6 +90,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
 		}
+		console.log('│- Drizzle config added');
 	}
 
 	function setSchema() {
@@ -98,16 +102,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			}
 			writeFileSync(schemaPath, templates.emptySchema);
 		}
-	}
-
-	function installDeps() {
-		if (skipInstall) return;
-		const packageManager = getPackageManager();
-		const devDeps = ['drizzle-kit@0.22.8'];
-		const deps = ['drizzle-orm@0.31.4', 'lucide-svelte', 'lucia', 'better-sqlite3'];
-		const command = getInstallCommand(packageManager);
-		execSync(`${command} ${deps.join(' ')}`);
-		execSync(`${command} -D ${devDeps.join(' ')}`);
+		console.log('│- Empty schema added');
 	}
 
 	function configureVite() {
@@ -130,6 +125,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			);
 			writeFileSync(configPath, updatedContent);
 		}
+		console.log('│- Vite plugin added');
 	}
 
 	function setHooks() {
@@ -144,9 +140,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			}
 			// Create hooks.server.ts with template content
 			writeFileSync(hooksPath, templates.hooks, 'utf-8');
-			console.log('Created src/hooks.server.ts');
+			console.log('│- Created src/hooks.server.ts');
 		} else {
-			console.log('hooks.server.ts already exists');
+			console.log('│- hooks.server.ts already exists');
 		}
 	}
 
@@ -159,7 +155,6 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setSchema();
 		setHooks();
 		configureVite();
-		installDeps();
 	} else {
 		intro('This will setup configuration files and install dependencies');
 
@@ -182,13 +177,6 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setSchema();
 		setHooks();
 		configureVite();
-
-		if (!skipInstall) {
-			const s = spinner();
-			s.start('Installing dependencies');
-			installDeps();
-			s.stop('Dependencies installed');
-		}
 
 		outro('done !');
 	}
