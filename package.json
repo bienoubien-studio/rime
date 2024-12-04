@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
@@ -41,6 +41,10 @@
 		"./fields": {
 			"types": "./dist/fields/types.d.ts",
 			"import": "./dist/fields/index.js"
+		},
+		"./fields/components": {
+			"types": "./dist/fields/components.d.ts",
+			"import": "./dist/fields/components.js"
 		},
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",
