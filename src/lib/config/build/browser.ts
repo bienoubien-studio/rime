@@ -4,6 +4,7 @@ import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from 'rizom/config/generate/cache/index.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
+import { PACKAGE_NAME } from 'rizom/constant';
 
 let hasEnv = false;
 
@@ -35,7 +36,13 @@ function createImportStatement(path: string): string {
 		const componentPath = path.split('src/').pop() ?? '';
 		return `await import('../${componentPath}').then(m => m.default)`;
 	}
-
+	if (path.match(/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/)) {
+		const modulePath = path.split('node_modules/').pop() ?? '';
+		return modulePath.replace(
+			/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/,
+			`await import('${PACKAGE_NAME}/fields/components').then(m => m.$2)`
+		);
+	}
 	// Handle node_modules imports
 	if (path.includes('node_modules')) {
 		const modulePath = path.split('node_modules/').pop() ?? '';
