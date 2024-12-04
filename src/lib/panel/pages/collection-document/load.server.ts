@@ -60,11 +60,12 @@ export function docLoad(slug: PrototypeSlug) {
 				currentEditorId = doc._editedBy.at(0).relationId;
 			}
 
+			/** resolve the relation to get user attributes */
 			if (currentEditorId) {
 				const currentEditor = await api.collection('users').findById({
 					id: currentEditorId
 				});
-				doc._editedBy = currentEditor;
+				doc._editedBy = [currentEditor];
 			}
 
 			/** If update not allowed set doc as readOnly  */
