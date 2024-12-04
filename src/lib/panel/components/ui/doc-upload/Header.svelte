@@ -26,7 +26,7 @@
 	const panelThumbnailKey = getPanelThumbnailKey(form.config as UploadCollectionConfig);
 
 	const deleteFile = () => {
-		console.log('delete');
+		// console.log('delete');
 		preview = null;
 		file = null;
 		form.setValue('file', null);

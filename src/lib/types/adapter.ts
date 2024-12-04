@@ -1,7 +1,7 @@
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { GenericDoc, GenericBlock, PrototypeSlug } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
-import type { Relation } from '../db/relations.js';
+import type { BeforeOperationRelation, Relation } from '../db/relations.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 
@@ -77,10 +77,19 @@ export interface AdapterBlocksInterface {
 }
 
 export interface AdapterRelationsInterface {
-	updateOrCreate(args: {
+	update(args: {
 		parentSlug: PrototypeSlug;
 		parentId: string;
-		relations: Partial<Relation>[];
+		relations: Relation[];
+	}): Promise<boolean>;
+
+	delete(args: { parentSlug: PrototypeSlug; relations: Relation[] }): Promise<boolean>;
+	update(args: { parentSlug: PrototypeSlug; relations: Relation[] }): Promise<boolean>;
+
+	create(args: {
+		parentSlug: PrototypeSlug;
+		parentId: string;
+		relations: BeforeOperationRelation[];
 	}): Promise<boolean>;
 
 	deleteFromPaths(args: {
@@ -89,6 +98,13 @@ export interface AdapterRelationsInterface {
 		paths: string[];
 		locale?: string;
 	}): Promise<boolean>;
+
+	getAll(args: {
+		parentSlug: PrototypeSlug;
+		parentId: string;
+		locale?: string;
+		paths?: string[];
+	}): Promise<Relation[]>;
 }
 
 export type TransformContext<T = GenericDoc> = {

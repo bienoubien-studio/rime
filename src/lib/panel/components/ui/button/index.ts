@@ -14,6 +14,7 @@ type Props = PrimitiveButtonAttributes &
 		variant?: ButtonVariant;
 		size?: ButtonSize;
 		icon?: any;
+		disabled?: boolean;
 	};
 
 export {

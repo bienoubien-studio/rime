@@ -3,7 +3,7 @@ import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { addDefaultValues } from '../preprocess/fill/index.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server';
-import { extractRelations } from '../preprocess/extract/relations.server';
+import { extractRelations } from '../preprocess/relations/extract.server';
 import { makeEmptyDoc, safeFlattenDoc } from '../../utils/doc.js';
 import { RizomAccessError } from '../../errors/access.server.js';
 import { isUploadConfig } from '../../config/utils.js';
@@ -141,7 +141,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	/** Update Relations */
-	await adapter.relations.updateOrCreate({
+	await adapter.relations.create({
 		parentSlug: config.slug,
 		parentId: createdId,
 		relations
@@ -188,8 +188,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 		slug: config.slug,
 		locale,
 		event,
-		api,
-		depth: 1
+		api
 	});
 
 	//////////////////////////////////////////////

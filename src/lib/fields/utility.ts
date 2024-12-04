@@ -93,7 +93,7 @@ export const resolveRelation = async <T>(value: any): Promise<T> => {
 	if (isRelationResolved<T>(value)) {
 		return value;
 	}
-	return (await fetch(`api/${value.relationTo}/${value.relationId}`)
+	return (await fetch(`/api/${value.relationTo}/${value.relationId}`)
 		.then((r) => r.json())
 		.then((r) => r.doc)) as T;
 };

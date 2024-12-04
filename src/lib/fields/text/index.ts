@@ -34,7 +34,7 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	toField() {
 		if (!this.field.validate) {
 			this.field.validate = (value: any) => {
-				console.log(value);
+				// console.log(value);
 				return typeof value === 'string' || 'Should be a string';
 			};
 		}

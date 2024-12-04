@@ -10,6 +10,9 @@
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import type { GenericDoc } from 'rizom/types/doc';
+	import CurrentlyEditing from './CurrentlyEditing.svelte';
+	import { getUserContext } from 'rizom/panel/context/user.svelte';
+	import { beforeNavigate } from '$app/navigation';
 
 	type Props = {
 		doc: GenericDoc;
@@ -40,9 +43,25 @@
 		prototype: initial._prototype,
 		slug: initial._type
 	});
-
+	const user = getUserContext();
 	const title = getContext<{ value: string }>('title');
 	let formElement: HTMLFormElement;
+
+	beforeNavigate(async () => {
+		// if (
+		// 	operation === 'update' &&
+		// 	form.doc._editedBy.length &&
+		// 	form.doc._editedBy[0].id === user.attributes.id
+		// ) {
+		// 	// console.log('untake control');
+		// 	await fetch(`/api/${config.slug}/${initial.id}`, {
+		// 		method: 'PATCH',
+		// 		body: JSON.stringify({
+		// 			_editedBy: []
+		// 		})
+		// 	});
+		// }
+	});
 
 	const form = setDocumentFormContext({
 		initial,
@@ -122,6 +141,9 @@
 	method="post"
 >
 	<ScrollArea>
+		{#if form.doc._editedBy.length && form.doc._editedBy[0].id !== user.attributes.id}
+			<CurrentlyEditing email={form.doc._editedBy[0].email} />
+		{/if}
 		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 
 		<div class="rz-document__fields">
@@ -140,6 +162,9 @@
 			{/if}
 			{#if form.doc.updatedAt}
 				{@render meta('Last update', locale.dateFormat(form.doc.updatedAt))}
+			{/if}
+			{#if form.doc.id}
+				{@render meta('id', form.doc.id)}
 			{/if}
 		</div>
 	</ScrollArea>

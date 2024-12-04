@@ -44,7 +44,7 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 	})) as T;
 
 	if (!rawDoc) {
-		throw new RizomNotFoundError();
+		return null;
 	}
 
 	let doc = await adapter.transform.doc<T>({

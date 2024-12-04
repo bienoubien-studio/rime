@@ -18,7 +18,7 @@ import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
 import { compileField } from 'rizom/fields/compile.js';
 import { SelectFieldBuilder } from 'rizom/fields/_builders/index.js';
-import { date } from 'rizom/fields/index.js';
+import { date, relation } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
 	let hooks: CollectionHooks = { ...collection.hooks };
@@ -125,6 +125,8 @@ export const buildCollection = async (
 
 		collection.panelThumbnail = thumbnailName;
 	}
+
+	fields.push(relation('_editedBy').to('users').hidden().toField());
 
 	return {
 		...collection,

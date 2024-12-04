@@ -110,7 +110,6 @@ const createAdapterCollectionInterface = ({ db, tables }: GenericAdapterInterfac
 		const keyTableLocales = `${slug}Locales` as PrototypeSlug;
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
-
 			const localizedColumns = Object.keys(getTableColumns(tableLocales));
 			const localizedValues = pick(localizedColumns, data);
 

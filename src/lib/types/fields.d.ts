@@ -57,7 +57,8 @@ type FormField = BaseField & {
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
-	table?: FieldPanelTableConfig | boolean;
+	// table?: FieldPanelTableConfig | boolean;
+	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
 	isEmpty: (value: any) => boolean;
 };
@@ -72,10 +73,7 @@ type FieldHookMeta<T extends AnyFormField = AnyFormField> = {
 	locale?: string;
 	config: T;
 };
-type FieldHook = <T extends AnyFormField = AnyFormField>(
-	value: any,
-	metas: FieldHookMeta<T>
-) => any;
+type FieldHook<T extends FormField> = (value: any, metas: FieldHookMeta<T>) => any;
 type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeValidate?: FieldHook[];

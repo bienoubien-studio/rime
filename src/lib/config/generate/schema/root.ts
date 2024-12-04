@@ -32,24 +32,41 @@ type Return = {
 	relationFieldsHasLocale: boolean;
 };
 
-function hasLocalizedField(fields: AnyField[]) {
-	let needLocales = false;
+function hasLocalizedField(fields: AnyField[]): boolean {
+	// Iterate through each field in the array
 	for (const field of fields) {
+		// Case 1: If it's a group field, check all fields within the group
 		if (isGroupField(field)) {
-			needLocales = hasLocalizedField(field.fields);
-		} else if (isTabsField(field)) {
-			for (const tab of field.tabs) {
-				needLocales = hasLocalizedField(tab.fields);
+			if (hasLocalizedField(field.fields)) {
+				return true;
 			}
-		} else if (isBlocksField(field)) {
-			for (const block of field.blocks) {
-				needLocales = hasLocalizedField(block.fields);
-			}
-		} else {
-			needLocales = isFormField(field) && !!field.localized;
 		}
-		if (needLocales) return true;
+
+		// Case 2: If it's a tabs field, check all fields within each tab
+		else if (isTabsField(field)) {
+			for (const tab of field.tabs) {
+				if (hasLocalizedField(tab.fields)) {
+					return true;
+				}
+			}
+		}
+
+		// Case 3: If it's a blocks field, check all fields within each block
+		else if (isBlocksField(field)) {
+			for (const block of field.blocks) {
+				if (hasLocalizedField(block.fields)) {
+					return true;
+				}
+			}
+		}
+
+		// Case 4: For regular form fields, check if it's marked as localized
+		else if (isFormField(field) && field.localized) {
+			return true;
+		}
 	}
+
+	// If no localized fields were found, return false
 	return false;
 }
 
@@ -69,7 +86,7 @@ const buildRootTable = ({
 	let relationFieldsHasLocale = false;
 
 	const generateFieldsTemplates = (fields: AnyField[], withLocalized?: boolean): string[] => {
-		// Change here
+		/** All key/pair, rizom field / drizzle schema string  */
 		let templates: string[] = [];
 
 		const checkLocalized = (config: AnyFormField) => {

@@ -15,9 +15,8 @@ const createAdapter = ({ schema, drizzleKitConfig, configInterface }: CreateAdap
 	const sqlite = new Database(drizzleKitConfig.dbCredentials.url);
 	const db = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
-	// @ts-expect-error config.dbCredentials.url
+	// @ ts-expect-error config.dbCredentials.url
 	// taskLogger.info('Using db at ' + drizzleKitConfig.dbCredentials.url);
-
 	const auth = createAdapterAuthInterface({
 		db,
 		sessionsTable: schema.sessions,

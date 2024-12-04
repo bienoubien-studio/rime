@@ -1,13 +1,13 @@
 import { isRelationField } from '$lib/utils/field.js';
-import type { Relation } from '$lib/db/relations.js';
+import type { BeforeOperationRelation } from '$lib/db/relations.js';
 import type { ConfigMap } from '../config/map.js';
 import type { Dic } from 'rizom/types/utility.js';
 
-type Args = { flatData: Dic; configMap: ConfigMap; locale: string | undefined };
-type BeforeOperationRelation = Omit<Relation, 'parentId'>;
+type Args = { parentId?: string; flatData: Dic; configMap: ConfigMap; locale: string | undefined };
 
-export const extractRelations = ({ flatData, configMap, locale }: Args) => {
+export const extractRelations = ({ parentId, flatData, configMap, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
+	const emptyPaths: string[] = []; // Add this to track empty arrays
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
@@ -20,6 +20,7 @@ export const extractRelations = ({ flatData, configMap, locale }: Args) => {
 					position,
 					relationTo: config.relationTo,
 					relationId: value,
+					parentId,
 					path
 				};
 				if (localized) {
@@ -28,7 +29,10 @@ export const extractRelations = ({ flatData, configMap, locale }: Args) => {
 				return result;
 			};
 
-			if (Array.isArray(relationRawValue)) {
+			// Check if it's an empty array
+			if (Array.isArray(relationRawValue) && relationRawValue.length === 0) {
+				emptyPaths.push(path);
+			} else if (Array.isArray(relationRawValue)) {
 				output = relationRawValue.map((value, n) => {
 					if (typeof value === 'string') {
 						return relationFromString({ value, position: n });
@@ -36,13 +40,14 @@ export const extractRelations = ({ flatData, configMap, locale }: Args) => {
 					return value;
 				});
 			} else if (typeof relationRawValue === 'string') {
+				// console.log('relationRawValue is string : ', relationRawValue);
 				output = [relationFromString({ value: relationRawValue, position: 0 })];
 			}
 			relations.push(...output);
 		}
 	}
-
-	return { relations };
+	// console.log('Relation extract output', relations);
+	return { relations, emptyPaths };
 };
 
 type RelationFromStringArgs = {

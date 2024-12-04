@@ -1,6 +1,15 @@
 .rz-radio-group {
 	display: grid;
 	gap: var(--rz-size-2);
+
+	&[data-disabled] {
+		opacity: 0.4;
+		cursor: not-allowed;
+		label,
+		button {
+			cursor: not-allowed;
+		}
+	}
 }
 
 .rz-radio-group-item {

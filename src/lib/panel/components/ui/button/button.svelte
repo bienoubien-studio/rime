@@ -73,10 +73,11 @@
 		@mixin ring var(--rz-color-ring);
 	}
 
-	.rz-button:disabled {
+	.rz-button:disabled,
+	.rz-button[disabled='true'] {
 		opacity: 0.5;
 		pointer-events: none;
-		cursor: not-allowed;
+		cursor: not-allowed !important;
 	}
 
 	/**************************************/

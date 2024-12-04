@@ -44,15 +44,19 @@
 	<Field.Label {config} />
 	<Popover.Root>
 		<Popover.Trigger>
-			<Button
-				variant="secondary"
-				data-empty={!calendarDate ? '' : null}
-				data-error={field.error ? '' : null}
-				class="rz-date__button"
-			>
-				<CalendarIcon class="rz-date__icon" />
-				{dateLabel}
-			</Button>
+			{#snippet child({ props })}
+				<Button
+					variant="secondary"
+					data-empty={!calendarDate ? '' : null}
+					data-error={field.error ? '' : null}
+					class="rz-date__button"
+					disabled={form.readOnly}
+					{...props}
+				>
+					<CalendarIcon class="rz-date__icon" />
+					{dateLabel}
+				</Button>
+			{/snippet}
 		</Popover.Trigger>
 		<Popover.Content align="start" class="rz-date__popover-content">
 			<Calendar type="single" bind:value={calendarDate} initialFocus />

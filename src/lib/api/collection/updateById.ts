@@ -28,6 +28,7 @@ export default function (slug: PrototypeSlug) {
 			});
 			return json({ doc });
 		} catch (err: any) {
+			console.log(err.message);
 			return handleAPIError(err);
 		}
 	}

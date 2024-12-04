@@ -8,7 +8,6 @@ import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js
 import { isUploadConfig } from '../config/utils.js';
 import { buildConfigMap } from '../operations/preprocess/config/map.js';
 import { safeFlattenDoc } from '../utils/doc.js';
-
 import { postprocessFields } from '../operations/postprocess/fields.server.js';
 import type { GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
@@ -94,7 +93,7 @@ export const databaseTransformInterface = ({
 		/** Place relations */
 		if (tableNameRelationFields in tables) {
 			for (const relation of doc[tableNameRelationFields]) {
-				/** Relation collection */
+				/** Relation collection key ex: usersId */
 				const relationToIdKey = Object.keys(relation).filter(
 					(key) => key.endsWith('Id') && key !== 'parentId' && relation[key] !== null
 				)[0] as PrototypeSlug;
@@ -171,6 +170,7 @@ export const databaseTransformInterface = ({
 			flatDoc[path] = flatDoc[path].filter(Boolean);
 		}
 
+		/** @TODO SHOULD BE IN BEFORE_READ */
 		/** Add folder prefix to url in an upload doc */
 		if (config.type === 'collection' && isUploadConfig(config)) {
 			if ('imageSizes' in config && config.imageSizes) {
@@ -183,6 +183,7 @@ export const databaseTransformInterface = ({
 			flatDoc.url = `/medias/${flatDoc.filename}`;
 		}
 
+		/**  */
 		let unflatted: Dic = unflatten(flatDoc);
 
 		/** Remove blocks table keys */
@@ -190,6 +191,11 @@ export const databaseTransformInterface = ({
 		if (tableNameRelationFields in unflatted) {
 			omits.push(tableNameRelationFields);
 		}
+
+		/////////////////////////////////////////////
+		//
+		//////////////////////////////////////////////
+		/** @TODO THE FOLLOWING SHOULD BE IN BEFORE_READ */
 
 		/** Remove passwords and auth fields */
 		omits.push(...privateFieldNames);
@@ -234,7 +240,7 @@ export const databaseTransformInterface = ({
 			doc._live += locale ? `&locale=${locale}` : '';
 		}
 
-		return doc as T;
+		return orderObjectKeys(doc) as T;
 	};
 
 	return {
@@ -242,3 +248,26 @@ export const databaseTransformInterface = ({
 		docs: transformDocs
 	};
 };
+
+function orderObjectKeys(obj: any): any {
+	// Special keys that should come first (in this order)
+	const priorityKeys = ['id', 'title'];
+
+	// Get all keys and separate them
+	const keys = Object.keys(obj);
+	const underscoreKeys = keys.filter((k) => k.startsWith('_')).sort();
+	const normalKeys = keys.filter((k) => !k.startsWith('_') && !priorityKeys.includes(k)).sort();
+
+	// Combine keys in desired order
+	const orderedKeys = [
+		...priorityKeys.filter((k) => keys.includes(k)),
+		...normalKeys,
+		...underscoreKeys
+	];
+
+	// Create new object with ordered keys
+	return orderedKeys.reduce((newObj: any, key: string) => {
+		newObj[key] = obj[key];
+		return newObj;
+	}, {});
+}

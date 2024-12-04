@@ -46,6 +46,7 @@ export const preprocessFields: PreprocessFields = async ({
 		}
 
 		// Unique
+		/** @TODO better unique check like nested ones, locale,... */
 		if ('unique' in config && config.unique && isCollection) {
 			const query = { where: { [key]: { equals: flatData[key] } } };
 			const existing = await adapter.collection.query({ slug, query });

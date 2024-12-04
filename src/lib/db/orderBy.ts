@@ -13,12 +13,9 @@ export const buildOrderByParam = ({ tables, slug, by }: Args) => {
 	type KeyOfTables = keyof typeof tables;
 
 	const table = tables[slug];
-
 	if (!by) return [desc(table.createdAt)];
-
 	const orderFunc = by.charAt(0) === '-' ? desc : asc;
 	const columnStr = by.replace(/^-/, '');
-
 	const tableColumns = Object.keys(getTableColumns(table));
 
 	if (tableColumns.includes(columnStr)) {

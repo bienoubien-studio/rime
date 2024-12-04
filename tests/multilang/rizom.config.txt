@@ -22,7 +22,6 @@ import type { GlobalConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
 
-
 /////////////////////////////////////////////
 // Settings
 //////////////////////////////////////////////
@@ -133,27 +132,23 @@ const setHome: CollectionHook<PagesDoc> = async (args) => {
 const formatslug: CollectionHook<PagesDoc> = async (args) => {
 	const { data, api, operation, event } = args;
 
+	const queryPagesWithSlug = async ({ slug }) => {
+		const query = `where[slug][equals]=${slug}`;
+		return api.collection('pages').find<PagesDoc>({
+			query,
+			locale: event?.locals.locale
+		});
+	};
+
 	if (operation === 'create' || operation === 'update') {
 		if (data.slug) {
 			const baseSlug = data.slug;
-			const query = {
-				where: {
-					slug: {
-						equals: data.slug
-					}
-				}
-			};
-
-			let index = 0;
-
-			const pagesWithCurrentSlug = await api.collection('pages').find<PagesDoc>({
-				query,
-				locale: event?.locals.locale
-			});
-
+			let suffix = 0;
+			let pagesWithCurrentSlug = await queryPagesWithSlug({ slug: baseSlug });
 			while (pagesWithCurrentSlug.some((page) => page.slug === data.slug)) {
-				index++;
-				data.slug = `${baseSlug}-${index}`;
+				suffix++;
+				data.slug = `${baseSlug}-${suffix}`;
+				pagesWithCurrentSlug = await queryPagesWithSlug({ slug: data.slug });
 			}
 		}
 
@@ -192,10 +187,11 @@ const tabAttributes = tab('Attributes').fields(
 		.table({ position: 3, sort: true })
 		.localized()
 		.required(),
-	// combobox('template').options('page', 'page-with-booking'),
 
 	relation('related').to('pages').many(),
 	relation('author').to('users'),
+	relation('contributors').to('users').many(),
+	relation('ambassadors').to('users').many().localized(),
 	date('published')
 );
 
@@ -289,9 +285,7 @@ const config: Config = {
 				read: () => true
 			}
 		}
-	},
-
-
+	}
 };
 
 export default config;

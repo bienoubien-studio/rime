@@ -1,4 +1,4 @@
-import { and, eq, inArray, type SQLWrapper } from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter';
 
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
@@ -33,48 +33,107 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		return true;
 	};
 
-	const updateOrCreate: UpdateRelations = async ({ parentSlug, parentId, relations }) => {
+	const create: Create = async ({ parentSlug, parentId, relations }) => {
 		const relationTableName = `${parentSlug}Rels`;
 		const table = tables[relationTableName];
-		for (const relation of relations) {
-			//
-			const relationToIdKey = `${relation.relationTo}Id`;
-			const existing = await db
-				.select({ id: table.id })
-				.from(table)
-				.where(eq(table.id, relation.id));
 
-			if (existing.length) {
-				/** Update or delete */
-				await db
-					.update(table)
-					.set({
-						position: relation.position,
-						path: relation.path,
-						[relationToIdKey]: relation.relationId
-					})
-					.where(eq(table.id, relation.id));
-			} else {
-				if (relation.relationId !== '' && relation.relationId) {
-					const values: Dic = {
-						path: relation.path,
-						position: relation.position,
-						[relationToIdKey]: relation.relationId,
-						parentId
-					};
-					if (relation.locale) {
-						values.locale = relation.locale;
-					}
-					await db.insert(table).values(values);
-				}
+		for (const relation of relations) {
+			if (!relation.relationId) continue;
+
+			const relationToIdKey = `${relation.relationTo}Id`;
+			const values: Dic = {
+				path: relation.path,
+				position: relation.position,
+				[relationToIdKey]: relation.relationId,
+				parentId
+			};
+
+			if (relation.locale) {
+				values.locale = relation.locale;
+			}
+			try {
+				await db.insert(table).values(values);
+			} catch (err: any) {
+				console.error('error in db/relations create' + err.message);
+				return false;
 			}
 		}
 		return true;
 	};
 
+	const update: Update = async ({ parentSlug, relations }) => {
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+
+		try {
+			for (const relation of relations) {
+				await db
+					.update(table)
+					.set({
+						position: relation.position
+					})
+					.where(eq(table.id, relation.id));
+			}
+		} catch (err: any) {
+			console.error('error in db/relations update' + err.message);
+			return false;
+		}
+
+		return true;
+	};
+
+	const deleteRelations: Delete = async ({ parentSlug, relations }) => {
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+
+		if (relations.length === 0) return true;
+
+		const relationIds = relations
+			.map((rel) => rel.id)
+			.filter((id): id is string => id !== undefined);
+		if (relationIds.length === 0) return true;
+
+		try {
+			await db.delete(table).where(inArray(table.id, relationIds));
+		} catch (err: any) {
+			console.error('error in db/relations delete' + err.message);
+			return false;
+		}
+
+		return true;
+	};
+
+	const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
+		// console.log('getAll called with:', { parentSlug, parentId, locale });
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+		const columns = Object.keys(getTableColumns(table));
+
+		let conditions;
+		if (locale && 'locale' in columns) {
+			conditions = [
+				eq(table.parentId, parentId),
+				or(eq(table.locale, locale), isNull(table.locale))
+			];
+		} else {
+			conditions = [eq(table.parentId, parentId)];
+		}
+
+		const all = await db
+			.select()
+			.from(table)
+			.where(and(...conditions));
+
+		// console.log('getAll returning:', all);
+		return all as Relation[];
+	};
+
 	return {
-		updateOrCreate,
-		deleteFromPaths
+		create,
+		update,
+		delete: deleteRelations,
+		deleteFromPaths,
+		getAll
 	};
 };
 
@@ -91,11 +150,7 @@ export type Relation = {
 	livePreview?: GenericDoc;
 };
 
-type UpdateRelations = (args: {
-	parentSlug: PrototypeSlug;
-	parentId: string;
-	relations: Partial<Relation>[];
-}) => Promise<boolean>;
+export type BeforeOperationRelation = Omit<Relation, 'parentId'> & { parentId?: string };
 
 type DeleteFromPaths = (args: {
 	parentSlug: PrototypeSlug;
@@ -103,3 +158,17 @@ type DeleteFromPaths = (args: {
 	paths: string[];
 	locale?: string;
 }) => Promise<boolean>;
+
+type Delete = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
+type Update = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
+type Create = (args: {
+	parentSlug: PrototypeSlug;
+	parentId: string;
+	relations: BeforeOperationRelation[];
+}) => Promise<boolean>;
+
+type GetAllRelations = (args: {
+	parentSlug: PrototypeSlug;
+	parentId: string;
+	locale?: string;
+}) => Promise<Relation[]>;

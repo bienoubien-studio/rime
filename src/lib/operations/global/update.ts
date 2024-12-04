@@ -1,6 +1,6 @@
 import rizom from '$lib/rizom.server.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server.js';
-import { extractRelations } from '../preprocess/extract/relations.server.js';
+import { extractRelations } from '../preprocess/relations/extract.server.js';
 import { safeFlattenDoc } from '../../utils/doc.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { preprocessFields } from '../preprocess/fields.server.js';
@@ -11,6 +11,7 @@ import type { GenericDoc } from 'rizom/types/doc.js';
 import type { BuiltGlobalConfig } from 'rizom/types/config.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
+import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -89,7 +90,6 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 
 	const { blocks, paths: blocksPaths } = extractBlocks(data, configMap);
-	const { relations } = extractRelations({ flatData, configMap, locale });
 
 	let doc = await adapter.global.update({ slug: config.slug, data, locale });
 
@@ -110,32 +110,61 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		});
 	}
 
-	/** Delete Localized Relations */
+	/** Delete relations in Blocks */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId: doc.id,
-		paths: [
-			...relations.map((relation) => relation.path).filter((path) => configMap[path].localized)
-		],
+		paths: deletedBlocks.map((block) => `${block.path}.${block.position}`)
+	});
+
+	/** Get existing relations */
+	const existingRelations = await adapter.relations.getAll({
+		parentSlug: config.slug,
+		parentId: doc.id,
 		locale
 	});
 
-	/** Delete Unlocalized Relations & relations in Blocks */
-	await adapter.relations.deleteFromPaths({
-		parentSlug: config.slug,
-		parentId: doc.id,
-		paths: [
-			...deletedBlocks.map((block) => `${block.path}.${block.position}`),
-			...relations.map((relation) => relation.path).filter((path) => !configMap[path].localized)
-		]
+	/** Get relations in data */
+	const extractedRelations = extractRelations({ parentId: doc.id, flatData, configMap, locale });
+
+	// console.log('Before diff - existingRelations:', existingRelations);
+	// console.log('Before diff - extractedRelations:', extractedRelations);
+
+	/** get difference between them */
+	const relationsDiff = defineRelationsDiff({
+		existingRelations,
+		extractedRelations,
+		locale
 	});
 
-	/** Update Relations */
-	await adapter.relations.updateOrCreate({
-		parentSlug: config.slug,
-		parentId: doc.id,
-		relations
-	});
+	if (relationsDiff.toDelete.length) {
+		await adapter.relations.delete({
+			parentSlug: config.slug,
+			relations: relationsDiff.toDelete
+		});
+	}
+
+	if (relationsDiff.toUpdate.length) {
+		await adapter.relations.update({
+			parentSlug: config.slug,
+			relations: relationsDiff.toUpdate
+		});
+	}
+
+	if (relationsDiff.toAdd.length) {
+		await adapter.relations.create({
+			parentSlug: config.slug,
+			parentId: doc.id,
+			relations: relationsDiff.toAdd
+		});
+	}
+
+	// /** Update Relations */
+	// await adapter.relations.updateOrCreate({
+	// 	parentSlug: config.slug,
+	// 	parentId: doc.id,
+	// 	relations
+	// });
 
 	const rawDoc = (await adapter.global.get({ slug: config.slug, locale })) as T;
 	doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });

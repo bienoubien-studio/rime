@@ -17,7 +17,7 @@ export const addDefaultValues: AddDefaultValues = async (args) => {
 			isEmpty = config.isEmpty(flatData[key]);
 		} catch (err: any) {
 			isEmpty = false;
-			console.log(config);
+			// console.log(config);
 			console.log(err.message);
 		}
 		if (hasDefaultValue && isEmpty) {

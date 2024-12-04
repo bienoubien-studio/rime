@@ -215,7 +215,7 @@ const generateTypes = (config: BuiltConfig) => {
 			console.error(err);
 		} else {
 			taskLogger.done('Types: generated at src/app.generated.d.ts');
-			console.log('');
+			// console.log('');
 		}
 	});
 };

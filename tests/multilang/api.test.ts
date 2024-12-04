@@ -70,17 +70,21 @@ test('Should create Home', async ({ request }) => {
 			title: 'Accueil',
 			slug: 'accueil',
 			home: true,
-			author: [adminUserId]
+			author: adminUserId
 		}
 	});
 
 	const { doc } = await response.json();
 	expect(doc.title).toBe('Accueil');
-	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
 	expect(doc.home).toBe(true);
 	expect(doc.locale).toBeDefined();
 	expect(doc.locale).toBe('fr');
+	expect(doc.createdAt).toBeDefined();
+	expect(doc.author).toBeDefined();
+	expect(doc.author).toHaveLength(1);
+	console.log('home author is : ', doc.author);
+	expect(doc.author.at(0).relationId).toBe(adminUserId);
 	homeId = doc.id;
 });
 
@@ -481,6 +485,221 @@ test('Should not get settings', async ({ request }) => {
 test('Should get informations', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
 	expect(response.doc.instagram).toBe('@fooo');
+});
+
+/////////////////////////////////////////////
+// Relations
+//////////////////////////////////////////////
+
+let page2Id: string;
+let editor2Id: string;
+
+test('Should create editor user for testing', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			email: 'editor2@bienoubien.com',
+			name: 'Editor2',
+			roles: ['editor'],
+			password: 'a&1Aa&1A'
+		}
+	});
+	const { doc } = await response.json();
+	editor2Id = doc.id;
+	expect(doc.name).toBe('Editor2');
+});
+
+test('Should create page with multiple relations', async ({ request }) => {
+	const payload = {
+		title: 'Relations Test',
+		slug: 'relations-test',
+		author: [adminUserId],
+		contributors: [adminUserId, editor2Id],
+		ambassadors: [editor2Id]
+	};
+
+	const response = await request.post(`${API_BASE_URL}/pages`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: payload
+	});
+
+	const { doc } = await response.json();
+	page2Id = doc.id;
+
+	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+	const { doc: verifyDoc } = await verifyResponse.json();
+
+	expect(verifyDoc.author).toBeDefined();
+	expect(verifyDoc.contributors).toBeDefined();
+	expect(verifyDoc.ambassadors).toBeDefined();
+});
+
+test('Should empty author relation', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			author: []
+		}
+	});
+
+	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+	const { doc: verifyDoc } = await verifyResponse.json();
+
+	expect(verifyDoc.author).toHaveLength(0);
+	expect(verifyDoc.contributors).toHaveLength(2);
+});
+
+test('Should reduce contributors array', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			contributors: [adminUserId]
+		}
+	});
+
+	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+	const { doc: verifyDoc } = await verifyResponse.json();
+
+	expect(verifyDoc.contributors).toHaveLength(1);
+	expect(verifyDoc.contributors[0].id).toBe(adminUserId);
+});
+
+test('Should handle localized relations', async ({ request }) => {
+	// First set FR locale
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			ambassadors: [adminUserId],
+			locale: 'fr'
+		}
+	});
+
+	// Then set EN locale
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			ambassadors: [editor2Id],
+			locale: 'en'
+		}
+	});
+
+	const responseEN = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+	const { doc: docEN } = await responseEN.json();
+	const responseFR = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+	const { doc: docFR } = await responseFR.json();
+
+	expect(docEN.ambassadors).toHaveLength(1);
+	expect(docEN.ambassadors[0].id).toBe(editor2Id);
+	expect(docFR.ambassadors).toHaveLength(1);
+	expect(docFR.ambassadors[0].id).toBe(adminUserId);
+});
+
+test('Should handle multiple locales with different relations', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
+		headers: { Authorization: `Bearer ${token}` },
+		data: {
+			ambassadors: adminUserId,
+			locale: 'fr'
+		}
+	});
+
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+		headers: { Authorization: `Bearer ${token}` },
+		data: {
+			ambassadors: [editor2Id],
+			locale: 'en'
+		}
+	});
+
+	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+
+	const { doc: frDoc } = await frResponse.json();
+	const { doc: enDoc } = await enResponse.json();
+
+	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
+});
+
+test('Should handle mixed localized and non-localized updates', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+		headers: { Authorization: `Bearer ${token}` },
+		data: {
+			ambassadors: [editor2Id],
+			contributors: [adminUserId],
+			locale: 'en'
+		}
+	});
+
+	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+	const { doc: enDoc } = await enResponse.json();
+	const { doc: frDoc } = await frResponse.json();
+
+	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
+	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+	expect(enDoc.contributors[0].id).toBe(adminUserId);
+	expect(frDoc.contributors[0].id).toBe(adminUserId);
+});
+
+test('Should handle emptying relations in specific locale', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+		headers: { Authorization: `Bearer ${token}` },
+		data: {
+			ambassadors: [],
+			locale: 'en'
+		}
+	});
+
+	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+	const { doc: enDoc } = await enResponse.json();
+	const { doc: frDoc } = await frResponse.json();
+
+	expect(enDoc.ambassadors).toHaveLength(0);
+	expect(frDoc.ambassadors).toHaveLength(1);
+	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+});
+
+test('Should handle updates with missing locale', async ({ request }) => {
+	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+		headers: { Authorization: `Bearer ${token}` },
+		data: {
+			contributors: [editor2Id]
+		}
+	});
+
+	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+	const { doc: enDoc } = await enResponse.json();
+	const { doc: frDoc } = await frResponse.json();
+
+	expect(enDoc.contributors[0].id).toBe(editor2Id);
+	expect(frDoc.contributors[0].id).toBe(editor2Id);
+});
+
+test('Should delete test page', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/pages/${page2Id}`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	expect(response.status()).toBe(200);
 });
 
 //////////////////////////////////////////////

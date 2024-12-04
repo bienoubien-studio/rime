@@ -2,7 +2,7 @@ import { error, type RequestEvent } from '@sveltejs/kit';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server.js';
-import { extractRelations } from '../preprocess/extract/relations.server';
+import { extractRelations } from '../preprocess/relations/extract.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
 import { RizomAccessError } from '../../errors/access.server.js';
 import rizom from '$lib/rizom.server.js';
@@ -14,6 +14,8 @@ import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
 import { RizomHookError } from 'rizom/errors/hook.server.js';
 import type { Dic } from 'rizom/types/utility.js';
+
+import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -110,16 +112,21 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 
 	const { blocks, paths: blocksPaths } = extractBlocks(data, configMap);
-	const { relations } = extractRelations({ flatData, configMap, locale });
 
 	await adapter.collection.update({ slug: config.slug, id, data, locale });
 
 	/** Deleted blocks */
-
 	const deletedBlocks = await adapter.blocks.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId: id,
 		paths: [...new Set(blocksPaths)]
+	});
+
+	// Delete relations in deleted blocks
+	await adapter.relations.deleteFromPaths({
+		parentSlug: config.slug,
+		parentId: id,
+		paths: deletedBlocks.map((block) => `${block.path}.${block.position}`)
 	});
 
 	/** Create blocks */
@@ -132,32 +139,112 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 		});
 	}
 
-	/** Delete Localized Relations */
-	await adapter.relations.deleteFromPaths({
+	/** Get existing relations */
+	const existingRelations = await adapter.relations.getAll({
 		parentSlug: config.slug,
 		parentId: id,
-		paths: [
-			...relations.map((relation) => relation.path).filter((path) => configMap[path].localized)
-		],
 		locale
 	});
 
-	/** Delete Unlocalized Relations & relations in Blocks */
-	await adapter.relations.deleteFromPaths({
-		parentSlug: config.slug,
-		parentId: id,
-		paths: [
-			...deletedBlocks.map((block) => `${block.path}.${block.position}`),
-			...relations.map((relation) => relation.path).filter((path) => !configMap[path].localized)
-		]
+	/** Get relations in data */
+	const extractedRelations = extractRelations({ parentId: id, flatData, configMap, locale });
+
+	// console.log('Before diff - existingRelations:', existingRelations);
+	// console.log('Before diff - extractedRelations:', extractedRelations);
+
+	/** get difference between them */
+	const relationsDiff = defineRelationsDiff({
+		existingRelations,
+		extractedRelations,
+		locale
 	});
 
+	if (relationsDiff.toDelete.length) {
+		await adapter.relations.delete({
+			parentSlug: config.slug,
+			relations: relationsDiff.toDelete
+		});
+	}
+
+	if (relationsDiff.toUpdate.length) {
+		await adapter.relations.update({
+			parentSlug: config.slug,
+			relations: relationsDiff.toUpdate
+		});
+	}
+
+	if (relationsDiff.toAdd.length) {
+		await adapter.relations.create({
+			parentSlug: config.slug,
+			parentId: id,
+			relations: relationsDiff.toAdd
+		});
+	}
+
+	// const existingRelations = await adapter.relations.getAll({
+	// 	parentSlug: config.slug,
+	// 	parentId: id,
+	// 	locale
+	// });
+
+	// // Group existing relations by path
+	// const existingByPath = existingRelations.reduce(
+	// 	(acc, rel) => {
+	// 		if (!acc[rel.path]) acc[rel.path] = [];
+	// 		acc[rel.path].push(rel);
+	// 		return acc;
+	// 	},
+	// 	{} as Record<string, Relation[]>
+	// );
+
+	// // Group new relations by path
+	// const newRelationsByPath = relations.reduce(
+	// 	(acc, rel) => {
+	// 		if (!acc[rel.path]) acc[rel.path] = [];
+	// 		acc[rel.path].push(rel);
+	// 		return acc;
+	// 	},
+	// 	{} as Record<string, Relation[]>
+	// );
+
+	// // Relations to delete
+	// const relationsToDelete = existingRelations.filter((rel) => {
+	// 	// If relation is localized and doesn't match current locale, keep it
+	// 	if (rel.locale && rel.locale !== locale) {
+	// 		return false;
+	// 	}
+
+	// 	return (
+	// 		emptyPaths.includes(rel.path) ||
+	// 		deletedBlocks.some((block) => rel.path.startsWith(`${block.path}.${block.position}`)) ||
+	// 		(newRelationsByPath[rel.path] &&
+	// 			!newRelationsByPath[rel.path].some((newRel) => {
+	// 				// Get the correct ID field based on relationTo
+	// 				const existingIdField = `${newRel.relationTo}Id`;
+	// 				return rel[existingIdField as keyof typeof rel] === newRel.relationId;
+	// 			}))
+	// 	);
+	// });
+
+	// console.log('Existing relations:', existingRelations);
+	// console.debug('New relations by path:', newRelationsByPath);
+	// console.debug('Relations to delete:', relationsToDelete);
+
+	// // Delete relations
+	// if (relationsToDelete.length > 0) {
+	// 	await adapter.relations.deleteFromPaths({
+	// 		parentSlug: config.slug,
+	// 		parentId: id,
+	// 		paths: [...new Set(relationsToDelete.map((rel) => rel.path))]
+	// 	});
+	// }
+
 	/** Update Relations */
-	await adapter.relations.updateOrCreate({
-		parentSlug: config.slug,
-		parentId: id,
-		relations
-	});
+	// await adapter.relations.updateOrCreate({
+	// 	parentSlug: config.slug,
+	// 	parentId: id,
+	// 	relations
+	// });
 
 	const rawDoc = (await adapter.collection.findById({ slug: config.slug, id, locale })) as T;
 

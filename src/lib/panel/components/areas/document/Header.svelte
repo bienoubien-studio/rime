@@ -55,7 +55,13 @@
 		{/if}
 
 		{#if config.live && !liveEditing && form.doc._live}
-			<Button class="rz-button-live" icon={PencilRuler} href={form.doc._live} variant="text">
+			<Button
+				disabled={form.readOnly}
+				class="rz-button-live"
+				icon={PencilRuler}
+				href={form.doc._live}
+				variant="text"
+			>
 				Live edit
 			</Button>
 		{/if}
