@@ -47,7 +47,7 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 
 const buildFields = (collection: CollectionConfig): AnyField[] => {
 	//
-	let fields: AnyField[] = collection.fields.map(compileField);
+	let fields: AnyField[] = (collection.fields || []).map(compileField);
 
 	if (collection.auth) {
 		const isNotPanelUsersCollection = !(collection.slug === 'users');
