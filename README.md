@@ -104,7 +104,7 @@ Once initialized, navigate to `http://localhost:5173/panel` to create your first
 // ./src/config/rizom.config.ts
 import type { CollectionConfig, GlobalConfig } from 'rizom';
 import { Settings2 } from 'lucide-svelte';
-import { relation, richText, text, toggle } from 'rizom/fields';
+import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/utils";
 
 const Pages: CollectionConfig = {
