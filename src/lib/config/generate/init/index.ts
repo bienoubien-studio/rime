@@ -187,7 +187,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			const s = spinner();
 			s.start('Installing dependencies');
 			installDeps();
-			s.stop('Depencies installed');
+			s.stop('Dependencies installed');
 		}
 
 		outro('done !');
