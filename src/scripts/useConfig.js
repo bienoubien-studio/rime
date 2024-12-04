@@ -20,7 +20,7 @@ program
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
-			execSync(`pnpm rizom init -s --name ${name}`);
+			execSync(`pnpm rizom init --name ${name}`);
 
 			// Copy config
 			const testConfigPath = path.join(projectRoot, 'tests', name, 'rizom.config.txt');

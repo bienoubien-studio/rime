@@ -1,10 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import * as templates from './templates.js';
-import { intro, outro, spinner, text } from '@clack/prompts';
+import { intro, outro, text } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
-import { getInstallCommand, getPackageManager } from './packageManagerUtil.js';
-import { execSync } from 'child_process';
 import { random } from 'rizom/utils/index.js';
 import cache from '../cache/index.js';
 import { RizomInitError } from 'rizom/errors/init.server.js';
