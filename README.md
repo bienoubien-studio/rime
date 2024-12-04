@@ -105,7 +105,7 @@ Once initialized, navigate to `http://localhost:5173/panel` to create your first
 import type { CollectionConfig, GlobalConfig } from 'rizom';
 import { Settings2 } from 'lucide-svelte';
 import { relation, richText, text, toggle } from 'rizom/fields';
-import { access } from 'rizom/access';
+import { access } from "rizom/utils";
 
 const Pages: CollectionConfig = {
   slug: 'pages',
