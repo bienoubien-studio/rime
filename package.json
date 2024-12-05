@@ -65,12 +65,6 @@
 		"!dist/**/*.spec.*"
 	],
 	"peerDependencies": {
-		"@sveltejs/kit": "^2.6.1",
-		"better-sqlite3": "^11.3.0",
-		"drizzle-kit": "0.22.8",
-		"drizzle-orm": "0.31.4",
-		"lucia": "^3.2.0",
-		"lucide-svelte": "^0.447.0",
 		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
