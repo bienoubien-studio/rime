@@ -3,6 +3,7 @@ import { FormFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import type { AnyField } from 'rizom/types';
 import Number from './component/Number.svelte';
+import type { FieldValidationFunc } from 'rizom/types/fields.js';
 
 export const blueprint = {
 	component: Number,
@@ -16,6 +17,19 @@ export const blueprint = {
 };
 
 export const number = (name: string) => new NumberFieldBuilder(name, 'number');
+
+const validateValue: FieldValidationFunc<NumberField> = (value, { config }) => {
+	if (typeof value !== 'number') {
+		return 'Should be a number';
+	}
+	if (config.min && value < config.min) {
+		return 'Should be greater than ' + config.min;
+	}
+	if (config.max && value > config.max) {
+		return 'Should be lower than ' + config.max;
+	}
+	return true;
+};
 
 class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 	//
@@ -39,18 +53,7 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 			this.field.defaultValue = this.field.min || 0;
 		}
 		if (!this.field.validate) {
-			this.field.validate = (value) => {
-				if (typeof value !== 'number') {
-					return 'Should be a number';
-				}
-				if (this.field.min && value < this.field.min) {
-					return 'Should be greater than ' + this.field.min;
-				}
-				if (this.field.max && value > this.field.max) {
-					return 'Should be lower than ' + this.field.max;
-				}
-				return true;
-			};
+			this.field.validate = validateValue;
 		}
 		return super.toField();
 	}
