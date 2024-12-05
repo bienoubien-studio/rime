@@ -15,7 +15,7 @@ const packageManagerInstallMap = {
 	npm: 'npm install'
 };
 
-type PackageManagerName = keyof typeof packageManagerInstallMap;
+export type PackageManagerName = keyof typeof packageManagerInstallMap;
 
 export const getPackageManager = (): PackageManagerName => {
 	for (const [packageManager, lockFile] of Object.entries(packageManagersMap)) {

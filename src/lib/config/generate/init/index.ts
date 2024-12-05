@@ -1,14 +1,21 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import * as templates from './templates.js';
-import { intro, outro, text } from '@clack/prompts';
+import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
 import { random } from 'rizom/utils/index.js';
 import cache from '../cache/index.js';
 import { RizomInitError } from 'rizom/errors/init.server.js';
+import {
+	getInstallCommand,
+	getPackageManager,
+	type PackageManagerName
+} from './packageManagerUtil.js';
+import { execSync } from 'child_process';
 
 type Args = {
 	force?: boolean;
+	skipInstall?: boolean;
 	name?: string;
 };
 
@@ -19,7 +26,7 @@ type EnvVarConfig = {
 
 const PACKAGE = 'rizom';
 
-export const init = async ({ force, name: incomingName }: Args) => {
+export const init = async ({ force, skipInstall, name: incomingName }: Args) => {
 	cache.clear();
 	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
@@ -55,10 +62,10 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			});
 
 			writeFileSync(envPath, envContent);
-			console.log('│- .env file populated');
+			log.info('.env file populated');
 		} else {
 			writeFileSync(envPath, templates.env());
-			console.log('│- .env file created');
+			log.info('.env file created');
 		}
 	}
 
@@ -72,7 +79,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			writeFileSync(configPath, templates.emptyConfig);
 		}
-		console.log('│- Empty rizom.config.ts created');
+		log.info('Empty rizom.config.ts created');
 	}
 
 	function setDatabase() {
@@ -80,7 +87,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
 		}
-		console.log('│- Created db folder');
+		log.info('Created db folder');
 	}
 
 	function setDrizzle(name: string) {
@@ -88,7 +95,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
 		}
-		console.log('│- Drizzle config added');
+		log.info('Drizzle config added');
 	}
 
 	function setSchema() {
@@ -100,7 +107,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			writeFileSync(schemaPath, templates.emptySchema);
 		}
-		console.log('│- Empty schema added');
+		log.info('Empty schema added');
 	}
 
 	function configureVite() {
@@ -123,7 +130,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			);
 			writeFileSync(configPath, updatedContent);
 		}
-		console.log('│- Vite plugin added');
+		log.info('Vite plugin added');
 	}
 
 	function setHooks() {
@@ -138,9 +145,42 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			// Create hooks.server.ts with template content
 			writeFileSync(hooksPath, templates.hooks, 'utf-8');
-			console.log('│- Created src/hooks.server.ts');
+			log.info('Created src/hooks.server.ts');
 		} else {
-			console.log('│- hooks.server.ts already exists');
+			log.info('hooks.server.ts already exists');
+		}
+	}
+
+	async function installDeps(force = false) {
+		const devDeps = ['drizzle-kit@0.22.8'];
+		if (force) {
+			const packageManager = getPackageManager();
+			const command = getInstallCommand(packageManager);
+			execSync(`${command} -D ${devDeps.join(' ')}`);
+			log.info('drizzle-kit installed');
+		} else {
+			const packageManager = await select({
+				message: 'Which package manager do you want to install dependencies (drizzle-kit) with?',
+				options: [
+					{ value: 'npm', label: 'npm' },
+					{ value: 'pnpm', label: 'pnpm' },
+					{ value: 'yarn', label: 'yarn', hint: 'not tested' },
+					{ value: 'bun', label: 'bun', hint: 'not tested' }
+				]
+			});
+			if (isCancel(packageManager)) {
+				outro('Operation cancelled');
+				process.exit(0);
+			}
+			const isValidPackageManager = (name: unknown): name is PackageManagerName =>
+				typeof packageManager === 'string' &&
+				['pnpm', 'npm', 'yarn', 'bun'].includes(packageManager);
+			if (!isValidPackageManager(packageManager)) return;
+			const s = spinner();
+			s.start('Installing via ' + packageManager);
+			const command = getInstallCommand(packageManager);
+			execSync(`${command} -D ${devDeps.join(' ')}`);
+			s.stop('drizzle-kit installed');
 		}
 	}
 
@@ -153,6 +193,9 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setSchema();
 		setHooks();
 		configureVite();
+		if (!skipInstall) {
+			await installDeps(true);
+		}
 	} else {
 		intro('This will setup configuration files and install dependencies');
 
@@ -168,6 +211,11 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 		})) as string;
 
+		if (isCancel(name)) {
+			outro('Operation cancelled');
+			process.exit(0);
+		}
+
 		setEnv();
 		setConfig();
 		setDatabase();
@@ -175,7 +223,9 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setSchema();
 		setHooks();
 		configureVite();
-
+		if (!skipInstall) {
+			await installDeps();
+		}
 		outro('done !');
 	}
 };
