@@ -26,11 +26,15 @@ declare module 'rizom' {
 	interface RegisterFields {}
 	// eslint-disable-next-line
 	interface RegisterPlugins {}
+	// eslint-disable-next-line
+	export interface RegisterCollectionSlug {} // Empty interface for users to extend
+	// eslint-disable-next-line
+	export interface RegisterGlobalSlug {}
 
 	export interface Register {
-		PrototypeSlug: string;
-		CollectionSlug: string;
-		GlobalSlug: string;
+		PrototypeSlug: Register['CollectionSlug'] | Register['GlobalSlug'];
+		CollectionSlug: keyof RegisterCollectionSlug;
+		GlobalSlug: keyof RegisterGlobalSlug;
 		Plugins: RegisterPlugins;
 		FieldsType: keyof RegisterFieldsType;
 		AnyFormField: RegisterFormFields[keyof RegisterFormFields];

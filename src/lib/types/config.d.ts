@@ -1,12 +1,13 @@
 import type { RequestHandler } from '@sveltejs/kit';
-import type { Access, User } from './auth';
-import type { AnyField } from './fields';
-import type { GenericDoc } from './doc';
-import type { CollectionHooks, GlobalHooks } from './hooks';
-import type { ComponentType } from 'svelte';
-import type { AtLeastOne, WithRequired } from './utility';
-import type { MaybeAsyncFunction, Plugin } from './plugin';
-import type { FieldBluePrint } from 'rizom/types/fields';
+import type { Access, User } from './auth.js';
+import type { AnyField } from './fields.js';
+import type { GenericDoc } from './doc.js';
+import type { CollectionHooks, GlobalHooks } from './hooks.js';
+import type { ComponentType } from 'svelte.js';
+import type { AtLeastOne, WithRequired } from './utility.js';
+import type { MaybeAsyncFunction, Plugin } from './plugin.js';
+import type { FieldBluePrint } from 'rizom/types/fields.js';
+import type { GetRegisterType } from './register.js';
 
 export type DocumentPrototype = 'collection' | 'global';
 
@@ -73,16 +74,6 @@ export type RouteConfig = {
 	GET?: RequestHandler;
 	PATCH?: RequestHandler;
 	DELETE?: RequestHandler;
-};
-
-export type SMTPConfig = {
-	from: string | undefined;
-	host: string | undefined;
-	port: number | undefined;
-	auth: {
-		user: string | undefined;
-		password: string | undefined;
-	};
 };
 
 export type LocalizationConfig = {
@@ -162,7 +153,7 @@ export type CustomPanelRoute = {
 export type BuiltCollectionConfig = Omit<CollectionConfig, 'fields'> & {
 	type: 'collection';
 	label: CollectionConfigLabel;
-	slug: DocTables;
+	slug: GetRegisterType<'CollectionSlug'>;
 	asTitle: string;
 	fields: AnyField[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
@@ -171,7 +162,7 @@ export type BuiltCollectionConfig = Omit<CollectionConfig, 'fields'> & {
 export type BuiltGlobalConfig = Omit<GlobalConfig, 'fields'> & {
 	type: 'global';
 	label: string;
-	slug: DocTables;
+	slug: GetRegisterType<'GlobalSlug'>;
 	asTitle: string;
 	fields: AnyField[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;

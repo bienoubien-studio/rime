@@ -42,9 +42,9 @@ export type Block${capitalize(slug)} = {
   ${content}
 }`;
 
-const templateAnyDoc = (slugs: string[]): string => {
-	return `export type AnyDoc = BaseDoc & Partial<UploadDoc & ${slugs.map((slug) => makeDocTypeName(slug)).join(' & ')}>;`;
-};
+// const templateAnyDoc = (slugs: string[]): string => {
+// 	return `export type AnyDoc = BaseDoc & Partial<UploadDoc & ${slugs.map((slug) => makeDocTypeName(slug)).join(' & ')}>;`;
+// };
 
 const templateRegister = (
 	slugs: string[],
@@ -53,13 +53,14 @@ const templateRegister = (
 ): string => {
 	return [
 		"declare module 'rizom' {",
-		'\tinterface Register {',
-		`\t\tPrototypeSlug: ${slugs.map((slug) => `'${slug}'`).join(' | ')};`,
-		`\t\tCollectionSlug: ${collectionSlugs.map((slug) => `'${slug}'`).join(' | ')};`,
-		globalSlugs.length
-			? `\t\tGlobalSlug: ${globalSlugs.map((slug) => `'${slug}'`).join(' | ')};`
-			: '',
+		'\tinterface RegisterCollectionSlug {',
+		`${collectionSlugs.map((slug) => `\t\t'${slug}': never`).join('\n')};`,
 		'\t}',
+
+		'\tinterface RegisterGlobalSlug {',
+		`${globalSlugs.map((slug) => `\t\t'${slug}': never`).join('\n')};`,
+		'\t}',
+
 		'}'
 	].join('\n');
 };
@@ -167,13 +168,14 @@ const generateTypes = (config: BuiltConfig) => {
 	const globalSlugs = config.globals.map((g) => g.slug);
 	const prototypeSlugs = [...collectionSlugs, ...globalSlugs];
 
-	const docType = templateAnyDoc(prototypeSlugs);
-	const docTables = templateRegister(prototypeSlugs, collectionSlugs, globalSlugs);
+	// const docType = templateAnyDoc(prototypeSlugs);
+	const register = templateRegister(prototypeSlugs, collectionSlugs, globalSlugs);
 
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
 	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
 	const typeImports = `import type { ${Array.from(imports).join(', ')} } from '${PACKAGE_NAME}'`;
+
 	const locals = `declare global {
   namespace App {
     interface Locals {
@@ -193,8 +195,7 @@ const generateTypes = (config: BuiltConfig) => {
 		typeImports,
 		collectionsTypes,
 		globalsTypes,
-		docType,
-		docTables,
+		register,
 		blocksTypes.join('\n'),
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',

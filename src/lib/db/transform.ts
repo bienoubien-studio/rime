@@ -195,12 +195,13 @@ export const databaseTransformInterface = ({
 		/////////////////////////////////////////////
 		//
 		//////////////////////////////////////////////
-		/** @TODO THE FOLLOWING SHOULD BE IN BEFORE_READ */
+		/** @TODO THE FOLLOWING SHOULD BE IN A BEFORE_READ METHOD SOMEWHERE ELSE */
 
 		/** Remove passwords and auth fields */
 		omits.push(...privateFieldNames);
-		if (!isPanel) {
-			omits.push('authUserId');
+
+		if (!isPanel || !user) {
+			omits.push('authUserId', '_editedBy');
 		}
 		unflatted = omit(omits, unflatted);
 

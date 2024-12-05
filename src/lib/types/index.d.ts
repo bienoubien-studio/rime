@@ -9,7 +9,7 @@ export type {
 	GenericAdapterInterfaceArgs,
 	TransformContext,
 	TransformManyContext
-} from './adapter';
+} from './adapter.js';
 
 // API types
 export type {
@@ -18,7 +18,7 @@ export type {
 	LocalAPIConstructorArgs,
 	LocalAPIGlobalInterface,
 	OperationQuery
-} from './api';
+} from './api.js';
 
 // Auth types
 export type { Access, User } from './auth';
@@ -43,9 +43,9 @@ export type {
 	LocalizationConfig,
 	PanelUsersConfig,
 	RouteConfig,
-	SMTPConfig,
+	// SMTPConfig,
 	UploadCollectionConfig
-} from './config';
+} from './config.js';
 
 // Doc types
 export type {
@@ -56,7 +56,7 @@ export type {
 	GenericDoc,
 	PrototypeSlug,
 	UploadDoc
-} from './doc';
+} from './doc.js';
 
 // Fields types
 export type {
@@ -66,7 +66,7 @@ export type {
 	FormField,
 	Option,
 	UserDefinedField
-} from './fields';
+} from './fields.js';
 
 // Hooks types
 export type {
@@ -82,10 +82,10 @@ export type {
 	GlobalHookBeforeUpdate,
 	GlobalHookBeforeUpdateArgs,
 	GlobalHooks
-} from './hooks';
+} from './hooks.js';
 
 // Panel types
-export type { CollectionLayoutProps, FieldPanelTableConfig, FormErrors, Route } from './panel';
+export type { CollectionLayoutProps, FieldPanelTableConfig, FormErrors, Route } from './panel.js';
 
 // Upload types
-export type { JsonFile } from './upload';
+export type { JsonFile } from './upload.js';

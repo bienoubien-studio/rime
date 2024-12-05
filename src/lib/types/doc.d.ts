@@ -1,5 +1,5 @@
-import type { GetRegisterType } from './register';
-import type { Dic } from './utility';
+import type { GetRegisterType } from './register.js';
+import type { Dic } from './utility.js';
 
 export type DocPrototype = 'global' | 'collection';
 
@@ -10,7 +10,7 @@ type BaseDoc = {
 	createdAt?: Date;
 	locale?: string;
 	_prototype: DocPrototype;
-	_type: DocTables;
+	_type: GetRegisterType<'PrototypeSlug'>;
 	_url?: string;
 	_live?: string;
 };
