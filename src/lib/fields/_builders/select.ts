@@ -28,7 +28,6 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 	constructor(name: string, type: FieldsType) {
 		super(name, type);
 		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
-		//@ts-expect-error I don't care
 		this.field.validate = ensureSelectIsOption;
 	}
 

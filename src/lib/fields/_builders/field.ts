@@ -53,7 +53,6 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	}
 
 	validate(func: FieldValidationFunc<T>) {
-		//@ts-expect-error I don't care
 		this.field.validate = func;
 		return this;
 	}

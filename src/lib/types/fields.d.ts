@@ -7,10 +7,7 @@ import type { LocalAPI } from 'rizom/types/api';
 
 export type UserDefinedField = AnyField | FieldBuilder<AnyField>;
 
-type FieldValidationFunc<
-	TConfig extends FormField = FormField,
-	TData extends GenericDoc = GenericDoc
-> = (
+type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: any,
 	metas: {
 		data: Partial<TData>;
@@ -73,7 +70,7 @@ type FieldHookMeta<T extends AnyFormField = AnyFormField> = {
 	locale?: string;
 	config: T;
 };
-type FieldHook<T extends FormField> = (value: any, metas: FieldHookMeta<T>) => any;
+type FieldHook<T extends FormField = any> = (value: any, metas: FieldHookMeta<T>) => any;
 type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeValidate?: FieldHook[];

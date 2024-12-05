@@ -1,11 +1,11 @@
-import type { BaseField, FieldValidationFunc } from 'rizom/types/fields';
+import type { FieldValidationFunc, FormField } from 'rizom/types/fields';
 import { FormFieldBuilder } from './field';
 
-type BooleanField = BaseField & {
+type BooleanField = FormField & {
 	type: any;
 	name: any;
 	defaultValue?: any;
-	validate?: FieldValidationFunc;
+	validate?: FieldValidationFunc<BooleanField>;
 };
 
 export class BooleanFieldBuilder<T extends BooleanField> extends FormFieldBuilder<T> {
