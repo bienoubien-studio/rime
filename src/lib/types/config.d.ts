@@ -53,7 +53,6 @@ export interface Config {
 		routes?: Record<string, CustomPanelRoute>;
 		users?: PanelUsersConfig;
 	};
-	smtp?: SMTPConfig;
 	routes?: Record<string, RouteConfig>;
 	plugins?: ReturnType<Plugin>[];
 	custom?: {
@@ -137,11 +136,10 @@ export type BuiltConfig = {
 		routes: Record<string, CustomPanelRoute>;
 		access: (user: User) => boolean;
 	};
-	smtp?: SMTPConfig;
 	blueprints: Record<string, FieldBluePrint>;
 };
 
-export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'smtp' | 'routes'>;
+export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'routes'>;
 
 export type CustomPanelRoute = {
 	group?: string;

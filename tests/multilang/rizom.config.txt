@@ -263,15 +263,7 @@ const config: Config = {
 
 	// cors: ['localhost:5173', 'local.rizom:5173'],
 
-	smtp: {
-		from: process.env.RIZOM_SMTP_USER,
-		host: process.env.RIZOM_SMTP_HOST,
-		port: parseInt(process.env.RIZOM_SMTP_PORT || '465'),
-		auth: {
-			user: process.env.RIZOM_SMTP_USER,
-			password: process.env.RIZOM_SMTP_PASSWORD
-		}
-	},
+	
 
 	panel: {
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),

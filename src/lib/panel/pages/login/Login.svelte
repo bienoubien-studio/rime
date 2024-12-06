@@ -12,8 +12,11 @@
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
 
-	type Props = { form?: { email?: string; password?: string; errors?: FormErrors } };
-	let { form }: Props = $props();
+	type Props = {
+		forgotPasswordLink?: boolean;
+		form?: { email?: string; password?: string; errors?: FormErrors };
+	};
+	let { form, forgotPasswordLink }: Props = $props();
 
 	const context = setFormContext(form || {}, 'login');
 
@@ -47,7 +50,9 @@
 			</Card.Content>
 			<Card.Footer>
 				<Button size="lg" disabled={!context.canSubmit} type="submit">Login</Button>
-				<Button variant="link" href="/forgot-password?slug=users">Forgot your password ?</Button>
+				{#if forgotPasswordLink}
+					<Button variant="link" href="/forgot-password?slug=users">Forgot your password ?</Button>
+				{/if}
 			</Card.Footer>
 		</Card.Root>
 	</form>

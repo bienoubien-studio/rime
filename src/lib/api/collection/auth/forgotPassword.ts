@@ -1,15 +1,15 @@
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/public';
-import type { BaseDoc, PrototypeSlug, User } from 'rizom/types';
+import type { BaseDoc, CollectionSlug } from 'rizom/types';
 import type { MailerPlugin } from 'rizom/types/plugin';
 
-export default function (slug: PrototypeSlug) {
+export default function (slug: CollectionSlug) {
 	//
 	async function POST(event: RequestEvent) {
 		const { rizom, api } = event.locals;
 
 		if (!('mailer' in rizom.plugins)) {
-			return error(400, 'missing mailer plugin');
+			return error(404);
 		}
 
 		const mailer = rizom.plugins.mailer as MailerPlugin;
@@ -23,9 +23,9 @@ export default function (slug: PrototypeSlug) {
 			return error(400, { message: 'email missing' });
 		}
 
-		const [user] = await api.collection(slug).find<User & BaseDoc>({
+		const [user] = (await api.collection(slug).find({
 			query: `where[email][equals]=${email}`
-		});
+		})) as Array<BaseDoc & { email: string }>;
 
 		const token = await rizom.auth.createForgotPasswordToken(slug, user.id || null);
 
