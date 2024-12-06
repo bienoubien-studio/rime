@@ -57,9 +57,14 @@ npx rizom init
 
 The `init` command will automatically:
 
+- Create/populate `.env` file
+- Create `src/config/rizom.config.ts` config file
+- Create a `db/` folder
+- Add a `drizzle.config.ts`
 - Create `src/hooks.server.ts` with the required initialization code
 - Add the Rizom plugin to `vite.config.ts`
-- Create/populate `.env` file
+- Install drizzle-kit
+- Push initial schema
 
 > [!NOTE]
 > Please check that these files have been properly configured:
