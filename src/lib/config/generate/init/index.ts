@@ -181,6 +181,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			const command = getInstallCommand(packageManager);
 			execSync(`${command} -D ${devDeps.join(' ')}`);
 			s.stop('drizzle-kit installed');
+			s.start('Pushing schema');
+			execSync(`npx drizzle-kit push`);
+			s.stop('Schema pushed');
 		}
 	}
 
