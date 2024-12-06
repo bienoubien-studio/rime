@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
