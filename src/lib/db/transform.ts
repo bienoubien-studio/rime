@@ -9,7 +9,7 @@ import { isUploadConfig } from '../config/utils.js';
 import { buildConfigMap } from '../operations/preprocess/config/map.js';
 import { safeFlattenDoc } from '../utils/doc.js';
 import { postprocessFields } from '../operations/postprocess/fields.server.js';
-import type { GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type {
 	AdapterBlocksInterface,
@@ -66,8 +66,12 @@ export const databaseTransformInterface = ({
 		const tableNameLocales = `${slug}Locales`;
 		const isLive = event && event.url.pathname.startsWith('/live');
 		const isPanel = event && (event.url.pathname.startsWith('/panel') || isLive);
-		const documentPrototype = configInterface.getDocumentPrototype(slug);
-		const docLocalAPI = api[documentPrototype](slug);
+		let docLocalAPI;
+		if (configInterface.isCollection(slug)) {
+			docLocalAPI = api.collection(slug);
+		} else {
+			docLocalAPI = api.global(slug);
+		}
 		const config = docLocalAPI.config;
 		const empty = docLocalAPI.emptyDoc();
 
@@ -100,11 +104,11 @@ export const databaseTransformInterface = ({
 
 				const relationToId = relation[relationToIdKey];
 				const relationPath = relation.path;
-				let relationOutput: Relation | GenericDoc;
+				let relationOutput: Relation | GenericDoc | null;
 
 				/** Get relation if depth > 0 */
 				if (depth > 0) {
-					const relationSlug = relationToIdKey.replace('Id', '') as PrototypeSlug;
+					const relationSlug = relationToIdKey.replace('Id', '') as CollectionSlug;
 					relationOutput = await api
 						.collection(relationSlug)
 						.findById({ id: relationToId, locale: relation.locale, depth: depth - 1 });

@@ -5,7 +5,7 @@ import { isFormField, isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
 import type { User } from 'rizom/types/auth.js';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
 	BuiltCollectionConfig,
 	CollectionConfig,
@@ -130,7 +130,7 @@ export const buildCollection = async (
 
 	return {
 		...collection,
-		slug: collection.slug as PrototypeSlug,
+		slug: collection.slug as CollectionSlug,
 		label: collection.label
 			? collection.label
 			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug) },

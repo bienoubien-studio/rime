@@ -4,10 +4,12 @@ import type { AnyField } from 'rizom/types';
 import Relation from './component/Relation.svelte';
 import { FormFieldBuilder } from '../_builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
+import { capitalize } from 'rizom/utils/string';
 
 export const blueprint = {
 	component: Relation,
-	toType: (field: RelationField) => `${field.name}: string`,
+	toType: (field: RelationField) =>
+		`${field.name}: RelationValue<${capitalize(field.relationTo)}Doc>`,
 	match: (field: AnyField): field is RelationField => field.type === 'relation'
 };
 
@@ -52,8 +54,8 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 		this.field.hooks = { beforeValidate: [ensureRelationExists] };
 	}
 
-	to(table: GetRegisterType<'CollectionSlug'>) {
-		this.field.relationTo = table;
+	to(slug: GetRegisterType<'CollectionSlug'>) {
+		this.field.relationTo = slug;
 		return this;
 	}
 	many() {
@@ -73,7 +75,7 @@ export const relation = (name: string) => new RelationFieldBuilder(name);
 //////////////////////////////////////////////
 export type RelationField = FormField & {
 	type: 'relation';
-	relationTo: GetRegisterType<'PrototypeSlug'>;
+	relationTo: GetRegisterType<'CollectionSlug'>;
 	layout?: 'tags' | 'list';
 	many?: boolean;
 	defaultValue?: string | string[];

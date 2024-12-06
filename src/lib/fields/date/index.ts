@@ -15,7 +15,7 @@ export const blueprint = {
 		const suffix = templateUniqueRequired(field);
 		return `${name}: integer('${snake_name}', { mode : 'timestamp' })${suffix}`;
 	},
-	toType: (field: DateField) => `${field.name}: Date`,
+	toType: (field: DateField) => `${field.name}${!field.required ? '?' : ''}: Date`,
 	match: (field: AnyField): field is DateField => field.type === 'date'
 };
 

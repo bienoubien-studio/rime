@@ -16,8 +16,8 @@ export async function liveLoad(event: ServerLoadEvent) {
 
 	if (user && src && slug && id) {
 		const output = { user, src: src, slug, locale };
-		const prototype = rizom.config.getDocumentPrototype(slug);
-		if (prototype === 'collection') {
+
+		if (rizom.config.isCollection(slug)) {
 			const doc = await api.collection(slug).findById({ id, locale });
 			return { ...output, doc, pathToBrowserConfig };
 		} else {

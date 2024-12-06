@@ -1,12 +1,12 @@
 import { error, type ServerLoad } from '@sveltejs/kit';
 import { buildConfigMap } from 'rizom/operations/preprocess/config/map.js';
 import { addDefaultValues } from 'rizom/operations/preprocess/fill/index.js';
-import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 
 /////////////////////////////////////////////
 // Document Load
 //////////////////////////////////////////////
-export function docLoad(slug: PrototypeSlug) {
+export function docLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {
 		const { api, locale, user, rizom } = event.locals;
@@ -37,9 +37,9 @@ export function docLoad(slug: PrototypeSlug) {
 			}
 
 			/** Get doc */
-			doc = await collection.findById({ id, locale });
-			if (!doc) throw error(404, 'Not found');
-
+			const docById = await collection.findById({ id, locale });
+			if (!docById) throw error(404, 'Not found');
+			doc = docById;
 			/** Check for currently editing user */
 			// Scenarios :
 			// - no one editing // set the current editor to user.id

@@ -17,19 +17,22 @@ export const blueprint: FieldBluePrint<LinkField> = {
 	match: (field): field is LinkField => field.type === 'link'
 };
 
-const populateRessourceURL: FieldHook = async (value, { api, locale }) => {
+const populateRessourceURL: FieldHook<LinkField> = async (value, { api, locale }) => {
 	const hasValue = !!value;
 	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
 		!['url', 'email', 'tel', 'anchor'].includes(type);
 
 	if (hasValue && isResourceLinkType(value.type)) {
 		try {
-			const documentPrototype = api.rizom.config.getDocumentPrototype(value.type);
 			let doc;
-			if (documentPrototype === 'collection') {
+			if (api.rizom.config.isCollection(value.type)) {
 				doc = await api.collection(value.type).findById({ id: value.link, locale });
 			} else {
 				doc = await api.global(value.type).find({ locale });
+			}
+			if (!doc) {
+				value.link = null;
+				return value;
 			}
 			if (doc._url) value._url = doc._url;
 		} catch (err) {

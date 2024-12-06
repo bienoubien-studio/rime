@@ -1,9 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
-import type { GetRegisterType } from 'rizom/types/register';
+import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Rizom } from 'rizom/rizom.server.js';
 import type { BuiltCollectionConfig, BuiltGlobalConfig } from 'rizom/types/config';
 import type { FormErrors } from './panel';
+import type { RegisterCollection, RegisterGlobal } from 'rizom';
 
 export type OperationQuery = {
 	[key: string]: undefined | string | string[] | OperationQuery | OperationQuery[] | boolean;
@@ -13,8 +13,14 @@ export type OperationQuery = {
 // };
 
 export interface LocalAPI {
-	collection(slug: GetRegisterType<'PrototypeSlug'>): LocalAPICollectionInterface;
-	global(slug: PrototypeSlug): LocalAPIGlobalInterface;
+	collection<Slug extends keyof RegisterCollection>(
+		slug: Slug
+	): LocalAPICollectionInterface<RegisterCollection[Slug]>;
+
+	global<Slug extends keyof RegisterGlobal>(
+		slug: Slug
+	): LocalAPIGlobalInterface<RegisterGlobal[Slug]>;
+
 	grantAdminPrivilege(): LocalAPI;
 	enforceLocale(locale: string): void;
 	hasGrantedPrivilege: boolean;
@@ -26,57 +32,47 @@ export type LocalAPIConstructorArgs = {
 	event?: RequestEvent;
 };
 
-export interface LocalAPICollectionInterface {
+export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc> {
 	readonly config: BuiltCollectionConfig;
 	defaultLocale: string | undefined;
 	isAuth: boolean;
 
-	emptyDoc<T extends GenericDoc = GenericDoc>(): T;
-	create<T extends GenericDoc = GenericDoc>(args: {
-		data: Partial<T>;
+	emptyDoc(): Doc;
+	create(args: {
+		data: Partial<Doc>;
 		locale?: string;
-	}): Promise<{ doc: T; errors?: never } | { doc?: never; errors: FormErrors }>;
+	}): Promise<{ doc: Doc; errors?: never } | { doc?: never; errors: FormErrors }>;
 
-	find<T extends GenericDoc = GenericDoc>(args: {
+	find(args: {
 		query: OperationQuery | string;
 		locale?: string;
 		sort?: string;
 		depth?: number;
 		limit?: number;
-	}): Promise<T[]>;
+	}): Promise<Doc[]>;
 
-	findAll<T extends GenericDoc = GenericDoc>(args?: {
+	findAll(args?: {
 		locale?: string;
 		sort?: string;
 		depth?: number;
 		limit?: number;
-	}): Promise<T[]>;
+	}): Promise<Doc[]>;
 
-	findById<T extends GenericDoc = GenericDoc>(args: {
-		id: string;
-		locale?: string;
-		depth?: number;
-	}): Promise<T>;
+	findById(args: { id: string; locale?: string; depth?: number }): Promise<Doc | null>;
 
-	updateById<T extends GenericDoc = GenericDoc>(args: {
+	updateById(args: {
 		id: string;
-		data: Partial<T>;
+		data: Partial<Doc>;
 		locale?: string;
-	}): Promise<T | { errors: FormErrors }>;
+	}): Promise<Doc | { errors: FormErrors }>;
 
 	deleteById(args: { id: string }): Promise<string>;
 }
 
-export interface LocalAPIGlobalInterface {
+export interface LocalAPIGlobalInterface<Doc extends GenericDoc = GenericDoc> {
 	readonly config: BuiltGlobalConfig;
 	defaultLocale: string | undefined;
-
-	emptyDoc(): GenericDoc;
-
-	find<T extends GenericDoc = GenericDoc>(args?: { locale?: string; depth?: number }): Promise<T>;
-
-	update<T extends GenericDoc = GenericDoc>(args: {
-		data: Partial<T>;
-		locale?: string;
-	}): Promise<T | { errors: FormErrors }>;
+	emptyDoc(): Doc;
+	find(args?: { locale?: string; depth?: number }): Promise<Doc>;
+	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc | { errors: FormErrors }>;
 }

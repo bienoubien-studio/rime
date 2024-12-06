@@ -23,7 +23,9 @@ type Args = {
 	event?: RequestEvent;
 };
 
-class CollectionInterface implements LocalAPICollectionInterface {
+class CollectionInterface<Doc extends GenericDoc = GenericDoc>
+	implements LocalAPICollectionInterface<Doc>
+{
 	#event: RequestEvent | undefined;
 	#adapter: Adapter;
 	#api: LocalAPI;
@@ -46,7 +48,7 @@ class CollectionInterface implements LocalAPICollectionInterface {
 		return locale || this.#event?.locals.locale || this.defaultLocale;
 	}
 
-	emptyDoc<T extends GenericDoc = GenericDoc>(): T {
+	emptyDoc(): Doc {
 		if (isAuthConfig(this.config)) {
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
@@ -54,19 +56,19 @@ class CollectionInterface implements LocalAPICollectionInterface {
 			return makeEmptyDoc({
 				...this.config,
 				fields: [...withoutPrivateFields]
-			});
+			}) as Doc;
 		}
-		return makeEmptyDoc(this.config) as T;
+		return makeEmptyDoc(this.config) as Doc;
 	}
 
 	get isAuth() {
 		return !!this.config.auth;
 	}
 
-	create<T extends GenericDoc = GenericDoc>({ data, locale }: CreateArgs<T>) {
-		return create<T>({
-			data,
-			locale: this.#fallbackLocale(locale),
+	create(args: { data: Partial<Doc>; locale?: string }) {
+		return create<Doc>({
+			data: args.data,
+			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
 			event: this.#event,
 			api: this.#api,
@@ -74,14 +76,8 @@ class CollectionInterface implements LocalAPICollectionInterface {
 		});
 	}
 
-	find<T extends GenericDoc = GenericDoc>({
-		query,
-		locale,
-		sort = '-createdAt',
-		depth = 0,
-		limit
-	}: FindArgs) {
-		return find<T>({
+	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs) {
+		return find<Doc>({
 			query,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -94,13 +90,8 @@ class CollectionInterface implements LocalAPICollectionInterface {
 		});
 	}
 
-	findAll<T extends GenericDoc = GenericDoc>({
-		locale,
-		sort = '-createdAt',
-		depth = 0,
-		limit
-	}: FindAllArgs = {}) {
-		return findAll<T>({
+	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}) {
+		return findAll<Doc>({
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
@@ -112,8 +103,8 @@ class CollectionInterface implements LocalAPICollectionInterface {
 		});
 	}
 
-	findById<T extends GenericDoc = GenericDoc>({ id, locale, depth = 0 }: FindByIdArgs) {
-		return findById<T>({
+	findById({ id, locale, depth = 0 }: FindByIdArgs) {
+		return findById<Doc>({
 			id,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -124,8 +115,8 @@ class CollectionInterface implements LocalAPICollectionInterface {
 		});
 	}
 
-	updateById<T extends GenericDoc = GenericDoc>({ id, data, locale }: UpdateByIdArgs<T>) {
-		return updateById<T>({
+	updateById({ id, data, locale }: UpdateByIdArgs<Doc>) {
+		return updateById<Doc>({
 			id,
 			data,
 			locale: this.#fallbackLocale(locale),
@@ -152,11 +143,6 @@ export { CollectionInterface };
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
 /* -------------------------------------------------------------------------- */
-
-type CreateArgs<T extends GenericDoc = GenericDoc> = {
-	data: Partial<T>;
-	locale?: string;
-};
 
 type DeleteByIdArgs = { id: string };
 

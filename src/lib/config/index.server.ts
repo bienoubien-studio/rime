@@ -7,6 +7,8 @@ import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
 import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
+import type { CollectionSlug, PrototypeSlug } from 'rizom/types/index.js';
+import type { GlobalSlug } from 'rizom/types/doc.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,10 +61,18 @@ export async function createConfigInterface() {
 		return getGlobal(slug) || getCollection(slug);
 	};
 
-	const getDocumentPrototype = (slug: string) => {
-		if (getCollection(slug)) {
+	const isCollection = (slug: string): slug is CollectionSlug => {
+		return !!getCollection(slug);
+	};
+
+	const isGlobal = (slug: string): slug is GlobalSlug => {
+		return !!getGlobal(slug);
+	};
+
+	const getDocumentPrototype = (slug: PrototypeSlug) => {
+		if (isCollection(slug)) {
 			return 'collection';
-		} else if (getGlobal(slug)) {
+		} else if (isGlobal(slug)) {
 			return 'global';
 		}
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
@@ -121,6 +131,8 @@ export async function createConfigInterface() {
 		getDocumentPrototype,
 		getGlobal,
 		getCollection,
+		isCollection,
+		isGlobal,
 		getBySlug
 	};
 }

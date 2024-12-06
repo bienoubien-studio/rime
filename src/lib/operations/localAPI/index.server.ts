@@ -2,9 +2,15 @@ import { RizomError } from '../../errors/error.server.js';
 import { CollectionInterface } from './Collection.js';
 import { GlobalInterface } from './Global.js';
 import type { Rizom } from '../../rizom.server.js';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
-import type { LocalAPI as LocalAPIType, LocalAPIConstructorArgs } from 'rizom/types/api.js';
+import type {
+	LocalAPI as LocalAPIType,
+	LocalAPIConstructorArgs,
+	LocalAPICollectionInterface,
+	LocalAPIGlobalInterface
+} from 'rizom/types/api.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { RegisterCollection } from 'rizom';
+import type { RegisterGlobal } from 'rizom';
 
 export class LocalAPI implements LocalAPIType {
 	//
@@ -29,7 +35,9 @@ export class LocalAPI implements LocalAPIType {
 		return this;
 	}
 
-	collection(slug: PrototypeSlug) {
+	collection<Slug extends keyof RegisterCollection>(
+		slug: Slug
+	): LocalAPICollectionInterface<RegisterCollection[Slug]> {
 		const collectionConfig = this.rizom.config.getCollection(slug);
 		if (!collectionConfig) {
 			throw new RizomError(`${slug} is not a collection`);
@@ -46,7 +54,9 @@ export class LocalAPI implements LocalAPIType {
 		});
 	}
 
-	global(slug: PrototypeSlug) {
+	global<Slug extends keyof RegisterGlobal>(
+		slug: Slug
+	): LocalAPIGlobalInterface<RegisterGlobal[Slug]> {
 		const globalConfig = this.rizom.config.getGlobal(slug);
 		if (!globalConfig) {
 			throw new RizomError(`${slug} is not a global`);

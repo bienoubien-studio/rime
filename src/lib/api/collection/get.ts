@@ -1,9 +1,9 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import qs from 'qs';
 import { handleAPIError } from '../handleError';
-import type { PrototypeSlug } from 'rizom/types/doc';
+import type { CollectionSlug } from 'rizom/types/doc';
 
-export default function (slug: PrototypeSlug) {
+export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
 		const { api, locale } = event.locals;

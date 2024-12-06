@@ -6,6 +6,7 @@ import type { BuiltGlobalConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPIGlobalInterface, LocalAPI } from 'rizom/types/api.js';
+import type { FormErrors } from 'rizom/types/panel.js';
 
 type Args = {
 	config: BuiltGlobalConfig;
@@ -15,7 +16,7 @@ type Args = {
 	event: RequestEvent | undefined;
 };
 
-class GlobalInterface implements LocalAPIGlobalInterface {
+class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGlobalInterface<Doc> {
 	#event: RequestEvent | undefined;
 	#adapter: Adapter;
 	#api: LocalAPI;
@@ -36,25 +37,25 @@ class GlobalInterface implements LocalAPIGlobalInterface {
 		return locale || this.#event?.locals.locale || this.defaultLocale;
 	}
 
-	emptyDoc() {
-		return makeEmptyDoc(this.config);
+	emptyDoc(): Doc {
+		return makeEmptyDoc(this.config) as Doc;
 	}
 
-	find<T extends GenericDoc = GenericDoc>(args?: FindArgs) {
-		return find<T>({
+	find(args?: { locale?: string; depth?: number }): Promise<Doc> {
+		return find<Doc>({
 			locale: this.#fallbackLocale(args?.locale),
 			config: this.config,
 			event: this.#event,
 			adapter: this.#adapter,
 			api: this.#api,
-			depth: args?.depth || 0
+			depth: args?.depth
 		});
 	}
 
-	update<T extends GenericDoc = GenericDoc>({ data, locale }: UpdateArgs<T>) {
-		return update<T>({
-			data,
-			locale: this.#fallbackLocale(locale),
+	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc | { errors: FormErrors }> {
+		return update<Doc>({
+			data: args.data,
+			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
 			event: this.#event,
 			api: this.#api,
@@ -64,14 +65,3 @@ class GlobalInterface implements LocalAPIGlobalInterface {
 }
 
 export { GlobalInterface };
-
-/* -------------------------------------------------------------------------- */
-/*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
-
-type UpdateArgs<T extends GenericDoc = GenericDoc> = {
-	data: Partial<T>;
-	locale?: string;
-};
-
-type FindArgs = { locale?: string; depth?: number };

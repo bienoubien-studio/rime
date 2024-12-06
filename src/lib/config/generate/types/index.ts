@@ -42,30 +42,22 @@ export type Block${capitalize(slug)} = {
   ${content}
 }`;
 
-// const templateAnyDoc = (slugs: string[]): string => {
-// 	return `export type AnyDoc = BaseDoc & Partial<UploadDoc & ${slugs.map((slug) => makeDocTypeName(slug)).join(' & ')}>;`;
-// };
-
-const templateRegister = (
-	slugs: string[],
-	collectionSlugs: string[],
-	globalSlugs: string[]
-): string => {
+const templateRegister = (collectionSlugs: string[], globalSlugs: string[]): string => {
 	return [
 		"declare module 'rizom' {",
-		'\tinterface RegisterCollectionSlug {',
-		`${collectionSlugs.map((slug) => `\t\t'${slug}': never`).join('\n')};`,
+		'\tinterface RegisterCollection {',
+		`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
 		'\t}',
 
-		'\tinterface RegisterGlobalSlug {',
-		`${globalSlugs.map((slug) => `\t\t'${slug}': never`).join('\n')};`,
+		'\tinterface RegisterGlobal {',
+		`${globalSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
 		'\t}',
 
 		'}'
 	].join('\n');
 };
 
-const generateTypes = (config: BuiltConfig) => {
+export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
 	let imports = new Set<string>(['BaseDoc', 'LocalAPI', 'Navigation', 'User', 'Rizom']);
@@ -79,6 +71,9 @@ const generateTypes = (config: BuiltConfig) => {
 
 		for (const field of fields) {
 			switch (true) {
+				case field.type in config.blueprints && !!config.blueprints[field.type].toType:
+					strFields.push(config.blueprints[field.type].toType!(field));
+					break;
 				case isTextField(field):
 					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
 					break;
@@ -148,6 +143,12 @@ const generateTypes = (config: BuiltConfig) => {
 		return strFields;
 	};
 
+	const relationValueType = `export type RelationValue<T> =
+		| T[] // When depth > 0, fully populated docs
+		| { id?: string; relationTo: string; relationId: string }[] // When depth = 0, relation objects
+		| string[]
+		| string; // When sending data to updateById`;
+
 	const collectionsTypes = config.collections
 		.map((collection) => {
 			const fieldsContent = convertFieldsToTypesTemplates(collection.fields).join('\n\t');
@@ -166,10 +167,9 @@ const generateTypes = (config: BuiltConfig) => {
 
 	const collectionSlugs = config.collections.map((c) => c.slug);
 	const globalSlugs = config.globals.map((g) => g.slug);
-	const prototypeSlugs = [...collectionSlugs, ...globalSlugs];
 
 	// const docType = templateAnyDoc(prototypeSlugs);
-	const register = templateRegister(prototypeSlugs, collectionSlugs, globalSlugs);
+	const register = templateRegister(collectionSlugs, globalSlugs);
 
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
@@ -193,15 +193,20 @@ const generateTypes = (config: BuiltConfig) => {
 	const content = [
 		`import '${PACKAGE_NAME}';`,
 		typeImports,
+		relationValueType,
 		collectionsTypes,
 		globalsTypes,
-		register,
 		blocksTypes.join('\n'),
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',
-		locals
+		locals,
+		register
 	].join('\n');
 
+	return content;
+}
+
+function write(content: string) {
 	const cachedTypes = cache.get('types');
 
 	if (cachedTypes && cachedTypes === content) {
@@ -219,6 +224,10 @@ const generateTypes = (config: BuiltConfig) => {
 			// console.log('');
 		}
 	});
-};
+}
+
+function generateTypes(config: BuiltConfig) {
+	write(generateTypesString(config));
+}
 
 export default generateTypes;
