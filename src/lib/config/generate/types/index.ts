@@ -87,11 +87,12 @@ export function generateTypesString(config: BuiltConfig) {
 		return strFields;
 	};
 
-	const relationValueType = `export type RelationValue<T> =
-		| T[] // When depth > 0, fully populated docs
-		| { id?: string; relationTo: string; relationId: string }[] // When depth = 0, relation objects
-		| string[]
-		| string; // When sending data to updateById`;
+	const relationValueType = `
+export type RelationValue<T> =
+	| T[] // When depth > 0, fully populated docs
+	| { id?: string; relationTo: string; relationId: string }[] // When depth = 0, relation objects
+	| string[]
+	| string; // When sending data to updateById`;
 
 	const collectionsTypes = config.collections
 		.map((collection) => {
