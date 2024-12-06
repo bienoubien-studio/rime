@@ -37,11 +37,13 @@ export const pagesRels = sqliteTable('pages_rels', {
   position: integer('position'),
   parentId: text("parent_id").references(() => pages.id, { onDelete: 'cascade' }),
   pagesId:  text('pages_id').references(() => pages.id, { onDelete: 'cascade' }),
+usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
   
 })
 
 export const rel_pagesRels = relations(pages, ({ many }) => ({
   pages: many(pages),
+users: many(users),
 }))
 
 export const rel_pagesBlocksParagraphHasOnePages = relations(pagesBlocksParagraph, ({ one }) => ({
@@ -103,6 +105,30 @@ export const users = sqliteTable( 'users', {
 
 })
 
+export const usersRels = sqliteTable('users_rels', {
+  id: pk(),
+  path: text('path'),
+  position: integer('position'),
+  parentId: text("parent_id").references(() => users.id, { onDelete: 'cascade' }),
+  usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
+  
+})
+
+export const rel_usersRels = relations(users, ({ many }) => ({
+  users: many(users),
+}))
+
+export const rel_usersRelsHasOneUsers = relations(usersRels, ({ one }) => ({
+  users : one(users, {
+    fields: [usersRels.parentId],
+    references: [users.id],
+  }),
+}))
+
+export const rel_usersHasMany = relations(users, ({ many }) => ({
+  usersRels: many(usersRels),
+}))
+
 /** infos ============================================== **/
 
 export const infos = sqliteTable( 'infos', {
@@ -120,6 +146,19 @@ export const infosLocales = sqliteTable( 'infos_locales', {
   parentId: text("parent_id").references(() => infos.id, { onDelete: 'cascade' }),
 })
 
+export const infosRels = sqliteTable('infos_rels', {
+  id: pk(),
+  path: text('path'),
+  position: integer('position'),
+  parentId: text("parent_id").references(() => infos.id, { onDelete: 'cascade' }),
+  usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
+  
+})
+
+export const rel_infosRels = relations(infos, ({ many }) => ({
+  users: many(users),
+}))
+
 export const rel_infosLocalesHasOneInfos = relations(infosLocales, ({ one }) => ({
   infos : one(infos, {
     fields: [infosLocales.parentId],
@@ -127,8 +166,16 @@ export const rel_infosLocalesHasOneInfos = relations(infosLocales, ({ one }) => 
   }),
 }))
 
+export const rel_infosRelsHasOneInfos = relations(infosRels, ({ one }) => ({
+  infos : one(infos, {
+    fields: [infosRels.parentId],
+    references: [infos.id],
+  }),
+}))
+
 export const rel_infosHasMany = relations(infos, ({ many }) => ({
   infosLocales: many(infosLocales),
+infosRels: many(infosRels),
 }))
 
 /** Auth ============================================== **/
@@ -167,15 +214,17 @@ export const tables: Tables = {
   pagesRels,
   pagesBlocksParagraphLocales,
   users,
+  usersRels,
   infos,
   infosLocales,
+  infosRels,
   authUsers,
   sessions
 }
 export const relationFieldsMap: Record<string, any> = {
-  pages : {"related":{"to":"pages"}},
-  users : {},
-  infos : {}
+  pages : {"related":{"to":"pages"},"_editedBy":{"to":"users"}},
+  users : {"_editedBy":{"to":"users"}},
+  infos : {"_editedBy":{"to":"users"}}
 }
 const schema = {
     pages,
@@ -184,15 +233,20 @@ const schema = {
     pagesRels,
     pagesBlocksParagraphLocales,
     users,
+    usersRels,
     infos,
     infosLocales,
+    infosRels,
     rel_pagesBlocksParagraphHasOnePages,
     rel_pagesLocalesHasOnePages,
     rel_pagesRelsHasOnePages,
     rel_pagesHasMany,
     rel_pagesBlocksParagraphLocalesHasOnePagesBlocksParagraph,
     rel_pagesBlocksParagraphHasMany,
+    rel_usersRelsHasOneUsers,
+    rel_usersHasMany,
     rel_infosLocalesHasOneInfos,
+    rel_infosRelsHasOneInfos,
     rel_infosHasMany,
     authUsers,
     sessions
