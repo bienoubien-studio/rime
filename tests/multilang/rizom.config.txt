@@ -116,7 +116,7 @@ const setHome: CollectionHook<PagesDoc> = async (args) => {
 			}
 		};
 
-		const pagesIsHome = await api.collection('pages').find<PagesDoc>({ query });
+		const pagesIsHome = await api.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
 			await api.collection('pages').updateById({
@@ -134,7 +134,7 @@ const formatslug: CollectionHook<PagesDoc> = async (args) => {
 
 	const queryPagesWithSlug = async ({ slug }) => {
 		const query = `where[slug][equals]=${slug}`;
-		return api.collection('pages').find<PagesDoc>({
+		return api.collection('pages').find({
 			query,
 			locale: event?.locals.locale
 		});
@@ -263,7 +263,7 @@ const config: Config = {
 
 	// cors: ['localhost:5173', 'local.rizom:5173'],
 
-	
+
 
 	panel: {
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),
