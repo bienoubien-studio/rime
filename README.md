@@ -209,6 +209,7 @@ const { docs } = await fetch('http://localhost:5173/api/pages?where[author][in_a
 - [ ] Working Live Edit system (in developpment)
 - [ ] Panel i18n
 - [ ] cmd-K menu in admin Panel
+- [ ] switch from lucia to better-auth
 
 Feel free to open a discussion for features request.
 
