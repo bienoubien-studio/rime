@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { RizomAccessError } from '../../errors/access.server.js';
-import { RizomNotFoundError } from '../../errors/notFound.server.js';
+// import { RizomNotFoundError } from '../../errors/notFound.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { BuiltCollectionConfig } from 'rizom/types/config.js';

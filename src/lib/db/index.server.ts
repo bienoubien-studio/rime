@@ -6,7 +6,6 @@ import createAdapterAuthInterface from './auth.js';
 import { type Config } from 'drizzle-kit';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { taskLogger } from 'rizom/utils/logger/index.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import { databaseTransformInterface } from './transform.js';
 
