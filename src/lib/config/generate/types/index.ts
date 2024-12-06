@@ -26,18 +26,21 @@ export type Block${toPascalCase(slug)} = {
 }`;
 
 const templateRegister = (collectionSlugs: string[], globalSlugs: string[]): string => {
-	return [
-		"declare module 'rizom' {",
-		'\tinterface RegisterCollection {',
-		`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-		'\t}',
-
-		'\tinterface RegisterGlobal {',
-		`${globalSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-		'\t}',
-
-		'}'
-	].join('\n');
+	const registerCollections = collectionSlugs.length
+		? [
+				'\tinterface RegisterCollection {',
+				`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\t}'
+			]
+		: [];
+	const registerGlobals = globalSlugs.length
+		? [
+				'\tinterface RegisterGlobal {',
+				`${globalSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\t}'
+			]
+		: [];
+	return ["declare module 'rizom' {", ...registerCollections, ...registerGlobals, '}'].join('\n');
 };
 
 export function generateTypesString(config: BuiltConfig) {
