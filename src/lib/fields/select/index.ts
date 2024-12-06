@@ -11,7 +11,7 @@ export const blueprint: FieldBluePrint<SelectField> = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: text('${snake_name}', { mode: 'json' })`;
 	},
-	toType: (field) => `${field.name}: string[]`,
+	toType: (field) => `${field.name}${field.required ? '' : '?'}: string[]`,
 	match: (field): field is SelectField => field.type === 'select'
 };
 

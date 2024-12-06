@@ -12,7 +12,7 @@ export const blueprint = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: text('${snake_name}')`;
 	},
-	toType: (field: RadioField) => `${field.name}: string`,
+	toType: (field: RadioField) => `${field.name}${field.required ? '' : '?'}: string`,
 	match: (field: AnyField): field is RadioField => field.type === 'radio'
 };
 

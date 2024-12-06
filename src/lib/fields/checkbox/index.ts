@@ -11,7 +11,7 @@ export const blueprint = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: integer('${snake_name}', { mode : 'boolean' })`;
 	},
-	toType: (field: CheckboxField) => `${field.name}: string`,
+	toType: (field: CheckboxField) => `${field.name}: boolean`,
 	match: (field: AnyField): field is CheckboxField => field.type === 'checkbox'
 };
 

@@ -9,7 +9,7 @@ import { capitalize } from 'rizom/utils/string';
 export const blueprint = {
 	component: Relation,
 	toType: (field: RelationField) =>
-		`${field.name}: RelationValue<${capitalize(field.relationTo)}Doc>`,
+		`${field.name}${field.required ? '' : '?'}: RelationValue<${capitalize(field.relationTo)}Doc>`,
 	match: (field: AnyField): field is RelationField => field.type === 'relation'
 };
 

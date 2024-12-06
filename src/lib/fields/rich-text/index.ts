@@ -15,7 +15,7 @@ export const blueprint = {
 		return `${name}: text('${snake_name}')${suffix}`;
 	},
 	toType: (field: RichTextField) =>
-		`${field.name}${!field.required ? '?' : ''}: { content: RichTextNode[] }`,
+		`${field.name}${field.required ? '' : '?'}: { content: RichTextNode[] }`,
 	match: (field: AnyField): field is RichTextField => field.type === 'richText'
 };
 

@@ -2,24 +2,7 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/utils/string.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
-import {
-	isBlocksField,
-	isComboBoxField,
-	isDateField,
-	isEmailField,
-	isFormField,
-	isGroupField,
-	isLinkField,
-	isNumberField,
-	isRadioField,
-	isRelationField,
-	isRichTextField,
-	isSelectField,
-	isSlugField,
-	isTabsField,
-	isTextField,
-	isToggleField
-} from 'rizom/utils/field.js';
+import { isBlocksField, isFormField, isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { AnyField } from 'rizom/types/fields.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
@@ -36,7 +19,7 @@ export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''}
 }`;
 
 const makeBlockType = (slug: string, content: string): string => `
-export type Block${capitalize(slug)} = {
+export type Block${toPascalCase(slug)} = {
   id: string
   type: '${slug}'
   ${content}
@@ -74,59 +57,20 @@ export function generateTypesString(config: BuiltConfig) {
 				case field.type in config.blueprints && !!config.blueprints[field.type].toType:
 					strFields.push(config.blueprints[field.type].toType!(field));
 					break;
-				case isTextField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
-					break;
-				case isComboBoxField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
-					break;
-				case isEmailField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
-					break;
-				case isToggleField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: boolean,`);
-					break;
-				case isRelationField(field): {
-					const docType = `${toPascalCase(field.relationTo)}Doc`;
-					strFields.push(
-						`${field.name}${field.required ? '' : '?'}: ${docType}[] | { id?: string; relationTo: string; relationId: string; }[],`
-					);
-					break;
-				}
-				case isRadioField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
-					break;
-				case isLinkField(field):
-					addImport('Link');
-					strFields.push(`${field.name}${field.required ? '' : '?'}: Link,`);
-					break;
-				case isSelectField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string[],`);
-					break;
-				case isSlugField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: string,`);
-					break;
-				case isDateField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: Date,`);
-					break;
-				case isRichTextField(field):
-					addImport('RichTextNode');
-					strFields.push(`${field.name}${field.required ? '' : '?'}: { content: RichTextNode[] },`);
-					break;
 				case isBlocksField(field):
-					for (const block of field.blocks) {
-						if (!registeredBlocks.includes(block.name)) {
-							const templates = convertFieldsToTypesTemplates(
-								block.fields.filter(isFormField).filter((f) => f.name !== 'type')
-							);
-							blocksTypes.push(makeBlockType(block.name, templates.join('\n\t')));
-							registeredBlocks.push(block.name);
+					{
+						for (const block of field.blocks) {
+							if (!registeredBlocks.includes(block.name)) {
+								const templates = convertFieldsToTypesTemplates(
+									block.fields.filter(isFormField).filter((f) => f.name !== 'type')
+								);
+								blocksTypes.push(makeBlockType(block.name, templates.join('\n\t')));
+								registeredBlocks.push(block.name);
+							}
 						}
+						const blockNames = field.blocks.map((block) => `Block${toPascalCase(block.name)}`);
+						strFields.push(`${field.name}: Array<${blockNames.join(' | ')}>,`);
 					}
-					strFields.push(`${field.name}: AnyBlock[],`);
-					break;
-				case isNumberField(field):
-					strFields.push(`${field.name}${field.required ? '' : '?'}: number,`);
 					break;
 				case isGroupField(field): {
 					const templates = convertFieldsToTypesTemplates(field.fields);

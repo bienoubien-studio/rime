@@ -12,7 +12,7 @@ export const blueprint = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: real('${snake_name}')`;
 	},
-	toType: (field: NumberField) => `${field.name}: number`,
+	toType: (field: NumberField) => `${field.name}${field.required ? '' : '?'}: number`,
 	match: (field: AnyField): field is NumberField => field.type === 'number'
 };
 
