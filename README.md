@@ -178,13 +178,13 @@ export default config;
 export const load = async (event: LayoutServerLoadEvent) => {
   const { api, rizom } = event.locals;
   // Get a global document
-  const menu = await api.global('menu').find<MenuDoc>();
+  const menu = await api.global('menu').find();
   // Get all pages documents
-  const pages = await api.collection('pages').findAll<PagesDoc>({ locale: 'en' });
+  const pages = await api.collection('pages').findAll({ locale: 'en' });
   // Get a page byId
-  const home = await api.collection('pages').findById<PagesDoc>({ locale: 'en', id: 'some-id' });
+  const home = await api.collection('pages').findById({ locale: 'en', id: 'some-id' });
   // Get a user with a query
-  const [user] = await api.collection('users').find<UsersDoc>({
+  const [user] = await api.collection('users').find({
     query: `where[email][equals]=some@email.com` // qs query or ParsedQsQuery
   });
   // Get some config values
