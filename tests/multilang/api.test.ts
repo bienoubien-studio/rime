@@ -83,7 +83,6 @@ test('Should create Home', async ({ request }) => {
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.author).toBeDefined();
 	expect(doc.author).toHaveLength(1);
-	console.log('home author is : ', doc.author);
 	expect(doc.author.at(0).relationId).toBe(adminUserId);
 	homeId = doc.id;
 });
