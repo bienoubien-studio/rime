@@ -18,7 +18,7 @@ export function rizom(): Plugin {
 				},
 				build: {
 					rollupOptions: {
-						external: ['./src/lib/rizom.config.browser.js']
+						external: ['@node-rs/bcrypt', '@node-rs/argon2', './src/lib/rizom.config.browser.js']
 					}
 				}
 			};
