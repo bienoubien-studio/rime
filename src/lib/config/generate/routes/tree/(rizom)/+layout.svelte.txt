@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import 'rizom/panel/style/index.css';
-	import { classList } from 'rizom/utils';
 
 	type Props = { children: Snippet };
 	const { children }: Props = $props();
 </script>
 
-<svelte:body use:classList={'rz-panel'} />
-
-{@render children()}
+<div class="rz-root">
+	{@render children()}
+</div>

@@ -7,7 +7,6 @@
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
-	import { classList } from 'rizom/utils/classList.js';
 	import type { FormErrors } from 'rizom/types';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
@@ -34,8 +33,6 @@
 		}
 	});
 </script>
-
-<svelte:body use:classList={'rz-panel'} />
 
 <Toaster />
 <div class="rz-login-container">

@@ -7,7 +7,6 @@
 	import { setConfigContext } from '$lib/panel/context/config.svelte';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import { classList } from '../../../utils/classList.js';
 	import type { User, Route, BrowserConfig } from 'rizom/types';
 
 	type Props = {
@@ -45,7 +44,6 @@
 </script>
 
 <svelte:window on:resize={onResize} />
-<svelte:body use:classList={'rz-panel'} />
 
 <Toaster />
 

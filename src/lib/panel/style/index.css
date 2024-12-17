@@ -19,25 +19,24 @@
 	--rz-border: 1px solid hsl(var(--rz-color-border) / 1);
 }
 
-body {
+body:has(.rz-root) {
 	min-height: 100vh;
 	background-color: hsl(var(--rz-color-bg));
 	color: hsl(var(--rz-color-fg));
 }
 
-.rz-panel {
+.rz-root {
 	font-size: var(--rz-text-base);
-}
+	::selection {
+		background-color: hsl(var(--rz-color-primary) / 0.5);
+		color: hsl(var(--rz-color-fg));
+	}
 
-::selection {
-	background-color: hsl(var(--rz-color-primary) / 0.5);
-	color: hsl(var(--rz-color-fg));
-}
-
-hr {
-	border-color: hsl(var(--rz-color-border));
-	margin-top: var(--rz-size-4);
-	margin-bottom: var(--rz-size-4);
+	hr {
+		border-color: hsl(var(--rz-color-border));
+		margin-top: var(--rz-size-4);
+		margin-bottom: var(--rz-size-4);
+	}
 }
 
 .rz-sr-only {
