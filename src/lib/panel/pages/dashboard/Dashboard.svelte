@@ -21,7 +21,9 @@
 
 <div class="rz-dashboard">
 	<PageHeader>
-		<Button variant="text" icon={Eye} href={config.raw.siteUrl}>View site</Button>
+		{#if config.raw.siteUrl}
+			<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>View site</Button>
+		{/if}
 		<LanguageSwitcher />
 	</PageHeader>
 
