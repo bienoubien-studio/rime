@@ -5,7 +5,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [rizom(), sveltekit()],
 	server: {
-		host: 'local.rizom'
+		host: 'rizom.test'
 	},
 	build: {
 		rollupOptions: {
