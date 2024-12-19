@@ -28,9 +28,6 @@ export type FieldBluePrint<T extends AnyField = AnyField> = {
 	cell?: any;
 	toSchema?: (field: T) => string;
 	toType?: (field: T) => string;
-	match: (field: AnyField) => field is T;
-	defaultValue?: any;
-	validate?: any;
 };
 
 // Base type for all fields
@@ -86,22 +83,4 @@ export type AnyFormField = GetRegisterType<'AnyFormField'>;
 
 export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;
 
-export type FieldsType =
-	| 'blocks'
-	| 'checkbox'
-	| 'combobox'
-	| 'component'
-	| 'date'
-	| 'email'
-	| 'group'
-	| 'link'
-	| 'number'
-	| 'radio'
-	| 'relation'
-	| 'richText'
-	| 'select'
-	| 'slug'
-	| 'toggle'
-	| 'tabs'
-	| 'separator'
-	| 'text';
+export type FieldsType = GetRegisterType<'FieldsType'>;

@@ -3,6 +3,7 @@ import handlers from './handlers/index.js';
 import { buildConfig } from './config/build/index.js';
 
 export { rizom, handlers, buildConfig };
+export { FormFieldBuilder } from 'rizom/fields/_builders/field.js';
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -16,6 +17,7 @@ export type { Plugin } from 'rizom/types/plugin.js';
 export type { Rizom } from 'rizom/rizom.server.js';
 export type { LocalAPI } from 'rizom/types/api.js';
 export type { Navigation } from './panel/navigation.js';
+export type { FormField, AnyField } from 'rizom/types';
 
 declare module 'rizom' {
 	// eslint-disable-next-line
@@ -27,7 +29,7 @@ declare module 'rizom' {
 	// eslint-disable-next-line
 	interface RegisterPlugins {}
 	// eslint-disable-next-line
-	export interface RegisterCollection {} // Empty interface for users to extend
+	export interface RegisterCollection {}
 	// eslint-disable-next-line
 	export interface RegisterGlobal {}
 
