@@ -13,8 +13,7 @@ export const blueprint: FieldBluePrint<TextField> = {
 		const suffix = templateUniqueRequired(field);
 		return `${name}: text('${snake_name}')${suffix}`;
 	},
-	toType: (field) => `${field.name}${field.required ? '' : '?'}: string`,
-	match: (field): field is TextField => field.type === 'text'
+	toType: (field) => `${field.name}${field.required ? '' : '?'}: string`
 };
 
 //////////////////////////////////////////////

@@ -13,8 +13,7 @@ export const blueprint: FieldBluePrint<LinkField> = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: text('${snake_name}', { mode: 'json' })`;
 	},
-	toType: (field) => `${field.name}${field.required ? '' : '?'}: Link`,
-	match: (field): field is LinkField => field.type === 'link'
+	toType: (field) => `${field.name}${field.required ? '' : '?'}: Link`
 };
 
 const populateRessourceURL: FieldHook<LinkField> = async (value, { api, locale }) => {

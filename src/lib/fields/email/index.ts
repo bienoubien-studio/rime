@@ -14,8 +14,7 @@ export const blueprint: FieldBluePrint<EmailField> = {
 		const suffix = templateUniqueRequired(field);
 		return `${name}: text('${snake_name}')${suffix}`;
 	},
-	toType: (field) => `${field.name}${!field.required ? '?' : ''}: string`,
-	match: (field): field is EmailField => field.type === 'email'
+	toType: (field) => `${field.name}${!field.required ? '?' : ''}: string`
 };
 
 class EmailFieldBuilder extends FormFieldBuilder<EmailField> {

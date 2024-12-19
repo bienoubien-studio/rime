@@ -11,8 +11,7 @@ export const blueprint: FieldBluePrint<ToggleField> = {
 		const snake_name = toSnakeCase(name);
 		return `${name}: integer('${snake_name}', { mode : 'boolean' })`;
 	},
-	toType: (field) => `${field.name}: boolean`,
-	match: (field): field is ToggleField => field.type === 'toggle'
+	toType: (field) => `${field.name}: boolean`
 };
 
 export const toggle = (name: string) => new BooleanFieldBuilder<ToggleField>(name, 'toggle');

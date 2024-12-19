@@ -15,8 +15,7 @@ export const blueprint: FieldBluePrint<SlugField> = {
 		const suffix = templateUniqueRequired(field);
 		return `${name}: text('${snake_name}')${suffix}`;
 	},
-	toType: (field) => `${field.name}${field.required ? '' : '?'}: string`,
-	match: (field): field is SlugField => field.type === 'slug'
+	toType: (field) => `${field.name}${field.required ? '' : '?'}: string`
 };
 
 export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
