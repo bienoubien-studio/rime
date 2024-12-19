@@ -1,0 +1,5 @@
+const config = {
+	collections: [],
+	globals: []
+};
+export default config;
