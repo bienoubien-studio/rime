@@ -4,7 +4,7 @@ import type { AnyField, FieldsType } from './fields.js';
 import type { GenericDoc } from './doc.js';
 import type { CollectionHooks, GlobalHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
-import type { AtLeastOne, WithRequired } from './utility.js';
+import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { GetRegisterType } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/_builders/field.js';
@@ -95,7 +95,7 @@ type CollectionConfigLabel = {
 type BaseDocConfig = {
 	slug: string;
 	group?: string;
-	fields: UserDefinedField[];
+	fields: FieldBuilder<AnyField>[];
 	icon?: ComponentType;
 	access?: Access;
 	url?: <T extends GenericDoc>(doc: T) => string;
@@ -139,9 +139,10 @@ export type BuiltConfig = {
 	};
 };
 
-export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'routes'> & {
+export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes'> & {
 	blueprints: Record<FieldsType, FieldsComponents>;
 };
+
 export type CustomPanelRoute = {
 	group?: string;
 	label: string;
@@ -149,16 +150,15 @@ export type CustomPanelRoute = {
 	component: ComponentType;
 };
 
-export type BuiltCollectionConfig = Omit<CollectionConfig, 'fields'> & {
+export type BuiltCollectionConfig = CollectionConfig & {
 	type: 'collection';
 	label: CollectionConfigLabel;
 	slug: GetRegisterType<'CollectionSlug'>;
 	asTitle: string;
-	fields: AnyField[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltGlobalConfig = Omit<GlobalConfig, 'fields'> & {
+export type BuiltGlobalConfig = GlobalConfig & {
 	type: 'global';
 	label: string;
 	slug: GetRegisterType<'GlobalSlug'>;
@@ -187,3 +187,7 @@ export type ImageSizesConfig = {
 	width: number;
 	height: number;
 }>;
+
+type CompiledConfig = WithoutBuilders<BuiltConfig>;
+type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
+type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;

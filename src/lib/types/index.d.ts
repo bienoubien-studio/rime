@@ -35,7 +35,6 @@ export type {
 	CollectionConfig,
 	Config,
 	CustomPanelRoute,
-	DocConfig,
 	DocumentPrototype,
 	GlobalConfig,
 	ImageSizesConfig,

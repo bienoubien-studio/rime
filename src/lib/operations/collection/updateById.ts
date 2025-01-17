@@ -10,7 +10,7 @@ import { preprocessFields } from '../preprocess/fields.server';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltCollectionConfig } from 'rizom/types/config.js';
+import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
 import { RizomHookError } from 'rizom/errors/hook.server.js';
 import type { Dic } from 'rizom/types/utility.js';
@@ -21,7 +21,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
 	data: Partial<T>;
 	locale?: string | undefined;
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 	event?: RequestEvent;
 	api: LocalAPI;
 	adapter: Adapter;

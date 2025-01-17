@@ -1,7 +1,7 @@
 import { hashedPassword, panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { hasProps } from 'rizom/utils/object.js';
-import { isFormField, isRolesField } from '../../utils/field.js';
+import { isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
 import type { User } from 'rizom/types/auth.js';
@@ -16,7 +16,7 @@ import type { AnyField } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
-import { FieldBuilder } from 'rizom/fields/_builders/index.js';
+import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/_builders/index.js';
 import { date, relation } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
@@ -52,7 +52,7 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 		const isNotPanelUsersCollection = !(collection.slug === 'users');
 		if (isNotPanelUsersCollection) {
 			fields.push(usersFields.email, hashedPassword);
-			const rolesField = fields.find(isRolesField);
+			const rolesField = fields.find((field) => isRolesField(field.raw));
 			if (!rolesField) {
 				fields.push(usersFields.roles);
 			}
@@ -159,7 +159,7 @@ export const mergePanelUsersCollectionWithDefault = ({
 
 		collection.fields = [
 			...collection.fields
-				.filter((field) => isFormField(field.raw))
+				.filter((field) => field instanceof FormFieldBuilder)
 				.filter((field) => field.raw.name !== 'roles'),
 			roleField
 		];

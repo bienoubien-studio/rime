@@ -1,13 +1,17 @@
-import type { BuiltCollectionConfig, BrowserConfig, BuiltGlobalConfig } from 'rizom/types/config';
+import type {
+	CompiledCollectionConfig,
+	BrowserConfig,
+	CompiledGlobalConfig
+} from 'rizom/types/config';
 import type { DocPrototype, PrototypeSlug } from 'rizom/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BrowserConfig) {
-	function getGlobalConfig(slug: string): BuiltGlobalConfig {
+	function getGlobalConfig(slug: string): CompiledGlobalConfig {
 		return config.globals.filter((c) => c.slug === slug)[0];
 	}
 
-	function getCollectionConfig(slug: string): BuiltCollectionConfig {
+	function getCollectionConfig(slug: string): CompiledCollectionConfig {
 		return config.collections.filter((c) => c.slug === slug)[0];
 	}
 

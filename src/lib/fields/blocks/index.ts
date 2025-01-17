@@ -12,7 +12,7 @@ export const blocks = (name: string) =>
 
 export const block = (name: string) => new BlockBuilder(name);
 
-class BlocksBuilder extends FormFieldBuilder<BlocksField> {
+export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 	constructor(name: string) {
 		super(name, 'blocks');
 		this.field.blocks = [];

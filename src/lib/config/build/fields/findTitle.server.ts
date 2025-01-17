@@ -1,6 +1,7 @@
 import type { FieldBuilder } from 'rizom/fields/_builders';
+import { BlocksBuilder } from 'rizom/fields/blocks';
 import type { AnyField } from 'rizom/types';
-import { hasMaybeTitle, isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field';
+import { hasMaybeTitle, isGroupField, isTabsField } from 'rizom/utils/field';
 
 export function findTitleField(fields: FieldBuilder<AnyField>[]): any | null {
 	for (const field of fields) {
@@ -10,7 +11,7 @@ export function findTitleField(fields: FieldBuilder<AnyField>[]): any | null {
 		}
 
 		// Check in blocks
-		if (isBlocksField(field.raw) && field.raw.blocks) {
+		if (field instanceof BlocksBuilder && field.raw.blocks) {
 			for (const block of field.raw.blocks) {
 				if (block.fields) {
 					const found = findTitleField(block.fields);

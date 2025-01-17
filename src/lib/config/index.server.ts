@@ -5,7 +5,11 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
-import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizom/types/config.js';
+import type {
+	CompiledCollectionConfig,
+	CompiledGlobalConfig,
+	CompiledConfig
+} from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/index.js';
 import type { GlobalSlug } from 'rizom/types/doc.js';
@@ -16,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function createConfigInterface() {
-	const flattenConfig = (config: BuiltConfig) => {
+	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {
 			shouldFlat: ([key]) =>
 				!['cors', 'plugins', 'routes', 'locales', 'globals', 'collections'].includes(key)
@@ -26,7 +30,7 @@ export async function createConfigInterface() {
 	const fullPathToConfig = path.resolve(process.cwd(), './src/config/rizom.config');
 	const pathToconfig = path.relative(__dirname, fullPathToConfig);
 
-	let config: BuiltConfig;
+	let config: CompiledConfig;
 	try {
 		config = await import(/* @vite-ignore */ pathToconfig)
 			.then((module) => module.default)
@@ -52,11 +56,11 @@ export async function createConfigInterface() {
 		}
 	}
 
-	const getGlobal = (slug: string): BuiltGlobalConfig | undefined => {
+	const getGlobal = (slug: string): CompiledGlobalConfig | undefined => {
 		return config.globals.find((g) => g.slug === slug);
 	};
 
-	const getCollection = (slug: string): BuiltCollectionConfig | undefined => {
+	const getCollection = (slug: string): CompiledCollectionConfig | undefined => {
 		return config.collections.find((c) => c.slug === slug);
 	};
 

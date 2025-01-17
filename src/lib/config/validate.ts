@@ -1,17 +1,21 @@
 import type { BlocksFieldBlock } from 'rizom/fields/types';
 import cache from './generate/cache';
 import { taskLogger } from 'rizom/utils/logger';
-import { isBlocksField, isFormField, toFormFields } from '../utils/field';
+import { isFormField, toFormFields } from '../utils/field';
 import { isAuthConfig } from './utils';
-import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizom/types/config';
+import type {
+	CompiledCollectionConfig,
+	CompiledGlobalConfig,
+	CompiledConfig
+} from 'rizom/types/config';
 import type { AnyFormField } from 'rizom/types';
-import { compileFields } from 'rizom/fields/compile';
+import type { WithoutBuilders } from 'rizom/types/utility';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
 }
 
-function hasDuplicateSlug(config: BuiltConfig) {
+function hasDuplicateSlug(config: CompiledConfig) {
 	const slugs = [];
 	for (const collection of config.collections) {
 		slugs.push(collection.slug);
@@ -27,7 +31,7 @@ function hasDuplicateSlug(config: BuiltConfig) {
 	return [];
 }
 
-function hasUsersSlug(config: BuiltConfig) {
+function hasUsersSlug(config: CompiledConfig) {
 	const invalid = config.collections.filter((collection) => collection.slug === 'users').length > 1;
 	if (invalid) {
 		return ['"users" is a reserved slug for panel users'];
@@ -35,7 +39,7 @@ function hasUsersSlug(config: BuiltConfig) {
 	return [];
 }
 
-const validateFields = (config: BuiltConfig) => {
+const validateFields = (config: CompiledConfig) => {
 	let errors: string[] = [];
 	for (const collection of config.collections) {
 		const collectionErrors = validateDocumentFields(collection);
@@ -48,11 +52,11 @@ const validateFields = (config: BuiltConfig) => {
 	return errors;
 };
 
-type UnknownConfig = BuiltCollectionConfig | BuiltGlobalConfig;
+type UnknownConfig = CompiledCollectionConfig | CompiledGlobalConfig;
 
 const validateDocumentFields = (config: UnknownConfig) => {
 	const errors: string[] = [];
-	const isCollection = (config: UnknownConfig): config is BuiltCollectionConfig =>
+	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
 	const registeredBlocks: Record<string, BlocksFieldBlock> = {};
@@ -77,7 +81,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 	};
 
-	const validateFormFields = (fields: AnyFormField[]) => {
+	const validateFormFields = (fields: WithoutBuilders<AnyFormField>[]) => {
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {
@@ -85,7 +89,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			}
 		}
 		for (const field of fields) {
-			if (isBlocksField(field)) {
+			if (field.type === 'blocks') {
 				for (const block of field.blocks) {
 					if (block.name in registeredBlocks) {
 						const blockDefinedButDiffer =
@@ -109,18 +113,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	return errors;
 };
 
-function validate(config: BuiltConfig): boolean {
-	config = {
-		...config,
-		collections: config.collections.map((collection) => ({
-			...collection,
-			fields: compileFields(collection.fields || [])
-		})),
-		globals: config.globals.map((global) => ({
-			...global,
-			fields: compileFields(global.fields || [])
-		}))
-	};
+function validate(config: CompiledConfig): boolean {
 	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields];
 
 	for (const isValid of validateFunctions) {

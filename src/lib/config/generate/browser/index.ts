@@ -2,11 +2,11 @@ import fs from 'fs';
 import path from 'path';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from 'rizom/config/generate/cache/index.js';
-import type { BuiltConfig } from 'rizom/types/config.js';
+import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
 import { PACKAGE_NAME } from 'rizom/constant';
-import { compileFields } from 'rizom/fields/compile';
 import type { FieldsComponents } from 'rizom/types/panel';
+import type { FieldsType } from 'rizom/types';
 
 let hasEnv = false;
 
@@ -116,22 +116,12 @@ function parseValue(key: string, value: any): string | boolean | number {
 	}
 }
 
-type BuiltConfigWithBluePrints = BuiltConfig & { blueprints: Record<FieldsType, FieldsComponents> };
+type BuiltConfigWithBluePrints = CompiledConfig & {
+	blueprints: Record<FieldsType, FieldsComponents>;
+};
 
 // Main build function
 const generateBrowserConfig = (config: BuiltConfigWithBluePrints) => {
-	config = {
-		...config,
-		collections: config.collections.map((collection) => ({
-			...collection,
-			fields: compileFields(collection.fields || [])
-		})),
-		globals: config.globals.map((global) => ({
-			...global,
-			fields: compileFields(global.fields || [])
-		}))
-	};
-
 	const content = buildConfigString(config);
 
 	if (cache.get('config.browser') !== content) {

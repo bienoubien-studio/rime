@@ -15,9 +15,10 @@ Object.values(builders).forEach((builder: any) => {
 				cell: instance.cell
 			};
 		}
-	} catch (e) {
+	} catch (e: any) {
 		// Skip if the builder throws an error with dummy args
 		console.warn(`Skipping builder: ${builder.name}`);
+		console.error(e);
 	}
 });
 

@@ -16,6 +16,8 @@ import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { componentsMap } from 'rizom/fields/components.js';
 import type { FieldsComponents } from 'rizom/types/panel.js';
+import { compileConfig } from '../compile.server.js';
+import { dev } from '$app/environment';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<BuiltConfig>;
 
@@ -84,7 +86,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	// Plugins
 	//////////////////////////////////////////////
 	if (config.plugins) {
-		const { builtConfigWithPlugins } = registerPlugins({
+		const { pluginsFieldsComponents, builtConfigWithPlugins } = registerPlugins({
 			plugins: config.plugins,
 			builtConfig
 		});
@@ -99,25 +101,24 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	// Generate files
 	//////////////////////////////////////////////
 
-	if (generate) {
+	if (dev) {
+		const compiledConfig = compileConfig(builtConfig);
 		const writeMemo = await import('./write.js').then((module) => module.default);
-		const changed = writeMemo(builtConfig);
+		const changed = writeMemo(compiledConfig);
 		if (changed) {
 			const validate = await import('../validate.js').then((module) => module.default);
-			const valid = validate(builtConfig);
+			const valid = validate(compiledConfig);
+			if (!valid) {
+				throw new RizomError('Config not valid');
+			}
 
-			if (valid) {
-				generateBrowserConfig({ ...builtConfig, blueprints: fieldsComponentsMap });
+			if (generate) {
+				generateBrowserConfig({ ...compiledConfig, blueprints: fieldsComponentsMap });
 				generateSchema(builtConfig);
 				generateRoutes(builtConfig);
 				generateTypes(builtConfig);
-			} else {
-				throw new RizomError('Config not valid');
 			}
 		}
-	} else {
-		const validate = await import('../validate.js').then((module) => module.default);
-		validate(builtConfig);
 	}
 
 	return builtConfig;

@@ -14,7 +14,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
-import type { BuiltCollectionConfig } from 'rizom/types/config';
+import type { CompiledCollectionConfig } from 'rizom/types/config';
 import { RizomHookError } from 'rizom/errors/hook.server.js';
 import logger from 'rizom/utils/logger/index.js';
 import type {
@@ -220,7 +220,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 type Args<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
 	locale?: string | undefined;
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 	api: LocalAPI;
 	event?: RequestEvent & {
 		locals: App.Locals;
