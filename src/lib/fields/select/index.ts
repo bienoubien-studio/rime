@@ -2,19 +2,22 @@ import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Select from './component/Select.svelte';
-import type { FieldBluePrint } from 'rizom/types/fields';
-
-export const blueprint: FieldBluePrint<SelectField> = {
-	component: Select,
-	toSchema(field) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		return `${name}: text('${snake_name}', { mode: 'json' })`;
-	},
-	toType: (field) => `${field.name}${field.required ? '' : '?'}: string[]`
-};
+import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
+	get component() {
+		return Select;
+	}
+
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		return `${this.field.name}: text('${snake_name}', { mode: 'json' })`;
+	}
+
+	toType() {
+		return `${this.field.name}${this.field.required ? '' : '?'}: string[]`;
+	}
+
 	many() {
 		this.field.many = true;
 		return this;
@@ -26,7 +29,8 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 	}
 }
 
-export const select = (name: string) => new SelectManyFieldBuilder(name, 'select');
+export const select = (name: string) =>
+	new SelectManyFieldBuilder(name, 'select') as PublicBuilder<typeof SelectManyFieldBuilder>;
 
 /////////////////////////////////////////////
 // Type

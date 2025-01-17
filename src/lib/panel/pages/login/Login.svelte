@@ -42,7 +42,7 @@
 				<Card.Title>Connexion</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Email config={usersFields.email} form={context} />
+				<Email config={usersFields.email.toField()} form={context} />
 				<Text type="password" config={text('password').required().toField()} form={context} />
 			</Card.Content>
 			<Card.Footer>

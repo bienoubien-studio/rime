@@ -3,21 +3,24 @@ import { SelectFieldBuilder } from '../_builders/index.js';
 import { templateUniqueRequired } from 'rizom/config/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import Combobox from './component/Combobox.svelte';
-import type { FieldBluePrint } from 'rizom/types/fields';
+import type { PublicBuilder } from 'rizom/types/utility.js';
 
-export const blueprint: FieldBluePrint<ComboBoxField> = {
-	component: Combobox,
-	toSchema(field: ComboBoxField) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		const suffix = templateUniqueRequired(field);
-		return `${name}: text('${snake_name}')${suffix}`;
-	},
-	toType: (field) => `${field.name}: string`,
-	match: (field): field is ComboBoxField => field.type === 'combobox'
-};
+class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
+	get component() {
+		return Combobox;
+	}
+	toType() {
+		return `${this.field.name}: string`;
+	}
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		const suffix = templateUniqueRequired(this.field);
+		return `${this.field.name}: text('${snake_name}')${suffix}`;
+	}
+}
 
-export const combobox = (name: string) => new SelectFieldBuilder<ComboBoxField>(name, 'radio');
+export const combobox = (name: string) =>
+	new ComboBoxFieldBuilder(name, 'combobox') as PublicBuilder<typeof ComboBoxFieldBuilder>;
 
 /////////////////////////////////////////////
 // Type

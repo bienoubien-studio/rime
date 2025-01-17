@@ -1,3 +1,5 @@
+import type { FieldBuilder } from 'rizom/fields/_builders';
+
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
@@ -7,3 +9,8 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 ) => Promise<infer R>
 	? R
 	: any;
+
+export type PublicBuilder<T extends FieldBuilder> = Omit<
+	InstanceType<T>,
+	'component' | 'cell' | 'toType' | 'toSchema' | 'raw' | 'type' | 'name'
+>;

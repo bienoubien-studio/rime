@@ -32,8 +32,8 @@
 			</Card.Header>
 			<Card.Content>
 				<Text config={text('name').required().toField()} form={context} />
-				<Email config={usersFields.email} form={context} />
-				<Text type="password" config={usersFields.password} form={context} />
+				<Email config={usersFields.email.toField()} form={context} />
+				<Text type="password" config={usersFields.password.toField()} form={context} />
 			</Card.Content>
 			<Card.Footer>
 				<Button type="submit" size="lg">Create</Button>

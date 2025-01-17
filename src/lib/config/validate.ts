@@ -5,6 +5,7 @@ import { isBlocksField, isFormField, toFormFields } from '../utils/field';
 import { isAuthConfig } from './utils';
 import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizom/types/config';
 import type { AnyFormField } from 'rizom/types';
+import { compileFields } from 'rizom/fields/compile';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -59,7 +60,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	if (isAuth) {
 		const hasRolesField = config.fields
 			.filter(isFormField)
-			.find((f: AnyFormField) => f.name === 'roles' && f.type === 'select');
+			.find((f) => f.name === 'roles' && f.type === 'select');
 		const hasEmailField = config.fields
 			.filter(isFormField)
 			.find((f: AnyFormField) => f.name === 'email' && f.type === 'email');
@@ -109,6 +110,17 @@ const validateDocumentFields = (config: UnknownConfig) => {
 };
 
 function validate(config: BuiltConfig): boolean {
+	config = {
+		...config,
+		collections: config.collections.map((collection) => ({
+			...collection,
+			fields: compileFields(collection.fields || [])
+		})),
+		globals: config.globals.map((global) => ({
+			...global,
+			fields: compileFields(global.fields || [])
+		}))
+	};
 	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields];
 
 	for (const isValid of validateFunctions) {

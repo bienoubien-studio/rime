@@ -47,7 +47,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	/** Add Password and ConfirmPassword so validation includes these fields */
 	const fields = [...config.fields];
 	if (config.auth) {
-		fields.push(usersFields.password, usersFields.confirmPassword);
+		fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
 	// extract file before merge

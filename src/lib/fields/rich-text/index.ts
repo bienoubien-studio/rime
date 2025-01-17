@@ -1,23 +1,9 @@
 import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
-import type { AnyField } from 'rizom/types';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-
-export const blueprint = {
-	component: RichText,
-	cell: Cell,
-	toSchema(field: RichTextField) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		const suffix = field.required ? '.notNull()' : '';
-		return `${name}: text('${snake_name}')${suffix}`;
-	},
-	toType: (field: RichTextField) =>
-		`${field.name}${field.required ? '' : '?'}: { content: RichTextNode[] }`,
-	match: (field: AnyField): field is RichTextField => field.type === 'richText'
-};
+import type { PublicBuilder } from 'rizom/types/utility.js';
 
 const isEmpty = (value: any) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -50,6 +36,24 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 			beforeSave: [RichTextFieldBuilder.stringify],
 			beforeValidate: []
 		};
+	}
+
+	get component() {
+		return RichText;
+	}
+
+	get cell() {
+		return Cell;
+	}
+
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		const suffix = this.field.required ? '.notNull()' : '';
+		return `${this.field.name}: text('${snake_name}')${suffix}`;
+	}
+
+	toType() {
+		return `${this.field.name}${this.field.required ? '' : '?'}: { content: RichTextNode[] }`;
 	}
 
 	marks(...marks: RichTextFieldMark[]) {
@@ -99,7 +103,8 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	}
 }
 
-export const richText = (name: string) => new RichTextFieldBuilder(name);
+export const richText = (name: string) =>
+	new RichTextFieldBuilder(name) as PublicBuilder<typeof RichTextFieldBuilder>;
 
 export type RichTextField = FormField & {
 	type: 'richText';

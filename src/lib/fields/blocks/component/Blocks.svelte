@@ -2,20 +2,14 @@
 	import { capitalize } from '$lib/utils/string.js';
 	import AddBlockButton from './AddBlockButton.svelte';
 	import Block from './Block.svelte';
-	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { Field } from 'rizom/panel';
 	import { useSortable } from '$lib/panel/utility/Sortable';
-	import type { BlocksField, BlocksFieldBlock } from 'rizom/fields/blocks';
+	import type { BlocksFieldBlock } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
+	import type { BlocksProps } from './props.js';
 	import './blocks.css';
 
-	type Props = {
-		path: string;
-		config: BlocksField;
-		form: DocumentFormContext;
-	};
-
-	const { path, config, form }: Props = $props();
+	const { path, config, form }: BlocksProps = $props();
 
 	let blockList: HTMLElement;
 

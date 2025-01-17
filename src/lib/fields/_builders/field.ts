@@ -1,5 +1,6 @@
 import type { FieldPanelTableConfig, FieldsType } from 'rizom/types';
 import type {
+	AnyFormField,
 	BaseField,
 	FieldAccess,
 	FieldHook,
@@ -7,8 +8,9 @@ import type {
 	FieldWidth,
 	FormField
 } from 'rizom/types/fields';
+import type { Component } from 'svelte';
 
-export class FieldBuilder<T extends BaseField> {
+export class FieldBuilder<T extends BaseField = BaseField> {
 	field: T;
 
 	constructor(type: FieldsType) {
@@ -26,15 +28,41 @@ export class FieldBuilder<T extends BaseField> {
 		this.field.live = bool;
 		return this;
 	}
+
+	get type() {
+		return this.field.type;
+	}
+
+	get raw() {
+		return this.field;
+	}
+
+	get cell(): Component | null {
+		return null;
+	}
 }
 
-export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
+export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldBuilder<T> {
 	//
 	constructor(name: string, type: FieldsType) {
 		super(type);
 		this.field.name = name;
 		this.field.isEmpty = (value: any) => !value;
 		return this;
+	}
+
+	get name() {
+		return this.field.name;
+	}
+
+	toType() {
+		console.log(this.field.type + ' missing toType not implementated');
+		return '';
+	}
+
+	toSchema() {
+		console.log(this.field.type + ' missing toSchema not implementated');
+		return '';
 	}
 
 	label(label: string) {

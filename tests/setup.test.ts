@@ -1,7 +1,7 @@
 import test, { expect } from '@playwright/test';
 import { execSync } from 'node:child_process';
 
-const BASE_URL = 'http://local.rizom:5173';
+const BASE_URL = 'http://rizom.test:5173';
 const API_BASE_URL = `${BASE_URL}/api`;
 
 execSync('rm -fr ./app.md');

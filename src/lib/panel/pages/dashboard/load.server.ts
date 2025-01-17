@@ -38,10 +38,19 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 							lastEdited: docs
 						})
 					)
+					.catch((err: any) => {
+						console.log(collection.slug);
+						console.error(err);
+					})
 			: false
 	);
 
-	await Promise.all(requests.filter(Boolean));
+	try {
+		await Promise.all(requests.filter(Boolean));
+	} catch (err: any) {
+		console.log(requests.filter(Boolean));
+		console.error(err);
+	}
 
 	for (const global of rizom.config.globals) {
 		if (user && global.access.read(user)) {

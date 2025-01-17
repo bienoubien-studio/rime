@@ -2,7 +2,7 @@ import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/collection/upload/utils/converter';
 import path from 'path';
 
-const API_BASE_URL = 'http://local.rizom:5173/api';
+const API_BASE_URL = 'http://rizom.test:5173/api';
 
 let token: string;
 

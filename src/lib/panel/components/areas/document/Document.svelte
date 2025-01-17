@@ -104,7 +104,7 @@
 			actionSuffix = '?/update';
 		}
 
-		// Add a redirect parameter if we're in a nested form
+		// Add a redirect parameter if we're in a nested form ex: relation creation
 		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
 
 		// Combine all parts to form the final action URL

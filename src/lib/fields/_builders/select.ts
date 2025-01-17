@@ -32,45 +32,26 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 	}
 
 	options(...options: Option[] | string[]) {
-		const formattedOptions = options.map((option) => {
+		this.field.options = options.map((option) => {
 			if (typeof option === 'string') {
 				return { label: capitalize(option), value: option };
+			} else {
+				const hasNoLabel = !('label' in option);
+				if (hasNoLabel) {
+					return {
+						value: option.value,
+						label: capitalize(option.value)
+					};
+				}
 			}
 			return option;
 		});
 
-		this.field.options = formattedOptions;
 		return this;
 	}
 
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
 		return this;
-	}
-
-	normalizeOptions(field: T) {
-		const options = field.options.map((option) => {
-			const hasNoLabel = !('label' in option);
-			if (hasNoLabel) {
-				return {
-					value: option.value,
-					label: capitalize(option.value)
-				};
-			}
-			return option;
-		});
-		return {
-			...field,
-			options
-		};
-	}
-
-	static normalizeOptions(field: FieldWithOptions) {
-		return new SelectFieldBuilder('tmp', field.type).normalizeOptions(field);
-	}
-
-	toField(): T {
-		this.field = this.normalizeOptions(this.field);
-		return super.toField();
 	}
 }

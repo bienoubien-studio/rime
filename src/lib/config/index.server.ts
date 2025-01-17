@@ -9,6 +9,8 @@ import type { BuiltCollectionConfig, BuiltConfig, BuiltGlobalConfig } from 'rizo
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/index.js';
 import type { GlobalSlug } from 'rizom/types/doc.js';
+import { compileConfig } from './compile.server.js';
+import { dev } from '$app/environment';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,7 +30,8 @@ export async function createConfigInterface() {
 	try {
 		config = await import(/* @vite-ignore */ pathToconfig)
 			.then((module) => module.default)
-			.then(async (rawConfig) => await buildConfig(rawConfig));
+			.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }))
+			.then((builtConfig) => compileConfig(builtConfig));
 	} catch (err) {
 		console.log(err);
 		throw new Error("can't import config from " + pathToconfig);
@@ -105,11 +108,10 @@ export async function createConfigInterface() {
 		},
 
 		async reload() {
-			// return;
-			// taskLogger.info('↪  config   :: reload');
 			config = await import(/* @vite-ignore */ pathToconfig)
 				.then((module) => module.default)
-				.then(async (rawConfig) => await buildConfig(rawConfig));
+				.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }))
+				.then((builtConfig) => compileConfig(builtConfig));
 			flatConfig = flattenConfig(config);
 		},
 

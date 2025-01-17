@@ -1,5 +1,5 @@
-import type { Component } from 'svelte';
 import type { BuiltConfig, RouteConfig } from './config';
+import type { Component } from 'svelte';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 
@@ -11,7 +11,7 @@ export type Plugin<TArgs extends Dic = Dic> = (options: TArgs) => {
 	fields?: Array<{
 		type: string;
 		component: Component;
-		cell?: Component;
+		cell: Component | null;
 		toSchema: () => string;
 		toType: () => string;
 	}>;

@@ -16,8 +16,7 @@ import type { AnyField } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
-import { compileField } from 'rizom/fields/compile.js';
-import { SelectFieldBuilder } from 'rizom/fields/_builders/index.js';
+import { FieldBuilder } from 'rizom/fields/_builders/index.js';
 import { date, relation } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
@@ -45,9 +44,9 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 	return hooks;
 };
 
-const buildFields = (collection: CollectionConfig): AnyField[] => {
+const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => {
 	//
-	let fields: AnyField[] = (collection.fields || []).map(compileField);
+	let fields = collection.fields;
 
 	if (collection.auth) {
 		const isNotPanelUsersCollection = !(collection.slug === 'users');
@@ -63,30 +62,25 @@ const buildFields = (collection: CollectionConfig): AnyField[] => {
 	if (collection.upload) {
 		if ('imageSizes' in collection && collection.imageSizes?.length) {
 			const sizesFields = collection.imageSizes.map((size: ImageSizesConfig) =>
-				text(toCamelCase(size.name)).hidden().toField()
+				text(toCamelCase(size.name)).hidden()
 			);
 			fields = [...fields, ...sizesFields];
 		}
 
-		const mimeType = text('mimeType').hidden().toField();
+		const mimeType = text('mimeType').hidden();
 
 		if ('accept' in collection) {
-			mimeType.validate = (value: string) => {
+			mimeType.raw.validate = (value: string) => {
 				return (
 					collection.accept.includes(value) ||
 					`File should be the type of ${collection.accept.toString()}`
 				);
 			};
 		}
-		fields = [
-			...fields,
-			mimeType,
-			text('filename').hidden().toField(),
-			text('filesize').hidden().toField()
-		];
+		fields = [...fields, mimeType, text('filename').hidden(), text('filesize').hidden()];
 	}
 
-	fields = [...fields, date('createdAt').hidden().toField(), date('updatedAt').hidden().toField()];
+	fields = [...fields, date('createdAt').hidden(), date('updatedAt').hidden()];
 
 	return fields;
 };
@@ -94,11 +88,11 @@ const buildFields = (collection: CollectionConfig): AnyField[] => {
 export const buildCollection = async (
 	collection: CollectionConfig
 ): Promise<BuiltCollectionConfig> => {
-	const fields: AnyField[] = buildFields(collection);
+	const fields = buildFields(collection);
 
 	// Add generic documents title field if not defined
 	const addAsTitle = () => {
-		const fieldTitle = findTitleField(fields);
+		const fieldTitle = findTitleField(collection.fields);
 		if (fieldTitle) return fieldTitle.name;
 		if (collection.upload) return 'filename';
 		if (collection.auth) return 'email';
@@ -126,7 +120,7 @@ export const buildCollection = async (
 		collection.panelThumbnail = thumbnailName;
 	}
 
-	fields.push(relation('_editedBy').to('users').hidden().toField());
+	fields.push(relation('_editedBy').to('users').hidden());
 
 	return {
 		...collection,
@@ -156,21 +150,22 @@ export const mergePanelUsersCollectionWithDefault = ({
 }: PanelUsersConfig = {}) => {
 	const collection = { ...panelUsersCollection };
 	if (roles) {
-		const adminInRoles = roles.find((role) => role.value === 'admin');
-		const roleField = {
-			...usersFields.roles,
-			options: roles
-		};
-		if (!adminInRoles) {
-			roleField.options = [{ value: 'admin', label: 'Administrator' }, ...roles];
+		const hasAdminRole = roles.find((role) => role.value === 'admin');
+
+		if (!hasAdminRole) {
+			roles = [{ value: 'admin', label: 'Administrator' }, ...roles];
 		}
+		const roleField = usersFields.roles.options(...roles);
+
 		collection.fields = [
-			...collection.fields.filter(isFormField).filter((f) => f.name !== 'roles'),
-			SelectFieldBuilder.normalizeOptions(roleField)
+			...collection.fields
+				.filter((field) => isFormField(field.raw))
+				.filter((field) => field.raw.name !== 'roles'),
+			roleField
 		];
 	}
 	if (fields) {
-		collection.fields.push(...fields.map(compileField));
+		collection.fields.push(...fields);
 	}
 	if (access) {
 		collection.access = {

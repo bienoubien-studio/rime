@@ -13,7 +13,7 @@ export type { Config, CollectionConfig, GlobalConfig, BrowserConfig } from './ty
 export type { Link } from 'rizom/fields/link';
 export type { UploadDoc, BaseDoc } from './types/doc.js';
 export type { User } from 'rizom/types/auth.js';
-export type { Plugin } from 'rizom/types/plugin.js';
+export type { Plugin } from 'rizom/types/config.js';
 export type { Rizom } from 'rizom/rizom.server.js';
 export type { LocalAPI } from 'rizom/types/api.js';
 export type { Navigation } from './panel/navigation.js';
@@ -43,3 +43,5 @@ declare module 'rizom' {
 		AnyField: RegisterFields[keyof RegisterFields];
 	}
 }
+
+export type GetRegisterType<K extends keyof Register> = Register[K];

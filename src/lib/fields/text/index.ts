@@ -2,19 +2,8 @@ import type { FormField } from 'rizom/types';
 import toSnakeCase from 'to-snake-case';
 import { FormFieldBuilder } from '../_builders/index.js';
 import { templateUniqueRequired } from 'rizom/config/generate/schema/templates.js';
-import type { FieldBluePrint } from 'rizom/types/fields';
 import Text from './component/Text.svelte';
-
-export const blueprint: FieldBluePrint<TextField> = {
-	component: Text,
-	toSchema(field) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		const suffix = templateUniqueRequired(field);
-		return `${name}: text('${snake_name}')${suffix}`;
-	},
-	toType: (field) => `${field.name}${field.required ? '' : '?'}: string`
-};
+import type { PublicBuilder } from 'rizom/types/utility.js';
 
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
@@ -22,18 +11,38 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		this.field.unique = true;
 		return this;
 	}
+
+	get component() {
+		return Text;
+	}
+
+	get cell() {
+		return null;
+	}
+
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		const suffix = templateUniqueRequired(this.field);
+		return `${this.field.name}: text('${snake_name}')${suffix}`;
+	}
+
+	toType() {
+		return `${this.field.name}${this.field.required ? '' : '?'}: string`;
+	}
+
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
 		return this;
 	}
+
 	isTitle() {
 		this.field.isTitle = true;
 		return this;
 	}
+
 	toField() {
 		if (!this.field.validate) {
 			this.field.validate = (value: any) => {
-				// console.log(value);
 				return typeof value === 'string' || 'Should be a string';
 			};
 		}
@@ -41,7 +50,8 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	}
 }
 
-export const text = (name: string) => new TextFieldBuilder(name, 'text');
+export const text = (name: string) =>
+	new TextFieldBuilder(name, 'text') as PublicBuilder<typeof TextFieldBuilder>;
 
 /////////////////////////////////////////////
 // Type

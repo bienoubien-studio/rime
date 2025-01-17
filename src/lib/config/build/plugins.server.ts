@@ -1,5 +1,5 @@
-import type { FieldBluePrint } from 'rizom/types/fields';
-import type { AnyField, BuiltConfig, Config } from 'rizom/types';
+import type { BuiltConfig, Config } from 'rizom/types';
+import type { FieldsComponents } from 'rizom/types/panel';
 
 type Args = {
 	plugins: Config['plugins'];
@@ -7,20 +7,20 @@ type Args = {
 };
 
 export const registerPlugins = ({ plugins, builtConfig }: Args) => {
+	let pluginsFieldsComponents: Record<string, FieldsComponents> = {};
 	for (const plugin of plugins!) {
 		// register fields
 		if ('fields' in plugin && Array.isArray(plugin.fields)) {
-			const blueprints: Record<string, FieldBluePrint<AnyField>> = Object.fromEntries(
+			const pluginFieldsComponents: Record<string, FieldsComponents> = Object.fromEntries(
 				plugin.fields.map((field) => [
 					field.type,
 					{
 						component: field.component,
-						toSchema: field.toSchema,
-						toType: field.toType
+						cell: field.cell
 					}
 				])
 			);
-			builtConfig.blueprints = { ...builtConfig.blueprints, ...blueprints };
+			pluginsFieldsComponents = { ...pluginsFieldsComponents, ...pluginFieldsComponents };
 		}
 
 		// Augment config
@@ -42,5 +42,5 @@ export const registerPlugins = ({ plugins, builtConfig }: Args) => {
 		plugins!.map((plugin) => [plugin.name, plugin.actions || {}])
 	);
 
-	return builtConfig;
+	return { builtConfigWithPlugins: builtConfig, pluginsFieldsComponents };
 };

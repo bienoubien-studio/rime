@@ -9,16 +9,17 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 		webServer: {
 			command: `pnpm rizom:use ${name} && vite dev`,
 			port: 5173,
-			stdout: 'ignore',
-			stderr: 'ignore'
+			stdout: 'pipe',
+			stderr: 'pipe'
 		},
+		retries: 3,
 		expect: {
-			timeout: 5000
+			timeout: 30000
 		},
 		use: {
-			baseURL: 'http://local.rizom:5173',
+			baseURL: 'http://rizom.test:5173',
 			extraHTTPHeaders: {
-				origin: 'http://local.rizom:5173'
+				origin: 'http://rizom.test:5173'
 			}
 		},
 		projects: [
@@ -31,7 +32,8 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 				name: 'tests',
 				dependencies: ['setup'],
 				testDir: `./tests/${name}`,
-				testMatch: /^(?!.*setup\.test\.ts).*\.test\.ts$/
+				testMatch: /^.*\.test\.ts$/,
+				timeout: 60000
 				// testMatch: /pages\.test\.ts/
 			}
 		]

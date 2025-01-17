@@ -261,7 +261,7 @@ const config: Config = {
 		default: 'fr'
 	},
 
-	// cors: ['localhost:5173', 'local.rizom:5173'],
+	// cors: ['localhost:5173', 'rizom.test:5173'],
 
 
 

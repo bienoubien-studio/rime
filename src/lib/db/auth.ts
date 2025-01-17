@@ -113,7 +113,6 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		if (!users.length) {
 			return false;
 		} else {
-			// console.log('- user exist');
 			user = users[0];
 		}
 

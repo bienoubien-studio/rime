@@ -1,22 +1,12 @@
 import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
-import type { AnyField } from 'rizom/types';
 import Number from './component/Number.svelte';
 import type { FieldValidationFunc } from 'rizom/types/fields.js';
+import type { PublicBuilder } from 'rizom/types/utility.js';
 
-export const blueprint = {
-	component: Number,
-	toSchema(field: NumberField) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		return `${name}: real('${snake_name}')`;
-	},
-	toType: (field: NumberField) => `${field.name}${field.required ? '' : '?'}: number`,
-	match: (field: AnyField): field is NumberField => field.type === 'number'
-};
-
-export const number = (name: string) => new NumberFieldBuilder(name, 'number');
+export const number = (name: string) =>
+	new NumberFieldBuilder(name, 'number') as PublicBuilder<typeof NumberFieldBuilder>;
 
 const validateValue: FieldValidationFunc<NumberField> = (value, { config }) => {
 	if (typeof value !== 'number') {
@@ -32,7 +22,19 @@ const validateValue: FieldValidationFunc<NumberField> = (value, { config }) => {
 };
 
 class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
-	//
+	get component() {
+		return Number;
+	}
+
+	toType() {
+		return `${this.field.name}${this.field.required ? '' : '?'}: number`;
+	}
+
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		return `${this.field.name}: real('${snake_name}')`;
+	}
+
 	defaultValue(value: number) {
 		this.field.defaultValue = value;
 		return this;

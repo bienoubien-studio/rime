@@ -1,7 +1,7 @@
 import type { FieldBuilder } from '../config/fields';
 import type { User } from './auth';
 import type { GenericDoc } from './doc';
-import type { GetRegisterType } from 'rizom/types/register';
+import type { GetRegisterType } from 'rizom';
 import type { FieldPanelTableConfig } from './panel';
 import type { LocalAPI } from 'rizom/types/api';
 
@@ -23,12 +23,10 @@ type FieldAccessParams = { id?: string };
 type FieldAccess = (user: User | undefined, params?: FieldAccessParams) => boolean;
 type FieldWidth = '1/3' | '1/2' | '2/3';
 
-export type FieldBluePrint<T extends AnyField = AnyField> = {
-	component: any;
-	cell?: any;
-	toSchema?: (field: T) => string;
-	toType?: (field: T) => string;
-};
+// export type BrowserField = {
+// 	component: any;
+// 	cell?: any;
+// };
 
 // Base type for all fields
 type BaseField = {

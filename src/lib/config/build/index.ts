@@ -1,6 +1,6 @@
 import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
 import { access } from 'rizom/utils/access/index.js';
-import buildBrowserConfig from './browser.js';
+import generateBrowserConfig from 'rizom/config/generate/browser/index.js';
 import generateSchema from 'rizom/config/generate/schema/index.js';
 import generateRoutes from 'rizom/config/generate/routes/index.js';
 import generateTypes from 'rizom/config/generate/types/index.js';
@@ -12,18 +12,18 @@ import type {
 } from 'rizom/types/config.js';
 import { RizomError } from 'rizom/errors/error.server.js';
 import type { Dic } from 'rizom/types/utility.js';
-import * as blueprints from 'rizom/fields/blueprints.js';
 import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
+import { componentsMap } from 'rizom/fields/components.js';
+import type { FieldsComponents } from 'rizom/types/panel.js';
 
-const dev = process.env.NODE_ENV === 'development';
-const execFromCommandLine =
-	process.env.npm_lifecycle_script && !process.env.npm_lifecycle_script.includes('vite dev');
+type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<BuiltConfig>;
 
 /**
  * Add extra configuration to Globals and Collections
  */
-const buildConfig = async (config: Config): Promise<BuiltConfig> => {
+
+const buildConfig: BuildConfig = async (config: Config, { generate } = { generate: false }) => {
 	let collections: BuiltCollectionConfig[] = [];
 	let globals: BuiltGlobalConfig[] = [];
 	const icons: Dic = {};
@@ -74,42 +74,50 @@ const buildConfig = async (config: Config): Promise<BuiltConfig> => {
 		},
 		collections,
 		plugins: {},
-		//@ts-expect-error will fix it
-		blueprints,
 		globals,
 		icons
 	};
+
+	let fieldsComponentsMap: Record<string, FieldsComponents> = { ...componentsMap };
 
 	/////////////////////////////////////////////
 	// Plugins
 	//////////////////////////////////////////////
 	if (config.plugins) {
-		builtConfig = registerPlugins({ plugins: config.plugins, builtConfig });
+		const { builtConfigWithPlugins } = registerPlugins({
+			plugins: config.plugins,
+			builtConfig
+		});
+		builtConfig = builtConfigWithPlugins;
+		fieldsComponentsMap = {
+			...pluginsFieldsComponents,
+			...fieldsComponentsMap
+		};
 	}
 
 	/////////////////////////////////////////////
 	// Generate files
 	//////////////////////////////////////////////
-	if (dev) {
-		if (!execFromCommandLine) {
-			const writeMemo = await import('./write.js').then((module) => module.default);
-			const changed = writeMemo(builtConfig);
-			if (changed) {
-				const validate = await import('../validate.js').then((module) => module.default);
-				const valid = validate(builtConfig);
-				if (valid) {
-					buildBrowserConfig(builtConfig);
-					generateSchema(builtConfig);
-					generateRoutes(builtConfig);
-					generateTypes(builtConfig);
-				} else {
-					throw new RizomError('Config not valid');
-				}
-			}
-		} else {
+
+	if (generate) {
+		const writeMemo = await import('./write.js').then((module) => module.default);
+		const changed = writeMemo(builtConfig);
+		if (changed) {
 			const validate = await import('../validate.js').then((module) => module.default);
-			validate(builtConfig);
+			const valid = validate(builtConfig);
+
+			if (valid) {
+				generateBrowserConfig({ ...builtConfig, blueprints: fieldsComponentsMap });
+				generateSchema(builtConfig);
+				generateRoutes(builtConfig);
+				generateTypes(builtConfig);
+			} else {
+				throw new RizomError('Config not valid');
+			}
 		}
+	} else {
+		const validate = await import('../validate.js').then((module) => module.default);
+		validate(builtConfig);
 	}
 
 	return builtConfig;

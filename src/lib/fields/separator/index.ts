@@ -1,14 +1,16 @@
 import type { BaseField } from 'rizom/types/fields';
 import { FieldBuilder } from '../_builders/index.js';
-import type { AnyField } from 'rizom/types';
 import Separator from './component/Separator.svelte';
 
-export const blueprint = {
-	component: Separator,
-	match: (field: AnyField): field is SeparatorField => field.type === 'separator'
-};
+class SeparatorFieldBuilder extends FieldBuilder<SeparatorField> {
+	get component() {
+		return Separator;
+	}
+}
 
-export const separator = () => new FieldBuilder<SeparatorField>('separator');
+type PublicSeparatorFieldBuilder = Omit<SeparatorFieldBuilder, 'component'>;
+export const separator = () =>
+	new SeparatorFieldBuilder('separator') as PublicSeparatorFieldBuilder;
 
 /////////////////////////////////////////////
 // Type
@@ -22,7 +24,7 @@ export type SeparatorField = BaseField & {
 //////////////////////////////////////////////
 declare module 'rizom' {
 	interface RegisterFieldsType {
-		slug: any;
+		separator: any;
 	}
 	interface RegisterFields {
 		SeparatorField: SeparatorField; // register the field type

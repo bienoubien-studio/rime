@@ -1,13 +1,14 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from './auth.js';
-import type { AnyField } from './fields.js';
+import type { AnyField, FieldsType } from './fields.js';
 import type { GenericDoc } from './doc.js';
 import type { CollectionHooks, GlobalHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
-import type { FieldBluePrint } from 'rizom/types/fields.js';
-import type { GetRegisterType } from './register.js';
+import type { GetRegisterType } from 'rizom';
+import type { FieldBuilder } from 'rizom/fields/_builders/field.js';
+import type { FieldsComponents } from './panel.js';
 
 export type DocumentPrototype = 'collection' | 'global';
 
@@ -65,7 +66,7 @@ export type PanelUsersConfig = {
 	roles?: Option[];
 	group?: string;
 	access?: Access;
-	fields?: UserDefinedField[];
+	fields?: FieldBuilder<AnyField>[];
 };
 
 export type RouteConfig = {
@@ -136,11 +137,11 @@ export type BuiltConfig = {
 		routes: Record<string, CustomPanelRoute>;
 		access: (user: User) => boolean;
 	};
-	blueprints: Record<string, FieldBluePrint>;
 };
 
-export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'routes'>;
-
+export type BrowserConfig = Omit<BuiltConfig, 'panel' | 'cors' | 'routes'> & {
+	blueprints: Record<FieldsType, FieldsComponents>;
+};
 export type CustomPanelRoute = {
 	group?: string;
 	label: string;

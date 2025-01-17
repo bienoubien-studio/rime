@@ -2,10 +2,11 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/utils/string.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
-import { isBlocksField, isFormField, isGroupField, isTabsField } from 'rizom/utils/field.js';
+import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { AnyField } from 'rizom/types/fields.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
+import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/_builders/field.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
@@ -52,39 +53,45 @@ export function generateTypesString(config: BuiltConfig) {
 		imports = new Set([...imports, string]);
 	};
 
-	const convertFieldsToTypesTemplates = (fields: AnyField[]): string[] => {
+	const convertFieldsToTypesTemplates = (fields: FieldBuilder<AnyField>[]): string[] => {
 		let strFields: string[] = [];
 
 		for (const field of fields) {
 			switch (true) {
-				case field.type in config.blueprints && !!config.blueprints[field.type].toType:
-					strFields.push(config.blueprints[field.type].toType!(field));
-					break;
-				case isBlocksField(field):
+				case isBlocksField(field.raw):
 					{
-						for (const block of field.blocks) {
+						for (const block of field.raw.blocks) {
 							if (!registeredBlocks.includes(block.name)) {
 								const templates = convertFieldsToTypesTemplates(
-									block.fields.filter(isFormField).filter((f) => f.name !== 'type')
+									block.fields
+										.filter((field) => field instanceof FormFieldBuilder)
+										.filter((field) => field.raw.name !== 'type')
 								);
 								blocksTypes.push(makeBlockType(block.name, templates.join('\n\t')));
 								registeredBlocks.push(block.name);
 							}
 						}
-						const blockNames = field.blocks.map((block) => `Block${toPascalCase(block.name)}`);
-						strFields.push(`${field.name}: Array<${blockNames.join(' | ')}>,`);
+						const blockNames = field.raw.blocks.map((block) => `Block${toPascalCase(block.name)}`);
+						strFields.push(`${field.raw.name}: Array<${blockNames.join(' | ')}>,`);
 					}
 					break;
-				case isGroupField(field): {
-					const templates = convertFieldsToTypesTemplates(field.fields);
+				case isGroupField(field.raw): {
+					const templates = convertFieldsToTypesTemplates(field.raw.fields);
 					strFields = [...strFields, ...templates];
 					break;
 				}
-				case isTabsField(field):
-					for (const tab of field.tabs) {
+				case isTabsField(field.raw):
+					for (const tab of field.raw.tabs) {
 						const templates = convertFieldsToTypesTemplates(tab.fields);
 						strFields = [...strFields, ...templates];
 					}
+					break;
+				case field instanceof FormFieldBuilder:
+					if (field.type === 'richText') {
+						addImport('RichTextNode');
+					}
+					strFields.push(field.toType());
+					break;
 			}
 		}
 		return strFields;
@@ -169,7 +176,6 @@ function write(content: string) {
 			console.error(err);
 		} else {
 			taskLogger.done('Types: generated at src/app.generated.d.ts');
-			// console.log('');
 		}
 	});
 }

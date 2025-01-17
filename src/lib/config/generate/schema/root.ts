@@ -1,4 +1,4 @@
-import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
+import type { AnyField } from 'rizom/types/fields.js';
 import {
 	isBlocksField,
 	isFormField,
@@ -10,11 +10,11 @@ import { toPascalCase } from '$lib/utils/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
 import type { LocaleConfig } from 'rizom/types/config.js';
 import type { RelationFieldsMap } from './relations/definition.js';
-import type { FieldBluePrint } from 'rizom/types/fields';
+import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/_builders/field.js';
 const p = toPascalCase;
 
 type Args = {
-	fields: AnyField[];
+	fields: FieldBuilder<AnyField>[];
 	tableName: string;
 	rootName: string;
 	locales?: LocaleConfig[];
@@ -22,7 +22,6 @@ type Args = {
 	relationFieldsMap?: RelationFieldsMap;
 	relationsDic?: Record<string, string[]>;
 	hasAuth?: boolean;
-	blueprints: Record<string, FieldBluePrint>;
 };
 
 type Return = {
@@ -32,19 +31,19 @@ type Return = {
 	relationFieldsHasLocale: boolean;
 };
 
-function hasLocalizedField(fields: AnyField[]): boolean {
+function hasLocalizedField(fields: FieldBuilder<AnyField>[]): boolean {
 	// Iterate through each field in the array
 	for (const field of fields) {
 		// Case 1: If it's a group field, check all fields within the group
-		if (isGroupField(field)) {
-			if (hasLocalizedField(field.fields)) {
+		if (isGroupField(field.raw)) {
+			if (hasLocalizedField(field.raw.fields)) {
 				return true;
 			}
 		}
 
 		// Case 2: If it's a tabs field, check all fields within each tab
-		else if (isTabsField(field)) {
-			for (const tab of field.tabs) {
+		else if (isTabsField(field.raw)) {
+			for (const tab of field.raw.tabs) {
 				if (hasLocalizedField(tab.fields)) {
 					return true;
 				}
@@ -52,8 +51,8 @@ function hasLocalizedField(fields: AnyField[]): boolean {
 		}
 
 		// Case 3: If it's a blocks field, check all fields within each block
-		else if (isBlocksField(field)) {
-			for (const block of field.blocks) {
+		else if (isBlocksField(field.raw)) {
+			for (const block of field.raw.blocks) {
 				if (hasLocalizedField(block.fields)) {
 					return true;
 				}
@@ -61,7 +60,7 @@ function hasLocalizedField(fields: AnyField[]): boolean {
 		}
 
 		// Case 4: For regular form fields, check if it's marked as localized
-		else if (isFormField(field) && field.localized) {
+		else if (isFormField(field.raw) && field.raw.localized) {
 			return true;
 		}
 	}
@@ -78,45 +77,47 @@ const buildRootTable = ({
 	locales,
 	relationFieldsMap = {},
 	relationsDic = {},
-	hasAuth,
-	blueprints
+	hasAuth
 }: Args): Return => {
 	const registeredBlocks: string[] = [];
 	const blocksTables: string[] = [];
 	let relationFieldsHasLocale = false;
 
-	const generateFieldsTemplates = (fields: AnyField[], withLocalized?: boolean): string[] => {
+	const generateFieldsTemplates = (
+		fields: FieldBuilder<AnyField>[],
+		withLocalized?: boolean
+	): string[] => {
 		/** All key/pair, rizom field / drizzle schema string  */
 		let templates: string[] = [];
 
-		const checkLocalized = (config: AnyFormField) => {
+		const checkLocalized = (field: FormFieldBuilder) => {
 			return (
-				(withLocalized && config.localized) ||
-				(!withLocalized && !config.localized) ||
+				(withLocalized && field.raw.localized) ||
+				(!withLocalized && !field.raw.localized) ||
 				withLocalized === undefined
 			);
 		};
 
 		for (const field of fields) {
-			if (isGroupField(field)) {
-				templates = [...templates, ...generateFieldsTemplates(field.fields, withLocalized)];
-			} else if (isTabsField(field)) {
-				for (const tab of field.tabs) {
+			if (isGroupField(field.raw)) {
+				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized)];
+			} else if (isTabsField(field.raw)) {
+				for (const tab of field.raw.tabs) {
 					templates = [...templates, ...generateFieldsTemplates(tab.fields, withLocalized)];
 				}
-			} else if (isRelationField(field)) {
-				if (field.localized) {
+			} else if (isRelationField(field.raw)) {
+				if (field.raw.localized) {
 					relationFieldsHasLocale = true;
 				}
 				relationFieldsMap = {
 					...relationFieldsMap,
-					[field.name]: {
-						to: field.relationTo,
-						localized: field.localized
+					[field.raw.name]: {
+						to: field.raw.relationTo,
+						localized: field.raw.localized
 					}
 				};
-			} else if (isBlocksField(field)) {
-				for (const block of field.blocks) {
+			} else if (isBlocksField(field.raw)) {
+				for (const block of field.raw.blocks) {
 					const blockTableName = `${rootName}Blocks${p(block.name)}`;
 					if (!registeredBlocks.includes(blockTableName)) {
 						relationsDic = {
@@ -134,8 +135,7 @@ const buildRootTable = ({
 							relationsDic,
 							relationFieldsMap,
 							locales,
-							rootName,
-							blueprints
+							rootName
 						});
 						relationsDic = nestedRelationsDic;
 						relationFieldsMap = nestedRelationFieldsDic;
@@ -143,10 +143,9 @@ const buildRootTable = ({
 						blocksTables.push(blockTable);
 					}
 				}
-			} else if (field.type in blueprints && 'name' in field) {
-				const blueprint = blueprints[field.type];
-				if (checkLocalized(field) && blueprint.toSchema) {
-					templates.push(blueprint.toSchema(field) + ',');
+			} else if (field instanceof FormFieldBuilder) {
+				if (checkLocalized(field)) {
+					templates.push(field.toSchema() + ',');
 				}
 			}
 		}

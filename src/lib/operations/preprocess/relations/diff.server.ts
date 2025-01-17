@@ -17,9 +17,6 @@ export const defineRelationsDiff = ({
 	extractedRelations,
 	locale
 }: Args): RelationDiff => {
-	// console.log('defineRelationsDiff input:', {
-	// 	existingRelations,
-	// 	extractedRelations,
 	// 	locale
 	// });
 

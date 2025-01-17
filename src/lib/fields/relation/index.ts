@@ -1,17 +1,10 @@
 import type { FormField } from 'rizom/types';
-import type { GetRegisterType } from 'rizom/types/register';
-import type { AnyField } from 'rizom/types';
+import type { GetRegisterType } from 'rizom';
 import Relation from './component/Relation.svelte';
 import { FormFieldBuilder } from '../_builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
 import { capitalize } from 'rizom/utils/string';
-
-export const blueprint = {
-	component: Relation,
-	toType: (field: RelationField) =>
-		`${field.name}${field.required ? '' : '?'}: RelationValue<${capitalize(field.relationTo)}Doc>`,
-	match: (field: AnyField): field is RelationField => field.type === 'relation'
-};
+import type { PublicBuilder } from 'rizom/types/utility';
 
 const ensureRelationExists: FieldHook<RelationField> = async (value, { api, config }) => {
 	const output = [];
@@ -54,6 +47,14 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 		this.field.hooks = { beforeValidate: [ensureRelationExists] };
 	}
 
+	get component() {
+		return Relation;
+	}
+
+	toType() {
+		return `${this.field.name}${this.field.required ? '' : '?'}: RelationValue<${capitalize(this.field.relationTo)}Doc>`;
+	}
+
 	to(slug: GetRegisterType<'CollectionSlug'>) {
 		this.field.relationTo = slug;
 		return this;
@@ -68,7 +69,8 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 	}
 }
 
-export const relation = (name: string) => new RelationFieldBuilder(name);
+export const relation = (name: string) =>
+	new RelationFieldBuilder(name) as PublicBuilder<typeof RelationFieldBuilder>;
 
 /////////////////////////////////////////////
 // Type

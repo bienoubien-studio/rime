@@ -5,6 +5,8 @@ import cache from 'rizom/config/generate/cache/index.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
 import { PACKAGE_NAME } from 'rizom/constant';
+import { compileFields } from 'rizom/fields/compile';
+import type { FieldsComponents } from 'rizom/types/panel';
 
 let hasEnv = false;
 
@@ -114,10 +116,24 @@ function parseValue(key: string, value: any): string | boolean | number {
 	}
 }
 
+type BuiltConfigWithBluePrints = BuiltConfig & { blueprints: Record<FieldsType, FieldsComponents> };
+
 // Main build function
-const buildBrowserConfig = (config: BuiltConfig) => {
-	// const content = buildConfigContent(configString);
+const generateBrowserConfig = (config: BuiltConfigWithBluePrints) => {
+	config = {
+		...config,
+		collections: config.collections.map((collection) => ({
+			...collection,
+			fields: compileFields(collection.fields || [])
+		})),
+		globals: config.globals.map((global) => ({
+			...global,
+			fields: compileFields(global.fields || [])
+		}))
+	};
+
 	const content = buildConfigString(config);
+
 	if (cache.get('config.browser') !== content) {
 		cache.set('config.browser', content);
 		const browserConfigPath = path.resolve(process.cwd(), './src/lib/rizom.config.browser.js');
@@ -162,4 +178,4 @@ function getSymbolFilename(value: object): string | null {
 	return null;
 }
 
-export default buildBrowserConfig;
+export default generateBrowserConfig;

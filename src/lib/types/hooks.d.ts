@@ -1,6 +1,5 @@
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { Rizom } from 'rizom/rizom.server';
-import type { BuiltGlobalConfig } from './config';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 

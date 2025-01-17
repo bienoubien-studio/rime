@@ -202,7 +202,6 @@ async function removeTxtSuffix(directory: string) {
 
 				try {
 					fs.renameSync(fullPath, newPath);
-					// console.log(`Renamed: ${fullPath} -> ${newPath}`);
 				} catch (renameErr) {
 					console.error(`Error renaming ${fullPath}:`, renameErr);
 				}

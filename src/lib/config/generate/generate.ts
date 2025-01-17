@@ -1,8 +1,8 @@
-import buildBrowserConfig from '../build/browser.js';
+// import generateBrowserConfig from '../build/browser.js';
 import cache from './cache/index.js';
-import generateRoutes from './routes/index.js';
-import generateSchema from './schema/index.js';
-import generateTypes from './types/index.js';
+// import generateRoutes from './routes/index.js';
+// import generateSchema from './schema/index.js';
+// import generateTypes from './types/index.js';
 import path from 'path';
 import { existsSync, mkdirSync, rmSync } from 'fs';
 import { buildConfig } from '../build/index.js';
@@ -35,13 +35,13 @@ export const generate = async (force?: boolean) => {
 			throw new Error('Unable to find config, did you run rizom init');
 		}
 
-		const config = await import(configPathJS)
+		await import(configPathJS)
 			.then((module) => module.default)
-			.then(async (config) => await buildConfig(config));
+			.then(async (config) => await buildConfig(config, { generate: true }));
 
-		buildBrowserConfig(config);
-		generateSchema(config);
-		generateRoutes(config);
-		generateTypes(config);
+		// generateBrowserConfig(config);
+		// generateSchema(config);
+		// generateRoutes(config);
+		// generateTypes(config);
 	}
 };

@@ -1,6 +1,6 @@
 import test, { expect } from '@playwright/test';
 
-const BASE_URL = 'http://local.rizom:5173';
+const BASE_URL = 'http://rizom.test:5173';
 
 test.describe('Live Edit', () => {
 	test('Should go to Live Panel', async ({ page }) => {

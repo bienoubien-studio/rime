@@ -1,20 +1,15 @@
 import type { AnyField, FormField } from 'rizom/types/index.js';
-import type { Dic } from 'rizom/types/utility.js';
-import { FormFieldBuilder } from '../_builders/index.js';
+import type { Dic, PublicBuilder } from 'rizom/types/utility.js';
+import { FieldBuilder, FormFieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
 import Blocks from './component/Blocks.svelte';
 import type { ComponentType } from 'svelte';
-import type { FieldBluePrint } from 'rizom/types/fields';
-import { compileField } from '../compile.js';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 
-export const blueprint: FieldBluePrint<BlocksField> = {
-	component: Blocks,
-	match: (field): field is BlocksField => field.type === 'blocks'
-};
+export const blocks = (name: string) =>
+	new BlocksBuilder(name) as PublicBuilder<typeof BlocksBuilder>;
 
-export const blocks = (name: string) => new BlocksBuilder(name);
 export const block = (name: string) => new BlockBuilder(name);
 
 class BlocksBuilder extends FormFieldBuilder<BlocksField> {
@@ -22,6 +17,10 @@ class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		super(name, 'blocks');
 		this.field.blocks = [];
 		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
+	}
+
+	get component() {
+		return Blocks;
 	}
 
 	blocks(...blocks: BlocksFieldBlock[]) {
@@ -36,11 +35,7 @@ class BlockBuilder {
 	constructor(name: string) {
 		this.#block = {
 			name,
-			fields: [
-				text('type').hidden().toField(),
-				text('path').hidden().toField(),
-				number('position').hidden().toField()
-			]
+			fields: [text('type').hidden(), text('path').hidden(), number('position').hidden()]
 		};
 	}
 	/**
@@ -66,7 +61,7 @@ class BlockBuilder {
 		return this;
 	}
 	fields(...fields: UserDefinedField[]) {
-		this.#block.fields.push(...fields.map(compileField));
+		this.#block.fields = [...fields, ...this.#block.fields];
 		return { ...this.#block };
 	}
 }
@@ -87,7 +82,7 @@ export type BlocksFieldBlock = {
 	description?: string;
 	icon?: ComponentType;
 	renderTitle?: BlocksFieldBlockRenderTitle;
-	fields: AnyField[];
+	fields: FieldBuilder<AnyField>[];
 };
 
 /////////////////////////////////////////////

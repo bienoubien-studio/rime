@@ -4,7 +4,7 @@ import { usersFields } from './usersFields.js';
 import { text } from 'rizom/fields/text';
 import type { CollectionConfig } from 'rizom';
 
-export const hashedPassword = text('hashedPassword').required().hidden().toField();
+export const hashedPassword = text('hashedPassword').required().hidden();
 
 export const panelUsersCollection: CollectionConfig = {
 	slug: 'users',

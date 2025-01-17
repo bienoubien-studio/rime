@@ -3,26 +3,28 @@ import { FormFieldBuilder } from '../_builders/index.js';
 import validate from 'rizom/utils/validate';
 import { templateUniqueRequired } from 'rizom/config/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
-import Email from './component/Email.svelte';
-import type { FieldBluePrint } from 'rizom/types/fields';
-
-export const blueprint: FieldBluePrint<EmailField> = {
-	component: Email,
-	toSchema(field) {
-		const { name } = field;
-		const snake_name = toSnakeCase(name);
-		const suffix = templateUniqueRequired(field);
-		return `${name}: text('${snake_name}')${suffix}`;
-	},
-	toType: (field) => `${field.name}${!field.required ? '?' : ''}: string`
-};
+import EmailComp from './component/Email.svelte';
 
 class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	constructor(name: string) {
 		super(name, 'email');
 		this.field.validate = validate.email;
 	}
-	//
+
+	get component() {
+		return EmailComp;
+	}
+
+	toType() {
+		return `${this.field.name}${!this.field.required ? '?' : ''}: string`;
+	}
+
+	toSchema() {
+		const snake_name = toSnakeCase(this.field.name);
+		const suffix = templateUniqueRequired(this.field);
+		return `${this.field.name}: text('${snake_name}')${suffix}`;
+	}
+
 	unique() {
 		this.field.unique = true;
 		return this;

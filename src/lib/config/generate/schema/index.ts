@@ -33,8 +33,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 			rootName: collectionSlug,
 			locales: config.localization?.locales || [],
 			hasAuth: !!collection.auth,
-			tableName: collectionSlug,
-			blueprints: config.blueprints
+			tableName: collectionSlug
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
@@ -84,8 +83,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 			fields: global.fields,
 			rootName: globalSlug,
 			locales: config.localization?.locales || [],
-			tableName: globalSlug,
-			blueprints: config.blueprints
+			tableName: globalSlug
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({

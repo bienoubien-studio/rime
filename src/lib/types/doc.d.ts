@@ -1,5 +1,5 @@
 import type { RegisterCollection } from 'rizom';
-import type { GetRegisterType } from './register.js';
+import type { GetRegisterType } from 'rizom';
 import type { Dic } from './utility.js';
 import type { RegisterGlobal } from 'rizom';
 

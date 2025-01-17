@@ -1,6 +1,6 @@
 import test, { expect } from '@playwright/test';
 
-const BASE_URL = 'http://local.rizom:5173';
+const BASE_URL = 'http://rizom.test:5173';
 
 test('Init Form', async ({ page }) => {
 	await page.goto(`${BASE_URL}/init`);
@@ -30,7 +30,7 @@ test.describe('Login form', () => {
 		await submitButton.click();
 
 		// Wait for navigation after login
-		await page.waitForNavigation();
+		await page.waitForURL(`${BASE_URL}/panel`);
 
 		// Add assertions based on successful login
 		// For example, check if redirected to dashboard or check for success message
@@ -101,7 +101,7 @@ test.describe('Admin panel', () => {
 		// Submit the form
 		await submitButton.click();
 		// Wait for navigation after login
-		await page.waitForNavigation();
+		await page.waitForURL(`${BASE_URL}/panel`);
 
 		const collections = [
 			{ slug: 'pages', singular: 'Page', plural: 'Pages' },
@@ -115,12 +115,14 @@ test.describe('Admin panel', () => {
 
 			let response = await page.goto(`/panel/${slug}`);
 			expect(response?.status()).toBe(200);
+			await page.waitForLoadState('networkidle');
 
 			const createButton = page.locator(`a[href="/panel/${slug}/create"]`);
 			expect(await createButton.innerText()).toBe('New ' + singular);
-
-			response = await page.goto(`/panel/${slug}/create`);
-			expect(response?.status()).toBe(200);
+			await expect(createButton).toBeEnabled();
+			await createButton.click();
+			await page.waitForURL(`${BASE_URL}/panel/${slug}/create`);
+			await page.waitForLoadState('networkidle');
 
 			const saveButton = page.locator('.rz-page-header button[type="submit"]');
 			await expect(saveButton).toBeDisabled();

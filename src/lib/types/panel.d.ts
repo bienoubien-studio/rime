@@ -1,4 +1,4 @@
-import type { Snippet } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { GenericDoc } from './doc';
 import type { Dic } from './utility';
 
@@ -6,6 +6,11 @@ export type Route = {
 	title: string;
 	icon: any;
 	path: string;
+};
+
+export type FieldsComponents = {
+	cell: Component | null;
+	component: Component;
 };
 
 export type FieldPanelTableConfig = {

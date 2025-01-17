@@ -36,12 +36,12 @@
 </script>
 
 <div class="rz-doc-auth-header">
-	<Email {form} config={usersFields.email} path="email" />
+	<Email {form} config={usersFields.email.raw} path="email" />
 
 	{#if changingPassword}
-		<Text {form} type="password" config={text('password').required().toField()} path="password" />
+		<Text {form} type="password" config={text('password').required().raw} path="password" />
 
-		<Text {form} type="password" config={usersFields.confirmPassword} path="confirmPassword" />
+		<Text {form} type="password" config={usersFields.confirmPassword.raw} path="confirmPassword" />
 
 		{#if !create && !form.readOnly}
 			<div class="rz-doc-auth-header__buttons">

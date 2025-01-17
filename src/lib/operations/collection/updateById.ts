@@ -58,7 +58,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	/** Add Password and ConfirmPassword for Auth collections so validation includes these fields */
 	const fields = config.fields;
 	if (config.auth) {
-		fields.push(usersFields.password, usersFields.confirmPassword);
+		fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
 	const configMap = buildConfigMap(data, fields);

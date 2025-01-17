@@ -104,7 +104,6 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 	};
 
 	const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
-		// console.log('getAll called with:', { parentSlug, parentId, locale });
 		const relationTableName = `${parentSlug}Rels`;
 		const table = tables[relationTableName];
 		const columns = Object.keys(getTableColumns(table));
@@ -124,7 +123,6 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 			.from(table)
 			.where(and(...conditions));
 
-		// console.log('getAll returning:', all);
 		return all as Relation[];
 	};
 
