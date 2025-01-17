@@ -16,7 +16,7 @@ import {
 import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 
 const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	const { db, sessionsTable, authUsersTable } = args;
@@ -70,7 +70,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		return await lucia.createSession(authUserId, {});
 	};
 
-	const createAuthUser = async (slug: PrototypeSlug) => {
+	const createAuthUser = async (slug: CollectionSlug) => {
 		const id = crypto.randomUUID();
 		await db.insert(authUsersTable).values({ id, table: slug });
 		return id;

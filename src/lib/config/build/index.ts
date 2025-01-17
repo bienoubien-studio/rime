@@ -17,15 +17,18 @@ import { registerPlugins } from './plugins.server.js';
 import { componentsMap } from 'rizom/fields/components.js';
 import type { FieldsComponents } from 'rizom/types/panel.js';
 import { compileConfig } from '../compile.server.js';
-import { dev } from '$app/environment';
+import { taskLogger } from 'rizom/utils/logger/index.js';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<BuiltConfig>;
+
+const dev = process.env.NODE_ENV === 'development';
 
 /**
  * Add extra configuration to Globals and Collections
  */
 
 const buildConfig: BuildConfig = async (config: Config, { generate } = { generate: false }) => {
+	taskLogger.info('Building config...');
 	let collections: BuiltCollectionConfig[] = [];
 	let globals: BuiltGlobalConfig[] = [];
 	const icons: Dic = {};
@@ -101,7 +104,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	// Generate files
 	//////////////////////////////////////////////
 
-	if (dev) {
+	if (dev || generate) {
 		const compiledConfig = compileConfig(builtConfig);
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
