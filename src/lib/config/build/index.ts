@@ -1,25 +1,21 @@
 import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
 import { access } from 'rizom/utils/access/index.js';
-import generateBrowserConfig from 'rizom/config/generate/browser/index.js';
-import generateSchema from 'rizom/config/generate/schema/index.js';
-import generateRoutes from 'rizom/config/generate/routes/index.js';
-import generateTypes from 'rizom/config/generate/types/index.js';
 import type {
 	BuiltCollectionConfig,
 	BuiltConfig,
 	BuiltGlobalConfig,
+	CompiledConfig,
 	Config
 } from 'rizom/types/config.js';
 import { RizomError } from 'rizom/errors/error.server.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
-import { componentsMap } from 'rizom/fields/components.js';
-import type { FieldsComponents } from 'rizom/types/panel.js';
 import { compileConfig } from '../compile.server.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
+import { buildComponentsMap } from './fields/componentMap.js';
 
-type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<BuiltConfig>;
+type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -28,7 +24,6 @@ const dev = process.env.NODE_ENV === 'development';
  */
 
 const buildConfig: BuildConfig = async (config: Config, { generate } = { generate: false }) => {
-	taskLogger.info('Building config...');
 	let collections: BuiltCollectionConfig[] = [];
 	let globals: BuiltGlobalConfig[] = [];
 	const icons: Dic = {};
@@ -83,7 +78,10 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		icons
 	};
 
-	let fieldsComponentsMap: Record<string, FieldsComponents> = { ...componentsMap };
+	const collectionFields = builtConfig.collections.flatMap((collection) => collection.fields);
+	const globalFields = builtConfig.globals.flatMap((global) => global.fields);
+
+	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...globalFields]);
 
 	/////////////////////////////////////////////
 	// Plugins
@@ -104,8 +102,9 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	// Generate files
 	//////////////////////////////////////////////
 
+	const compiledConfig = compileConfig(builtConfig);
+
 	if (dev || generate) {
-		const compiledConfig = compileConfig(builtConfig);
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
 		if (changed) {
@@ -116,7 +115,22 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 			}
 
 			if (generate) {
-				generateBrowserConfig({ ...compiledConfig, blueprints: fieldsComponentsMap });
+				const generateSchema = await import('rizom/config/generate/schema/index.js').then(
+					(m) => m.default
+				);
+				const generateRoutes = await import('rizom/config/generate/routes/index.js').then(
+					(m) => m.default
+				);
+				const generateTypes = await import('rizom/config/generate/types/index.js').then(
+					(m) => m.default
+				);
+				const generateBrowserConfig = await import('rizom/config/generate/browser/index.js').then(
+					(m) => m.default
+				);
+				generateBrowserConfig({
+					...compiledConfig,
+					blueprints: fieldsComponentsMap
+				});
 				generateSchema(builtConfig);
 				generateRoutes(builtConfig);
 				generateTypes(builtConfig);
@@ -124,7 +138,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		}
 	}
 
-	return builtConfig;
+	return compiledConfig;
 };
 
 export { buildConfig };

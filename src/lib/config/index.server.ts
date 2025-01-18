@@ -13,20 +13,12 @@ import type {
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/index.js';
 import type { GlobalSlug } from 'rizom/types/doc.js';
-import { compileConfig } from './compile.server.js';
 import { dev } from '$app/environment';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function createConfigInterface() {
-	const flattenConfig = (config: CompiledConfig) => {
-		return flattenWithGuard(config, {
-			shouldFlat: ([key]) =>
-				!['cors', 'plugins', 'routes', 'locales', 'globals', 'collections'].includes(key)
-		});
-	};
-
 	const fullPathToConfig = path.resolve(process.cwd(), './src/config/rizom.config');
 	const pathToconfig = path.relative(__dirname, fullPathToConfig);
 
@@ -34,12 +26,18 @@ export async function createConfigInterface() {
 	try {
 		config = await import(/* @vite-ignore */ pathToconfig)
 			.then((module) => module.default)
-			.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }))
-			.then((builtConfig) => compileConfig(builtConfig));
+			.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }));
 	} catch (err) {
 		console.log(err);
 		throw new Error("can't import config from " + pathToconfig);
 	}
+
+	const flattenConfig = (config: CompiledConfig) => {
+		return flattenWithGuard(config, {
+			shouldFlat: ([key]) =>
+				!['cors', 'plugins', 'routes', 'locales', 'globals', 'collections'].includes(key)
+		});
+	};
 
 	let flatConfig: Dic = flattenConfig(config);
 
@@ -114,8 +112,8 @@ export async function createConfigInterface() {
 		async reload() {
 			config = await import(/* @vite-ignore */ pathToconfig)
 				.then((module) => module.default)
-				.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }))
-				.then((builtConfig) => compileConfig(builtConfig));
+				.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }));
+
 			flatConfig = flattenConfig(config);
 		},
 

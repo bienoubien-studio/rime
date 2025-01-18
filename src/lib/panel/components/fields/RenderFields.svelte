@@ -37,8 +37,6 @@
 	const widthClassModifier = (field: AnyFormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
 
-	const Tabs = config.raw.blueprints.tabs.component;
-	const Separator = config.raw.blueprints.separator.component;
 	//
 </script>
 
@@ -58,8 +56,10 @@
 						{/if}
 						<RenderFields {path} fields={field.fields} framed={true} {form} />
 					{:else if field.type === 'tabs'}
+						{@const Tabs = config.raw.blueprints.tabs.component}
 						<Tabs config={field} {path} {form} />
 					{:else}
+						{@const Separator = config.raw.blueprints.separator.component}
 						<Separator />
 					{/if}
 				</div>

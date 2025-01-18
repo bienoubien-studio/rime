@@ -163,7 +163,7 @@ export type BuiltGlobalConfig = GlobalConfig & {
 	label: string;
 	slug: GetRegisterType<'GlobalSlug'>;
 	asTitle: string;
-	fields: AnyField[];
+	fields: FieldBuilder<AnyField>[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 

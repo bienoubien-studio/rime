@@ -9,7 +9,7 @@ export type Route = {
 };
 
 export type FieldsComponents = {
-	cell: Component | null;
+	cell?: Component | null;
 	component: Component;
 };
 
