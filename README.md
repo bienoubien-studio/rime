@@ -83,15 +83,11 @@ export default defineConfig({
 ```typescript
 // src/hooks.server.ts (should be created)
 import { sequence } from '@sveltejs/kit/hooks';
-import { handlers, rizom } from 'rizom';
+import { handlers } from 'rizom';
+import config from './config/rizom.config.js';
+import * as schema from './lib/server/schema.js';
 
-const init = async () => {
-  await rizom.init();
-};
-
-init();
-
-export const handle = sequence(...handlers);
+export const handle = sequence(...handlers({ config, schema }));
 ```
 ```
 #.env
@@ -101,7 +97,10 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 
 ### 3. Create your first admin user
 
-Once initialized, navigate to `http://localhost:5173/panel` to create your first admin user.
+```bash
+npm run dev
+```
+Navigate to `http://localhost:5173/panel` to create your first admin user.
 
 ## Configuration Example
 
@@ -113,6 +112,7 @@ import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/utils";
 
 const Pages: CollectionConfig = {
+  database: 'my-db.sqlite'
   slug: 'pages',
   group: 'content',
   fields: [
