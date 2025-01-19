@@ -248,6 +248,7 @@ const Medias: CollectionConfig = {
 
 const config: Config = {
 	//
+	database: 'multilang.sqlite',
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages, Medias],

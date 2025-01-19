@@ -1,6 +1,5 @@
 import createAdapter from '$lib/db/index.server.js';
 import path from 'path';
-
 import { randomId } from './utils/random.js';
 import { createConfigInterface } from './config/index.server.js';
 import { existsSync } from 'fs';
@@ -8,7 +7,7 @@ import { dev } from '$app/environment';
 import { RizomInitError } from './errors/init.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/utility.js';
-import type { GetRegisterType } from 'rizom';
+import type { Config, GetRegisterType } from 'rizom';
 
 function createRizom() {
 	//
@@ -31,54 +30,23 @@ function createRizom() {
 		);
 	};
 
-	const init = async () => {
+	const init = async ({ config: rawConfig, schema }: InitArgs) => {
 		if (dev && !hasRunInitCommand()) {
 			throw new RizomInitError('Missing required files, please run `rizom init` first');
 		}
 		// Initialize config
-		config = await createConfigInterface();
+		config = await createConfigInterface(rawConfig);
 
 		// Initialize DB
-		const schema = await getSchema();
-		const drizzleKitConfig = await getDrizzleConfig();
-		adapter = createAdapter({ schema: schema, drizzleKitConfig, configInterface: config });
+		adapter = createAdapter({ schema, configInterface: config });
 
 		// Done
 		initialized = true;
-		// taskLogger.done('CMS Initialized');
-	};
-
-	const getSchema = async () => {
-		try {
-			const pathToSchema = path.resolve(process.cwd(), './src/lib/server/schema.ts');
-			const schema = await import(/* @vite-ignore */ pathToSchema);
-			return schema;
-		} catch (error) {
-			console.error('Failed to import schema:', error);
-			return {};
-		}
-	};
-
-	const getDrizzleConfig = async () => {
-		try {
-			const pathToDrizzleConfig = path.resolve(process.cwd(), './drizzle.config.ts');
-
-			const drizzleConfig = await import(/* @vite-ignore */ pathToDrizzleConfig);
-			return drizzleConfig.default;
-		} catch (error) {
-			console.error('Failed to import drizzle kit config:', error);
-			return {};
-		}
-	};
-
-	const reloadConfig = async () => {
-		await config.reload();
 	};
 
 	return {
 		key,
 		init,
-		reloadConfig,
 
 		get initialized() {
 			return initialized;
@@ -131,12 +99,10 @@ const getInstance = () => {
 		return instance;
 	}
 	instance = createRizom();
-
-	// taskLogger.info('Create CMS instance ' + instance.key);
-
 	return instance;
 };
 
 export default getInstance();
 
 export type Rizom = ReturnType<typeof createRizom>;
+type InitArgs = { config: Config; schema: any };

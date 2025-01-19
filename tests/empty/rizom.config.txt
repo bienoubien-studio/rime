@@ -1,4 +1,5 @@
 const config = {
+    database: 'empty.sqlite',
 	collections: [],
 	globals: []
 };

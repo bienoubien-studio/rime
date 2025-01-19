@@ -12,7 +12,6 @@ import type { Dic } from 'rizom/types/utility.js';
 import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
-import { taskLogger } from 'rizom/utils/logger/index.js';
 import { buildComponentsMap } from './fields/componentMap.js';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;

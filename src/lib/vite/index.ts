@@ -8,11 +8,11 @@ export function rizom(): Plugin {
 		name: 'rizom',
 		config(): UserConfig {
 			return {
-				server: {
-					watch: {
-						ignored: ['./src/config/**']
-					}
-				},
+				// server: {
+				// 	watch: {
+				// 		ignored: ['./src/config/**']
+				// 	}
+				// },
 				optimizeDeps: {
 					exclude: ['@node-rs/argon2']
 				},

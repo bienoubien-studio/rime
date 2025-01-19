@@ -17,6 +17,7 @@ import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
+import type { Schema } from 'rizom/server/schema.js';
 
 const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	const { db, sessionsTable, authUsersTable } = args;
@@ -62,7 +63,6 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	};
 
 	const getAuthUsers = () => {
-		//@ts-expect-error authUsers exists
 		return db.query.authUsers.findMany();
 	};
 
@@ -169,7 +169,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 
 		const userTable = rizom.adapter.tables[slug];
 
-		// @ts-expect-error todo...
+		//@ts-expect-error that's suck
 		const user = await db.query[slug].findFirst({
 			where: eq(userTable.email, email)
 		});
@@ -280,7 +280,7 @@ type VerifyForgotPasswordTokenArgs = {
 };
 
 type CreateAuthDatabaseInterfaceArgs = {
-	db: BetterSQLite3Database<any>;
+	db: BetterSQLite3Database<Schema>;
 	sessionsTable: any;
 	authUsersTable: any;
 };

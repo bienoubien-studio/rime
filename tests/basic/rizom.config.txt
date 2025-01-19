@@ -40,6 +40,7 @@ const Medias = {
 };
 
 const config = {
+    database: 'basic.sqlite',
 	collections: [Pages, Medias],
 	globals: [Settings],
 	panel: {

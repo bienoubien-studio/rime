@@ -1,6 +1,6 @@
 import { FieldBuilder } from './_builders/index.js';
 
-import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field';
+import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { TabsFieldTab } from './tabs/index.js';
 import type { BlocksFieldBlock } from './types.js';
 import type { UserDefinedField } from 'rizom/types/fields.js';

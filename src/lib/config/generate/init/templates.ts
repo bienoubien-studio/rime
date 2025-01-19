@@ -12,8 +12,9 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 # RIZOM_SMTP_PORT=465
 `;
 
-export const emptyConfig = `
+export const emptyConfig = (name: string) => `
 const config = {
+  database: '${name}.sqlite',
   collections: [],
   globals: []
 };
@@ -46,13 +47,8 @@ export const emptySchema = dedent`
 
 export const hooks = `import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from '${PACKAGE}';
-import { rizom } from '${PACKAGE}';
+import config from './config/rizom.config.js';
+import * as schema from './lib/server/schema.js';
 
-const init = async () => {
-	await rizom.init();
-};
-
-init();
-
-export const handle = sequence(...handlers);
+export const handle = sequence(...handlers({ config, schema }));
 `;

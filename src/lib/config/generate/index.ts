@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // @ts-check
 import { program } from 'commander';
 import { init } from './init/index.js';
@@ -49,6 +49,7 @@ program
 		rmSync(path.join('db'), { recursive: true, force: true });
 		rmSync(path.join('static', 'medias'), { recursive: true, force: true });
 		// Remove files
+		rmSync(path.join('src', 'hooks.server.ts'), { force: true });
 		rmSync(path.join('src', 'app.generated.d.ts'), { force: true });
 		rmSync(path.join('src', 'lib', 'rizom.config.browser.js'), { force: true });
 		rmSync(path.join('src', 'lib', 'server', 'schema.ts'), { force: true });

@@ -6,10 +6,10 @@ import path from 'path';
 import fs from 'fs';
 import { error } from '@sveltejs/kit';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+// import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;
@@ -43,7 +43,12 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 
 const handleFont = async (pathname: string) => {
 	const fontFile = pathname.split('panel/fonts/').at(-1) as string;
-	const fontPath = path.resolve(__dirname, '..', 'panel', 'fonts', fontFile);
+
+	// Get the current file's directory
+	const currentDir = path.dirname(fileURLToPath(import.meta.url));
+
+	// Construct the path to the font file
+	const fontPath = path.resolve(currentDir, '..', 'panel', 'fonts', fontFile);
 
 	try {
 		const font = await fs.promises.readFile(fontPath);

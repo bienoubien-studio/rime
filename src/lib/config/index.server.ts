@@ -1,8 +1,6 @@
 import path from 'path';
 import { RizomError } from '../errors/error.server.js';
 import { flattenWithGuard } from '../utils/object.js';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
 import type {
@@ -11,26 +9,12 @@ import type {
 	CompiledConfig
 } from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
-import type { CollectionSlug, PrototypeSlug } from 'rizom/types/index.js';
+import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
 import type { GlobalSlug } from 'rizom/types/doc.js';
 import { dev } from '$app/environment';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-export async function createConfigInterface() {
-	const fullPathToConfig = path.resolve(process.cwd(), './src/config/rizom.config');
-	const pathToconfig = path.relative(__dirname, fullPathToConfig);
-
-	let config: CompiledConfig;
-	try {
-		config = await import(/* @vite-ignore */ pathToconfig)
-			.then((module) => module.default)
-			.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }));
-	} catch (err) {
-		console.log(err);
-		throw new Error("can't import config from " + pathToconfig);
-	}
+export async function createConfigInterface(rawConfig: Config) {
+	const config: CompiledConfig = await buildConfig(rawConfig, { generate: dev });
 
 	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {
@@ -39,7 +23,7 @@ export async function createConfigInterface() {
 		});
 	};
 
-	let flatConfig: Dic = flattenConfig(config);
+	const flatConfig: Dic = flattenConfig(config);
 
 	// Initialize required upload folder
 	const hasUpload = config.collections.some((collection) => !!collection.upload);
@@ -107,14 +91,6 @@ export async function createConfigInterface() {
 
 		get globals() {
 			return config.globals;
-		},
-
-		async reload() {
-			config = await import(/* @vite-ignore */ pathToconfig)
-				.then((module) => module.default)
-				.then(async (rawConfig) => await buildConfig(rawConfig, { generate: dev }));
-
-			flatConfig = flattenConfig(config);
 		},
 
 		getDefaultLocale() {

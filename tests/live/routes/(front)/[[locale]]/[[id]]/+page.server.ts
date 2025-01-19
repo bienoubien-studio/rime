@@ -16,7 +16,6 @@ export const load = async (event: ServerLoadEvent) => {
 		throw error(404, 'Not found');
 	}
 
-	console.log(docs[0]);
 	if (user && docs[0]._live && event.url.searchParams.get('live') === '1') {
 		return redirect(302, docs[0]._live);
 	}

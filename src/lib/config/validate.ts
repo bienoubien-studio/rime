@@ -8,7 +8,7 @@ import type {
 	CompiledGlobalConfig,
 	CompiledConfig
 } from 'rizom/types/config';
-import type { AnyFormField } from 'rizom/types';
+import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import type { WithoutBuilders } from 'rizom/types/utility';
 
 function hasDuplicates(arr: string[]): string[] {
@@ -16,7 +16,7 @@ function hasDuplicates(arr: string[]): string[] {
 }
 
 function hasDuplicateSlug(config: CompiledConfig) {
-	const slugs = [];
+	const slugs: PrototypeSlug[] = [];
 	for (const collection of config.collections) {
 		slugs.push(collection.slug);
 	}
@@ -113,8 +113,16 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	return errors;
 };
 
+const hasDatabase = (config: CompiledConfig) => {
+	const hasDatabaseName = 'database' in config && typeof config.database === 'string';
+	if (!hasDatabaseName) {
+		return ['config.database not defined'];
+	}
+	return [];
+};
+
 function validate(config: CompiledConfig): boolean {
-	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields];
+	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields, hasDatabase];
 
 	for (const isValid of validateFunctions) {
 		const errors: string[] = isValid(config);

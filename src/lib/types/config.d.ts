@@ -13,6 +13,8 @@ import type { FieldsComponents } from './panel.js';
 export type DocumentPrototype = 'collection' | 'global';
 
 export interface Config {
+	/** The database name inside ./db folder */
+	database: string;
 	/** If config.siteUrl is defined, a preview button is added
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
@@ -125,6 +127,7 @@ export type BuiltDocConfig =
 	| BuiltGlobalConfig;
 
 export type BuiltConfig = {
+	database: string;
 	siteUrl?: string;
 	collections: (BuiltCollectionConfig | BuiltUploadCollectionConfig)[];
 	globals: BuiltGlobalConfig[];

@@ -69,7 +69,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 	}
 
-	function setConfig() {
+	function setConfig(name: string) {
 		const configDirPath = path.join(process.cwd(), 'src', 'config');
 		const configPath = path.join(configDirPath, 'rizom.config.ts');
 
@@ -77,7 +77,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			if (!existsSync(configDirPath)) {
 				mkdirSync(configDirPath);
 			}
-			writeFileSync(configPath, templates.emptyConfig);
+			writeFileSync(configPath, templates.emptyConfig(name.toString()));
 		}
 		log.info('Empty rizom.config.ts created');
 	}
@@ -190,7 +190,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 	if (force || incomingName) {
 		const name = incomingName || packageName;
 		setEnv();
-		setConfig();
+		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
@@ -220,7 +220,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 
 		setEnv();
-		setConfig();
+		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
 		setSchema();

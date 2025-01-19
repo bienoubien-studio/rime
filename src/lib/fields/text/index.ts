@@ -50,8 +50,7 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	}
 }
 
-export const text = (name: string) =>
-	new TextFieldBuilder(name, 'text') as PublicBuilder<typeof TextFieldBuilder>;
+export const text = (name: string) => new TextFieldBuilder(name, 'text');
 
 /////////////////////////////////////////////
 // Type
