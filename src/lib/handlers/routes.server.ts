@@ -6,17 +6,9 @@ import path from 'path';
 import fs from 'fs';
 import { error } from '@sveltejs/kit';
 import { fileURLToPath } from 'url';
-// import { dirname } from 'path';
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;
-
-	if (event.url.pathname.startsWith('/panel/fonts')) {
-		return await handleFont(event.url.pathname);
-	}
 
 	if (event.url.pathname?.startsWith('/panel') && event.request.method === 'GET') {
 		event.locals.routes = buildNavigation(rizom.config.raw, user);
@@ -39,30 +31,6 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 	}
 
 	return resolve(event);
-};
-
-const handleFont = async (pathname: string) => {
-	const fontFile = pathname.split('panel/fonts/').at(-1) as string;
-
-	// Get the current file's directory
-	const currentDir = path.dirname(fileURLToPath(import.meta.url));
-
-	// Construct the path to the font file
-	const fontPath = path.resolve(currentDir, '..', 'panel', 'fonts', fontFile);
-
-	try {
-		const font = await fs.promises.readFile(fontPath);
-
-		return new Response(font, {
-			headers: {
-				'Content-Type': getMimeType(path.extname(fontPath)),
-				'Cache-Control': 'public, max-age=31536000, immutable'
-			}
-		});
-	} catch (err: any) {
-		console.log(err);
-		throw error(404, 'Font not found');
-	}
 };
 
 function getMimeType(extension: string) {

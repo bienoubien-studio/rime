@@ -12,6 +12,8 @@ import {
 	type PackageManagerName
 } from './packageManagerUtil.js';
 import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { cp, mkdir } from 'fs/promises';
 
 type Args = {
 	force?: boolean;
@@ -187,6 +189,21 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 	}
 
+	async function copyAssets() {
+		try {
+			const currentDir = path.dirname(fileURLToPath(import.meta.url));
+			await mkdir(path.resolve(process.cwd(), 'static/panel/fonts'), { recursive: true });
+			await cp(
+				path.join(currentDir, '../../../panel/fonts'),
+				path.resolve(process.cwd(), 'static/panel/fonts'),
+				{ recursive: true }
+			);
+			log.info('copied assets');
+		} catch (err) {
+			console.error('Error copying fonts:', err);
+		}
+	}
+
 	if (force || incomingName) {
 		const name = incomingName || packageName;
 		setEnv();
@@ -196,6 +213,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setSchema();
 		setHooks();
 		configureVite();
+		copyAssets();
 		if (!skipInstall) {
 			await installDeps(true);
 		}
@@ -226,6 +244,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setSchema();
 		setHooks();
 		configureVite();
+		copyAssets();
 		if (!skipInstall) {
 			await installDeps();
 		}
