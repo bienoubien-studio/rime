@@ -49,10 +49,9 @@ type FormField = BaseField & {
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
-	// table?: FieldPanelTableConfig | boolean;
 	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
-	isEmpty: (value: any) => boolean;
+	isEmpty: (value: unknown) => boolean;
 };
 
 type BaseSelectField = FormField & {
