@@ -25,6 +25,8 @@ vite.config.ts.timestamp-*
 .rizom
 .cache
 db/*
+static
+hooks.server.ts
 src/config
 src/routes
 drizzle.config.ts
