@@ -122,7 +122,9 @@ export function generateSchemaString(config: BuiltConfig): string {
       ${enumTables.join(',\n      ')},
       ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
       authUsers,
-      sessions
+      sessions,
+      verifications,
+      accounts,
   }
 
   export type Schema = typeof schema

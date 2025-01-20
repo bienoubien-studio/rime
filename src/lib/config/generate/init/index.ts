@@ -153,6 +153,15 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 	}
 
+	function setAuth(name: string) {
+		try {
+			const authPath = path.join(projectRoot, 'src', 'lib', 'auth.ts');
+			writeFileSync(authPath, templates.auth(name.toString()), 'utf-8');
+		} catch (err: any) {
+			log.info('Error creating auth.ts file');
+		}
+	}
+
 	async function installDeps(force = false) {
 		const devDeps = ['drizzle-kit@0.22.8'];
 		if (force) {
@@ -211,6 +220,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
+		setAuth(name);
 		setHooks();
 		configureVite();
 		copyAssets();
@@ -242,6 +252,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
+		setAuth(name);
 		setHooks();
 		configureVite();
 		copyAssets();

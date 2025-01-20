@@ -1,8 +1,8 @@
 // import schema, { tables, type GenericTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { dev } from '$app/environment';
-import { Lucia } from 'lucia';
-import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
+// import { Lucia } from 'lucia';
+// import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
 import crypto from 'crypto';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { hash, verifyHash } from 'rizom/collection/auth/utils.server.js';
@@ -17,25 +17,42 @@ import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
-import type { Schema } from 'rizom/server/schema.js';
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 
 const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
-	const { db, sessionsTable, authUsersTable } = args;
+	const { db, schema } = args;
 
-	const drizzleAdapter = new DrizzleSQLiteAdapter(db, sessionsTable, authUsersTable);
-	const lucia = new Lucia(drizzleAdapter, {
-		sessionCookie: {
-			attributes: {
-				secure: !dev
+	const auth = betterAuth({
+		database: drizzleAdapter(db, {
+			provider: 'sqlite',
+			schema: {
+				...schema,
+				user: schema.authUsers,
+				session: schema.sessions,
+				account: schema.accounts,
+				verification: schema.verifications
 			}
-		},
-		getUserAttributes: (attributes) => {
-			return {
-				id: attributes.id,
-				table: attributes.table
-			};
+		}),
+		emailAndPassword: {
+			enabled: true
 		}
 	});
+
+	// const drizzleAdapter = new DrizzleSQLiteAdapter(db, sessionsTable, authUsersTable);
+	// const lucia = new Lucia(drizzleAdapter, {
+	// 	sessionCookie: {
+	// 		attributes: {
+	// 			secure: !dev
+	// 		}
+	// 	},
+	// 	getUserAttributes: (attributes) => {
+	// 		return {
+	// 			id: attributes.id,
+	// 			table: attributes.table
+	// 		};
+	// 	}
+	// });
 
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
@@ -72,7 +89,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 
 	const createAuthUser = async (slug: CollectionSlug) => {
 		const id = crypto.randomUUID();
-		await db.insert(authUsersTable).values({ id, table: slug });
+		await db.insert(schema.authUsers).values({ id, table: slug });
 		return id;
 	};
 
@@ -124,7 +141,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	};
 
 	const deleteAuthUserById = async (id: string) => {
-		await db.delete(authUsersTable).where(eq(authUsersTable.id, id));
+		await db.delete(schema.authUsers).where(eq(schema.authUsers.id, id));
 		return id;
 	};
 
@@ -246,7 +263,6 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	};
 
 	return {
-		lucia,
 		getAuthUsers,
 		createSession,
 		createAuthUser,
@@ -281,8 +297,7 @@ type VerifyForgotPasswordTokenArgs = {
 
 type CreateAuthDatabaseInterfaceArgs = {
 	db: BetterSQLite3Database<Schema>;
-	sessionsTable: any;
-	authUsersTable: any;
+	schema: any;
 };
 
 type CreateFirstUserArgs = {
