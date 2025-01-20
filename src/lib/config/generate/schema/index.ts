@@ -5,6 +5,7 @@ import { toSnakeCase } from '$lib/utils/string.js';
 import {
 	templateAuth,
 	templateExportRelationsFieldsToTable,
+	templateExportSchema,
 	templateExportTables,
 	templateHead
 } from './templates.js';
@@ -114,22 +115,9 @@ export function generateSchemaString(config: BuiltConfig): string {
 	}
 
 	schema.push(templateHead('Auth'), templateAuth);
-	schema.push(templateExportTables([...enumTables, 'authUsers', 'sessions']));
+	schema.push(templateExportTables(enumTables));
 	schema.push(templateExportRelationsFieldsToTable(relationFieldsExportDic));
-
-	schema.push(dedent`
-    const schema = {
-      ${enumTables.join(',\n      ')},
-      ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
-      authUsers,
-      sessions,
-      verifications,
-      accounts,
-  }
-
-  export type Schema = typeof schema
-  export default schema
-  `);
+	schema.push(templateExportSchema({ enumTables, enumRelations }));
 
 	return schema.join('\n').replace(/\n{3,}/g, '\n\n');
 }

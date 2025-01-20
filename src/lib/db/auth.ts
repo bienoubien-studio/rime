@@ -1,11 +1,9 @@
 // import schema, { tables, type GenericTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
 import { dev } from '$app/environment';
-// import { Lucia } from 'lucia';
-// import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
 import crypto from 'crypto';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { hash, verifyHash } from 'rizom/collection/auth/utils.server.js';
+// import { hash, verifyHash } from 'rizom/collection/auth/utils.server.js';
 import { RizomInitError } from '../errors/init.server.js';
 import {
 	RizomLoginEmailError,
@@ -17,55 +15,58 @@ import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
-import { betterAuth } from 'better-auth';
+import { betterAuth as createBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { bearer } from 'better-auth/plugins';
 
 const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	const { db, schema } = args;
 
-	const auth = betterAuth({
+	const betterAuth = createBetterAuth({
+		plugins: [bearer()],
 		database: drizzleAdapter(db, {
 			provider: 'sqlite',
 			schema: {
 				...schema,
 				user: schema.authUsers,
-				session: schema.sessions,
-				account: schema.accounts,
-				verification: schema.verifications
+				session: schema.authSessions,
+				account: schema.authAccounts,
+				verification: schema.authVerifications
 			}
 		}),
+		session: {
+			modelName: 'authSessions'
+		},
+		account: {
+			modelName: 'authAccounts'
+		},
+		verification: {
+			modelName: 'authVerifications'
+		},
+		user: {
+			modelName: 'authUsers',
+			additionalFields: {
+				table: {
+					type: 'string',
+					required: true
+				}
+			}
+		},
 		emailAndPassword: {
 			enabled: true
 		}
 	});
-
-	// const drizzleAdapter = new DrizzleSQLiteAdapter(db, sessionsTable, authUsersTable);
-	// const lucia = new Lucia(drizzleAdapter, {
-	// 	sessionCookie: {
-	// 		attributes: {
-	// 			secure: !dev
-	// 		}
-	// 	},
-	// 	getUserAttributes: (attributes) => {
-	// 		return {
-	// 			id: attributes.id,
-	// 			table: attributes.table
-	// 		};
-	// 	}
-	// });
 
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
 		if (users.length) {
 			throw new RizomInitError('Already initialized');
 		}
-		const hashedPassword = await hash(password);
-		const authUserId = await createAuthUser('users');
+		const authUserId = await createAuthUser({ name, email, password, slug: 'users' });
 		const now = new Date();
 		const values = {
 			name,
 			email,
-			hashedPassword,
 			roles: ['admin'],
 			authUserId,
 			createdAt: now,
@@ -83,31 +84,36 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		return db.query.authUsers.findMany();
 	};
 
-	const createSession = async (authUserId: string) => {
-		return await lucia.createSession(authUserId, {});
-	};
-
-	const createAuthUser = async (slug: CollectionSlug) => {
-		const id = crypto.randomUUID();
-		await db.insert(schema.authUsers).values({ id, table: slug });
-		return id;
+	type CreateAuthUserArgs = { slug: CollectionSlug; email: string; password: string; name: string };
+	const createAuthUser = async ({ slug, email, password, name }: CreateAuthUserArgs) => {
+		console.log({ slug, email, password, name });
+		const { user } = await betterAuth.api.signUpEmail({
+			body: {
+				email,
+				password,
+				name,
+				table: slug
+			}
+		});
+		return user.id;
 	};
 
 	const createForgotPasswordToken = async (userTableName: PrototypeSlug, id: string | null) => {
-		const table = rizom.adapter.tables[userTableName];
-		const now = new Date();
-		const token = crypto.randomBytes(32).toString('hex');
-		const hashedToken = await hash(token);
-		if (id) {
-			await db
-				.update(table)
-				.set({
-					resetToken: hashedToken,
-					resetTokenExpireAt: new Date(now.getTime() + 10 * 60000)
-				})
-				.where(eq(table.id, id));
-		}
-		return token;
+		throw new Error('not implemented');
+		// const table = rizom.adapter.tables[userTableName];
+		// const now = new Date();
+		// const token = crypto.randomBytes(32).toString('hex');
+		// const hashedToken = await hash(token);
+		// if (id) {
+		// 	await db
+		// 		.update(table)
+		// 		.set({
+		// 			resetToken: hashedToken,
+		// 			resetTokenExpireAt: new Date(now.getTime() + 10 * 60000)
+		// 		})
+		// 		.where(eq(table.id, id));
+		// }
+		// return token;
 	};
 
 	const verifyForgotPasswordToken = async ({
@@ -115,29 +121,30 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		userTableName,
 		id
 	}: VerifyForgotPasswordTokenArgs) => {
-		let user;
-		const table = rizom.adapter.tables[userTableName];
-		const now = new Date();
+		throw new Error('not implemented');
+		// let user;
+		// const table = rizom.adapter.tables[userTableName];
+		// const now = new Date();
 
-		const users = await db
-			.select({
-				hashedToken: table.resetToken,
-				resetTokenExpireAt: table.resetTokenExpireAt
-			})
-			.from(table)
-			.where(eq(table.id, id));
+		// const users = await db
+		// 	.select({
+		// 		hashedToken: table.resetToken,
+		// 		resetTokenExpireAt: table.resetTokenExpireAt
+		// 	})
+		// 	.from(table)
+		// 	.where(eq(table.id, id));
 
-		if (!users.length) {
-			return false;
-		} else {
-			user = users[0];
-		}
+		// if (!users.length) {
+		// 	return false;
+		// } else {
+		// 	user = users[0];
+		// }
 
-		if (!dev && now.getTime() > user.resetTokenExpireAt.getTime()) {
-			return false;
-		}
+		// if (!dev && now.getTime() > user.resetTokenExpireAt.getTime()) {
+		// 	return false;
+		// }
 
-		return await verifyHash({ hash: user.hashedToken, clear: token });
+		// return await verifyHash({ hash: user.hashedToken, clear: token });
 	};
 
 	const deleteAuthUserById = async (id: string) => {
@@ -186,14 +193,14 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 
 		const userTable = rizom.adapter.tables[slug];
 
-		//@ts-expect-error that's suck
+		//@ts-expect-error will fix it
 		const user = await db.query[slug].findFirst({
 			where: eq(userTable.email, email)
 		});
 
 		if (!user) {
 			// fake check
-			await verifyHash({ hash: '$argon2idfooo', clear: 'fooo' });
+			await new Promise((resolve) => setTimeout(resolve, 30 + 10 * Math.random()));
 			throw new RizomLoginError('Invalid credentials');
 		}
 
@@ -201,6 +208,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 			const timeLocked = 5; // min
 			const now = new Date();
 			const diff = (now.getTime() - user.lockedAt.getTime()) / 60000;
+			// unlock user
 			if (diff >= timeLocked) {
 				await db
 					.update(userTable)
@@ -216,27 +224,16 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 			}
 		}
 
-		const validPassword = await verifyHash({ hash: user.hashedPassword, clear: password });
-		if (validPassword) {
-			await db
-				.update(userTable)
-				.set({
-					locked: false,
-					loginAttempts: 0
-				})
-				.where(eq(userTable.id, user.id));
-
-			const session = await createSession(user.authUserId);
-			return {
-				session,
-				user: {
-					name: user.name,
-					email: user.email,
-					id: user.id,
-					roles: user.roles
-				}
-			};
-		} else {
+		let signin;
+		try {
+			signin = await betterAuth.api.signInEmail({
+				body: {
+					email,
+					password
+				},
+				asResponse: true
+			});
+		} catch (err: any) {
 			const maxLoginAttempts = 5;
 			const maxLoginAttemptsReached = user.loginAttempts + 1 >= maxLoginAttempts;
 			if (maxLoginAttemptsReached) {
@@ -260,11 +257,34 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 			}
 			throw new RizomLoginError('Invalid credentials');
 		}
+
+		if (!signin || signin.status !== 200) {
+			throw new RizomLoginError('Invalid credentials');
+		}
+
+		await db
+			.update(userTable)
+			.set({
+				locked: false,
+				loginAttempts: 0
+			})
+			.where(eq(userTable.id, user.id));
+
+		return {
+			token: signin.headers.get('set-auth-token'),
+			user: {
+				name: user.name,
+				email: user.email,
+				id: user.id,
+				roles: user.roles
+			}
+		};
 	};
 
 	return {
+		betterAuth,
 		getAuthUsers,
-		createSession,
+		// createSession,
 		createAuthUser,
 		deleteAuthUserById,
 		getUserAttributes,
@@ -296,7 +316,7 @@ type VerifyForgotPasswordTokenArgs = {
 };
 
 type CreateAuthDatabaseInterfaceArgs = {
-	db: BetterSQLite3Database<Schema>;
+	db: BetterSQLite3Database<any>;
 	schema: any;
 };
 
@@ -306,12 +326,12 @@ type CreateFirstUserArgs = {
 	password: string;
 };
 
-declare module 'lucia' {
-	interface Register {
-		Lucia: ReturnType<typeof createAdapterAuthInterface>['lucia'];
-		DatabaseUserAttributes: DatabaseUserAttributes;
-	}
-}
+// declare module 'lucia' {
+// 	interface Register {
+// 		Lucia: ReturnType<typeof createAdapterAuthInterface>['lucia'];
+// 		DatabaseUserAttributes: DatabaseUserAttributes;
+// 	}
+// }
 
 interface DatabaseUserAttributes {
 	id: string;

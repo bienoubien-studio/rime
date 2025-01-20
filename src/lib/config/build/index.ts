@@ -106,6 +106,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	if (dev || generate) {
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
+
 		if (changed) {
 			const validate = await import('../validate.js').then((module) => module.default);
 			const valid = validate(compiledConfig);

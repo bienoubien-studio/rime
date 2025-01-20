@@ -1,8 +1,12 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
+import type { PrototypeSlug } from 'rizom/types';
 
 export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rizom = event.locals.rizom;
-	let sessionId = event.cookies.get(rizom.auth.lucia.sessionCookieName);
+
+	let authenticated = await rizom.auth.betterAuth.api.getSession({
+		headers: event.request.headers
+	});
 
 	//////////////////////////////////////////////
 	// Init if no admin users
@@ -12,7 +16,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		if (users.length === 0) {
 			throw redirect(303, '/init');
 		}
-		if (!sessionId) {
+		if (!authenticated) {
 			throw redirect(303, '/login');
 		}
 	}
@@ -24,43 +28,20 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	//////////////////////////////////////////////
-	// Try getting sessionId if not defined
-	//////////////////////////////////////////////
-
-	if (!sessionId && event.url.pathname.startsWith('/api')) {
-		const authorizationHeader = event.request.headers.get('Authorization');
-		sessionId = rizom.auth.lucia.readBearerToken(authorizationHeader ?? '') || undefined;
-	}
-
-	if (!sessionId) {
+	if (!authenticated) {
 		event.locals.user = undefined;
 		event.locals.session = undefined;
 		return resolve(event);
 	}
 
-	const { session, user: authUser } = await rizom.auth.lucia.validateSession(sessionId);
+	const { session, user: authUser } = authenticated;
 
-	if (session && session.fresh) {
-		const sessionCookie = rizom.auth.lucia.createSessionCookie(session.id);
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
-	}
-
-	if (!session) {
-		const sessionCookie = rizom.auth.lucia.createBlankSessionCookie();
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
-	}
+	console.log(authenticated);
 
 	const user = authUser
 		? await rizom.auth.getUserAttributes({
 				authUserId: authUser?.id,
-				slug: authUser?.table
+				slug: authUser?.table as PrototypeSlug
 			})
 		: undefined;
 

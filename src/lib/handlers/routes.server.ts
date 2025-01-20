@@ -2,10 +2,6 @@ import { type Handle } from '@sveltejs/kit';
 import apiInit from '../api/init.js';
 import { logout } from 'rizom/panel/pages/logout/actions.server.js';
 import buildNavigation from '$lib/panel/navigation.js';
-import path from 'path';
-import fs from 'fs';
-import { error } from '@sveltejs/kit';
-import { fileURLToPath } from 'url';
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;

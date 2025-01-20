@@ -1,5 +1,5 @@
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
-import { type CookieAttributes } from 'lucia';
+// import { type CookieAttributes } from 'lucia';
 
 import {
 	RizomLoginEmailError,
@@ -25,13 +25,12 @@ export const loginActions = {
 		const password = data.get('password') as string | undefined;
 
 		try {
-			const { session } = await rizom.auth.login({ email, password, slug: 'users' });
-			const sessionCookie = rizom.auth.lucia.createSessionCookie(session.id);
-			locals.session = session;
-			const { name, value, attributes } = sessionCookie;
-			cookies.set(name, value, attributes as CookieAttributes & { path: string });
+			const { user } = await rizom.auth.login({ email, password, slug: 'users' });
+			// const sessionCookie = rizom.auth.lucia.createSessionCookie(session.id);
+			// locals.session = session;
+			// const { name, value, attributes } = sessionCookie;
+			// cookies.set(name, value, attributes as CookieAttributes & { path: string });
 		} catch (err: any) {
-			console.log(err);
 			if (err instanceof RizomLoginEmailError) {
 				return fail<LoginActionFailure>(400, { form: { email }, errors: { email: err.message } });
 			}

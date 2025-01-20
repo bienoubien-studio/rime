@@ -16,8 +16,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 
 	const auth = createAdapterAuthInterface({
 		db,
-		sessionsTable: schema.sessions,
-		authUsersTable: schema.authUsers
+		schema
 	});
 	const blocks = createAdapterBlocksInterface({ db, tables });
 	const collection = createAdapterCollectionInterface({ db, tables });

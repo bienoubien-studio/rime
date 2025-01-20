@@ -4,12 +4,16 @@ import { requestLogger, taskLogger } from 'rizom/utils/logger/index.js';
 import { dev } from '$app/environment';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from 'rizom/types/index.js';
+import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
 type Args = { config: Config; schema: any };
 
 export function createCMSHandler({ config, schema }: Args) {
+	// CMS Handler
+	// Initialize Rizom and add it to event.locals
+	// as well as the current locale
 	const handleCMS: Handle = async ({ event, resolve }) => {
 		requestLogger.info(event.request.method + ' ' + event.url.pathname);
 
@@ -26,7 +30,8 @@ export function createCMSHandler({ config, schema }: Args) {
 		event.locals.rizom = rizom;
 		event.locals.locale = rizom.defineLocale({ event });
 
-		return resolve(event);
+		// return resolve(event);
+		return svelteKitHandler({ event, resolve, auth: rizom.auth.betterAuth });
 	};
 
 	return handleCMS;

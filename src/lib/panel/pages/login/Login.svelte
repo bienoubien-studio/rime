@@ -1,15 +1,14 @@
 <script lang="ts">
 	import * as Card from '$lib/panel/components/ui/card';
-	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Email from 'rizom/fields/email/component/Email.svelte';
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
-	import { enhance } from '$app/forms';
-	import { toast } from 'svelte-sonner';
 	import type { FormErrors } from 'rizom/types';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
+	import { createAuthClient } from 'better-auth/svelte';
+	import { goto } from '$app/navigation';
 
 	type Props = {
 		forgotPasswordLink?: boolean;
@@ -17,26 +16,43 @@
 	};
 	let { form, forgotPasswordLink }: Props = $props();
 
-	const context = setFormContext(form || {}, 'login');
+	const authClient = createAuthClient();
+	let context = setFormContext(form || {}, 'login');
+
+	const handleSignIn = async (e: SubmitEvent) => {
+		e.preventDefault();
+
+		await authClient.signIn.email(
+			{
+				email: context.form.email,
+				password: context.form.password
+			},
+			{
+				onRequest: () => {
+					//show loading
+				},
+				onSuccess: (ctx) => {
+					goto('/panel');
+				},
+				onError: (ctx) => {
+					context.errors.set('password', 'Invalid email or password');
+					context.errors.set('email', 'Invalid email or password');
+				}
+			}
+		);
+	};
 
 	$effect(() => {
-		if (context.status === 'failure') {
-			toast.warning('Invalid credential');
-		}
-	});
-
-	$effect(() => {
-		const hasEmailChanged = 'password' in context.changes;
-		const hasInvalidCredentials = context.errors.get('email') === 'Invalid credentials';
-		if (hasInvalidCredentials && hasEmailChanged) {
+		const hasChanges = 'email' in context.changes || 'password' in context.changes;
+		if (hasChanges) {
 			context.errors.delete('email');
+			context.errors.delete('password');
 		}
 	});
 </script>
 
-<Toaster />
 <div class="rz-login-container">
-	<form method="POST" action="/login" use:enhance={context.enhance}>
+	<form onsubmit={handleSignIn}>
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Connexion</Card.Title>

@@ -101,7 +101,11 @@ export const templateExportTables = (tables: string[]): string => dedent`
   type Tables = Record<string, GenericTable | SQLiteTableWithColumns<any>>;
 
   export const tables: Tables = {
-    ${tables.join(',\n    ')}
+    ${tables.join(',\n    ')},
+    authUsers,
+    authSessions,
+    authVerifications,
+    authAccounts
   }
 `;
 
@@ -114,10 +118,11 @@ export const authUsers = sqliteTable('auth_users', {
 	emailVerified: integer('email_verified', { mode: 'boolean' }).notNull(),
 	image: text('image'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
+	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+	table: text('table').notNull()
 });
 
-export const sessions = sqliteTable('sessions', {
+export const authSessions = sqliteTable('auth_sessions', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 	token: text('token').notNull().unique(),
@@ -127,16 +132,16 @@ export const sessions = sqliteTable('sessions', {
 	userAgent: text('user_agent'),
 	userId: text('user_id')
 		.notNull()
-		.references(() => users.id)
+		.references(() => authUsers.id)
 });
 
-export const accounts = sqliteTable('accounts', {
+export const authAccounts = sqliteTable('auth_accounts', {
 	id: text('id').primaryKey(),
 	accountId: text('account_id').notNull(),
 	providerId: text('provider_id').notNull(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => users.id),
+		.references(() => authUsers.id),
 	accessToken: text('access_token'),
 	refreshToken: text('refresh_token'),
 	idToken: text('id_token'),
@@ -148,7 +153,7 @@ export const accounts = sqliteTable('accounts', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
 });
 
-export const verifications = sqliteTable('verifications', {
+export const authVerifications = sqliteTable('auth_verifications', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
@@ -157,6 +162,21 @@ export const verifications = sqliteTable('verifications', {
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 });
 `;
+
+type TemplateExportSchemaArgs = { enumTables: string[]; enumRelations: string[] };
+export const templateExportSchema = ({ enumTables, enumRelations }: TemplateExportSchemaArgs) => `
+   const schema = {
+     ${enumTables.join(',\n      ')},
+     ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
+     authUsers,
+     authSessions,
+     authVerifications,
+     authAccounts,
+ }
+
+ export type Schema = typeof schema
+ export default schema
+ `;
 
 export const templateHead = (slug: string) => dedent`
   /** ${slug} ============================================== **/`;

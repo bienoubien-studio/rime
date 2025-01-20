@@ -11,7 +11,7 @@ export const panelUsersCollection: CollectionConfig = {
 	label: { singular: 'User', plural: 'Users' },
 	auth: true,
 	icon: UsersRound,
-	fields: [usersFields.name, usersFields.email, usersFields.roles, hashedPassword],
+	fields: [usersFields.name, usersFields.email, usersFields.roles],
 	access: {
 		read: (user) => !!user,
 		create: (user) => access.isAdmin(user),

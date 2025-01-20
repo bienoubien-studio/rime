@@ -6,15 +6,16 @@
 	const { path, config, form }: EmailFieldProps = $props();
 
 	const field = $derived(form.useField(path, config));
-	let hasErrorAfterInput = $state(false);
+	let showError = $state(false);
 
 	// Actions
 	const onInput = (event: Event) => {
+		showError = false;
 		field.value = (event.target as HTMLInputElement).value;
 	};
 
 	const onBlur = () => {
-		hasErrorAfterInput = !!field.error;
+		showError = true;
 	};
 </script>
 
@@ -23,10 +24,10 @@
 	<Input
 		id={path || config.name}
 		name={path || config.name}
-		data-error={hasErrorAfterInput ? '' : null}
-		onblur={onBlur}
+		data-error={showError && field.error ? '' : null}
 		value={field.value}
+		onblur={onBlur}
 		oninput={onInput}
 	/>
-	<Field.Error error={hasErrorAfterInput ? field.error : false} />
+	<Field.Error error={(showError && field.error) || false} />
 </Field.Root>
