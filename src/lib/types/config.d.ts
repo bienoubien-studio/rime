@@ -138,7 +138,7 @@ export type BuiltConfig = {
 	plugins?: Record<string, Record<string, MaybeAsyncFunction>>;
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
-		access: (user: User) => boolean;
+		access: (user?: User) => boolean;
 	};
 };
 

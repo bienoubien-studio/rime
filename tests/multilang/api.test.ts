@@ -37,21 +37,25 @@ test('Login should not be successfull', async ({ request }) => {
 });
 
 test('Login should be successfull', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/login`, {
-			data: {
-				email: 'admin@bienoubien.studio',
-				password: 'a&1Aa&1A'
-			}
-		})
-		.then((r) => r.json());
-	expect(response.token).toBeDefined();
-	expect(response.user).toBeDefined();
-	expect(response.user.id).toBeDefined();
-	expect(response.user.roles).toBeDefined();
-	expect(response.user.roles[0]).toBe('admin');
-	token = response.token;
-	adminUserId = response.user.id;
+	const response = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin@bienoubien.studio',
+			password: 'a&1Aa&1A'
+		}
+	});
+
+	const headerToken = response.headers()['Set-Auth-Token'];
+	expect(headerToken).toBeDefined();
+	token = headerToken;
+
+	const json = await response.json();
+	expect(json.user).toBeDefined();
+	expect(json.user.id).toBeDefined();
+	expect(json.user).toBeDefined();
+	expect(json.user.id).toBeDefined();
+	expect(json.user.roles).toBeDefined();
+	expect(json.user.roles[0]).toBe('admin');
+	adminUserId = json.user.id;
 });
 
 ///////////////////////////////////////////////
@@ -366,8 +370,9 @@ test('Login should be successfull (again)', async ({ request }) => {
 			}
 		})
 		.then((r) => r.json());
-	expect(response.token).toBeDefined();
-	token = response.token;
+	const headerToken = response.headers()['Set-Auth-Token'];
+	expect(headerToken).toBeDefined();
+	token = headerToken;
 });
 
 test('Should get settings', async ({ request }) => {

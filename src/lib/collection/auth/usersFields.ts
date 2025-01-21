@@ -15,9 +15,11 @@ const roles = select('roles')
 		read: (user) => !!user && access.isAdmin(user),
 		update: (user) => !!user && access.isAdmin(user)
 	});
+
 const password = text('password')
 	.required()
 	.validate((value) => validate.password(value));
+
 const confirmPassword = text('confirmPassword')
 	.label('Confirm password')
 	.required()
@@ -27,6 +29,7 @@ const confirmPassword = text('confirmPassword')
 		}
 		return true;
 	});
+
 export const usersFields = {
 	email: emailField,
 	name,
@@ -34,12 +37,3 @@ export const usersFields = {
 	password,
 	confirmPassword
 };
-
-type UsersFields = {
-	email: typeof email;
-	roles: typeof roles;
-	password: typeof password;
-	confirmPassword: typeof confirmPassword;
-};
-
-export type { UsersFields };

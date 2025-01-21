@@ -2,7 +2,13 @@ import toSnakeCase from 'to-snake-case';
 import dedent from 'dedent';
 const s = toSnakeCase;
 
-/** Templates Tables / Fields */
+export const templateImports = `
+import { text, integer, sqliteTable, real } from "drizzle-orm/sqlite-core";
+import { relations, type ColumnBaseConfig, type ColumnDataType } from 'drizzle-orm';
+import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
+
+const pk = () => text("id").primaryKey().$defaultFn(() => crypto.randomUUID());
+`;
 
 export const templateTable = (table: string, content: string): string => `
 export const ${table} = sqliteTable( '${s(table)}', {
@@ -103,15 +109,14 @@ export const templateExportTables = (tables: string[]): string => dedent`
   export const tables: Tables = {
     ${tables.join(',\n    ')},
     authUsers,
-    authSessions,
+    authAccounts,
     authVerifications,
-    authAccounts
+    authSessions
   }
 `;
 
 export const templateAuth = `
-/** better-auth tables */
-export const authUsers = sqliteTable('auth_users', {
+  export const authUsers = sqliteTable('auth_users', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
 	email: text('email').notNull().unique(),
@@ -119,10 +124,14 @@ export const authUsers = sqliteTable('auth_users', {
 	image: text('image'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+	role: text('role'),
+	banned: integer('banned', { mode: 'boolean' }),
+	banReason: text('ban_reason'),
+	banExpires: integer('ban_expires', { mode: 'timestamp' }),
 	table: text('table').notNull()
-});
+  });
 
-export const authSessions = sqliteTable('auth_sessions', {
+  export const authSessions = sqliteTable('auth_sessions', {
 	id: text('id').primaryKey(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 	token: text('token').notNull().unique(),
@@ -132,10 +141,11 @@ export const authSessions = sqliteTable('auth_sessions', {
 	userAgent: text('user_agent'),
 	userId: text('user_id')
 		.notNull()
-		.references(() => authUsers.id)
-});
+		.references(() => authUsers.id),
+	impersonatedBy: text('impersonated_by')
+  });
 
-export const authAccounts = sqliteTable('auth_accounts', {
+  export const authAccounts = sqliteTable('auth_accounts', {
 	id: text('id').primaryKey(),
 	accountId: text('account_id').notNull(),
 	providerId: text('provider_id').notNull(),
@@ -151,16 +161,16 @@ export const authAccounts = sqliteTable('auth_accounts', {
 	password: text('password'),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull()
-});
+  });
 
-export const authVerifications = sqliteTable('auth_verifications', {
+  export const authVerifications = sqliteTable('auth_verifications', {
 	id: text('id').primaryKey(),
 	identifier: text('identifier').notNull(),
 	value: text('value').notNull(),
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' }),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
-});
+  });
 `;
 
 type TemplateExportSchemaArgs = { enumTables: string[]; enumRelations: string[] };
@@ -169,9 +179,9 @@ export const templateExportSchema = ({ enumTables, enumRelations }: TemplateExpo
      ${enumTables.join(',\n      ')},
      ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
      authUsers,
-     authSessions,
-     authVerifications,
      authAccounts,
+     authVerifications,
+     authSessions
  }
 
  export type Schema = typeof schema

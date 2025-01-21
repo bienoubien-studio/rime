@@ -137,7 +137,7 @@ function validate(config: CompiledConfig): boolean {
 		}
 	}
 
-	taskLogger.done('Config is valid');
+	// taskLogger.done('Config is valid');
 
 	return true;
 }

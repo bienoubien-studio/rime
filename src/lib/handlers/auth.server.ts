@@ -1,16 +1,24 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import type { PrototypeSlug } from 'rizom/types';
 
+// Validate the session
+// retrieve user attributes
+// check for panel access
 export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rizom = event.locals.rizom;
 
+	// console.log(event.request.headers);
+	// Authenticate
 	let authenticated = await rizom.auth.betterAuth.api.getSession({
 		headers: event.request.headers
 	});
 
-	//////////////////////////////////////////////
-	// Init if no admin users
-	//////////////////////////////////////////////
+	// let authenticated = await rizom.auth.betterAuth.api.getSession({
+	// 	headers: event.request.headers
+	// });
+
+	// Redirect to the proper route
+	// for /panel request
 	if (event.url.pathname.startsWith('/panel')) {
 		const users = await rizom.auth.getAuthUsers();
 		if (users.length === 0) {
@@ -21,6 +29,8 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
+	// Redirect to /init if no authUsers
+	// or throw a 404 if there is at least one
 	if (event.url.pathname.startsWith('/init')) {
 		const users = await rizom.auth.getAuthUsers();
 		if (users.length > 0) {
@@ -28,16 +38,16 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
+	// If not authenticated resolve
+	// before getting user attributes
 	if (!authenticated) {
 		event.locals.user = undefined;
 		event.locals.session = undefined;
 		return resolve(event);
 	}
 
+	// Get user attributes
 	const { session, user: authUser } = authenticated;
-
-	console.log(authenticated);
-
 	const user = authUser
 		? await rizom.auth.getUserAttributes({
 				authUserId: authUser?.id,
@@ -45,14 +55,13 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 			})
 		: undefined;
 
+	// Populate locals
 	event.locals.user = user;
 	event.locals.session = session || undefined;
 
-	//
+	// Check if a user has the proper role
+	// to visit the panel
 	if (event.url.pathname.startsWith('/panel')) {
-		if (!user) {
-			return redirect(302, '/login');
-		}
 		const authorized = rizom.config.raw.panel?.access?.(user);
 		if (!authorized) {
 			throw error(401, 'unauthorized');

@@ -3,19 +3,11 @@ import fs from 'fs';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
 
-const head = `
-import { text, integer, sqliteTable, real } from "drizzle-orm/sqlite-core";
-import { relations, type ColumnBaseConfig, type ColumnDataType } from 'drizzle-orm';
-import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
-
-const pk = () => text("id").primaryKey().$defaultFn(() => crypto.randomUUID());
-`;
-
 const write = (schema: string) => {
 	const cachedSchema = cache.get('schema');
 
 	if (cachedSchema && cachedSchema === schema) {
-		taskLogger.info('-  schema   :: No change detected');
+		// taskLogger.info('-  schema   :: No change detected');
 		return;
 	} else {
 		cache.set('schema', schema);
@@ -25,7 +17,7 @@ const write = (schema: string) => {
 		fs.mkdirSync('./src/lib/server');
 	}
 
-	fs.writeFile('./src/lib/server/schema.ts', [head, schema].join('\n\n'), (err) => {
+	fs.writeFile('./src/lib/server/schema.ts', schema, (err) => {
 		if (err) {
 			console.error(err);
 		} else {

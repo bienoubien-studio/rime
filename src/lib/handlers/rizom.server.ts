@@ -11,9 +11,10 @@ const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, de
 type Args = { config: Config; schema: any };
 
 export function createCMSHandler({ config, schema }: Args) {
-	// CMS Handler
+	// CMS Handler :
 	// Initialize Rizom and add it to event.locals
-	// as well as the current locale
+	// Define current locale and add it to event.locals
+	// Return the better-auth handler
 	const handleCMS: Handle = async ({ event, resolve }) => {
 		requestLogger.info(event.request.method + ' ' + event.url.pathname);
 
@@ -30,7 +31,6 @@ export function createCMSHandler({ config, schema }: Args) {
 		event.locals.rizom = rizom;
 		event.locals.locale = rizom.defineLocale({ event });
 
-		// return resolve(event);
 		return svelteKitHandler({ event, resolve, auth: rizom.auth.betterAuth });
 	};
 

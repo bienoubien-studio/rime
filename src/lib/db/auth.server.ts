@@ -1,9 +1,5 @@
-// import schema, { tables, type GenericTable } from '$lib/server/schema';
 import { eq } from 'drizzle-orm';
-import { dev } from '$app/environment';
-import crypto from 'crypto';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-// import { hash, verifyHash } from 'rizom/collection/auth/utils.server.js';
 import { RizomInitError } from '../errors/init.server.js';
 import {
 	RizomLoginEmailError,
@@ -15,15 +11,15 @@ import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
-import { betterAuth as createBetterAuth } from 'better-auth';
+import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { bearer } from 'better-auth/plugins';
+import { admin, bearer } from 'better-auth/plugins';
 
-const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
+const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema } = args;
 
-	const betterAuth = createBetterAuth({
-		plugins: [bearer()],
+	const betterAuth = initBetterAuth({
+		plugins: [bearer(), admin()],
 		database: drizzleAdapter(db, {
 			provider: 'sqlite',
 			schema: {
@@ -45,6 +41,12 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		},
 		user: {
 			modelName: 'authUsers',
+			changeEmail: {
+				enabled: true
+			},
+			deleteUser: {
+				enabled: true
+			},
 			additionalFields: {
 				table: {
 					type: 'string',
@@ -57,12 +59,28 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		}
 	});
 
+	// Create the first user at init
+	// Should run only once as /api/init or /init
+	// return a 404 if a user exists
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
+
 		if (users.length) {
 			throw new RizomInitError('Already initialized');
 		}
-		const authUserId = await createAuthUser({ name, email, password, slug: 'users' });
+
+		const authUserId = await createAuthUser({
+			name,
+			email,
+			password,
+			slug: 'users',
+			role: 'admin'
+		});
+
+		await db.update(schema.authUsers).set({
+			role: 'admin'
+		});
+
 		const now = new Date();
 		const values = {
 			name,
@@ -76,22 +94,34 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		const [user] = (await db
 			.insert(rizom.adapter.tables.users)
 			.values(values)
-			.returning()) as any[];
+			.returning()) as User[];
 		return user.id;
 	};
 
+	type GetAuthUserIdArgs = { slug: string; id: string };
+	const getAuthUserId = async ({ slug, id }: GetAuthUserIdArgs) => {
+		const userTable = rizom.adapter.tables[slug];
+		//@ts-expect-error slug is key of query
+		const user = await db.query[slug].findFirst({ where: eq(userTable.id, id) });
+		if (user) {
+			return user.authUserId;
+		}
+		return null;
+	};
+
 	const getAuthUsers = () => {
+		//@ts-expect-error will fix it
 		return db.query.authUsers.findMany();
 	};
 
-	type CreateAuthUserArgs = { slug: CollectionSlug; email: string; password: string; name: string };
-	const createAuthUser = async ({ slug, email, password, name }: CreateAuthUserArgs) => {
-		console.log({ slug, email, password, name });
+	const createAuthUser = async ({ slug, email, password, name, role }: CreateAuthUserArgs) => {
+		console.log('createAuthUser', role);
 		const { user } = await betterAuth.api.signUpEmail({
 			body: {
 				email,
 				password,
 				name,
+				role: role || 'regular',
 				table: slug
 			}
 		});
@@ -148,10 +178,18 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	};
 
 	const deleteAuthUserById = async (id: string) => {
-		await db.delete(schema.authUsers).where(eq(schema.authUsers.id, id));
+		await betterAuth.api.removeUser({
+			body: {
+				userId: id
+			}
+		});
+		// await db.delete(schema.authUsers).where(eq(schema.authUsers.id, id));
 		return id;
 	};
 
+	// Get auth collection attributes
+	// based on an authUserId and the slug
+	// of the collection
 	const getUserAttributes = async ({
 		authUserId,
 		slug
@@ -170,6 +208,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 		return user as User;
 	};
 
+	// Shortcut to get a panel user attributes
 	const getPanelUserAttributes = async (authUserId: string) => {
 		return getUserAttributes({
 			slug: 'users',
@@ -200,7 +239,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 
 		if (!user) {
 			// fake check
-			await new Promise((resolve) => setTimeout(resolve, 30 + 10 * Math.random()));
+			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
 			throw new RizomLoginError('Invalid credentials');
 		}
 
@@ -284,6 +323,7 @@ const createAdapterAuthInterface = (args: CreateAuthDatabaseInterfaceArgs) => {
 	return {
 		betterAuth,
 		getAuthUsers,
+		getAuthUserId,
 		// createSession,
 		createAuthUser,
 		deleteAuthUserById,
@@ -315,7 +355,7 @@ type VerifyForgotPasswordTokenArgs = {
 	token: string;
 };
 
-type CreateAuthDatabaseInterfaceArgs = {
+type AuthDatabaseInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	schema: any;
 };
@@ -326,14 +366,10 @@ type CreateFirstUserArgs = {
 	password: string;
 };
 
-// declare module 'lucia' {
-// 	interface Register {
-// 		Lucia: ReturnType<typeof createAdapterAuthInterface>['lucia'];
-// 		DatabaseUserAttributes: DatabaseUserAttributes;
-// 	}
-// }
-
-interface DatabaseUserAttributes {
-	id: string;
-	table: PrototypeSlug;
-}
+type CreateAuthUserArgs = {
+	slug: CollectionSlug;
+	email: string;
+	password: string;
+	name: string;
+	role: 'regular' | 'admin';
+};
