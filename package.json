@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.21",
+	"version": "0.0.22",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
@@ -71,6 +71,7 @@
 		"svelte": "^5.0.0"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.48.2",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.7.4",
 		"@sveltejs/package": "^2.0.0",
@@ -106,7 +107,7 @@
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
 		"@internationalized/date": "^3.5.6",
-		"@playwright/test": "^1.48.2",
+		"@sveltejs/adapter-node": "^5.2.12",
 		"@tiptap/core": "^2.8.0",
 		"@tiptap/extension-bubble-menu": "^2.8.0",
 		"@tiptap/extension-link": "^2.8.0",
@@ -132,7 +133,6 @@
 		"loglevel-plugin-prefix": "^0.8.4",
 		"lucide-svelte": "^0.462.0",
 		"mode-watcher": "^0.4.1",
-		"oslo": "^1.2.1",
 		"qs": "^6.13.0",
 		"sharp": "^0.33.5",
 		"sortablejs": "^1.15.3",
