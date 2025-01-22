@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from '../button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { usersFields } from '$lib/collection/auth/usersFields.js';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
@@ -36,8 +36,6 @@
 </script>
 
 <div class="rz-doc-auth-header">
-	<Email {form} config={usersFields.email.raw} path="email" />
-
 	{#if changingPassword}
 		<Text {form} type="password" config={text('password').required().raw} path="password" />
 

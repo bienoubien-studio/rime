@@ -31,6 +31,7 @@ function createRizom() {
 	};
 
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
+		initialized = false;
 		if (dev && !hasRunInitCommand()) {
 			throw new RizomInitError('Missing required files, please run `rizom init` first');
 		}

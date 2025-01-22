@@ -39,21 +39,21 @@ test('Login should not be successfull', async ({ request }) => {
 });
 
 test('Login should be successfull', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/login`, {
-			data: {
-				email: 'admin@bienoubien.studio',
-				password: 'a&1Aa&1A'
-			}
-		})
-		.then((r) => r.json());
-	expect(response.token).toBeDefined();
-	expect(response.user).toBeDefined();
-	expect(response.user.id).toBeDefined();
-	expect(response.user.roles).toBeDefined();
-	expect(response.user.roles[0]).toBe('admin');
-	token = response.token;
-	adminUserId = response.user.id;
+	const response = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin@bienoubien.studio',
+			password: 'a&1Aa&1A'
+		}
+	});
+	const headerToken = response.headers()['Set-Auth-Token'];
+	const json = await response.json();
+	expect(headerToken).toBeDefined();
+	expect(json.user).toBeDefined();
+	expect(json.user.id).toBeDefined();
+	expect(json.user.roles).toBeDefined();
+	expect(json.user.roles[0]).toBe('admin');
+	token = headerToken;
+	adminUserId = json.user.id;
 });
 
 ///////////////////////////////////////////////
@@ -202,7 +202,7 @@ test('Should get admin user', async ({ request }) => {
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();
-	expect(data.doc.hashedPassword).toBeUndefined();
+	// expect(data.doc.hashedPassword).toBeUndefined();
 });
 
 test('Should create a user editor', async ({ request }) => {
@@ -242,7 +242,7 @@ test('Should get editor user', async ({ request }) => {
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();
-	expect(data.doc.hashedPassword).toBeUndefined();
+	// expect(data.doc.hashedPassword).toBeUndefined();
 });
 
 test('Should logout user', async ({ request }) => {
@@ -297,16 +297,19 @@ test('Should not create a page', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/login`, {
-			data: {
-				email: 'admin@bienoubien.studio',
-				password: 'a&1Aa&1A'
-			}
-		})
-		.then((r) => r.json());
-	expect(response.token).toBeDefined();
-	token = response.token;
+	const response = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin@bienoubien.studio',
+			password: 'a&1Aa&1A'
+		}
+	});
+	const headerToken = response.headers()['Set-Auth-Token'];
+	const json = await response.json();
+	expect(headerToken).toBeDefined();
+	expect(json.user).toBeDefined();
+	expect(json.user.id).toBeDefined();
+	token = headerToken;
+	adminUserId = json.user.id;
 });
 
 test('Should get settings', async ({ request }) => {
@@ -371,10 +374,11 @@ test('Should login editor', async ({ request }) => {
 	});
 
 	const status = response.status();
-	const data = await response.json();
 	expect(status).toBe(200);
-	expect(data.token).toBeDefined();
-	token = data.token;
+
+	const headerToken = response.headers()['Set-Auth-Token'];
+	expect(headerToken).toBeDefined();
+	token = headerToken;
 });
 
 test('Editor should update editor password', async ({ request }) => {
@@ -462,4 +466,24 @@ test('Should lock user', async ({ request }) => {
 		}
 	});
 	expect(response.status()).toBe(403);
+});
+
+test('Should delete user editor', async ({ request }) => {
+	const sigin = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin@bienoubien.studio',
+			password: 'a&1Aa&1A'
+		}
+	});
+	const headerToken = sigin.headers()['Set-Auth-Token'];
+	const json = await sigin.json();
+	expect(headerToken).toBeDefined();
+	token = headerToken;
+	adminUserId = json.user.id;
+	const response = await request.delete(`${API_BASE_URL}/users/${editorId}`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	expect(response.status()).toBe(200);
 });

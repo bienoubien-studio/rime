@@ -38,7 +38,7 @@ export const pagesRels = sqliteTable('pages_rels', {
   parentId: text("parent_id").references(() => pages.id, { onDelete: 'cascade' }),
   pagesId:  text('pages_id').references(() => pages.id, { onDelete: 'cascade' }),
 usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
-  
+
 })
 
 export const rel_pagesRels = relations(pages, ({ many }) => ({
@@ -95,13 +95,13 @@ export const users = sqliteTable( 'users', {
   website: text('website'),
   createdAt: integer('created_at', { mode : 'timestamp' }),
   updatedAt: integer('updated_at', { mode : 'timestamp' }),
-  
+
   resetTokenExpireAt: integer("reset_token_expire_at", { mode: 'timestamp' }),
   resetToken: text("reset_token"),
   loginAttempts: integer("login_attempts").notNull().default(0),
   locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
   lockedAt: integer("locked_at", { mode: 'timestamp'}),
-  authUserId: text("auth_user_id").references(() => authUsers.id, { onDelete: 'cascade' }).notNull(),
+  authUserId: text("auth_user_id").references(() => authSchema.authUsers.id, { onDelete: 'cascade' }).notNull(),
 
 })
 
@@ -111,7 +111,7 @@ export const usersRels = sqliteTable('users_rels', {
   position: integer('position'),
   parentId: text("parent_id").references(() => users.id, { onDelete: 'cascade' }),
   usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
-  
+
 })
 
 export const rel_usersRels = relations(users, ({ many }) => ({
@@ -152,7 +152,7 @@ export const infosRels = sqliteTable('infos_rels', {
   position: integer('position'),
   parentId: text("parent_id").references(() => infos.id, { onDelete: 'cascade' }),
   usersId:  text('users_id').references(() => users.id, { onDelete: 'cascade' }),
-  
+
 })
 
 export const rel_infosRels = relations(infos, ({ many }) => ({

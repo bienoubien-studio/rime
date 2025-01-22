@@ -37,6 +37,7 @@ const apiInit: RequestHandler = async (event: RequestEvent) => {
 
 	try {
 		await rizom.auth.createFirstUser({ name, email, password });
+
 		return json({ initialized: true });
 	} catch (err: any) {
 		logger.error(err);

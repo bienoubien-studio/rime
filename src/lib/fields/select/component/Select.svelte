@@ -70,7 +70,7 @@
 	};
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly}>
+<Field.Root visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 

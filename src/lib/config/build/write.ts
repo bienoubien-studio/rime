@@ -1,5 +1,5 @@
 import { flatten } from 'flat';
-import cache from 'rizom/config/generate/cache/index.js';
+import cache from '../../bin/generate/cache/index.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import { RizomConfigError } from 'rizom/errors/config.server.js';
@@ -57,7 +57,7 @@ const writeMemo = (config: BuiltConfig) => {
 
 	if (cached !== memoStr) {
 		cache.set('config', memoStr);
-		taskLogger.done('Config: config cached');
+		// taskLogger.done('Config: config cached');
 		return true;
 	} else {
 		// taskLogger.info('-  config   :: No change detected');

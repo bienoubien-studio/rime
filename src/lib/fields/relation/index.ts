@@ -69,8 +69,7 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 	}
 }
 
-export const relation = (name: string) =>
-	new RelationFieldBuilder(name) as PublicBuilder<typeof RelationFieldBuilder>;
+export const relation = (name: string) => new RelationFieldBuilder(name);
 
 /////////////////////////////////////////////
 // Type

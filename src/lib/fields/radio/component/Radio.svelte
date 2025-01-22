@@ -20,9 +20,9 @@
 	});
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly}>
+<Field.Root visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
-	<RadioGroup.Root bind:value class="rz-radio" disabled={form.readOnly}>
+	<RadioGroup.Root bind:value class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index}
 			<div class="rz-radio__option">
 				<RadioGroup.Item value={option.value} id="r{index}" class="rz-radio__input" />

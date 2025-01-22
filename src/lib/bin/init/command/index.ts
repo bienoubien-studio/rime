@@ -4,7 +4,6 @@ import * as templates from './templates.js';
 import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
 import { random } from 'rizom/utils/index.js';
-import cache from '../cache/index.js';
 import { RizomInitError } from 'rizom/errors/init.server.js';
 import {
 	getInstallCommand,
@@ -29,7 +28,6 @@ type EnvVarConfig = {
 const PACKAGE = 'rizom';
 
 export const init = async ({ force, skipInstall, name: incomingName }: Args) => {
-	cache.clear();
 	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
 
@@ -153,6 +151,15 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 	}
 
+	function setAuth(name: string) {
+		try {
+			const authPath = path.join(projectRoot, 'src', 'lib', 'auth.ts');
+			writeFileSync(authPath, templates.auth(name.toString()), 'utf-8');
+		} catch (err: any) {
+			log.info('Error creating auth.ts file');
+		}
+	}
+
 	async function installDeps(force = false) {
 		const devDeps = ['drizzle-kit@0.22.8'];
 		if (force) {
@@ -211,6 +218,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
+		setAuth(name);
 		setHooks();
 		configureVite();
 		copyAssets();
@@ -242,6 +250,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
+		setAuth(name);
 		setHooks();
 		configureVite();
 		copyAssets();

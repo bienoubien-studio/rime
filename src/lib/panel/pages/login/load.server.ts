@@ -7,9 +7,9 @@ export const loginLoad = async ({ locals }: ServerLoadEvent) => {
 		forgotPasswordLink: false,
 		form: {}
 	};
-	if ('mailer' in rizom.plugins) {
-		data.forgotPasswordLink = true;
-	}
+	// if ('mailer' in rizom.plugins) {
+	// 	data.forgotPasswordLink = true;
+	// }
 	if (session) {
 		throw redirect(302, '/panel');
 	} else {

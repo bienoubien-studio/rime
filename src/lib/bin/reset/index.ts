@@ -1,36 +1,15 @@
 #!/usr/bin/env bun
 // @ts-check
 import { program } from 'commander';
-import { init } from './init/index.js';
 import { confirm, outro } from '@clack/prompts';
 import { rmSync } from 'fs';
 import path from 'path';
 
-program.version('0.1').description('CMS utilities');
+program.version('0.1').description('rizom utilities');
 
 program
-	.command('init')
-	.description('Initialize CMS')
-	.option('-s, --skip-install', 'Skip dependencies installation', false)
-	.option('-f, --force', 'Force init with default package name', false)
-	.option('-n, --name <name>', 'Specify the name')
-	.action((args) => {
-		init(args);
-	});
-
-program
-	.command('generate')
-	.description('Generate schema, types and routes from config file')
-	.option('-f, --force', 'Force generation overwriting existing files', false)
-	.action(async (args) => {
-		const { generate } = await import('./generate.js');
-		generate(args.force);
-	});
-
-program
-	.command('reset')
 	.description('Reset CMS')
-	.option('-f, --force', 'Force generation overwriting existing files', false)
+	.option('-f, --force', 'Skip confirmation', false)
 	.action(async (args) => {
 		let shouldProceed = true;
 		if (!args.force) {
@@ -40,7 +19,7 @@ program
 			shouldProceed = response === true;
 		}
 		if (!shouldProceed) {
-			return outro('Operation cancelled. Goodbye!');
+			return outro('Operation cancelled. Great!');
 		}
 
 		// Remove directories

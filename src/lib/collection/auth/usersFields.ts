@@ -2,22 +2,42 @@ import { validate } from 'rizom/utils/index.js';
 import { access } from 'rizom/utils/access/index.js';
 import { email, select, text } from 'rizom/fields';
 
-const emailField = email('email').hidden().required().unique();
-const name = text('name').required();
+const emailField = email('email')
+	.access({
+		read: (user) => !!user,
+		update: (user) => false
+	})
+	.required()
+	.unique();
+
+const name = text('name')
+	.access({
+		create: (user) => !!user,
+		read: (user) => true,
+		update: (user) => false
+	})
+	.required();
 
 const roles = select('roles')
-	.options({ value: 'admin', label: 'Admin' })
+	.options({ value: 'admin', label: 'Admin' }, { value: 'user', label: 'User' })
 	.many()
-	.defaultValue('admin')
+	.defaultValue('user')
 	.required()
 	.access({
 		create: (user) => !!user && access.isAdmin(user),
 		read: (user) => !!user && access.isAdmin(user),
 		update: (user) => !!user && access.isAdmin(user)
 	});
+
 const password = text('password')
 	.required()
+	.access({
+		create: (user) => !!user && access.isAdmin(user),
+		read: (user) => false,
+		update: (user) => false
+	})
 	.validate((value) => validate.password(value));
+
 const confirmPassword = text('confirmPassword')
 	.label('Confirm password')
 	.required()
@@ -27,6 +47,7 @@ const confirmPassword = text('confirmPassword')
 		}
 		return true;
 	});
+
 export const usersFields = {
 	email: emailField,
 	name,
@@ -34,12 +55,3 @@ export const usersFields = {
 	password,
 	confirmPassword
 };
-
-type UsersFields = {
-	email: typeof email;
-	roles: typeof roles;
-	password: typeof password;
-	confirmPassword: typeof confirmPassword;
-};
-
-export type { UsersFields };

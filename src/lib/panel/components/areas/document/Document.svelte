@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import * as DocUpload from '$lib/panel/components/ui/doc-upload';
-	import * as DocAuth from '$lib/panel/components/ui/doc-auth';
+	import AuthHeader from './AuthHeader.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
 	import { setDocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
@@ -141,8 +141,8 @@
 	method="post"
 >
 	<ScrollArea>
-		{#if form.doc._editedBy.length && form.doc._editedBy[0].id !== user.attributes.id}
-			<CurrentlyEditing email={form.doc._editedBy[0].email} />
+		{#if form.doc._editedBy && form.doc._editedBy.email !== user.attributes.email}
+			<CurrentlyEditing email={form.doc._editedBy.email} />
 		{/if}
 		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 
@@ -150,8 +150,8 @@
 			{#if config.type === 'collection' && isUploadConfig(config)}
 				<DocUpload.Header accept={config.accept} create={operation === 'create'} {form} />
 			{/if}
-			{#if config.type === 'collection' && isAuthConfig(config)}
-				<DocAuth.Header create={operation === 'create'} {form} />
+			{#if config.type === 'collection' && isAuthConfig(config) && operation === 'create'}
+				<AuthHeader create={operation === 'create'} {form} />
 			{/if}
 			<RenderFields fields={config.fields} {form} />
 		</div>

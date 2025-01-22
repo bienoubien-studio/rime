@@ -1,22 +1,32 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
+import { RizomError } from 'rizom/errors/error.server';
+import type { PrototypeSlug } from 'rizom/types';
 
+// Validate the session
+// retrieve user attributes
+// check for panel access
 export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rizom = event.locals.rizom;
-	let sessionId = event.cookies.get(rizom.auth.lucia.sessionCookieName);
 
-	//////////////////////////////////////////////
-	// Init if no admin users
-	//////////////////////////////////////////////
+	// Authenticate
+	let authenticated = await rizom.auth.betterAuth.api.getSession({
+		headers: event.request.headers
+	});
+
+	// Redirect to the proper route
+	// for /panel request
 	if (event.url.pathname.startsWith('/panel')) {
 		const users = await rizom.auth.getAuthUsers();
 		if (users.length === 0) {
 			throw redirect(303, '/init');
 		}
-		if (!sessionId) {
+		if (!authenticated) {
 			throw redirect(303, '/login');
 		}
 	}
 
+	// Handle /init route, if no authUsers allow
+	// or throw a 404 if there is at least one
 	if (event.url.pathname.startsWith('/init')) {
 		const users = await rizom.auth.getAuthUsers();
 		if (users.length > 0) {
@@ -24,54 +34,37 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	//////////////////////////////////////////////
-	// Try getting sessionId if not defined
-	//////////////////////////////////////////////
-
-	if (!sessionId && event.url.pathname.startsWith('/api')) {
-		const authorizationHeader = event.request.headers.get('Authorization');
-		sessionId = rizom.auth.lucia.readBearerToken(authorizationHeader ?? '') || undefined;
-	}
-
-	if (!sessionId) {
+	// If not authenticated resolve
+	// before getting user attributes
+	if (!authenticated) {
 		event.locals.user = undefined;
 		event.locals.session = undefined;
 		return resolve(event);
 	}
 
-	const { session, user: authUser } = await rizom.auth.lucia.validateSession(sessionId);
+	// Get user attributes
+	const { session, user: authUser } = authenticated;
+	const user = await rizom.auth.getUserAttributes({
+		authUserId: authUser.id,
+		slug: authUser.table as PrototypeSlug
+	});
 
-	if (session && session.fresh) {
-		const sessionCookie = rizom.auth.lucia.createSessionCookie(session.id);
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+	if (!user) {
+		throw new RizomError('User not found');
 	}
 
-	if (!session) {
-		const sessionCookie = rizom.auth.lucia.createBlankSessionCookie();
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+	// Check admin roles on both better-auth and user attributes
+	if (user.roles.includes('admin') && authUser.role !== 'admin') {
+		throw error(401, 'unauthorized');
 	}
 
-	const user = authUser
-		? await rizom.auth.getUserAttributes({
-				authUserId: authUser?.id,
-				slug: authUser?.table
-			})
-		: undefined;
-
+	// Populate locals
 	event.locals.user = user;
 	event.locals.session = session || undefined;
 
-	//
+	// Check if a user has the proper role
+	// to visit the panel
 	if (event.url.pathname.startsWith('/panel')) {
-		if (!user) {
-			return redirect(302, '/login');
-		}
 		const authorized = rizom.config.raw.panel?.access?.(user);
 		if (!authorized) {
 			throw error(401, 'unauthorized');

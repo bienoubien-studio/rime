@@ -1,4 +1,4 @@
-import { hashedPassword, panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
+import { panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { hasProps } from 'rizom/utils/object.js';
 import { isRolesField } from '../../utils/field.js';
@@ -51,7 +51,7 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 	if (collection.auth) {
 		const isNotPanelUsersCollection = !(collection.slug === 'users');
 		if (isNotPanelUsersCollection) {
-			fields.push(usersFields.email, hashedPassword);
+			fields.push(usersFields.email);
 			const rolesField = fields.find((field) => isRolesField(field.raw));
 			if (!rolesField) {
 				fields.push(usersFields.roles);
@@ -120,7 +120,7 @@ export const buildCollection = async (
 		collection.panelThumbnail = thumbnailName;
 	}
 
-	fields.push(relation('_editedBy').to('users').hidden());
+	fields.push(text('_editedBy').hidden());
 
 	return {
 		...collection,
@@ -151,11 +151,19 @@ export const mergePanelUsersCollectionWithDefault = ({
 	const collection = { ...panelUsersCollection };
 	if (roles) {
 		const hasAdminRole = roles.find((role) => role.value === 'admin');
+		const otherRoles = roles.filter((role) => role.value !== 'admin');
 
 		if (!hasAdminRole) {
-			roles = [{ value: 'admin', label: 'Administrator' }, ...roles];
+			roles = [{ value: 'admin' }, ...roles];
 		}
-		const roleField = usersFields.roles.options(...roles);
+
+		if (otherRoles.length === 0) {
+			roles.push({ value: 'user' });
+		}
+
+		const defaultRole = roles.filter((role) => role.value !== 'admin')[0].value;
+
+		const roleField = usersFields.roles.options(...roles).defaultValue(defaultRole);
 
 		collection.fields = [
 			...collection.fields

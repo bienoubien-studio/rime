@@ -1,29 +1,26 @@
-import type { GenericDoc } from 'rizom/types/doc.js';
-import { hash } from './utils.server.js';
+import { RizomError } from 'rizom/errors/error.server';
 import type {
 	CollectionHookBeforeCreate,
 	CollectionHookBeforeDelete,
 	CollectionHookBeforeUpdate
 } from 'rizom/types/hooks.js';
 
-export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
-	const data = args.data as GenericDoc;
-	if (data.password) {
-		const hashedPassword = await hash(data.password);
-		data.hashedPassword = hashedPassword;
-		delete data.password;
-	}
-	return { ...args, data };
-};
-
 export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 	const { rizom } = args;
-	const authUserId = await rizom.auth.createAuthUser(args.config.slug);
-	if (args.data.password) {
-		const hashedPassword = await hash(args.data.password);
-		args.data.hashedPassword = hashedPassword;
-		delete args.data.password;
-	}
+
+	const isAdminCreation =
+		'roles' in args.data && Array.isArray(args.data.roles) && !!args.data.roles.includes('admin');
+
+	const authUserId = await rizom.auth.createAuthUser({
+		email: args.data.email,
+		password: args.data.password,
+		name: args.data.name,
+		slug: args.config.slug,
+		role: isAdminCreation ? 'admin' : 'user'
+	});
+
+	delete args.data.password;
+
 	return {
 		...args,
 		data: {
@@ -31,6 +28,32 @@ export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 			authUserId
 		}
 	};
+};
+
+export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
+	const { rizom } = args;
+
+	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
+
+	if (rolesChanged) {
+		const authUserId = await rizom.auth.getAuthUserId({
+			slug: args.config.slug,
+			id: args.originalDoc.id
+		});
+
+		if (!authUserId) {
+			throw new RizomError('user not found');
+		}
+
+		const hasAdminRole = args.data.roles.includes('admin');
+
+		await rizom.auth.betterAuth.api.setRole({
+			body: { userId: authUserId, role: hasAdminRole ? 'admin' : 'user' },
+			headers: args.event?.request.headers
+		});
+	}
+
+	return args;
 };
 
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {

@@ -34,10 +34,10 @@ type BaseField = {
 	live?: boolean;
 	condition?: (doc: any) => boolean;
 	width?: FieldWidth;
-	access?: {
-		create?: FieldAccess;
-		read?: FieldAccess;
-		update?: FieldAccess;
+	access: {
+		create: FieldAccess;
+		read: FieldAccess;
+		update: FieldAccess;
 	};
 };
 

@@ -105,6 +105,14 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 	const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
 		const relationTableName = `${parentSlug}Rels`;
+
+		// If the collection doesn't have relation
+		// relationTableName doesn't exist
+		// then there are no relations
+		if (!('relationTableName' in tables)) {
+			return [];
+		}
+
 		const table = tables[relationTableName];
 		const columns = Object.keys(getTableColumns(table));
 

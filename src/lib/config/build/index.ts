@@ -65,6 +65,11 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	}
 
 	// Set base builtConfig
+	const trustedOrigins =
+		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
+			? config.trustedOrigins
+			: [process.env.PUBLIC_RIZOM_URL as string];
+
 	let builtConfig: BuiltConfig = {
 		...config,
 		panel: {
@@ -74,6 +79,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		collections,
 		plugins: {},
 		globals,
+		trustedOrigins,
 		icons
 	};
 
@@ -106,6 +112,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	if (dev || generate) {
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
+
 		if (changed) {
 			const validate = await import('../validate.js').then((module) => module.default);
 			const valid = validate(compiledConfig);
@@ -114,16 +121,16 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 			}
 
 			if (generate) {
-				const generateSchema = await import('rizom/config/generate/schema/index.js').then(
+				const generateSchema = await import('rizom/bin/generate/schema/index.js').then(
 					(m) => m.default
 				);
-				const generateRoutes = await import('rizom/config/generate/routes/index.js').then(
+				const generateRoutes = await import('rizom/bin/generate/routes/index.js').then(
 					(m) => m.default
 				);
-				const generateTypes = await import('rizom/config/generate/types/index.js').then(
+				const generateTypes = await import('rizom/bin/generate/types/index.js').then(
 					(m) => m.default
 				);
-				const generateBrowserConfig = await import('rizom/config/generate/browser/index.js').then(
+				const generateBrowserConfig = await import('rizom/bin/generate/browser/index.js').then(
 					(m) => m.default
 				);
 				generateBrowserConfig({

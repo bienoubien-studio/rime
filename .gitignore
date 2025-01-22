@@ -6,6 +6,7 @@ node_modules
 /.svelte-kit
 /build
 /dist
+/app
 
 # OS
 .DS_Store
@@ -26,7 +27,7 @@ vite.config.ts.timestamp-*
 .cache
 db/*
 static
-hooks.server.ts
+src/hooks.server.ts
 src/config
 src/routes
 drizzle.config.ts

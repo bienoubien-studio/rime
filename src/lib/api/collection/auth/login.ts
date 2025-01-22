@@ -9,11 +9,9 @@ export default function (slug: PrototypeSlug) {
 		const data = await event.request.json();
 		const { email, password } = data;
 		try {
-			const { session, user } = await rizom.auth.login({ email, password, slug });
-			return json({
-				token: session.id,
-				user
-			});
+			const { token, user } = await rizom.auth.login({ email, password, slug });
+			const headers = token ? { 'Set-Auth-Token': token } : undefined;
+			return json({ user }, { headers });
 		} catch (err) {
 			handleAPIError(err, 'Could not login user');
 		}

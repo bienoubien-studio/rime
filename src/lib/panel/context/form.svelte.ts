@@ -30,7 +30,6 @@ function createFormStore(initial: Dic, key: string) {
 			try {
 				isEmpty = config.isEmpty(value);
 			} catch (err: any) {
-				// console.log(config);
 				console.log(err.message);
 				throw new Error(config.type + ' ' + err.message);
 			}
@@ -64,6 +63,10 @@ function createFormStore(initial: Dic, key: string) {
 		return {
 			get value() {
 				return form[path];
+			},
+
+			get editable() {
+				return true;
 			},
 
 			set value(value: any) {

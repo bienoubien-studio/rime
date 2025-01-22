@@ -52,3 +52,11 @@ import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));
 `;
+
+export const auth = (name: string) => `
+  import { betterAuth } from "better-auth";
+  import Database from "better-sqlite3";
+
+  export const auth = betterAuth({
+      database: new Database("./db/${name}.db"),
+  })`;

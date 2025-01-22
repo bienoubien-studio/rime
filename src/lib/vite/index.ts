@@ -8,18 +8,8 @@ export function rizom(): Plugin {
 		name: 'rizom',
 		config(): UserConfig {
 			return {
-				// server: {
-				// 	watch: {
-				// 		ignored: ['./src/config/**']
-				// 	}
-				// },
-				optimizeDeps: {
-					exclude: ['@node-rs/argon2']
-				},
 				build: {
-					rollupOptions: {
-						external: ['@node-rs/bcrypt', '@node-rs/argon2', './src/lib/rizom.config.browser.js']
-					}
+					target: 'es2022'
 				}
 			};
 		}
