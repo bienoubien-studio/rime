@@ -16,10 +16,11 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
 
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
-	const { db, schema } = args;
+	const { db, schema, trustedOrigins } = args;
 
 	const betterAuth = initBetterAuth({
 		plugins: [bearer(), admin()],
+		trustedOrigins,
 		database: drizzleAdapter(db, {
 			provider: 'sqlite',
 			schema: {
@@ -358,6 +359,7 @@ type VerifyForgotPasswordTokenArgs = {
 type AuthDatabaseInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	schema: any;
+	trustedOrigins: string[];
 };
 
 type CreateFirstUserArgs = {

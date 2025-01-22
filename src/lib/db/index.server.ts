@@ -7,6 +7,7 @@ import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import { databaseTransformInterface } from './transform.js';
+import { env } from '$env/dynamic/public';
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
@@ -16,7 +17,8 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 
 	const auth = createAdapterAuthInterface({
 		db,
-		schema
+		schema,
+		trustedOrigins: configInterface.raw.trustedOrigins || [env.PUBLIC_RIZOM_URL]
 	});
 	const blocks = createAdapterBlocksInterface({ db, tables });
 	const collection = createAdapterCollectionInterface({ db, tables });

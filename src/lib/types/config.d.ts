@@ -133,7 +133,7 @@ export type BuiltConfig = {
 	globals: BuiltGlobalConfig[];
 	localization?: LocalizationConfig;
 	icons: Record<string, any>;
-	cors?: string[];
+	trustedOrigins?: string[];
 	routes?: Record<string, RouteConfig>;
 	plugins?: Record<string, Record<string, MaybeAsyncFunction>>;
 	panel: {
