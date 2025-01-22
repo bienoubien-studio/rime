@@ -18,7 +18,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const auth = createAdapterAuthInterface({
 		db,
 		schema,
-		trustedOrigins: configInterface.raw.trustedOrigins || [env.PUBLIC_RIZOM_URL]
+		trustedOrigins: configInterface.raw.trustedOrigins
 	});
 	const blocks = createAdapterBlocksInterface({ db, tables });
 	const collection = createAdapterCollectionInterface({ db, tables });

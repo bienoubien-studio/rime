@@ -13,6 +13,7 @@ import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
+import { env } from '$env/dynamic/public';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;
 
@@ -65,6 +66,11 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	}
 
 	// Set base builtConfig
+	const trustedOrigins =
+		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
+			? config.trustedOrigins
+			: [env.PUBLIC_RIZOM_URL];
+
 	let builtConfig: BuiltConfig = {
 		...config,
 		panel: {
@@ -74,6 +80,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		collections,
 		plugins: {},
 		globals,
+		trustedOrigins,
 		icons
 	};
 

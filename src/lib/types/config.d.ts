@@ -47,10 +47,10 @@ export interface Config {
 	 *
 	 * @example
 	 * ```typescript
-	 * cors: ['www.external.com']
+	 * trustedOrigins: ['www.external.com']
 	 * ```
 	 */
-	cors?: string[];
+	trustedOrigins?: string[];
 	panel?: {
 		access?: (user: User | undefined) => boolean;
 		routes?: Record<string, CustomPanelRoute>;
@@ -133,7 +133,7 @@ export type BuiltConfig = {
 	globals: BuiltGlobalConfig[];
 	localization?: LocalizationConfig;
 	icons: Record<string, any>;
-	trustedOrigins?: string[];
+	trustedOrigins: string[];
 	routes?: Record<string, RouteConfig>;
 	plugins?: Record<string, Record<string, MaybeAsyncFunction>>;
 	panel: {
