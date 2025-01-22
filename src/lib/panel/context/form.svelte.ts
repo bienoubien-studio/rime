@@ -65,6 +65,10 @@ function createFormStore(initial: Dic, key: string) {
 				return form[path];
 			},
 
+			get editable() {
+				return true;
+			},
+
 			set value(value: any) {
 				const valid = validate(value);
 

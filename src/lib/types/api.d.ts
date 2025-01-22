@@ -1,7 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Rizom } from 'rizom/rizom.server.js';
-import type { BuiltCollectionConfig, BuiltGlobalConfig } from 'rizom/types/config';
+import type {
+	BuiltCollectionConfig,
+	BuiltGlobalConfig,
+	CompiledCollectionConfig
+} from 'rizom/types/config';
 import type { FormErrors } from './panel';
 import type { RegisterCollection, RegisterGlobal } from 'rizom';
 
@@ -33,7 +37,7 @@ export type LocalAPIConstructorArgs = {
 };
 
 export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc> {
-	readonly config: BuiltCollectionConfig;
+	readonly config: CompiledCollectionConfig;
 	defaultLocale: string | undefined;
 	isAuth: boolean;
 

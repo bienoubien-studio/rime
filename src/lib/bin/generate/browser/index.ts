@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { taskLogger } from 'rizom/utils/logger/index.js';
-import cache from 'rizom/config/generate/cache/index.js';
+import cache from '../cache/index.js';
 import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
 import { PACKAGE_NAME } from 'rizom/constant';
@@ -13,7 +13,19 @@ let hasEnv = false;
 // Determines what should be included in browser config
 function shouldIncludeInBrowser(key: string, value: any): boolean {
 	// Exclude these keys entirely
-	if (['cors', 'panel', 'smtp', 'routes', 'plugins', 'toSchema', 'toType', 'hooks'].includes(key))
+	if (
+		[
+			'trustedOrigins',
+			'database',
+			'panel',
+			'smtp',
+			'routes',
+			'plugins',
+			'toSchema',
+			'toType',
+			'hooks'
+		].includes(key)
+	)
 		return false;
 
 	// For objects, exclude specific properties

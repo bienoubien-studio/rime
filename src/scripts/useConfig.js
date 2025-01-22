@@ -16,11 +16,11 @@ program
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous
-			execSync('pnpm rizom reset --force');
+			execSync('bun ./src/lib/bin/reset/index.ts --force');
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
-			execSync(`pnpm rizom init --name ${name}`);
+			execSync(`bun ./src/lib/bin/init/index.ts --name ${name}`);
 
 			// Copy config
 			const testConfigPath = path.join(projectRoot, 'tests', name, 'rizom.config.txt');
@@ -34,7 +34,7 @@ program
 				execSync(`cp -rf ${testFrontRoutesPath} ${frontRoutesPath}`);
 			}
 			// Generate
-			execSync(`pnpm rizom generate --force`);
+			execSync(`bun ./src/lib/bin/generate/index.ts --force`);
 		} catch (error) {
 			console.error('Error setting configuration:', error);
 		}

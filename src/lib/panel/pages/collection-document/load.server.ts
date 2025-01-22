@@ -46,18 +46,19 @@ export function docLoad(slug: CollectionSlug) {
 			// - someone editing // set nothing
 			// - someone editing but take control // set the current editor to user.id
 			let currentEditorId: string | undefined;
-			const someOneEditing = doc._editedBy.length;
+			const someOneEditing = !!doc._editedBy;
 			const takeControl = event.url.searchParams.get('take_control') === '1';
 			if (!someOneEditing || (someOneEditing && takeControl)) {
-				await collection.updateById({
-					id,
+				await rizom.adapter.collection.update({
+					id: doc.id,
+					slug,
 					data: {
 						_editedBy: [user!.id]
 					}
 				});
 				currentEditorId = user!.id;
 			} else if (someOneEditing) {
-				currentEditorId = doc._editedBy.at(0).relationId;
+				currentEditorId = doc._editedBy;
 			}
 
 			/** resolve the relation to get user attributes */
@@ -65,7 +66,7 @@ export function docLoad(slug: CollectionSlug) {
 				const currentEditor = await api.collection('users').findById({
 					id: currentEditorId
 				});
-				doc._editedBy = [currentEditor];
+				doc._editedBy = currentEditor;
 			}
 
 			/** If update not allowed set doc as readOnly  */

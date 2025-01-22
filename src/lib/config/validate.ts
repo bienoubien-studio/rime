@@ -1,6 +1,4 @@
 import type { BlocksFieldBlock } from 'rizom/fields/types';
-import cache from './generate/cache';
-import { taskLogger } from 'rizom/utils/logger';
 import { isFormField, toFormFields } from '../utils/field';
 import { isAuthConfig } from './utils';
 import type {
@@ -10,6 +8,7 @@ import type {
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import type { WithoutBuilders } from 'rizom/types/utility';
+import { RizomConfigError } from 'rizom/errors/config.server';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -127,17 +126,9 @@ function validate(config: CompiledConfig): boolean {
 	for (const isValid of validateFunctions) {
 		const errors: string[] = isValid(config);
 		if (errors.length) {
-			cache.set('error', errors.join('\n'));
-			for (const message of errors) {
-				taskLogger.error('Config error: ' + message);
-			}
-			return false;
-		} else {
-			cache.delete('error');
+			throw new RizomConfigError(errors[0]);
 		}
 	}
-
-	// taskLogger.done('Config is valid');
 
 	return true;
 }

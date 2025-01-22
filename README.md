@@ -10,8 +10,8 @@ Headless CMS powered by SvelteKit.
 
 - Easy configuration
 - TypeScript
-- Built-in authentication (Lucia)
-- SQLite database (Drizzle)
+- Built-in authentication (better-auth)
+- SQLite database (drizzle)
 - Auto-generated:
   - API endpoints
   - TypeScript types
@@ -52,10 +52,10 @@ cd my-app
 
 ```bash
 npm install rizom
-npx rizom init
+npx rizom-init
 ```
 
-The `init` command will automatically:
+The `rizom-init` command will automatically:
 
 - Create/populate `.env` file
 - Create `src/config/rizom.config.ts` config file
@@ -89,6 +89,7 @@ import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));
 ```
+
 ```
 #.env
 RIZOM_SECRET=super_secret
@@ -106,13 +107,12 @@ Navigate to `http://localhost:5173/panel` to create your first admin user.
 
 ```typescript
 // ./src/config/rizom.config.ts
-import type { CollectionConfig, GlobalConfig } from 'rizom';
+import type { CollectionConfig, GlobalConfig, Config } from 'rizom';
 import { Settings2 } from 'lucide-svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/utils";
 
 const Pages: CollectionConfig = {
-  database: 'my-db.sqlite'
   slug: 'pages',
   group: 'content',
   fields: [
@@ -137,7 +137,7 @@ const Settings: GlobalConfig = {
     relation('logo').to('medias')
   ],
   access: {
-    read: (user) => true
+    read: () => true
   }
 };
 
@@ -154,7 +154,8 @@ const Medias = {
   ]
 };
 
-const config = {
+const config: Config = {
+  database: 'my-db.sqlite'
   collections: [Pages, Medias],
   globals: [Settings],
   panel: {
@@ -208,15 +209,13 @@ const { docs } = await fetch('http://localhost:5173/api/pages?where[author][in_a
 
 ## ROADMAP
 
+- [√] switch from lucia to better-auth
+- [√] Document locked while being edited by another user
 - [ ] Documentation
 - [ ] Document version
-- [ ] Document locked while being edited by another user
 - [ ] Working Live Edit system (in developpment)
 - [ ] Panel i18n
 - [ ] cmd-K menu in admin Panel
-- [ ] switch from lucia to better-auth
-
-Feel free to open a discussion for features request.
 
 ## 🙏 Acknowledgments
 

@@ -1,12 +1,11 @@
 {
 	"name": "rizom",
-	"version": "0.0.22",
+	"version": "0.0.25",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "pnpm rizom reset --force && vite build && npm run package && pnpm build:css",
+		"build": "bun ./src/lib/bin/reset/index.ts --force && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
 		"rizom:use": "bun ./src/scripts/useConfig.js",
-		"rizom": "bun ./src/lib/config/generate/index.ts",
 		"preview": "vite preview",
 		"package": "svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package",
@@ -22,7 +21,12 @@
 	},
 	"license": "MIT",
 	"type": "module",
-	"bin": "./dist/config/generate/index.js",
+	"bin": {
+		"rizom-generate": "./dist/bin/generate/index.js",
+		"rizom-build": "./dist/bin/build/index.js",
+		"rizom-init": "./dist/bin/init/index.js",
+		"rizom-reset": "./dist/bin/reset/index.js"
+	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
@@ -127,6 +131,7 @@
 		"deepmerge": "^4.3.1",
 		"dotenv": "^16.4.5",
 		"drizzle-orm": "0.31.4",
+		"express": "^4.21.2",
 		"flat": "^6.0.1",
 		"js-cookie": "^3.0.5",
 		"loglevel": "^1.9.2",

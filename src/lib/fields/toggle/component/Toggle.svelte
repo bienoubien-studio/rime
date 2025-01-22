@@ -15,7 +15,7 @@
 	};
 </script>
 
-<Field.Root class="rz-toggle-field" visible={field.visible} disabled={form.readOnly}>
+<Field.Root class="rz-toggle-field" visible={field.visible} disabled={!field.editable}>
 	<Switch
 		data-error={field.error ? '' : null}
 		checked={field.value}

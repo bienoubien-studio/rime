@@ -13,7 +13,6 @@ import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
-import { env } from '$env/dynamic/public';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;
 
@@ -69,7 +68,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	const trustedOrigins =
 		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
 			? config.trustedOrigins
-			: [env.PUBLIC_RIZOM_URL];
+			: [process.env.PUBLIC_RIZOM_URL as string];
 
 	let builtConfig: BuiltConfig = {
 		...config,
@@ -122,16 +121,16 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 			}
 
 			if (generate) {
-				const generateSchema = await import('rizom/config/generate/schema/index.js').then(
+				const generateSchema = await import('rizom/bin/generate/schema/index.js').then(
 					(m) => m.default
 				);
-				const generateRoutes = await import('rizom/config/generate/routes/index.js').then(
+				const generateRoutes = await import('rizom/bin/generate/routes/index.js').then(
 					(m) => m.default
 				);
-				const generateTypes = await import('rizom/config/generate/types/index.js').then(
+				const generateTypes = await import('rizom/bin/generate/types/index.js').then(
 					(m) => m.default
 				);
-				const generateBrowserConfig = await import('rizom/config/generate/browser/index.js').then(
+				const generateBrowserConfig = await import('rizom/bin/generate/browser/index.js').then(
 					(m) => m.default
 				);
 				generateBrowserConfig({

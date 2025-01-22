@@ -1,7 +1,7 @@
 import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../_builders/index.js';
 import validate from 'rizom/utils/validate';
-import { templateUniqueRequired } from 'rizom/config/generate/schema/templates';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import EmailComp from './component/Email.svelte';
 import type { PublicBuilder } from 'rizom/types/utility.js';

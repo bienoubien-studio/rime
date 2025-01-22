@@ -25,10 +25,14 @@ export const preprocessFields: PreprocessFields = async ({
 
 	for (const [key, config] of Object.entries(configMap)) {
 		if (key === 'hashedPassword') {
+			//
 			// hashedPassword is a mandatory field added while building config
 			// so it's present in configMap.
 			// Value should be empty and populated in hookBefore[Create/Update]
 			// defined in rizom/auth/hooks.server.ts
+			//
+			// [EDIT] Should not be there with better-auth
+			//
 			if (flatData[key]) {
 				throw new RizomError('hashedPassword should be empty while preprocessing incoming data');
 			}

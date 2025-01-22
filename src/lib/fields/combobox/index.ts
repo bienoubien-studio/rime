@@ -1,6 +1,6 @@
 import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../_builders/index.js';
-import { templateUniqueRequired } from 'rizom/config/generate/schema/templates';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import Combobox from './component/Combobox.svelte';
 import type { PublicBuilder } from 'rizom/types/utility.js';

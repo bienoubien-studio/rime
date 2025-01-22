@@ -16,7 +16,7 @@
 	const checkboxErrorClass = $derived(field.error ? 'rz-checkbox--error' : '');
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly} class="rz-checkbox-field">
+<Field.Root visible={field.visible} disabled={!field.editable} class="rz-checkbox-field">
 	<Checkbox
 		class="rz-checkbox-field__input {checkboxErrorClass}"
 		checked={field.value}

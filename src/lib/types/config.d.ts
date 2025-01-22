@@ -1,10 +1,10 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from './auth.js';
-import type { AnyField, FieldsType } from './fields.js';
+import type { AnyField, FieldsType, Option } from './fields.js';
 import type { GenericDoc } from './doc.js';
 import type { CollectionHooks, GlobalHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
-import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
+import type { AtLeastOne, PublicBuilder, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { GetRegisterType } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/_builders/field.js';

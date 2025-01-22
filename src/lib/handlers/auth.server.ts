@@ -1,4 +1,5 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
+import { RizomError } from 'rizom/errors/error.server';
 import type { PrototypeSlug } from 'rizom/types';
 
 // Validate the session
@@ -7,15 +8,10 @@ import type { PrototypeSlug } from 'rizom/types';
 export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rizom = event.locals.rizom;
 
-	// console.log(event.request.headers);
 	// Authenticate
 	let authenticated = await rizom.auth.betterAuth.api.getSession({
 		headers: event.request.headers
 	});
-
-	// let authenticated = await rizom.auth.betterAuth.api.getSession({
-	// 	headers: event.request.headers
-	// });
 
 	// Redirect to the proper route
 	// for /panel request
@@ -29,7 +25,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Redirect to /init if no authUsers
+	// Handle /init route, if no authUsers allow
 	// or throw a 404 if there is at least one
 	if (event.url.pathname.startsWith('/init')) {
 		const users = await rizom.auth.getAuthUsers();
@@ -48,12 +44,19 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 
 	// Get user attributes
 	const { session, user: authUser } = authenticated;
-	const user = authUser
-		? await rizom.auth.getUserAttributes({
-				authUserId: authUser?.id,
-				slug: authUser?.table as PrototypeSlug
-			})
-		: undefined;
+	const user = await rizom.auth.getUserAttributes({
+		authUserId: authUser.id,
+		slug: authUser.table as PrototypeSlug
+	});
+
+	if (!user) {
+		throw new RizomError('User not found');
+	}
+
+	// Check admin roles on both better-auth and user attributes
+	if (user.roles.includes('admin') && authUser.role !== 'admin') {
+		throw error(401, 'unauthorized');
+	}
 
 	// Populate locals
 	event.locals.user = user;

@@ -59,7 +59,7 @@
 	}
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly}>
+<Field.Root visible={field.visible} disabled={!field.editable}>
 	<Field.Error error={field.error} />
 
 	<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>

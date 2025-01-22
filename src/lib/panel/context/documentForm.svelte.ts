@@ -222,13 +222,27 @@ function createDocumentFormState({
 
 			set value(value: any) {
 				const valid = validate(value);
-
+				if (!isCreateDoc(doc) && !config.access.update(user.attributes)) {
+					console.log('noooope but whyyyyy');
+					return;
+				}
 				if (valid) {
 					setValue(path, value);
 				}
 			},
 
+			get editable() {
+				if (isCreateDoc(doc)) {
+					return config.access.create(user.attributes);
+				} else {
+					return config.access.update(user.attributes);
+				}
+			},
+
 			get visible() {
+				if (config.access?.read && !config.access?.read(user.attributes)) {
+					return false;
+				}
 				let visible = true;
 				if (config.condition) {
 					try {

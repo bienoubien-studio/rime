@@ -19,7 +19,7 @@
 	};
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly}>
+<Field.Root visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Input
 		id={path || config.name}

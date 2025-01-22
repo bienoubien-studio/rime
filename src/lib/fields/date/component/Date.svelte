@@ -40,7 +40,7 @@
 	const dateLabel = $derived(date ? locale.dateFormat(date) : 'Select a date');
 </script>
 
-<Field.Root visible={field.visible} disabled={form.readOnly}>
+<Field.Root visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Popover.Root>
 		<Popover.Trigger>
@@ -50,7 +50,7 @@
 					data-empty={!calendarDate ? '' : null}
 					data-error={field.error ? '' : null}
 					class="rz-date__button"
-					disabled={form.readOnly}
+					disabled={!field.editable}
 					{...props}
 				>
 					<CalendarIcon class="rz-date__icon" />

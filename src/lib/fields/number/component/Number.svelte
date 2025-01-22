@@ -34,7 +34,7 @@
 	</button>
 {/snippet}
 
-<Field.Root class="rz-number" visible={field.visible} disabled={form.readOnly}>
+<Field.Root class="rz-number" visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 	<div class="rz-number__input-wrapper">

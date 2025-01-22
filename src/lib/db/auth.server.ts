@@ -14,6 +14,7 @@ import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
+import { dev } from '$app/environment';
 
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, trustedOrigins } = args;
@@ -66,7 +67,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
 
-		if (users.length) {
+		if (users.length || !dev) {
 			throw new RizomInitError('Already initialized');
 		}
 
@@ -122,7 +123,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				email,
 				password,
 				name,
-				role: role || 'regular',
+				role: role || 'user',
 				table: slug
 			}
 		});
@@ -184,7 +185,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				userId: id
 			}
 		});
-		// await db.delete(schema.authUsers).where(eq(schema.authUsers.id, id));
 		return id;
 	};
 
@@ -209,7 +209,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		return user as User;
 	};
 
-	// Shortcut to get a panel user attributes
+	// Shortcut to get panel user attributes
 	const getPanelUserAttributes = async (authUserId: string) => {
 		return getUserAttributes({
 			slug: 'users',
@@ -373,5 +373,5 @@ type CreateAuthUserArgs = {
 	email: string;
 	password: string;
 	name: string;
-	role: 'regular' | 'admin';
+	role: 'user' | 'admin';
 };

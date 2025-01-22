@@ -52,6 +52,11 @@ export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldB
 		super(type);
 		this.field.name = name;
 		this.field.isEmpty = (value: any) => !value;
+		this.field.access = {
+			create: (user) => !!user,
+			update: (user) => !!user,
+			read: (user) => !!user
+		};
 		return this;
 	}
 
@@ -116,7 +121,7 @@ export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldB
 	}
 
 	access(access: { create?: FieldAccess; read?: FieldAccess; update?: FieldAccess }) {
-		this.field.access = access;
+		this.field.access = { ...this.field.access, ...access };
 		return this;
 	}
 

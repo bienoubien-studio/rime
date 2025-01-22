@@ -103,8 +103,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	}
 }
 
-export const richText = (name: string) =>
-	new RichTextFieldBuilder(name) as PublicBuilder<RichTextFieldBuilder>;
+export const richText = (name: string) => new RichTextFieldBuilder(name);
 
 export type RichTextField = FormField & {
 	type: 'richText';

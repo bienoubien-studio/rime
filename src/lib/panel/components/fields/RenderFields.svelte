@@ -5,6 +5,7 @@
 	import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
 	import RenderFields from './RenderFields.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
+	import type { WithoutBuilders } from 'rizom/types/utility';
 
 	type Props = {
 		path?: string;
@@ -54,7 +55,16 @@
 						{#if field.label}
 							<h2 class="rz-render-fields__group-title">{field.label}</h2>
 						{/if}
-						<RenderFields {path} fields={field.fields} framed={true} {form} />
+						<!--
+						  This is very ugly, need to fix it :
+					    fields={(field as WithoutBuilders<typeof field>).fields}
+						-->
+						<RenderFields
+							{path}
+							fields={(field as WithoutBuilders<typeof field>).fields}
+							framed={true}
+							{form}
+						/>
 					{:else if field.type === 'tabs'}
 						{@const Tabs = config.raw.blueprints.tabs.component}
 						<Tabs config={field} {path} {form} />
