@@ -16,8 +16,8 @@ export const postprocessFields: FilterFieldsArgs = async ({
 			const authorized = config.access.read(user);
 			if (!authorized) {
 				delete flatDoc[key];
+				continue;
 			}
-			continue;
 		}
 
 		if (config.hooks?.beforeRead) {

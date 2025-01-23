@@ -74,7 +74,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 }
 
 export interface LocalAPIGlobalInterface<Doc extends GenericDoc = GenericDoc> {
-	readonly config: BuiltGlobalConfig;
+	readonly config: CompiledGlobalConfig;
 	defaultLocale: string | undefined;
 	emptyDoc(): Doc;
 	find(args?: { locale?: string; depth?: number }): Promise<Doc>;

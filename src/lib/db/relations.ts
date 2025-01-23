@@ -34,7 +34,6 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 	};
 
 	const create: Create = async ({ parentSlug, parentId, relations }) => {
-		console.log('-> create relation');
 		const relationTableName = `${parentSlug}Rels`;
 		const table = tables[relationTableName];
 
@@ -114,7 +113,6 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 			return [];
 		}
 
-		console.log('has table', relationTableName);
 		const table = tables[relationTableName];
 		const columns = Object.keys(getTableColumns(table));
 

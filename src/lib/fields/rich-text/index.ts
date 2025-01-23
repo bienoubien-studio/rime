@@ -93,10 +93,6 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return value;
 	};
 
-	beforeRead() {
-		return [RichTextFieldBuilder.jsonParse, ...(this.field.hooks?.beforeRead || [])];
-	}
-
 	defaultValue(value: { type: 'doc'; content: any[] }) {
 		this.field.defaultValue = value;
 		return this;

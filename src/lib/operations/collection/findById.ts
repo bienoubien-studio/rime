@@ -63,7 +63,7 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 		for (const hook of config.hooks.beforeRead) {
 			try {
 				const args = await hook({ operation: 'read', config, doc, event, rizom, api });
-				doc = args.doc;
+				doc = args.doc as T;
 				event = args.event;
 			} catch (err: any) {
 				throw new RizomHookError(err.message);
