@@ -70,6 +70,7 @@ function createDocumentFormState({
 
 		flatDoc[path] = value;
 		doc = unflatten(flatDoc);
+
 		if (collection && !isCreateDoc(doc)) collection.updateDoc(doc);
 		if (onDataChange) onDataChange({ path, value });
 	}
@@ -223,7 +224,6 @@ function createDocumentFormState({
 			set value(value: any) {
 				const valid = validate(value);
 				if (!isCreateDoc(doc) && !config.access.update(user.attributes)) {
-					console.log('noooope but whyyyyy');
 					return;
 				}
 				if (valid) {

@@ -51,7 +51,7 @@ export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldB
 	constructor(name: string, type: FieldsType) {
 		super(type);
 		this.field.name = name;
-		this.field.isEmpty = (value: any) => !value;
+		this.field.isEmpty = (value) => !value;
 		this.field.access = {
 			create: (user) => !!user,
 			update: (user) => !!user,

@@ -8,7 +8,7 @@ import type { LocalAPI } from 'rizom/types/api';
 export type UserDefinedField = AnyField | FieldBuilder<AnyField>;
 
 type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
-	value: any,
+	value: unknown,
 	metas: {
 		data: Partial<TData>;
 		operation: 'create' | 'update' | undefined;

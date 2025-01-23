@@ -149,8 +149,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	/** Get relations in data */
 	const extractedRelations = extractRelations({ parentId: id, flatData, configMap, locale });
 
-	// console.log('Before diff - existingRelations:', existingRelations);
-	// console.log('Before diff - extractedRelations:', extractedRelations);
+	console.log('existingRelations', existingRelations);
+	console.log('extractedRelations', extractedRelations);
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
@@ -158,6 +158,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 		extractedRelations,
 		locale
 	});
+
+	console.log('relationsDiff', relationsDiff);
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({

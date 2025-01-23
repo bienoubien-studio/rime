@@ -10,7 +10,8 @@ import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
-import type { WithRequired } from 'rizom/types/utility.js';
+import type { WithoutBuilders, WithRequired } from 'rizom/types/utility.js';
+import type { GroupField } from 'rizom/fields/types.js';
 
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid';
@@ -77,7 +78,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			if (isFormField(field) && isNotHidden(field) && hasProps(field, ['table'])) {
 				columns.push(field);
 			} else if (isGroupField(field)) {
-				columns = [...columns, ...buildFieldColumns(field.fields)];
+				columns = [...columns, ...buildFieldColumns((field as WithoutBuilders<GroupField>).fields)];
 			} else if (isTabsField(field)) {
 				for (const tab of field.tabs) {
 					columns = [...columns, ...buildFieldColumns(tab.fields)];

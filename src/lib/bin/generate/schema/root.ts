@@ -99,7 +99,7 @@ const buildRootTable = ({
 		};
 
 		for (const field of fields) {
-			if (isGroupField(field.raw)) {
+			if (field.raw.type === 'group') {
 				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized)];
 			} else if (isTabsField(field.raw)) {
 				for (const tab of field.raw.tabs) {
@@ -145,6 +145,7 @@ const buildRootTable = ({
 				}
 			} else if (field instanceof FormFieldBuilder) {
 				if (checkLocalized(field)) {
+					console.log(field);
 					templates.push(field.toSchema() + ',');
 				}
 			}

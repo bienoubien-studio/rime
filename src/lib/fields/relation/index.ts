@@ -1,12 +1,18 @@
 import type { FormField } from 'rizom/types';
 import type { GetRegisterType } from 'rizom';
-import Relation from './component/Relation.svelte';
+import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../_builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
 import { capitalize } from 'rizom/utils/string';
 import type { PublicBuilder } from 'rizom/types/utility';
+import type { Relation } from 'rizom/db/relations';
 
-const ensureRelationExists: FieldHook<RelationField> = async (value, { api, config }) => {
+type RelationValue = string | Array<Relation | string>;
+
+const ensureRelationExists: FieldHook<RelationField> = async (
+	value: RelationValue,
+	{ api, config }
+) => {
 	const output = [];
 
 	const retrieveRelation = async (id: string) => {
@@ -20,11 +26,18 @@ const ensureRelationExists: FieldHook<RelationField> = async (value, { api, conf
 
 	if (value && Array.isArray(value)) {
 		for (const relation of value) {
+			let relationId;
 			if (typeof relation === 'string') {
-				const doc = await retrieveRelation(relation);
-				if (doc) {
-					output.push(doc.id);
-				}
+				relationId = relation;
+			} else {
+				relationId = relation.relationId;
+			}
+			if (!relationId) {
+				continue;
+			}
+			const doc = await retrieveRelation(relationId);
+			if (doc) {
+				output.push(doc.id);
 			}
 		}
 	} else if (typeof value === 'string') {
@@ -33,9 +46,7 @@ const ensureRelationExists: FieldHook<RelationField> = async (value, { api, conf
 			output.push(doc.id);
 		}
 	}
-	if (config.name === 'author') {
-		console.log('output of retrieve relations', output);
-	}
+
 	return output;
 };
 
@@ -43,12 +54,12 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 	//
 	constructor(name: string) {
 		super(name, 'relation');
-		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
+		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 		this.field.hooks = { beforeValidate: [ensureRelationExists] };
 	}
 
 	get component() {
-		return Relation;
+		return RelationComponent;
 	}
 
 	toType() {
