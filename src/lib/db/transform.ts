@@ -169,9 +169,6 @@ export const databaseTransformInterface = ({
 			delete block[blockLocaleTableName];
 			/** Assign */
 			flatDoc[path][position] = block;
-			// If block has been delete in DB or block type doesn't exist anymore
-			// Remove empy element
-			flatDoc[path] = flatDoc[path].filter(Boolean);
 		}
 
 		/** @TODO SHOULD BE IN BEFORE_READ */

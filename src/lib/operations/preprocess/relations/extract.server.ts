@@ -11,7 +11,6 @@ export const extractRelations = ({ parentId, flatData, configMap, locale }: Args
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
-			console.log(path);
 			const localized = config.localized;
 			const relationRawValue: BeforeOperationRelation[] | string | string[] = flatData[path];
 			let output: BeforeOperationRelation[] = [];
@@ -30,7 +29,6 @@ export const extractRelations = ({ parentId, flatData, configMap, locale }: Args
 				return result;
 			};
 
-			console.log('relationRawValue', relationRawValue);
 			// Check if it's an empty array
 			if (Array.isArray(relationRawValue) && relationRawValue.length === 0) {
 				emptyPaths.push(path);
