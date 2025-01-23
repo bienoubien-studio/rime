@@ -21,6 +21,7 @@
 		removeValue,
 		items,
 		readOnly,
+		nothingToSelect,
 		relationConfig,
 		onOrderChange,
 		formNestedLevel,
@@ -91,7 +92,13 @@
 				</div>
 			{/each}
 
-			{#if !readOnly && !isFull}
+			{#if nothingToSelect}
+				<span class="rz-relation__no-items">
+					No {relationConfig.label.singular.toLowerCase()} to select
+				</span>
+			{/if}
+
+			{#if !readOnly && !isFull && items.length > 0}
 				<Command.InputSelect
 					onfocus={() => (inputFocused = true)}
 					onblur={() => setTimeout(() => (inputFocused = false), 150)}
@@ -173,6 +180,11 @@
 			:global(.rz-command-item) {
 				height: var(--rz-size-10);
 			}
+		}
+
+		.rz-relation__no-items {
+			font-size: var(--rz-text-sm);
+			opacity: 0.4;
 		}
 
 		.rz-relation__list {

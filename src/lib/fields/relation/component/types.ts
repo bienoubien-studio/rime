@@ -20,6 +20,7 @@ export type RelationComponentProps = {
 	removeValue: (relationId: string) => void;
 	items: RelationFieldItem[];
 	readOnly: boolean;
+	nothingToSelect: boolean;
 	isSortable: boolean;
 	selectedItems: RelationFieldItem[];
 	relationConfig: BuiltCollectionConfig;

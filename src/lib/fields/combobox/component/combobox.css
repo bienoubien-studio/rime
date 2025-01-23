@@ -1,4 +1,4 @@
-.rz-combobox__trigger {
+.rz-combobox__trigger.rz-button {
 	min-width: 200px;
 	height: var(--rz-size-11);
 	justify-content: space-between;
@@ -23,6 +23,10 @@
 
 .rz-combobox__item {
 	justify-content: space-between;
+}
+
+.rz-combobox__item:hover {
+	background-color: hsl(var(--rz-ground-7) / 0.5);
 }
 
 .rz-combobox__check {

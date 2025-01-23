@@ -8,20 +8,10 @@
 	type Props = { editor: Editor; isOpen: boolean };
 	let { editor, isOpen = $bindable() }: Props = $props();
 	const nodesState = createNodesState(editor);
-
-	// let isOpen = $state(false);
-
-	function onTriggerClick(e: MouseEvent) {
-		e.stopPropagation();
-		e.stopImmediatePropagation();
-		isOpen = !isOpen;
-	}
-
-	$inspect(isOpen);
 </script>
 
-<Popover.Root controlledOpen open={isOpen}>
-	<Popover.Trigger class="rz-node-selector__trigger" type="button" onclick={onTriggerClick}>
+<Popover.Root bind:open={isOpen}>
+	<Popover.Trigger class="rz-node-selector__trigger" type="button">
 		<p>{nodesState.activeItem.label}</p>
 		<ChevronDown size={16} />
 	</Popover.Trigger>

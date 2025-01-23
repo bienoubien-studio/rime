@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { getContext, setContext } from 'svelte';
-	import * as Collection from '$lib/panel/components/ui/collection/index.js';
+	import GridItem from './grid-item/GridItem.svelte';
+	import ListRow from './list-row/ListRow.svelte';
+	import ListHeader from './list-header/ListHeader.svelte';
+	import Header from './header/Header.svelte';
 	import ScrollArea from '$lib/panel/components/ui/scroll-area/scroll-area.svelte';
 	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { page } from '$app/stores';
@@ -31,10 +34,10 @@
 
 <div class="rz-collection-area">
 	<div class="rz-collection-area__header">
-		<Collection.Header {compact} />
+		<Header {compact} />
 
 		{#if collection.isList()}
-			<Collection.ListHeader {compact} />
+			<ListHeader {compact} />
 		{/if}
 	</div>
 
@@ -44,9 +47,9 @@
 				{@const checked = collection.selected.includes(doc.id)}
 				{@const active = currentDoc === doc.id}
 				{#if collection.isList()}
-					<Collection.ListRow {doc} {checked} {compact} {active} />
+					<ListRow {doc} {checked} {compact} {active} />
 				{:else}
-					<Collection.GridItem {doc} {checked} />
+					<GridItem {doc} {checked} />
 				{/if}
 			{/each}
 		</div>

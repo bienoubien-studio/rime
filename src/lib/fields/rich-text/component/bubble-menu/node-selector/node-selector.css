@@ -20,7 +20,7 @@
 	margin-top: var(--rz-size-1);
 	margin-bottom: var(--rz-size-1);
 	display: flex;
-	position: absolute;
+	/* position: absolute; */
 	max-height: 20rem;
 	width: 12rem;
 	flex-direction: column;

@@ -27,7 +27,7 @@
 	const tippyOptions = {
 		moveTransition: 'transform 0.15s ease-out',
 		zIndex: 50,
-		hideOnClick: false,
+		hideOnClick: true,
 		onShow: () => {
 			marksComponent?.updateActiveMarks();
 			isLinkActive = editor.isActive('link');

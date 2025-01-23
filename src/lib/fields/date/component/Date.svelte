@@ -58,9 +58,11 @@
 				</Button>
 			{/snippet}
 		</Popover.Trigger>
-		<Popover.Content align="start" class="rz-date__popover-content">
-			<Calendar type="single" bind:value={calendarDate} initialFocus />
-		</Popover.Content>
+		<Popover.Portal>
+			<Popover.Content align="start" class="rz-date__popover-content">
+				<Calendar type="single" bind:value={calendarDate} initialFocus />
+			</Popover.Content>
+		</Popover.Portal>
 	</Popover.Root>
 	<Field.Error error={field.error} />
 </Field.Root>

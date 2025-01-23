@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { Search } from 'lucide-svelte';
-	import Input from '../../input/input.svelte';
+	import Input from 'rizom/panel/components/ui/input/input.svelte';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();

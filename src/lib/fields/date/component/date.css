@@ -1,14 +1,13 @@
-.rz-date__button {
+.rz-date__button.rz-button {
 	background-color: hsl(var(--rz-color-input));
 	height: var(--rz-size-11);
-	width: 100%;
+	width: 200px;
 	justify-content: flex-start;
 	border: var(--rz-border);
 	padding-left: var(--rz-size-3);
 	padding-right: var(--rz-size-3);
 	text-align: left;
 	font-weight: normal;
-	width: auto;
 }
 
 .rz-date__button[data-empty] {

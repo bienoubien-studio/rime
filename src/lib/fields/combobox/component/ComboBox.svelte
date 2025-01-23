@@ -6,6 +6,7 @@
 	import { Check, ChevronsUpDown } from 'lucide-svelte';
 	import './combobox.css';
 	import type { ComboBoxProps } from './props';
+	import type { Option } from 'rizom/types';
 
 	const { path, config, form }: ComboBoxProps = $props();
 
@@ -13,14 +14,15 @@
 
 	const options = config.options;
 
+	let search = $state('');
 	let open = $state(false);
 	let value = $state('');
 
-	const selectedValue = $derived(options.find((f) => f.value === value)?.label ?? 'Select...');
+	let selected = $state<Option>({});
 
 	$effect(() => {
-		if (field.value !== selectedValue) {
-			field.value = selectedValue;
+		if (field.value !== selected.value) {
+			field.value = selected.value;
 		}
 	});
 </script>
@@ -37,29 +39,44 @@
 					class="rz-combobox__trigger"
 					{...props}
 				>
-					{selectedValue}
+					{selected.label || 'Select...'}
 					<ChevronsUpDown class="rz-combobox__chevron" />
 				</Button>
 			{/snippet}
 		</Popover.Trigger>
-		<Popover.Content class="rz-combobox__content">
-			<Command.Root>
-				{#if options.length > 8}
-					<Command.Input placeholder="Search..." class="rz-combobox__search" />
-				{/if}
-				<Command.Empty>Nothing found.</Command.Empty>
-				<Command.Group>
-					{#each options as option}
-						<Command.Item class="rz-combobox__item" value={option.value}>
-							{option.label}
-							<Check
-								class={`rz-combobox__check ${value !== option.value ? 'rz-combobox__check--hidden' : ''}`}
-							/>
-						</Command.Item>
-					{/each}
-				</Command.Group>
-			</Command.Root>
-		</Popover.Content>
+		<Popover.Portal>
+			<Popover.Content class="rz-combobox__content">
+				<Command.Root>
+					{#if options.length > 8}
+						<Command.Input
+							bind:value={search}
+							placeholder="Search..."
+							class="rz-combobox__search"
+						/>
+					{/if}
+					<Command.Empty>Nothing found.</Command.Empty>
+					<Command.Group>
+						{#each options as option}
+							<Command.Item
+								class="rz-combobox__item"
+								value={option.value}
+								onSelect={() => {
+									selected = option;
+									value = selected.value;
+									search = '';
+									open = false;
+								}}
+							>
+								{option.label}
+								<Check
+									class={`rz-combobox__check ${value !== option.value ? 'rz-combobox__check--hidden' : ''}`}
+								/>
+							</Command.Item>
+						{/each}
+					</Command.Group>
+				</Command.Root>
+			</Popover.Content>
+		</Popover.Portal>
 	</Popover.Root>
 	<Field.Error error={field.error} />
 </Field.Root>

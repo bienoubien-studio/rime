@@ -4,10 +4,8 @@ import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
-export const date = (name: string) =>
-	new DateFieldBuilder(name) as PublicBuilder<typeof DateFieldBuilder>;
+export const date = (name: string) => new DateFieldBuilder(name);
 
 const stringToDate = (value: string) => {
 	return new Date(value);

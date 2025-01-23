@@ -21,7 +21,7 @@
 	const { getCollectionConfig } = getConfigContext();
 	const locale = getLocaleContext();
 
-	let intialItems: RelationFieldItem[] = $state([]);
+	let initialItems: RelationFieldItem[] = $state([]);
 
 	// State
 	const field = $derived(form.useField(path, config));
@@ -31,13 +31,14 @@
 	const relationConfig = getCollectionConfig(config.relationTo);
 	let isRelationToUpload = isUploadConfig(relationConfig);
 	let items = $state<RelationFieldItem[]>([]);
+	const nothingToSelect = $derived(initialItems.length === 0);
 
 	let selectedIds = $state<string[]>([]);
 	let selectedItems = $state<RelationFieldItem[]>([]);
 	let isFull = $derived(
 		(!config.many && selectedIds.length === 1) ||
-			(config.many && selectedIds.length === intialItems.length) ||
-			false
+			(config.many && selectedIds.length === initialItems.length) ||
+			initialItems.length === 0
 	);
 
 	function toRelationFieldItem(doc: GenericDoc) {
@@ -73,7 +74,7 @@
 
 		if (res.ok) {
 			const { docs } = await res.json();
-			intialItems = docs.map((doc: GenericDoc) => toRelationFieldItem(doc));
+			initialItems = docs.map((doc: GenericDoc) => toRelationFieldItem(doc));
 			if (field.value && Array.isArray(field.value) && field.value.length) {
 				selectedIds = field.value.map((relation: Relation) => relation.relationId);
 			}
@@ -97,9 +98,9 @@
 
 	$effect(() => {
 		selectedItems = selectedIds.map(
-			(id) => intialItems.filter((item) => item.relationId === id)[0]
+			(id) => initialItems.filter((item) => item.relationId === id)[0]
 		);
-		items = intialItems.filter((item) => !selectedIds.includes(item.relationId));
+		items = initialItems.filter((item) => !selectedIds.includes(item.relationId));
 	});
 
 	// Actions
@@ -117,7 +118,7 @@
 				relation.locale = locale.code;
 			}
 			if (form.isLive) {
-				const initialItem = intialItems.find((item) => item.relationId === relationId);
+				const initialItem = initialItems.find((item) => item.relationId === relationId);
 				if (initialItem && initialItem.livePreview) {
 					relation.livePreview = snapshot(initialItem.livePreview);
 				}
@@ -129,7 +130,7 @@
 	};
 
 	const onRelationCreated = (doc: GenericDoc) => {
-		intialItems.push(toRelationFieldItem(doc));
+		initialItems.push(toRelationFieldItem(doc));
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
@@ -172,8 +173,9 @@
 		isSortable={!!config.many}
 		hasError={!!field.error}
 		formNestedLevel={form.nestedLevel}
-		{onRelationCreated}
 		readOnly={form.readOnly}
+		{nothingToSelect}
+		{onRelationCreated}
 		{isFull}
 		{addValue}
 		{items}

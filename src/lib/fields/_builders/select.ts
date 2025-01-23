@@ -5,6 +5,8 @@ import { capitalize } from 'rizom/utils/string';
 const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { config }) => {
 	const selected = value;
 	const validValues = config.options.map((o) => o.value);
+	console.log(selected);
+	console.log(validValues);
 	if (selected && Array.isArray(selected)) {
 		for (const value of selected) {
 			if (!validValues.includes(value)) {

@@ -45,9 +45,9 @@
 <style type="postcss">
 	.rz-logout-form {
 		:global(.rz-button[type='submit']) {
-			width: 100%;
+			width: var(--rz-size-10);
 			height: var(--rz-size-10);
-			padding: var(--rz-size-2) var(--rz-size-4);
+			padding: var(--rz-size-2);
 			border-radius: var(--rz-radius-md);
 		}
 	}
@@ -63,6 +63,7 @@
 	}
 	.rz-user-button__left {
 		display: flex;
+		flex: 1;
 		align-items: center;
 		gap: var(--rz-size-2);
 	}

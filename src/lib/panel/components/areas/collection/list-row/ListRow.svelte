@@ -37,7 +37,7 @@
 <div style={gridTemplateColumn} class="rz-list-row" class:rz-list-row--active={active}>
 	<div class="rz-list-row__main">
 		{#if collection.selectMode}
-			<Checkbox {checked} onclick={() => collection.toggleSelectOf(doc.id)} />
+			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
 				<UploadThumbCell url={doc[getPanelThumbnailKey(collection.config)]} />
 			{/if}
