@@ -127,7 +127,7 @@ function validateUploadCollections(config: CompiledConfig) {
 	let errors = [];
 	const uploadCollections = config.collections.filter(isUploadConfig);
 	for (const collection of uploadCollections) {
-		const hasImageSizes = 'imagesSizes' in collection;
+		const hasImageSizes = 'imageSizes' in collection;
 		const hasPanelThumbnail = 'panelThumbnail' in collection;
 		if (!hasImageSizes) {
 			errors.push(`collection.imagesSizes of ${collection.slug} should be defined`);
