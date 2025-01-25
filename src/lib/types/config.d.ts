@@ -170,18 +170,18 @@ export type BuiltGlobalConfig = GlobalConfig & {
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type UploadCollectionConfig = BaseCollectionConfig & {
+export type UploadCollectionConfig = Omit<BaseCollectionConfig, 'upload'> & {
 	upload: true;
 	imageSizes?: ImageSizesConfig[];
 	accept: string[];
 	panelThumbnail?: string;
 };
 
-export type BuiltUploadCollectionConfig = BuiltCollectionConfig & {
+export type BuiltUploadCollectionConfig = Omit<BuiltCollectionConfig, 'upload'> & {
 	upload: true;
-	imageSizes?: ImageSizesConfig[];
+	imageSizes: ImageSizesConfig[];
 	accept: string[];
-	panelThumbnail?: string;
+	panelThumbnail: string;
 };
 
 export type ImageSizesConfig = {
