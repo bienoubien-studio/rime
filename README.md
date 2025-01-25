@@ -204,7 +204,7 @@ export const load = async (event: LayoutServerLoadEvent) => {
 ```ts
 const { docs } = await fetch('http://localhost:5173/api/pages').then(r => r.json())
 const { docs } = await fetch('http://localhost:5173/api/pages?sort=title&limit=1').then(r => r.json())
-const { docs } = await fetch('http://localhost:5173/api/pages?where[author][in_array]=some-id&locale=en`;').then(r => r.json())
+const { docs } = await fetch('http://localhost:5173/api/pages?where[author][like]=some-id&locale=en`;').then(r => r.json())
 ```
 
 ## ROADMAP
