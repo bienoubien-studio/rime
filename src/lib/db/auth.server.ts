@@ -179,11 +179,13 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		// return await verifyHash({ hash: user.hashedToken, clear: token });
 	};
 
-	const deleteAuthUserById = async (id: string) => {
+	type DeleteAuthUserByIdArgs = { id: string; headers?: Request['headers'] };
+	const deleteAuthUserById = async ({ id, headers }: DeleteAuthUserByIdArgs) => {
 		await betterAuth.api.removeUser({
 			body: {
 				userId: id
-			}
+			},
+			headers
 		});
 		return id;
 	};
@@ -317,7 +319,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				email: user.email,
 				id: user.id,
 				roles: user.roles
-			}
+			},
+			response: signin
 		};
 	};
 
@@ -325,7 +328,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		betterAuth,
 		getAuthUsers,
 		getAuthUserId,
-		// createSession,
 		createAuthUser,
 		deleteAuthUserById,
 		getUserAttributes,

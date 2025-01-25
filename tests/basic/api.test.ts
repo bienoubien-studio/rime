@@ -45,7 +45,7 @@ test('Login should be successfull', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = response.headers()['Set-Auth-Token'];
+	const headerToken = response.headers()['set-auth-token'];
 	const json = await response.json();
 	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
@@ -114,6 +114,8 @@ test('Should return the home page', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}`).then((response) => {
 		return response.json();
 	});
+	console.log(`${API_BASE_URL}/pages/${homeId}`);
+	console.log(response);
 	expect(response.doc).toBeDefined();
 	expect(response.doc.title).toBe('Home');
 });
@@ -303,7 +305,7 @@ test('Login should be successfull (again)', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = response.headers()['Set-Auth-Token'];
+	const headerToken = response.headers()['set-auth-token'];
 	const json = await response.json();
 	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
@@ -376,7 +378,7 @@ test('Should login editor', async ({ request }) => {
 	const status = response.status();
 	expect(status).toBe(200);
 
-	const headerToken = response.headers()['Set-Auth-Token'];
+	const headerToken = response.headers()['set-auth-token'];
 	expect(headerToken).toBeDefined();
 	token = headerToken;
 });
@@ -475,7 +477,7 @@ test('Should delete user editor', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = sigin.headers()['Set-Auth-Token'];
+	const headerToken = sigin.headers()['set-auth-token'];
 	const json = await sigin.json();
 	expect(headerToken).toBeDefined();
 	token = headerToken;

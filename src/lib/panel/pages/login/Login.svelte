@@ -4,11 +4,10 @@
 	import Email from 'rizom/fields/email/component/Email.svelte';
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
+	import { enhance } from '$app/forms';
 	import type { FormErrors } from 'rizom/types';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
-	import { createAuthClient } from 'better-auth/svelte';
-	import { goto } from '$app/navigation';
 
 	type Props = {
 		forgotPasswordLink?: boolean;
@@ -16,31 +15,7 @@
 	};
 	let { form, forgotPasswordLink }: Props = $props();
 
-	const authClient = createAuthClient();
-	let context = setFormContext(form || {}, 'login');
-
-	const handleSignIn = async (e: SubmitEvent) => {
-		e.preventDefault();
-
-		await authClient.signIn.email(
-			{
-				email: context.form.email,
-				password: context.form.password
-			},
-			{
-				onRequest: () => {
-					//show loading
-				},
-				onSuccess: (ctx) => {
-					goto('/panel');
-				},
-				onError: (ctx) => {
-					context.errors.set('password', 'Invalid email or password');
-					context.errors.set('email', 'Invalid email or password');
-				}
-			}
-		);
-	};
+	const context = setFormContext(form || {}, 'login');
 
 	$effect(() => {
 		const hasChanges = 'email' in context.changes || 'password' in context.changes;
@@ -52,7 +27,8 @@
 </script>
 
 <div class="rz-login-container">
-	<form onsubmit={handleSignIn}>
+	<form method="POST" action="/login" use:enhance={context.enhance}>
+		<!-- <form onsubmit={handleSignIn}> -->
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Connexion</Card.Title>

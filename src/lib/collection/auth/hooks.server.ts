@@ -1,4 +1,4 @@
-import { RizomError } from 'rizom/errors/error.server';
+import { RizomError } from '../../errors/error.server';
 import type {
 	CollectionHookBeforeCreate,
 	CollectionHookBeforeDelete,
@@ -58,6 +58,6 @@ export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
 
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 	const { doc, rizom } = args;
-	await rizom.auth.deleteAuthUserById(doc.authUserId);
+	await rizom.auth.deleteAuthUserById({ id: doc.authUserId, headers: args.event?.request.headers });
 	return args;
 };

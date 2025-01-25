@@ -56,8 +56,14 @@ test.describe('Login form', () => {
 		await submitButton.click();
 
 		// Check for error message
-		const errorMessage = page.locator('.rz-field-error'); // Adjust selector based on your error message element
-		await expect(errorMessage).toBeVisible();
+		const errorMessageEmail = page.locator(
+			'.rz-card-content .rz-field-root:nth-child(1) .rz-field-error'
+		);
+		const errorMessagePassword = page.locator(
+			'.rz-card-content .rz-field-root:nth-child(2) .rz-field-error'
+		);
+		await expect(errorMessageEmail).toBeVisible();
+		await expect(errorMessagePassword).toBeVisible();
 	});
 
 	test('should not display forgot password link', async ({ page }) => {
