@@ -5,22 +5,29 @@ import type {
 	BuiltCollectionConfig,
 	BuiltDocConfig,
 	BuiltGlobalConfig,
+	BuiltUploadCollectionConfig,
 	CollectionConfig,
+	CompiledCollectionConfig,
+	CompiledUploadCollectionConfig,
 	UploadCollectionConfig
 } from 'rizom/types/config';
 
-export const getPanelThumbnailKey = (collectionConfig: UploadCollectionConfig): string => {
+export const getPanelThumbnailKey = (collectionConfig: { panelThumbnail?: string }): string => {
 	if (collectionConfig.panelThumbnail) {
 		return toCamelCase(collectionConfig.panelThumbnail);
 	}
 	return `admin`;
 };
 
-export const isUploadConfig = (config: CollectionConfig): config is UploadCollectionConfig =>
-	!!config.upload;
+export function isUploadConfig(
+	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig
+): config is UploadCollectionConfig | BuiltUploadCollectionConfig | CompiledUploadCollectionConfig {
+	return 'upload' in config && config.upload === true;
+}
 
-export const isAuthConfig = (config: CollectionConfig | BuiltCollectionConfig) =>
-	config.auth === true;
+export const isAuthConfig = (
+	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig
+) => config.auth === true;
 
 export const isBuiltGlobalConfig = (config: BuiltDocConfig): config is BuiltGlobalConfig =>
 	config.type === 'global';

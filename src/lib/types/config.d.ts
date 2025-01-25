@@ -193,4 +193,5 @@ export type ImageSizesConfig = {
 
 type CompiledConfig = WithoutBuilders<BuiltConfig>;
 type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
+type CompiledUploadCollectionConfig = WithoutBuilders<BuiltUploadCollectionConfig>;
 type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;

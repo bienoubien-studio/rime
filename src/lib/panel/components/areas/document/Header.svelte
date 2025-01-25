@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import X from 'lucide-svelte/icons/x';
-	// import Button from 'rizom/panel//button/button.svelte';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import { Button } from '../../ui/button';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { PencilRuler, Eye, PanelsTopLeft } from 'lucide-svelte';
-
 	import { page } from '$app/stores';
-	import type { BuiltDocConfig, BuiltGlobalConfig } from 'rizom/types/config';
+	import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 
 	// Props
@@ -19,7 +17,7 @@
 		panelURL: string;
 		liveEditing: boolean;
 		form: DocumentFormContext;
-		config: BuiltGlobalConfig | BuiltDocConfig;
+		config: CompiledGlobalConfig | CompiledCollectionConfig;
 		collectionUrl?: string;
 	};
 	const { form, panelURL, onClose, liveEditing, config }: Props = $props();

@@ -1,4 +1,5 @@
 import type { FieldBuilder } from 'rizom/fields/_builders';
+import type { AnyField } from './fields';
 
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;

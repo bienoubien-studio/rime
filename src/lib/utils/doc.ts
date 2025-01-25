@@ -1,6 +1,6 @@
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
 import { flattenWithGuard, isBuffer } from './object.js';
-import type { BuiltCollectionConfig, BuiltGlobalConfig } from 'rizom/types/config.js';
+import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
 
@@ -81,7 +81,7 @@ export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 };
 
 export const makeEmptyDoc = <T extends GenericDoc = GenericDoc>(
-	config: BuiltCollectionConfig | BuiltGlobalConfig
+	config: CompiledCollectionConfig | CompiledGlobalConfig
 ): T => {
 	function toEmptyDoc(prev: Dic, curr: any) {
 		if (curr.type === 'tabs') {

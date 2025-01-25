@@ -30,13 +30,16 @@ export const isNotHidden = (field: AnyFormField) => !field.hidden;
 
 export const isLiveField = (field: AnyField) => field.live;
 
-export const isPresentative = (field: AnyField): field is GroupField | SeparatorField | TabsField =>
+export const isPresentative = (
+	field: AnyField
+): field is GroupField<'compiled'> | SeparatorField | TabsField<'compiled'> =>
 	['group', 'separator', 'tabs'].includes(field.type);
 
 export const isComponentField = (field: AnyField): field is ComponentField =>
 	field.type === 'component';
 
-export const isBlocksField = (field: AnyField): field is BlocksField => field.type === 'blocks';
+export const isBlocksField = (field: AnyField): field is BlocksField<'compiled'> =>
+	field.type === 'blocks';
 
 export const isTextField = (field: AnyField): field is TextField => field.type === 'text';
 
@@ -53,10 +56,10 @@ export const isLinkField = (field: AnyField): field is LinkField => field.type =
 
 export const isToggleField = (field: AnyField): field is ToggleField => field.type === 'toggle';
 
-export const isGroupField = (field: AnyField): field is WithoutBuilders<GroupField> =>
+export const isGroupField = (field: AnyField): field is GroupField<'compiled'> =>
 	field.type === 'group';
 
-export const isTabsField = (field: AnyField): field is WithoutBuilders<TabsField> =>
+export const isTabsField = (field: AnyField): field is TabsField<'compiled'> =>
 	field.type === 'tabs';
 
 export const isRadioField = (field: AnyField): field is RadioField => field.type === 'radio';

@@ -1,7 +1,7 @@
 import { compileFields } from 'rizom/fields/compile.js';
-import type { CompiledConfig } from 'rizom/types/config';
+import type { BuiltConfig } from 'rizom/types/config';
 
-export const compileConfig = (config: CompiledConfig) => {
+export const compileConfig = (config: BuiltConfig) => {
 	return {
 		...config,
 		collections: config.collections.map((collection) => ({

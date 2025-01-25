@@ -6,20 +6,20 @@
 	import { isFormField } from '$lib/utils/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from 'rizom/types/doc';
-	import type { BlocksField, BlocksFieldBlock } from 'rizom/types/fields';
+	import type { BlocksField, BlocksFieldBlock } from '../index.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
 		size: 'default' | 'sm';
 		class: string;
-		config: BlocksField;
+		config: BlocksField<'compiled'>;
 		addBlock: AddBlock;
 	};
 	const { class: className, config, addBlock, size }: Props = $props();
 
 	let open = $state(false);
 
-	const add = (block: BlocksFieldBlock) => {
+	const add = (block: BlocksFieldBlock<'compiled'>) => {
 		open = false;
 		const empty = {
 			...emptyFieldsFromFieldConfig(block.fields.filter(isFormField)),

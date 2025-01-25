@@ -1,6 +1,9 @@
 import type { Link } from 'rizom';
 
-export const password = (value: string) => {
+export const password = (value: unknown) => {
+	if (typeof value !== 'string') {
+		return 'Expect a string';
+	}
 	if (value.length < 8) {
 		return 'Min. 8 characters';
 	} else if (!/[a-z]/.test(value)) {

@@ -3,9 +3,8 @@ import { FormFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
-const isEmpty = (value: any) => {
+const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
 		if ('text' in curr) {
 			prev += curr.text;

@@ -7,7 +7,7 @@ import type { LocalAPI } from 'rizom/types/api';
 
 export type UserDefinedField = AnyField | FieldBuilder<AnyField>;
 
-type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
+type FieldValidationFunc<TConfig extends AnyFormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
 	metas: {
 		data: Partial<TData>;
@@ -45,7 +45,7 @@ type BaseField = {
 type FormField = BaseField & {
 	name: string;
 	hidden?: boolean;
-	validate?: FieldValidationFunc;
+	validate?: FieldValidationFunc<FormField, GenericDoc>;
 	required?: boolean;
 	localized?: boolean;
 	label?: string;

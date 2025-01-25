@@ -69,20 +69,20 @@ class BlockBuilder {
 /////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
-export type BlocksField = FormField & {
+export type BlocksField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = FormField & {
 	type: 'blocks';
-	blocks: BlocksFieldBlock[];
+	blocks: BlocksFieldBlock<Compiled>[];
 };
 
 export type BlocksFieldBlockRenderTitle = (args: { fields: Dic; position: number }) => string;
 
-export type BlocksFieldBlock = {
+export type BlocksFieldBlock<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = {
 	name: string;
 	label?: string;
 	description?: string;
 	icon?: ComponentType;
 	renderTitle?: BlocksFieldBlockRenderTitle;
-	fields: FieldBuilder<AnyField>[];
+	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
 };
 
 /////////////////////////////////////////////
@@ -93,6 +93,6 @@ declare module 'rizom' {
 		blocks: any;
 	}
 	interface RegisterFormFields {
-		BlocksField: BlocksField; // register the field type
+		BlocksField: BlocksField<'compiled'>;
 	}
 }

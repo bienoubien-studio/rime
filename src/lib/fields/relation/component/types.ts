@@ -1,4 +1,4 @@
-import type { BuiltCollectionConfig } from 'rizom/types/config';
+import type { CompiledCollectionConfig } from 'rizom/types/config';
 import type { GenericDoc } from 'rizom/types/doc';
 
 export type RelationFieldItem = {
@@ -23,7 +23,7 @@ export type RelationComponentProps = {
 	nothingToSelect: boolean;
 	isSortable: boolean;
 	selectedItems: RelationFieldItem[];
-	relationConfig: BuiltCollectionConfig;
+	relationConfig: CompiledCollectionConfig;
 	onOrderChange: (oldIndex: number, newIndex: number) => void;
 	formNestedLevel: number;
 	onRelationCreated: any;

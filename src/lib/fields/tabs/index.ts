@@ -38,14 +38,14 @@ export const tab = (label: string) => new TabBuilder(label);
 // Types
 //////////////////////////////////////////////
 
-export type TabsField = BaseField & {
+export type TabsField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = BaseField & {
 	type: 'tabs';
-	tabs: TabsFieldTab[];
+	tabs: TabsFieldTab<Compiled>[];
 };
 
-export type TabsFieldTab = {
+export type TabsFieldTab<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = {
 	label: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
 };
 
 /////////////////////////////////////////////
@@ -56,6 +56,6 @@ declare module 'rizom' {
 		tabs: any;
 	}
 	interface RegisterFields {
-		TabsField: TabsField; // register the field type
+		TabsField: TabsField<'compiled'>; // register the field type
 	}
 }

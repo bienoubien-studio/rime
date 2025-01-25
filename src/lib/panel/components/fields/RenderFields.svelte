@@ -55,16 +55,7 @@
 						{#if field.label}
 							<h2 class="rz-render-fields__group-title">{field.label}</h2>
 						{/if}
-						<!--
-						  This is very ugly, need to fix it :
-					    fields={(field as WithoutBuilders<typeof field>).fields}
-						-->
-						<RenderFields
-							{path}
-							fields={(field as WithoutBuilders<typeof field>).fields}
-							framed={true}
-							{form}
-						/>
+						<RenderFields {path} fields={field.fields} framed={true} {form} />
 					{:else if field.type === 'tabs'}
 						{@const Tabs = config.raw.blueprints.tabs.component}
 						<Tabs config={field} {path} {form} />

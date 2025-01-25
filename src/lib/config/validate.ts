@@ -10,7 +10,6 @@ import type {
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import type { WithoutBuilders } from 'rizom/types/utility';
 import { RizomConfigError } from 'rizom/errors/config.server';
-import { execSync } from 'child_process';
 import cache from 'rizom/bin/generate/cache';
 
 function hasDuplicates(arr: string[]): string[] {
@@ -61,7 +60,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
-	const registeredBlocks: Record<string, BlocksFieldBlock> = {};
+	const registeredBlocks: Record<string, BlocksFieldBlock<true>> = {};
 
 	if (isAuth) {
 		const hasRolesField = config.fields
@@ -83,7 +82,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 	};
 
-	const validateFormFields = (fields: WithoutBuilders<AnyFormField>[]) => {
+	const validateFormFields = (fields: AnyFormField[]) => {
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {

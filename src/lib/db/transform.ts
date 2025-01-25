@@ -184,7 +184,6 @@ export const databaseTransformInterface = ({
 			flatDoc.url = `/medias/${flatDoc.filename}`;
 		}
 
-		/**  */
 		let unflatted: Dic = unflatten(flatDoc);
 
 		/** Remove blocks table keys */

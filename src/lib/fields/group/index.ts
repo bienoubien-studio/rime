@@ -24,10 +24,10 @@ export const group = (label?: string) =>
 // Types
 //////////////////////////////////////////////
 
-export type GroupField = BaseField & {
+export type GroupField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = BaseField & {
 	type: 'group';
 	label: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
 };
 
 /////////////////////////////////////////////
@@ -38,6 +38,6 @@ declare module 'rizom' {
 		group: any;
 	}
 	interface RegisterFields {
-		GroupField: GroupField; // register the field type
+		GroupField: GroupField<'compiled'>; // register the field type
 	}
 }

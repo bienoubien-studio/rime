@@ -51,7 +51,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 };
 
 class RelationFieldBuilder<Doc extends GenericDoc = GenericDoc> extends FormFieldBuilder<
-	RelationField<Doc>
+	RelationField<GenericDoc>
 > {
 	//
 	constructor(name: string) {
@@ -69,7 +69,7 @@ class RelationFieldBuilder<Doc extends GenericDoc = GenericDoc> extends FormFiel
 	}
 
 	query(query: string | QueryResolver<Doc>) {
-		this.field.query = query;
+		(this.field as RelationField<Doc>).query = query;
 		return this;
 	}
 
@@ -100,7 +100,7 @@ export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	layout?: 'tags' | 'list';
 	many?: boolean;
 	defaultValue?: string | string[];
-	query?: string | QueryResolver<Doc>;
+	query?: string | ((doc: Doc) => string);
 };
 
 type QueryResolver<Doc extends GenericDoc = GenericDoc> = (doc: Doc) => string;
@@ -113,6 +113,6 @@ declare module 'rizom' {
 		relation: any;
 	}
 	interface RegisterFormFields {
-		RelationField: RelationField; // register the field type
+		RelationField: RelationField<GenericDoc>; // register the field type
 	}
 }

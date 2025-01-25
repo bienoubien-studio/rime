@@ -70,9 +70,9 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 		const mimeType = text('mimeType').hidden();
 
 		if ('accept' in collection) {
-			mimeType.raw.validate = (value: string) => {
+			mimeType.raw.validate = (value) => {
 				return (
-					collection.accept.includes(value) ||
+					(typeof value === 'string' && collection.accept.includes(value)) ||
 					`File should be the type of ${collection.accept.toString()}`
 				);
 			};

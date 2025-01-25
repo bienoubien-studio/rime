@@ -147,7 +147,7 @@
 		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 
 		<div class="rz-document__fields">
-			{#if config.type === 'collection' && isUploadConfig(config)}
+			{#if config.type === 'collection' && config.upload === 'true'}
 				<DocUpload.Header accept={config.accept} create={operation === 'create'} {form} />
 			{/if}
 			{#if config.type === 'collection' && isAuthConfig(config) && operation === 'create'}

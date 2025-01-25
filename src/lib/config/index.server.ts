@@ -14,6 +14,12 @@ import type { GlobalSlug } from 'rizom/types/doc.js';
 import { dev } from '$app/environment';
 
 export async function createConfigInterface(rawConfig: Config) {
+	if (import.meta.hot) {
+		import.meta.hot.on('special-update', (data) => {
+			console.log('meta hot');
+		});
+	}
+
 	const config: CompiledConfig = await buildConfig(rawConfig, { generate: dev });
 
 	const flattenConfig = (config: CompiledConfig) => {

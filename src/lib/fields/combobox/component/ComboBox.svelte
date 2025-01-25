@@ -18,10 +18,10 @@
 	let open = $state(false);
 	let value = $state('');
 
-	let selected = $state<Option>({});
+	let selected = $state<Option>();
 
 	$effect(() => {
-		if (field.value !== selected.value) {
+		if (selected && field.value !== selected.value) {
 			field.value = selected.value;
 		}
 	});
@@ -39,7 +39,7 @@
 					class="rz-combobox__trigger"
 					{...props}
 				>
-					{selected.label || 'Select...'}
+					{selected?.label || 'Select...'}
 					<ChevronsUpDown class="rz-combobox__chevron" />
 				</Button>
 			{/snippet}
