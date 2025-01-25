@@ -55,7 +55,7 @@ export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldB
 		this.field.access = {
 			create: (user) => !!user,
 			update: (user) => !!user,
-			read: (user) => !!user
+			read: (user) => true
 		};
 		return this;
 	}
