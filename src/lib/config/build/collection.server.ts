@@ -88,8 +88,6 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 export const buildCollection = async (
 	collection: CollectionConfig
 ): Promise<BuiltCollectionConfig> => {
-	const fields = buildFields(collection);
-
 	// Add generic documents title field if not defined
 	const addAsTitle = () => {
 		const fieldTitle = findTitleField(collection.fields);
@@ -119,6 +117,8 @@ export const buildCollection = async (
 
 		collection.panelThumbnail = thumbnailName;
 	}
+
+	const fields = buildFields(collection);
 
 	fields.push(text('_editedBy').hidden());
 
