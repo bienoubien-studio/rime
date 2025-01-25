@@ -54,7 +54,6 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 
 		const fn = operatorFn(operator);
 		const value = formatValue({ operator, value: rawValue });
-		console.log(fn, value);
 
 		if (unlocalizedColumns.includes(column)) {
 			return fn(table[column], value);
