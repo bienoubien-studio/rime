@@ -1,10 +1,7 @@
 import { UsersRound } from 'lucide-svelte';
 import { access } from 'rizom/utils/access/index.js';
 import { usersFields } from './usersFields.js';
-import { text } from 'rizom/fields/text';
 import type { CollectionConfig } from 'rizom';
-
-// export const hashedPassword = text('hashedPassword').required().hidden();
 
 export const panelUsersCollection: CollectionConfig = {
 	slug: 'users',
