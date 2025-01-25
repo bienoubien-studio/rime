@@ -1,14 +1,17 @@
 import type { BlocksFieldBlock } from 'rizom/fields/types';
 import { isFormField, toFormFields } from '../utils/field';
-import { isAuthConfig } from './utils';
+import { isAuthConfig, isUploadConfig } from './utils';
 import type {
 	CompiledCollectionConfig,
 	CompiledGlobalConfig,
-	CompiledConfig
+	CompiledConfig,
+	BuiltUploadCollectionConfig
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import type { WithoutBuilders } from 'rizom/types/utility';
 import { RizomConfigError } from 'rizom/errors/config.server';
+import { execSync } from 'child_process';
+import cache from 'rizom/bin/generate/cache';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -120,12 +123,35 @@ const hasDatabase = (config: CompiledConfig) => {
 	return [];
 };
 
+function validateUploadCollections(config: CompiledConfig) {
+	let errors = [];
+	const uploadCollections = config.collections.filter(isUploadConfig);
+	for (const collection of uploadCollections) {
+		const hasImageSizes = 'imagesSizes' in collection;
+		const hasPanelThumbnail = 'panelThumbnail' in collection;
+		if (!hasImageSizes) {
+			errors.push(`collection.imagesSizes of ${collection.slug} should be defined`);
+		}
+		if (!hasPanelThumbnail) {
+			errors.push(`collection.hasPanelThumbnail of ${collection.slug} should be defined`);
+		}
+	}
+	return errors;
+}
+
 function validate(config: CompiledConfig): boolean {
-	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields, hasDatabase];
+	const validateFunctions = [
+		hasDuplicateSlug,
+		hasUsersSlug,
+		validateFields,
+		hasDatabase,
+		validateUploadCollections
+	];
 
 	for (const isValid of validateFunctions) {
 		const errors: string[] = isValid(config);
 		if (errors.length) {
+			cache.clear();
 			throw new RizomConfigError(errors[0]);
 		}
 	}
