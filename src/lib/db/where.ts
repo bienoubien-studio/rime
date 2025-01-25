@@ -4,11 +4,11 @@ import qs, { type ParsedQs } from 'qs';
 import { rizom } from '$lib/index.js';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from '../types/utility';
 
-import { RizomError } from 'rizom/errors/error.server';
-import { isObjectLiteral } from 'rizom/utils/object';
-import type { OperationQuery } from 'rizom/types';
+import { RizomError } from '../errors/error.server';
+import { isObjectLiteral } from '../utils/object';
+import type { OperationQuery } from '../types';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;
@@ -107,11 +107,12 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			: false;
 };
 
-const isOperator = (str: string) => ['equals', 'in_array'].includes(str);
+const isOperator = (str: string) => ['equals', 'in_array', 'not_equals'].includes(str);
 
 const operatorFn = (operator: string): any => {
 	const operators: Record<string, any> = {
 		equals: drizzleORM.eq,
+		not_equals: drizzleORM.ne,
 		in_array: drizzleORM.inArray
 	};
 	return operators[operator] || drizzleORM.eq;

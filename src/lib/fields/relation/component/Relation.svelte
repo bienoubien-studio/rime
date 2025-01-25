@@ -65,7 +65,14 @@
 
 	// Fetch
 	const getItems = async () => {
-		const res = await fetch(`/api/${relationConfig.slug}${form.isLive ? '?depth=1' : ''}`, {
+		let requestURL = `/api/${relationConfig.slug}${form.isLive ? '?depth=1' : ''}`;
+
+		if (config.query && typeof config.query === 'string') {
+			requestURL += `?${config.query}`;
+		} else if (typeof config.query === 'function') {
+			requestURL += `?${config.query(form.doc)}`;
+		}
+		const res = await fetch(requestURL, {
 			method: 'GET',
 			headers: {
 				'content-type': 'application/json'

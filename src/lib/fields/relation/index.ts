@@ -1,5 +1,5 @@
-import type { FormField } from 'rizom/types';
-import type { GetRegisterType } from 'rizom';
+import type { FormField, GenericDoc } from 'rizom/types';
+import type { GetRegisterType, RegisterCollection } from 'rizom';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../_builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
@@ -9,7 +9,7 @@ import type { Relation } from 'rizom/db/relations';
 
 type RelationValue = string | Array<Relation | string>;
 
-const ensureRelationExists: FieldHook<RelationField> = async (
+const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 	value: RelationValue,
 	{ api, config }
 ) => {
@@ -50,7 +50,9 @@ const ensureRelationExists: FieldHook<RelationField> = async (
 	return output;
 };
 
-class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
+class RelationFieldBuilder<Doc extends GenericDoc = GenericDoc> extends FormFieldBuilder<
+	RelationField<Doc>
+> {
 	//
 	constructor(name: string) {
 		super(name, 'relation');
@@ -66,9 +68,16 @@ class RelationFieldBuilder extends FormFieldBuilder<RelationField> {
 		return `${this.field.name}${this.field.required ? '' : '?'}: RelationValue<${capitalize(this.field.relationTo)}Doc>`;
 	}
 
-	to(slug: GetRegisterType<'CollectionSlug'>) {
-		this.field.relationTo = slug;
+	query(query: string | QueryResolver<Doc>) {
+		this.field.query = query;
 		return this;
+	}
+
+	to<Slug extends GetRegisterType<'CollectionSlug'>>(
+		slug: Slug
+	): RelationFieldBuilder<RegisterCollection[Slug]> {
+		this.field.relationTo = slug;
+		return this as RelationFieldBuilder<RegisterCollection[Slug]>;
 	}
 	many() {
 		this.field.many = true;
@@ -85,13 +94,16 @@ export const relation = (name: string) => new RelationFieldBuilder(name);
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
-export type RelationField = FormField & {
+export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	type: 'relation';
 	relationTo: GetRegisterType<'CollectionSlug'>;
 	layout?: 'tags' | 'list';
 	many?: boolean;
 	defaultValue?: string | string[];
+	query?: string | QueryResolver<Doc>;
 };
+
+type QueryResolver<Doc extends GenericDoc = GenericDoc> = (doc: Doc) => string;
 
 /////////////////////////////////////////////
 // Register
