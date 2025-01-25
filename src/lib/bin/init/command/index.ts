@@ -162,14 +162,15 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 
 	async function installDeps(force = false) {
 		const devDeps = ['drizzle-kit@0.22.8'];
+		const deps = ['better-sqlite3'];
 		if (force) {
 			const packageManager = getPackageManager();
 			const command = getInstallCommand(packageManager);
-			execSync(`${command} -D ${devDeps.join(' ')}`);
-			log.info('drizzle-kit installed');
+			execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
+			log.info('drizzle-kit & better-sqlite3 installed');
 		} else {
 			const packageManager = await select({
-				message: 'Which package manager do you want to install dependencies (drizzle-kit) with?',
+				message: 'Which package manager do you want to install dependencies with?',
 				options: [
 					{ value: 'npm', label: 'npm' },
 					{ value: 'pnpm', label: 'pnpm' },
@@ -188,8 +189,8 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			const s = spinner();
 			s.start('Installing via ' + packageManager);
 			const command = getInstallCommand(packageManager);
-			execSync(`${command} -D ${devDeps.join(' ')}`);
-			s.stop('drizzle-kit installed');
+			execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
+			s.stop('drizzle-kit & better-sqlite3 installed');
 			s.start('Pushing schema');
 			execSync(`npx drizzle-kit push`);
 			s.stop('Schema pushed');
