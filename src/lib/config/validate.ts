@@ -4,11 +4,9 @@ import { isAuthConfig, isUploadConfig } from './utils';
 import type {
 	CompiledCollectionConfig,
 	CompiledGlobalConfig,
-	CompiledConfig,
-	BuiltUploadCollectionConfig
+	CompiledConfig
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
-import type { WithoutBuilders } from 'rizom/types/utility';
 import { RizomConfigError } from 'rizom/errors/config.server';
 import cache from 'rizom/bin/generate/cache';
 
@@ -60,7 +58,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
-	const registeredBlocks: Record<string, BlocksFieldBlock<true>> = {};
+	const registeredBlocks: Record<string, BlocksFieldBlock<'compiled'>> = {};
 
 	if (isAuth) {
 		const hasRolesField = config.fields
