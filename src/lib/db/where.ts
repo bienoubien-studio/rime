@@ -54,6 +54,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 
 		const fn = operatorFn(operator);
 		const value = formatValue({ operator, value: rawValue });
+		console.log(fn, value);
 
 		if (unlocalizedColumns.includes(column)) {
 			return fn(table[column], value);
@@ -107,16 +108,29 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			: false;
 };
 
-const isOperator = (str: string) => ['equals', 'in_array', 'not_equals'].includes(str);
+const isOperator = (str: string) =>
+	['equals', 'in_array', 'not_in_array', 'not_equals', 'like', 'ilike', 'not_like'].includes(str);
 
 const operatorFn = (operator: string): any => {
 	const operators: Record<string, any> = {
 		equals: drizzleORM.eq,
 		not_equals: drizzleORM.ne,
-		in_array: drizzleORM.inArray
+		in_array: drizzleORM.inArray,
+		like: drizzleORM.like,
+		ilike: drizzleORM.ilike,
+		not_like: drizzleORM.notLike,
+		not_in_array: drizzleORM.notInArray
 	};
 	return operators[operator] || drizzleORM.eq;
 };
 
-const formatValue = ({ operator, value }: { operator: string; value: any }) =>
-	operator === 'in_array' ? value.split(',') : value;
+const formatValue = ({ operator, value }: { operator: string; value: any }) => {
+	switch (true) {
+		case ['in_array', 'not_in_array'].includes(operator):
+			return value.split(',');
+		case ['like', 'ilike', 'not_like'].includes(operator):
+			return `%${value}%`;
+		default:
+			return value;
+	}
+};
