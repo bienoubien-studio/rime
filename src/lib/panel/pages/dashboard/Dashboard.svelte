@@ -4,11 +4,8 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import PageHeader from 'rizom/panel/components/ui/page-header/PageHeader.svelte';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
-
 	import { ArrowRight, Eye } from 'lucide-svelte';
 	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
-
-	// import PageHeader from 'rizom/panel/components/ui/page-header/PageHeader.svelte';
 
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();
@@ -20,12 +17,16 @@
 </script>
 
 <div class="rz-dashboard">
-	<PageHeader>
-		{#if config.raw.siteUrl}
-			<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>View site</Button>
-		{/if}
-		<LanguageSwitcher />
-	</PageHeader>
+	{#if config.raw.siteUrl || config.raw.localization}
+		<PageHeader>
+			{#if config.raw.siteUrl}
+				<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}
+					>View site</Button
+				>
+			{/if}
+			<LanguageSwitcher />
+		</PageHeader>
+	{/if}
 
 	<div class="rz-dashboard__content">
 		{#each entries as entry}
