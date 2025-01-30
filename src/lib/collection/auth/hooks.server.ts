@@ -49,7 +49,7 @@ export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
 
 		await rizom.auth.betterAuth.api.setRole({
 			body: { userId: authUserId, role: hasAdminRole ? 'admin' : 'user' },
-			headers: args.event?.request.headers
+			headers: args.event.request.headers
 		});
 	}
 
@@ -58,6 +58,6 @@ export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
 
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 	const { doc, rizom } = args;
-	await rizom.auth.deleteAuthUserById({ id: doc.authUserId, headers: args.event?.request.headers });
+	await rizom.auth.deleteAuthUserById({ id: doc.authUserId, headers: args.event.request.headers });
 	return args;
 };

@@ -136,7 +136,7 @@ const formatslug: CollectionHook<PagesDoc> = async (args) => {
 		const query = `where[slug][equals]=${slug}`;
 		return api.collection('pages').find({
 			query,
-			locale: event?.locals.locale
+			locale: event.locals.locale
 		});
 	};
 

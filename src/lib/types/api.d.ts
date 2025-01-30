@@ -33,7 +33,7 @@ export interface LocalAPI {
 
 export type LocalAPIConstructorArgs = {
 	rizom: Rizom;
-	event?: RequestEvent;
+	event: RequestEvent;
 };
 
 export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc> {

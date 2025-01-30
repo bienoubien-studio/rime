@@ -111,7 +111,7 @@ export type TransformContext<T = GenericDoc> = {
 	doc: T;
 	slug: PrototypeSlug;
 	locale?: string;
-	event?: RequestEvent;
+	event: RequestEvent;
 	api: LocalAPI;
 	depth?: number;
 };

@@ -87,7 +87,7 @@ const formatslug: CollectionHook<PagesDoc> = async (args) => {
 
 			const pagesWithCurrentSlug = await api.collection('pages').find({
 				query,
-				locale: event?.locals.locale
+				locale: event.locals.locale
 			});
 
 			while (pagesWithCurrentSlug.some((page) => page.slug === data.slug)) {

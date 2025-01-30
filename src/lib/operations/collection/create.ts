@@ -35,11 +35,9 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 
-	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.create(event.locals.user);
-		if (!authorized) {
-			throw new RizomAccessError('- trying to create ' + config.slug);
-		}
+	const authorized = config.access.create(event.locals.user);
+	if (!authorized) {
+		throw new RizomAccessError('- trying to create ' + config.slug);
 	}
 
 	const incomingData = cloneDeep(data);
@@ -89,7 +87,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 		configMap,
 		operation: 'create',
 		documentId: undefined,
-		user: event?.locals.user,
+		user: event.locals.user,
 		slug: config.slug,
 		locale,
 		api
@@ -221,7 +219,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	locale?: string | undefined;
 	config: CompiledCollectionConfig;
 	api: LocalAPI;
-	event?: RequestEvent & {
+	event: RequestEvent & {
 		locals: App.Locals;
 	};
 	adapter: Adapter;

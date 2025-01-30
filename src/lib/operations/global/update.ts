@@ -8,7 +8,7 @@ import { RizomAccessError } from '../../errors/access.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltGlobalConfig } from 'rizom/types/config.js';
+import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
@@ -16,8 +16,8 @@ import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
 	locale?: string | undefined;
-	config: BuiltGlobalConfig;
-	event?: RequestEvent;
+	config: CompiledGlobalConfig;
+	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
 };
@@ -34,7 +34,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.update(event.locals.user);
+		const authorized = config.access.update(event.locals.user);
 		if (!authorized) {
 			throw new RizomAccessError('- trying to update ' + config.slug);
 		}
@@ -57,7 +57,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 				rizom,
 				api
 			});
-			data = args.data;
+			data = args.data as Partial<T>;
 			event = args.event;
 		}
 	}
@@ -72,7 +72,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		configMap,
 		operation: 'update',
 		documentId: originalDoc.id,
-		user: event?.locals.user,
+		user: event.locals.user,
 		slug: config.slug,
 		locale,
 		api

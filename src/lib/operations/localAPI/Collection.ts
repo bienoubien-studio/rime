@@ -10,27 +10,28 @@ import { findById } from '../collection/findById.js';
 import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltCollectionConfig } from 'rizom/types/config.js';
+import type { BuiltCollectionConfig, CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { AnyFormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
+import { toHash } from 'rizom/utils/string.js';
 
 type Args = {
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
-	event?: RequestEvent;
+	event: RequestEvent;
 };
 
 class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 	implements LocalAPICollectionInterface<Doc>
 {
-	#event: RequestEvent | undefined;
+	#event: RequestEvent;
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 
 	constructor({ config, adapter, defaultLocale, event, api }: Args) {
 		this.config = config;
@@ -45,7 +46,7 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 	}
 
 	#fallbackLocale(locale?: string) {
-		return locale || this.#event?.locals.locale || this.defaultLocale;
+		return locale || this.#event.locals.locale || this.defaultLocale;
 	}
 
 	blank(): Doc {

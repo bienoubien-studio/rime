@@ -83,7 +83,7 @@ const formatslug: CollectionHook = async (args) => {
 
 			const pagesWithCurrentSlug = await api.collection('pages').find({
 				query,
-				locale: event?.locals.locale
+				locale: event.locals.locale
 			});
 
 			while (pagesWithCurrentSlug.some((page) => page.slug === data.slug)) {
@@ -146,6 +146,7 @@ const Pages: CollectionConfig = {
 
 const config: Config = {
 	//
+	database: 'basic.sqlite',
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages],

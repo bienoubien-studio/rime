@@ -13,11 +13,11 @@ type Args = {
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
-	event: RequestEvent | undefined;
+	event: RequestEvent;
 };
 
 class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGlobalInterface<Doc> {
-	#event: RequestEvent | undefined;
+	#event: RequestEvent;
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
@@ -34,7 +34,7 @@ class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGl
 	}
 
 	#fallbackLocale(locale?: string) {
-		return locale || this.#event?.locals.locale || this.defaultLocale;
+		return locale || this.#event.locals.locale || this.defaultLocale;
 	}
 
 	blank(): Doc {

@@ -13,7 +13,7 @@ type Args = {
 	locale?: string | undefined;
 	config: BuiltCollectionConfig;
 	api: LocalAPI;
-	event?: RequestEvent;
+	event: RequestEvent;
 	adapter: Adapter;
 	depth?: number;
 };
@@ -31,7 +31,7 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.read(event.locals.user, { id });
+		const authorized = config.access.read(event.locals.user, { id });
 		if (!authorized) {
 			throw new RizomAccessError('- trying to read ' + config.slug);
 		}

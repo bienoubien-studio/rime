@@ -22,7 +22,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
 	locale?: string | undefined;
 	config: CompiledCollectionConfig;
-	event?: RequestEvent;
+	event: RequestEvent;
 	api: LocalAPI;
 	adapter: Adapter;
 };
@@ -40,7 +40,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.update(event.locals.user, { id });
+		const authorized = config.access.update(event.locals.user, { id });
 		if (!authorized) {
 			throw new RizomAccessError('- trying to update ' + config.slug);
 		}
@@ -55,7 +55,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	/** Flatten data once for all */
 	let flatData: Dic = safeFlattenDoc(data);
 
-	/** Add Password and ConfirmPassword for Auth collections so validation includes these fields */
+	/** Add Password and ConfirmPassword Configs for Auth collections so validation includes these fields */
 	const fields = config.fields;
 	if (config.auth) {
 		fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);

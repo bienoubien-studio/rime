@@ -11,7 +11,7 @@ import type { CollectionHookBeforeDeleteArgs } from 'rizom/types/hooks.js';
 type DeleteById = (args: {
 	id: string;
 	config: BuiltCollectionConfig;
-	event?: RequestEvent & { locals: App.Locals };
+	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
 }) => Promise<string>;
@@ -21,7 +21,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.delete(event.locals.user, { id });
+		const authorized = config.access.delete(event.locals.user, { id });
 		if (!authorized) {
 			throw new RizomAccessError('- trying to delete ' + config.slug);
 		}

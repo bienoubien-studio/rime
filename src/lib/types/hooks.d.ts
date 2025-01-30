@@ -7,7 +7,7 @@ type RequestEvent = import('@sveltejs/kit').RequestEvent;
 type BaseHookArgs = {
 	api: LocalAPI;
 	rizom: Rizom;
-	event?: RequestEvent & {
+	event: RequestEvent & {
 		locals: App.Locals;
 	};
 };

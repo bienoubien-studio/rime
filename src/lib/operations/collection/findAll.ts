@@ -10,7 +10,7 @@ import { RizomHookError } from 'rizom/errors/hook.server.js';
 type Args = {
 	locale?: string | undefined;
 	config: BuiltCollectionConfig;
-	event?: RequestEvent & { locals: App.Locals };
+	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
 	sort?: string;
@@ -32,7 +32,7 @@ export const findAll = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.read(event.locals.user);
+		const authorized = config.access.read(event.locals.user);
 		if (!authorized) {
 			throw new RizomAccessError('- trying to read ' + config.slug);
 		}

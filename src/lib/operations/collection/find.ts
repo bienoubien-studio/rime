@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { RizomAccessError } from '../../errors/access.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
-import type { BuiltCollectionConfig } from 'rizom/types/config.js';
+import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
@@ -11,8 +11,8 @@ import { RizomHookError } from 'rizom/errors/hook.server.js';
 type FindArgs = {
 	query: OperationQuery;
 	locale?: string | undefined;
-	config: BuiltCollectionConfig;
-	event?: RequestEvent & { locals: App.Locals };
+	config: CompiledCollectionConfig;
+	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
 	sort?: string;
@@ -34,11 +34,10 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.read(event.locals.user);
-		if (!authorized) {
-			throw new RizomAccessError('- trying to read ' + config.slug);
-		}
+
+	const authorized = config.access.read(event.locals.user);
+	if (!authorized) {
+		throw new RizomAccessError('- trying to read ' + config.slug);
 	}
 
 	const rawDocs = (await adapter.collection.query({

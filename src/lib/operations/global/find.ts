@@ -4,12 +4,12 @@ import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
-import type { BuiltGlobalConfig } from 'rizom/types/config';
+import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config';
 
 type FindArgs = {
 	locale?: string | undefined;
-	config: BuiltGlobalConfig;
-	event?: RequestEvent;
+	config: CompiledGlobalConfig;
+	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
 	depth?: number;
@@ -26,7 +26,7 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 	// Access
 	//////////////////////////////////////////////
 	if (event) {
-		const authorized = api.hasGrantedPrivilege || config.access.read(event.locals.user);
+		const authorized = config.access.read(event.locals.user);
 		if (!authorized) {
 			throw new RizomAccessError('- trying to read ' + config.slug);
 		}
