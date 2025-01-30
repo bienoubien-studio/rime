@@ -10,7 +10,7 @@
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import type { GenericDoc } from 'rizom/types/doc';
-	import CurrentlyEditing from './CurrentlyEditing.svelte';
+	import CurrentlyEdited from './CurrentlyEdited.svelte';
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 
@@ -141,8 +141,8 @@
 	method="post"
 >
 	<ScrollArea>
-		{#if form.doc._editedBy && form.doc._editedBy.email !== user.attributes.email}
-			<CurrentlyEditing email={form.doc._editedBy.email} />
+		{#if form.doc._editedBy && form.doc._editedBy !== user.attributes.id}
+			<CurrentlyEdited by={form.doc._editedBy} doc={form.doc} user={user.attributes} />
 		{/if}
 		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 

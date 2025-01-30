@@ -241,38 +241,6 @@ export const databaseTransformInterface = ({
 			doc._live += locale ? `&locale=${locale}` : '';
 		}
 
-		console.log('isPanel', isPanel);
-		console.log('isLive', isLive);
-		// console.log('user', user);
-		console.log('event.url.pathname.includes(doc.id)', event.url.href.includes(doc.id));
-		// _editedBy
-		if ((isPanel || isLive) && user && event.url.href.includes(doc.id)) {
-			console.log('set editor');
-			let currentEditorId: string | undefined;
-			const someOneEditing = !!doc._editedBy;
-			const takeControl = event.url.searchParams.get('take_control') === '1';
-			if (!someOneEditing || (someOneEditing && takeControl)) {
-				await event.locals.rizom.adapter.collection.update({
-					id: doc.id,
-					slug,
-					data: {
-						_editedBy: [user!.id]
-					}
-				});
-				currentEditorId = user!.id;
-			} else if (someOneEditing) {
-				currentEditorId = doc._editedBy;
-			}
-
-			/** resolve the relation to get user attributes */
-			if (currentEditorId) {
-				const currentEditor = await api.collection('users').findById({
-					id: currentEditorId
-				});
-				doc._editedBy = currentEditor;
-			}
-		}
-
 		return orderObjectKeys(doc) as T;
 	};
 
