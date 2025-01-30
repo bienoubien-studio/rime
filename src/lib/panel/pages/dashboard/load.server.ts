@@ -18,7 +18,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 
 	const entries: DashboardEntry[] = [];
 
-	const requests = rizom.config.collections.map((collection: BuiltCollectionConfig) =>
+	const requests = rizom.config.collections.map((collection) =>
 		user && collection.access.read(user)
 			? api
 					.collection(collection.slug)
@@ -34,7 +34,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 							canCreate: user && collection.access.create(user),
 							link: `/panel/${collection.slug}`,
 							titleSingular: collection.label.singular,
-							title: collection.label.singular,
+							title: collection.label.plural,
 							lastEdited: docs
 						})
 					)
