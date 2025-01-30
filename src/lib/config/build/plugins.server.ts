@@ -36,7 +36,7 @@ export const registerPlugins = ({ plugins, builtConfig }: Args) => {
 			};
 		}
 	}
-	// Register a plugin record making this available :
+	// Register plugins actions making this available :
 	// rizom.plugins.something.do()
 	builtConfig.plugins = Object.fromEntries(
 		plugins!.map((plugin) => [plugin.name, plugin.actions || {}])
