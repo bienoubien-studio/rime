@@ -25,7 +25,7 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			const emptyDoc = collection.emptyDoc();
+			const emptyDoc = collection.blank();
 			const configMap = buildConfigMap(emptyDoc, collection.config.fields);
 			doc = await addDefaultValues({ data: emptyDoc, configMap, adapter: rizom.adapter });
 		} else {
@@ -40,34 +40,6 @@ export function docLoad(slug: CollectionSlug) {
 			const docById = await collection.findById({ id, locale });
 			if (!docById) throw error(404, 'Not found');
 			doc = docById;
-			/** Check for currently editing user */
-			// Scenarios :
-			// - no one editing // set the current editor to user.id
-			// - someone editing // set nothing
-			// - someone editing but take control // set the current editor to user.id
-			let currentEditorId: string | undefined;
-			const someOneEditing = !!doc._editedBy;
-			const takeControl = event.url.searchParams.get('take_control') === '1';
-			if (!someOneEditing || (someOneEditing && takeControl)) {
-				await rizom.adapter.collection.update({
-					id: doc.id,
-					slug,
-					data: {
-						_editedBy: [user!.id]
-					}
-				});
-				currentEditorId = user!.id;
-			} else if (someOneEditing) {
-				currentEditorId = doc._editedBy;
-			}
-
-			/** resolve the relation to get user attributes */
-			if (currentEditorId) {
-				const currentEditor = await api.collection('users').findById({
-					id: currentEditorId
-				});
-				doc._editedBy = currentEditor;
-			}
 
 			/** If update not allowed set doc as readOnly  */
 			if (authorizedRead && !authorizedUpdate) {
