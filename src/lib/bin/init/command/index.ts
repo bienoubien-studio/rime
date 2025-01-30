@@ -210,7 +210,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
-		setAuth(name);
+
 		setHooks();
 		configureVite();
 		copyAssets();
@@ -242,7 +242,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setDatabase();
 		setDrizzle(name);
 		setSchema();
-		setAuth(name);
+
 		setHooks();
 		configureVite();
 		copyAssets();
