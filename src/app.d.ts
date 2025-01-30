@@ -1,5 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 import type { Navigation } from '$lib/panel/navigation.ts';
+import type { Session } from 'better-auth';
 import type { Rizom } from 'rizom';
 import type { LocalAPI, User } from 'rizom/types/index.js';
 
@@ -13,11 +14,11 @@ declare global {
 		// interface Error {}
 
 		interface Locals {
-			session: import('lucia').Session | undefined;
+			session: Session;
 			user: User | undefined;
 			rizom: Rizom;
 			api: LocalAPI;
-			/** Available in panel, routes for sidebar */
+			cache?: any;
 			routes: Navigation;
 			locale: string | undefined;
 		}
