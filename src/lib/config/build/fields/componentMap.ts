@@ -19,7 +19,7 @@ export function buildComponentsMap(
 		if (field.component) {
 			componentsMap[field.type] = {
 				component: field.component,
-				cell: field.cell // This can be undefined
+				cell: field.cell
 			};
 		}
 	}

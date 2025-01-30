@@ -65,9 +65,11 @@
 	.rz-list-header {
 		display: grid;
 		height: var(--rz-size-14);
+		width: calc(100% - var(--rz-size-10));
 		align-items: center;
 		border-bottom: var(--rz-border);
-		padding-left: var(--rz-size-6);
+		margin-left: var(--rz-size-5);
+		padding-left: var(--rz-size-3);
 		padding-right: var(--rz-size-6);
 		font-size: var(--rz-text-sm);
 	}

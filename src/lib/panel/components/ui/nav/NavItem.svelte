@@ -45,9 +45,6 @@
 	</Tooltip.Provider>
 {:else}
 	<NavItemButton icon={RouteIcon} {active} {...rest}>
-		{#if active}
-			<NavItemButtonCaret />
-		{/if}
 		{route.title}
 	</NavItemButton>
 {/if}

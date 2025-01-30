@@ -42,7 +42,10 @@
 	</div>
 
 	<ScrollArea class={gridClass}>
-		<div class:rz-collection-area__grid={collection.isGrid()}>
+		<div
+			class:rz-collection-area__list={!collection.isGrid()}
+			class:rz-collection-area__grid={collection.isGrid()}
+		>
 			{#each collection.docs as doc}
 				{@const checked = collection.selected.includes(doc.id)}
 				{@const active = currentDoc === doc.id}
@@ -69,6 +72,8 @@
 		& :global(.rz-scroll-area--grid) {
 			height: calc(100vh - 4rem);
 		}
+
+		background-color: hsl(var(--rz-ground-7) / 0.5);
 	}
 
 	.rz-collection-area__grid {
@@ -76,5 +81,8 @@
 		grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 		gap: var(--rz-size-6);
 		padding: var(--rz-size-6);
+	}
+	.rz-collection-area__list {
+		padding: 0 var(--rz-size-5);
 	}
 </style>

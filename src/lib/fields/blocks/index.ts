@@ -3,6 +3,7 @@ import type { Dic, PublicBuilder } from 'rizom/types/utility.js';
 import { FieldBuilder, FormFieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
 import Blocks from './component/Blocks.svelte';
+import Cell from './component/Cell.svelte';
 import type { ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
@@ -21,6 +22,9 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 
 	get component() {
 		return Blocks;
+	}
+	get cell() {
+		return Cell;
 	}
 
 	blocks(...blocks: BlocksFieldBlock[]) {

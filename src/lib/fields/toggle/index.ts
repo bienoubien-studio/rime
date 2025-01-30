@@ -2,11 +2,14 @@ import type { FormField } from 'rizom/types';
 import toSnakeCase from 'to-snake-case';
 import { BooleanFieldBuilder } from '../_builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
+import Cell from './component/Cell.svelte';
 
 class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	get component() {
 		return Toggle;
+	}
+	get cell() {
+		return Cell;
 	}
 
 	toSchema() {
@@ -34,8 +37,7 @@ class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	}
 }
 
-export const toggle = (name: string) =>
-	new ToggleFieldBuilder(name, 'toggle') as PublicBuilder<typeof ToggleFieldBuilder>;
+export const toggle = (name: string) => new ToggleFieldBuilder(name, 'toggle');
 
 /////////////////////////////////////////////
 // Type

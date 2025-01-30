@@ -35,7 +35,6 @@
 				<header>
 					<a href={entry.link}>
 						<h2>{entry.title}</h2>
-						<ArrowRight size="13" />
 					</a>
 				</header>
 
@@ -95,7 +94,7 @@
 
 	.rz-dashboard__doc {
 		/* margin-bottom: var(--rz-size-2); */
-		padding: var(--rz-size-4);
+		padding: var(--rz-size-6);
 		border-bottom: var(--rz-border);
 		background-color: hsl(var(--rz-ground-6));
 		border-left: var(--rz-border);
@@ -135,8 +134,7 @@
 	.rz-dashboard__content {
 		display: grid;
 		gap: var(--rz-size-8);
-		padding-top: var(--rz-size-4);
 		max-width: 1024px;
-		@mixin px var(--rz-size-8);
+		padding: var(--rz-size-6) var(--rz-size-10);
 	}
 </style>

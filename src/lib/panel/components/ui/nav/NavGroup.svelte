@@ -41,33 +41,39 @@
 <style type="postcss" global>
 	.rz-nav-group {
 		width: 100%;
-		margin-bottom: var(--rz-size-3);
+		/* margin-bottom: var(--rz-size-3); */
 	}
 	.rz-nav-group--collapsed {
 		margin-bottom: 0;
 	}
 	.rz-nav-group--nav-collapsed {
-		border-top: var(--rz-border);
+		/* border-top: var(--rz-border); */
 		padding-top: var(--rz-size-2);
 		margin-bottom: 0;
 	}
 
 	.rz-nav-group__content {
+		/* --padding: calc(-0.5px + var(--rz-spacing-scale) * 0.65rem); */
 		display: grid;
-		gap: var(--rz-size-1);
+		/* gap: var(--rz-size-4); */
+		padding: 0 var(--rz-size-3);
+		border-bottom: var(--rz-border);
+		background-color: hsl(var(--rz-ground-7));
+	}
+	.rz-nav-group--nav-collapsed .rz-nav-group__content {
+		background-color: transparent;
 	}
 
 	.rz-nav-group__trigger {
-		font-size: var(--rz-text-2xs);
-		@mixin color ground-2;
-		margin-bottom: var(--rz-size-2);
-		margin-left: var(--rz-size-2);
+		padding: var(--rz-size-4);
 		display: flex;
+		width: 100%;
 		gap: var(--rz-size-2);
 		align-items: center;
 		justify-content: space-between;
 		text-align: left;
-		text-transform: uppercase;
-		letter-spacing: 0.0625rem;
+		/* text-transform: uppercase; */
+		/* letter-spacing: 0.0625rem; */
+		border-bottom: var(--rz-border);
 	}
 </style>

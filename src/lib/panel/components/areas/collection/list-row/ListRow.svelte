@@ -7,6 +7,8 @@
 	import { getContext } from 'svelte';
 	import type { GenericDoc, FieldsType } from 'rizom/types';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import { Pencil } from 'lucide-svelte';
 
 	type Props = {
 		checked: boolean;
@@ -48,6 +50,9 @@
 					<UploadThumbCell url={doc[getPanelThumbnailKey(collection.config)]} />
 				{/if}
 				<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
+				<!-- {#if doc._live}
+					<Button class="rz-button-live" icon={Pencil} href={doc._live} variant="text"></Button>
+				{/if} -->
 			</a>
 		{/if}
 	</div>
@@ -66,6 +71,7 @@
 				{/if}
 			</div>
 		{/each}
+
 		<div class="rz-list-row__cell">
 			{formattedDate}
 		</div>
@@ -75,30 +81,33 @@
 <style type="postcss" global>
 	.rz-list-row {
 		display: grid;
-		height: var(--rz-size-16);
+		height: var(--rz-size-14);
 		align-items: center;
 		border-bottom: 1px solid hsl(var(--rz-ground-4) / 1);
-		font-size: var(--rz-text-sm);
-		@mixin font-normal;
+		/* font-size: var(--rz-text-sm); */
+		/* @mixin font-normal; */
 	}
 
 	.rz-list-row--active {
-		background-color: hsl(var(--rz-ground-5));
+		.rz-list-row__link {
+			text-decoration: underline;
+		}
+		/* background-color: hsl(var(--rz-ground-6)); */
 	}
 
 	.rz-list-row__main {
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
-		padding-left: var(--rz-size-6);
-		padding-right: var(--rz-size-6);
+		padding-left: var(--rz-size-3);
+		padding-right: var(--rz-size-3);
 	}
 
 	.rz-list-row__link {
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-2);
-		@mixin font-medium;
+		/* @mixin font-medium; */
 	}
 
 	.rz-list-row__title {
@@ -107,7 +116,7 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		word-break: break-all;
-		@mixin font-semibold;
+		/* @mixin font-semibold; */
 	}
 
 	.rz-list-row__cell {

@@ -4,7 +4,8 @@
 	import UserButton from './UserButton.svelte';
 	import type { Route } from 'rizom/types/panel';
 
-	import { PanelsTopLeft } from 'lucide-svelte';
+	import { Home, PanelsTopLeft } from 'lucide-svelte';
+	import Logo from './logo/Logo.svelte';
 
 	type Props = { isCollapsed: boolean; routes: Record<string, Route[]> };
 	const { isCollapsed, routes: routesGroups }: Props = $props();
@@ -18,15 +19,18 @@
 
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
 	<div class="rz-nav__content">
-		<!-- <div class="rz-nav__header">
-			<a href="/panel">
-				<Logo />
-			</a>
-		</div> -->
+		<div class="rz-nav__header">
+			{#if isCollapsed}
+				<NavItem href="/panel" isCollapsed={true} route={dashBoardRoute} />
+			{:else}
+				<a href="/panel">
+					<Logo />
+				</a>
+			{/if}
+		</div>
 
 		<div class="rz-nav__body">
 			<nav class="rz-nav__nav">
-				<NavItem href={dashBoardRoute.path} {isCollapsed} route={dashBoardRoute} />
 				{#each Object.entries(routesGroups) as [groupName, routes]}
 					{#if groupName !== 'none'}
 						<NavGroup name={groupName} navCollapsed={isCollapsed}>
@@ -37,7 +41,9 @@
 					{/if}
 				{/each}
 				{#each routesGroups.none as route (route.path)}
-					<NavItem href={route.path} {isCollapsed} {route} />
+					<div class="rz-nav__group-none">
+						<NavItem href={route.path} {isCollapsed} {route} />
+					</div>
 				{/each}
 			</nav>
 
@@ -50,7 +56,6 @@
 
 <style type="postcss">
 	.rz-nav {
-		background-color: hsl(var(--rz-ground-5) / 0.7);
 		position: fixed;
 		bottom: 0;
 		left: 0;
@@ -67,34 +72,37 @@
 		flex-direction: column;
 		padding-top: var(--rz-size-2);
 	}
-	/* .rz-nav__header {
+	.rz-nav__header {
 		display: flex;
-		margin-top: 2px;
-		height: var(--rz-size-16);
+		/* margin-top: 2px; */
+		height: var(--rz-size-14);
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: space-between;
 		padding-right: var(--rz-size-4);
-		padding-left: var(--rz-size-6);
-	} */
+		padding-left: var(--rz-size-4);
+		border-bottom: var(--rz-border);
+		a {
+			height: 100%;
+			padding: var(--rz-size-5) 0;
+		}
+	}
 	.rz-nav__body {
 		display: flex;
 		height: 100%;
 		flex-direction: column;
 		justify-content: space-between;
-		gap: var(--rz-size-4);
-		padding-top: var(--rz-size-1);
-
-		/* @media (min-width: 1024px) {
-			padding-top: var(--rz-size-5);
-		} */
 	}
-
-	.rz-nav__nav {
+	.rz-nav__group-none {
+		padding: var(--rz-size-3);
 		display: flex;
 		flex-direction: column;
 		gap: var(--rz-size-2);
-		@mixin px var(--rz-size-4);
+	}
+	.rz-nav__nav {
+		display: flex;
+		flex-direction: column;
+		/* gap: var(--rz-size-2); */
 	}
 	.rz-nav--collapsed .rz-nav__nav {
 		align-items: center;

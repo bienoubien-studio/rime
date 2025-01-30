@@ -147,7 +147,7 @@
 		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
 
 		<div class="rz-document__fields">
-			{#if config.type === 'collection' && config.upload === 'true'}
+			{#if config.type === 'collection' && isUploadConfig(config)}
 				<DocUpload.Header accept={config.accept} create={operation === 'create'} {form} />
 			{/if}
 			{#if config.type === 'collection' && isAuthConfig(config) && operation === 'create'}
@@ -172,6 +172,7 @@
 
 <style type="postcss">
 	.rz-document {
+		background-color: hsl(var(--rz-ground-7));
 		min-height: 100vh;
 		& :global(.rz-scroll-area) {
 			height: 100vh;

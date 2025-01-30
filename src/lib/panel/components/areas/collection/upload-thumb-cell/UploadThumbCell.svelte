@@ -22,13 +22,13 @@
 	.rz-upload-preview-cell {
 		background: hsl(var(--rz-ground-4));
 		display: flex;
-		width: var(--rz-size-12);
-		height: var(--rz-size-12);
+		width: var(--rz-size-9);
+		height: var(--rz-size-9);
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		border-radius: var(--rz-radius-lg);
+		border-radius: var(--rz-radius-sm);
 	}
 
 	.rz-upload-preview-cell__image {

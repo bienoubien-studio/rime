@@ -7,7 +7,11 @@
 	import { getPanelThumbnailKey } from '$lib/config/utils';
 	import { toast } from 'svelte-sonner';
 	import { FileArchive, FileAudio, FileVideo } from 'lucide-svelte';
-	import type { UploadCollectionConfig } from 'rizom/types/config';
+	import type {
+		CompiledCollectionConfig,
+		CompiledUploadCollectionConfig,
+		UploadCollectionConfig
+	} from 'rizom/types/config';
 	import * as util from 'rizom/utils/file.js';
 
 	type Props = {
@@ -23,7 +27,7 @@
 
 	const hasAccept = 'accept' in form.config;
 	const allowedMimeTypes = hasAccept ? form.config.accept : [];
-	const panelThumbnailKey = getPanelThumbnailKey(form.config as UploadCollectionConfig);
+	const panelThumbnailKey = getPanelThumbnailKey(form.config as CompiledUploadCollectionConfig);
 
 	const deleteFile = () => {
 		// console.log('delete');
@@ -132,7 +136,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		border-right: var(--border);
+		/* border-right: var(--rz-border); */
 		@mixin radius-top md;
 	}
 
@@ -153,7 +157,8 @@
 	.rz-doc-upload-header__prewiew-grid {
 		width: 100%;
 		height: 100%;
-		--dark: #eaeaea;
+		--dark: hsl(var(--rz-ground-6) / 1);
+		--light: hsl(var(--rz-ground-4) / 1);
 		--size: 16px;
 		--half-size: calc(var(--size) / 2);
 		background-size: var(--size) var(--size);
@@ -173,8 +178,22 @@
 				var(--dark) 75%,
 				var(--dark)
 			),
-			linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff),
-			linear-gradient(45deg, #fff 25%, transparent 25%, transparent 75%, #fff 75%, #fff);
+			linear-gradient(
+				45deg,
+				var(--light) 25%,
+				transparent 25%,
+				transparent 75%,
+				var(--light) 75%,
+				var(--light)
+			),
+			linear-gradient(
+				45deg,
+				var(--light) 25%,
+				transparent 25%,
+				transparent 75%,
+				var(--light) 75%,
+				var(--light)
+			);
 		background-position:
 			0 0,
 			var(--half-size) var(--half-size),
