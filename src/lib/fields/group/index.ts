@@ -3,7 +3,7 @@ import { FieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
 import type { PublicBuilder } from 'rizom/types/utility.js';
 
-class GroupFieldBuilder extends FieldBuilder<GroupField> {
+class GroupFieldBuilder extends FieldBuilder<GroupField<'compiled'>> {
 	//
 	constructor(label?: string) {
 		super('group');
@@ -17,8 +17,7 @@ class GroupFieldBuilder extends FieldBuilder<GroupField> {
 	}
 }
 
-export const group = (label?: string) =>
-	new GroupFieldBuilder(label) as PublicBuilder<typeof GroupFieldBuilder>;
+export const group = (label?: string) => new GroupFieldBuilder(label);
 
 /////////////////////////////////////////////
 // Types

@@ -6,6 +6,7 @@
 	import RenderFields from './RenderFields.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
 	import type { WithoutBuilders } from 'rizom/types/utility';
+	import Group from './Group.svelte';
 
 	type Props = {
 		path?: string;
@@ -52,10 +53,7 @@
 			{:else if isPresentative(field)}
 				<div class="rz-render-fields__field rz-render-fields__field--full">
 					{#if field.type === 'group'}
-						{#if field.label}
-							<h2 class="rz-render-fields__group-title">{field.label}</h2>
-						{/if}
-						<RenderFields {path} fields={field.fields} framed={true} {form} />
+						<Group config={field} {path} {form} />
 					{:else if field.type === 'tabs'}
 						{@const Tabs = config.raw.blueprints.tabs.component}
 						<Tabs config={field} {path} {form} />
@@ -88,9 +86,18 @@
 	}
 
 	.rz-render-fields--framed {
-		border: var(--rz-border);
-		padding: var(--rz-size-6);
-		border-radius: var(--rz-radius-lg);
+		position: relative;
+		padding-bottom: var(--rz-size-12);
+		padding-top: var(--rz-size-6);
+
+		&::after {
+			content: '';
+			border-bottom: var(--rz-border);
+			position: absolute;
+			bottom: 0;
+			left: calc(-1 * var(--rz-size-8));
+			right: calc(-1 * var(--rz-size-8));
+		}
 	}
 
 	.rz-render-fields__field--full,
@@ -100,11 +107,6 @@
 		grid-column: span 12 / span 12;
 	}
 
-	.rz-render-fields__group-title {
-		margin-bottom: var(--rz-size-4);
-		font-size: var(--rz-text-xl);
-		@mixin font-medium;
-	}
 	@container (min-width: 700px) {
 		.rz-render-fields__field--1\/3 {
 			grid-column: span 4 / span 4;
