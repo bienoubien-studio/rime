@@ -1,15 +1,15 @@
-import { makeEmptyDoc } from '../../utils/doc.js';
+import { createBlankDocument } from '../../utils/doc.js';
 import { find } from '../global/find.js';
 import { update } from '../global/update.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { BuiltGlobalConfig } from 'rizom/types/config.js';
+import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPIGlobalInterface, LocalAPI } from 'rizom/types/api.js';
 import type { FormErrors } from 'rizom/types/panel.js';
 
 type Args = {
-	config: BuiltGlobalConfig;
+	config: CompiledGlobalConfig;
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
@@ -21,7 +21,7 @@ class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGl
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
-	config: BuiltGlobalConfig;
+	config: CompiledGlobalConfig;
 
 	constructor({ config, adapter, defaultLocale, event, api }: Args) {
 		this.config = config;
@@ -37,8 +37,8 @@ class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGl
 		return locale || this.#event?.locals.locale || this.defaultLocale;
 	}
 
-	emptyDoc(): Doc {
-		return makeEmptyDoc(this.config) as Doc;
+	blank(): Doc {
+		return createBlankDocument(this.config) as Doc;
 	}
 
 	find(args?: { locale?: string; depth?: number }): Promise<Doc> {

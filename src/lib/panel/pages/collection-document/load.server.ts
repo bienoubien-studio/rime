@@ -25,9 +25,9 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			const emptyDoc = collection.blank();
-			const configMap = buildConfigMap(emptyDoc, collection.config.fields);
-			doc = await addDefaultValues({ data: emptyDoc, configMap, adapter: rizom.adapter });
+			const blankDocument = collection.blank();
+			const configMap = buildConfigMap(blankDocument, collection.config.fields);
+			doc = await addDefaultValues({ data: blankDocument, configMap, adapter: rizom.adapter });
 		} else {
 			/** Check for authorizations */
 			const authorizedRead = collection.config.access.read(user, { id });

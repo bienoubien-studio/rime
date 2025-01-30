@@ -41,7 +41,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 	defaultLocale: string | undefined;
 	isAuth: boolean;
 
-	emptyDoc(): Doc;
+	blank(): Doc;
 	create(args: {
 		data: Partial<Doc>;
 		locale?: string;
@@ -76,7 +76,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 export interface LocalAPIGlobalInterface<Doc extends GenericDoc = GenericDoc> {
 	readonly config: CompiledGlobalConfig;
 	defaultLocale: string | undefined;
-	emptyDoc(): Doc;
+	blank(): Doc;
 	find(args?: { locale?: string; depth?: number }): Promise<Doc>;
 	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc | { errors: FormErrors }>;
 }

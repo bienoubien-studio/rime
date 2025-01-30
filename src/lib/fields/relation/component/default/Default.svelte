@@ -5,7 +5,7 @@
 	import Document from 'rizom/panel/components/areas/document/Document.svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { makeEmptyDoc } from '$lib/utils/doc.js';
+	import { createBlankDocument } from '$lib/utils/doc.js';
 	import { dataError } from '$lib/panel/utility/dataError.js';
 	import { dataFocused } from '$lib/panel/utility/dataFocused.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
@@ -137,7 +137,7 @@
 		<Sheet.Trigger />
 		<Sheet.Content side="right" showCloseButton={false}>
 			<Document
-				doc={makeEmptyDoc(relationConfig)}
+				doc={createBlankDocument(relationConfig)}
 				readOnly={false}
 				onClose={() => (create = false)}
 				operation="create"
@@ -178,7 +178,7 @@
 			}
 
 			:global(.rz-command-item) {
-				height: var(--rz-size-10);
+				height: var(--rz-size-11);
 			}
 		}
 
@@ -195,7 +195,7 @@
 			flex-wrap: wrap;
 			align-items: center;
 			gap: var(--rz-size-1);
-			min-height: var(--rz-size-10);
+			min-height: var(--rz-size-11);
 			padding: var(--rz-size-2) var(--rz-size-3);
 			transition: all 0.2s ease;
 		}

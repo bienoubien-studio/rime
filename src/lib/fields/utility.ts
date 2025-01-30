@@ -178,22 +178,3 @@ export function toFormFields(prev: any[], curr: any) {
 	prev.push(curr);
 	return prev;
 }
-
-export const emptyFieldsFromFieldConfig = <T extends AnyFormField>(arr: T[]): Dic => {
-	return Object.assign(
-		{},
-		...arr.map((config) => {
-			let emptyValue;
-			if (isBlocksField(config) || isRelationField(config) || isSelectField(config)) {
-				emptyValue = [];
-			} else if (isLinkField(config)) {
-				emptyValue = { label: '', type: 'url', link: null, target: '_self' };
-			} else {
-				emptyValue = null;
-			}
-			return {
-				[config.name]: emptyValue
-			};
-		})
-	);
-};

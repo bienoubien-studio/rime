@@ -6,7 +6,7 @@
 	import Doc from 'rizom/panel/components/areas/document/Document.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { useSortable } from '$lib/panel/utility/Sortable.js';
-	import { makeEmptyDoc } from '$lib/utils/doc.js';
+	import { createBlankDocument } from '$lib/utils/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
 	import './upload.css';
@@ -149,7 +149,7 @@
 	<Sheet.Trigger />
 	<Sheet.Content showCloseButton={false} class="rz-relation-upload__sheet" side="right">
 		<Doc
-			doc={makeEmptyDoc(relationConfig)}
+			doc={createBlankDocument(relationConfig)}
 			readOnly={false}
 			onClose={() => (create = false)}
 			operation="create"

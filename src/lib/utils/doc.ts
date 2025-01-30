@@ -80,28 +80,28 @@ export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 	return output;
 };
 
-export const makeEmptyDoc = <T extends GenericDoc = GenericDoc>(
+export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollectionConfig | CompiledGlobalConfig
 ): T => {
-	function toEmptyDoc(prev: Dic, curr: any) {
+	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
 		if (curr.type === 'tabs') {
-			return curr.tabs.reduce(toEmptyDoc, prev);
+			return curr.tabs.reduce(reduceFieldsToBlankDocument, prev);
 		} else if (curr.type === 'group') {
-			return curr.fields.reduce(toEmptyDoc, prev);
+			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
 		} else if (curr.type === 'link') {
 			const emptyLink: Link = { label: '', link: '', target: '_self', type: 'url' };
 			prev[curr.name] = emptyLink;
 		} else if (['blocks', 'relation', 'select'].includes(curr.type)) {
 			prev[curr.name] = [];
 		} else if ('fields' in curr) {
-			return curr.fields.reduce(toEmptyDoc, prev);
+			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
 		} else {
 			prev[curr.name] = null;
 		}
 		return prev;
 	}
 
-	const fields: GenericDoc['fields'] = config.fields.reduce(toEmptyDoc, {});
+	const fields: GenericDoc['fields'] = config.fields.reduce(reduceFieldsToBlankDocument, {});
 	const empty = {
 		...fields,
 		_type: config.slug,

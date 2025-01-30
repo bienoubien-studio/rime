@@ -58,8 +58,8 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	}
 
 	/** Merge data with emptydoc so all required fields will be present in validate */
-	const dataWithEmptyFields = deepmerge<GenericDoc>(
-		makeEmptyDoc({
+	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(
+		createBlankDocument({
 			...config,
 			fields
 		}),
@@ -67,15 +67,14 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	);
 
 	if (file) {
-		dataWithEmptyFields.file = file;
+		dataMergedWithBlankDocument.file = file;
 	}
 
-	// logger.info(flatData);
 	/** Build map between path in data and coresponding config */
-	const configMap = buildConfigMap(dataWithEmptyFields, fields);
+	const configMap = buildConfigMap(dataMergedWithBlankDocument, fields);
 
 	const dataWithDefaultValues = await addDefaultValues({
-		data: dataWithEmptyFields,
+		data: dataMergedWithBlankDocument,
 		configMap,
 		adapter
 	});

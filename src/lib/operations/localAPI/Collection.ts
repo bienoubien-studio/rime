@@ -1,6 +1,6 @@
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
 import { isAuthConfig } from '../../config/utils.js';
-import { makeEmptyDoc } from '../../utils/doc.js';
+import { createBlankDocument } from '../../utils/doc.js';
 import { isFormField } from '../../utils/field.js';
 import { create } from '../collection/create.js';
 import { deleteById } from '../collection/deleteById.js';
@@ -48,17 +48,17 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 		return locale || this.#event?.locals.locale || this.defaultLocale;
 	}
 
-	emptyDoc(): Doc {
+	blank(): Doc {
 		if (isAuthConfig(this.config)) {
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
 				.filter((field: AnyFormField) => !privateFieldNames.includes(field.name));
-			return makeEmptyDoc({
+			return createBlankDocument({
 				...this.config,
 				fields: [...withoutPrivateFields]
 			}) as Doc;
 		}
-		return makeEmptyDoc(this.config) as Doc;
+		return createBlankDocument(this.config) as Doc;
 	}
 
 	get isAuth() {
