@@ -4,7 +4,7 @@ import { addDefaultValues } from '../preprocess/fill/index.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server';
 import { extractRelations } from '../preprocess/relations/extract.server';
-import { makeEmptyDoc, safeFlattenDoc } from '../../utils/doc.js';
+import { createBlankDocument, safeFlattenDoc } from '../../utils/doc.js';
 import { RizomAccessError } from '../../errors/access.server.js';
 import { isUploadConfig } from '../../config/utils.js';
 import rizom from '$lib/rizom.server.js';
