@@ -126,44 +126,6 @@ export const richTextJSONToText = (value: string): string => {
 	return textValue;
 };
 
-// export const renderRichText = (value: string): string => {
-
-// };
-
-// export const isEmptyValue = (value: any, type: FieldsType) => {
-// 	if (value === null || value === undefined) return true;
-// 	switch (type) {
-// 		case 'text':
-// 			return value === '';
-// 		case 'slug':
-// 			return value === '';
-// 		case 'blocks':
-// 			return Array.isArray(value) && value.length === 0;
-// 		case 'link':
-// 			return !value.link || !value.label;
-// 		case 'select':
-// 			return Array.isArray(value) && value.length === 0;
-// 		case 'relation':
-// 			return Array.isArray(value) && value.length === 0;
-// 		case 'richText': {
-// 			const reduceText = (prev: string, curr: any) => {
-// 				if ('text' in curr) {
-// 					prev += curr.text;
-// 				} else if ('content' in curr) {
-// 					return curr.content.reduce(reduceText, prev);
-// 				}
-// 				return prev;
-// 			};
-// 			return (
-// 				isObjectLiteral(value) &&
-// 				'content' in value &&
-// 				Array.isArray(value.content) &&
-// 				value.content.reduce(reduceText, '') === ''
-// 			);
-// 		}
-// 	}
-// };
-
 export function toFormFields(prev: any[], curr: any) {
 	if (curr.type === 'tabs') {
 		return curr.tabs.reduce(toFormFields, prev);
@@ -184,6 +146,8 @@ export function toFormFields(prev: any[], curr: any) {
 	return prev;
 }
 
+// @TODO
+// add a toBlankValue inside each fields config
 export const emptyFieldsFromFieldConfig = <T extends AnyFormField>(arr: T[]): Dic => {
 	return Object.assign(
 		{},
