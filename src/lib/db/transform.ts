@@ -73,7 +73,7 @@ export const databaseTransformInterface = ({
 			docLocalAPI = api.global(slug);
 		}
 		const config = docLocalAPI.config;
-		const empty = docLocalAPI.blank();
+		const blankDocument = docLocalAPI.blank();
 
 		/** Add localized fields */
 		if (locale && tableNameLocales in tables) {
@@ -216,7 +216,7 @@ export const databaseTransformInterface = ({
 		});
 
 		doc = unflatten(flatDoc);
-		doc = deepmerge(empty, doc);
+		doc = deepmerge(blankDocument, doc);
 
 		if (locale) {
 			doc.locale = locale;
