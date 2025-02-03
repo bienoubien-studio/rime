@@ -7,8 +7,13 @@ import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
 import { PACKAGE_NAME } from 'rizom/constant';
 import type { FieldsComponents } from 'rizom/types/panel';
 import type { FieldsType } from 'rizom/types';
+import { RizomFormError } from 'rizom/errors/index.js';
 
 let hasEnv = false;
+const functionRegistry = new Map<string, string>();
+let functionCounter = 0;
+const importRegistry = new Map<string, string>();
+let importCounter = 0;
 
 // Determines what should be included in browser config
 function shouldIncludeInBrowser(key: string, value: any): boolean {
@@ -45,31 +50,77 @@ function shouldIncludeInBrowser(key: string, value: any): boolean {
 
 // Handles import paths for components and modules
 function createImportStatement(path: string): string {
+	let importPath;
+
 	// Handle Svelte components from src
 	if (path.endsWith('.svelte') && !path.includes('node_modules')) {
 		const componentPath = path.split('src/').pop() ?? '';
-		return `await import('../${componentPath}').then(m => m.default)`;
-	}
-	if (path.match(/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/)) {
+		importPath = `'../${componentPath}'`;
+	} else if (path.match(/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/)) {
 		const modulePath = path.split('node_modules/').pop() ?? '';
-		return modulePath.replace(
+		importPath = modulePath.replace(
 			/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/,
-			`await import('${PACKAGE_NAME}/fields/components').then(m => m.$2)`
+			`'${PACKAGE_NAME}/fields/components'`
 		);
 	}
 	// Handle node_modules imports
-	if (path.includes('node_modules')) {
+	else if (path.includes('node_modules')) {
 		const modulePath = path.split('node_modules/').pop() ?? '';
-		return `await import('${modulePath
-			.replace('dist/', '')
-			.replace('.svelte', '')}').then(m => m.default)`;
+		importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
+	} else {
+		importPath = path;
 	}
 
-	return path;
+	return registerImport(importPath);
 }
 
 function cleanViteImports(str: string) {
-	return str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
+	// Replace RizomFormError.CONSTANT with it's value
+	str = str.replace(/__vite_ssr_import_\d+__\.RizomFormError\.([A-Z_]+)/g, (_, key) =>
+		JSON.stringify(RizomFormError[key as keyof typeof RizomFormError])
+	);
+	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
+	return str;
+}
+
+function registerImport(importPath: string): string {
+	// Check if already registered
+	for (const [key, value] of importRegistry.entries()) {
+		if (value === importPath) {
+			return key;
+		}
+	}
+
+	const importName = `import_${importCounter++}`;
+	importRegistry.set(importName, importPath);
+	return importName;
+}
+
+function registerFunction(func: Function, key: string = ''): string {
+	let funcString = func.toString();
+
+	// Handle environment variables
+	const processEnvReg = /process\.env\.PUBLIC_([A-Z_]+)/gm;
+	if (processEnvReg.test(funcString)) {
+		hasEnv = true;
+		funcString = funcString.replace(processEnvReg, (_: string, p1: string) => `env.PUBLIC_${p1}`);
+	}
+
+	// Clean vite imports
+	funcString = cleanViteImports(funcString);
+
+	// Check if we already have this function
+	for (const [existingKey, value] of functionRegistry.entries()) {
+		if (value === funcString) {
+			return existingKey;
+		}
+	}
+
+	// Create prefix based on key or default to 'fn'
+	const prefix = key ? `${key}Fn` : 'fn';
+	const functionName = `${prefix}_${functionCounter++}`;
+	functionRegistry.set(functionName, funcString);
+	return functionName;
 }
 
 // Parse different value types
@@ -81,18 +132,7 @@ function parseValue(key: string, value: any): string | boolean | number {
 		case 'function': {
 			const filename = (value as any).filename || getSymbolFilename(value);
 			if (filename) return createImportStatement(filename);
-
-			let funcString = value.toString();
-			// Handle environment variables
-			const processEnvReg = /process\.env\.PUBLIC_([A-Z_]+)/gm;
-			if (processEnvReg.test(funcString)) {
-				hasEnv = true;
-				funcString = funcString.replace(
-					processEnvReg,
-					(_: string, p1: string) => `env.PUBLIC_${p1}`
-				);
-			}
-			return cleanViteImports(funcString);
+			return registerFunction(value, key);
 		}
 
 		case 'object': {
@@ -128,12 +168,12 @@ function parseValue(key: string, value: any): string | boolean | number {
 	}
 }
 
-type BuiltConfigWithBluePrints = CompiledConfig & {
+type CompiledConfigWithBluePrints = CompiledConfig & {
 	blueprints: Record<FieldsType, FieldsComponents>;
 };
 
 // Main build function
-const generateBrowserConfig = (config: BuiltConfigWithBluePrints) => {
+const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
 	const content = buildConfigString(config);
 
 	if (cache.get('config.browser') !== content) {
@@ -145,11 +185,19 @@ const generateBrowserConfig = (config: BuiltConfigWithBluePrints) => {
 };
 
 // Build the final config content
-export function buildConfigString(config: BuiltConfig) {
+export function buildConfigString(config: CompiledConfigWithBluePrints) {
 	const configString = Object.entries(config)
 		.filter(([key, value]) => shouldIncludeInBrowser(key, value))
 		.map(([key, value]) => `${key}: ${parseValue(key, value)}`)
 		.join(',');
+
+	const functionDefinitions = Array.from(functionRegistry.entries())
+		.map(([name, func]) => `const ${name} = ${func};`)
+		.join('\n');
+
+	const importDefinitions = Array.from(importRegistry.entries())
+		.map(([name, path]) => `import ${name} from ${path};`)
+		.join('\n');
 
 	const packageName = 'rizom';
 	const imports = [
@@ -161,6 +209,9 @@ export function buildConfigString(config: BuiltConfig) {
 		.join('\n');
 
 	return `${imports}
+${importDefinitions}
+
+${functionDefinitions}
 
 /**
  * @type {import('${packageName}').BrowserConfig}
