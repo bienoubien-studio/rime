@@ -56,9 +56,12 @@
 		/* --padding: calc(-0.5px + var(--rz-spacing-scale) * 0.65rem); */
 		display: grid;
 		/* gap: var(--rz-size-4); */
-		padding: 0 var(--rz-size-3);
+		padding: 0 var(--rz-size-7);
 		border-bottom: var(--rz-border);
 		background-color: hsl(var(--rz-ground-7));
+		@media (prefers-color-scheme: light) {
+			background-color: hsl(var(--rz-ground-6));
+		}
 	}
 	.rz-nav-group--nav-collapsed .rz-nav-group__content {
 		background-color: transparent;
@@ -70,6 +73,7 @@
 		width: 100%;
 		gap: var(--rz-size-2);
 		align-items: center;
+		text-transform: capitalize;
 		justify-content: space-between;
 		text-align: left;
 		/* text-transform: uppercase; */

@@ -4,7 +4,7 @@ import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
-import { RizomAccessError } from '../../errors/access.server.js';
+
 import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server';
 import type { Adapter } from 'rizom/types/adapter.js';
@@ -12,10 +12,9 @@ import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
-import { RizomHookError } from 'rizom/errors/hook.server.js';
 import type { Dic } from 'rizom/types/utility.js';
-
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
+import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -42,14 +41,14 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	if (event) {
 		const authorized = config.access.update(event.locals.user, { id });
 		if (!authorized) {
-			throw new RizomAccessError('- trying to update ' + config.slug);
+			throw new RizomError(RizomError.UNAUTHORIZED);
 		}
 	}
 
 	const originalDoc = await api.collection(config.slug).findById({ id, locale });
 
 	if (!originalDoc) {
-		return error(404);
+		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
 	/** Flatten data once for all */
@@ -76,7 +75,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	if (errors) {
-		return { errors };
+		throw new RizomFormError(errors);
 	} else {
 		data = validData as T;
 		flatData = validFlatData;
@@ -102,7 +101,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 				event = args.event;
 			} catch (err: any) {
 				console.log(err);
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}
@@ -178,75 +177,10 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 		});
 	}
 
-	// const existingRelations = await adapter.relations.getAll({
-	// 	parentSlug: config.slug,
-	// 	parentId: id,
-	// 	locale
-	// });
-
-	// // Group existing relations by path
-	// const existingByPath = existingRelations.reduce(
-	// 	(acc, rel) => {
-	// 		if (!acc[rel.path]) acc[rel.path] = [];
-	// 		acc[rel.path].push(rel);
-	// 		return acc;
-	// 	},
-	// 	{} as Record<string, Relation[]>
-	// );
-
-	// // Group new relations by path
-	// const newRelationsByPath = relations.reduce(
-	// 	(acc, rel) => {
-	// 		if (!acc[rel.path]) acc[rel.path] = [];
-	// 		acc[rel.path].push(rel);
-	// 		return acc;
-	// 	},
-	// 	{} as Record<string, Relation[]>
-	// );
-
-	// // Relations to delete
-	// const relationsToDelete = existingRelations.filter((rel) => {
-	// 	// If relation is localized and doesn't match current locale, keep it
-	// 	if (rel.locale && rel.locale !== locale) {
-	// 		return false;
-	// 	}
-
-	// 	return (
-	// 		emptyPaths.includes(rel.path) ||
-	// 		deletedBlocks.some((block) => rel.path.startsWith(`${block.path}.${block.position}`)) ||
-	// 		(newRelationsByPath[rel.path] &&
-	// 			!newRelationsByPath[rel.path].some((newRel) => {
-	// 				// Get the correct ID field based on relationTo
-	// 				const existingIdField = `${newRel.relationTo}Id`;
-	// 				return rel[existingIdField as keyof typeof rel] === newRel.relationId;
-	// 			}))
-	// 	);
-	// });
-
-	// console.log('Existing relations:', existingRelations);
-	// console.debug('New relations by path:', newRelationsByPath);
-	// console.debug('Relations to delete:', relationsToDelete);
-
-	// // Delete relations
-	// if (relationsToDelete.length > 0) {
-	// 	await adapter.relations.deleteFromPaths({
-	// 		parentSlug: config.slug,
-	// 		parentId: id,
-	// 		paths: [...new Set(relationsToDelete.map((rel) => rel.path))]
-	// 	});
-	// }
-
-	/** Update Relations */
-	// await adapter.relations.updateOrCreate({
-	// 	parentSlug: config.slug,
-	// 	parentId: id,
-	// 	relations
-	// });
-
 	const rawDoc = (await adapter.collection.findById({ slug: config.slug, id, locale })) as T;
 
 	if (!rawDoc) {
-		throw new Error('Database error');
+		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
 	const doc = await adapter.transform.doc<T>({

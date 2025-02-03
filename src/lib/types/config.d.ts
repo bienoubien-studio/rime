@@ -9,6 +9,7 @@ import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { GetRegisterType } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/_builders/field.js';
 import type { FieldsComponents } from './panel.js';
+import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
 
 export type DocumentPrototype = 'collection' | 'global';
 
@@ -55,6 +56,7 @@ export interface Config {
 		access?: (user: User | undefined) => boolean;
 		routes?: Record<string, CustomPanelRoute>;
 		users?: PanelUsersConfig;
+		language?: PanelLanguage;
 	};
 	routes?: Record<string, RouteConfig>;
 	plugins?: ReturnType<Plugin>[];
@@ -68,6 +70,7 @@ export type PanelUsersConfig = {
 	roles?: Option[];
 	group?: string;
 	access?: Access;
+	label?: CollectionConfigLabel;
 	fields?: FieldBuilder<AnyField>[];
 };
 
@@ -92,6 +95,7 @@ export type LocaleConfig = {
 type CollectionConfigLabel = {
 	singular: string;
 	plural: string;
+	gender: 'f' | 'm';
 };
 
 type BaseDocConfig = {
@@ -139,6 +143,7 @@ export type BuiltConfig = {
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
 		access: (user?: User) => boolean;
+		language: 'fr' | 'en';
 	};
 };
 

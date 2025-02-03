@@ -25,9 +25,9 @@ export interface LocalAPI {
 		slug: Slug
 	): LocalAPIGlobalInterface<RegisterGlobal[Slug]>;
 
-	grantAdminPrivilege(): LocalAPI;
 	enforceLocale(locale: string): void;
-	hasGrantedPrivilege: boolean;
+	createFirstPanelUser({ name: string; email: string; password: string }): Promise<void>;
+
 	readonly rizom: Rizom;
 }
 
@@ -62,10 +62,10 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 		limit?: number;
 	}): Promise<Doc[]>;
 
-	findById(args: { id: string; locale?: string; depth?: number }): Promise<Doc | null>;
+	findById(args: { id?: string; locale?: string; depth?: number }): Promise<Doc | null>;
 
 	updateById(args: {
-		id: string;
+		id?: string;
 		data: Partial<Doc>;
 		locale?: string;
 	}): Promise<Doc | { errors: FormErrors }>;

@@ -1,12 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { RizomAccessError } from '../../errors/access.server.js';
-import { RizomNotFoundError } from '../../errors/notFound.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomHookError } from 'rizom/errors/hook.server.js';
 import type { CollectionHookBeforeDeleteArgs } from 'rizom/types/hooks.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type DeleteById = (args: {
 	id: string;
@@ -20,17 +18,16 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-	if (event) {
-		const authorized = config.access.delete(event.locals.user, { id });
-		if (!authorized) {
-			throw new RizomAccessError('- trying to delete ' + config.slug);
-		}
+
+	const authorized = config.access.delete(event.locals.user, { id });
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	let doc = await adapter.collection.findById({ slug: config.slug, id });
 
 	if (!doc) {
-		throw new RizomNotFoundError();
+		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
 	//////////////////////////////////////////////
@@ -50,7 +47,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 				doc = args.doc;
 				event = args.event;
 			} catch (err: any) {
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}
@@ -67,7 +64,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 				doc = args.doc;
 				event = args.event;
 			} catch (err: any) {
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}

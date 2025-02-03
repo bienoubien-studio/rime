@@ -6,7 +6,7 @@ import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Dic } from '../types/utility';
 
-import { RizomError } from '../errors/error.server';
+import { RizomError } from '../errors/index.js';
 import { isObjectLiteral } from '../utils/object';
 import type { OperationQuery } from '../types';
 

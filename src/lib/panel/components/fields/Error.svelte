@@ -1,11 +1,29 @@
 <script lang="ts">
+	import { __t } from 'rizom/panel/i18n';
+	import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+
 	type Props = { error: string | false };
+
 	const { error }: Props = $props();
+
+	function formatError(error: string) {
+		// subfield::error
+		const cleanError = error.split('::').at(-1) ?? '';
+		// If it's a predefined error from RizomError or RizomFormError
+		if (
+			Object.values(RizomError).includes(cleanError) ||
+			Object.values(RizomFormError).includes(cleanError)
+		) {
+			return __t(`errors.${cleanError}`);
+		}
+		// Otherwise return as-is (user defined message)
+		return cleanError;
+	}
 </script>
 
 {#if error}
 	<div class="rz-field-error">
-		{error.split('::').at(-1)}
+		{formatError(error)}
 	</div>
 {/if}
 
@@ -14,7 +32,7 @@
 		@mixin color ground-6;
 		@mixin bg color-error;
 		position: absolute;
-		right: 0;
+		right: var(--rz-fields-padding);
 		top: 0;
 		border-radius: var(--rz-radius-sm);
 		@mixin px var(--rz-size-1);

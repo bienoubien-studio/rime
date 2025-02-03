@@ -1,9 +1,8 @@
 import type { AnyField, BaseField } from 'rizom/types/fields';
 import { FieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
-class GroupFieldBuilder extends FieldBuilder<GroupField<'compiled'>> {
+export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 	//
 	constructor(label?: string) {
 		super('group');
@@ -23,10 +22,16 @@ export const group = (label?: string) => new GroupFieldBuilder(label);
 // Types
 //////////////////////////////////////////////
 
-export type GroupField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = BaseField & {
+export type GroupField = BaseField & {
 	type: 'group';
 	label: string;
-	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
+	fields: FieldBuilder<AnyField>[];
+};
+
+export type RawGroupField = BaseField & {
+	type: 'group';
+	label: string;
+	fields: AnyField[];
 };
 
 /////////////////////////////////////////////
@@ -37,6 +42,6 @@ declare module 'rizom' {
 		group: any;
 	}
 	interface RegisterFields {
-		GroupField: GroupField<'compiled'>; // register the field type
+		GroupField: GroupField;
 	}
 }

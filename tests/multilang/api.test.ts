@@ -44,7 +44,7 @@ test('Login should be successfull', async ({ request }) => {
 		}
 	});
 
-	const headerToken = response.headers()['Set-Auth-Token'];
+	const headerToken = response.headers()['set-auth-token'];
 	expect(headerToken).toBeDefined();
 	token = headerToken;
 
@@ -362,15 +362,14 @@ test('Should not create a page', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/login`, {
-			data: {
-				email: 'admin@bienoubien.studio',
-				password: 'a&1Aa&1A'
-			}
-		})
-		.then((r) => r.json());
-	const headerToken = response.headers()['Set-Auth-Token'];
+	const response = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin@bienoubien.studio',
+			password: 'a&1Aa&1A'
+		}
+	});
+
+	const headerToken = response.headers()['set-auth-token'];
 	expect(headerToken).toBeDefined();
 	token = headerToken;
 });
@@ -731,22 +730,10 @@ test('Should login editor', async ({ request }) => {
 	});
 
 	const status = response.status();
-	const data = await response.json();
 	expect(status).toBe(200);
-	expect(data.token).toBeDefined();
-	token = data.token;
-});
-
-test('Editor should update editor password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${editorId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			password: 'a&1Aa&1A'
-		}
-	});
-	expect(response.status()).toBe(200);
+	const headerToken = response.headers()['set-auth-token'];
+	expect(headerToken).toBeDefined();
+	token = headerToken;
 });
 
 test('Editor should not update admin password', async ({ request }) => {

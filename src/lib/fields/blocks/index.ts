@@ -8,8 +8,7 @@ import type { ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 
-export const blocks = (name: string) =>
-	new BlocksBuilder(name) as PublicBuilder<typeof BlocksBuilder>;
+export const blocks = (name: string) => new BlocksBuilder(name);
 
 export const block = (name: string) => new BlockBuilder(name);
 
@@ -73,20 +72,32 @@ class BlockBuilder {
 /////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
-export type BlocksField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = FormField & {
+export type BlocksField = FormField & {
 	type: 'blocks';
-	blocks: BlocksFieldBlock<Compiled>[];
+	blocks: BlocksFieldBlock[];
 };
 
 export type BlocksFieldBlockRenderTitle = (args: { fields: Dic; position: number }) => string;
 
-export type BlocksFieldBlock<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = {
+export type BlocksFieldBlock = {
 	name: string;
 	label?: string;
 	description?: string;
 	icon?: ComponentType;
 	renderTitle?: BlocksFieldBlockRenderTitle;
-	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
+	fields: FieldBuilder<AnyField>[];
+};
+
+export type RawBlocksField = FormField & {
+	type: 'blocks';
+	blocks: {
+		name: string;
+		label?: string;
+		description?: string;
+		icon?: ComponentType;
+		renderTitle?: BlocksFieldBlockRenderTitle;
+		fields: AnyField[];
+	}[];
 };
 
 /////////////////////////////////////////////
@@ -97,6 +108,6 @@ declare module 'rizom' {
 		blocks: any;
 	}
 	interface RegisterFormFields {
-		BlocksField: BlocksField<'compiled'>;
+		BlocksField: BlocksField | RawBlocksField;
 	}
 }

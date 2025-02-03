@@ -1,11 +1,15 @@
 <script lang="ts">
-	import { isComponentField, isLiveField, isNotHidden, isPresentative } from '$lib/utils/field.js';
+	import {
+		isComponentField,
+		isGroupField,
+		isLiveField,
+		isNotHidden,
+		isPresentative
+	} from '$lib/fields/utility.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
-	import RenderFields from './RenderFields.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
-	import type { WithoutBuilders } from 'rizom/types/utility';
 	import Group from './Group.svelte';
 
 	type Props = {
@@ -36,6 +40,7 @@
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
 	const framedClassModifier = $derived(framed ? 'rz-render-fields--framed' : '');
+
 	const widthClassModifier = (field: AnyFormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
 
@@ -47,12 +52,12 @@
 		{#if !form.isLive || (form.isLive && isLiveField(field))}
 			{#if isComponentField(field)}
 				{@const FieldComponent = field.component}
-				<div class="rz-render-fields__field rz-render-fields__field--full">
+				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<FieldComponent {path} config={field} {form} />
 				</div>
 			{:else if isPresentative(field)}
-				<div class="rz-render-fields__field rz-render-fields__field--full">
-					{#if field.type === 'group'}
+				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
+					{#if isGroupField(field)}
 						<Group config={field} {path} {form} />
 					{:else if field.type === 'tabs'}
 						{@const Tabs = config.raw.blueprints.tabs.component}
@@ -64,7 +69,7 @@
 				</div>
 			{:else if isNotHidden(field)}
 				{@const FieldComponent = fieldComponent(field.type)}
-				<div class="rz-render-fields__field {widthClassModifier(field)}">
+				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
 			{/if}
@@ -83,13 +88,16 @@
 		& > * {
 			position: relative;
 		}
+		&:not(.rz-render-fields--framed) :global(.rz-field-root) {
+			padding-left: var(--rz-fields-padding);
+			padding-right: var(--rz-fields-padding);
+		}
 	}
 
 	.rz-render-fields--framed {
 		position: relative;
-		padding-bottom: var(--rz-size-12);
-		padding-top: var(--rz-size-6);
-
+		/* padding: 0 var(--rz-size-4); */
+		padding: var(--rz-size-6) var(--rz-size-6) var(--rz-size-12) var(--rz-size-6);
 		&::after {
 			content: '';
 			border-bottom: var(--rz-border);

@@ -26,21 +26,33 @@
 </script>
 
 <button onclick={handleClick} type="button" class:open={groupOpen} class="rz-group-field__title">
+	<span><ChevronDown size="14" /></span>
 	{config.label || 'Group'}
-	<span><ChevronDown /></span>
 </button>
 {#if groupOpen}
-	<RenderFields {path} fields={config.fields} framed={true} {form} />
+	<div class="rz-group-field__content">
+		<RenderFields {path} fields={config.fields} framed={true} {form} />
+	</div>
 {/if}
 
-<style>
+<style lang="postcss">
+	.rz-group-field__content {
+		padding-top: var(--rz-size-4);
+		background-color: hsl(var(--rz-ground-6));
+		> :global(.rz-render-fields) {
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
 	.rz-group-field__title {
+		border-top: var(--rz-border);
+		border-bottom: var(--rz-border);
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		margin-bottom: var(--rz-size-4);
+		justify-content: start;
+		gap: var(--rz-size-2);
 		font-size: var(--rz-text-xl);
-		padding: var(--rz-size-6) 0;
+		padding: var(--rz-size-6) var(--rz-size-6);
 		position: relative;
 		width: 100%;
 		text-align: left;
@@ -50,27 +62,8 @@
 			rotate: -180deg;
 		}
 
-		&:first-child {
-			padding: 0 0 var(--rz-size-6) 0;
-		}
-
-		&::after {
-			content: '';
-			/* border-bottom: var(--rz-border); */
-			border-bottom: 1px solid hsl(var(--rz-color-border) / 0.5);
-			position: absolute;
-			bottom: 0;
-			left: calc(-1 * var(--rz-size-8));
-			right: calc(-1 * var(--rz-size-8));
-		}
-		&:not(:first-child)::before {
-			content: '';
-			/* border-bottom: var(--rz-border); */
-			border-top: var(--rz-border);
-			position: absolute;
-			bottom: 0;
-			left: calc(-1 * var(--rz-size-8));
-			right: calc(-1 * var(--rz-size-8));
-		}
+		/* &:first-child {
+			padding-bottom: 0 0 var(--rz-size-6) 0;
+		} */
 	}
 </style>

@@ -13,15 +13,8 @@
 	--rz-ring-opacity: 0;
 	@mixin ring var(--rz-color-ring);
 	@mixin px var(--rz-size-3);
-	/* border: 1px solid hsl(var(--rz-color-border)); */
-	&:first-child {
-		border-top-left-radius: var(--rz-radius-md);
-		border-bottom-left-radius: var(--rz-radius-md);
-	}
-	&:last-child {
-		border-top-right-radius: var(--rz-radius-md);
-		border-bottom-right-radius: var(--rz-radius-md);
-	}
+	@mixin font-semibold;
+	border-right: 1px solid hsl(var(--rz-color-border));
 }
 .rz-tabs-trigger[data-state='active'] {
 	background-color: hsl(var(--rz-ground-7));
@@ -70,14 +63,12 @@
 	@mixin bg color-input;
 	@mixin color ground-2;
 	height: var(--rz-size-11);
+	width: 100%;
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	/* gap: var(--rz-size-1); */
-	border-radius: var(--rz-radius-lg);
-	border: var(--rz-border);
+	/* border-radius: var(--rz-radius-lg); */
+	border-bottom: var(--rz-border);
 	/* padding: var(--rz-size-1); */
-	> * + * {
-		border-left: var(--rz-border);
-	}
 }

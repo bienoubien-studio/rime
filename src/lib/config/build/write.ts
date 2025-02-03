@@ -1,8 +1,6 @@
 import { flatten } from 'flat';
 import cache from '../../bin/generate/cache/index.js';
-import { taskLogger } from 'rizom/utils/logger/index.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
-import { RizomConfigError } from 'rizom/errors/config.server.js';
 import type { Dic } from 'rizom/types/utility.js';
 
 const serializeValue = (value: any): string => {
@@ -48,7 +46,7 @@ const writeMemo = (config: BuiltConfig) => {
 				const serializedValue = serializeValue(value);
 				return `${key}:${serializedValue}`;
 			} catch (err: any) {
-				throw new RizomConfigError(`Unable to parse value for key ${key}: ${err.message}`);
+				throw new Error(`Config error : Unable to parse value for key ${key}: ${err.message}`);
 			}
 		})
 		.join('\n');

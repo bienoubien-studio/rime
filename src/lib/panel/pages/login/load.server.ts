@@ -1,7 +1,7 @@
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
 import type { Dic } from 'rizom/types/utility';
 
-export const loginLoad = async ({ locals }: ServerLoadEvent) => {
+export const loginLoad = async ({ locals, url }: ServerLoadEvent) => {
 	const { session, rizom } = locals;
 	const data: Dic = {
 		forgotPasswordLink: false,

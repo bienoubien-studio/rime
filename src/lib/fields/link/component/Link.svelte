@@ -9,6 +9,7 @@
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
+	import { __t } from 'rizom/panel/i18n';
 
 	const { path, config, form }: LinkFieldProps = $props();
 
@@ -163,7 +164,7 @@
 			{#if hasTarget}
 				<div class="rz-link__target">
 					<Switch checked={targetBlank} onCheckedChange={onTargetChange} id="target" />
-					<Label for="target">New tab</Label>
+					<Label for="target">{__t('fields.new_tab')}</Label>
 				</div>
 			{/if}
 		</div>

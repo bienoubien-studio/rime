@@ -1,12 +1,5 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { RizomInitError } from '../errors/init.server.js';
-import {
-	RizomLoginEmailError,
-	RizomLoginError,
-	RizomLoginLockedError,
-	RizomLoginPasswordError
-} from '../errors/login.server.js';
 import validate from '../utils/validate.js';
 import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
@@ -15,6 +8,7 @@ import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
 import { dev } from '$app/environment';
+import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, trustedOrigins } = args;
@@ -64,11 +58,12 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	// Create the first user at init
 	// Should run only once as /api/init or /init
 	// return a 404 if a user exists
+
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
 
 		if (users.length || !dev) {
-			throw new RizomInitError('Already initialized');
+			throw new RizomError(RizomError.NOT_FOUND);
 		}
 
 		const authUserId = await createAuthUser({
@@ -117,7 +112,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	};
 
 	const createAuthUser = async ({ slug, email, password, name, role }: CreateAuthUserArgs) => {
-		console.log('createAuthUser', role);
 		const { user } = await betterAuth.api.signUpEmail({
 			body: {
 				email,
@@ -222,15 +216,15 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const login = async ({ email, password, slug }: LoginArgs) => {
 		//
 		if (!email) {
-			throw new RizomLoginEmailError('Email is required');
+			throw new RizomFormError({ email: RizomFormError.REQUIRED_FIELD });
 		}
 		if (!password) {
-			throw new RizomLoginPasswordError('Password is required');
+			throw new RizomFormError({ password: RizomFormError.REQUIRED_FIELD });
 		}
 
 		const isValidEmail = validate.email(email);
 		if (typeof isValidEmail === 'string') {
-			throw new RizomLoginEmailError(isValidEmail);
+			throw new RizomFormError({ email: RizomFormError.INVALID_FIELD });
 		}
 
 		const userTable = rizom.adapter.tables[slug];
@@ -243,11 +237,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		if (!user) {
 			// fake check
 			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
-			throw new RizomLoginError('Invalid credentials');
+			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
 		}
 
 		if (user.locked) {
-			const timeLocked = 5; // min
+			const timeLocked = parseInt(process.env.RIZOM_BANNED_TIME_MN || '60'); // min
 			const now = new Date();
 			const diff = (now.getTime() - user.lockedAt.getTime()) / 60000;
 			// unlock user
@@ -262,7 +256,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				user.loginAttempts = 0;
 				user.locked = false;
 			} else {
-				throw new RizomLoginLockedError();
+				throw new RizomError(RizomError.USER_BANNED);
 			}
 		}
 
@@ -288,7 +282,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 					})
 					.where(eq(userTable.id, user.id));
 
-				throw new RizomLoginLockedError();
+				throw new RizomError(RizomError.USER_BANNED);
 			} else {
 				await db
 					.update(userTable)
@@ -297,11 +291,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 					})
 					.where(eq(userTable.id, user.id));
 			}
-			throw new RizomLoginError('Invalid credentials');
+			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
 		}
 
 		if (!signin || signin.status !== 200) {
-			throw new RizomLoginError('Invalid credentials');
+			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
 		}
 
 		await db
@@ -313,7 +307,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			.where(eq(userTable.id, user.id));
 
 		return {
-			token: signin.headers.get('set-auth-token'),
+			token: signin.headers.get('set-auth-token') as string,
 			user: {
 				name: user.name,
 				email: user.email,

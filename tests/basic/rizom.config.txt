@@ -1,11 +1,11 @@
 import { relation, richText, text, toggle } from 'rizom/fields/index.js';
-import type { CollectionConfig, GlobalConfig } from 'rizom';
+import type { CollectionConfig, Config, GlobalConfig } from 'rizom';
 import { access } from '$lib/utils/access/index.js';
 import { Settings2 } from 'lucide-svelte';
 
 const Pages: CollectionConfig = {
 	slug: 'pages',
-	label: { singular: 'Page', plural: 'Pages' },
+	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
 	group: 'content',
 	fields: [text('title').isTitle().required(), relation('parent').to('pages'), richText('intro')],
 	access: {
@@ -31,19 +31,20 @@ const Settings: GlobalConfig = {
 	}
 };
 
-const Medias = {
+const Medias: CollectionConfig = {
 	slug: 'medias',
-	label: { singular: 'Media', plural: 'Medias' },
+	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
 	upload: true,
 	group: 'content',
 	fields: [text('alt')]
 };
 
-const config = {
-    database: 'basic.sqlite',
+const config: Config = {
+	database: 'basic.sqlite',
 	collections: [Pages, Medias],
 	globals: [Settings],
 	panel: {
+		language: 'en',
 		users: {
 			roles: [{ value: 'admin' }, { value: 'editor' }]
 		}

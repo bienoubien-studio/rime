@@ -8,6 +8,7 @@
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import type { User, Route, BrowserConfig } from 'rizom/types';
+	import { registerTranslation } from 'rizom/panel/i18n';
 
 	type Props = {
 		routes: Record<string, Route[]>;

@@ -5,29 +5,25 @@
 	import { Button } from '../../ui/button';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
-	import { PencilRuler, Eye, PanelsTopLeft } from 'lucide-svelte';
-	import { page } from '$app/stores';
+	import { PencilRuler, Eye } from 'lucide-svelte';
 	import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
+	import { __t } from 'rizom/panel/i18n';
 
 	// Props
 	type Props = {
 		onClose?: any;
 		class?: string;
-		panelURL: string;
-		liveEditing: boolean;
 		form: DocumentFormContext;
 		config: CompiledGlobalConfig | CompiledCollectionConfig;
 		collectionUrl?: string;
 	};
-	const { form, panelURL, onClose, liveEditing, config }: Props = $props();
+	const { form, onClose, config }: Props = $props();
 
 	const onCloseIsDefined = !!onClose;
 	const title = getContext<{ value: string }>('title');
-	//
 </script>
 
-<!-- <div class:page-header--live={form.isLive} class="rz-page-header {className}"> -->
 <PageHeader>
 	<div class="rz-page-header__left">
 		{#if onCloseIsDefined}
@@ -35,24 +31,19 @@
 				<X class="rz-page-header__close" size="17" />
 			</Button>
 		{/if}
-
-		{#if !liveEditing}
-			<h1 class="rz-page-header__title">
-				{title.value}
-			</h1>
-		{:else}
-			<a href={panelURL}>
-				<Button size="icon" variant="default"><PanelsTopLeft size="16" /></Button>
-			</a>
-		{/if}
+		<h1 class="rz-page-header__title">
+			{title.value}
+		</h1>
 	</div>
 
 	<div class="rz-page-header__right">
-		{#if config.url && !liveEditing && form.doc._url}
-			<Button icon={Eye} target="_blank" href={form.doc._url} variant="text">View page</Button>
+		{#if config.url && form.doc._url}
+			<Button icon={Eye} target="_blank" href={form.doc._url} variant="text">
+				{__t('common.view_page')}
+			</Button>
 		{/if}
 
-		{#if config.live && !liveEditing && form.doc._live}
+		{#if config.live && form.doc._live}
 			<Button
 				disabled={form.readOnly}
 				class="rz-button-live"
@@ -68,20 +59,14 @@
 			{#if form.processing}
 				<SpinLoader />
 			{/if}
-			Save
+			{__t('common.save')}
 		</Button>
 
-		{#if !liveEditing}
-			<LanguageSwitcher />
-		{:else}
-			<Button href={$page.url.searchParams.get('src')} variant="ghost" size="icon-sm">
-				<X class="rz-page-header__close" size="17" />
-			</Button>
-		{/if}
+		<LanguageSwitcher />
 	</div>
 </PageHeader>
 
-<style type="postcss" global>
+<style type="postcss">
 	.rz-page-header__left {
 		display: flex;
 		align-items: center;
@@ -97,7 +82,4 @@
 		@mixin line-clamp 1;
 		@mixin font-bold;
 	}
-	/* .rz-page-header__close {
-		pointer-events: none;
-	} */
 </style>

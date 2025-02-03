@@ -34,7 +34,7 @@
 		/* margin-top: calc(var(--rz-size-2)); */
 		height: calc(var(--rz-size-14) - 1px);
 
-		padding: var(--rz-size-2) var(--rz-size-4);
+		padding: var(--rz-size-2) var(--rz-size-0);
 		/* border-radius: var(--rz-radius-md); */
 		/* font-size: var(--rz-text-sm); */
 		white-space: nowrap;

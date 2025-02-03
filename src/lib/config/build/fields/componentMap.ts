@@ -5,6 +5,7 @@ import { isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { FieldsComponents } from 'rizom/types/panel';
 import Email from 'rizom/fields/email/component/Email.svelte';
 import Text from 'rizom/fields/email/component/Email.svelte';
+import { GroupFieldBuilder } from 'rizom/fields/group';
 
 export function buildComponentsMap(
 	fields: FieldBuilder<AnyField>[]
@@ -38,7 +39,7 @@ export function buildComponentsMap(
 		}
 
 		// Check in group
-		if (isGroupField(field.raw) && field.raw.fields) {
+		if (field instanceof GroupFieldBuilder && field.raw.fields) {
 			Object.assign(componentsMap, buildComponentsMap(field.raw.fields));
 		}
 

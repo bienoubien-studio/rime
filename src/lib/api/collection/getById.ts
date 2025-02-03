@@ -1,6 +1,7 @@
-import { error, json, type RequestEvent } from '@sveltejs/kit';
+import { json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server';
 import type { CollectionSlug } from 'rizom/types/doc';
-import { handleAPIError } from '../handleError';
+import { safe } from 'rizom/utils/safe';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -8,20 +9,19 @@ export default function (slug: CollectionSlug) {
 		const { api, locale } = event.locals;
 		const { id } = event.params;
 
-		if (!id) {
-			return error(404);
-		}
-
 		const paramLocale = event.url.searchParams.get('locale');
 		const paramDepth = event.url.searchParams.get('depth');
+		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
-		try {
-			const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
-			const doc = await api.collection(slug).findById({ id, locale: paramLocale || locale, depth });
-			return json({ doc });
-		} catch (err: any) {
-			return handleAPIError(err);
+		const [error, doc] = await safe(
+			api.collection(slug).findById({ id, locale: paramLocale || locale, depth })
+		);
+
+		if (error) {
+			return handleError(error, { context: 'api' });
 		}
+
+		return json({ doc });
 	}
 
 	return GET;

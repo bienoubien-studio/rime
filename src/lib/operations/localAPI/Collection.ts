@@ -10,11 +10,12 @@ import { findById } from '../collection/findById.js';
 import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltCollectionConfig, CompiledCollectionConfig } from 'rizom/types/config.js';
+import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { AnyFormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import { toHash } from 'rizom/utils/string.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type Args = {
 	config: CompiledCollectionConfig;
@@ -78,7 +79,7 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 	}
 
 	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs) {
-		return find<Doc>({
+		const params = {
 			query,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -88,11 +89,20 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			sort,
 			depth,
 			limit
-		});
+		};
+
+		if (this.#event.locals.cache) {
+			const key = toHash(
+				`find-${this.config.slug}-${sort}-${depth}-${limit || 'nolimit'}-${locale || ''}-${query.toString()}`
+			);
+			return this.#event.locals.cache.get(key, () => find<Doc>(params));
+		}
+
+		return find<Doc>(params);
 	}
 
 	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}) {
-		return findAll<Doc>({
+		const params = {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
@@ -101,11 +111,23 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			sort,
 			depth,
 			limit
-		});
+		};
+
+		if (this.#event.locals.cache) {
+			const key = toHash(
+				`findall-${this.config.slug}-${sort}-${depth}-${limit || 'nolimit'}-${locale || ''}`
+			);
+			return this.#event.locals.cache.get(key, () => findAll<Doc>(params));
+		}
+
+		return findAll<Doc>(params);
 	}
 
 	findById({ id, locale, depth = 0 }: FindByIdArgs) {
-		return findById<Doc>({
+		if (!id) {
+			throw new RizomError(RizomError.NOT_FOUND);
+		}
+		const params = {
 			id,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -113,7 +135,15 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			adapter: this.#adapter,
 			api: this.#api,
 			depth
-		});
+		};
+
+		if (this.#event.locals.cache) {
+			console.log('cache ?!');
+			const key = toHash(`findall-${this.config.slug}-${id}-${depth}-${locale || ''}`);
+			return this.#event.locals.cache.get(key, () => findById<Doc>(params));
+		}
+
+		return findById<Doc>(params);
 	}
 
 	updateById({ id, data, locale }: UpdateByIdArgs<Doc>) {
@@ -163,7 +193,7 @@ type FindAllArgs = {
 };
 
 type FindByIdArgs = {
-	id: string;
+	id?: string;
 	locale?: string;
 	depth?: number;
 };

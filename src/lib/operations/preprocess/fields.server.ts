@@ -1,6 +1,6 @@
 import { unflatten } from 'flat';
 
-import { RizomError } from '$lib/errors/error.server.js';
+import { RizomError, RizomFormError } from '$lib/errors/index.js';
 import type { ConfigMap } from './config/map.js';
 import type { User } from 'rizom/types/auth.js';
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
@@ -46,7 +46,7 @@ export const preprocessFields: PreprocessFields = async ({
 
 		// Required
 		if (config.required && config.isEmpty(flatData[key])) {
-			errors[key] = `Field ${config.name} is required`;
+			errors[key] = RizomFormError.REQUIRED_FIELD;
 		}
 
 		// Unique
@@ -55,7 +55,7 @@ export const preprocessFields: PreprocessFields = async ({
 			const query = { where: { [key]: { equals: flatData[key] } } };
 			const existing = await adapter.collection.query({ slug, query });
 			if (existing.length && existing[0].id !== documentId) {
-				errors[key] = `Field ${flatData[key]} already exist`;
+				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}
 		}
 
@@ -90,7 +90,7 @@ export const preprocessFields: PreprocessFields = async ({
 				}
 			} catch (err: any) {
 				console.log(err);
-				errors[key] = `Error in validate function`;
+				errors[key] = RizomFormError.VALIDATION_ERROR;
 			}
 		}
 

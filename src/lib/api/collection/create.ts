@@ -1,30 +1,27 @@
 import { isAuthConfig } from '$lib/config/utils.js';
 import extractData from '$lib/operations/preprocess/extract/data.server.js';
-import { error, json, type RequestEvent } from '@sveltejs/kit';
-import { handleAPIError } from '../handleError';
-import type { AsyncReturnType } from 'rizom/types/utility';
+import { json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server';
 import type { CollectionSlug } from 'rizom/types';
+import { safe } from 'rizom/utils/safe';
 
 export default function (slug: CollectionSlug) {
 	//
 	async function POST(event: RequestEvent) {
 		const { api, locale } = event.locals;
+
 		const collection = api.collection(slug);
 		const data = await extractData(event.request);
 
+		// Bypass confirm password for api auth collection creation calls
 		if (isAuthConfig(collection.config) && 'password' in data) {
 			data.confirmPassword = data.password;
 		}
 
-		let result: AsyncReturnType<typeof collection.create>;
-		try {
-			result = await collection.create({ data, locale: data.locale || locale });
-		} catch (err: any) {
-			return handleAPIError(err);
-		}
+		const [error, result] = await safe(collection.create({ data, locale: data.locale || locale }));
 
-		if (result.errors) {
-			return error(400, { message: Object.values(result.errors)[0] });
+		if (error) {
+			return handleError(error, { context: 'api' });
 		}
 
 		return json(result);

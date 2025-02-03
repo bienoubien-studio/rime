@@ -4,6 +4,7 @@
 	import { dataFocused } from 'rizom/panel/utility/dataFocused';
 	import { dataError } from 'rizom/panel/utility/dataError';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
+	import { __t } from 'rizom/panel/i18n';
 
 	type Ressource = {
 		label: string;
@@ -97,7 +98,7 @@
 					onblur={() => setTimeout(() => (inputFocused = false), 150)}
 					class="rz-ressource-input__search {selected ? 'rz-ressource-input__search--hidden' : ''}"
 					bind:value={search}
-					placeholder="Search {ressourceType}..."
+					placeholder={__t('common.search_a', ressourceType)}
 				/>
 
 				{#if inputFocused}

@@ -5,7 +5,7 @@ import type { CollectionConfig } from 'rizom';
 
 export const panelUsersCollection: CollectionConfig = {
 	slug: 'users',
-	label: { singular: 'User', plural: 'Users' },
+	label: { singular: 'User', plural: 'Users', gender: 'm' },
 	auth: true,
 	icon: UsersRound,
 	fields: [usersFields.name, usersFields.email, usersFields.roles],

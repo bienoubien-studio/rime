@@ -11,11 +11,18 @@ type Status = ActionResult['type'];
 function createFormStore(initial: Dic, key: string) {
 	//
 	const errors = setErrorsContext(key);
+
 	let form = $state(initial);
 	const changes = $derived<Dic>(diff(initial, form));
 	const hasError = $derived(errors.length);
 	const canSubmit = $derived(Object.keys(changes).length > 0 && !hasError);
 	let status = $state<Status>();
+
+	$effect(() => {
+		if (Object.keys(changes).length) {
+			errors.value = {};
+		}
+	});
 
 	function setValue(path: string, value: any) {
 		status = undefined;
@@ -94,10 +101,14 @@ function createFormStore(initial: Dic, key: string) {
 
 		return async ({ result }) => {
 			status = result.type;
+			console.log(result);
 			if (result.type === 'redirect') {
 				await applyAction(result);
 			} else if (result.type === 'failure') {
 				if (result.data?.errors) {
+					errors.value = result.data.errors;
+				}
+				if (result.data?.error) {
 					errors.value = result.data.errors;
 				}
 				form = result.data?.form || {};
@@ -118,6 +129,10 @@ function createFormStore(initial: Dic, key: string) {
 		},
 
 		get errors() {
+			return errors;
+		},
+
+		get error() {
 			return errors;
 		},
 

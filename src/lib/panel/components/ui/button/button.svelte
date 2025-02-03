@@ -75,7 +75,7 @@
 
 	.rz-button:disabled,
 	.rz-button[disabled='true'] {
-		opacity: 0.5;
+		opacity: 0.7;
 		pointer-events: none;
 		cursor: not-allowed !important;
 	}
@@ -126,7 +126,7 @@
 	}
 
 	.rz-button--default:disabled {
-		background-color: hsl(var(--rz-ground-3) / 1);
+		background-color: hsl(var(--rz-ground-2) / 1);
 	}
 
 	.rz-button--outline {
@@ -148,9 +148,9 @@
 	}
 
 	.rz-button--secondary {
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-ground-5));
 		color: hsl(var(--rz-ground-0));
-		/* border: 1px solid hsl(var(--rz-ground-3)); */
+		fill: hsl(var(--rz-ground-0));
 		box-shadow: var(--rz-shadow-sm);
 		&:hover {
 			background-color: hsl(var(--rz-color-secondary) / 0.7);
@@ -186,8 +186,8 @@
 	/**************************************/
 
 	.rz-button__icon {
-		color: hsl(var(--rz-color-primary));
-		translate: calc(-1 * var(--rz-size-1));
+		/* color: hsl(var(--rz-color-primary)); */
+		/* translate: calc(-1 * var(--rz-size-1)); */
 	}
 	.rz-button__icon,
 	.rz-button--text__icon {

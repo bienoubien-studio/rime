@@ -1,17 +1,32 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { capitalize } from 'rizom/utils/string.js';
-import type { DocPrototype, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type {
+	CollectionSlug,
+	DocPrototype,
+	GenericDoc,
+	GlobalSlug,
+	PrototypeSlug
+} from 'rizom/types/doc.js';
 import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 
-export type DashboardEntry = {
-	slug: PrototypeSlug;
-	title: string;
-	titleSingular?: string;
-	link: string;
-	canCreate?: boolean;
-	prototype: DocPrototype;
-	lastEdited?: GenericDoc[];
-};
+export type DashboardEntry =
+	| {
+			slug: CollectionSlug;
+			title: string;
+			gender: 'm' | 'f';
+			titleSingular: string;
+			link: string;
+			canCreate?: boolean;
+			prototype: 'collection';
+			lastEdited?: GenericDoc[];
+	  }
+	| {
+			slug: GlobalSlug;
+			title: string;
+			link: string;
+			prototype: 'global';
+			lastEdited?: GenericDoc[];
+	  };
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
 	const { rizom, locale, user, api } = event.locals;
@@ -31,6 +46,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 						entries.push({
 							prototype: 'collection',
 							slug: collection.slug,
+							gender: collection.label?.gender || 'm',
 							canCreate: user && collection.access.create(user),
 							link: `/panel/${collection.slug}`,
 							titleSingular: collection.label.singular,

@@ -4,10 +4,11 @@ import { randomId } from './utils/random.js';
 import { createConfigInterface } from './config/index.server.js';
 import { existsSync } from 'fs';
 import { dev } from '$app/environment';
-import { RizomInitError } from './errors/init.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/utility.js';
 import type { Config, GetRegisterType } from 'rizom';
+import { RizomError } from './errors/index.js';
+import { registerTranslation } from './panel/i18n/index.js';
 
 function createRizom() {
 	//
@@ -33,13 +34,16 @@ function createRizom() {
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
 		initialized = false;
 		if (dev && !hasRunInitCommand()) {
-			throw new RizomInitError('Missing required files, please run `rizom init` first');
+			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom-init`');
 		}
 		// Initialize config
 		config = await createConfigInterface(rawConfig);
 
 		// Initialize DB
 		adapter = createAdapter({ schema, configInterface: config });
+
+		// Panel Language
+		await registerTranslation(config.raw.panel.language);
 
 		// Done
 		initialized = true;

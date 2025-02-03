@@ -1,17 +1,15 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { RizomAccessError } from '../../errors/access.server.js';
-// import { RizomNotFoundError } from '../../errors/notFound.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
-import type { BuiltCollectionConfig } from 'rizom/types/config.js';
+import type { BuiltCollectionConfig, CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomHookError } from 'rizom/errors/hook.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type Args = {
 	id: string;
 	locale?: string | undefined;
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 	api: LocalAPI;
 	event: RequestEvent;
 	adapter: Adapter;
@@ -30,11 +28,10 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-	if (event) {
-		const authorized = config.access.read(event.locals.user, { id });
-		if (!authorized) {
-			throw new RizomAccessError('- trying to read ' + config.slug);
-		}
+
+	const authorized = config.access.read(event.locals.user, { id });
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const rawDoc = (await adapter.collection.findById({
@@ -66,7 +63,7 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 				doc = args.doc as T;
 				event = args.event;
 			} catch (err: any) {
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}

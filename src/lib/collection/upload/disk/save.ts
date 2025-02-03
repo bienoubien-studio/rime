@@ -3,7 +3,7 @@ import type { UploadDoc } from 'rizom';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { randomId } from 'rizom/utils/random';
-import { RizomUploadError } from 'rizom/errors/upload.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 import { pick } from 'rizom/utils/object';
 import sharp from 'sharp';
 import { toCamelCase } from 'rizom/utils/string';
@@ -35,7 +35,7 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 		}
 	} catch (err: any) {
 		console.log(err);
-		throw new RizomUploadError('Error while writing file on disk');
+		throw new RizomError(RizomError.UPLOAD, 'Error while writing file on disk');
 	}
 	return { filename, imageSizes: sizes };
 };

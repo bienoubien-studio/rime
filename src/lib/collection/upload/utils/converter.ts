@@ -1,8 +1,8 @@
-import { RizomUploadError } from 'rizom/errors/upload.server.js';
 import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../utils/mime.js';
 import type { JsonFile } from 'rizom/types/upload';
 import { readFile } from 'fs/promises';
 import { fileSizeToString } from 'rizom/utils/file.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 export const jsonFileToFile = (jsonFile: JsonFile) => {
 	// Convert base64 to Blob
@@ -11,7 +11,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 	const base64Content = base64String.split(',')[1];
 
 	if (!base64Content) {
-		throw new RizomUploadError('Invalid base64 data format');
+		throw new RizomError(RizomError.UPLOAD, 'Invalid base64 data format');
 	}
 
 	try {
@@ -37,7 +37,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 
 		const extension = getExtensionFromMimeType(mimeType);
 		if (!extension) {
-			throw new RizomUploadError('File type not supported');
+			throw new RizomError(RizomError.UPLOAD, 'File type not supported');
 		}
 
 		const blob = new Blob([byteArray], { type: mimeType });
@@ -56,7 +56,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 			})
 		};
 	} catch (error: any) {
-		throw new RizomUploadError('Invalid base64 content: ' + error.message);
+		throw new RizomError(RizomError.UPLOAD, 'Invalid base64 content');
 	}
 };
 

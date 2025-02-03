@@ -29,6 +29,6 @@
 		height: var(--rz-size-16);
 		border-bottom: var(--rz-border);
 		backdrop-filter: blur(8px);
-		@mixin px var(--rz-size-6);
+		@mixin px var(--rz-field-padding, var(--rz-size-6));
 	}
 </style>

@@ -4,7 +4,6 @@ import validate from 'rizom/utils/validate';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import EmailComp from './component/Email.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	constructor(name: string) {
@@ -40,8 +39,7 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	}
 }
 
-export const email = (name: string) =>
-	new EmailFieldBuilder(name) as PublicBuilder<typeof EmailFieldBuilder>;
+export const email = (name: string) => new EmailFieldBuilder(name);
 
 /////////////////////////////////////////////
 // Type

@@ -7,7 +7,6 @@ import type {
 	CompiledConfig
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
-import { RizomConfigError } from 'rizom/errors/config.server';
 import cache from 'rizom/bin/generate/cache';
 
 function hasDuplicates(arr: string[]): string[] {
@@ -149,7 +148,7 @@ function validate(config: CompiledConfig): boolean {
 		const errors: string[] = isValid(config);
 		if (errors.length) {
 			cache.clear();
-			throw new RizomConfigError(errors[0]);
+			throw new Error('Config error : ' + errors[0]);
 		}
 	}
 

@@ -1,36 +1,31 @@
-import { isAuthConfig } from '$lib/config/utils';
 import extractData from '$lib/operations/preprocess/extract/data.server';
-import { error, json, type RequestEvent } from '@sveltejs/kit';
-import type { PrototypeSlug } from 'rizom/types/doc';
-import { handleAPIError } from '../handleError';
+import { json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server';
+import type { CollectionSlug } from 'rizom/types/doc';
+import { safe } from 'rizom/utils/safe';
 
-export default function (slug: PrototypeSlug) {
+export default function (slug: CollectionSlug) {
 	//
 	async function PATCH(event: RequestEvent) {
 		const { api, locale } = event.locals;
 		const id = event.params.id;
 
-		if (!id) {
-			return error(404);
-		}
-
 		const collection = api.collection(slug);
+		const data = await extractData(event.request);
 
-		try {
-			const data = await extractData(event.request);
-			if (isAuthConfig(collection.config) && 'password' in data) {
-				data.confirmPassword = data.password;
-			}
-			const doc = await collection.updateById({
+		const [error, doc] = await safe(
+			collection.updateById({
 				id,
 				data,
 				locale: data.locale || locale
-			});
-			return json({ doc });
-		} catch (err: any) {
-			console.log(err.message);
-			return handleAPIError(err);
+			})
+		);
+
+		if (error) {
+			return handleError(error, { context: 'api' });
 		}
+
+		return json({ doc });
 	}
 
 	return PATCH;

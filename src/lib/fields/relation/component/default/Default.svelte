@@ -11,6 +11,7 @@
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types/doc';
 	import { useSortable } from 'rizom/panel/utility/Sortable';
+	import { __t } from 'rizom/panel/i18n/index.js';
 
 	const {
 		isFull,
@@ -105,7 +106,10 @@
 					ref={commandInput}
 					class={inputWithItemsClass}
 					bind:value={search}
-					placeholder="Search..."
+					placeholder={__t(
+						`common.search_a|${relationConfig.label.gender}`,
+						relationConfig.label.singular
+					)}
 				/>
 
 				{#if inputFocused}
@@ -129,7 +133,10 @@
 			variant="secondary"
 			size="sm"
 		>
-			Create new {relationConfig.label.singular || relationConfig.slug}
+			{__t(
+				`common.create_new|${relationConfig.label.gender}`,
+				relationConfig.label.singular || relationConfig.slug
+			)}
 		</Button>
 	{/if}
 

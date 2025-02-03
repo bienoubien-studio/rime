@@ -471,20 +471,21 @@ test('Should lock user', async ({ request }) => {
 });
 
 test('Should delete user editor', async ({ request }) => {
-	const sigin = await request.post(`${API_BASE_URL}/users/login`, {
+	const signin = await request.post(`${API_BASE_URL}/users/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = sigin.headers()['set-auth-token'];
-	const json = await sigin.json();
-	expect(headerToken).toBeDefined();
-	token = headerToken;
-	adminUserId = json.user.id;
+	const authToken = signin.headers()['set-auth-token'];
+	const data = await signin.json();
+	expect(authToken).toBeDefined();
+	console.log('editorId', editorId);
+	console.log('authToken', authToken);
+	console.log('signed user', data.user);
 	const response = await request.delete(`${API_BASE_URL}/users/${editorId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${authToken}`
 		}
 	});
 	expect(response.status()).toBe(200);

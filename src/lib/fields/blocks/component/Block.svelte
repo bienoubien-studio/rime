@@ -9,7 +9,7 @@
 	import type { BlocksFieldBlock } from '../index.ts';
 
 	type Props = {
-		config: BlocksFieldBlock;
+		config: BlocksFieldBlock<'compiled'>;
 		path: string;
 		sorting: boolean;
 		deleteBlock: () => void;
@@ -150,7 +150,7 @@
 	}
 
 	.rz-block__fields {
-		padding: var(--rz-size-8) var(--rz-size-7);
+		padding: var(--rz-size-8) 0;
 	}
 
 	.rz-block__fields--hidden {

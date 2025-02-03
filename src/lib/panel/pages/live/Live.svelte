@@ -80,10 +80,11 @@
 
 <style>
 	.rz-live-container {
+		--rz-live-sidebar-width: 26rem;
 		display: flex;
 	}
 	.rz-live-container__side-panel {
-		width: 26rem;
+		width: var(--rz-live-sidebar-width);
 		flex-shrink: 0;
 		flex-grow: 0;
 		border-right: var(--rz-border);

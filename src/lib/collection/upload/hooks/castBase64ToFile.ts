@@ -1,5 +1,5 @@
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import { RizomUploadError } from 'rizom/errors/upload.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 import { isFile } from 'rizom/utils/file';
 import { jsonFileToFile } from '../utils/converter';
 import type { UploadDoc } from 'rizom/types';
@@ -30,7 +30,7 @@ export const castBase64ToFile: CollectionHookBeforeUpsert<UploadDoc> = async (ar
 			};
 		} catch (err: any) {
 			console.log(err);
-			throw new RizomUploadError('Unable to process file ' + err.message);
+			throw new RizomError(RizomError.UPLOAD, 'Unable to process file');
 		}
 	}
 	return { ...args, data };

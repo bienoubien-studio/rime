@@ -13,6 +13,8 @@
 	import CurrentlyEdited from './CurrentlyEdited.svelte';
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
+	import FloatingUI from './FloatingUI.svelte';
+	import { __t } from 'rizom/panel/i18n';
 
 	type Props = {
 		doc: GenericDoc;
@@ -76,17 +78,6 @@
 	const locale = getLocaleContext();
 	const liveEditing = !!onDataChange;
 
-	function buildPanelURL() {
-		// Start with the base URI for the panel
-		let panelUri = `/panel/${config.slug}`;
-
-		// Add the item ID to the URI if we're updating a collection doc
-		if (operation === 'update' && initial._prototype === 'collection' && initial.id) {
-			panelUri += `/${initial.id}`;
-		}
-		return panelUri;
-	}
-
 	function buildPanelActionUrl() {
 		// Start with the base URI for the panel
 		let panelUri = `/panel/${config.slug}`;
@@ -144,7 +135,12 @@
 		{#if form.doc._editedBy && form.doc._editedBy !== user.attributes.id}
 			<CurrentlyEdited by={form.doc._editedBy} doc={form.doc} user={user.attributes} />
 		{/if}
-		<Header panelURL={buildPanelURL()} {liveEditing} {form} {config} {onClose}></Header>
+
+		{#if !liveEditing}
+			<Header {form} {config} {onClose}></Header>
+		{:else}
+			<FloatingUI {form} {onClose} />
+		{/if}
 
 		<div class="rz-document__fields">
 			{#if config.type === 'collection' && isUploadConfig(config)}
@@ -158,10 +154,10 @@
 
 		<div class="rz-document__infos">
 			{#if form.doc.createdAt}
-				{@render meta('Created', locale.dateFormat(form.doc.createdAt))}
+				{@render meta(__t('common.created_at'), locale.dateFormat(form.doc.createdAt))}
 			{/if}
 			{#if form.doc.updatedAt}
-				{@render meta('Last update', locale.dateFormat(form.doc.updatedAt))}
+				{@render meta(__t('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
 			{/if}
 			{#if form.doc.id}
 				{@render meta('id', form.doc.id)}
@@ -172,18 +168,28 @@
 
 <style type="postcss">
 	.rz-document {
+		container: rz-document / inline-size;
 		background-color: hsl(var(--rz-ground-7));
 		min-height: 100vh;
+		position: relative;
 		& :global(.rz-scroll-area) {
 			height: 100vh;
 		}
+		> :global(.rz-scroll-area) {
+			--rz-fields-padding: var(--rz-size-6);
+			@container rz-document (min-width:640px) {
+				--rz-fields-padding: var(--rz-size-8);
+			}
+		}
 	}
 	.rz-document__fields {
-		@mixin px var(--rz-size-8);
+		/* @mixin px var(--rz-size-8); */
 		display: grid;
 		gap: var(--rz-size-4);
 		padding-bottom: var(--rz-size-6);
-		padding-top: var(--rz-size-8);
+		&:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
+			padding-top: var(--rz-size-8);
+		}
 	}
 	.rz-document__infos {
 		border-top: var(--rz-border);

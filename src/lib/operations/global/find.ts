@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { RizomAccessError } from '../../errors/access.server.js';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
 import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config';
+import { RizomError } from 'rizom/errors/index.js';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -25,11 +25,10 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-	if (event) {
-		const authorized = config.access.read(event.locals.user);
-		if (!authorized) {
-			throw new RizomAccessError('- trying to read ' + config.slug);
-		}
+
+	const authorized = config.access.read(event.locals.user);
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const rawDoc = (await adapter.global.get({ slug: config.slug, locale })) as T;

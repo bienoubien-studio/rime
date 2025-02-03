@@ -6,6 +6,7 @@
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
 	import { ArrowRight, Eye } from 'lucide-svelte';
 	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
+	import { __t } from 'rizom/panel/i18n/index.js';
 
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();
@@ -20,9 +21,9 @@
 	{#if config.raw.siteUrl || config.raw.localization}
 		<PageHeader>
 			{#if config.raw.siteUrl}
-				<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}
-					>View site</Button
-				>
+				<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>
+					{__t('common.view_site')}
+				</Button>
 			{/if}
 			<LanguageSwitcher />
 		</PageHeader>
@@ -40,7 +41,7 @@
 
 				{#if entry.prototype === 'collection'}
 					{#if entry.lastEdited!.length === 0}
-						You don't have any {entry.titleSingular}
+						{__t(`common.no_document|${entry.gender}`, entry.titleSingular)}
 					{/if}
 					{#if entry.lastEdited}
 						<ul>
@@ -49,7 +50,7 @@
 									<a href="/panel/{doc._type}/{doc.id}">
 										<Icon size="12" />
 										{doc.title}
-										<p>Last update : {locale.dateFormat(doc.updatedAt!, true)}</p>
+										<p>{__t('common.last_update')} : {locale.dateFormat(doc.updatedAt!, true)}</p>
 									</a>
 								</li>
 							{/each}
@@ -57,7 +58,7 @@
 					{/if}
 					{#if entry.canCreate}
 						<Button variant="secondary" href="{entry.link}/create"
-							>Create new {entry.titleSingular}</Button
+							>{__t(`common.create_new|${entry.gender}`, entry.titleSingular)}</Button
 						>
 					{/if}
 				{/if}

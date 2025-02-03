@@ -3,6 +3,7 @@
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from 'lucide-svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import { __t } from 'rizom/panel/i18n';
 
 	const collection = getContext<CollectionContext>('collectionList');
 
@@ -28,7 +29,9 @@
 				Deselect All
 			</Button>
 		{:else}
-			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>Select All</Button>
+			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>
+				{__t('common.select_all')}
+			</Button>
 		{/if}
 		<Button
 			disabled={selectedCount === 0}
@@ -36,7 +39,7 @@
 			variant="text"
 			onclick={collection.deleteSelection}
 		>
-			Delete {selectedCount} doc{pluralSuffix}
+			{__t('common.delete', `${selectedCount} doc${pluralSuffix}`)}
 		</Button>
 	{/if}
 </div>

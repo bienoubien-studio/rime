@@ -5,7 +5,7 @@ import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/extract/blocks.server';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { createBlankDocument, safeFlattenDoc } from '../../utils/doc.js';
-import { RizomAccessError } from '../../errors/access.server.js';
+
 import { isUploadConfig } from '../../config/utils.js';
 import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server.js';
@@ -15,13 +15,13 @@ import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
 import type { CompiledCollectionConfig } from 'rizom/types/config';
-import { RizomHookError } from 'rizom/errors/hook.server.js';
 import logger from 'rizom/utils/logger/index.js';
 import type {
 	CollectionHookAfterCreateArgs,
 	CollectionHookBeforeCreateArgs
 } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
+import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 export const create = async <T extends GenericDoc = GenericDoc>({
 	data,
@@ -37,7 +37,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 
 	const authorized = config.access.create(event.locals.user);
 	if (!authorized) {
-		throw new RizomAccessError('- trying to create ' + config.slug);
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const incomingData = cloneDeep(data);
@@ -94,7 +94,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	if (errors) {
-		return { errors };
+		throw new RizomFormError(errors);
 	} else {
 		data = validData as T;
 		flatData = validFlatData;
@@ -119,7 +119,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 				event = args.event;
 			} catch (err: any) {
 				console.log(err);
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	})) as T;
 
 	if (!rawDoc) {
-		throw new Error('Database error');
+		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
 	/** Easy way to fallback locale, TODO : find a better way */
@@ -206,7 +206,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 				})) as CollectionHookAfterCreateArgs<T>;
 				event = args.event;
 			} catch (err: any) {
-				throw new RizomHookError(err.message);
+				throw new RizomError(RizomError.HOOK, err.message);
 			}
 		}
 	}

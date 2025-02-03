@@ -1,6 +1,9 @@
 import { dev } from '$app/environment';
-import { fail, redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
+import { error, fail, redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server';
+import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { PanelActionFailure } from 'rizom/types/panel';
+import { safe } from 'rizom/utils/safe';
 
 type LoginForm = {
 	email?: string;
@@ -17,25 +20,25 @@ export const loginActions: Actions = {
 		const email = data.get('email')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 
-		try {
-			const { response } = await rizom.auth.login({ email, password, slug: 'users' });
+		const [error, success] = await safe(rizom.auth.login({ email, password, slug: 'users' }));
 
-			const setCookieHeader = response.headers.get('set-cookie');
-			if (setCookieHeader) {
-				const parsedCookie = setCookieHeader.split(';')[0];
-				const [name, encodedValue] = parsedCookie.split('=');
-				const decodedValue = decodeURIComponent(encodedValue);
-				cookies.set(name, decodedValue, {
-					path: '/',
-					httpOnly: true,
-					sameSite: 'lax',
-					maxAge: 604800,
-					secure: !dev
-				});
-			}
-		} catch (err: any) {
-			console.log(err);
-			return fail<LoginActionFailure>(500, { error: 'Could not login user.' });
+		if (error) {
+			return handleError(error, { context: 'action', formData: { email } });
+		}
+
+		const setCookieHeader = success.response.headers.get('set-cookie');
+
+		if (setCookieHeader) {
+			const parsedCookie = setCookieHeader.split(';')[0];
+			const [name, encodedValue] = parsedCookie.split('=');
+			const decodedValue = decodeURIComponent(encodedValue);
+			cookies.set(name, decodedValue, {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'lax',
+				maxAge: 604800,
+				secure: !dev
+			});
 		}
 
 		throw redirect(302, '/panel');

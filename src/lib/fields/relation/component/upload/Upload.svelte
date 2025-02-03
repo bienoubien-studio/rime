@@ -10,6 +10,7 @@
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
 	import './upload.css';
+	import { __t } from 'rizom/panel/i18n/index.js';
 
 	const {
 		isFull,
@@ -123,7 +124,10 @@
 <Command.Dialog bind:open onOpenChange={(val) => (open = val)}>
 	<Command.Input
 		class="rz-relation-upload__search"
-		placeholder="Search a {relationConfig.label.singular || relationConfig.slug}..."
+		placeholder={__t(
+			`common.search_a|${relationConfig.label.gender}`,
+			relationConfig.label.singular || relationConfig.slug
+		)}
 	/>
 
 	<Command.List class="rz-relation-upload__command-list">

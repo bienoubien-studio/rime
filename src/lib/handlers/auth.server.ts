@@ -1,5 +1,5 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
-import { RizomError } from 'rizom/errors/error.server';
+import { RizomError } from 'rizom/errors/index.js';
 import type { PrototypeSlug } from 'rizom/types';
 
 // Validate the session

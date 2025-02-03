@@ -127,7 +127,7 @@ export const buildCollection = async (
 		slug: collection.slug as CollectionSlug,
 		label: collection.label
 			? collection.label
-			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug) },
+			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug), gender: 'm' },
 		asTitle: addAsTitle(),
 		type: 'collection',
 		fields,
@@ -146,7 +146,8 @@ export const mergePanelUsersCollectionWithDefault = ({
 	roles,
 	fields,
 	access,
-	group
+	group,
+	label
 }: PanelUsersConfig = {}) => {
 	const collection = { ...panelUsersCollection };
 	if (roles) {
@@ -183,6 +184,9 @@ export const mergePanelUsersCollectionWithDefault = ({
 	}
 	if (group) {
 		collection.group = group;
+	}
+	if (label) {
+		collection.label = label;
 	}
 	return collection;
 };

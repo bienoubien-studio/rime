@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/errors/error.server';
+import { RizomError } from '$lib/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc';
 import { flatten, unflatten } from 'flat';

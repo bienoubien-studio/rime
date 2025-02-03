@@ -5,6 +5,7 @@ import { handleRoutes } from './routes.server.js';
 import type { Config } from 'rizom/types/index.js';
 import { createPluginsHandler } from './plugins.server.js';
 
+type Args = { config: Config; schema: any };
 export default function (args: Args) {
 	return [
 		createCMSHandler(args),
@@ -13,5 +14,3 @@ export default function (args: Args) {
 		...createPluginsHandler({ config: args.config })
 	];
 }
-
-type Args = { config: Config; schema: any };

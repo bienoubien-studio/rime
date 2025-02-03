@@ -18,6 +18,7 @@ import type { ActionResult } from '@sveltejs/kit';
 import type { GenericBlock, GenericDoc, AnyFormField, BuiltDocConfig } from 'rizom/types';
 import type { Dic } from 'rizom/types/utility';
 import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
+import { __t } from '../i18n/index.js';
 
 function createDocumentFormState({
 	initial,
@@ -47,6 +48,8 @@ function createDocumentFormState({
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
+
+	$inspect(title);
 
 	function initLevel() {
 		const last = key.split('.').pop() as string;
@@ -302,15 +305,15 @@ function createDocumentFormState({
 		if (result.type === 'success') {
 			doc = result.data?.doc || (doc as GenericDoc);
 			if (nestedLevel === 0) {
-				toast.success('Document succesfully updated');
+				toast.success(__t('common.doc_updated'));
 				await invalidateAll();
 				intialDoc = doc;
 			} else {
-				toast.success('Document succesfully created');
+				toast.success(__t('common.doc_created'));
 				if (onNestedDocumentCreated) onNestedDocumentCreated(doc);
 			}
 		} else if (result.type === 'redirect') {
-			toast.success('Document succesfully created');
+			toast.success(__t('common.doc_created'));
 			if (collection) collection.addDoc(doc as GenericDoc);
 			applyAction(result);
 		} else if (result.type === 'failure') {

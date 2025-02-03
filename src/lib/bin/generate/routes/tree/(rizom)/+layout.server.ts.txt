@@ -1,6 +1,6 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 
 export const load = async ({ locals }: ServerLoadEvent) => {
-  const { user } = locals;
-  return { user };
+	const { user, rizom } = locals;
+	return { user, rizomLanguage: rizom.config.raw.panel.language };
 };

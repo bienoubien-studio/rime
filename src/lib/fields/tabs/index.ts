@@ -3,7 +3,6 @@ import type { BaseField } from 'rizom/types/fields';
 import { FieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
 import Tabs from './component/Tabs.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class TabsBuilder extends FieldBuilder<TabsField> {
 	//
@@ -29,8 +28,7 @@ class TabBuilder {
 	}
 }
 
-export const tabs = (...tabs: TabsFieldTab[]) =>
-	new TabsBuilder(...tabs) as PublicBuilder<typeof TabsBuilder>;
+export const tabs = (...tabs: TabsFieldTab[]) => new TabsBuilder(...tabs);
 
 export const tab = (label: string) => new TabBuilder(label);
 
@@ -38,14 +36,22 @@ export const tab = (label: string) => new TabBuilder(label);
 // Types
 //////////////////////////////////////////////
 
-export type TabsField<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = BaseField & {
+export type TabsField = BaseField & {
 	type: 'tabs';
-	tabs: TabsFieldTab<Compiled>[];
+	tabs: TabsFieldTab[];
 };
 
-export type TabsFieldTab<Compiled extends 'compiled' | 'uncompiled' = 'uncompiled'> = {
+export type TabsFieldTab = {
 	label: string;
-	fields: Compiled extends 'compiled' ? AnyField[] : FieldBuilder<AnyField>[];
+	fields: FieldBuilder<AnyField>[];
+};
+
+export type RawTabsField = BaseField & {
+	type: 'tabs';
+	tabs: {
+		label: string;
+		fields: AnyField[];
+	}[];
 };
 
 /////////////////////////////////////////////
@@ -56,6 +62,6 @@ declare module 'rizom' {
 		tabs: any;
 	}
 	interface RegisterFields {
-		TabsField: TabsField<'compiled'>; // register the field type
+		TabsField: TabsField;
 	}
 }

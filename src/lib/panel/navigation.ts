@@ -1,8 +1,8 @@
 import type { User } from 'rizom/types/auth';
-import type { BuiltConfig } from 'rizom/types/config';
+import type { CompiledConfig } from 'rizom/types/config';
 import type { Dic } from 'rizom/types/utility';
 
-const buildNavigation = (config: BuiltConfig, user: User | undefined): Dic => {
+const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
 	//
 	const groups: Dic = {
 		none: []

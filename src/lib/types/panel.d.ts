@@ -32,7 +32,6 @@ export type PanelActionFailure<T extends Dic = Dic> = {
 	form?: {
 		[K in keyof T]: T[K];
 	};
-	error?: string;
 	errors?: Partial<FormErrors<keyof T>>;
 };
 

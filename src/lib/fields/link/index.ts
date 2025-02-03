@@ -36,7 +36,8 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	constructor(name: string) {
 		super(name, 'link');
-		this.field.isEmpty = (value: Link) => !value.link || !value.label;
+		this.field.isEmpty = (value: any) => !value || !value.link || !value.label;
+		this.field.validate = validate.link;
 		this.field.hooks = {
 			beforeRead: [populateRessourceURL],
 			beforeSave: [],
@@ -66,9 +67,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.defaultValue = value;
 		return this;
 	}
-	defineValidationFunction() {
-		return validate.link;
-	}
+
 	types(...values: LinkType[]) {
 		this.field.types = values;
 		return this;

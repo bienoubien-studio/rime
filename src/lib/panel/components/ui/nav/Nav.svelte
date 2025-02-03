@@ -20,13 +20,13 @@
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
 	<div class="rz-nav__content">
 		<div class="rz-nav__header">
-			{#if isCollapsed}
-				<NavItem href="/panel" isCollapsed={true} route={dashBoardRoute} />
-			{:else}
+			<!-- {#if isCollapsed} -->
+			<NavItem href="/panel" {isCollapsed} route={dashBoardRoute} />
+			<!-- {:else}
 				<a href="/panel">
 					<Logo />
 				</a>
-			{/if}
+			{/if} -->
 		</div>
 
 		<div class="rz-nav__body">
@@ -70,12 +70,12 @@
 		display: flex;
 		height: 100%;
 		flex-direction: column;
-		padding-top: var(--rz-size-2);
+		/* padding-top: var(--rz-size-2); */
 	}
 	.rz-nav__header {
 		display: flex;
 		/* margin-top: 2px; */
-		height: var(--rz-size-14);
+		height: var(--rz-size-16);
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: space-between;
@@ -84,7 +84,7 @@
 		border-bottom: var(--rz-border);
 		a {
 			height: 100%;
-			padding: var(--rz-size-5) 0;
+			padding: var(--rz-size-6) 0;
 		}
 	}
 	.rz-nav__body {
@@ -102,7 +102,10 @@
 	.rz-nav__nav {
 		display: flex;
 		flex-direction: column;
-		/* gap: var(--rz-size-2); */
+		background-color: hsl(var(--rz-ground-6));
+		@media (prefers-color-scheme: light) {
+			background-color: hsl(var(--rz-ground-7));
+		}
 	}
 	.rz-nav--collapsed .rz-nav__nav {
 		align-items: center;

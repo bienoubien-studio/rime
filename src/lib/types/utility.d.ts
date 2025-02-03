@@ -1,5 +1,8 @@
 import type { FieldBuilder } from 'rizom/fields/_builders';
 import type { AnyField } from './fields';
+import type { RawTabsField } from 'rizom/fields/tabs';
+import type { RawBlocksField } from 'rizom/fields/blocks';
+import type { RawGroupField } from 'rizom/fields/group';
 
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
@@ -17,34 +20,18 @@ export type PublicBuilder<T> = Omit<
 >;
 
 type AnyFunction = (...args: any[]) => any;
+
 type WithoutBuilders<T> =
 	T extends Array<infer U>
-		? Array<WithoutBuilders<U>>
-		: // Handle fields arrays in blocks, tabs, etc.
-			T extends { fields: Array<FieldBuilder<any>> }
-			? Omit<T, 'fields'> & { fields: Array<AnyField> }
-			: // Handle blocks field type specifically
-				T extends { blocks: Array<{ fields: Array<FieldBuilder<any>> }> }
-				? Omit<T, 'blocks'> & {
-						blocks: Array<
-							Omit<T['blocks'][number], 'fields'> & {
-								fields: Array<AnyField>;
-							}
-						>;
-					}
-				: // Handle tabs field type specifically
-					T extends { tabs: Array<{ fields: Array<FieldBuilder<any>> }> }
-					? Omit<T, 'tabs'> & {
-							tabs: Array<
-								Omit<T['tabs'][number], 'fields'> & {
-									fields: Array<AnyField>;
-								}
-							>;
-						}
-					: // Handle function types
-						T extends AnyFunction
-						? T
-						: // Handle other object properties recursively
-							T extends object
-							? { [K in keyof T]: WithoutBuilders<T[K]> }
-							: T;
+		? U extends FieldBuilder<any>
+			? AnyField[]
+			: Array<WithoutBuilders<U>>
+		: T extends { fields: FieldBuilder<any>[] }
+			? Omit<T, 'fields'> & { fields: AnyField[] }
+			: T extends { tabs: Array<{ fields: FieldBuilder<any>[] }> }
+				? Omit<T, 'tabs'> & { tabs: Array<{ fields: AnyField[] }> }
+				: T extends { blocks: Array<{ fields: FieldBuilder<any>[] }> }
+					? Omit<T, 'blocks'> & { blocks: Array<{ fields: AnyField[] }> }
+					: T extends object
+						? { [K in keyof T]: WithoutBuilders<T[K]> }
+						: T;

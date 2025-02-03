@@ -4,10 +4,11 @@
 	import Block from './Block.svelte';
 	import { Field } from 'rizom/panel';
 	import { useSortable } from '$lib/panel/utility/Sortable';
-	import type { BlocksFieldBlock } from 'rizom/fields/blocks';
+	import type { BlocksFieldBlock, RawBlocksField } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
 	import './blocks.css';
+	import { __t } from 'rizom/panel/i18n';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -50,7 +51,7 @@
 		}
 	});
 
-	function getConfigByBlockType(type: string): BlocksFieldBlock {
+	function getConfigByBlockType(type: string): RawBlocksField['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
 			throw new Error(`Block configuration not found for type: ${type}`);
@@ -78,7 +79,7 @@
 				/>
 			{/each}
 		{:else}
-			<div class="rz-blocks__empty">No block yet</div>
+			<div class="rz-blocks__empty">{__t('fields.no_block')}</div>
 		{/if}
 	</div>
 

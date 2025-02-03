@@ -8,6 +8,7 @@
 	import type { User } from 'rizom/types/auth';
 	import type { PrototypeSlug } from 'rizom/types/doc';
 	import type { BrowserConfig } from 'rizom/types/config';
+	import { goto } from '$app/navigation';
 
 	type Props = {
 		doc: any;
@@ -21,6 +22,17 @@
 
 	const { doc, config, locale: initialeLocale, user, onDataChange, onFieldFocus }: Props = $props();
 
+	function buildPanelURL() {
+		// Start with the base URI for the panel
+		let panelUri = `/panel/${doc._type}`;
+
+		// Add the item ID to the URI if we're updating a collection doc
+		if (doc._prototype === 'collection' && doc.id) {
+			panelUri += `/${doc.id}`;
+		}
+		return panelUri;
+	}
+
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[undefined]');
@@ -32,4 +44,11 @@
 </script>
 
 <Toaster />
-<Document {onDataChange} {onFieldFocus} {doc} readOnly={false} operation="update" />
+<Document
+	onClose={() => goto(buildPanelURL())}
+	{onDataChange}
+	{onFieldFocus}
+	{doc}
+	readOnly={false}
+	operation="update"
+/>

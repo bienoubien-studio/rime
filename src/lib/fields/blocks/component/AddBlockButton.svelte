@@ -7,6 +7,7 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksField, BlocksFieldBlock } from '../index.js';
+	import { __t } from 'rizom/panel/i18n/index.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
@@ -37,16 +38,19 @@
 		{size}
 	>
 		<Plus size={15} />
-		<span>Add {config.blocks[0].label || capitalize(config.blocks[0].name)}</span>
+		<span>
+			{__t('fields.add_block')}
+			{config.blocks[0].label || config.blocks[0].name}
+		</span>
 	</Button>
 {:else}
 	<Button class="rz-add-block-button {className}" onclick={() => (open = true)} variant="outline">
 		<Plus size={15} />
-		<span>Add block</span>
+		<span>{__t('fields.add_block')}</span>
 	</Button>
 
 	<Command.Dialog bind:open>
-		<Command.Input class="rz-add-block-button__search" placeholder="Search for a component..." />
+		<Command.Input class="rz-add-block-button__search" placeholder={__t('fields.search')} />
 
 		<Command.List class="rz-add-block-button__list">
 			<Command.Empty>No results found.</Command.Empty>

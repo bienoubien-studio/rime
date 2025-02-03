@@ -1,5 +1,5 @@
 import path from 'path';
-import { RizomError } from '../errors/error.server.js';
+import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../utils/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';

@@ -7,7 +7,7 @@
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { TabsField } from '..';
 
-	type Props = { config: TabsField; path: string; form: DocumentFormContext };
+	type Props = { config: TabsField<'compiled'>; path: string; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();
 
 	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;
@@ -44,7 +44,6 @@
 		<Tabs.List>
 			{#each config.tabs as tab, index}
 				<Tabs.Trigger
-					disabled={false}
 					data-error={tabErrors.includes(tabIds[index]) ? 'true' : null}
 					value={slugify(tab.label)}
 				>
@@ -66,9 +65,9 @@
 		container: rz-tabs / inline-size;
 
 		:global(.rz-tabs-trigger) {
-			@container rz-tabs (min-width: 640px) {
-				min-width: var(--rz-size-28);
-			}
+			/* @container rz-tabs (min-width: 640px) { */
+			min-width: var(--rz-size-28);
+			/* } */
 		}
 
 		:global(.rz-tabs-list) {

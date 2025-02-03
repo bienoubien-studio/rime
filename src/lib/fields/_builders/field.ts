@@ -33,7 +33,7 @@ export class FieldBuilder<T extends BaseField = BaseField> {
 		return this.field.type;
 	}
 
-	get raw() {
+	get raw(): T {
 		return this.field;
 	}
 
@@ -46,7 +46,7 @@ export class FieldBuilder<T extends BaseField = BaseField> {
 	}
 }
 
-export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldBuilder<T> {
+export class FormFieldBuilder<T extends AnyFormField> extends FieldBuilder<T> {
 	//
 	constructor(name: string, type: FieldsType) {
 		super(type);
@@ -90,7 +90,7 @@ export class FormFieldBuilder<T extends FormField = AnyFormField> extends FieldB
 	}
 
 	validate(func: FieldValidationFunc<T>) {
-		this.field.validate = func;
+		this.field.validate = func as FieldValidationFunc<AnyFormField>;
 		return this;
 	}
 

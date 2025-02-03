@@ -28,18 +28,3 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 
 	return resolve(event);
 };
-
-function getMimeType(extension: string) {
-	switch (extension) {
-		case '.woff':
-			return 'font/woff';
-		case '.woff2':
-			return 'font/woff2';
-		case '.ttf':
-			return 'font/ttf';
-		case '.otf':
-			return 'font/otf';
-		default:
-			return 'application/octet-stream';
-	}
-}

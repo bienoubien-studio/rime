@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import { RizomAccessError } from '../../errors/access.server.js';
+
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomHookError } from 'rizom/errors/hook.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type FindArgs = {
 	query: OperationQuery;
@@ -37,7 +37,7 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 
 	const authorized = config.access.read(event.locals.user);
 	if (!authorized) {
-		throw new RizomAccessError('- trying to read ' + config.slug);
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const rawDocs = (await adapter.collection.query({
@@ -69,7 +69,7 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 					event = args.event;
 					docs[index] = doc;
 				} catch (err: any) {
-					throw new RizomHookError(err.message);
+					throw new RizomError(RizomError.HOOK, err.message);
 				}
 			}
 		}

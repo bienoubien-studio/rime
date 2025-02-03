@@ -68,6 +68,9 @@
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
 		padding: var(--rz-size-5);
+		margin-left: var(--rz-fields-padding);
+		margin-right: var(--rz-fields-padding);
+		margin-bottom: var(--rz-fields-padding);
 	}
 	.rz-doc-auth-header__buttons {
 		display: flex;

@@ -4,7 +4,7 @@ import { extractRelations } from '../preprocess/relations/extract.server.js';
 import { safeFlattenDoc } from '../../utils/doc.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
 import { preprocessFields } from '../preprocess/fields.server.js';
-import { RizomAccessError } from '../../errors/access.server.js';
+
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
@@ -12,6 +12,7 @@ import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
+import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -33,11 +34,10 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-	if (event) {
-		const authorized = config.access.update(event.locals.user);
-		if (!authorized) {
-			throw new RizomAccessError('- trying to update ' + config.slug);
-		}
+
+	const authorized = config.access.update(event.locals.user);
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const originalDoc = await api.global(config.slug).find({ locale });
@@ -79,7 +79,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	if (errors) {
-		return { errors };
+		throw new RizomFormError(errors);
 	} else {
 		data = validData as T;
 		flatData = validFlatData;
@@ -127,9 +127,6 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	/** Get relations in data */
 	const extractedRelations = extractRelations({ parentId: doc.id, flatData, configMap, locale });
 
-	// console.log('Before diff - existingRelations:', existingRelations);
-	// console.log('Before diff - extractedRelations:', extractedRelations);
-
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
 		existingRelations,
@@ -158,13 +155,6 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 			relations: relationsDiff.toAdd
 		});
 	}
-
-	// /** Update Relations */
-	// await adapter.relations.updateOrCreate({
-	// 	parentSlug: config.slug,
-	// 	parentId: doc.id,
-	// 	relations
-	// });
 
 	const rawDoc = (await adapter.global.get({ slug: config.slug, locale })) as T;
 	doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });

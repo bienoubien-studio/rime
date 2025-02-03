@@ -7,7 +7,7 @@ import type {
 	CompiledConfig,
 	Config
 } from 'rizom/types/config.js';
-import { RizomError } from 'rizom/errors/error.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
@@ -74,7 +74,8 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		...config,
 		panel: {
 			access: config.panel?.access ? config.panel.access : (user) => access.isAdmin(user),
-			routes: config.panel?.routes ? config.panel.routes : {}
+			routes: config.panel?.routes ? config.panel.routes : {},
+			language: config.panel?.language || 'en'
 		},
 		collections,
 		plugins: {},

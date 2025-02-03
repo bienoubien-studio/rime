@@ -1,4 +1,4 @@
-import { RizomError } from '../../errors/error.server';
+import { RizomError } from '../../errors/index.js';
 import type {
 	CollectionHookBeforeCreate,
 	CollectionHookBeforeDelete,

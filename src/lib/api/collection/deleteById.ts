@@ -1,6 +1,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server.js';
 import type { CollectionSlug } from 'rizom/types/doc';
-import { handleAPIError } from '../handleError';
+import { safe } from 'rizom/utils/safe';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -8,11 +9,11 @@ export default function (slug: CollectionSlug) {
 		const { api } = event.locals;
 		const id = event.params.id || '';
 
-		try {
-			await api.collection(slug).deleteById({ id });
-		} catch (err: any) {
-			return handleAPIError(err);
+		const [error, success] = await safe(api.collection(slug).deleteById({ id }));
+		if (error) {
+			return handleError(error, { context: 'api' });
 		}
+
 		return json({ id });
 	}
 

@@ -1,6 +1,7 @@
-import { json, type RequestEvent } from '@sveltejs/kit';
-import { handleAPIError } from 'rizom/api/handleError.js';
+import { error, json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
+import { safe } from 'rizom/utils/safe';
 
 export default function (slug: PrototypeSlug) {
 	//
@@ -8,13 +9,14 @@ export default function (slug: PrototypeSlug) {
 		const { rizom } = event.locals;
 		const data = await event.request.json();
 		const { email, password } = data;
-		try {
-			const { token, user } = await rizom.auth.login({ email, password, slug });
-			const headers = token ? { 'set-auth-token': token } : undefined;
-			return json({ user }, { headers });
-		} catch (err) {
-			handleAPIError(err, 'Could not login user');
+
+		const [error, success] = await safe(rizom.auth.login({ email, password, slug }));
+		if (error) {
+			return handleError(error, { context: 'api' });
 		}
+
+		const headers = { 'set-auth-token': success.token };
+		return json({ user: success.user }, { headers });
 	}
 
 	return POST;
