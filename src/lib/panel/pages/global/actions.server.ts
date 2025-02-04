@@ -2,7 +2,7 @@ import { type RequestEvent } from '@sveltejs/kit';
 import extractData from '$lib/operations/preprocess/extract/data.server';
 import type { GlobalSlug } from 'rizom/types/doc';
 import { safe } from 'rizom/utils/safe';
-import { handleError } from 'rizom';
+import { handleError } from 'rizom/errors/handler.server';
 
 export default function (slug: GlobalSlug) {
 	const actions = {

@@ -1,8 +1,8 @@
 import rizom from './rizom.server.js';
-import handlers, { handleError } from './handlers/index.js';
+import handlers from './handlers/index.js';
 import { buildConfig } from './config/build/index.js';
 
-export { rizom, handlers, handleError, buildConfig };
+export { rizom, handlers, buildConfig };
 export { FormFieldBuilder } from 'rizom/fields/_builders/field.js';
 
 /* -------------------------------------------------------------------------- */
