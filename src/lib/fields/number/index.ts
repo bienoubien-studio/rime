@@ -3,12 +3,10 @@ import { FormFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Number from './component/Number.svelte';
 import type { FieldValidationFunc } from 'rizom/types/fields.js';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
-export const number = (name: string) =>
-	new NumberFieldBuilder(name, 'number') as PublicBuilder<typeof NumberFieldBuilder>;
+export const number = (name: string) => new NumberFieldBuilder(name);
 
-const validateValue: FieldValidationFunc<NumberField> = (value, { config }) => {
+const validateNumber: FieldValidationFunc<NumberField> = (value, { config }) => {
 	if (typeof value !== 'number') {
 		return 'Should be a number';
 	}
@@ -22,6 +20,11 @@ const validateValue: FieldValidationFunc<NumberField> = (value, { config }) => {
 };
 
 class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
+	constructor(name: string) {
+		super(name, 'number');
+		this.field.validate = validateNumber;
+	}
+
 	get component() {
 		return Number;
 	}
@@ -54,9 +57,6 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		if (!this.field.defaultValue) {
 			this.field.defaultValue = this.field.min || 0;
 		}
-		if (!this.field.validate) {
-			this.field.validate = validateValue;
-		}
 		return super.toField();
 	}
 }
@@ -79,6 +79,6 @@ declare module 'rizom' {
 		number: any;
 	}
 	interface RegisterFormFields {
-		NumberField: NumberField; // register the field type
+		NumberField: NumberField;
 	}
 }

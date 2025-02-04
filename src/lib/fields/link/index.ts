@@ -5,7 +5,6 @@ import toSnakeCase from 'to-snake-case';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/utils/validate.js';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale }) => {
 	const hasValue = !!value;
@@ -74,8 +73,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	}
 }
 
-export const link = (name: string) =>
-	new LinkFieldBuilder(name) as PublicBuilder<typeof LinkFieldBuilder>;
+export const link = (name: string) => new LinkFieldBuilder(name);
 
 /////////////////////////////////////////////
 // Type

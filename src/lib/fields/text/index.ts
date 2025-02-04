@@ -3,7 +3,6 @@ import toSnakeCase from 'to-snake-case';
 import { FormFieldBuilder } from '../_builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {

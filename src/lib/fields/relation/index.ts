@@ -4,7 +4,6 @@ import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../_builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
 import { capitalize } from 'rizom/utils/string';
-import type { PublicBuilder } from 'rizom/types/utility';
 import type { Relation } from 'rizom/db/relations';
 
 type RelationValue = string | Array<Relation | string>;

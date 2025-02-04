@@ -2,7 +2,6 @@ import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Select from './component/Select.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 	get component() {
@@ -29,8 +28,7 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 	}
 }
 
-export const select = (name: string) =>
-	new SelectManyFieldBuilder(name, 'select') as PublicBuilder<typeof SelectManyFieldBuilder>;
+export const select = (name: string) => new SelectManyFieldBuilder(name, 'select');
 
 /////////////////////////////////////////////
 // Type

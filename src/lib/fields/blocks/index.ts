@@ -1,5 +1,5 @@
 import type { AnyField, FormField } from 'rizom/types/index.js';
-import type { Dic, PublicBuilder } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/utility.js';
 import { FieldBuilder, FormFieldBuilder } from '../_builders/index.js';
 import type { UserDefinedField } from 'rizom/types';
 import Blocks from './component/Blocks.svelte';

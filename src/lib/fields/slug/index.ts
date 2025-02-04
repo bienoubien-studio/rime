@@ -4,10 +4,8 @@ import { FormFieldBuilder } from '../_builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Slug from './component/Slug.svelte';
 import Cell from './component/Cell.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
-export const slug = (name: string) =>
-	new SlugFieldBuilder(name, 'slug') as PublicBuilder<typeof SlugFieldBuilder>;
+export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
 
 class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 	get component() {

@@ -3,7 +3,6 @@ import type { FormField } from 'rizom/types';
 import { SelectFieldBuilder } from '../_builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Radio from './component/Radio.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 	get component() {
@@ -20,8 +19,7 @@ class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 	}
 }
 
-export const radio = (name: string) =>
-	new RadioFieldBuilder(name, 'radio') as PublicBuilder<typeof RadioFieldBuilder>;
+export const radio = (name: string) => new RadioFieldBuilder(name, 'radio');
 
 /////////////////////////////////////////////
 // Type

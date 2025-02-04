@@ -3,7 +3,6 @@ import { SelectFieldBuilder } from '../_builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';
 import Combobox from './component/Combobox.svelte';
-import type { PublicBuilder } from 'rizom/types/utility.js';
 
 class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 	get component() {
@@ -19,8 +18,7 @@ class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 	}
 }
 
-export const combobox = (name: string) =>
-	new ComboBoxFieldBuilder(name, 'combobox') as PublicBuilder<typeof ComboBoxFieldBuilder>;
+export const combobox = (name: string) => new ComboBoxFieldBuilder(name, 'combobox');
 
 /////////////////////////////////////////////
 // Type
