@@ -16,32 +16,51 @@ const importRegistry = new Map<string, string>();
 let importCounter = 0;
 
 // Determines what should be included in browser config
-function shouldIncludeInBrowser(key: string, value: any): boolean {
-	// Exclude these keys entirely
-	if (
-		[
-			'trustedOrigins',
-			'database',
-			'panel',
-			'smtp',
-			'routes',
-			'plugins',
-			'toSchema',
-			'toType',
-			'hooks'
-		].includes(key)
-	)
-		return false;
+function shouldIncludeInBrowser(key: string, value: any, parentKey: string = ''): boolean {
+	const fullPath = parentKey ? `${parentKey}.${key}` : key;
 
-	// For objects, exclude specific properties
+	// Patterns to exclude - more flexible matching
+	const excludePatterns = [
+		// Root level exclusions
+		'^trustedOrigins$',
+		'^database$',
+		'^smtp$',
+		'^routes$',
+		'^plugins$',
+
+		// Exclude panel properties except components
+		'^panel\.access',
+		'^panel\.routes',
+		'^panel\.users',
+
+		// Exclude global and collection access
+		'collections\.\.hooks',
+
+		// Exclude global and collection hooks
+		'globals\.\.access',
+		'globals\.\.hooks',
+
+		// Generic patterns
+		'.*\.server', // Exclude any path ending with server
+		'.*\.beforeValidate',
+		'.*\.beforeCreate',
+		'.*\.beforeUpdate',
+		'.*\.beforeDelete',
+		'.*\.beforeRead',
+		'.*\.beforeSave'
+	];
+
+	// Check if path matches any exclude pattern
+	if (excludePatterns.some((pattern) => new RegExp(pattern).test(fullPath))) {
+		return false;
+	}
+
+	// Rest of your existing checks for objects
 	if (typeof value === 'object' && value !== null) {
 		if ('name' in value && 'type' in value) {
 			if (privateFieldNames.includes(value.name)) {
 				return false;
 			}
-		}
-		if ('server' in value) {
-			return false;
 		}
 	}
 
@@ -124,8 +143,8 @@ function registerFunction(func: Function, key: string = ''): string {
 }
 
 // Parse different value types
-function parseValue(key: string, value: any): string | boolean | number {
-	if (!shouldIncludeInBrowser(key, value)) return '';
+function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
+	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
 
 	// Handle different value types
 	switch (typeof value) {
@@ -139,14 +158,15 @@ function parseValue(key: string, value: any): string | boolean | number {
 			if (value === null) return 'null';
 			if (Array.isArray(value)) {
 				return `[${value
-					.map((item) => parseValue('', item))
+					.map((item) => parseValue('', item, key))
 					.filter(Boolean)
 					.join(',')}]`;
 			}
 			// Handle objects
+			const fullPath = parentKey ? `${parentKey}.${key}` : key;
 			const entries = Object.entries(value)
-				.filter(([k, v]) => shouldIncludeInBrowser(k, v))
-				.map(([k, v]) => `'${k}': ${parseValue(k, v)}`);
+				.filter(([k, v]) => shouldIncludeInBrowser(k, v, fullPath))
+				.map(([k, v]) => `'${k}': ${parseValue(k, v, fullPath)}`);
 			return `{${entries.join(',')}}`;
 		}
 
