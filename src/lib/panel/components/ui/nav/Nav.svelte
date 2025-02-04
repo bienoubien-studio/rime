@@ -19,7 +19,7 @@
 
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
 	<div class="rz-nav__content">
-		<div class="rz-nav__header">
+		<div class="rz-nav__header" class:rz-nav__header--collapsed={isCollapsed}>
 			<!-- {#if isCollapsed} -->
 			<NavItem href="/panel" {isCollapsed} route={dashBoardRoute} />
 			<!-- {:else}
@@ -85,6 +85,9 @@
 		a {
 			height: 100%;
 			padding: var(--rz-size-6) 0;
+		}
+		&.rz-nav__header--collapsed {
+			justify-content: center;
 		}
 	}
 	.rz-nav__body {

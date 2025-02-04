@@ -38,9 +38,11 @@
 					<NavItemButton icon={RouteIcon} {active} {...rest} {...props} />
 				{/snippet}
 			</Tooltip.Trigger>
-			<Tooltip.Content side="right">
-				{route.title}
-			</Tooltip.Content>
+			<Tooltip.Portal>
+				<Tooltip.Content side="right">
+					{route.title}
+				</Tooltip.Content>
+			</Tooltip.Portal>
 		</Tooltip.Root>
 	</Tooltip.Provider>
 {:else}
