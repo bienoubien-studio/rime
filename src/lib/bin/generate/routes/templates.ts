@@ -98,17 +98,36 @@ export const GET = api.global.get('${slug}')
 export const POST = api.global.update('${slug}')
 `;
 
-// "/svelte-admin/src/lib/panel/BookingsOverview.svelte"
 export const customRouteSvelte = (config: any) => {
-	const componentReg = /([A-Z][a-zA-Z0-9]+)\.svelte$/;
-	const match = config.component.match(componentReg);
-	if (match) {
-		const componentName = match[1];
-		const componentPath = '$lib' + config.component.split('lib').at(-1);
+	let componentPath: string = '';
+	let componentName: string = '';
+
+	const rawPath =
+		typeof config.component === 'string'
+			? config.component
+			: config.component[Symbol.for('filename')] || (config.component as any)[Symbol('filename')];
+
+	if (rawPath) {
+		const componentReg = /([A-Z][a-zA-Z0-9]+)\.svelte$/;
+		const match = rawPath.match(componentReg);
+		if (match) {
+			componentName = match[1];
+
+			if (rawPath.includes('node_modules/')) {
+				componentPath = 'node_modules/' + rawPath.split('node_modules/').at(-1);
+			} else {
+				// Find everything after 'plugins' (or whatever your structure is)
+				componentPath = '$lib/' + rawPath.split('lib/').at(-1);
+			}
+		}
+	}
+
+	if (componentName && componentPath) {
 		return `<script lang="ts">
-      import ${componentName} from '${componentPath}'
-    </script>
-      <${componentName} />`;
+            import ${componentName} from '${componentPath}'
+            const { data } = $props()
+        </script>
+        <${componentName} {data} />`;
 	}
 
 	return `Cannot parse provided component path`;
