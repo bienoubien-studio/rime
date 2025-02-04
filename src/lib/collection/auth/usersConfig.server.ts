@@ -9,6 +9,7 @@ export const panelUsersCollection: CollectionConfig = {
 	auth: true,
 	icon: UsersRound,
 	fields: [usersFields.name, usersFields.email, usersFields.roles],
+	group: 'system',
 	access: {
 		read: (user) => !!user,
 		create: (user) => access.isAdmin(user),
