@@ -1,5 +1,5 @@
 .rz-relation-upload__row {
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-ground-6));
 	position: relative;
 	margin-bottom: var(--rz-size-3);
 	display: flex;
@@ -7,14 +7,14 @@
 	gap: var(--rz-size-6);
 	border-radius: var(--rz-radius-md);
 	border: var(--rz-border);
+	padding: var(--rz-size-2);
 }
 
 .rz-relation-upload__thumbnail {
 	width: var(--rz-size-40);
 	height: var(--rz-size-40);
 	overflow: hidden;
-	border-top-left-radius: var(--rz-radius-md);
-	border-bottom-left-radius: var(--rz-radius-md);
+	border-radius: var(--rz-radius-md);
 }
 
 .rz-relation-upload__image {

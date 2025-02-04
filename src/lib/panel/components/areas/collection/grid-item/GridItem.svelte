@@ -72,6 +72,11 @@
 			aspect-ratio: 16/9;
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
+			padding: var(--rz-size-2);
+			> :global(div) {
+				border-radius: var(--rz-radius-sm);
+				overflow: hidden;
+			}
 		}
 
 		:global(.rz-card-content) {
