@@ -21,6 +21,7 @@
 
 <style>
 	.rz-field-root {
+		container: rz-field-root / inline-size;
 		position: relative;
 	}
 	.rz-field-root--hidden {

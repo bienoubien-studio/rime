@@ -32,6 +32,7 @@
 	const linkTypes = config.types || ['url', 'email', 'tel', 'anchor'];
 
 	const initial = path ? form.getRawValue(path) : null;
+
 	let initialLinkType = initial?.type || linkTypes[0];
 	let initialLinkValue = initial?.link || '';
 	let initialLabel = initial?.label || '';
@@ -173,10 +174,8 @@
 	<Field.Error error={field.error} />
 </Field.Root>
 
-<style type="postcss">
+<style>
 	.rz-link-field {
-		container: rz-link-field / inline-size;
-
 		:global(.rz-input) {
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: var(--rz-corner-radius);
@@ -217,7 +216,7 @@
 			}
 		}
 
-		@container rz-link-field (min-width:640px) {
+		@container rz-field-root (min-width:640px) {
 			.rz-link__type-text {
 				display: block;
 			}
@@ -236,14 +235,14 @@
 	}
 
 	.rz-link__target {
-		@mixin bg ground-5;
+		background-color: hsl(var(--rz-ground-5));
 		border-bottom: var(--rz-border);
 		border-right: var(--rz-border);
 		border-bottom-right-radius: var(--rz-radius-md);
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-4);
-		@mixin px var(--rz-size-4);
+		padding: 0 var(--rz-size-4);
 
 		:global(.rz-label) {
 			white-space: nowrap;

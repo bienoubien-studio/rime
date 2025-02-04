@@ -177,7 +177,7 @@ function createDocumentFormState({
 
 		const validate = (value: any) => {
 			if (config.required && config.isEmpty(value)) {
-				errors.value[path] = 'required::This field is required';
+				errors.set(path, 'required::required_field');
 				return 'required';
 			}
 
@@ -191,7 +191,7 @@ function createDocumentFormState({
 					config
 				});
 				if (validated !== true) {
-					errors.value[path] = validated;
+					errors.set(path, validated);
 					return false;
 				}
 			}
