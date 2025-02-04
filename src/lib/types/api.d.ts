@@ -45,7 +45,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 	create(args: {
 		data: Partial<Doc>;
 		locale?: string;
-	}): Promise<{ doc: Doc; errors?: never } | { doc?: never; errors: FormErrors }>;
+	}): Promise<{ doc: Doc }>;
 
 	find(args: {
 		query: OperationQuery | string;
@@ -68,7 +68,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 		id?: string;
 		data: Partial<Doc>;
 		locale?: string;
-	}): Promise<Doc | { errors: FormErrors }>;
+	}): Promise<Doc>;
 
 	deleteById(args: { id: string }): Promise<string>;
 }

@@ -14,11 +14,6 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 	? R
 	: any;
 
-export type PublicBuilder<T> = Omit<
-	InstanceType<T>,
-	'component' | 'cell' | 'toType' | 'toSchema' | 'raw' | 'type' | 'name'
->;
-
 type AnyFunction = (...args: any[]) => any;
 
 type WithoutBuilders<T> =

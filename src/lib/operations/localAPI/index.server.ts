@@ -36,7 +36,7 @@ export class LocalAPI implements LocalAPIType {
 			throw new RizomError(`${slug} is not a collection`);
 		}
 
-		return new CollectionInterface({
+		return new CollectionInterface<RegisterCollection[Slug]>({
 			event: this.#requestEvent,
 			config: collectionConfig,
 			adapter: this.rizom.adapter,

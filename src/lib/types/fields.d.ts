@@ -45,7 +45,7 @@ type BaseField = {
 type FormField = BaseField & {
 	name: string;
 	hidden?: boolean;
-	validate?: FieldValidationFunc<AnyFormField, GenericDoc>;
+	validate?: FieldValidationFunc<TConfig extends AnyFormField, GenericDoc>;
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
