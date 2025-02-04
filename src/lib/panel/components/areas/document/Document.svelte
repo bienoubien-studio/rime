@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import * as DocUpload from '$lib/panel/components/ui/doc-upload';
+	import UploadHeader from './upload-header/UploadHeader.svelte';
 	import AuthHeader from './AuthHeader.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
@@ -144,7 +144,7 @@
 
 		<div class="rz-document__fields">
 			{#if config.type === 'collection' && isUploadConfig(config)}
-				<DocUpload.Header accept={config.accept} create={operation === 'create'} {form} />
+				<UploadHeader accept={config.accept} create={operation === 'create'} {form} />
 			{/if}
 			{#if config.type === 'collection' && isAuthConfig(config) && operation === 'create'}
 				<AuthHeader create={operation === 'create'} {form} />
