@@ -4,7 +4,7 @@ import type { AnyField, FieldsType, Option } from './fields.js';
 import type { GenericDoc } from './doc.js';
 import type { CollectionHooks, GlobalHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
-import type { AtLeastOne, PublicBuilder, WithoutBuilders, WithRequired } from './utility.js';
+import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { GetRegisterType } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/_builders/field.js';
@@ -57,7 +57,12 @@ export interface Config {
 		routes?: Record<string, CustomPanelRoute>;
 		users?: PanelUsersConfig;
 		language?: PanelLanguage;
+		components?: {
+			header?: ComponentType[];
+			dashboard?: ComponentType;
+		};
 	};
+	cache?: { isEnabled?: (event: RequestEvent) => boolean };
 	routes?: Record<string, RouteConfig>;
 	plugins?: ReturnType<Plugin>[];
 	custom?: {
@@ -143,12 +148,17 @@ export type BuiltConfig = {
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
 		access: (user?: User) => boolean;
+		components?: {
+			header: ComponentType[];
+			// dashboard: ComponentType;
+		};
 		language: 'fr' | 'en';
 	};
 };
 
 export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes'> & {
 	blueprints: Record<FieldsType, FieldsComponents>;
+	panel: { components: { header: ComponentType[]; dashboard?: ComponentType } };
 };
 
 export type CustomPanelRoute = {

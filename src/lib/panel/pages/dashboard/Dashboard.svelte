@@ -11,8 +11,7 @@
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();
 
-	const configContext = getConfigContext();
-	const config = configContext;
+	const config = getConfigContext();
 
 	const locale = getLocaleContext();
 </script>
@@ -20,51 +19,61 @@
 <div class="rz-dashboard">
 	{#if config.raw.siteUrl || config.raw.localization}
 		<PageHeader>
-			{#if config.raw.siteUrl}
-				<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>
-					{__t('common.view_site')}
-				</Button>
-			{/if}
+			<div class="rz-dashboard__header-left">
+				{#if config.raw.siteUrl}
+					<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>
+						{__t('common.view_site')}
+					</Button>
+				{/if}
+				{#each config.raw.panel.components.header as CustomHeaderComponent}
+					<CustomHeaderComponent />
+				{/each}
+			</div>
 			<LanguageSwitcher />
 		</PageHeader>
 	{/if}
 
-	<div class="rz-dashboard__content">
-		{#each entries as entry}
-			{@const Icon = config.raw.icons[entry.slug]}
-			<section>
-				<header>
-					<a href={entry.link}>
-						<h2>{entry.title}</h2>
-					</a>
-				</header>
+	{#if config.raw.panel.components.dashboard}
+		{@const CustomDashBoard = config.raw.panel.components.dashboard}
+		<CustomDashBoard />
+	{:else}
+		<div class="rz-dashboard__content">
+			{#each entries as entry}
+				{@const Icon = config.raw.icons[entry.slug]}
+				<section>
+					<header>
+						<a href={entry.link}>
+							<h2>{entry.title}</h2>
+						</a>
+					</header>
 
-				{#if entry.prototype === 'collection'}
-					{#if entry.lastEdited!.length === 0}
-						{__t(`common.no_document|${entry.gender}`, entry.titleSingular)}
+					{#if entry.prototype === 'collection'}
+						{#if entry.lastEdited!.length === 0}
+							{__t(`common.no_document|${entry.gender}`, entry.titleSingular)}
+						{/if}
+						{#if entry.lastEdited}
+							<ul>
+								{#each entry.lastEdited as doc}
+									<li class="rz-dashboard__doc">
+										<a href="/panel/{doc._type}/{doc.id}">
+											<Icon size="12" />
+											{doc.title}
+											<p>{__t('common.last_update')} : {locale.dateFormat(doc.updatedAt!, true)}</p>
+										</a>
+									</li>
+								{/each}
+							</ul>
+						{/if}
+						{#if entry.canCreate}
+							<Button variant="secondary" href="{entry.link}/create"
+								>{__t(`common.create_new|${entry.gender}`, entry.titleSingular)}</Button
+							>
+						{/if}
 					{/if}
-					{#if entry.lastEdited}
-						<ul>
-							{#each entry.lastEdited as doc}
-								<li class="rz-dashboard__doc">
-									<a href="/panel/{doc._type}/{doc.id}">
-										<Icon size="12" />
-										{doc.title}
-										<p>{__t('common.last_update')} : {locale.dateFormat(doc.updatedAt!, true)}</p>
-									</a>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-					{#if entry.canCreate}
-						<Button variant="secondary" href="{entry.link}/create"
-							>{__t(`common.create_new|${entry.gender}`, entry.titleSingular)}</Button
-						>
-					{/if}
-				{/if}
-			</section>
-		{/each}
-	</div>
+				</section>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 <style type="postcss">
@@ -74,6 +83,12 @@
 		container: rz-dashboard / inline-size;
 		background-color: hsl(var(--rz-ground-5) / 0.4);
 		min-height: 100vh;
+
+		.rz-dashboard__header-left {
+			display: flex;
+			gap: var(--rz-size-2);
+			align-items: center;
+		}
 
 		header {
 			a {

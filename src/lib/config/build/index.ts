@@ -65,18 +65,22 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		}
 	}
 
-	// Set base builtConfig
 	const trustedOrigins =
 		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
 			? config.trustedOrigins
 			: [process.env.PUBLIC_RIZOM_URL as string];
 
+	// Set base builtConfig
 	let builtConfig: BuiltConfig = {
 		...config,
 		panel: {
 			access: config.panel?.access ? config.panel.access : (user) => access.isAdmin(user),
 			routes: config.panel?.routes ? config.panel.routes : {},
-			language: config.panel?.language || 'en'
+			language: config.panel?.language || 'en',
+			components: {
+				header: config.panel?.components?.header || [],
+				...(config.panel?.components?.dashboard && { dashboard: config.panel.components.dashboard })
+			}
 		},
 		collections,
 		plugins: {},
