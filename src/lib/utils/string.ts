@@ -19,10 +19,14 @@ export const slugify = (text: string): string => {
 };
 
 export function toHash(str: string) {
-	let hash = 0;
+	const seed = 0;
+	let h1 = seed;
+
 	for (let i = 0; i < str.length; i++) {
-		hash = (hash << 5) - hash + str.charCodeAt(i);
-		hash = hash & hash;
+		h1 ^= str.charCodeAt(i);
+		h1 = Math.imul(h1, 0xcc9e2d51);
+		h1 = Math.imul((h1 >>> 13) | (h1 << 19), 0x1b873593);
 	}
-	return Math.abs(hash).toString();
+
+	return Math.abs(h1).toString();
 }
