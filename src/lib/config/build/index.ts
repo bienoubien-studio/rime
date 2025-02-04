@@ -13,6 +13,7 @@ import { buildGlobal } from './global.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
+import { cache } from 'rizom/plugins/cache/index.js';
 
 type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;
 
@@ -92,17 +93,23 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 	/////////////////////////////////////////////
 	// Plugins
 	//////////////////////////////////////////////
-	if (config.plugins) {
-		const { pluginsFieldsComponents, builtConfigWithPlugins } = registerPlugins({
-			plugins: config.plugins,
-			builtConfig
-		});
-		builtConfig = builtConfigWithPlugins;
-		fieldsComponentsMap = {
-			...pluginsFieldsComponents,
-			...fieldsComponentsMap
-		};
-	}
+
+	// IMPORTANT !
+	// Mandatory plugins that includes handlers should be added also here :
+	// src/lib/handlers/plugins.server.ts
+	// to register handlers as the config is built from inside the first handler
+	// in order to reload/rebuild on refresh if dev mode
+	const plugins = [cache(config.cache || {}), ...(config.plugins || [])];
+
+	const { pluginsFieldsComponents, builtConfigWithPlugins } = registerPlugins({
+		plugins,
+		builtConfig
+	});
+	builtConfig = builtConfigWithPlugins;
+	fieldsComponentsMap = {
+		...pluginsFieldsComponents,
+		...fieldsComponentsMap
+	};
 
 	/////////////////////////////////////////////
 	// Generate files

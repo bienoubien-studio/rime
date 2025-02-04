@@ -91,11 +91,17 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			limit
 		};
 
-		if (this.#event.locals.cache) {
-			const key = toHash(
-				`find-${this.config.slug}-${sort}-${depth}-${limit || 'nolimit'}-${locale || ''}-${query.toString()}`
+		if (this.#event.locals.cacheEnabled) {
+			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+				'find',
+				this.config.slug,
+				sort,
+				depth,
+				limit,
+				locale,
+				query
 			);
-			return this.#event.locals.cache.get(key, () => find<Doc>(params));
+			return this.#event.locals.rizom.plugins.cache.get(key, () => find<Doc>(params));
 		}
 
 		return find<Doc>(params);
@@ -113,11 +119,16 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			limit
 		};
 
-		if (this.#event.locals.cache) {
-			const key = toHash(
-				`findall-${this.config.slug}-${sort}-${depth}-${limit || 'nolimit'}-${locale || ''}`
+		if (this.#event.locals.cacheEnabled) {
+			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+				'findAll',
+				this.config.slug,
+				sort,
+				depth,
+				limit,
+				locale
 			);
-			return this.#event.locals.cache.get(key, () => findAll<Doc>(params));
+			return this.#event.locals.rizom.plugins.cache.get(key, () => findAll<Doc>(params));
 		}
 
 		return findAll<Doc>(params);
@@ -137,10 +148,15 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 			depth
 		};
 
-		if (this.#event.locals.cache) {
-			console.log('cache ?!');
-			const key = toHash(`findall-${this.config.slug}-${id}-${depth}-${locale || ''}`);
-			return this.#event.locals.cache.get(key, () => findById<Doc>(params));
+		if (this.#event.locals.cacheEnabled) {
+			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+				'findById',
+				this.config.slug,
+				id,
+				depth,
+				locale
+			);
+			return this.#event.locals.rizom.plugins.cache.get(key, () => findById<Doc>(params));
 		}
 
 		return findById<Doc>(params);

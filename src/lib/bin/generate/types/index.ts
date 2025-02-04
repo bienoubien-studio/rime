@@ -138,6 +138,7 @@ export type RelationValue<T> =
       user: User | undefined;
       rizom: Rizom;
       api: LocalAPI;
+      cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;
       locale: string | undefined;

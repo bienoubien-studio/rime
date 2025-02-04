@@ -1,4 +1,5 @@
 import { type Handle } from '@sveltejs/kit';
+import { cache } from 'rizom/plugins/cache/index.js';
 import type { Config } from 'rizom/types/index.js';
 
 type Args = { config: Config };
@@ -6,11 +7,14 @@ type Args = { config: Config };
 export function createPluginsHandler({ config }: Args) {
 	const pluginHandlers: Handle[] = [];
 
-	if (config.plugins) {
-		for (const plugin of config.plugins) {
-			if (plugin.handler) {
-				pluginHandlers.push(plugin.handler);
-			}
+	// Should re-pass mandatory plugins here as the config is not built
+	// at this point and making it built would prevent config reload/rebuilt
+	// it's ugly but it works
+	const plugins = [cache(config.cache || {}), ...(config.plugins || [])];
+
+	for (const plugin of plugins) {
+		if (plugin.handler) {
+			pluginHandlers.push(plugin.handler);
 		}
 	}
 
