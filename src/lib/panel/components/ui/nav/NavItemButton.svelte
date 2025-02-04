@@ -31,37 +31,23 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		/* margin-top: calc(var(--rz-size-2)); */
 		height: calc(var(--rz-size-14) - 1px);
-
 		padding: var(--rz-size-2) var(--rz-size-0);
-		/* border-radius: var(--rz-radius-md); */
-		/* font-size: var(--rz-text-sm); */
 		white-space: nowrap;
 		@mixin font-normal;
 		justify-content: start;
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color,
 			fill, stroke;
 		transition-duration: 0.25s;
-		/* background-color: hsl(var(--rz-ground-5) / 0); */
 		gap: var(--rz-size-3);
 		&:not(:last-child) {
 			border-bottom: 1px solid hsl(var(--rz-color-border) / 0.5);
 		}
 	}
-	.rz-button-nav:hover {
-		/* background-color: hsl(var(--rz-ground-5) / 0.5); */
-	}
+
 	.rz-button-nav--active {
 		text-decoration: underline;
-		/* background-color: hsl(var(--rz-ground-5) / 0.6); */
 		position: relative;
-		/* @mixin font-semibold; */
-		/* box-shadow: var(--rz-shadow-sm); */
-	}
-
-	.rz-button-nav--active:hover {
-		/* background-color: hsl(var(--rz-ground-5) / 0.6); */
 	}
 
 	.rz-button-nav__icon {
