@@ -1,10 +1,10 @@
-import { fail, redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
-import logger from 'rizom/utils/logger';
+import { redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
 import extractData from 'rizom/operations/preprocess/extract/data.server';
-import type { PrototypeSlug } from 'rizom/types/doc';
-import type { PanelActionFailure } from 'rizom/types/panel';
+import type { CollectionSlug } from 'rizom/types/doc';
+import { handleError } from 'rizom/errors/handler.server';
+import { safe } from 'rizom/utils/safe';
 
-export default function (slug: PrototypeSlug) {
+export default function (slug: CollectionSlug) {
 	const actions: Actions = {
 		//////////////////////////////////////////////
 		// Create
@@ -12,26 +12,28 @@ export default function (slug: PrototypeSlug) {
 		create: async (event: RequestEvent) => {
 			const { api, locale } = event.locals;
 			let doc;
+
+			// A redirect parameter equals to 0 can be present if we're in a nested form
+			// to prevent redirection after entry creation
+			// ex: for relation creation
 			const withoutRedirect = event.url.searchParams.get('redirect') === '0';
-			try {
-				const data = await extractData(event.request);
-				const result = await api.collection(slug).create({
-					data,
+
+			const [error, result] = await safe(
+				api.collection(slug).create({
+					data: await extractData(event.request),
 					locale
-				});
-				if ('errors' in result) {
-					return fail<PanelActionFailure>(400, { errors: result.errors });
-				} else {
-					doc = result.doc;
-				}
-			} catch (err: any) {
-				logger.error(err);
-				return fail<PanelActionFailure>(500, { error: err.message });
+				})
+			);
+
+			if (error) {
+				return handleError(error, { context: 'action' });
 			}
+
 			if (withoutRedirect) {
-				return { doc };
+				return { doc: result.doc };
 			}
-			return redirect(303, `/panel/${slug}/${doc.id}`);
+
+			return redirect(303, `/panel/${slug}/${result.doc.id}`);
 		},
 
 		//////////////////////////////////////////////
@@ -41,22 +43,19 @@ export default function (slug: PrototypeSlug) {
 			const { api, locale } = event.locals;
 			const id = event.params.id || '';
 
-			try {
-				const data = await extractData(event.request);
-				const result = await api.collection(slug).updateById({
+			const [error, doc] = await safe(
+				api.collection(slug).updateById({
 					id,
-					data,
+					data: await extractData(event.request),
 					locale
-				});
+				})
+			);
 
-				if ('errors' in result) {
-					return fail<PanelActionFailure>(400, { errors: result.errors });
-				}
-				return { doc: result.doc };
-			} catch (err: any) {
-				logger.error(err);
-				return fail<PanelActionFailure>(500, { error: err.message });
+			if (error) {
+				return handleError(error, { context: 'action' });
 			}
+
+			return { doc };
 		}
 	};
 

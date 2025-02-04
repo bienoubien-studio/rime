@@ -1,6 +1,7 @@
-import { error, fail, redirect, type NumericRange } from '@sveltejs/kit';
+import { error, fail, isRedirect, redirect, type NumericRange } from '@sveltejs/kit';
 import type { FormErrors } from 'rizom/types/panel';
 import { RizomError, RizomFormError } from './index';
+import logger from 'rizom/utils/logger';
 
 export type ErrorContext = 'action' | 'api' | 'load';
 
@@ -11,6 +12,7 @@ type ErrorHandlerOptions = {
 
 export function handleError(err: unknown, options: ErrorHandlerOptions) {
 	const { context, formData } = options;
+	logger.error(err);
 
 	if (err instanceof RizomFormError) {
 		switch (context) {
@@ -33,7 +35,11 @@ export function handleError(err: unknown, options: ErrorHandlerOptions) {
 		return error(err.status, err.message);
 	}
 
+	// Redirect error
+	if (isRedirect(err)) {
+		return redirect(err.status, err.location);
+	}
+
 	// Unknown errors
-	console.error('Unhandled error:', err);
 	return error(500, 'Internal Server Error');
 }
