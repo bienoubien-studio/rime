@@ -8,6 +8,7 @@ node_modules
 /dist
 /app
 /src/plugins
+rules.txt
 
 # OS
 .DS_Store
