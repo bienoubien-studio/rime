@@ -2,16 +2,12 @@
 	import DropZone from './drop-zone/DropZone.svelte';
 	import FileText from 'lucide-svelte/icons/file-text';
 	import { capitalize } from '$lib/utils/string.js';
-	import Button from '../button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getPanelThumbnailKey } from '$lib/config/utils';
 	import { toast } from 'svelte-sonner';
 	import { FileArchive, FileAudio, FileVideo } from 'lucide-svelte';
-	import type {
-		CompiledCollectionConfig,
-		CompiledUploadCollectionConfig,
-		UploadCollectionConfig
-	} from 'rizom/types/config';
+	import type { CompiledUploadCollectionConfig, UploadCollectionConfig } from 'rizom/types/config';
 	import * as util from 'rizom/utils/file.js';
 
 	type Props = {
@@ -122,6 +118,7 @@
 <style type="postcss">
 	.rz-doc-upload-header {
 		container: inline-size;
+		padding: 0 var(--rz-fields-padding);
 	}
 
 	.rz-doc-upload-header__file {
