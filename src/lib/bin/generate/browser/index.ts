@@ -27,6 +27,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'^smtp$',
 		'^routes$',
 		'^plugins$',
+		'^cache',
 
 		// Exclude panel properties except components
 		'^panel\.access',
@@ -37,7 +38,6 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'collections\.\.hooks',
 
 		// Exclude global and collection hooks
-		'globals\.\.access',
 		'globals\.\.hooks',
 
 		// Generic patterns
