@@ -2,6 +2,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { EllipsisVertical, Trash2 } from 'lucide-svelte';
 	import * as Popover from '$lib/panel/components/ui/popover';
+	import { __t } from 'rizom/panel/i18n';
 
 	type Props = {
 		deleteBlock: () => void;
@@ -23,17 +24,20 @@
 
 <Popover.Root bind:open>
 	<Popover.Trigger />
-	<Popover.Content class="rz-block-actions__content" align="end">
-		<Button
-			class="rz-block-actions__delete-button"
-			size="sm"
-			variant="ghost"
-			type="button"
-			onclick={deleteBlock}
-		>
-			<Trash2 size={13} /> Delete block
-		</Button>
-	</Popover.Content>
+	<Popover.Portal>
+		<Popover.Content class="rz-block-actions__content" align="end">
+			<Button
+				class="rz-block-actions__delete-button"
+				size="sm"
+				variant="ghost"
+				type="button"
+				onclick={deleteBlock}
+			>
+				<Trash2 size={13} />
+				{__t('fields.delete_block')}
+			</Button>
+		</Popover.Content>
+	</Popover.Portal>
 </Popover.Root>
 
 <style type="postcss">
