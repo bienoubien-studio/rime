@@ -209,12 +209,13 @@ const { docs } = await fetch('http://localhost:5173/api/pages?where[author][like
 
 ## ROADMAP
 
-- [√] switch from lucia to better-auth
-- [√] Document locked while being edited by another user
+- [v] switch from lucia to better-auth
+- [v] Document locked while being edited by another user
+- [v] Panel i18n
 - [ ] Documentation
 - [ ] Document version
 - [ ] Working Live Edit system (in developpment)
-- [ ] Panel i18n
+- [ ] Tree field
 - [ ] cmd-K menu in admin Panel
 
 ## 🙏 Acknowledgments
