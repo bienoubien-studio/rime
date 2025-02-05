@@ -60,7 +60,7 @@
 /**************************************/
 
 .rz-tabs-list {
-	@mixin bg color-input;
+	background-color: hsl(var(--rz-color-input));
 	@mixin color ground-2;
 	height: var(--rz-size-11);
 	width: 100%;

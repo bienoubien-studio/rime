@@ -23,7 +23,7 @@
 <style type="postcss" global>
 	.rz-tag {
 		background-color: hsl(var(--rz-ground-0));
-		@mixin color ground-4;
+		color: hsl(var(--rz-ground-4));
 		border-radius: var(--rz-radius-sm);
 		display: flex;
 		align-items: center;

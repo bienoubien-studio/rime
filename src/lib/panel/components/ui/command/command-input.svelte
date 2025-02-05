@@ -22,7 +22,7 @@
 
 <style type="postcss">
 	.rz-command-input {
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		align-items: center;
 		border-radius: var(--rz-radius-md);

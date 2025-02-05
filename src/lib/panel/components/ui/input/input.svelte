@@ -17,7 +17,7 @@
 <style type="postcss">
 	.rz-input {
 		border: var(--rz-border);
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		height: var(--rz-size-11);
 		width: 100%;
