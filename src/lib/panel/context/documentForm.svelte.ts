@@ -226,6 +226,7 @@ function createDocumentFormState({
 			},
 
 			set value(value: any) {
+				console.log('set value');
 				const valid = validate(value);
 				if (!isCreateDoc(doc) && !config.access.update(user.attributes)) {
 					return;
@@ -260,8 +261,14 @@ function createDocumentFormState({
 
 			get error() {
 				return errors.value[path] || false;
-			}
+			},
 
+			get isEmpty() {
+				return (
+					!!config.isEmpty &&
+					config.isEmpty(getValueFromPath(doc, path, { maxDepth: parts.length }))
+				);
+			}
 			// get props() {
 			// 	return {
 			//        get disabled() { return readOnly },
