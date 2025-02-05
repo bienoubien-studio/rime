@@ -11,5 +11,6 @@
 	"search_a": "Rechercher {un|une} $1...",
 	"select_all": "Tout sélectionner",
 	"delete": "Supprimer $1",
-	"no_document": "Aucun{ |e} $1"
+	"no_document": "Aucun{ |e} $1",
+	"edit_link": "Editer le lien"
 }

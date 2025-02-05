@@ -41,7 +41,7 @@ function createFormStore(initial: Dic, key: string) {
 				throw new Error(config.type + ' ' + err.message);
 			}
 			if (config.required && isEmpty) {
-				errors.value[path] = 'required::This field is required';
+				errors.value[path] = 'required::required_field';
 				return false;
 			}
 

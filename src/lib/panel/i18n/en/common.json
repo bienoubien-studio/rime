@@ -11,5 +11,6 @@
 	"search_a": "Search a $1...",
 	"select_all": "Select all",
 	"delete": "Delete $1",
-	"no_document": "No $1 yet"
+	"no_document": "No $1 yet",
+	"edit_link": "Edit link"
 }
