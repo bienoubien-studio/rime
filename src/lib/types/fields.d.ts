@@ -34,6 +34,7 @@ type BaseField = {
 	live?: boolean;
 	condition?: (doc: any) => boolean;
 	width?: FieldWidth;
+  className?: string;
 	access: {
 		create: FieldAccess;
 		read: FieldAccess;

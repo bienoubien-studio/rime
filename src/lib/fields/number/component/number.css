@@ -10,7 +10,7 @@
 }
 
 .rz-number__input {
-	@mixin bg color-input;
+	background-color: hsl(var(--rz-color-input));
 	height: 100%;
 	width: 100%;
 	flex: 1;
@@ -38,7 +38,7 @@
 }
 
 .rz-number__chevron {
-	@mixin bg color-input;
+	background-color: hsl(var(--rz-color-input));
 	display: flex;
 	align-items: center;
 	justify-content: center;

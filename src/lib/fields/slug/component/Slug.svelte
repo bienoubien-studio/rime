@@ -50,7 +50,7 @@
 	};
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 
 	<div class="rz-slug">

@@ -172,7 +172,7 @@
 	const RelationComponent = isRelationToUpload ? Upload : Default;
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 
 	<RelationComponent

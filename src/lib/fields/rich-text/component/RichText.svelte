@@ -33,7 +33,7 @@
 	});
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 	<div
@@ -50,7 +50,7 @@
 
 <style type="postcss">
 	.rz-rich-text__editor {
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		min-height: var(--rz-size-11);
 		width: 100%;
 		border-radius: var(--rz-radius-md);

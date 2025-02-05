@@ -20,6 +20,11 @@ export class FieldBuilder<T extends BaseField = BaseField> {
 		} as T;
 	}
 
+	className(str: string) {
+		this.field.className = str;
+		return this;
+	}
+
 	toField(): T {
 		return this.field;
 	}

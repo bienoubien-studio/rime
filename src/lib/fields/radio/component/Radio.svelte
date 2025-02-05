@@ -20,7 +20,7 @@
 	});
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<RadioGroup.Root bind:value class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index}

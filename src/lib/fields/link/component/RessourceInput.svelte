@@ -1,14 +1,13 @@
 <script lang="ts">
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import { X } from 'lucide-svelte';
-	import { dataFocused } from 'rizom/panel/utility/dataFocused';
-	import { dataError } from 'rizom/panel/utility/dataError';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
 	import { __t } from 'rizom/panel/i18n';
+	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 
 	type Ressource = {
 		label: string;
 		id: string;
+		_prototype: 'global' | 'collection';
 	};
 
 	type Props = {
@@ -37,7 +36,8 @@
 			const docs = 'docs' in response ? response.docs : [response.doc];
 			const ressources: Ressource[] = docs.map((doc: GenericDoc) => ({
 				id: doc.id,
-				label: doc.title
+				label: doc._prototype === 'collection' ? doc.title : doc._type,
+				_prototype: doc._prototype
 			}));
 			if (ressourceId) {
 				selected = ressources.find((ressource) => ressource.id === ressourceId);
@@ -48,7 +48,15 @@
 	};
 
 	$effect(() => {
-		getRessources(ressourceType).then((out) => (ressources = out));
+		getRessources(ressourceType)
+			.then((result) => {
+				ressources = result;
+			})
+			.then(() => {
+				if (ressources[0]._prototype === 'global') {
+					selected = ressources[0];
+				}
+			});
 	});
 
 	$effect(() => {
@@ -62,6 +70,11 @@
 			selected = null;
 		}
 	});
+
+	function removeRessource() {
+		selected = null;
+		ressourceId = null;
+	}
 </script>
 
 <div class="rz-ressource-input">
@@ -69,43 +82,26 @@
 		<div
 			class="rz-ressource-input__wrapper"
 			class:rz-ressource-input__wrapper--readonly={readOnly}
-			use:dataFocused={inputFocused}
-			use:dataError={error}
+			data-focused={inputFocused ? '' : null}
+			data-error={error ? '' : null}
 		>
 			{#if selected}
-				<div
-					class="rz-ressource-input__selected"
-					class:rz-ressource-input__selected--readonly={readOnly}
-				>
-					<span>{selected.label}</span>
-					<button
-						class="rz-ressource-input__remove"
-						class:rz-ressource-input__remove--readonly={readOnly}
-						type="button"
-						onclick={() => {
-							selected = null;
-							ressourceId = null;
-						}}
-					>
-						<X size={13} />
-					</button>
-				</div>
+				<Tag onRemove={removeRessource} {readOnly}>
+					{selected.label}
+				</Tag>
 			{/if}
 
-			{#if !readOnly}
+			{#if !readOnly && !selected}
 				<Command.InputSelect
 					onfocus={() => (inputFocused = true)}
-					onblur={() => setTimeout(() => (inputFocused = false), 150)}
-					class="rz-ressource-input__search {selected ? 'rz-ressource-input__search--hidden' : ''}"
+					onblur={() => setTimeout(() => (inputFocused = false), 200)}
 					bind:value={search}
 					placeholder={__t('common.search_a', ressourceType)}
 				/>
-
 				{#if inputFocused}
-					<Command.List class="rz-ressource-input__list">
+					<Command.List>
 						{#each ressources as ressource}
 							<Command.Item
-								class="rz-ressource-input__item"
 								value={ressource.label}
 								onSelect={() => {
 									selected = ressource;
@@ -129,14 +125,35 @@
 	.rz-ressource-input {
 		position: relative;
 		width: 100%;
-		& :global(.rz-command) {
+
+		:global(.rz-command) {
 			width: 100%;
 			border-radius: var(--rz-radius-md);
+		}
+
+		:global(.rz-command-list) {
+			background-color: hsl(var(--rz-color-input));
+			border: var(--rz-border);
+			border-radius: var(--rz-radius-md);
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: var(--rz-size-12);
+			z-index: 10;
+			box-shadow: var(--rz-shadow-md);
+		}
+
+		:global(.rz-command-input-select) {
+			cursor: text;
+		}
+
+		:global(.rz-command-item) {
+			height: var(--rz-size-10);
 		}
 	}
 
 	.rz-ressource-input__wrapper {
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		height: var(--rz-size-11);
 		flex-wrap: wrap;
@@ -163,7 +180,7 @@
 
 	.rz-ressource-input__selected {
 		background-color: hsl(var(--rz-ground-0));
-		@mixin color ground-4;
+		color: hsl(var(--rz-ground-4));
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-2);
@@ -184,7 +201,7 @@
 	.rz-ressource-input__remove--readonly {
 		cursor: no-drop;
 	}
-	/*
+
 	.rz-ressource-input__search {
 		border-radius: 0;
 	}
@@ -194,7 +211,7 @@
 	}
 
 	.rz-ressource-input__list {
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		position: absolute;
 		left: 0;
 		right: 0;
@@ -208,5 +225,5 @@
 
 	.rz-ressource-input__item {
 		height: var(--rz-size-11);
-	} */
+	}
 </style>

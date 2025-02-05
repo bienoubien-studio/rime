@@ -71,7 +71,7 @@
 	};
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 
@@ -124,17 +124,17 @@
 		margin-bottom: var(--rz-size-3);
 		position: relative;
 
-		& :global(.rz-command) {
+		:global(.rz-command) {
 			width: 100%;
 			border-radius: var(--rz-radius-md);
 		}
 
-		& :global(.rz-command-input-select) {
+		:global(.rz-command-input-select) {
 			cursor: text;
 		}
 
-		& :global(.rz-command-list) {
-			@mixin bg color-input;
+		:global(.rz-command-list) {
+			background-color: hsl(var(--rz-color-input));
 			border: var(--rz-border);
 			border-radius: var(--rz-radius-md);
 			position: absolute;
@@ -145,13 +145,13 @@
 			box-shadow: var(--rz-shadow-md);
 		}
 
-		& :global(.rz-command-item) {
+		:global(.rz-command-item) {
 			height: var(--rz-size-10);
 		}
 	}
 
 	.rz-select__list {
-		@mixin bg color-input;
+		background-color: hsl(var(--rz-color-input));
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
 		display: flex;

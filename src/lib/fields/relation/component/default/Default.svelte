@@ -173,7 +173,7 @@
 			}
 
 			:global(.rz-command-list) {
-				@mixin bg color-input;
+				background-color: hsl(var(--rz-color-input));
 				border: var(--rz-border);
 				position: absolute;
 				left: 0;
@@ -195,7 +195,7 @@
 		}
 
 		.rz-relation__list {
-			@mixin bg color-input;
+			background-color: hsl(var(--rz-color-input));
 			border: var(--rz-border);
 			border-radius: var(--rz-radius-md);
 			display: flex;
@@ -223,7 +223,7 @@
 
 		.rz-relation__item {
 			background-color: hsl(var(--rz-ground-0));
-			@mixin color ground-4;
+			color: hsl(var(--rz-ground-4));
 			display: flex;
 			align-items: center;
 			gap: var(--rz-size-2);

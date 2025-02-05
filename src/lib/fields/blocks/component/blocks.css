@@ -12,7 +12,10 @@
 	display: grid;
 	border-left: 1px solid hsl(var(--rz-color-border));
 	border-right: var(--rz-border);
-	border-top: var(--rz-border);
+	&:not([data-empty]) {
+		border-top: var(--rz-border);
+		margin-bottom: var(--rz-size-4);
+	}
 }
 
 .rz-blocks__empty {
@@ -20,8 +23,4 @@
 	border-radius: var(--rz-radius-md);
 	padding: var(--rz-size-4);
 	font-size: var(--rz-text-sm);
-}
-
-.rz-blocks__add-button {
-	margin-top: var(--rz-size-4);
 }

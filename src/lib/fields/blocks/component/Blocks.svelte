@@ -58,17 +58,19 @@
 		}
 		return blockConfig;
 	}
+
+	const hasBlocks = $derived(blockState.blocks && blockState.blocks.length);
 </script>
 
-<Field.Root visible={field.visible} disabled={!field.editable}>
+<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Error error={field.error} />
 
 	<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>
 		{config.label ? config.label : capitalize(config.name)}
 	</h3>
 
-	<div class="rz-blocks__list" bind:this={blockList}>
-		{#if blockState.blocks && blockState.blocks.length}
+	<div class="rz-blocks__list" data-empty={!hasBlocks ? '' : null} bind:this={blockList}>
+		{#if hasBlocks}
 			{#each blockState.blocks as block, index (block.id)}
 				<Block
 					deleteBlock={() => blockState.deleteBlock(index)}
@@ -78,8 +80,6 @@
 					config={getConfigByBlockType(block.type)}
 				/>
 			{/each}
-		{:else}
-			<div class="rz-blocks__empty">{__t('fields.no_block')}</div>
 		{/if}
 	</div>
 

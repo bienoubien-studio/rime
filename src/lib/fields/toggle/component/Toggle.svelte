@@ -15,7 +15,11 @@
 	};
 </script>
 
-<Field.Root class="rz-toggle-field" visible={field.visible} disabled={!field.editable}>
+<Field.Root
+	class="rz-toggle-field {config.className || ''}"
+	visible={field.visible}
+	disabled={!field.editable}
+>
 	<Switch
 		data-error={field.error ? '' : null}
 		checked={field.value}
