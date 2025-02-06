@@ -26,15 +26,14 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 			{
 				name: 'setup',
 				testDir: `./tests`,
-				testMatch: /setup\.test\.ts/,
-				timeout: 60000
+				testMatch: /setup\.test\.ts/
 			},
 			{
 				name: 'tests',
 				dependencies: ['setup'],
 				testDir: `./tests/${name}`,
-				testMatch: /^.*\.test\.ts$/,
-				timeout: 60000
+				testMatch: /^.*\.test\.ts$/
+
 				// testMatch: /pages\.test\.ts/
 			}
 		]
