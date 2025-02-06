@@ -1,7 +1,7 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
-import { extractBlocks } from '../preprocess/extract/blocks.server.js';
+import { extractBlocks } from '../preprocess/blocks/extract.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
 
@@ -15,6 +15,9 @@ import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+import logger from 'rizom/utils/logger/index.js';
+import { execSync } from 'node:child_process';
+import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -110,33 +113,51 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 	// Update data
 	//////////////////////////////////////////////
 
-	const { blocks, paths: blocksPaths } = extractBlocks(data, configMap);
+	const newBlocks = extractBlocks({
+		doc: data,
+		configMap
+	});
 
 	await adapter.collection.update({ slug: config.slug, id, data, locale });
 
-	/** Deleted blocks */
-	const deletedBlocks = await adapter.blocks.deleteFromPaths({
-		parentSlug: config.slug,
-		parentId: id,
-		paths: [...new Set(blocksPaths)]
+	const existingBlocks = extractBlocks({
+		doc: originalDoc,
+		configMap
 	});
 
-	// Delete relations in deleted blocks
+	const blocksDiff = defineBlocksDiff({
+		existingBlocks,
+		newBlocks
+	});
+
+	if (blocksDiff.toDelete.length) {
+		await Promise.all(
+			blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: config.slug, block }))
+		);
+	}
+
+	if (blocksDiff.toAdd.length) {
+		await Promise.all(
+			blocksDiff.toAdd.map((block) =>
+				adapter.blocks.create({ parentSlug: config.slug, parentId: originalDoc.id, block, locale })
+			)
+		);
+	}
+
+	if (blocksDiff.toUpdate.length) {
+		await Promise.all(
+			blocksDiff.toUpdate.map((block) =>
+				adapter.blocks.update({ parentSlug: config.slug, block, locale })
+			)
+		);
+	}
+
+	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId: id,
-		paths: deletedBlocks.map((block) => `${block.path}.${block.position}`)
+		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
 	});
-
-	/** Create blocks */
-	for (const block of blocks) {
-		adapter.blocks.createBlock({
-			parentSlug: config.slug,
-			parentId: id,
-			block,
-			locale
-		});
-	}
 
 	/** Get existing relations */
 	const existingRelations = await adapter.relations.getAll({

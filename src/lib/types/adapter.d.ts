@@ -56,19 +56,15 @@ export interface AdapterGlobalInterface {
 export interface AdapterBlocksInterface {
 	getBlocksTableNames(slug: string): string[];
 
-	deleteFromPaths(args: {
+	delete(args: { parentSlug: string; block: GenericBlock }): Promise<boolean>;
+
+	update(args: {
 		parentSlug: PrototypeSlug;
-		parentId: string;
-		paths: string[];
-	}): Promise<GenericBlock[]>;
+		block: GenericBlock;
+		locale?: string;
+	}): Promise<boolean>;
 
-	deleteBlocks(args: {
-		parentSlug: string;
-		ids?: string[];
-		parentId: string;
-	}): Promise<GenericBlock[]>;
-
-	createBlock(args: {
+	create(args: {
 		parentSlug: PrototypeSlug;
 		block: GenericBlock;
 		parentId: string;
