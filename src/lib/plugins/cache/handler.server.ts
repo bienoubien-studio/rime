@@ -5,7 +5,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 
 	// return await resolve(event);
 	// Only cache GET requests
-	if (event.request.method !== 'GET') {
+	if (event.request.method !== 'GET' || !(process.env.RIZOM_CACHE_ENABLED === 'true')) {
 		return await resolve(event);
 	}
 
