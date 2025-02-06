@@ -49,11 +49,6 @@ export const defineRelationsDiff = ({
 	// Process data relations to find updates and additions
 	for (const newRel of dataRelations) {
 		const existingForPath = existingByPath[newRel.path] || [];
-		// console.log('Checking path:', {
-		// 	path: newRel.path,
-		// 	newRel,
-		// 	existingForPath
-		// });
 
 		const match = existingForPath.find((existing) => {
 			const relationIdKey = `${newRel.relationTo}Id` as keyof typeof existing;
@@ -61,15 +56,6 @@ export const defineRelationsDiff = ({
 			const sameLocale = newRel.locale
 				? existing.locale === newRel.locale
 				: existing.locale === null;
-
-			// console.log('Comparing relation:', {
-			// 	existing,
-			// 	sameId,
-			// 	sameLocale,
-			// 	relationIdKey,
-			// 	existingId: existing[relationIdKey],
-			// 	newRelId: newRel.relationId
-			// });
 
 			return sameId && sameLocale;
 		});
@@ -87,12 +73,6 @@ export const defineRelationsDiff = ({
 
 	// Find relations to delete
 	toDelete = existingRelations.filter((existing) => {
-		// console.log('Checking relation for deletion:', {
-		// 	relation: existing,
-		// 	locale,
-		// 	shouldKeep: existing.locale && existing.locale !== locale
-		// });
-
 		// Keep relations from other locales
 		if (existing.locale && existing.locale !== locale) {
 			return false;
