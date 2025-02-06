@@ -21,7 +21,7 @@ export function logToFile(...args: any) {
 	}
 
 	try {
-		fs.appendFileSync('app.md', markdownEntry);
+		fs.appendFileSync('log.md', markdownEntry);
 	} catch (err) {
 		console.error('Error writing to markdown file:', err);
 	}

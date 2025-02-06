@@ -4,7 +4,7 @@ import { execSync } from 'node:child_process';
 const BASE_URL = 'http://rizom.test:5173';
 const API_BASE_URL = `${BASE_URL}/api`;
 
-execSync('rm -fr ./app.md');
+execSync('rm -fr ./log.md');
 
 test('First init should work', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/init`, {
