@@ -75,7 +75,7 @@
 	};
 
 	$effect(() => {
-		if (!isPrimitiveType && ressourceId !== field.value.link) {
+		if (!isPrimitiveType && field.value && ressourceId !== field.value.link) {
 			linkValue = ressourceId;
 			setValue();
 		}
