@@ -6,10 +6,10 @@
 	import ToggleBlockButton from './ToggleBlockButton.svelte';
 	import { useOnce } from '$lib/panel/utility/Once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import type { BlocksFieldBlock } from '../index.ts';
+	import type { RawBlocksField } from '../index.ts';
 
 	type Props = {
-		config: BlocksFieldBlock<'compiled'>;
+		config: RawBlocksField['blocks'][number];
 		path: string;
 		sorting: boolean;
 		deleteBlock: () => void;
@@ -26,7 +26,7 @@
 	const { once } = useOnce();
 
 	once(() => {
-		isOpen = (localStorage.getItem(`${renderBlockTitle()}:open`) || 'true') === 'true';
+		isOpen = (localStorage.getItem(`${blockValue.id}:open`) || 'true') === 'true';
 	});
 
 	const toggleBlock = (e: MouseEvent) => {
@@ -34,7 +34,7 @@
 			e.stopPropagation();
 		}
 		isOpen = !isOpen;
-		localStorage.setItem(`${renderBlockTitle()}:open`, isOpen.toString());
+		localStorage.setItem(`${blockValue.id}:open`, isOpen.toString());
 	};
 
 	const renderBlockTitle = () => {
@@ -89,8 +89,8 @@
 <style type="postcss">
 	.rz-block {
 		position: relative;
-		margin-left: calc(-1 * var(--rz-size-8));
-		padding-left: var(--rz-size-8);
+		margin-left: calc(-1 * var(--rz-size-7));
+		padding-left: var(--rz-size-7);
 	}
 
 	.rz-block__grip {
@@ -103,7 +103,7 @@
 		transition: opacity 0.2s;
 	}
 
-	.rz-block:hover .rz-block__grip {
+	.rz-block:hover > .rz-block__grip {
 		opacity: 1;
 	}
 
@@ -113,7 +113,7 @@
 	}
 
 	.rz-block__header {
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-ground-7));
 		display: flex;
 		height: var(--rz-size-8);
 		width: 100%;

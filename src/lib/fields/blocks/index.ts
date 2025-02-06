@@ -16,7 +16,7 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 	constructor(name: string) {
 		super(name, 'blocks');
 		this.field.blocks = [];
-		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
+		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 	}
 
 	get component() {

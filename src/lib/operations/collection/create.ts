@@ -2,7 +2,7 @@ import deepmerge from 'deepmerge';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { addDefaultValues } from '../preprocess/fill/index.js';
 import { buildConfigMap } from '../preprocess/config/map.js';
-import { extractBlocks } from '../preprocess/extract/blocks.server';
+import { extractBlocks } from '../preprocess/blocks/extract.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { createBlankDocument, safeFlattenDoc } from '../../utils/doc.js';
 
@@ -22,6 +22,7 @@ import type {
 } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+import { logToFile } from '../../../log.js';
 
 export const create = async <T extends GenericDoc = GenericDoc>({
 	data,
@@ -128,8 +129,10 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	// Create doc
 	//////////////////////////////////////////////
 
-	const { blocks } = extractBlocks(data, configMap);
+	const blocks = extractBlocks({ doc: data, configMap });
 	const { relations } = extractRelations({ flatData, configMap, locale });
+
+	logToFile('blocks', blocks);
 
 	const createdId = await adapter.collection.insert({
 		slug: config.slug,
@@ -145,14 +148,16 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	/** Create blocks */
-	for (const block of blocks) {
-		await adapter.blocks.createBlock({
-			parentSlug: config.slug,
-			block: { ...block },
-			parentId: createdId,
-			locale
-		});
-	}
+	await Promise.all(
+		blocks.map((block) =>
+			adapter.blocks.create({
+				parentSlug: config.slug,
+				block,
+				parentId: createdId,
+				locale
+			})
+		)
+	);
 
 	const rawDoc = (await adapter.collection.findById({
 		slug: config.slug,

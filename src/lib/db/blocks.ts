@@ -12,7 +12,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 	const buildBlockTableName = (slug: string, blockName: string) =>
 		`${slug}Blocks${toPascalCase(blockName)}`;
 
-	const updateBlock: UpdateBlock = async ({ parentSlug, block, locale }) => {
+	const update: UpdateBlock = async ({ parentSlug, block, locale }) => {
 		const table = buildBlockTableName(parentSlug, block.type);
 		const columns = Object.keys(getTableColumns(tables[table]));
 		const values: Partial<GenericBlock> = pick(columns, omitId(block));
@@ -51,7 +51,13 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 		return true;
 	};
 
-	const createBlock: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
+	const deleteBlock: DeleteBlock = async ({ parentSlug, block }) => {
+		const table = buildBlockTableName(parentSlug, block.type);
+		await db.delete(tables[table]).where(eq(tables[table].id, block.id));
+		return true;
+	};
+
+	const create: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
 		const table = buildBlockTableName(parentSlug, block.type);
 		const blockId = generatePK();
 		const tableLocales = `${table}Locales`;
@@ -90,57 +96,57 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 		return true;
 	};
 
-	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, parentId, paths }) => {
-		if (!paths.length) return [];
-		const blocksTablesNames = getBlocksTableNames(parentSlug);
-		let deleted: any = [];
-		for (const tableName of blocksTablesNames) {
-			const table = tables[tableName];
-			const conditions: SQLWrapper[] = [
-				eq(table.parentId, parentId)
-				// inArray(table.path, paths)
-			];
-			const existingBlocks = await db
-				.select({ id: table.id, path: table.path })
-				.from(table)
-				.where(and(...conditions));
+	// const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, parentId, paths }) => {
+	// 	if (!paths.length) return [];
+	// 	const blocksTablesNames = getBlocksTableNames(parentSlug);
+	// 	let deleted: any = [];
+	// 	for (const tableName of blocksTablesNames) {
+	// 		const table = tables[tableName];
+	// 		const conditions: SQLWrapper[] = [
+	// 			eq(table.parentId, parentId)
+	// 			// inArray(table.path, paths)
+	// 		];
+	// 		const existingBlocks = await db
+	// 			.select({ id: table.id, path: table.path })
+	// 			.from(table)
+	// 			.where(and(...conditions));
 
-			const toDelete = existingBlocks
-				.filter((row) => paths.some((path) => row.path.startsWith(path)))
-				.map((row) => row.id);
+	// 		const toDelete = existingBlocks
+	// 			.filter((row) => paths.some((path) => row.path.startsWith(path)))
+	// 			.map((row) => row.id);
 
-			if (!toDelete.length) continue;
-			deleted = [
-				...deleted,
-				...((await db.delete(table).where(inArray(table.id, toDelete)).returning()) as any[])
-			];
-		}
-		return deleted;
-	};
+	// 		if (!toDelete.length) continue;
+	// 		deleted = [
+	// 			...deleted,
+	// 			...((await db.delete(table).where(inArray(table.id, toDelete)).returning()) as any[])
+	// 		];
+	// 	}
+	// 	return deleted;
+	// };
 
-	const deleteBlocks = async ({
-		parentSlug,
-		ids,
-		parentId
-	}: DeleteBlockArgs): Promise<GenericBlock[]> => {
-		const blocksTablesNames = getBlocksTableNames(parentSlug);
+	// const deleteBlocks = async ({
+	// 	parentSlug,
+	// 	ids,
+	// 	parentId
+	// }: DeleteBlockArgs): Promise<GenericBlock[]> => {
+	// 	const blocksTablesNames = getBlocksTableNames(parentSlug);
 
-		let deletedBlocks: any = [];
-		for (const table of blocksTablesNames) {
-			if (ids && ids.length) {
-				const deleted = (await db
-					.delete(tables[table])
-					.where(and(eq(tables[table].parentId, parentId), notInArray(tables[table].id, ids)))
-					.returning()) as any[];
-				deletedBlocks = [...deletedBlocks, ...deleted];
-			} else {
-				const deleted = await db.delete(tables[table]).where(eq(tables[table].parentId, parentId));
-				deletedBlocks.push(deleted);
-			}
-		}
+	// 	let deletedBlocks: any = [];
+	// 	for (const table of blocksTablesNames) {
+	// 		if (ids && ids.length) {
+	// 			const deleted = (await db
+	// 				.delete(tables[table])
+	// 				.where(and(eq(tables[table].parentId, parentId), notInArray(tables[table].id, ids)))
+	// 				.returning()) as any[];
+	// 			deletedBlocks = [...deletedBlocks, ...deleted];
+	// 		} else {
+	// 			const deleted = await db.delete(tables[table]).where(eq(tables[table].parentId, parentId));
+	// 			deletedBlocks.push(deleted);
+	// 		}
+	// 	}
 
-		return deletedBlocks;
-	};
+	// 	return deletedBlocks;
+	// };
 
 	const getBlocksTableNames = (slug: string): string[] =>
 		Object.keys(tables).filter(
@@ -149,10 +155,10 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 
 	return {
 		getBlocksTableNames,
-		deleteFromPaths,
-		deleteBlocks,
-		createBlock,
-		updateBlock
+		// deleteFromPaths,
+		delete: deleteBlock,
+		create,
+		update
 	};
 };
 
@@ -161,8 +167,6 @@ export default createAdapterBlocksInterface;
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
-
-type DeleteBlockArgs = { parentSlug: string; ids?: string[]; parentId: string };
 
 type UpdateBlock = (args: {
 	parentSlug: PrototypeSlug;
@@ -177,9 +181,4 @@ type CreateBlock = (args: {
 	locale?: string;
 }) => Promise<boolean>;
 
-type DeleteFromPaths = (args: {
-	parentSlug: PrototypeSlug;
-	parentId: string;
-	paths: string[];
-	locale?: string;
-}) => Promise<GenericBlock[]>;
+type DeleteBlock = (args: { parentSlug: PrototypeSlug; block: GenericBlock }) => Promise<boolean>;
