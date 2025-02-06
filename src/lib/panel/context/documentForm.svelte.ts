@@ -11,7 +11,7 @@ import { getCollectionContext } from './collection.svelte.js';
 import { randomId } from '../../utils/random.js';
 import { getUserContext } from './user.svelte.js';
 import { getValueFromPath } from '../../utils/doc.js';
-import { getPanelThumbnailKey, isUploadConfig } from '../../config/utils.js';
+
 import { snapshot } from '../../utils/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
@@ -283,15 +283,10 @@ function createDocumentFormState({
 		processing = true;
 
 		const data: Dic = {};
-		const isUpload = config.type === 'collection' && isUploadConfig(config);
+		// const isUpload = config.type === 'collection' && isUploadConfig(config);
 
 		for (const key of Object.keys(changes)) {
 			data[key] = doc[key];
-		}
-
-		if (isUpload) {
-			const panelThumbnailKey = getPanelThumbnailKey(config);
-			delete data[panelThumbnailKey];
 		}
 
 		const flatData: Dic = flatten(data);

@@ -2,11 +2,11 @@ import { existsSync, unlink, unlinkSync } from 'fs';
 import { toCamelCase } from '$lib/utils/string.js';
 import path from 'path';
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc';
-import type { BuiltUploadCollectionConfig } from 'rizom/types/config';
+import type { CompiledUploadCollectionConfig } from 'rizom/types/config';
 import type { LocalAPI } from 'rizom/types/api';
 
 type Args = {
-	config: BuiltUploadCollectionConfig;
+	config: CompiledUploadCollectionConfig;
 	api: LocalAPI;
 	id: string;
 };
@@ -18,10 +18,18 @@ export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<Gen
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);
 		unlinkSync(filePath);
 		for (const size of config.imageSizes || []) {
+			const unlinkPath = (sizePath: string) => {
+				if (existsSync(sizePath)) {
+					unlink(sizePath, () => {});
+				}
+			};
 			const sizeKey = toCamelCase(size.name);
-			const sizePath = `static/${doc[sizeKey]}`;
-			if (existsSync(sizePath)) {
-				unlink(sizePath, () => {});
+			if (typeof doc.size[sizeKey] === 'string') {
+				unlinkPath(`static/${doc.size[sizeKey]}`);
+			} else {
+				for (const sizeFormatPath of Object.values(doc.size[sizeKey])) {
+					unlinkPath(`static/${sizeFormatPath}`);
+				}
 			}
 		}
 	} catch (err: any) {

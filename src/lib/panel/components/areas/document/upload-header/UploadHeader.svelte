@@ -4,7 +4,6 @@
 	import { capitalize } from '$lib/utils/string.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { getPanelThumbnailKey } from '$lib/config/utils';
 	import { toast } from 'svelte-sonner';
 	import { FileArchive, FileAudio, FileVideo } from 'lucide-svelte';
 	import type { CompiledUploadCollectionConfig, UploadCollectionConfig } from 'rizom/types/config';
@@ -23,7 +22,6 @@
 
 	const hasAccept = 'accept' in form.config;
 	const allowedMimeTypes = hasAccept ? form.config.accept : [];
-	const panelThumbnailKey = getPanelThumbnailKey(form.config as CompiledUploadCollectionConfig);
 
 	const deleteFile = () => {
 		// console.log('delete');
@@ -34,9 +32,7 @@
 		form.setValue('mimeType', null);
 		form.setValue('filesize', null);
 		form.errors.delete('mimeType');
-		if (panelThumbnailKey) {
-			form.setValue(panelThumbnailKey, null);
-		}
+		form.setValue(`size.thumbnail`, null);
 	};
 
 	$effect(() => {
@@ -66,8 +62,8 @@
 	});
 
 	$effect(() => {
-		if (preview && panelThumbnailKey && form.doc[panelThumbnailKey] !== preview) {
-			form.setValue(panelThumbnailKey, preview);
+		if (preview && form.doc.size.thumbnail !== preview) {
+			form.setValue(`size.thumbnail`, preview);
 		}
 	});
 
@@ -91,7 +87,7 @@
 			<div class="rz-doc-upload-header__preview">
 				{#if form.doc.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
-						<img src={form.doc[panelThumbnailKey]} alt="preview" />
+						<img src={form.doc.size.thumbnail} alt="preview" />
 					</div>
 				{:else}
 					{@const FileIcon = mimeTypeToIcon(form.doc.mimeType)}

@@ -8,6 +8,7 @@ import type {
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
+import type { RawBlocksField } from 'rizom/fields/blocks';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -57,7 +58,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
-	const registeredBlocks: Record<string, BlocksFieldBlock<'compiled'>> = {};
+	const registeredBlocks: Record<string, RawBlocksField['blocks'][number]> = {};
 
 	if (isAuth) {
 		const hasRolesField = config.fields
@@ -119,29 +120,29 @@ const hasDatabase = (config: CompiledConfig) => {
 	return [];
 };
 
-function validateUploadCollections(config: CompiledConfig) {
-	let errors = [];
-	const uploadCollections = config.collections.filter(isUploadConfig);
-	for (const collection of uploadCollections) {
-		const hasImageSizes = 'imageSizes' in collection;
-		const hasPanelThumbnail = 'panelThumbnail' in collection;
-		if (!hasImageSizes) {
-			errors.push(`collection.imagesSizes of ${collection.slug} should be defined`);
-		}
-		if (!hasPanelThumbnail) {
-			errors.push(`collection.hasPanelThumbnail of ${collection.slug} should be defined`);
-		}
-	}
-	return errors;
-}
+// function validateUploadCollections(config: CompiledConfig) {
+// 	let errors = [];
+// 	const uploadCollections = config.collections.filter(isUploadConfig);
+// 	for (const collection of uploadCollections) {
+// 		const hasImageSizes = 'imageSizes' in collection;
+// 		const hasPanelThumbnail = 'panelThumbnail' in collection;
+// 		if (!hasImageSizes) {
+// 			errors.push(`collection.imagesSizes of ${collection.slug} should be defined`);
+// 		}
+// 		if (!hasPanelThumbnail) {
+// 			errors.push(`collection.hasPanelThumbnail of ${collection.slug} should be defined`);
+// 		}
+// 	}
+// 	return errors;
+// }
 
 function validate(config: CompiledConfig): boolean {
 	const validateFunctions = [
 		hasDuplicateSlug,
 		hasUsersSlug,
 		validateFields,
-		hasDatabase,
-		validateUploadCollections
+		hasDatabase
+		// validateUploadCollections
 	];
 
 	for (const isValid of validateFunctions) {

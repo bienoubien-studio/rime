@@ -3,6 +3,7 @@ import { flattenWithGuard, isBuffer } from './object.js';
 import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
+import { isUploadConfig } from 'rizom/config/utils.js';
 
 export const isUploadDoc = (doc: GenericDoc): doc is UploadDoc => {
 	return 'mimeType' in doc;
@@ -107,6 +108,16 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		_type: config.slug,
 		_prototype: config.type
 	};
+
+	if (
+		config.type === 'collection' &&
+		isUploadConfig(config) &&
+		'imageSizes' in config &&
+		config.imageSizes
+	) {
+		empty.size = {};
+	}
+
 	return empty as T;
 };
 

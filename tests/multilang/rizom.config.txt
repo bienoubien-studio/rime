@@ -239,7 +239,7 @@ const Medias: CollectionConfig = {
 		{ name: 'medium', width: 720, height: 1024 },
 		{ name: 'large', width: 1080 }
 	],
-	panelThumbnail: 'thumbnail',
+
 	fields: [text('alt').required()],
 	access: {
 		read: () => true

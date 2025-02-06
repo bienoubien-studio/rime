@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
-	import { getPanelThumbnailKey, isUploadConfig } from '$lib/config/utils';
+	import { isUploadConfig } from '$lib/config/utils';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import * as Card from '$lib/panel/components/ui/card/index';
 	import { getContext } from 'svelte';
@@ -15,8 +15,7 @@
 	const isUploadCollection = $derived(isUploadConfig(collection.config));
 	const thumbnailUrl = $derived.by(() => {
 		if (isUploadConfig(collection.config)) {
-			const thumbnailKey = getPanelThumbnailKey(collection.config);
-			return doc[thumbnailKey];
+			return doc.size.thumbnail;
 		}
 		return null;
 	});

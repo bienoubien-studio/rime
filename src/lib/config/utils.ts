@@ -1,6 +1,3 @@
-// import config from '$lib/config/rizom.config';
-import { toCamelCase } from '$lib/utils/string.js';
-
 import type {
 	BuiltCollectionConfig,
 	BuiltDocConfig,
@@ -11,13 +8,6 @@ import type {
 	CompiledUploadCollectionConfig,
 	UploadCollectionConfig
 } from 'rizom/types/config';
-
-export const getPanelThumbnailKey = (collectionConfig: { panelThumbnail?: string }): string => {
-	if (collectionConfig.panelThumbnail) {
-		return toCamelCase(collectionConfig.panelThumbnail);
-	}
-	return `admin`;
-};
 
 export function isUploadConfig(
 	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig

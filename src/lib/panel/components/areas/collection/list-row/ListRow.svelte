@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
-	import { getPanelThumbnailKey, isUploadConfig } from '$lib/config/utils.js';
+	import { isUploadConfig } from '$lib/config/utils.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
@@ -41,13 +41,13 @@
 		{#if collection.selectMode}
 			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
-				<UploadThumbCell url={doc[getPanelThumbnailKey(collection.config)]} />
+				<UploadThumbCell url={doc.size.thumbnail} />
 			{/if}
 			<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
-					<UploadThumbCell url={doc[getPanelThumbnailKey(collection.config)]} />
+					<UploadThumbCell url={doc.size.thumbnail} />
 				{/if}
 				<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
 				<!-- {#if doc._live}
