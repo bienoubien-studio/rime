@@ -3,7 +3,10 @@ import rizom from '$lib/rizom.server.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import type { CollectionHookBeforeDeleteArgs } from 'rizom/types/hooks.js';
+import type {
+	CollectionHookAfterDeleteArgs,
+	CollectionHookBeforeDeleteArgs
+} from 'rizom/types/hooks.js';
 import { RizomError } from 'rizom/errors/index.js';
 
 type DeleteById = (args: {
@@ -18,7 +21,6 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
-
 	const authorized = config.access.delete(event.locals.user, { id });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
@@ -52,6 +54,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 		}
 	}
 
+	// Delete
 	await adapter.collection.deleteById({ slug: config.slug, id });
 
 	//////////////////////////////////////////////
@@ -60,7 +63,14 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 	if (config.hooks && config.hooks.afterDelete) {
 		for (const hook of config.hooks.afterDelete) {
 			try {
-				const args = await hook({ operation: 'delete', config, doc, event, rizom, api });
+				const args = (await hook({
+					operation: 'delete',
+					config,
+					doc,
+					event,
+					rizom,
+					api
+				})) as CollectionHookAfterDeleteArgs;
 				doc = args.doc;
 				event = args.event;
 			} catch (err: any) {
