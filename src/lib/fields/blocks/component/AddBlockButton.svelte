@@ -50,7 +50,7 @@
 	</Button>
 
 	<Command.Dialog bind:open>
-		<Command.Input class="rz-add-block-button__search" placeholder={__t('fields.search')} />
+		<Command.Input class="rz-add-block-button__search" placeholder={__t('common.search')} />
 
 		<Command.List class="rz-add-block-button__list">
 			<Command.Empty>No results found.</Command.Empty>
