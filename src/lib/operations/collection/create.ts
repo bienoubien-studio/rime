@@ -22,7 +22,6 @@ import type {
 } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
-import { logToFile } from '../../../log.js';
 
 export const create = async <T extends GenericDoc = GenericDoc>({
 	data,
@@ -50,6 +49,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	}
 
 	// extract file before merge
+	// or merge fails ...
 	let file;
 	if (isUploadConfig(config) && 'file' in data) {
 		file = data.file;
@@ -65,6 +65,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 		data
 	);
 
+	// Add file after merge
 	if (file) {
 		dataMergedWithBlankDocument.file = file;
 	}
@@ -132,8 +133,6 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	const blocks = extractBlocks({ doc: data, configMap });
 	const { relations } = extractRelations({ flatData, configMap, locale });
 
-	logToFile('blocks', blocks);
-
 	const createdId = await adapter.collection.insert({
 		slug: config.slug,
 		data,
@@ -174,6 +173,7 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	if (locales.length) {
 		if ('file' in incomingData) {
 			delete incomingData.file;
+			delete incomingData.filename;
 		}
 		const otherLocales = locales.filter((code) => code !== locale);
 		for (const otherLocale of otherLocales) {

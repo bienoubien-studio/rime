@@ -9,6 +9,7 @@ import sharp from 'sharp';
 import { toCamelCase } from 'rizom/utils/string';
 import { normalizeFileName } from 'rizom/utils/file';
 import type { Dic } from 'rizom/types/utility';
+import { logToFile } from '../../../../log';
 
 export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | false) => {
 	const { name: initialName, extension } = normalizeFileName(file.name);
@@ -25,7 +26,7 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 	try {
 		const buffer = Buffer.from(await file.arrayBuffer());
 		writeFileSync(filePath, buffer);
-		if (imagesSizes && file.type.includes('image')) {
+		if (imagesSizes && file.type.includes('image') && !file.type.includes('svg')) {
 			sizes = await generateSizes({
 				name: name,
 				extension,
@@ -49,14 +50,57 @@ type GenerateSizeArgs = {
 
 export const generateSizes = async ({ sizes, buffer, name, extension }: GenerateSizeArgs) => {
 	const imageSizes: Dic = {};
+
 	for (const size of sizes) {
 		const wh = pick(['width', 'height'], size);
-		const resizedBuffer = await sharp(buffer).resize(wh).toBuffer();
+		const resizedImage = sharp(buffer).resize(wh);
 		const whString = `${wh.width || ''}${wh.height && wh.width ? 'x' : ''}${wh.height || ''}`;
-		const filename = `${name}-${toCamelCase(size.name)}-${whString}.${extension}`;
-		const filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
-		writeFileSync(filePath, resizedBuffer);
-		imageSizes[toCamelCase(size.name)] = filename;
+
+		// If no output formats specified, keep original format
+		if (!size.out?.length) {
+			let resizedBuffer: Buffer;
+			const shouldApplyCompression =
+				size.compression && (extension === 'jpg' || extension === 'webp');
+
+			if (shouldApplyCompression) {
+				if (extension === 'jpg') {
+					resizedBuffer = await resizedImage.jpeg({ quality: size.compression }).toBuffer();
+				} else {
+					resizedBuffer = await resizedImage.webp({ quality: size.compression }).toBuffer();
+				}
+			} else {
+				resizedBuffer = await resizedImage.toBuffer();
+			}
+
+			const filename = `${name}-${toCamelCase(size.name)}-${whString}.${extension}`;
+			const filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
+			writeFileSync(filePath, resizedBuffer);
+			imageSizes[toCamelCase(size.name)] = filename;
+			continue;
+		}
+
+		// Handle format conversions
+		const convertedFiles = await Promise.all(
+			size.out.map(async (format) => {
+				const compression = size.compression || 70;
+				let convertedImage;
+
+				if (format === 'jpg') {
+					convertedImage = await resizedImage.jpeg({ quality: compression }).toBuffer();
+				} else {
+					convertedImage = await resizedImage.webp({ quality: compression }).toBuffer();
+				}
+
+				const filename = `${name}-${toCamelCase(size.name)}-${whString}.${format}`;
+				const filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
+				writeFileSync(filePath, convertedImage);
+
+				return filename;
+			})
+		);
+
+		imageSizes[toCamelCase(size.name)] = convertedFiles.join('|');
 	}
+
 	return imageSizes;
 };

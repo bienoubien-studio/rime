@@ -1,6 +1,7 @@
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { Rizom } from 'rizom/rizom.server';
-import type { GenericDoc } from '.';
+import type { BuiltCollectionConfig, GenericDoc } from '.';
+import type { CompiledCollectionConfig } from './config';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
@@ -13,7 +14,7 @@ type BaseHookArgs = {
 };
 
 type BaseCollectionHookArgs = BaseHookArgs & {
-	config: BuiltCollectionConfig;
+	config: CompiledCollectionConfig;
 	operation: 'update' | 'create' | 'read' | 'delete';
 };
 

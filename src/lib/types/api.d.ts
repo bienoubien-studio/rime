@@ -4,7 +4,8 @@ import type { Rizom } from 'rizom/rizom.server.js';
 import type {
 	BuiltCollectionConfig,
 	BuiltGlobalConfig,
-	CompiledCollectionConfig
+	CompiledCollectionConfig,
+    CompiledGlobalConfig
 } from 'rizom/types/config';
 import type { FormErrors } from './panel';
 import type { RegisterCollection, RegisterGlobal } from 'rizom';

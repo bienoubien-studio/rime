@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { moveItem } from '$lib/utils/array.js';
-	import { getPanelThumbnailKey, isUploadConfig } from '$lib/config/utils.js';
+	import { isUploadConfig } from '$lib/config/utils.js';
 	import Upload from './upload/Upload.svelte';
 	import Default from './default/Default.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
@@ -53,8 +53,7 @@
 			item.filesize = doc.filesize;
 			item.mimeType = doc.mimeType;
 			if (isRelationToImage) {
-				const thumbnailKey = getPanelThumbnailKey(relationConfig);
-				item.imageURL = doc[thumbnailKey];
+				item.imageURL = doc.size.thumbnail;
 			}
 		}
 		if (form.isLive) {

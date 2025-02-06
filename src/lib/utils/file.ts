@@ -11,9 +11,10 @@ export const fileSizeToString = (size: number) => {
 export const normalizeFileName = (str: string) => {
 	const { name, extension } = fileNameAndExt(str);
 	const normalizedName = slugify(name);
+	const normalizedExtension = extension.toLowerCase().replace('jpeg', 'jpg');
 	return {
 		name: normalizedName,
-		extension
+		extension: normalizedExtension
 	};
 };
 

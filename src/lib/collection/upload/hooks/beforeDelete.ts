@@ -15,7 +15,7 @@ import { cleanupStoredFiles } from '../disk/delete';
  * @returns Unmodified args object after file cleanup
  */
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
-	const config = args.config as BuiltUploadCollectionConfig;
+	const config = args.config;
 	const event = args.event;
 	const id = (event && event.params.id) || '';
 	await cleanupStoredFiles({ config, api: args.api, id });

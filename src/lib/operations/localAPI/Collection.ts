@@ -14,7 +14,7 @@ import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { AnyFormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
-import { toHash } from 'rizom/utils/string.js';
+
 import { RizomError } from 'rizom/errors/index.js';
 
 type Args = {

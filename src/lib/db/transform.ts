@@ -17,6 +17,7 @@ import type {
 	TransformManyContext
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
+import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
 
 /////////////////////////////////////////////
 // Types
@@ -171,77 +172,24 @@ export const databaseTransformInterface = ({
 			flatDoc[path][position] = block;
 		}
 
-		/** @TODO SHOULD BE IN BEFORE_READ */
-		/** Add folder prefix to url in an upload doc */
-		if (config.type === 'collection' && isUploadConfig(config)) {
-			if ('imageSizes' in config && config.imageSizes) {
-				for (const size of config.imageSizes) {
-					if (flatDoc[size.name]) {
-						flatDoc[size.name] = `/medias/${flatDoc[size.name]}`;
-					}
-				}
-			}
-			flatDoc.url = `/medias/${flatDoc.filename}`;
-		}
-
-		let unflatted: Dic = unflatten(flatDoc);
+		let output: Dic = unflatten(flatDoc);
 
 		/** Remove blocks table keys */
-		const omits: string[] = blocksTables;
-		if (tableNameRelationFields in unflatted) {
-			omits.push(tableNameRelationFields);
+		const keysToDelete: string[] = blocksTables;
+		if (tableNameRelationFields in output) {
+			keysToDelete.push(tableNameRelationFields);
 		}
 
-		/////////////////////////////////////////////
-		//
-		//////////////////////////////////////////////
-		/** @TODO THE FOLLOWING SHOULD BE IN A BEFORE_READ METHOD SOMEWHERE ELSE */
+		output = omit(keysToDelete, deepmerge(blankDocument, output));
 
-		/** Remove passwords and auth fields */
-		omits.push(...privateFieldNames);
-
-		if (!isPanel || !user) {
-			omits.push('authUserId', '_editedBy');
-		}
-		unflatted = omit(omits, unflatted);
-
-		const configMap = buildConfigMap(unflatted, config.fields);
-
-		flatDoc = await postprocessFields({
-			flatDoc: safeFlattenDoc(unflatted),
-			configMap,
-			locale,
-			api,
-			user
-		});
-
-		doc = unflatten(flatDoc);
-		doc = deepmerge(blankDocument, doc);
-
-		if (locale) {
-			doc.locale = locale;
-		}
-
-		doc._prototype = config.type;
-		doc._type = config.slug;
-
-		if (!('title' in doc)) {
-			doc = {
-				title: doc[config.asTitle],
-				...doc
-			};
-		}
-
-		if (config.url) {
-			doc._url = config.url(doc as T);
-		}
-
-		if (config.live && user && config.url) {
-			doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc._url}&slug=${config.slug}&id=${doc.id}`;
-			doc._live += locale ? `&locale=${locale}` : '';
-		}
-
-		return orderObjectKeys(doc) as T;
+		return (await beforeRead({
+			doc: output,
+			config,
+			user,
+			event,
+			isPanel,
+			locale
+		})) as T;
 	};
 
 	return {
@@ -249,26 +197,3 @@ export const databaseTransformInterface = ({
 		docs: transformDocs
 	};
 };
-
-function orderObjectKeys(obj: any): any {
-	// Special keys that should come first (in this order)
-	const priorityKeys = ['id', 'title'];
-
-	// Get all keys and separate them
-	const keys = Object.keys(obj);
-	const underscoreKeys = keys.filter((k) => k.startsWith('_')).sort();
-	const normalKeys = keys.filter((k) => !k.startsWith('_') && !priorityKeys.includes(k)).sort();
-
-	// Combine keys in desired order
-	const orderedKeys = [
-		...priorityKeys.filter((k) => keys.includes(k)),
-		...normalKeys,
-		...underscoreKeys
-	];
-
-	// Create new object with ordered keys
-	return orderedKeys.reduce((newObj: any, key: string) => {
-		newObj[key] = obj[key];
-		return newObj;
-	}, {});
-}

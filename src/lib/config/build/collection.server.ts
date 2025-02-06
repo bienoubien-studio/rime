@@ -102,20 +102,13 @@ export const buildCollection = async (
 
 	// Augment
 	if (isUploadConfig(collection)) {
-		const thumbnailName = collection.panelThumbnail || 'panelThumbnail';
-
-		if (hasProps(collection, ['imageSizes'])) {
-			const isPanelThumbnailInSizes = collection.imageSizes.some(
-				(size: ImageSizesConfig) => size.name === collection.panelThumbnail
-			);
-			if (!isPanelThumbnailInSizes) {
-				collection.imageSizes = [...collection.imageSizes, { name: thumbnailName, width: 600 }];
-			}
-		} else {
-			collection.imageSizes = [{ name: thumbnailName, width: 600 }];
+		const isPanelThumbnailInSizes =
+			collection.imageSizes &&
+			collection.imageSizes.some((size: ImageSizesConfig) => size.name === 'thumbnail');
+		if (!isPanelThumbnailInSizes) {
+			const thumbnailSize = { name: 'thumbnail', width: 400, compression: 60 };
+			collection.imageSizes = [thumbnailSize, ...(collection.imageSizes || [])];
 		}
-
-		collection.panelThumbnail = thumbnailName;
 	}
 
 	const fields = buildFields(collection);

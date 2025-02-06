@@ -189,18 +189,19 @@ export type UploadCollectionConfig = Omit<BaseCollectionConfig, 'upload'> & {
 	upload: true;
 	imageSizes?: ImageSizesConfig[];
 	accept: string[];
-	panelThumbnail?: string;
+	out: 'jpeg' | 'webp';
 };
 
 export type BuiltUploadCollectionConfig = Omit<BuiltCollectionConfig, 'upload'> & {
 	upload: true;
 	imageSizes: ImageSizesConfig[];
 	accept: string[];
-	panelThumbnail: string;
 };
 
 export type ImageSizesConfig = {
 	name: string;
+	out?: Array<'jpg' | 'webp'>;
+	compression?: number;
 } & AtLeastOne<{
 	width: number;
 	height: number;

@@ -24,19 +24,20 @@ import { saveFile } from '../disk/save';
  *    - Cleans up image variations
  *    - Nullifies related document fields
  */
-export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (args) => {
+export const processFileUpload: CollectionHookBeforeUpsert = async (args) => {
 	const { operation, config, event, api } = args;
+
 	let data = args.data || {};
 	const id = (event && event.params.id) || '';
 
 	const create = operation === 'create';
-	const hasSizeConfig = hasProps(config, ['imageSizes']) && Array.isArray(config.imageSizes);
+	const hasSizeConfig = 'imageSizes' in config && Array.isArray(config.imageSizes);
 	const sizesConfig = hasSizeConfig ? config.imageSizes : [];
 
 	if (data.file) {
 		if (!create) await cleanupStoredFiles({ config, api, id });
 
-		const { filename, imageSizes } = await saveFile(data.file, sizesConfig);
+		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
 
 		data = {
 			...omit(['file'], data),
@@ -47,7 +48,7 @@ export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (
 
 	if (data.file === null) {
 		if (!create) await cleanupStoredFiles({ config, api, id });
-		for (const size of sizesConfig) {
+		for (const size of sizesConfig!) {
 			data = {
 				...data,
 				[toCamelCase(size.name)]: null
