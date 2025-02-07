@@ -78,30 +78,6 @@
 	const locale = getLocaleContext();
 	const liveEditing = !!onDataChange;
 
-	function buildPanelActionUrl() {
-		// Start with the base URI for the panel
-		let panelUri = `/panel/${config.slug}`;
-
-		// Add the item ID to the URI if we're updating a collection doc
-		if (operation === 'update' && initial._prototype === 'collection' && initial.id) {
-			panelUri += `/${initial.id}`;
-		}
-
-		// Determine the appropriate action based on whether we're creating or updating
-		let actionSuffix;
-		if (operation === 'create') {
-			actionSuffix = '/create?/create';
-		} else {
-			actionSuffix = '?/update';
-		}
-
-		// Add a redirect parameter if we're in a nested form ex: relation creation
-		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
-
-		// Combine all parts to form the final action URL
-		return `${panelUri}${actionSuffix}${redirectParam}`;
-	}
-
 	$effect(() => {
 		title.value = form.title;
 	});
@@ -127,7 +103,7 @@
 	class="rz-document {className}"
 	bind:this={formElement}
 	use:form.enhance
-	action={buildPanelActionUrl()}
+	action={form.buildPanelActionUrl()}
 	enctype="multipart/form-data"
 	method="post"
 >

@@ -10,6 +10,7 @@
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import ButtonSave from './ButtonSave.svelte';
+	import ButtonStatus from './ButtonStatus.svelte';
 
 	// Props
 	type Props = {
@@ -31,6 +32,9 @@
 			<Button onclick={onClose} variant="ghost" size="icon-sm">
 				<X class="rz-page-header__close" size="17" />
 			</Button>
+		{/if}
+		{#if form.doc.status}
+			<ButtonStatus {form} />
 		{/if}
 		<h1 class="rz-page-header__title">
 			{title.value}
