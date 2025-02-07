@@ -1,10 +1,14 @@
-import { type Handle } from '@sveltejs/kit';
+import { json, type Handle } from '@sveltejs/kit';
 import apiInit from '../api/init.js';
 import { logout } from 'rizom/panel/pages/logout/actions.server.js';
 import buildNavigation from '$lib/panel/navigation.js';
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;
+
+	if (event.url.pathname === '/api/reload-config') {
+		return json({ success: true });
+	}
 
 	if (event.url.pathname?.startsWith('/panel') && event.request.method === 'GET') {
 		event.locals.routes = buildNavigation(rizom.config.raw, user);
