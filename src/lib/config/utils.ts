@@ -2,16 +2,13 @@ import type {
 	BuiltCollectionConfig,
 	BuiltDocConfig,
 	BuiltGlobalConfig,
-	BuiltUploadCollectionConfig,
 	CollectionConfig,
-	CompiledCollectionConfig,
-	CompiledUploadCollectionConfig,
-	UploadCollectionConfig
+	CompiledCollectionConfig
 } from 'rizom/types/config';
 
 export function isUploadConfig(
 	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig
-): config is UploadCollectionConfig | BuiltUploadCollectionConfig | CompiledUploadCollectionConfig {
+) {
 	return 'upload' in config && config.upload === true;
 }
 

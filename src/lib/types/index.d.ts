@@ -31,7 +31,7 @@ export type {
 	BuiltConfig,
 	BuiltDocConfig,
 	BuiltGlobalConfig,
-	BuiltUploadCollectionConfig,
+	// BuiltUploadCollectionConfig,
 	CollectionConfig,
 	Config,
 	CustomPanelRoute,
@@ -41,9 +41,9 @@ export type {
 	LocaleConfig,
 	LocalizationConfig,
 	PanelUsersConfig,
-	RouteConfig,
+	RouteConfig
 	// SMTPConfig,
-	UploadCollectionConfig
+	// UploadCollectionConfig
 } from './config.js';
 
 // Doc types
