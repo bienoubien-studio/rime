@@ -4,7 +4,6 @@ import { buildConfigMap } from '../preprocess/config/map.js';
 import { extractBlocks } from '../preprocess/blocks/extract.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
-
 import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server';
 import type { Adapter } from 'rizom/types/adapter.js';
@@ -15,8 +14,6 @@ import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
-import logger from 'rizom/utils/logger/index.js';
-import { execSync } from 'node:child_process';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
