@@ -212,7 +212,7 @@ export function buildConfigString(config: CompiledConfigWithBluePrints) {
 		.join(',');
 
 	const functionDefinitions = Array.from(functionRegistry.entries())
-		.map(([name, func]) => `const ${name} = ${func};`)
+		.map(([name, func]) => `// @ts-ignore\nconst ${name} = ${func};`)
 		.join('\n');
 
 	const importDefinitions = Array.from(importRegistry.entries())
