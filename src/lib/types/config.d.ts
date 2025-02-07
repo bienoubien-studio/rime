@@ -113,14 +113,14 @@ type BaseDocConfig = {
 	live?: boolean;
 };
 
-export type DocumentStatus = { value: string; color: string };
+export type DocumentStatus = 'draft' | 'published';
 
 export type BaseCollectionConfig = {
 	label?: CollectionConfigLabel;
 	auth?: true;
 	upload?: boolean;
 	hooks?: CollectionHooks;
-	status?: DocumentStatus[];
+	status?: boolean;
 } & BaseDocConfig;
 
 export type CollectionConfig = BaseCollectionConfig &
@@ -129,8 +129,8 @@ export type CollectionConfig = BaseCollectionConfig &
 		| {
 				upload: true;
 				imageSizes?: ImageSizesConfig[];
-				accept: string[];
-				out: 'jpeg' | 'webp';
+				accept?: string[];
+				out?: 'jpeg' | 'webp';
 		  }
 	);
 

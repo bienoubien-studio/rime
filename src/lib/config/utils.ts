@@ -5,10 +5,11 @@ import type {
 	CollectionConfig,
 	CompiledCollectionConfig
 } from 'rizom/types/config';
+import type { WithUpload } from 'rizom/types/utility';
 
 export function isUploadConfig(
-	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig
-) {
+	config: CollectionConfig | CompiledCollectionConfig
+): config is WithUpload<typeof config> {
 	return 'upload' in config && config.upload === true;
 }
 

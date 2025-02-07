@@ -33,12 +33,12 @@
 				<X class="rz-page-header__close" size="17" />
 			</Button>
 		{/if}
-		{#if form.doc.status}
-			<ButtonStatus {form} />
-		{/if}
 		<h1 class="rz-page-header__title">
 			{title.value}
 		</h1>
+		{#if form.doc.status}
+			<ButtonStatus {form} />
+		{/if}
 	</div>
 
 	<div class="rz-page-header__right">
@@ -74,6 +74,9 @@
 		margin-left: var(--rz-size-3);
 		&.rz-page-header__left--with-close {
 			margin-left: 0;
+		}
+		:global(.rz-button) {
+			flex-shrink: 0;
 		}
 	}
 	.rz-page-header__right {

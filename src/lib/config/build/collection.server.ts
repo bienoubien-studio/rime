@@ -135,8 +135,8 @@ export const buildCollection = async (
 		}
 	};
 
-	if (collection.status && Array.isArray(collection.status) && collection.status.length) {
-		out.fields.push(text('status').defaultValue(collection.status[0].value));
+	if (collection.status) {
+		out.fields.push(text('status').defaultValue('draft').hidden());
 	}
 	return out as BuiltCollectionConfig;
 };
