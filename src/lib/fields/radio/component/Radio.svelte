@@ -9,8 +9,7 @@
 
 	const field = $derived(form.useField(path, config));
 
-	let initialValue =
-		form.getRawValue(path) || config.defaultValue ? config.defaultValue : undefined;
+	let initialValue = form.getRawValue(path) ?? config.defaultValue;
 	let value = $state<string | undefined>(initialValue);
 
 	$effect(() => {
