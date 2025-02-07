@@ -8,6 +8,7 @@ import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
 	BuiltCollectionConfig,
+	BuiltConfig,
 	CollectionConfig,
 	ImageSizesConfig,
 	PanelUsersConfig
@@ -115,7 +116,7 @@ export const buildCollection = async (
 
 	fields.push(text('_editedBy').hidden());
 
-	return {
+	let out = {
 		...collection,
 		slug: collection.slug as CollectionSlug,
 		label: collection.label
@@ -133,6 +134,11 @@ export const buildCollection = async (
 			...collection.access
 		}
 	};
+
+	if (collection.status && Array.isArray(collection.status) && collection.status.length) {
+		out.fields.push(text('status').defaultValue(collection.status[0].value));
+	}
+	return out as BuiltCollectionConfig;
 };
 
 export const mergePanelUsersCollectionWithDefault = ({

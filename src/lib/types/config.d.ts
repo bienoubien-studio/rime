@@ -113,11 +113,14 @@ type BaseDocConfig = {
 	live?: boolean;
 };
 
+export type DocumentStatus = { value: string; color: string };
+
 export type BaseCollectionConfig = {
 	label?: CollectionConfigLabel;
 	auth?: true;
 	upload?: boolean;
 	hooks?: CollectionHooks;
+	status?: DocumentStatus[];
 } & BaseDocConfig;
 
 export type CollectionConfig = BaseCollectionConfig | UploadCollectionConfig;
