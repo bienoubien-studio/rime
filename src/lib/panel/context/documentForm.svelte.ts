@@ -49,8 +49,6 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	$inspect(title);
-
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -226,7 +224,6 @@ function createDocumentFormState({
 			},
 
 			set value(value: any) {
-				console.log('set value');
 				const valid = validate(value);
 				if (!isCreateDoc(doc) && !config.access.update(user.attributes)) {
 					return;
