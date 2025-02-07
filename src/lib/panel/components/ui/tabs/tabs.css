@@ -31,7 +31,7 @@
 }
 
 .rz-tabs-trigger:focus-visible {
-	--rz-ring-offset: 2px;
+	/* --rz-ring-offset: 2px; */
 	--rz-ring-opacity: 1;
 	@mixin ring var(--rz-color-ring);
 	outline: none;

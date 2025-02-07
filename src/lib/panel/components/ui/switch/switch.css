@@ -1,5 +1,5 @@
 .rz-switch {
-	--rz-ring-offset: 1px;
+	/* --rz-ring-offset: 1px; */
 	display: inline-flex;
 	height: 16px;
 	width: 26px;

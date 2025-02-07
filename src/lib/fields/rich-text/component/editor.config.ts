@@ -3,7 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { RichTextLink } from './extensions/Link';
 import type { RichTextField } from '..';
-import { __t } from 'rizom/panel/i18n';
+import { t__ } from 'rizom/panel/i18n';
 
 type BuildEditorConfig = (args: {
 	config: RichTextField;
@@ -37,7 +37,7 @@ export const buildEditorConfig: BuildEditorConfig = ({
 			}),
 			Placeholder.configure({
 				emptyEditorClass: 'empty-editor',
-				placeholder: __t('fields.write_something')
+				placeholder: t__('fields.write_something')
 			})
 		],
 		onUpdate: (props) => setValue(props.editor.getJSON())

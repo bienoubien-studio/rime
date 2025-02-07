@@ -9,7 +9,7 @@
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 	import { dataError } from 'rizom/panel/utility/dataError';
 
 	const { path, config, form }: LinkFieldProps = $props();
@@ -52,7 +52,7 @@
 	const hasTarget = $derived(!['anchor', 'email', 'tel'].includes(linkType));
 
 	let isLinkValueError = $state(false);
-	let isLinkLabelError = $derived(!!field.error && field.error.includes(`label::`));
+	let isLinkRequiredError = $derived(!!field.error && field.error.includes(`required::`));
 
 	const onInput = (event: Event) => {
 		linkValue = (event.target as HTMLInputElement).value;
@@ -97,8 +97,7 @@
 
 	$effect(() => {
 		const linkTypeError = !!field.error && field.error.includes(`${linkType}::`);
-		const requiredError = !!field.error && field.error.includes('required::');
-		isLinkValueError = linkTypeError || (requiredError && !linkValue);
+		isLinkValueError = linkTypeError || (isLinkRequiredError && !linkValue);
 	});
 </script>
 
@@ -109,7 +108,7 @@
 		<div class="rz-link-field" data-error={field.error ? 'true' : 'false'}>
 			<Input
 				bind:value={inputLabelValue}
-				data-error={isLinkLabelError ? '' : null}
+				data-error={isLinkRequiredError ? '' : null}
 				oninput={onInputLabel}
 				placeholder="Label"
 			/>
@@ -167,7 +166,7 @@
 				{#if hasTarget}
 					<div class="rz-link__target">
 						<Switch checked={targetBlank} onCheckedChange={onTargetChange} id="target" />
-						<Label for="target">{__t('fields.new_tab')}</Label>
+						<Label for="target">{t__('fields.new_tab')}</Label>
 					</div>
 				{/if}
 			</div>
@@ -186,7 +185,7 @@
 		>
 			{#if field.isEmpty}
 				<Edit size="12" />
-				{__t('common.edit_link')}
+				{t__('common.edit_link')}
 			{:else}
 				<Icon size="12" />
 				<span>{field.value.label}</span>

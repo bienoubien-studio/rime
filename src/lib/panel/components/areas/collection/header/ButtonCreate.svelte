@@ -3,7 +3,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
 	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	type ButtonSize = 'sm' | 'default';
 	const { size = 'default' }: { size?: ButtonSize } = $props();
@@ -13,7 +13,7 @@
 	const buttonVariant = $derived(isSmallSize ? 'ghost' : 'default');
 	const buttonSize = $derived(isSmallSize ? 'icon-sm' : 'default');
 	const buttonLabel = $derived(
-		__t(`common.create_new|${collection.config.label.gender}`, collection.config.label.singular)
+		t__(`common.create_new|${collection.config.label.gender}`, collection.config.label.singular)
 	);
 </script>
 

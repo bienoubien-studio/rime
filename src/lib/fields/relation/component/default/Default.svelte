@@ -11,7 +11,7 @@
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types/doc';
 	import { useSortable } from 'rizom/panel/utility/Sortable';
-	import { __t } from 'rizom/panel/i18n/index.js';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	const {
 		isFull,
@@ -106,7 +106,7 @@
 					ref={commandInput}
 					class={inputWithItemsClass}
 					bind:value={search}
-					placeholder={__t(
+					placeholder={t__(
 						`common.search_a|${relationConfig.label.gender}`,
 						relationConfig.label.singular
 					)}
@@ -133,7 +133,7 @@
 			variant="secondary"
 			size="sm"
 		>
-			{__t(
+			{t__(
 				`common.create_new|${relationConfig.label.gender}`,
 				relationConfig.label.singular || relationConfig.slug
 			)}
@@ -209,7 +209,7 @@
 
 		.rz-relation__list:global([data-focused]) {
 			outline: none;
-			--rz-ring-offset: 2px;
+			/* --rz-ring-offset: 2px; */
 			@mixin ring var(--rz-color-ring);
 		}
 

@@ -3,7 +3,7 @@
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from 'lucide-svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	const collection = getContext<CollectionContext>('collectionList');
 
@@ -30,7 +30,7 @@
 			</Button>
 		{:else}
 			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>
-				{__t('common.select_all')}
+				{t__('common.select_all')}
 			</Button>
 		{/if}
 		<Button
@@ -39,7 +39,7 @@
 			variant="text"
 			onclick={collection.deleteSelection}
 		>
-			{__t('common.delete', `${selectedCount} doc${pluralSuffix}`)}
+			{t__('common.delete', `${selectedCount} doc${pluralSuffix}`)}
 		</Button>
 	{/if}
 </div>

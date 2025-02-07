@@ -46,7 +46,7 @@
 
 	.rz-input:focus-visible {
 		outline: none;
-		--rz-ring-offset: 1px;
+		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-ring);
 	}
 

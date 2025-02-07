@@ -5,7 +5,7 @@
 	import { useSortable } from '$lib/panel/utility/Sortable';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	const { path, config, form }: SelectFieldProps = $props();
 
@@ -96,7 +96,7 @@
 						onfocus={() => (inputFocused = true)}
 						onblur={() => setTimeout(() => (inputFocused = false), 200)}
 						bind:value={search}
-						placeholder={__t('common.search')}
+						placeholder={t__('common.search')}
 					/>
 					{#if inputFocused}
 						<Command.List>

@@ -20,7 +20,7 @@
 
 .rz-sheet-content__close:focus-visible {
 	outline: none;
-	--rz-ring-offset: 2px;
+	/* --rz-ring-offset: 2px; */
 	border-radius: var(--rz-radius-sm);
 	@mixin ring var(--rz-color-ring);
 }

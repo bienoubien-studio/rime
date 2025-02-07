@@ -71,25 +71,25 @@ type ModifiedKey = `${TranslationKey}|${'m' | 'f'}` | `${TranslationKey}|${'m' |
  *
  * @example
  * // Basic usage
- * __t('common.save')  // → "Save"
+ * t__('common.save')  // → "Save"
  *
  * // With gender (masculine/feminine)
- * __t('common.new|m')  // → "nouveau"
- * __t('common.new|f')  // → "nouvelle"
+ * t__('common.new|m')  // → "nouveau"
+ * t__('common.new|f')  // → "nouvelle"
  *
  * // With plural
- * __t('common.new|m|p')  // → "nouveaux"
- * __t('common.new|f|p')  // → "nouvelles"
+ * t__('common.new|m|p')  // → "nouveaux"
+ * t__('common.new|f|p')  // → "nouvelles"
  *
  * // With parameters
- * __t('common.count', '42')  // → "Count: 42" (if template is "Count: $1")
+ * t__('common.count', '42')  // → "Count: 42" (if template is "Count: $1")
  *
  * // Translation templates in JSON should use this format:
  * // {masculine|feminine|masculine_plural|feminine_plural}
  * // "new": "{nouveau|nouvelle|nouveaux|nouvelles}"
  * // "create": "Créer {un|une|des} {nouveau|nouvelle|nouveaux|nouvelles} élément{ | |s}"
  */
-export function __t(key: TranslationKey | ModifiedKey | string, ...params: string[]) {
+export function t__(key: TranslationKey | ModifiedKey | string, ...params: string[]) {
 	const isPredefinedError = namespaces.some((ns) => key.startsWith(`${ns}.`));
 
 	if (!isPredefinedError) {

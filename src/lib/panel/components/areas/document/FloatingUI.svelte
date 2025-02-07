@@ -3,7 +3,8 @@
 	import Button from '../../ui/button/button.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { ChevronLeft, Command } from 'lucide-svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
+	import ButtonSave from './ButtonSave.svelte';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
@@ -11,16 +12,11 @@
 
 <div class="rz-floating-ui">
 	<Button icon={ChevronLeft} onclick={onClose} variant="secondary" size="icon"></Button>
-	<Button class="rz-floating-ui__save" type="submit" disabled={!form.canSubmit}>
-		{__t('common.save')}
-		{#if form.processing}
-			<SpinLoader />
-		{:else}
-			<span>
-				<Command size="9" /> + S
-			</span>
-		{/if}
-	</Button>
+	<ButtonSave
+		class="rz-floating-ui__save"
+		disabled={!form.canSubmit}
+		processing={form.processing}
+	/>
 </div>
 
 <style>
@@ -35,17 +31,9 @@
 		z-index: 1000;
 		display: flex;
 		gap: var(--rz-size-2);
+
 		:global(.rz-floating-ui__save) {
 			flex: 1;
-			span {
-				font-size: var(--rz-text-xs);
-				display: flex;
-				align-items: center;
-				gap: 2px;
-				border: 1px solid currentColor;
-				padding: 0 4px;
-				border-radius: var(--rz-radius-sm);
-			}
 		}
 	}
 </style>

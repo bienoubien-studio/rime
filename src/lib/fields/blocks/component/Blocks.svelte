@@ -8,7 +8,7 @@
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
 	import './blocks.css';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	const { path, config, form }: BlocksProps = $props();
 

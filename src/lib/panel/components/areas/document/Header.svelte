@@ -5,10 +5,11 @@
 	import { Button } from '../../ui/button';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
-	import { PencilRuler, Eye } from 'lucide-svelte';
+	import { PencilRuler, Eye, Command } from 'lucide-svelte';
 	import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
+	import ButtonSave from './ButtonSave.svelte';
 
 	// Props
 	type Props = {
@@ -25,7 +26,7 @@
 </script>
 
 <PageHeader>
-	<div class="rz-page-header__left">
+	<div class:rz-page-header__left--with-close={onCloseIsDefined} class="rz-page-header__left">
 		{#if onCloseIsDefined}
 			<Button onclick={onClose} variant="ghost" size="icon-sm">
 				<X class="rz-page-header__close" size="17" />
@@ -39,7 +40,7 @@
 	<div class="rz-page-header__right">
 		{#if config.url && form.doc._url}
 			<Button icon={Eye} target="_blank" href={form.doc._url} variant="text">
-				{__t('common.view_page')}
+				{t__('common.view_page')}
 			</Button>
 		{/if}
 
@@ -55,12 +56,7 @@
 			</Button>
 		{/if}
 
-		<Button type="submit" disabled={!form.canSubmit}>
-			{#if form.processing}
-				<SpinLoader />
-			{/if}
-			{__t('common.save')}
-		</Button>
+		<ButtonSave disabled={!form.canSubmit} processing={form.processing} />
 
 		<LanguageSwitcher />
 	</div>
@@ -71,6 +67,10 @@
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
+		margin-left: var(--rz-size-3);
+		&.rz-page-header__left--with-close {
+			margin-left: 0;
+		}
 	}
 	.rz-page-header__right {
 		display: flex;

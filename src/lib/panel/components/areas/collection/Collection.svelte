@@ -8,6 +8,8 @@
 	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { page } from '$app/stores';
 	import type { PrototypeSlug } from 'rizom/types/doc';
+	import { t__ } from 'rizom/panel/i18n';
+	import Button from '../../ui/button/button.svelte';
 
 	interface Props {
 		compact?: boolean;
@@ -42,20 +44,39 @@
 	</div>
 
 	<ScrollArea class={gridClass}>
-		<div
-			class:rz-collection-area__list={!collection.isGrid()}
-			class:rz-collection-area__grid={collection.isGrid()}
-		>
-			{#each collection.docs as doc}
-				{@const checked = collection.selected.includes(doc.id)}
-				{@const active = currentDoc === doc.id}
-				{#if collection.isList()}
-					<ListRow {doc} {checked} {compact} {active} />
-				{:else}
-					<GridItem {doc} {checked} />
-				{/if}
-			{/each}
-		</div>
+		{#if !collection.docs.length}
+			<div class="rz-collection-area__empty">
+				<div>
+					<span
+						>{t__(
+							`common.no_document|${collection.config.label.gender}`,
+							collection.config.label.singular
+						)}</span
+					>
+					<Button variant="outline">
+						{t__(
+							`common.create_first|${collection.config.label.gender}`,
+							collection.config.label.singular
+						)}
+					</Button>
+				</div>
+			</div>
+		{:else}
+			<div
+				class:rz-collection-area__list={!collection.isGrid()}
+				class:rz-collection-area__grid={collection.isGrid()}
+			>
+				{#each collection.docs as doc}
+					{@const checked = collection.selected.includes(doc.id)}
+					{@const active = currentDoc === doc.id}
+					{#if collection.isList()}
+						<ListRow {doc} {checked} {compact} {active} />
+					{:else}
+						<GridItem {doc} {checked} />
+					{/if}
+				{/each}
+			</div>
+		{/if}
 	</ScrollArea>
 </div>
 
@@ -84,5 +105,17 @@
 	}
 	.rz-collection-area__list {
 		padding: 0 var(--rz-size-5);
+	}
+	.rz-collection-area__empty {
+		place-content: center;
+		display: grid;
+		height: 100%;
+		@mixin font-medium;
+		& > div {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: var(--rz-size-3);
+		}
 	}
 </style>

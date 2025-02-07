@@ -67,7 +67,7 @@
 
 		.rz-dialog-content__close:focus {
 			outline: none;
-			--rz-ring-offset-2: 2px;
+			/* --rz-ring-offset-2: 2px; */
 			@mixin ring var(--rz-color-ring);
 		}
 

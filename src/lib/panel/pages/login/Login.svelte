@@ -8,7 +8,7 @@
 	import type { FormErrors } from 'rizom/types';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
-	import { __t, registerTranslation } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	type Props = {
 		forgotPasswordLink?: boolean;
@@ -30,14 +30,14 @@
 				<Email config={usersFields.email.toField()} form={context} />
 				<Text
 					type="password"
-					config={text('password').label(__t('fields.password')).required().toField()}
+					config={text('password').label(t__('fields.password')).required().toField()}
 					form={context}
 				/>
 			</Card.Content>
 			<Card.Footer>
 				<Button size="lg" disabled={!context.canSubmit} type="submit">Login</Button>
 				{#if context.errors?.has('_form')}
-					<span class="rz-login__form-error">{__t('errors.' + context.errors.get('_form'))}</span>
+					<span class="rz-login__form-error">{t__('errors.' + context.errors.get('_form'))}</span>
 				{/if}
 				{#if forgotPasswordLink}
 					<Button variant="link" href="/forgot-password?slug=users">Forgot your password ?</Button>

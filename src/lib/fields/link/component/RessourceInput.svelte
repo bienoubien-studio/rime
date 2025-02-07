@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 
 	type Ressource = {
@@ -96,7 +96,7 @@
 					onfocus={() => (inputFocused = true)}
 					onblur={() => setTimeout(() => (inputFocused = false), 200)}
 					bind:value={search}
-					placeholder={__t('common.search_a', ressourceType)}
+					placeholder={t__('common.search_a', ressourceType)}
 				/>
 				{#if inputFocused}
 					<Command.List>
@@ -169,7 +169,7 @@
 	}
 
 	.rz-ressource-input__wrapper:global([data-focused]) {
-		--rz-ring-offset: 1px;
+		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-primary);
 		z-index: 20;
 	}

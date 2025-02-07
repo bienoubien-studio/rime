@@ -1,5 +1,6 @@
 {
 	"save": "Save",
+	"create_first": "Create your first $1",
 	"create_new": "Create new $1",
 	"view_site": "View website",
 	"view_page": "View page",
@@ -12,5 +13,8 @@
 	"select_all": "Select all",
 	"delete": "Delete $1",
 	"no_document": "No $1 yet",
-	"edit_link": "Edit link"
+	"edit_link": "Edit link",
+	"drop_file": "Drop your file here",
+	"or": "or",
+	"browse": "browse"
 }

@@ -6,7 +6,7 @@
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
 	import { ArrowRight, Eye } from 'lucide-svelte';
 	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
-	import { __t } from 'rizom/panel/i18n/index.js';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();
@@ -22,7 +22,7 @@
 			<div class="rz-dashboard__header-left">
 				{#if config.raw.siteUrl}
 					<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>
-						{__t('common.view_site')}
+						{t__('common.view_site')}
 					</Button>
 				{/if}
 				{#each config.raw.panel.components.header as CustomHeaderComponent}
@@ -40,37 +40,25 @@
 		<div class="rz-dashboard__content">
 			{#each entries as entry}
 				{@const Icon = config.raw.icons[entry.slug]}
-				<section>
+
+				<a href={entry.link}>
+					<Icon size="32" />
 					<header>
-						<a href={entry.link}>
-							<h2>{entry.title}</h2>
-						</a>
+						<h2>{entry.title}</h2>
 					</header>
 
-					{#if entry.prototype === 'collection'}
+					<!-- {#if entry.prototype === 'collection'}
 						{#if entry.lastEdited!.length === 0}
-							{__t(`common.no_document|${entry.gender}`, entry.titleSingular)}
+							{t__(`common.no_document|${entry.gender}`, entry.titleSingular)}
 						{/if}
-						{#if entry.lastEdited}
-							<ul>
-								{#each entry.lastEdited as doc}
-									<li class="rz-dashboard__doc">
-										<a href="/panel/{doc._type}/{doc.id}">
-											<Icon size="12" />
-											{doc.title}
-											<p>{__t('common.last_update')} : {locale.dateFormat(doc.updatedAt!, true)}</p>
-										</a>
-									</li>
-								{/each}
-							</ul>
-						{/if}
+
 						{#if entry.canCreate}
-							<Button variant="secondary" href="{entry.link}/create"
-								>{__t(`common.create_new|${entry.gender}`, entry.titleSingular)}</Button
-							>
+							<Button variant="secondary" href="{entry.link}/create">
+								{t__(`common.create_new|${entry.gender}`, entry.titleSingular)}
+							</Button>
 						{/if}
-					{/if}
-				</section>
+					{/if} -->
+				</a>
 			{/each}
 		</div>
 	{/if}
@@ -96,12 +84,12 @@
 				align-items: center;
 				gap: var(--rz-size-3);
 			}
-			margin-top: var(--rz-size-5);
+			/* margin-top: var(--rz-size-5); */
 			/* margin-bottom: var(--rz-size-3); */
 		}
 
 		h2 {
-			@mixin font-semibold;
+			/* @mixin font-semibold; */
 			font-size: var(--rz-text-2xl);
 			/* border-top: var(--rz-size-2) solid hsl(var(--rz-ground-4)); */
 			/* padding-top: var(--rz-size-3); */
@@ -110,11 +98,11 @@
 
 	.rz-dashboard__doc {
 		/* margin-bottom: var(--rz-size-2); */
-		padding: var(--rz-size-6);
-		border-bottom: var(--rz-border);
-		background-color: hsl(var(--rz-ground-6));
-		border-left: var(--rz-border);
-		border-right: var(--rz-border);
+		/* padding: var(--rz-size-6); */
+		/* border-bottom: var(--rz-border); */
+		/* background-color: hsl(var(--rz-ground-6)); */
+		/* border-left: var(--rz-border);
+		border-right: var(--rz-border); */
 
 		a {
 			@mixin font-semibold;
@@ -128,29 +116,48 @@
 			@mixin font-light;
 		}
 
-		&:first-child {
+		/* &:first-child {
 			border-top: var(--rz-border);
 			border-radius: var(--rz-radius-md) var(--rz-radius-md) 0 0;
 		}
 		&:last-child {
 			border-radius: 0 0 var(--rz-radius-md) var(--rz-radius-md);
-		}
-	}
-
-	section {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-
-		:global(.rz-button) {
-			align-self: start;
-		}
+		} */
 	}
 
 	.rz-dashboard__content {
 		display: grid;
-		gap: var(--rz-size-8);
-		max-width: 1024px;
-		padding: var(--rz-size-6) var(--rz-size-10);
+		/* gap: var(--rz-size-8); */
+		/* max-width: 1024px; */
+		/* padding: var(--rz-size-6) var(--rz-size-10); */
+		grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+		grid-template-row: repeat(auto-fit, minmax(290px, 1fr));
+
+		a {
+			height: 100%;
+			border-right: var(--rz-border);
+			border-bottom: var(--rz-border);
+			padding: var(--rz-size-4);
+			position: relative;
+			text-align: center;
+			min-height: 235px;
+			display: flex;
+			gap: var(--rz-size-3);
+			flex-direction: column;
+			justify-content: flex-end;
+			transition: background-color 0.3s ease-out;
+			background-color: hsl(var(--rz-ground-6));
+			&:hover {
+				background-color: hsl(var(--rz-ground-7));
+			}
+			:global(svg) {
+				position: absolute;
+				opacity: 0.1;
+				left: 50%;
+				top: 50%;
+				translate: -50% -50%;
+				z-index: 0;
+			}
+		}
 	}
 </style>

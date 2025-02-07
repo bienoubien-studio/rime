@@ -10,7 +10,7 @@
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
 	import './upload.css';
-	import { __t } from 'rizom/panel/i18n/index.js';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	const {
 		isFull,
@@ -113,18 +113,18 @@
 		<Button onclick={() => (open = true)} variant="outline">
 			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
-	{/if}
-	{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
-		<Button onclick={() => (create = true)} variant="secondary">
-			Create new {relationConfig.label.singular || relationConfig.slug}
-		</Button>
+		{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
+			<Button onclick={() => (create = true)} variant="secondary">
+				Create new {relationConfig.label.singular || relationConfig.slug}
+			</Button>
+		{/if}
 	{/if}
 </div>
 
 <Command.Dialog bind:open onOpenChange={(val) => (open = val)}>
 	<Command.Input
 		class="rz-relation-upload__search"
-		placeholder={__t(
+		placeholder={t__(
 			`common.search_a|${relationConfig.label.gender}`,
 			relationConfig.label.singular || relationConfig.slug
 		)}
@@ -150,7 +150,6 @@
 </Command.Dialog>
 
 <Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
-	<Sheet.Trigger />
 	<Sheet.Content showCloseButton={false} class="rz-relation-upload__sheet" side="right">
 		<Doc
 			doc={createBlankDocument(relationConfig)}

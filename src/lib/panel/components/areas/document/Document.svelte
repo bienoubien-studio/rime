@@ -14,7 +14,7 @@
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	type Props = {
 		doc: GenericDoc;
@@ -154,10 +154,10 @@
 
 		<div class="rz-document__infos">
 			{#if form.doc.createdAt}
-				{@render meta(__t('common.created_at'), locale.dateFormat(form.doc.createdAt))}
+				{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
 			{/if}
 			{#if form.doc.updatedAt}
-				{@render meta(__t('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
+				{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
 			{/if}
 			{#if form.doc.id}
 				{@render meta('id', form.doc.id)}

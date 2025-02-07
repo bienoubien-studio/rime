@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t__ } from 'rizom/panel/i18n';
 	import type { UploadCollectionConfig } from 'rizom/types/config';
 
 	import type { ChangeEventHandler } from 'svelte/elements';
@@ -67,7 +68,7 @@
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
 >
-	<p>Drop your file here or <strong>browse</strong></p>
+	<p>{t__('common.drop_file')} {t__('common.or')} <strong>{t__('common.browse')}</strong></p>
 	{#if accept}
 		<p class="rz-doc-upload-dropzone__accept">{accept.join(', ')} accepted</p>
 	{/if}

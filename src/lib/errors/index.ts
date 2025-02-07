@@ -1,4 +1,4 @@
-import { __t } from 'rizom/panel/i18n';
+import { t__ } from 'rizom/panel/i18n';
 import type { FormErrors } from 'rizom/types';
 
 class RizomError extends Error {
@@ -17,7 +17,7 @@ class RizomError extends Error {
 	status: number;
 
 	constructor(code: string, message?: string, ...args: any) {
-		message = message || __t(`errors.${code}`);
+		message = message || t__(`errors.${code}`);
 		super(message, ...args);
 		this.code = code;
 		const statusCodes = {
@@ -51,7 +51,7 @@ class RizomFormError extends RizomError {
 
 	constructor(errors: FormErrors) {
 		const message = Object.entries(errors)
-			.map(([field, code]) => __t(`errors.${code}`, field))
+			.map(([field, code]) => t__(`errors.${code}`, field))
 			.join(', ');
 		super(RizomError.FORM_ERROR, message);
 

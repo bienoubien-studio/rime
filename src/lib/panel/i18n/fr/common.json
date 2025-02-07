@@ -1,5 +1,6 @@
 {
 	"save": "Enregistrer",
+	"create_first": "Créer votre premi{e|è}r{ |e} $1",
 	"create_new": "Créer {un|une} $1",
 	"view_site": "Voir le site",
 	"view_page": "Voir la page",
@@ -12,5 +13,8 @@
 	"select_all": "Tout sélectionner",
 	"delete": "Supprimer $1",
 	"no_document": "Aucun{ |e} $1",
-	"edit_link": "Editer le lien"
+	"edit_link": "Editer le lien",
+	"drop_file": "Déposez votre fichier ici",
+	"or": "ou",
+	"browse": "parcourez"
 }

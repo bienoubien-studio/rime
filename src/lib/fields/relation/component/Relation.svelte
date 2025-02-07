@@ -37,8 +37,7 @@
 	let selectedItems = $state<RelationFieldItem[]>([]);
 	let isFull = $derived(
 		(!config.many && selectedIds.length === 1) ||
-			(config.many && selectedIds.length === initialItems.length) ||
-			initialItems.length === 0
+			(config.many && selectedIds.length === initialItems.length)
 	);
 
 	function toRelationFieldItem(doc: GenericDoc) {

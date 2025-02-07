@@ -3,7 +3,7 @@
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import { Search } from 'lucide-svelte';
 	import Input from 'rizom/panel/components/ui/input/input.svelte';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();
@@ -24,7 +24,7 @@
 	</div>
 	<Input
 		class="rz-header-search-input__input"
-		placeholder={__t('common.search', `${collection.length} document(s)...`)}
+		placeholder={t__('common.search', `${collection.length} document(s)...`)}
 		type="text"
 		bind:value={filterValue}
 	/>

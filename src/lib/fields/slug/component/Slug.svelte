@@ -5,7 +5,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import type { SlugField } from '../index';
 	import { Field } from 'rizom/panel';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -57,7 +57,7 @@
 		<Input data-error={field.error ? '' : null} type="text" value={field.value} oninput={onInput} />
 		{#if config.slugify}
 			<Button onclick={generateFromField} type="button" size="sm" variant="outline">
-				{__t('fields.generate_from', config.slugify)}
+				{t__('fields.generate_from', config.slugify)}
 			</Button>
 		{/if}
 	</div>

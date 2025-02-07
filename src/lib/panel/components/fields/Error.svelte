@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 	import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 	type Props = { error: string | false };
@@ -14,7 +14,7 @@
 			Object.values(RizomError).includes(cleanError) ||
 			Object.values(RizomFormError).includes(cleanError)
 		) {
-			return __t(`errors.${cleanError}`);
+			return t__(`errors.${cleanError}`);
 		}
 		// Otherwise return as-is (user defined message)
 		return cleanError;

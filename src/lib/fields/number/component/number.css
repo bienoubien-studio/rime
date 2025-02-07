@@ -24,7 +24,7 @@
 }
 
 .rz-number__input:focus-visible {
-	--rz-ring-offset: 1px;
+	/* --rz-ring-offset: 1px; */
 	position: relative;
 	z-index: 10;
 	@mixin ring var(--rz-color-ring);
@@ -53,7 +53,7 @@
 }
 
 .rz-number__chevron:focus-visible {
-	--rz-ring-offset: 1px;
+	/* --rz-ring-offset: 1px; */
 	@mixin ring var(--rz-color-ring);
 	position: relative;
 	z-index: 10;

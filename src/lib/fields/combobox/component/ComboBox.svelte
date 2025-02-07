@@ -7,7 +7,7 @@
 	import './combobox.css';
 	import type { ComboBoxProps } from './props';
 	import type { Option } from 'rizom/types';
-	import { __t } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n';
 
 	const { path, config, form }: ComboBoxProps = $props();
 
@@ -51,7 +51,7 @@
 					{#if options.length > 8}
 						<Command.Input
 							bind:value={search}
-							placeholder={__t('common.search')}
+							placeholder={t__('common.search')}
 							class="rz-combobox__search"
 						/>
 					{/if}

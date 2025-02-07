@@ -68,7 +68,7 @@
 	}
 
 	.rz-button:focus-visible {
-		--rz-ring-offset: 1px;
+		/* --rz-ring-offset: 1px; */
 		outline: none;
 		@mixin ring var(--rz-color-ring);
 	}
@@ -151,7 +151,7 @@
 		background-color: hsl(var(--rz-ground-5));
 		color: hsl(var(--rz-ground-0));
 		fill: hsl(var(--rz-ground-0));
-		box-shadow: var(--rz-shadow-sm);
+		/* box-shadow: var(--rz-shadow-sm); */
 		&:hover {
 			background-color: hsl(var(--rz-color-secondary) / 0.7);
 		}
