@@ -3,7 +3,7 @@ import type { AnyField } from './fields';
 import type { RawTabsField } from 'rizom/fields/tabs';
 import type { RawBlocksField } from 'rizom/fields/blocks';
 import type { RawGroupField } from 'rizom/fields/group';
-
+import type { CollectionConfig } from './config';
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
@@ -16,18 +16,25 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 
 type AnyFunction = (...args: any[]) => any;
 
+type WithUpload<T extends { upload?: boolean }> = T & {
+	upload: true;
+	imageSizes?: ImageSizesConfig[];
+	accept: string[];
+	out: 'jpeg' | 'webp';
+};
+
 type WithoutBuilders<T> =
 	T extends Array<infer U>
 		? U extends FieldBuilder<any>
-			? Array<FieldBuilderToField<U>>
+			? AnyField[]
 			: Array<WithoutBuilders<U>>
 		: T extends { fields: FieldBuilder<any>[] }
-			? Omit<T, 'fields'> & { fields: Array<FieldBuilderToField<T['fields'][number]>> }
+			? Omit<T, 'fields'> & { fields: AnyField[] }
 			: T extends { tabs: Array<{ fields: FieldBuilder<any>[] }> }
 				? Omit<T, 'tabs'> & {
 						tabs: Array<
 							Omit<T['tabs'][number], 'fields'> & {
-								fields: Array<FieldBuilderToField<T['tabs'][number]['fields'][number]>>;
+								fields: AnyField[];
 							}
 						>;
 					}
@@ -35,7 +42,7 @@ type WithoutBuilders<T> =
 					? Omit<T, 'blocks'> & {
 							blocks: Array<
 								Omit<T['blocks'][number], 'fields'> & {
-									fields: Array<FieldBuilderToField<T['blocks'][number]['fields'][number]>>;
+									fields: AnyField[];
 								}
 							>;
 						}

@@ -120,7 +120,16 @@ export type BaseCollectionConfig = {
 	hooks?: CollectionHooks;
 } & BaseDocConfig;
 
-export type CollectionConfig = BaseCollectionConfig | UploadCollectionConfig;
+export type CollectionConfig = BaseCollectionConfig &
+	(
+		| { upload?: false | undefined }
+		| {
+				upload: true;
+				imageSizes?: ImageSizesConfig[];
+				accept: string[];
+				out: 'jpeg' | 'webp';
+		  }
+	);
 
 export type GlobalConfig = BaseDocConfig & {
 	hooks?: GlobalHooks;
@@ -130,15 +139,12 @@ export type GlobalConfig = BaseDocConfig & {
 export type DocConfig = CollectionConfig | GlobalConfig;
 
 // Built versions of configs
-export type BuiltDocConfig =
-	| BuiltCollectionConfig
-	| BuiltUploadCollectionConfig
-	| BuiltGlobalConfig;
+export type BuiltDocConfig = BuiltCollectionConfig | BuiltGlobalConfig;
 
 export type BuiltConfig = {
 	database: string;
 	siteUrl?: string;
-	collections: (BuiltCollectionConfig | BuiltUploadCollectionConfig)[];
+	collections: BuiltCollectionConfig[];
 	globals: BuiltGlobalConfig[];
 	localization?: LocalizationConfig;
 	icons: Record<string, any>;
@@ -188,18 +194,18 @@ export type BuiltGlobalConfig = GlobalConfig & {
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type UploadCollectionConfig = Omit<BaseCollectionConfig, 'upload'> & {
-	upload: true;
-	imageSizes?: ImageSizesConfig[];
-	accept: string[];
-	out: 'jpeg' | 'webp';
-};
+// export type UploadCollectionConfig = Omit<BaseCollectionConfig, 'upload'> & {
+// 	upload: true;
+// 	imageSizes?: ImageSizesConfig[];
+// 	accept: string[];
+// 	out: 'jpeg' | 'webp';
+// };
 
-export type BuiltUploadCollectionConfig = Omit<BuiltCollectionConfig, 'upload'> & {
-	upload: true;
-	imageSizes: ImageSizesConfig[];
-	accept: string[];
-};
+// export type BuiltUploadCollectionConfig = Omit<BuiltCollectionConfig, 'upload'> & {
+// 	upload: true;
+// 	imageSizes: ImageSizesConfig[];
+// 	accept: string[];
+// };
 
 export type ImageSizesConfig = {
 	name: string;
@@ -211,9 +217,9 @@ export type ImageSizesConfig = {
 }>;
 
 type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
-type CompiledUploadCollectionConfig = WithoutBuilders<BuiltUploadCollectionConfig>;
+// type CompiledUploadCollectionConfig = WithoutBuilders<BuiltUploadCollectionConfig>;
 type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;
 
 type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
-	collections: Array<CompiledCollectionConfig | CompiledUploadCollectionConfig>;
+	collections: Array<CompiledCollectionConfig>;
 };
