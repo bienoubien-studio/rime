@@ -158,7 +158,10 @@ export type BuiltConfig = {
 
 export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes'> & {
 	blueprints: Record<FieldsType, FieldsComponents>;
-	panel: { components: { header: ComponentType[]; dashboard?: ComponentType } };
+	panel: {
+		language: 'fr' | 'en';
+		components: { header: ComponentType[]; dashboard?: ComponentType };
+	};
 };
 
 export type CustomPanelRoute = {
@@ -207,7 +210,10 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
-type CompiledConfig = WithoutBuilders<BuiltConfig>;
 type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
 type CompiledUploadCollectionConfig = WithoutBuilders<BuiltUploadCollectionConfig>;
 type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;
+
+type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
+	collections: Array<CompiledCollectionConfig | CompiledUploadCollectionConfig>;
+};

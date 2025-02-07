@@ -16,7 +16,7 @@ import {
 import { ListTree, Newspaper, ReceiptText, Settings2 } from 'lucide-svelte';
 import { Images, Text } from 'lucide-svelte';
 import type { CollectionConfig } from 'rizom';
-import type { CollectionHook } from 'rizom/types/hooks';
+import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
 import type { GlobalConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
@@ -104,7 +104,7 @@ const Informations: GlobalConfig = {
 // Pages
 //////////////////////////////////////////////
 
-const setHome: CollectionHook<PagesDoc> = async (args) => {
+const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
 	if (data?.home) {
@@ -129,10 +129,10 @@ const setHome: CollectionHook<PagesDoc> = async (args) => {
 	return args;
 };
 
-const formatslug: CollectionHook<PagesDoc> = async (args) => {
+const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api, operation, event } = args;
 
-	const queryPagesWithSlug = async ({ slug }) => {
+	const queryPagesWithSlug = async ({ slug }: { slug: string }) => {
 		const query = `where[slug][equals]=${slug}`;
 		return api.collection('pages').find({
 			query,

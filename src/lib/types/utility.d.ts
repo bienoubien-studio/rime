@@ -19,14 +19,26 @@ type AnyFunction = (...args: any[]) => any;
 type WithoutBuilders<T> =
 	T extends Array<infer U>
 		? U extends FieldBuilder<any>
-			? AnyField[]
+			? Array<FieldBuilderToField<U>>
 			: Array<WithoutBuilders<U>>
 		: T extends { fields: FieldBuilder<any>[] }
-			? Omit<T, 'fields'> & { fields: AnyField[] }
+			? Omit<T, 'fields'> & { fields: Array<FieldBuilderToField<T['fields'][number]>> }
 			: T extends { tabs: Array<{ fields: FieldBuilder<any>[] }> }
-				? Omit<T, 'tabs'> & { tabs: Array<{ fields: AnyField[] }> }
+				? Omit<T, 'tabs'> & {
+						tabs: Array<
+							Omit<T['tabs'][number], 'fields'> & {
+								fields: Array<FieldBuilderToField<T['tabs'][number]['fields'][number]>>;
+							}
+						>;
+					}
 				: T extends { blocks: Array<{ fields: FieldBuilder<any>[] }> }
-					? Omit<T, 'blocks'> & { blocks: Array<{ fields: AnyField[] }> }
+					? Omit<T, 'blocks'> & {
+							blocks: Array<
+								Omit<T['blocks'][number], 'fields'> & {
+									fields: Array<FieldBuilderToField<T['blocks'][number]['fields'][number]>>;
+								}
+							>;
+						}
 					: T extends object
 						? { [K in keyof T]: WithoutBuilders<T[K]> }
 						: T;

@@ -2,7 +2,7 @@ import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
 import type { CollectionConfig } from 'rizom';
-import type { CollectionHook } from 'rizom/types/hooks';
+import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
 import type { GlobalConfig } from 'rizom';
 import type { PagesDoc } from '../app.generated';
@@ -50,7 +50,7 @@ const Informations: GlobalConfig = {
 // Pages
 //////////////////////////////////////////////
 
-const setHome: CollectionHook<PagesDoc> = async (args) => {
+const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
 	if (data?.home) {
@@ -69,7 +69,7 @@ const setHome: CollectionHook<PagesDoc> = async (args) => {
 	return args;
 };
 
-const formatslug: CollectionHook<PagesDoc> = async (args) => {
+const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api, operation, event } = args;
 
 	if (operation === 'create' || operation === 'update') {
