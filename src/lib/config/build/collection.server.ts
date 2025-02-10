@@ -60,7 +60,7 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 		}
 	}
 
-	if (collection.upload) {
+	if (isUploadConfig(collection)) {
 		if ('imageSizes' in collection && collection.imageSizes?.length) {
 			const sizesFields = collection.imageSizes.map((size: ImageSizesConfig) =>
 				text(toCamelCase(size.name)).hidden()
@@ -136,7 +136,14 @@ export const buildCollection = async (
 	};
 
 	if (collection.status) {
-		out.fields.push(text('status').defaultValue('draft').hidden());
+		let defaultStatus;
+		if (collection.status === true) {
+			collection.status = [
+				{ value: 'draft', color: 'orange' },
+				{ value: 'published', color: 'green' }
+			];
+		}
+		out.fields.push(text('status').defaultValue(collection.status[0].value).hidden());
 	}
 	return out as BuiltCollectionConfig;
 };

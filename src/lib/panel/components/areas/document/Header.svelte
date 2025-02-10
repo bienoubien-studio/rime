@@ -36,8 +36,8 @@
 		<h1 class="rz-page-header__title">
 			{title.value}
 		</h1>
-		{#if form.doc.status}
-			<ButtonStatus {form} />
+		{#if config.type === 'collection' && config.status}
+			<ButtonStatus statusList={config.status} {form} />
 		{/if}
 	</div>
 

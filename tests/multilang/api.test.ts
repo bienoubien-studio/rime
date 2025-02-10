@@ -96,6 +96,7 @@ test('Should get Home EN with FR data', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.title).toBe('Accueil');
 	expect(doc.locale).toBe('en');
+	expect(doc.status).toBe('draft');
 	expect(doc.slug).toBe('accueil');
 });
 
@@ -138,6 +139,7 @@ test('Should create a page', async ({ request }) => {
 		data: {
 			title: 'Page',
 			slug: 'page',
+			status: 'published',
 			components: [
 				{
 					text: 'Foo',
@@ -221,6 +223,26 @@ test('Should return home FR (query)', async ({ request }) => {
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
 	expect(response.docs[0].title).toBe('Accueil');
+});
+
+test('Should return home (draft)', async ({ request }) => {
+	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
+	const response = await request.get(url).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(1);
+	expect(response.docs[0].title).toBe('Accueil');
+});
+
+test('Should return the page (published)', async ({ request }) => {
+	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
+	const response = await request.get(url).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(1);
+	expect(response.docs[0].title).toBe('Page');
 });
 
 let pageWithAuthorId: string;

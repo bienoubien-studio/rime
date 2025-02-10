@@ -51,7 +51,10 @@
 					<UploadThumbCell url={doc.size.thumbnail} />
 				{/if}
 				{#if collection.config.status}
-					<StatusDot --rz-dot-size="0.4rem" status={doc.status} />
+					{@const docStatus =
+						collection.config.status.find((status) => doc.status === status.value) ||
+						collection.config.status[0]}
+					<StatusDot --rz-dot-size="0.4rem" color={docStatus.color} />
 				{/if}
 				<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
 			</a>

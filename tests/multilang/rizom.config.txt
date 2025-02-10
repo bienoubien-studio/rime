@@ -21,6 +21,7 @@ import type { Config } from 'rizom';
 import type { GlobalConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
+import type { WithUpload } from 'rizom/types/utility';
 
 /////////////////////////////////////////////
 // Settings
@@ -204,11 +205,14 @@ const tabSeo = tab('Seo').fields(
 	text('metaDescription').localized()
 );
 
+const tabFooter = tab('Footer').fields(text('slider').localized());
+
 const Pages: CollectionConfig = {
 	slug: 'pages',
 	icon: Newspaper,
 	group: 'Content',
-	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo)],
+	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
+	status: true,
 	url: (doc) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.slug}`;
 	},
@@ -234,10 +238,10 @@ const Medias: CollectionConfig = {
 	group: 'Medias',
 	upload: true,
 	imageSizes: [
-		{ name: 'thumbnail', width: 400 },
-		{ name: 'small', width: 720 },
-		{ name: 'medium', width: 720, height: 1024 },
-		{ name: 'large', width: 1080 }
+		{ name: 'thumbnail', width: 400, out: ['webp'] },
+		{ name: 'small', width: 720, out: ['webp'] },
+		{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
+		{ name: 'large', width: 1080, out: ['webp'] }
 	],
 
 	fields: [text('alt').required()],
@@ -264,9 +268,8 @@ const config: Config = {
 
 	// cors: ['localhost:5173', 'rizom.test:5173'],
 
-
-
 	panel: {
+		language: 'fr',
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),
 		users: {
 			roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
