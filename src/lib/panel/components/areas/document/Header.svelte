@@ -10,6 +10,7 @@
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import ButtonSave from './ButtonSave.svelte';
+	import ButtonStatus from './ButtonStatus.svelte';
 
 	// Props
 	type Props = {
@@ -35,6 +36,9 @@
 		<h1 class="rz-page-header__title">
 			{title.value}
 		</h1>
+		{#if config.type === 'collection' && config.status}
+			<ButtonStatus statusList={config.status} {form} />
+		{/if}
 	</div>
 
 	<div class="rz-page-header__right">
@@ -70,6 +74,9 @@
 		margin-left: var(--rz-size-3);
 		&.rz-page-header__left--with-close {
 			margin-left: 0;
+		}
+		:global(.rz-button) {
+			flex-shrink: 0;
 		}
 	}
 	.rz-page-header__right {

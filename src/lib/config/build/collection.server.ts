@@ -8,6 +8,7 @@ import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
 	BuiltCollectionConfig,
+	BuiltConfig,
 	CollectionConfig,
 	ImageSizesConfig,
 	PanelUsersConfig
@@ -59,7 +60,7 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 		}
 	}
 
-	if (collection.upload) {
+	if (isUploadConfig(collection)) {
 		if ('imageSizes' in collection && collection.imageSizes?.length) {
 			const sizesFields = collection.imageSizes.map((size: ImageSizesConfig) =>
 				text(toCamelCase(size.name)).hidden()
@@ -115,7 +116,7 @@ export const buildCollection = async (
 
 	fields.push(text('_editedBy').hidden());
 
-	return {
+	let out = {
 		...collection,
 		slug: collection.slug as CollectionSlug,
 		label: collection.label
@@ -133,6 +134,18 @@ export const buildCollection = async (
 			...collection.access
 		}
 	};
+
+	if (collection.status) {
+		let defaultStatus;
+		if (collection.status === true) {
+			collection.status = [
+				{ value: 'draft', color: 'orange' },
+				{ value: 'published', color: 'green' }
+			];
+		}
+		out.fields.push(text('status').defaultValue(collection.status[0].value).hidden());
+	}
+	return out as BuiltCollectionConfig;
 };
 
 export const mergePanelUsersCollectionWithDefault = ({

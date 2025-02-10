@@ -12,7 +12,7 @@
 
 <style type="postcss">
 	:global(.rz-dialog-overlay) {
-		background-color: hsl(var(--rz-color-bg) / 0.8);
+		background-color: hsl(var(--rz-color-bg) / 0.6);
 		position: fixed;
 		inset: 0;
 		z-index: 50;

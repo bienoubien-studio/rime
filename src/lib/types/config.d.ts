@@ -113,11 +113,14 @@ type BaseDocConfig = {
 	live?: boolean;
 };
 
+export type DocumentStatus = { value: string; color: string };
+
 export type BaseCollectionConfig = {
 	label?: CollectionConfigLabel;
 	auth?: true;
 	upload?: boolean;
 	hooks?: CollectionHooks;
+	status?: boolean | DocumentStatus[];
 } & BaseDocConfig;
 
 export type CollectionConfig = BaseCollectionConfig &
@@ -126,8 +129,8 @@ export type CollectionConfig = BaseCollectionConfig &
 		| {
 				upload: true;
 				imageSizes?: ImageSizesConfig[];
-				accept: string[];
-				out: 'jpeg' | 'webp';
+				accept?: string[];
+				out?: 'jpeg' | 'webp';
 		  }
 	);
 
@@ -177,11 +180,12 @@ export type CustomPanelRoute = {
 	component: ComponentType;
 };
 
-export type BuiltCollectionConfig = CollectionConfig & {
+export type BuiltCollectionConfig = Omit<CollectionConfig, 'status'> & {
 	type: 'collection';
 	label: CollectionConfigLabel;
 	slug: GetRegisterType<'CollectionSlug'>;
 	asTitle: string;
+	status?: DocumentStatus[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
@@ -194,19 +198,6 @@ export type BuiltGlobalConfig = GlobalConfig & {
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-// export type UploadCollectionConfig = Omit<BaseCollectionConfig, 'upload'> & {
-// 	upload: true;
-// 	imageSizes?: ImageSizesConfig[];
-// 	accept: string[];
-// 	out: 'jpeg' | 'webp';
-// };
-
-// export type BuiltUploadCollectionConfig = Omit<BuiltCollectionConfig, 'upload'> & {
-// 	upload: true;
-// 	imageSizes: ImageSizesConfig[];
-// 	accept: string[];
-// };
-
 export type ImageSizesConfig = {
 	name: string;
 	out?: Array<'jpg' | 'webp'>;
@@ -217,9 +208,8 @@ export type ImageSizesConfig = {
 }>;
 
 type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
-// type CompiledUploadCollectionConfig = WithoutBuilders<BuiltUploadCollectionConfig>;
 type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;
-
 type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
 	collections: Array<CompiledCollectionConfig>;
+	globals: Array<CompiledGlobalConfig>;
 };

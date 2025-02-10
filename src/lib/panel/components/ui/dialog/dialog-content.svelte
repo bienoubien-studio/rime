@@ -31,7 +31,7 @@
 			@mixin bg color-bg;
 			position: fixed;
 			left: 50%;
-			top: 50%;
+			top: 40%;
 			z-index: 50;
 			display: grid;
 			width: 100%;

@@ -9,6 +9,7 @@
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { Pencil } from 'lucide-svelte';
+	import StatusDot from '../StatusDot.svelte';
 
 	type Props = {
 		checked: boolean;
@@ -49,10 +50,13 @@
 				{#if isUploadConfig(collection.config)}
 					<UploadThumbCell url={doc.size.thumbnail} />
 				{/if}
+				{#if collection.config.status}
+					{@const docStatus =
+						collection.config.status.find((status) => doc.status === status.value) ||
+						collection.config.status[0]}
+					<StatusDot --rz-dot-size="0.4rem" color={docStatus.color} />
+				{/if}
 				<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
-				<!-- {#if doc._live}
-					<Button class="rz-button-live" icon={Pencil} href={doc._live} variant="text"></Button>
-				{/if} -->
 			</a>
 		{/if}
 	</div>
@@ -84,8 +88,6 @@
 		height: var(--rz-size-14);
 		align-items: center;
 		border-bottom: 1px solid hsl(var(--rz-ground-4) / 1);
-		/* font-size: var(--rz-text-sm); */
-		/* @mixin font-normal; */
 	}
 
 	.rz-list-row--active {
