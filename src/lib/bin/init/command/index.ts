@@ -152,7 +152,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 	}
 
 	async function installDeps(force = false) {
-		const devDeps = ['drizzle-kit@0.22.8'];
+		const devDeps = ['drizzle-kit'];
 		const deps = ['better-sqlite3'];
 		if (force) {
 			const packageManager = getPackageManager();
