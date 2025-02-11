@@ -128,24 +128,26 @@
 			<RenderFields fields={config.fields} {form} />
 		</div>
 
-		<div class="rz-document__infos">
-			{#if form.doc.createdAt}
-				{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
-			{/if}
-			{#if form.doc.updatedAt}
-				{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
-			{/if}
-			{#if form.doc.id}
-				{@render meta('id', form.doc.id)}
-			{/if}
-		</div>
+		{#if !form.isLive}
+			<div class="rz-document__infos">
+				{#if form.doc.createdAt}
+					{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
+				{/if}
+				{#if form.doc.updatedAt}
+					{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
+				{/if}
+				{#if form.doc.id}
+					{@render meta('id', form.doc.id)}
+				{/if}
+			</div>
+		{/if}
 	</ScrollArea>
 </form>
 
 <style type="postcss">
 	.rz-document {
 		container: rz-document / inline-size;
-		background-color: hsl(var(--rz-ground-7));
+		background-color: hsl(var(--rz-ground-6));
 		min-height: 100vh;
 		position: relative;
 		& :global(.rz-scroll-area) {

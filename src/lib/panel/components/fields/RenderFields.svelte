@@ -81,7 +81,7 @@
 	.rz-render-fields {
 		position: relative;
 		margin-bottom: var(--rz-size-4);
-		gap: var(--rz-size-8);
+		gap: var(--rz-size-8) 0;
 		display: grid;
 		container-type: inline-size;
 		grid-template-columns: repeat(12, 1fr);

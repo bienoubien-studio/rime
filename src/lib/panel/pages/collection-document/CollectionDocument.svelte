@@ -54,7 +54,7 @@
 		display: none;
 	}
 
-	@container rz-collection-container (min-width: 62rem) {
+	/* @container rz-collection-container (min-width: 62rem) {
 		.rz-collection-container__list {
 			display: block;
 			grid-column: span 4 / span 4;
@@ -64,10 +64,11 @@
 			border-left: var(--rz-border);
 			grid-column: span 8 / span 8;
 		}
-	}
+	} */
 
 	@container rz-collection-container (min-width: 72rem) {
 		.rz-collection-container__list {
+			display: block;
 			grid-column: span 3 / span 3;
 		}
 

@@ -74,6 +74,7 @@
 			{#each blockState.blocks as block, index (block.id)}
 				<Block
 					deleteBlock={() => blockState.deleteBlock(index)}
+					duplicateBlock={() => blockState.duplicateBlock(index)}
 					{form}
 					{sorting}
 					path="{path}.{index}"

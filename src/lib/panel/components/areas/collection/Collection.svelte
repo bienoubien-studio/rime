@@ -17,18 +17,16 @@
 	}
 
 	const { slug, compact = false }: Props = $props();
-	// Get the shared title context
+
 	const title = getContext<{ value: string }>('title');
-	// Get the collection context based on the collection slug
-	// assign it to the a shared collectionList context to avoid
-	// passing the slug to children
+
 	const collection = getCollectionContext(slug);
 	setContext('collectionList', collection);
-	// Retrieve current document if one active
+
 	let currentDoc = $derived($page.params.id || null);
-	// Define layout class display
+
 	const gridClass = $derived(collection.isGrid() ? 'rz-scroll-area--grid' : '');
-	// Set shared title to the current collection title
+
 	title.value = collection.title;
 
 	//
@@ -94,7 +92,7 @@
 			height: calc(100vh - 4rem);
 		}
 
-		background-color: hsl(var(--rz-ground-7) / 0.5);
+		background-color: hsl(var(--rz-ground-6));
 	}
 
 	.rz-collection-area__grid {

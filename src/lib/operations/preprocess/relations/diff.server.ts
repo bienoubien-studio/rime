@@ -60,8 +60,6 @@ export const defineRelationsDiff = ({
 			return sameId && sameLocale;
 		});
 
-		// console.log('Match result:', { match });
-
 		if (match) {
 			if (match.position !== newRel.position) {
 				toUpdate.push({ ...match, position: newRel.position });
@@ -100,6 +98,5 @@ export const defineRelationsDiff = ({
 		});
 	});
 
-	// console.log('defineRelationsDiff output:', { toAdd, toDelete, toUpdate });
 	return { toAdd, toDelete, toUpdate };
 };

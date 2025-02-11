@@ -75,7 +75,7 @@
 	.rz-nav__header {
 		display: flex;
 		/* margin-top: 2px; */
-		height: var(--rz-size-16);
+		height: var(--rz-size-14);
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: space-between;

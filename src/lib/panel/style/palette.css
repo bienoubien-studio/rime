@@ -12,8 +12,7 @@
 	--rz-color-fg: var(--rz-ground-0);
 
 	--rz-color-error: 4deg 100% 69%;
-	--rz-color-input: var(--rz-ground-6);
-	--rz-color-border: var(--rz-ground-4);
+	--rz-color-input: var(--rz-ground-7);
 
 	--rz-color-primary: 241deg 3% 0%;
 	--rz-color-primary-fg: 200 4% 100%;
@@ -24,7 +23,7 @@
 	--rz-color-accent: var(--rz-ground-3);
 	--rz-color-accent-fg: var(--rz-ground-6);
 
-	--rz-color-border: var(--rz-ground-3);
+	--rz-color-border: var(--rz-ground-4);
 	--rz-color-ring: var(--rz-color-primary);
 
 	@media (prefers-color-scheme: dark) {

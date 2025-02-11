@@ -24,7 +24,7 @@
 	</div>
 	<Input
 		class="rz-header-search-input__input"
-		placeholder={t__('common.search', `${collection.length} document(s)...`)}
+		placeholder={t__('common.search', `${collection.length} document(s)`)}
 		type="text"
 		bind:value={filterValue}
 	/>

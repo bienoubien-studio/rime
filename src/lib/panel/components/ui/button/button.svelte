@@ -144,14 +144,12 @@
 		&:hover {
 			background-color: hsl(var(--rz-ground-4) / 1);
 		}
-		/* ghost: 'hover:bg-ground-4 hover:text-accent-foreground', */
 	}
 
 	.rz-button--secondary {
 		background-color: hsl(var(--rz-ground-5));
 		color: hsl(var(--rz-ground-0));
 		fill: hsl(var(--rz-ground-0));
-		/* box-shadow: var(--rz-shadow-sm); */
 		&:hover {
 			background-color: hsl(var(--rz-color-secondary) / 0.7);
 		}

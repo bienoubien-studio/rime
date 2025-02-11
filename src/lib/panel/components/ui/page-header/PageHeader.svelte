@@ -26,7 +26,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--rz-size-4);
-		height: var(--rz-size-16);
+		height: var(--rz-size-14);
 		border-bottom: var(--rz-border);
 		backdrop-filter: blur(8px);
 		@mixin px var(--rz-field-padding, var(--rz-size-6));

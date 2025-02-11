@@ -40,13 +40,12 @@ export const extractRelations = ({ parentId, flatData, configMap, locale }: Args
 					return value;
 				});
 			} else if (typeof relationRawValue === 'string') {
-				// console.log('relationRawValue is string : ', relationRawValue);
 				output = [relationFromString({ value: relationRawValue, position: 0 })];
 			}
 			relations.push(...output);
 		}
 	}
-	// console.log('Relation extract output', relations);
+
 	return { relations, emptyPaths };
 };
 

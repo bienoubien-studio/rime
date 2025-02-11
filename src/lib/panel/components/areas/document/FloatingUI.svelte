@@ -21,12 +21,12 @@
 
 <style>
 	.rz-floating-ui {
-		position: fixed;
+		position: absolute;
 		bottom: var(--rz-size-4);
 		left: var(--rz-size-4);
 		background-color: hsl(var(--rz-ground-5));
 		padding: var(--rz-size-2);
-		width: calc(var(--rz-live-sidebar-width) - var(--rz-size-8));
+		right: var(--rz-size-4);
 		border-radius: var(--rz-radius-md);
 		z-index: 1000;
 		display: flex;

@@ -1,48 +1,39 @@
 <script lang="ts">
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { EllipsisVertical, Trash2 } from 'lucide-svelte';
-	import * as Popover from '$lib/panel/components/ui/popover';
-	import { t__ } from 'rizom/panel/i18n';
+	import { CopyPlus, Trash2 } from 'lucide-svelte';
 
 	type Props = {
 		deleteBlock: () => void;
+		duplicateBlock: () => void;
 	};
 
-	const { deleteBlock }: Props = $props();
+	const { deleteBlock, duplicateBlock }: Props = $props();
 
 	let open = $state(false);
-
-	const onClick = (e: MouseEvent) => {
-		open = !open;
-		if (e && e.stopPropagation) e.stopPropagation();
-	};
 </script>
 
-<button class="rz-block-actions__toggle" type="button" onclick={onClick}>
-	<EllipsisVertical size={13} />
-</button>
-
-<Popover.Root bind:open>
-	<Popover.Trigger />
-	<Popover.Portal>
-		<Popover.Content class="rz-block-actions__content" align="end">
-			<Button
-				class="rz-block-actions__delete-button"
-				size="sm"
-				variant="ghost"
-				type="button"
-				onclick={deleteBlock}
-			>
-				<Trash2 size={13} />
-				{t__('fields.delete_block')}
-			</Button>
-		</Popover.Content>
-	</Popover.Portal>
-</Popover.Root>
+<div class="rz-block-actions">
+	<button class="rz-block-action" type="button" onclick={duplicateBlock}>
+		<CopyPlus size={11} />
+	</button>
+	<button class="rz-block-action" type="button" onclick={deleteBlock}>
+		<Trash2 size={11} />
+	</button>
+</div>
 
 <style type="postcss">
-	.rz-block-actions__toggle {
-		padding: var(--rz-size-3);
+	.rz-block-actions {
+		display: flex;
+		gap: var(--rz-size-2);
+	}
+	.rz-block-action {
+		border: var(--rz-border);
+		background-color: hsl(var(--rz-ground-6));
+		border-radius: 1rem;
+		height: var(--rz-size-6);
+		width: var(--rz-size-6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	:global(.rz-block-actions__content) {

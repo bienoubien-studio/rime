@@ -5,9 +5,10 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Cookies from 'js-cookie';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import type { TabsField } from '..';
+	import type { TabsField } from '../index.js';
+	import type { WithoutBuilders } from 'rizom/types/utility';
 
-	type Props = { config: TabsField<'compiled'>; path: string; form: DocumentFormContext };
+	type Props = { config: WithoutBuilders<TabsField>; path: string; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();
 
 	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;
@@ -65,13 +66,21 @@
 		container: rz-tabs / inline-size;
 
 		:global(.rz-tabs-trigger) {
-			/* @container rz-tabs (min-width: 640px) { */
 			min-width: var(--rz-size-28);
-			/* } */
 		}
 
+		:global(.rz-tabs-content) {
+			margin-top: 0;
+		}
+		:global(
+			.rz-tabs-content:not(
+					:has(> .rz-render-fields > .rz-render-fields__field[data-type='group']:first-child)
+				)
+		) {
+			margin-top: var(--rz-size-8);
+		}
 		:global(.rz-tabs-list) {
-			margin-bottom: var(--rz-size-4);
+			margin-bottom: 0;
 		}
 	}
 </style>

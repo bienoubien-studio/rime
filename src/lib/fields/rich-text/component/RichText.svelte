@@ -47,14 +47,3 @@
 		{/key}
 	{/if}
 </Field.Root>
-
-<style type="postcss">
-	.rz-rich-text__editor {
-		background-color: hsl(var(--rz-color-input));
-		min-height: var(--rz-size-11);
-		width: 100%;
-		border-radius: var(--rz-radius-md);
-		border: var(--rz-border);
-		padding: var(--rz-size-1) var(--rz-size-3);
-	}
-</style>

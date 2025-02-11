@@ -8,19 +8,20 @@
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksField, BlocksFieldBlock } from '../index.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import type { WithoutBuilders } from 'rizom/types/utility.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
 		size: 'default' | 'sm';
 		class: string;
-		config: BlocksField<'compiled'>;
+		config: WithoutBuilders<BlocksField>;
 		addBlock: AddBlock;
 	};
 	const { class: className, config, addBlock, size }: Props = $props();
 
 	let open = $state(false);
 
-	const add = (block: BlocksFieldBlock<'compiled'>) => {
+	const add = (block: WithoutBuilders<BlocksFieldBlock>) => {
 		open = false;
 		const empty = {
 			...emptyFieldsFromFieldConfig(block.fields.filter(isFormField)),
@@ -102,10 +103,10 @@
 		.rz-add-block-button__item {
 			display: flex;
 			gap: var(--rz-size-3);
-			border-radius: var(--rz-radius-xl);
+			border-radius: var(--rz-radius-md);
 		}
 		.rz-add-block-button__item[aria-selected='true'] {
-			background-color: hsl(var(--rz-ground-4));
+			background-color: hsl(var(--rz-ground-5));
 		}
 	}
 

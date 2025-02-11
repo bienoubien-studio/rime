@@ -50,7 +50,7 @@
 	.rz-collection-header {
 		container-type: inline-size;
 		display: flex;
-		height: var(--rz-size-16);
+		height: var(--rz-size-14);
 		align-items: center;
 		justify-content: space-between;
 		border-bottom: var(--rz-border);

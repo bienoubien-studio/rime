@@ -101,7 +101,7 @@ function createFormStore(initial: Dic, key: string) {
 
 		return async ({ result }) => {
 			status = result.type;
-			console.log(result);
+
 			if (result.type === 'redirect') {
 				await applyAction(result);
 			} else if (result.type === 'failure') {

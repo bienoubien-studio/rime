@@ -13,10 +13,11 @@
 		path: string;
 		sorting: boolean;
 		deleteBlock: () => void;
+		duplicateBlock: () => void;
 		form: DocumentFormContext;
 	};
 
-	const { config, path, deleteBlock, form, sorting = false }: Props = $props();
+	const { config, path, deleteBlock, duplicateBlock, form, sorting = false }: Props = $props();
 
 	let currentPath = $state.raw(path);
 	let isOpen = $state(true);
@@ -43,7 +44,7 @@
 			if (title) return title;
 		}
 		const title = config.label ? config.label : capitalize(config.name);
-		return `${title} ${position}`;
+		return title;
 	};
 
 	$effect(() => {
@@ -58,26 +59,32 @@
 </script>
 
 <div data-sorting={sorting} class="rz-block">
-	<div class="rz-block__grip">
-		<GripVertical size={15} />
-	</div>
-
-	<div class="rz-block__content">
-		<header class="rz-block__header" class:rz-block__header--closed={!isOpen}>
-			<button type="button" onclick={toggleBlock} class="rz-block__title-button">
-				<div class="rz-block__title">
-					<div class="rz-block__icon">
-						<BlockIcon size={12} />
+	<button onclick={toggleBlock} type="button" class="rz-block__ghost-toggle" aria-label="toggle">
+	</button>
+	<div class="rz-block__content" class:rz-block__content--closed={!isOpen}>
+		<header class="rz-block__header">
+			{#if !isOpen}
+				<button type="button" onclick={toggleBlock} class="rz-block__title-button">
+					<div class="rz-block__title">
+						<div class="rz-block__icon">
+							<BlockIcon size={12} />
+						</div>
+						<h3 class="rz-block__heading">
+							{renderBlockTitle()}
+						</h3>
 					</div>
-					<h3 class="rz-block__heading">
-						{renderBlockTitle()}
-					</h3>
-				</div>
-			</button>
-			<div class="rz-block__actions">
-				<ToggleBlockButton toggle={toggleBlock} {isOpen} />
-				<BlockActions {deleteBlock} />
+				</button>
+			{/if}
+
+			<div class="rz-block__grip">
+				<GripVertical size={15} />
 			</div>
+
+			{#if isOpen}
+				<div></div>
+			{/if}
+
+			<BlockActions {duplicateBlock} {deleteBlock} />
 		</header>
 
 		<div class="rz-block__fields" class:rz-block__fields--hidden={!isOpen}>
@@ -89,50 +96,68 @@
 <style type="postcss">
 	.rz-block {
 		position: relative;
-		margin-left: calc(-1 * var(--rz-size-7));
-		padding-left: var(--rz-size-7);
+		/* margin-left: calc(-1 * var(--rz-size-7)); */
+		/* padding-left: var(--rz-size-7); */
 	}
 
 	.rz-block__grip {
-		position: absolute;
-		left: 0;
-		top: var(--rz-size-0-5);
 		cursor: grab;
-		padding: var(--rz-size-1);
-		opacity: 0;
-		transition: opacity 0.2s;
 	}
 
-	.rz-block:hover > .rz-block__grip {
+	.rz-block:hover :global(.rz-block-actions) {
 		opacity: 1;
+		pointer-events: all;
 	}
 
 	.rz-block__content {
 		background-color: hsl(var(--rz-ground-6));
 		border-bottom: var(--rz-border);
+		display: flex;
+		flex-direction: row-reverse;
 	}
 
 	.rz-block__header {
-		background-color: hsl(var(--rz-ground-7));
 		display: flex;
-		height: var(--rz-size-8);
-		width: 100%;
+		position: relative;
+		flex-direction: column;
+		width: var(--rz-size-8);
 		align-items: center;
 		justify-content: space-between;
-		border-bottom: var(--rz-border);
-		padding-left: var(--rz-size-2);
-		padding-right: var(--rz-size-2);
+		border-left: var(--rz-border);
+		padding: var(--rz-size-2);
 	}
 
-	.rz-block__header--closed {
-		border-color: transparent;
+	.rz-block__content--closed {
+		.rz-block__header {
+			height: var(--rz-size-8);
+			flex-direction: row;
+			border-color: transparent;
+			width: 100%;
+		}
+		.rz-block__title-button {
+			flex: 1;
+			justify-content: flex-start;
+			flex-direction: row;
+		}
+		.rz-block__title {
+			position: static;
+			justify-content: flex-start;
+			rotate: 0deg;
+		}
+		:global(.rz-block-actions) {
+			position: absolute;
+			opacity: 0;
+			pointer-events: none;
+			top: var(--rz-size-1);
+			right: var(--rz-size-11);
+		}
 	}
 
 	.rz-block__title-button {
 		display: flex;
-		flex: 1;
 		align-items: center;
 		padding: var(--rz-size-1);
+		flex-direction: column;
 	}
 
 	.rz-block__title {
@@ -143,6 +168,12 @@
 		gap: var(--rz-size-2);
 		padding: var(--rz-size-1);
 		font-size: var(--rz-text-xs);
+		position: absolute;
+		transform-origin: bottom left;
+		top: 0;
+		left: 0;
+		width: 100px;
+		rotate: 90deg;
 	}
 
 	.rz-block__heading {
@@ -150,7 +181,9 @@
 	}
 
 	.rz-block__fields {
-		padding: var(--rz-size-8) 0;
+		background-color: hsl(var(--rz-ground-7));
+		flex: 1;
+		padding: var(--rz-size-6) 0;
 	}
 
 	.rz-block__fields--hidden {
@@ -159,5 +192,22 @@
 
 	.rz-block[data-sorting='true'] .rz-block__grip {
 		display: none;
+	}
+
+	:global(.rz-block-actions) {
+		position: absolute;
+		opacity: 0;
+		pointer-events: none;
+		top: var(--rz-size-1);
+		right: var(--rz-size-11);
+	}
+	.rz-block__ghost-toggle {
+		position: absolute;
+		left: 0;
+		right: var(--rz-size-8);
+		height: var(--rz-size-4);
+		&:hover {
+			background-color: hsl(var(--rz-ground-5) / 0.6);
+		}
 	}
 </style>

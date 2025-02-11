@@ -1,5 +1,5 @@
 import { flatten, unflatten } from 'flat';
-
+import cloneDeep from 'clone-deep';
 import { diff } from 'deep-object-diff';
 import { applyAction, deserialize } from '$app/forms';
 import { toast } from 'svelte-sonner';
@@ -97,6 +97,8 @@ function createDocumentFormState({
 	function useBlocks(path: string) {
 		const parts = path.split('.');
 
+		const generateTempId = () => 'temp-' + randomId(8);
+
 		const getBlocks = (): GenericBlock[] => {
 			return getValueFromPath(doc, path, { maxDepth: parts.length }) || [];
 		};
@@ -113,7 +115,7 @@ function createDocumentFormState({
 		const addBlock: AddBlock = (block) => {
 			const blockWithPath: GenericBlock = {
 				...block,
-				id: 'temp-' + randomId(8),
+				id: generateTempId(),
 				type: block.type,
 				path: path,
 				position: block.position
@@ -123,7 +125,7 @@ function createDocumentFormState({
 			assignBlocksToDoc(blocks);
 		};
 
-		const deleteBlock: DeleteBlock = (index) => {
+		const deleteBlock = (index: number) => {
 			const blocks = [...getBlocks()]
 				.filter((_, i) => i !== index)
 				.map((block, index) => ({ ...block, position: index }));
@@ -140,11 +142,22 @@ function createDocumentFormState({
 			assignBlocksToDoc(blocks);
 		};
 
+		const duplicateBlock = (index: number) => {
+			let blocks = [...getBlocks()];
+			const blockCopy = { ...cloneDeep(blocks[index]), id: generateTempId() };
+			blocks.splice(index + 1, 0, blockCopy);
+			blocks = blocks.map((block, index) => ({
+				...block,
+				position: index
+			}));
+			assignBlocksToDoc(blocks);
+		};
+
 		return {
 			addBlock,
 			deleteBlock,
 			moveBlock,
-
+			duplicateBlock,
 			get blocks() {
 				return getBlocks();
 			}
