@@ -4,7 +4,7 @@ import * as templates from './templates.js';
 import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
 import { random } from 'rizom/utils/index.js';
-import { RizomError } from 'rizom/errors/index.js';
+
 import {
 	getInstallCommand,
 	getPackageManager,
@@ -113,7 +113,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 	function configureVite() {
 		const configPath = path.resolve(projectRoot, 'vite.config.ts');
 		if (!existsSync(configPath)) {
-			throw new RizomError(RizomError.INIT, "Can't find vite configuration file");
+			throw new Error("Can't find vite configuration file");
 		}
 		const content = readFileSync(configPath, 'utf-8');
 		if (!content.includes('rizom()')) {
