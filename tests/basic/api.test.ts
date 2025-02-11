@@ -114,8 +114,7 @@ test('Should return the home page', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}`).then((response) => {
 		return response.json();
 	});
-	console.log(`${API_BASE_URL}/pages/${homeId}`);
-	console.log(response);
+
 	expect(response.doc).toBeDefined();
 	expect(response.doc.title).toBe('Home');
 });
@@ -480,9 +479,7 @@ test('Should delete user editor', async ({ request }) => {
 	const authToken = signin.headers()['set-auth-token'];
 	const data = await signin.json();
 	expect(authToken).toBeDefined();
-	console.log('editorId', editorId);
-	console.log('authToken', authToken);
-	console.log('signed user', data.user);
+
 	const response = await request.delete(`${API_BASE_URL}/users/${editorId}`, {
 		headers: {
 			Authorization: `Bearer ${authToken}`

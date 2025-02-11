@@ -7,7 +7,7 @@ import type { Dic } from 'rizom/types/utility.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
-function createStore<T extends GenericDoc = GenericDoc>(src: string) {
+function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	let enabled = $state(false);
 	let doc = $state<T>();
 	const callbacks: any[] = [];
@@ -29,7 +29,7 @@ function createStore<T extends GenericDoc = GenericDoc>(src: string) {
 		if (e.data.handshake) {
 			enabled = true;
 			if (window && window.top) {
-				window.top.postMessage({ handshake: src });
+				window.top.postMessage({ handshake: href });
 			}
 			/////////////////////////////////////////////
 			// Set field value
@@ -87,6 +87,7 @@ function createStore<T extends GenericDoc = GenericDoc>(src: string) {
 	const mergeData: MergeData = (args) => {
 		const { path, value } = args;
 		const parts = path.split('.');
+
 		const flatDoc: Dic = flatten(doc, {
 			maxDepth: parts.length
 		});
@@ -114,8 +115,8 @@ function createStore<T extends GenericDoc = GenericDoc>(src: string) {
 	};
 }
 
-export function setLiveContext<T extends GenericDoc = GenericDoc>(src: string) {
-	const store = createStore<T>(src);
+export function setLiveContext<T extends GenericDoc = GenericDoc>(href: string) {
+	const store = createStore<T>(href);
 	return setContext(LIVE_KEY, store);
 }
 

@@ -31,7 +31,6 @@ export type {
 	BuiltConfig,
 	BuiltDocConfig,
 	BuiltGlobalConfig,
-	// BuiltUploadCollectionConfig,
 	CollectionConfig,
 	Config,
 	CustomPanelRoute,
@@ -42,8 +41,6 @@ export type {
 	LocalizationConfig,
 	PanelUsersConfig,
 	RouteConfig
-	// SMTPConfig,
-	// UploadCollectionConfig
 } from './config.js';
 
 // Doc types
@@ -64,6 +61,7 @@ export type {
 	FieldsType,
 	FormField,
 	Option,
+	RelationValue,
 	UserDefinedField
 } from './fields.js';
 
