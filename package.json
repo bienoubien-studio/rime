@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.35",
+	"version": "0.0.36",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/bin/reset/index.ts --force && vite build && npm run package && pnpm build:css",
@@ -91,7 +91,7 @@
 		"@types/qs": "^6.9.16",
 		"@types/sortablejs": "^1.15.8",
 		"@types/to-snake-case": "^1.0.2",
-		"drizzle-kit": "0.30.2",
+		"drizzle-kit": "0.30.4",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",
