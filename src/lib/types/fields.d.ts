@@ -34,7 +34,7 @@ type BaseField = {
 	live?: boolean;
 	condition?: (doc: any) => boolean;
 	width?: FieldWidth;
-  className?: string;
+	className?: string;
 	access: {
 		create: FieldAccess;
 		read: FieldAccess;
@@ -46,7 +46,7 @@ type BaseField = {
 type FormField = BaseField & {
 	name: string;
 	hidden?: boolean;
-	validate?: FieldValidationFunc<TConfig extends AnyFormField, GenericDoc>;
+	validate?: FieldValidationFunc<AnyFormField, GenericDoc>;
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
@@ -77,8 +77,12 @@ export type Option = {
 	label?: string;
 };
 
+export type RelationValue<T> =
+	| T[]
+	| { id?: string; relationTo: string; relationId: string }[]
+	| string[]
+	| string;
+
 export type AnyFormField = GetRegisterType<'AnyFormField'>;
-
 export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;
-
 export type FieldsType = GetRegisterType<'FieldsType'>;

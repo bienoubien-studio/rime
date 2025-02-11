@@ -21,8 +21,8 @@ import type {
 	TextField,
 	ToggleField
 } from 'rizom/fields/types.js';
-import type { Dic } from 'rizom/types/utility.js';
-import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
+import type { Dic, WithoutBuilders } from 'rizom/types/utility.js';
+import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;
 
@@ -53,7 +53,8 @@ export const isLinkField = (field: AnyField): field is LinkField => field.type =
 
 export const isToggleField = (field: AnyField): field is ToggleField => field.type === 'toggle';
 
-export const isGroupField = (field: AnyField): field is GroupField => field.type === 'group';
+export const isGroupField = (field: { type: FieldsType }): field is WithoutBuilders<GroupField> =>
+	field.type === 'group';
 
 export const isTabsField = (field: AnyField): field is TabsField => field.type === 'tabs';
 

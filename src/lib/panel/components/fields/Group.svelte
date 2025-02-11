@@ -5,8 +5,9 @@
 	import { isFormField } from 'rizom/fields/utility';
 	import { onMount } from 'svelte';
 	import { ChevronDown } from 'lucide-svelte';
+	import type { WithoutBuilders } from 'rizom/types/utility';
 
-	type Props = { path: string; config: GroupField<'compiled'>; form: DocumentFormContext };
+	type Props = { path: string; config: WithoutBuilders<GroupField>; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();
 
 	let groupOpen = $state(true);
@@ -25,7 +26,13 @@
 	});
 </script>
 
-<button onclick={handleClick} type="button" class:open={groupOpen} class="rz-group-field__title">
+<button
+	onclick={handleClick}
+	type="button"
+	class:open={groupOpen}
+	class:rz-group-field__title--live={form.isLive}
+	class="rz-group-field__title"
+>
 	<span><ChevronDown size="14" /></span>
 	{config.label || 'Group'}
 </button>
@@ -45,25 +52,26 @@
 		}
 	}
 	.rz-group-field__title {
-		border-top: var(--rz-border);
 		border-bottom: var(--rz-border);
 		display: flex;
 		align-items: center;
 		justify-content: start;
 		gap: var(--rz-size-2);
 		font-size: var(--rz-text-xl);
-		padding: var(--rz-size-6) var(--rz-size-6);
+		padding: var(--rz-size-6) var(--rz-fields-padding);
 		position: relative;
 		width: 100%;
 		text-align: left;
 		@mixin font-medium;
-
+		&:not(:first-child) {
+			border-top: var(--rz-border);
+		}
 		&.open span {
 			rotate: -180deg;
 		}
-
-		/* &:first-child {
-			padding-bottom: 0 0 var(--rz-size-6) 0;
-		} */
+	}
+	.rz-group-field__title--live {
+		font-size: var(--rz-text-md);
+		padding: var(--rz-size-4) var(--rz-fields-padding);
 	}
 </style>
