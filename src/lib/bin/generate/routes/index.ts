@@ -14,7 +14,8 @@ import {
 	customRouteSvelte,
 	globalAPIServer,
 	globalPageServer,
-	globalPageSvelte
+	globalPageSvelte,
+	rootLayoutServer
 } from './templates.js';
 import cache from '../cache/index.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
@@ -51,21 +52,28 @@ function generateRoutes(config: BuiltConfig) {
 		cache.set('routes', memo);
 	}
 
-	const rizomRoutes = path.resolve(projectRoot, 'src', 'routes', '(rizom)');
+	const rootRoutes = path.resolve(projectRoot, 'src', 'routes');
+	const rizomRoutes = path.join(rootRoutes, '(rizom)');
 	const panelRoute = path.join(rizomRoutes, 'panel');
 	const apiRoute = path.join(rizomRoutes, 'api');
+
+	if (!fs.existsSync(rootRoutes)) {
+		fs.mkdirSync(rootRoutes);
+	}
 
 	if (!fs.existsSync(rizomRoutes)) {
 		fs.cpSync(path.resolve(__dirname, 'tree', '(rizom)'), rizomRoutes, {
 			recursive: true
 		});
-
 		removeTxtSuffix(rizomRoutes);
 	}
 
 	if (!fs.existsSync(apiRoute)) {
 		fs.mkdirSync(apiRoute);
 	}
+
+	// root layout
+	fs.writeFileSync(path.join(rootRoutes, '+layout.server.ts'), rootLayoutServer);
 
 	for (const collection of config.collections) {
 		const collectionRoute = path.join(panelRoute, collection.slug);

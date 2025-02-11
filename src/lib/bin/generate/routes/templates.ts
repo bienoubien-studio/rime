@@ -2,6 +2,12 @@
 
 import { PACKAGE_NAME } from 'rizom/constant.js';
 
+export const rootLayoutServer = `import type { ServerLoadEvent } from '@sveltejs/kit';
+
+export const load = async ({ locals }: ServerLoadEvent) => {
+	return { user: locals.user };
+};`;
+
 export const collectionLayoutServer = (slug: string) =>
 	`import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
 export const load = pagesLoad.collection.layout('${slug}')
