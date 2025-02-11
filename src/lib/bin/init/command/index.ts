@@ -3,7 +3,7 @@ import path from 'path';
 import * as templates from './templates.js';
 import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
-import { random } from 'rizom/utils/index.js';
+import { randomId } from 'rizom/utils/random.js';
 
 import {
 	getInstallCommand,
@@ -37,7 +37,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		// Define variables with their update behavior
 		const envUpdates: Record<string, EnvVarConfig> = {
 			RIZOM_SECRET: {
-				value: random.randomId(32),
+				value: randomId(32),
 				replace: false // won't replace if already exists
 			}
 		};

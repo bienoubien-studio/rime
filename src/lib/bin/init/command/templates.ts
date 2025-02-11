@@ -1,9 +1,9 @@
-import { random } from '$lib/utils/index.js';
+import { randomId } from '$lib/utils/random.js';
 import dedent from 'dedent';
 
 const PACKAGE = 'rizom';
 
-export const env = () => `RIZOM_SECRET=${random.randomId(32)}
+export const env = () => `RIZOM_SECRET=${randomId(32)}
 PUBLIC_RIZOM_URL=http://localhost:5173
 
 # RIZOM_SMTP_USER=user@mail.com
