@@ -7,7 +7,7 @@
 	import './combobox.css';
 	import type { ComboBoxProps } from './props';
 	import type { Option } from 'rizom/types';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	const { path, config, form }: ComboBoxProps = $props();
 

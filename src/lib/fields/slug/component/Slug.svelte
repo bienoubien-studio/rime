@@ -5,7 +5,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import type { SlugField } from '../index';
 	import { Field } from 'rizom/panel';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 
 	type Props = { error: string | false };

@@ -8,7 +8,7 @@
 	import type { FormErrors } from 'rizom/types';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	type Props = {
 		forgotPasswordLink?: boolean;

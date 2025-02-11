@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 
 	type Ressource = {

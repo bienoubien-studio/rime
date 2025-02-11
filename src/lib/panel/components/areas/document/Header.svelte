@@ -8,7 +8,7 @@
 	import { PencilRuler, Eye, Command } from 'lucide-svelte';
 	import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
 	import ButtonStatus from './ButtonStatus.svelte';
 

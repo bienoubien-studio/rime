@@ -3,7 +3,7 @@
 	import Button from '../../ui/button/button.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { ChevronLeft, Command } from 'lucide-svelte';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
 
 	type Props = { form: DocumentFormContext; onClose: any };

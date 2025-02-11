@@ -9,7 +9,7 @@
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { dataError } from 'rizom/panel/utility/dataError';
 
 	const { path, config, form }: LinkFieldProps = $props();

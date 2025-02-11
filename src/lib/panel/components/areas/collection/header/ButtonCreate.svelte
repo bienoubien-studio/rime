@@ -3,7 +3,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
 	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	type ButtonSize = 'sm' | 'default';
 	const { size = 'default' }: { size?: ButtonSize } = $props();

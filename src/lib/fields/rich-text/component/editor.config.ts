@@ -3,7 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { RichTextLink } from './extensions/Link';
 import type { RichTextField } from '..';
-import { t__ } from 'rizom/panel/i18n';
+import { t__ } from 'rizom/panel/i18n/index.js';
 
 type BuildEditorConfig = (args: {
 	config: RichTextField;

@@ -5,7 +5,7 @@
 	import { useSortable } from '$lib/panel/utility/Sortable';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	const { path, config, form }: SelectFieldProps = $props();
 

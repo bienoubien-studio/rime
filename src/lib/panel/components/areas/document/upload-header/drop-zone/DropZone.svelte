@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { CollectionConfig } from 'rizom/types';
 	import type { WithUpload } from 'rizom/types/utility';
 

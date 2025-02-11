@@ -14,7 +14,7 @@
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	type Props = {
 		doc: GenericDoc;
