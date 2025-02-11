@@ -139,6 +139,7 @@
 		"loglevel-plugin-prefix": "^0.8.4",
 		"lucide-svelte": "^0.462.0",
 		"mode-watcher": "^0.4.1",
+		"paneforge": "^0.0.6",
 		"qs": "^6.13.0",
 		"sharp": "^0.33.5",
 		"sortablejs": "^1.15.3",

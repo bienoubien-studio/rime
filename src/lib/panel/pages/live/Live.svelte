@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
 	import { goto } from '$app/navigation';
 	import type { GenericDoc } from 'rizom/types/doc';
 	import LiveSidePanel from 'rizom/panel/components/areas/live/SidePanel.svelte';
 	import type { BrowserConfig } from 'rizom/types/config';
+	import { GripVertical } from 'lucide-svelte';
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -60,36 +62,48 @@
 <svelte:window onmessage={onIframeMessage} />
 
 <div class="rz-live-container">
-	<!-- {#await loadConfig() then config} -->
-	<div class="rz-live-container__side-panel">
-		{#key data.src + data.doc.id + data.locale + data.slug}
-			<LiveSidePanel
-				{config}
-				{onDataChange}
-				{onFieldFocus}
-				doc={data.doc}
-				user={data.user}
-				locale={data.locale}
-				slug={data.slug}
-			/>
-		{/key}
-	</div>
-	<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
-	<!-- {/await} -->
+	<PaneGroup direction="horizontal">
+		<Pane defaultSize={30}>
+			<div class="rz-live-container__side-panel">
+				{#key data.src + data.doc.id + data.locale + data.slug}
+					<LiveSidePanel
+						{config}
+						{onDataChange}
+						{onFieldFocus}
+						doc={data.doc}
+						user={data.user}
+						locale={data.locale}
+						slug={data.slug}
+					/>
+				{/key}
+			</div>
+		</Pane>
+		<PaneResizer />
+		<Pane defaultSize={70}>
+			<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
+		</Pane>
+	</PaneGroup>
 </div>
 
+<!-- <PaneGroup direction="horizontal">
+	<Pane defaultSize={50}>Pane 1</Pane>
+	<PaneResizer />
+	<Pane defaultSize={50}>Pane 2</Pane>
+</PaneGroup> -->
+
 <style>
-	.rz-live-container {
-		--rz-live-sidebar-width: 26rem;
-		display: flex;
+	:global(.rz-scroll-area__viewport) {
+		position: relative;
 	}
 	.rz-live-container__side-panel {
-		width: var(--rz-live-sidebar-width);
+		width: 100%;
+		/* width: var(--rz-live-sidebar-width); */
 		flex-shrink: 0;
 		flex-grow: 0;
 		border-right: var(--rz-border);
 	}
 	.rz-live-container iframe {
-		flex: 1;
+		width: 100%;
+		height: 100%;
 	}
 </style>
