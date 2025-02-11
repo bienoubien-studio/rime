@@ -36,7 +36,7 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 
 		// Define variables with their update behavior
 		const envUpdates: Record<string, EnvVarConfig> = {
-			RIZOM_SECRET: {
+			BETTER_AUTH_SECRET: {
 				value: randomId(32),
 				replace: false // won't replace if already exists
 			}

@@ -92,7 +92,7 @@ export const handle = sequence(...handlers({ config, schema }));
 
 ```
 #.env
-RIZOM_SECRET=super_secret
+BETTER_AUTH_SECRET=super_secret
 PUBLIC_RIZOM_URL=http://localhost:5173
 ```
 
