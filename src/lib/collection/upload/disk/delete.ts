@@ -25,10 +25,10 @@ export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<Gen
 				}
 			};
 			const sizeKey = toCamelCase(size.name);
-			if (typeof doc.size[sizeKey] === 'string') {
-				unlinkPath(`static/${doc.size[sizeKey]}`);
+			if (typeof doc.sizes[sizeKey] === 'string') {
+				unlinkPath(`static/${doc.sizes[sizeKey]}`);
 			} else {
-				for (const sizeFormatPath of Object.values(doc.size[sizeKey])) {
+				for (const sizeFormatPath of Object.values(doc.sizes[sizeKey])) {
 					unlinkPath(`static/${sizeFormatPath}`);
 				}
 			}

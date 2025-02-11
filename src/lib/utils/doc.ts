@@ -115,7 +115,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		'imageSizes' in config &&
 		config.imageSizes
 	) {
-		empty.size = {};
+		empty.sizes = {};
 	}
 
 	return empty as T;

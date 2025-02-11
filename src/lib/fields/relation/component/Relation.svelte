@@ -52,7 +52,7 @@
 			item.filesize = doc.filesize;
 			item.mimeType = doc.mimeType;
 			if (isRelationToImage) {
-				item.imageURL = doc.size.thumbnail;
+				item.imageURL = doc.sizes.thumbnail;
 			}
 		}
 		if (form.isLive) {

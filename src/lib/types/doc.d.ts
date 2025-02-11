@@ -33,7 +33,7 @@ export type UploadDoc = BaseDoc & {
 	filesize: string;
 	filename: string;
 	url: string;
-	sizes?: { [key: string]: string };
+	sizes: { [key: string]: string };
 } & Dic;
 
 export type PrototypeSlug = CollectionSlug | GlobalSlug;

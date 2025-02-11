@@ -51,7 +51,7 @@ export const beforeRead = async ({
 	//////////////////////////////////////////////
 	if (config.type === 'collection' && isUploadConfig(config)) {
 		if ('imageSizes' in config && config.imageSizes) {
-			flatDoc.size = {};
+			flatDoc.sizes = {};
 			for (const size of config.imageSizes) {
 				if (flatDoc[size.name]) {
 					// Handle multiple formats
@@ -59,20 +59,20 @@ export const beforeRead = async ({
 
 					if (formats.length > 1) {
 						// Multiple formats case: use object
-						flatDoc.size[size.name] = {};
+						flatDoc.sizes[size.name] = {};
 						formats.forEach((format) => {
 							const extension = format.split('.').pop()!;
-							flatDoc.size[size.name][extension] = `/medias/${format}`;
+							flatDoc.sizes[size.name][extension] = `/medias/${format}`;
 						});
 					} else {
 						// Single format case: use string
-						flatDoc.size[size.name] = `/medias/${formats[0]}`;
+						flatDoc.sizes[size.name] = `/medias/${formats[0]}`;
 					}
 
 					delete flatDoc[size.name];
 				} else {
 					// Default case: use original file as string
-					flatDoc.size[size.name] = `/medias/${flatDoc.filename}`;
+					flatDoc.sizes[size.name] = `/medias/${flatDoc.filename}`;
 				}
 			}
 		}

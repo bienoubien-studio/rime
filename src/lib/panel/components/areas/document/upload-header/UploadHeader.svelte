@@ -26,7 +26,6 @@
 	const allowedMimeTypes = hasAccept ? form.config.accept : [];
 
 	const deleteFile = () => {
-		// console.log('delete');
 		preview = null;
 		file = null;
 		form.setValue('file', null);
@@ -64,7 +63,7 @@
 	});
 
 	$effect(() => {
-		if (preview && form.doc.size.thumbnail !== preview) {
+		if (preview && form.doc.sizes.thumbnail !== preview) {
 			form.setValue(`size.thumbnail`, preview);
 		}
 	});
@@ -89,7 +88,7 @@
 			<div class="rz-doc-upload-header__preview">
 				{#if form.doc.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
-						<img src={form.doc.size.thumbnail} alt="preview" />
+						<img src={form.doc.sizes.thumbnail} alt="preview" />
 					</div>
 				{:else}
 					{@const FileIcon = mimeTypeToIcon(form.doc.mimeType)}

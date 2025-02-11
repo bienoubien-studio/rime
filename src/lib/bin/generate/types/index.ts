@@ -4,9 +4,10 @@ import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
 import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { AnyField } from 'rizom/types/fields.js';
-import type { BuiltConfig } from 'rizom/types/config.js';
+import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/_builders/field.js';
+import { isUploadConfig } from 'rizom/config/utils.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
@@ -43,6 +44,20 @@ const templateRegister = (collectionSlugs: string[], globalSlugs: string[]): str
 		: [];
 	return ["declare module 'rizom' {", ...registerCollections, ...registerGlobals, '}'].join('\n');
 };
+
+function generateImageSizesType(sizes: ImageSizesConfig[]) {
+	const sizesTypes = sizes
+		.map((size) => {
+			if (size.out && size.out.length > 1) {
+				const formats = size.out.map((format) => `${format}: string`).join(', ');
+				return `${size.name}: {${formats}}`;
+			} else {
+				return `${size.name}: string`;
+			}
+		})
+		.join(', ');
+	return `\n\t\tsizes:{${sizesTypes}}`;
+}
 
 export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
@@ -106,9 +121,18 @@ export type RelationValue<T> =
 
 	const collectionsTypes = config.collections
 		.map((collection) => {
-			const fieldsContent = convertFieldsToTypesTemplates(collection.fields).join('\n\t');
-			if (collection.upload) {
+			let fields = collection.fields;
+			if (isUploadConfig(collection) && collection.imageSizes?.length) {
+				fields = collection.fields
+					.filter((f) => f instanceof FormFieldBuilder)
+					.filter((field) => !collection.imageSizes!.some((size) => size.name === field.raw.name));
+			}
+			let fieldsContent = convertFieldsToTypesTemplates(fields).join('\n\t');
+			if (isUploadConfig(collection)) {
 				addImport('UploadDoc');
+				if (collection.imageSizes?.length) {
+					fieldsContent += generateImageSizesType(collection.imageSizes);
+				}
 			}
 			return templateDocType(collection.slug, fieldsContent, collection.upload);
 		})
