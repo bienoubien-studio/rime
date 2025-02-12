@@ -1,5 +1,5 @@
 <script>
-  import { Locked } from 'rizom/panel';
+  import { Locked } from 'rizom/panel';
 </script>
 
 <Locked />

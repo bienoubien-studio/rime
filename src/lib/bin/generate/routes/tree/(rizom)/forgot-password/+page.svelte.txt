@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ForgotPassword } from 'rizom/panel';
+  import { ForgotPassword } from 'rizom/panel';
   const { data } = $props();
 </script>
 

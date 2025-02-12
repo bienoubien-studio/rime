@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Live } from 'rizom/panel';
+  import { Live } from 'rizom/panel';
 
     async function loadConfig() {
     	return await import('../../../lib/rizom.config.browser.js').then((module) => module.default);

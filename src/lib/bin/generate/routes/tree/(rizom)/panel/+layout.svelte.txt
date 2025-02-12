@@ -1,6 +1,9 @@
 <script>
-  import { Panel } from 'rizom/panel';
+  import { Panel } from 'rizom/panel';
   const { children, data } = $props();
+
+  const user = data.user;
+  if (!user) throw new Error('unauthorized');
 
   async function loadConfig() {
     return await import('$lib/rizom.config.browser.js').then(module => module.default);
@@ -8,7 +11,7 @@
 </script>
 
 {#await loadConfig() then config}
-  <Panel {config} user={data.user} routes={data.routes} locale={data.locale}>
+  <Panel {config} {user} routes={data.routes} locale={data.locale}>
     {@render children()}
   </Panel>
 {/await}
