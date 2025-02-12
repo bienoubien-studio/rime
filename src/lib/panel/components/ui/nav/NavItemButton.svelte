@@ -30,7 +30,6 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;
 		height: calc(var(--rz-size-14) - 1px);
 		padding: var(--rz-size-2) var(--rz-size-0);
 		white-space: nowrap;
