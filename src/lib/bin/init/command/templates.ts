@@ -6,6 +6,8 @@ const PACKAGE = 'rizom';
 export const env = () => `BETTER_AUTH_SECRET=${randomId(32)}
 PUBLIC_RIZOM_URL=http://localhost:5173
 
+# RIZOM_CACHE_ENABLED=false
+
 # RIZOM_SMTP_USER=user@mail.com
 # RIZOM_SMTP_PASSWORD=supersecret
 # RIZOM_SMTP_HOST=smtphost.com
@@ -13,8 +15,8 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 `;
 
 export const emptyConfig = (name: string) => `
-import type { Config, CollectionConfig } from 'rizom';
-import { text } from 'rizom/fields';
+import type { Config, CollectionConfig } from '${PACKAGE}';
+import { text } from '${PACKAGE}/fields';
 
 const Pages: CollectionConfig = {
 	slug: 'pages',
