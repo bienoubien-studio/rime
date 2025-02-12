@@ -9,7 +9,6 @@ import sharp from 'sharp';
 import { toCamelCase } from 'rizom/utils/string';
 import { normalizeFileName } from 'rizom/utils/file';
 import type { Dic } from 'rizom/types/utility';
-import { logToFile } from '../../../../log';
 
 export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | false) => {
 	const { name: initialName, extension } = normalizeFileName(file.name);
