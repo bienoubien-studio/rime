@@ -13,7 +13,7 @@ import type { Dic } from 'rizom/types/utility';
 export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | false) => {
 	const { name: initialName, extension } = normalizeFileName(file.name);
 	let name = initialName;
-	let sizes: UploadDoc['sizes'];
+	let sizes: UploadDoc['sizes'] = {};
 	let filename = `${name}.${extension}`;
 	let filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
 	while (existsSync(filePath)) {
