@@ -12,7 +12,11 @@ export function rizom(): Plugin {
 				if (path.includes('config')) {
 					// Make a dummy request to trigger handler
 					try {
-						await fetch('http://rizom.test:5173/api/reload-config');
+						const { host, port, https } = server.config.server;
+						const protocol = https ? 'https' : 'http';
+						const hostname = host === true ? 'localhost' : host || 'localhost';
+						const baseUrl = `${protocol}://${hostname}:${port}`;
+						await fetch(`${baseUrl}/api/reload-config`);
 					} catch (error) {
 						console.error('Failed to trigger config reload:', error);
 					}
