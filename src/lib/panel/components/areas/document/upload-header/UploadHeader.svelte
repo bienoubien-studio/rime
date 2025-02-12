@@ -23,7 +23,7 @@
 	let isValidFile = $state(false);
 
 	const hasAccept = 'accept' in form.config;
-	const allowedMimeTypes = hasAccept ? form.config.accept : [];
+	const allowedMimeTypes = accept || [];
 
 	const deleteFile = () => {
 		preview = null;
@@ -64,7 +64,7 @@
 
 	$effect(() => {
 		if (preview && form.doc.sizes.thumbnail !== preview) {
-			form.setValue(`size.thumbnail`, preview);
+			form.setValue(`sizes.thumbnail`, preview);
 		}
 	});
 
