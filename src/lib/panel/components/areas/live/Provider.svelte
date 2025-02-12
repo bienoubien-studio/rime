@@ -2,13 +2,18 @@
 	import { page } from '$app/stores';
 	import { setLiveContext } from '$lib/panel/context/live.svelte';
 	import { beforeNavigate } from '$app/navigation';
+	import { browser } from '$app/environment';
 
 	let live = setLiveContext($page.url.href);
 	beforeNavigate(live.beforeNavigate);
 
 	const { children } = $props();
-</script>
 
-<svelte:window onmessage={live.onMessage} />
+	$effect(() => {
+		if (browser) {
+			window.addEventListener('message', live.onMessage);
+		}
+	});
+</script>
 
 {@render children()}

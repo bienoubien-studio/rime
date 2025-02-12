@@ -7,6 +7,18 @@ import type { Dic } from 'rizom/types/utility.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
+/**
+  - 1. Live.svelte send a handshake message
+  - 2. live context in iframe receive it, enable itself
+  - 3. live context send handshake with its href as prop
+  - 4. Live.svelte receive the handshake
+  - 5. Live.svelte compare this href to the expected iframeSrc
+  - 6. If equals then live edit is synced : USER CAN EDIT
+  - 7. onBeforeNavigate iframe live context send message to Live.svelte with a prop : location which is actually the link href + ?live=1
+  - 8. Live.svelte goto(location) and as it has ?live=1 it should redirect to the doc.__live url (or not)
+  - 9. --> step 1
+*/
+
 function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	let enabled = $state(false);
 	let doc = $state<T>();

@@ -4,7 +4,7 @@
 	import type { GenericDoc } from 'rizom/types/doc';
 	import LiveSidePanel from 'rizom/panel/components/areas/live/SidePanel.svelte';
 	import type { BrowserConfig } from 'rizom/types/config';
-	import { GripVertical } from 'lucide-svelte';
+	import { browser } from '$app/environment';
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -47,6 +47,12 @@
 	};
 
 	$effect(() => {
+		if (browser) {
+			window.addEventListener('message', onIframeMessage);
+		}
+	});
+
+	$effect(() => {
 		if (!sync) {
 			handshake();
 		}
@@ -58,8 +64,6 @@
 		}
 	});
 </script>
-
-<svelte:window onmessage={onIframeMessage} />
 
 <div class="rz-live-container">
 	<PaneGroup direction="horizontal">
@@ -79,22 +83,23 @@
 			</div>
 		</Pane>
 		<PaneResizer />
-		<Pane defaultSize={70}>
+		<Pane class="rz-live-container__pane-right" defaultSize={70}>
+			{#if !sync}
+				<div class="rz-live-container__iframe-overlay"></div>
+			{/if}
 			<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
 		</Pane>
 	</PaneGroup>
 </div>
 
-<!-- <PaneGroup direction="horizontal">
-	<Pane defaultSize={50}>Pane 1</Pane>
-	<PaneResizer />
-	<Pane defaultSize={50}>Pane 2</Pane>
-</PaneGroup> -->
-
 <style>
 	:global(.rz-scroll-area__viewport) {
 		position: relative;
 	}
+	:global(.rz-live-container__pane-right) {
+		position: relative;
+	}
+
 	.rz-live-container__side-panel {
 		width: 100%;
 		/* width: var(--rz-live-sidebar-width); */
@@ -105,5 +110,11 @@
 	.rz-live-container iframe {
 		width: 100%;
 		height: 100%;
+	}
+	.rz-live-container__iframe-overlay {
+		background-color: hsl(var(--rz-ground-6));
+		opacity: 0.5;
+		position: absolute;
+		inset: 0;
 	}
 </style>

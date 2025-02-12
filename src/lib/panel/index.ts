@@ -6,6 +6,8 @@ import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte'
 import ForgotPassword from './pages/forgot-password/ForgotPassword.svelte';
 import Init from './pages/init/Init.svelte';
 import Live from './pages/live/Live.svelte';
+import LiveProvider from './components/areas/live/Provider.svelte';
+import LiveConsumer from './components/areas/live/Consumer.svelte';
 import Locked from './pages/locked/Locked.svelte';
 import Login from './pages/login/Login.svelte';
 import Panel from './components/root/Root.svelte';
@@ -15,6 +17,7 @@ import Collection from './components/areas/collection/Collection.svelte';
 import Doc from './components/areas/document/Document.svelte';
 import { Field } from './components/fields/index.js';
 import { registerTranslation } from './i18n/index.js';
+import { checkLiveRedirect } from './utility/live.server.js';
 
 export {
 	Global,
@@ -23,6 +26,8 @@ export {
 	ForgotPassword,
 	Init,
 	Live,
+	LiveProvider,
+	LiveConsumer,
 	Locked,
 	Login,
 	Panel,
@@ -31,6 +36,7 @@ export {
 	Collection,
 	Doc,
 	Field,
+	checkLiveRedirect,
 	registerTranslation
 };
 

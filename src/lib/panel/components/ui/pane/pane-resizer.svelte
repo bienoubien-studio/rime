@@ -12,6 +12,7 @@
 <style>
 	:global(.rz-pane-resizer) {
 		position: absolute;
+		z-index: 100;
 		translate: -50% 0;
 		padding: var(--rz-size-2) var(--rz-size-1);
 		border: var(--rz-border);

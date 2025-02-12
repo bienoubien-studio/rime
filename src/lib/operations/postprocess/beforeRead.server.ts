@@ -107,7 +107,7 @@ export const beforeRead = async ({
 	if (config.url) {
 		doc._url = config.url(doc as GenericDoc);
 	}
-	if (config.live && user && config.url && isPanel) {
+	if (config.live && user && config.url) {
 		doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc._url}&slug=${config.slug}&id=${doc.id}`;
 		doc._live += locale ? `&locale=${locale}` : '';
 	}
