@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.39",
+	"version": "0.0.41",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/bin/reset/index.ts --force && vite build && npm run package && pnpm build:css",
@@ -49,10 +49,15 @@
 			"types": "./dist/fields/index.d.ts",
 			"import": "./dist/fields/index.js"
 		},
-		"./fields/components": {
-			"types": "./dist/fields/components.d.ts",
-			"import": "./dist/fields/components.js"
+		"./fields/*.svelte": {
+			"types": "./dist/plugins/*.svelte.d.ts",
+			"default": "./dist/fields/*.svelte"
 		},
+		"./plugins/*.svelte": {
+			"types": "./dist/plugins/*.svelte.d.ts",
+			"default": "./dist/plugins/*.svelte"
+		},
+		"./panel/i18n/*.json": "./dist/panel/i18n/*.json",
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",
 			"import": "./dist/panel/pages/index.js"

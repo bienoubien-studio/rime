@@ -9,10 +9,12 @@ import type { FieldsComponents } from 'rizom/types/panel';
 import type { FieldsType } from 'rizom/types';
 import { RizomFormError } from 'rizom/errors/index.js';
 
+let functionRegistry = new Map<string, string>();
+let importRegistry = new Map<string, string>();
 let hasEnv = false;
-const functionRegistry = new Map<string, string>();
+let needsValidate = false;
+let needsAccess = false;
 let functionCounter = 0;
-const importRegistry = new Map<string, string>();
 let importCounter = 0;
 
 // Determines what should be included in browser config
@@ -75,17 +77,17 @@ function createImportStatement(path: string): string {
 	if (path.endsWith('.svelte') && !path.includes('node_modules')) {
 		const componentPath = path.split('src/').pop() ?? '';
 		importPath = `'../${componentPath}'`;
-	} else if (path.match(/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/)) {
-		const modulePath = path.split('node_modules/').pop() ?? '';
-		importPath = modulePath.replace(
-			/rizom\/dist\/fields\/(.+?)\/component\/(.+?)\.svelte/,
-			`'${PACKAGE_NAME}/fields/components'`
-		);
 	}
 	// Handle node_modules imports
 	else if (path.includes('node_modules')) {
 		const modulePath = path.split('node_modules/').pop() ?? '';
-		importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
+		if (modulePath.startsWith('lucide-svelte')) {
+			// Only remove .svelte extension for lucide icons
+			importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
+		} else {
+			// Keep .svelte extension
+			importPath = `'${modulePath.replace('dist/', '')}'`;
+		}
 	} else {
 		importPath = path;
 	}
@@ -98,7 +100,13 @@ function cleanViteImports(str: string) {
 	str = str.replace(/__vite_ssr_import_\d+__\.RizomFormError\.([A-Z_]+)/g, (_, key) =>
 		JSON.stringify(RizomFormError[key as keyof typeof RizomFormError])
 	);
-	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
+	// Replace __vite_ssr_import_0__.(validate|access)
+	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, (match, func) => {
+		if (func === 'validate') needsValidate = true;
+		if (func === 'access') needsAccess = true;
+		return match; // Return the full match to preserve the code
+	});
+
 	return str;
 }
 
@@ -206,13 +214,22 @@ const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
 
 // Build the final config content
 export function buildConfigString(config: CompiledConfigWithBluePrints) {
+	// Reset vars
+	functionRegistry = new Map<string, string>();
+	importRegistry = new Map<string, string>();
+	hasEnv = false;
+	needsValidate = false;
+	needsAccess = false;
+	functionCounter = 0;
+	importCounter = 0;
+
 	const configString = Object.entries(config)
 		.filter(([key, value]) => shouldIncludeInBrowser(key, value))
 		.map(([key, value]) => `${key}: ${parseValue(key, value)}`)
 		.join(',');
 
 	const functionDefinitions = Array.from(functionRegistry.entries())
-		.map(([name, func]) => `// @ts-ignore\nconst ${name} = ${func};`)
+		.map(([name, func]) => `const ${name} = ${func};`)
 		.join('\n');
 
 	const importDefinitions = Array.from(importRegistry.entries())
@@ -221,14 +238,16 @@ export function buildConfigString(config: CompiledConfigWithBluePrints) {
 
 	const packageName = 'rizom';
 	const imports = [
-		`import { validate } from '${packageName}/utils'`,
-		`import { access } from '${packageName}/utils'`,
+		needsValidate ? `import { validate } from '${packageName}/utils'` : '',
+		needsAccess ? `import { access } from '${packageName}/utils'` : '',
 		hasEnv ? "import { env } from '$env/dynamic/public'" : ''
 	]
 		.filter(Boolean)
 		.join('\n');
 
-	return `${imports}
+	return `// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+${imports}
 ${importDefinitions}
 
 ${functionDefinitions}
