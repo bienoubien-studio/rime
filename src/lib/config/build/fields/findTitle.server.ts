@@ -10,16 +10,6 @@ export function findTitleField(fields: FieldBuilder<AnyField>[]): any | null {
 			return field;
 		}
 
-		// Check in blocks
-		if (field instanceof BlocksBuilder && field.raw.blocks) {
-			for (const block of field.raw.blocks) {
-				if (block.fields) {
-					const found = findTitleField(block.fields);
-					if (found) return found;
-				}
-			}
-		}
-
 		// Check in group
 		if (isGroupField(field.raw) && field.raw.fields) {
 			const found = findTitleField(field.raw.fields);
