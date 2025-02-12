@@ -100,12 +100,14 @@ function cleanViteImports(str: string) {
 	str = str.replace(/__vite_ssr_import_\d+__\.RizomFormError\.([A-Z_]+)/g, (_, key) =>
 		JSON.stringify(RizomFormError[key as keyof typeof RizomFormError])
 	);
-	// Replace __vite_ssr_import_0__.(validate|access)
-	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, (match, func) => {
-		if (func === 'validate') needsValidate = true;
-		if (func === 'access') needsAccess = true;
-		return match; // Return the full match to preserve the code
+
+	str.match(/__vite_ssr_import_\d+__\.(access|validate)/g)?.forEach((match) => {
+		if (match.endsWith('.access')) needsAccess = true;
+		if (match.endsWith('.validate')) needsValidate = true;
 	});
+
+	// Replace __vite_ssr_import_0__.(validate|access)
+	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
 
 	return str;
 }
