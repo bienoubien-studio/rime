@@ -17,7 +17,7 @@
 </script>
 
 <div class="rz-dashboard">
-	{#if config.raw.siteUrl || config.raw.localization}
+	{#if config.raw.siteUrl || config.raw.localization || config.raw.panel.components.header.length}
 		<PageHeader>
 			<div class="rz-dashboard__header-left">
 				{#if config.raw.siteUrl}
