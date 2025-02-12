@@ -42,11 +42,11 @@ export class FieldBuilder<T extends BaseField = BaseField> {
 		return this.field;
 	}
 
-	get component(): Component | null {
+	get component(): Component<any> | null {
 		return null;
 	}
 
-	get cell(): Component | null {
+	get cell(): Component<any> | null {
 		return null;
 	}
 }
