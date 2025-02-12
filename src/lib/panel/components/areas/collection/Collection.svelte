@@ -51,7 +51,7 @@
 							collection.config.label.singular
 						)}</span
 					>
-					<Button variant="outline">
+					<Button href="/panel/{collection.config.slug}/create" variant="outline">
 						{t__(
 							`common.create_first|${collection.config.label.gender}`,
 							collection.config.label.singular
