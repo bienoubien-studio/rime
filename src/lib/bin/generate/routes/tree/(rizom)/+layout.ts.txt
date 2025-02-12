@@ -2,5 +2,5 @@ import { registerTranslation } from 'rizom/panel';
 import type { LayoutLoadEvent } from './$types';
 
 export const load = async (event: LayoutLoadEvent) => {
-	registerTranslation(event.data.rizomLanguage);
+	await registerTranslation(event.data.rizomLanguage);
 };

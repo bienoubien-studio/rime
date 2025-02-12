@@ -57,7 +57,10 @@
 			"types": "./dist/plugins/*.svelte.d.ts",
 			"default": "./dist/plugins/*.svelte"
 		},
-		"./panel/i18n/*.json": "./dist/panel/i18n/*.json",
+		"./panel/i18n/*.js": {
+			"types": "./dist/panel/i18n/*.d.ts",
+			"import": "./dist/panel/i18n/*.js"
+		},
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",
 			"import": "./dist/panel/pages/index.js"
