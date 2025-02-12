@@ -34,7 +34,7 @@ const loaders = languages.flatMap((locale) =>
 	namespaces.map((namespace) => ({
 		locale,
 		namespace,
-		loader: async () => (await import(`$lib/panel/i18n/${locale}/${namespace}.json`)).default
+		loader: async () => (await import(`rizom/panel/i18n/${locale}/${namespace}.json`)).default
 	}))
 );
 

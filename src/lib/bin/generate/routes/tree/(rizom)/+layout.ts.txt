@@ -1,4 +1,4 @@
-import { registerTranslation } from 'rizom/panel/i18n/index.js';
+import { registerTranslation } from 'rizom/panel';
 import type { LayoutLoadEvent } from './$types';
 
 export const load = async (event: LayoutLoadEvent) => {

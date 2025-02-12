@@ -14,6 +14,7 @@ import Doc from './components/areas/document/Document.svelte';
 import type { Snippet } from 'svelte';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc';
 import { Field } from './components/fields/index.js';
+import { registerTranslation } from './i18n/index.js';
 
 export {
 	Global,
@@ -29,7 +30,8 @@ export {
 	Dashboard,
 	Collection,
 	Doc,
-	Field
+	Field,
+	registerTranslation
 };
 
 export type CollectionLayoutProps = {
