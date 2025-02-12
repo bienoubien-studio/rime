@@ -1,10 +1,8 @@
 import Blocks from './blocks/component/Blocks.svelte';
 import Checkbox from './checkbox/component/Checkbox.svelte';
 import ComboBox from './combobox/component/ComboBox.svelte';
-// import Component from './component/Component.svelte';
 import Date from './date/component/Date.svelte';
 import Email from './email/component/Email.svelte';
-// import Group from './group/component/Group.svelte';
 import Link from './link/component/Link.svelte';
 import Number from './number/component/Number.svelte';
 import Radio from './radio/component/Radio.svelte';

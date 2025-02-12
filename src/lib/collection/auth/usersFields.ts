@@ -5,7 +5,7 @@ import { email, select, text } from 'rizom/fields';
 const emailField = email('email')
 	.access({
 		read: (user) => !!user,
-		update: (user) => false
+		update: () => false
 	})
 	.required()
 	.unique();
@@ -14,7 +14,7 @@ const name = text('name')
 	.access({
 		create: (user) => !!user,
 		read: (user) => true,
-		update: (user) => false
+		update: () => false
 	})
 	.required();
 
@@ -33,8 +33,8 @@ const password = text('password')
 	.required()
 	.access({
 		create: (user) => !!user && access.isAdmin(user),
-		read: (user) => false,
-		update: (user) => false
+		read: () => false,
+		update: () => false
 	})
 	.validate((value) => validate.password(value));
 

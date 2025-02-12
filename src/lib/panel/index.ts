@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc';
 import Global from './pages/global/Global.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
 import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte';
@@ -11,8 +13,6 @@ import ResetPassword from './pages/reset-password/ResetPassword.svelte';
 import Dashboard from './pages/dashboard/Dashboard.svelte';
 import Collection from './components/areas/collection/Collection.svelte';
 import Doc from './components/areas/document/Document.svelte';
-import type { Snippet } from 'svelte';
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc';
 import { Field } from './components/fields/index.js';
 import { registerTranslation } from './i18n/index.js';
 
