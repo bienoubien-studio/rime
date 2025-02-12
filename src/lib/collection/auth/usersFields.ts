@@ -13,7 +13,7 @@ const emailField = email('email')
 const name = text('name')
 	.access({
 		create: (user) => !!user,
-		read: (user) => true,
+		read: () => true,
 		update: () => false
 	})
 	.required();
