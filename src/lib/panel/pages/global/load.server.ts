@@ -1,7 +1,7 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { PrototypeSlug } from 'rizom/types/doc';
+import type { GlobalSlug } from 'rizom/types/doc';
 
-export default function (slug: PrototypeSlug) {
+export default function (slug: GlobalSlug) {
 	const load = async ({ locals }: ServerLoadEvent) => {
 		const { api, locale } = locals;
 

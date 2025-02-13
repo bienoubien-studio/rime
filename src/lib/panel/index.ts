@@ -17,7 +17,6 @@ import Collection from './components/areas/collection/Collection.svelte';
 import Doc from './components/areas/document/Document.svelte';
 import { Field } from './components/fields/index.js';
 import { registerTranslation } from './i18n/index.js';
-import { checkLiveRedirect } from './utility/live.server.js';
 
 export {
 	Global,
@@ -36,7 +35,6 @@ export {
 	Collection,
 	Doc,
 	Field,
-	checkLiveRedirect,
 	registerTranslation
 };
 

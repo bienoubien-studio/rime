@@ -17,7 +17,8 @@
 		"test:basic": "playwright test --ui -c ./playwright.config.basic.ts",
 		"test:live": "playwright test --ui -c ./playwright.config.live.ts",
 		"test": "pnpm test:multilang && pnpm test:basic && pnpm test:live",
-		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/"
+		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/",
+		"local-pack": "npm run build && npm pack && echo \"Package created at: $(pwd)/$(npm pack | tail -1)\""
 	},
 	"license": "MIT",
 	"type": "module",
@@ -41,6 +42,10 @@
 		"./panel": {
 			"types": "./dist/panel/index.d.ts",
 			"import": "./dist/panel/index.js"
+		},
+		"./panel/server": {
+			"types": "./dist/panel/index.server.d.ts",
+			"import": "./dist/panel/index.server.js"
 		},
 		"./panel/style/index.css": {
 			"import": "./dist/panel/style/index.css"
