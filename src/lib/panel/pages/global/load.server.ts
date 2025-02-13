@@ -1,5 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { GlobalSlug } from 'rizom/types/doc';
+import type { GenericDoc, GlobalSlug } from 'rizom/types/doc';
 
 export default function (slug: GlobalSlug) {
 	const load = async ({ locals }: ServerLoadEvent) => {
@@ -9,13 +9,13 @@ export default function (slug: GlobalSlug) {
 		const authorizedRead = global.config.access.read(locals.user);
 		const authorizedUpdate = global.config.access.update(locals.user);
 
-		if (!authorizedRead && !authorizedUpdate) {
+		if (!authorizedRead) {
 			return { doc: {}, operation: 'update', status: 401 };
 		}
 
 		const doc = await api.global(slug).find({ locale });
 
-		if (authorizedRead && !authorizedUpdate) {
+		if (!authorizedUpdate) {
 			return { doc, operation: 'update', status: 200, readOnly: true };
 		}
 
@@ -23,6 +23,7 @@ export default function (slug: GlobalSlug) {
 			doc,
 			operation: 'update',
 			status: 200,
+			readOnly: false,
 			slug
 		};
 	};

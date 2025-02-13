@@ -1,18 +1,26 @@
 <script>
 	import Ban from 'lucide-svelte/icons/ban';
+	import { t__ } from 'rizom/panel/i18n';
 </script>
 
 <div class="rz-unauthorized">
 	<Ban />
-	<p>Not authorized</p>
+	<p>{t__('errors.unauthorized')}</p>
 </div>
 
 <style type="postcss">
 	.rz-unauthorized {
-		display: grid;
+		display: flex;
+		flex-direction: column;
 		height: 100vh;
-		place-content: center;
+		justify-content: center;
+		align-items: center;
 		gap: var(--rz-size-3);
+		padding-bottom: 15vh;
+		p {
+			max-width: 300px;
+			text-align: center;
+		}
 	}
 	.rz-unauthorized p {
 		@mixin font-semibold;

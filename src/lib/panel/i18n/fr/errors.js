@@ -2,11 +2,11 @@ export default {
 	required_field: 'Le champs $1 est requis',
 	invalid_credentials: 'Mauvais identifiants',
 	user_banned: 'User banned',
-	unauthorized: 'Unauthorized',
+	unauthorized: "Vous n'êtes pas autorisé à accéder à cette ressource",
 	invalid_email: 'Adresse email invalide',
 	invalid_url: 'URL invalide',
 	invalid_field: "Le champs $1 n'est pas valide",
-	not_found: 'Not found',
+	not_found: 'Non trouvé',
 	hook: 'Hook error',
-	upload: 'Upload error'
+	upload: 'Erreur de téléchargement'
 };
