@@ -6,7 +6,7 @@ export type GlobalProps = {
 	slug: GlobalSlug;
 };
 
-type GlobalData =
+export type GlobalData =
 	| {
 			status: 401;
 			doc: {};

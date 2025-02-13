@@ -1,8 +1,9 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { GenericDoc, GlobalSlug } from 'rizom/types/doc';
+import type { GlobalData } from './props';
 
 export default function (slug: GlobalSlug) {
-	const load = async ({ locals }: ServerLoadEvent) => {
+	const load = async ({ locals }: ServerLoadEvent): Promise<GlobalData> => {
 		const { api, locale } = locals;
 
 		const global = api.global(slug);
