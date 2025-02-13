@@ -23,6 +23,7 @@ import type {
 } from 'rizom/fields/types';
 import type { Dic, WithoutBuilders } from 'rizom/types/utility.js';
 import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
+import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;
 
@@ -39,6 +40,8 @@ export const isComponentField = (field: AnyField): field is ComponentField =>
 	field.type === 'component';
 
 export const isBlocksField = (field: AnyField): field is BlocksField => field.type === 'blocks';
+export const isBlocksFieldRaw = (field: AnyField): field is BlocksFieldRaw =>
+	field.type === 'blocks';
 
 export const isTextField = (field: AnyField): field is TextField => field.type === 'text';
 

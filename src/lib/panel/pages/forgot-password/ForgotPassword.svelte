@@ -37,7 +37,7 @@
 					<Card.Title>Request a password reset</Card.Title>
 				</Card.Header>
 				<Card.Content>
-					<Email form={context} config={usersFields.email} />
+					<Email form={context} config={usersFields.email.raw} />
 				</Card.Content>
 				<Card.Footer>
 					<Button type="submit" size="lg">Request a password reset</Button>

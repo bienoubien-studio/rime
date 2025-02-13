@@ -11,7 +11,7 @@ const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { co
 				return `Value should be one of these : ${validValues.join('|')}`;
 			}
 		}
-	} else if (selected !== undefined) {
+	} else if (typeof selected === 'string') {
 		if (!validValues.includes(selected)) {
 			return `Value should be one of these : ${validValues.join('|')}`;
 		}
@@ -19,9 +19,10 @@ const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { co
 	return true;
 };
 
-type FieldWithOptions = FormField & {
+type FieldWithOptions<T extends 'select' | 'radio' | 'combobox' = 'radio'> = FormField & {
+	type: T;
 	options: Option[];
-	defaultValue?: string | string[];
+	defaultValue?: any;
 };
 
 export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBuilder<T> {

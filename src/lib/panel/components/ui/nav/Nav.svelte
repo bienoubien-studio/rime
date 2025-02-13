@@ -83,10 +83,7 @@
 		padding-right: var(--rz-size-4);
 		padding-left: var(--rz-size-4);
 		border-bottom: var(--rz-border);
-		a {
-			height: 100%;
-			padding: var(--rz-size-6) 0;
-		}
+
 		&.rz-nav__header--collapsed {
 			justify-content: center;
 		}

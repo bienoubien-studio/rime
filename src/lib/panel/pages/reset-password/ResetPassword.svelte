@@ -26,7 +26,7 @@
 		}
 	});
 
-	const validateConfirm = (value: string) => {
+	const validateConfirm = (value: unknown) => {
 		if (value === context.form.password) return true;
 		return 'Password missmatch';
 	};
@@ -40,10 +40,10 @@
 				<Card.Title>Reset password</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Text type="password" config={usersFields.password} form={context} />
+				<Text type="password" config={usersFields.password.raw} form={context} />
 				<Text
 					type="password"
-					config={{ ...usersFields.password, validate: validateConfirm }}
+					config={{ ...usersFields.password.raw, validate: validateConfirm }}
 					form={context}
 				/>
 			</Card.Content>

@@ -8,7 +8,7 @@ import type {
 } from 'rizom/types/config';
 import type { AnyFormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
-import type { RawBlocksField } from 'rizom/fields/blocks';
+import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -58,7 +58,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
-	const registeredBlocks: Record<string, RawBlocksField['blocks'][number]> = {};
+	const registeredBlocks: Record<string, BlocksFieldRaw['blocks'][number]> = {};
 
 	if (isAuth) {
 		const hasRolesField = config.fields

@@ -1,5 +1,10 @@
 import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
-import { isBlocksField, isFormField, toFormFields } from '../../../utils/field.js';
+import {
+	isBlocksField,
+	isBlocksFieldRaw,
+	isFormField,
+	toFormFields
+} from '../../../utils/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/utility.js';
 
@@ -17,7 +22,7 @@ export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields
 			const path = `${basePath}${key}`;
 			if (config) {
 				map = { ...map, [path]: config };
-				if (isBlocksField(config) && value && Array.isArray(value)) {
+				if (isBlocksFieldRaw(config) && value && Array.isArray(value)) {
 					const blocks = value;
 
 					for (const [index, block] of blocks.entries()) {

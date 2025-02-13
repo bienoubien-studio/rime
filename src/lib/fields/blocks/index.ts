@@ -88,7 +88,7 @@ export type BlocksFieldBlock = {
 	fields: FieldBuilder<AnyField>[];
 };
 
-export type RawBlocksField = FormField & {
+export type BlocksFieldRaw = FormField & {
 	type: 'blocks';
 	blocks: {
 		name: string;
@@ -108,6 +108,6 @@ declare module 'rizom' {
 		blocks: any;
 	}
 	interface RegisterFormFields {
-		BlocksField: BlocksField | RawBlocksField;
+		BlocksField: BlocksField | BlocksFieldRaw;
 	}
 }

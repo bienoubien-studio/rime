@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
 import path from 'path';
 
 describe('Test schema generation', async () => {
-	const config = await buildConfig(rawConfig, { generate: false });
+	const config = await buildConfig(rawConfig, { generateFiles: false, compiled: false });
 	const types = generateTypesString(config);
 
 	const expectedOutput = readFileSync(path.join(__dirname, './expect-types.txt'), 'utf8');

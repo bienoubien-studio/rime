@@ -11,44 +11,45 @@ type ForgotPasswordActionFailure = PanelActionFailure<ForgotPasswordForm>;
 
 export const forgotPasswordActions = {
 	default: async ({ request, url, fetch }: RequestEvent) => {
-		const data = await request.formData();
-		const email = (data.get('email') as string) || undefined;
-		const hasParams = url.searchParams.toString() !== '';
+		throw new Error('not implemented');
+		// const data = await request.formData();
+		// const email = (data.get('email') as string) || undefined;
+		// const hasParams = url.searchParams.toString() !== '';
 
-		if (!email) {
-			return fail<ForgotPasswordActionFailure>(400, {
-				errors: { email: 'email is required' }
-			});
-		}
+		// if (!email) {
+		// 	return fail<ForgotPasswordActionFailure>(400, {
+		// 		errors: { email: 'email is required' }
+		// 	});
+		// }
 
-		const validationResult = validate.email(email as string);
-		if (typeof validationResult === 'string') {
-			return fail<ForgotPasswordActionFailure>(400, {
-				form: { email },
-				errors: { email: validationResult }
-			});
-		}
+		// const validationResult = validate.email(email as string);
+		// if (typeof validationResult === 'string') {
+		// 	return fail<ForgotPasswordActionFailure>(400, {
+		// 		form: { email },
+		// 		errors: { email: validationResult }
+		// 	});
+		// }
 
-		if (!hasParams) {
-			return fail<ForgotPasswordActionFailure>(400, { error: 'invalid data' });
-		}
+		// if (!hasParams) {
+		// 	return fail<ForgotPasswordActionFailure>(400, { error: 'invalid data' });
+		// }
 
-		const slug = url.searchParams.get('slug');
+		// const slug = url.searchParams.get('slug');
 
-		try {
-			await fetch(`/api/${slug}/forgot-password`, {
-				method: 'POST',
-				headers: {
-					'content-type': 'application/json'
-				},
-				body: JSON.stringify({
-					email
-				})
-			}).then((r) => r.json());
-		} catch (err: any) {
-			logger.error(err.message);
-			return fail<ForgotPasswordActionFailure>(500, { error: err.message });
-		}
-		return { success: true };
+		// try {
+		// 	await fetch(`/api/${slug}/forgot-password`, {
+		// 		method: 'POST',
+		// 		headers: {
+		// 			'content-type': 'application/json'
+		// 		},
+		// 		body: JSON.stringify({
+		// 			email
+		// 		})
+		// 	}).then((r) => r.json());
+		// } catch (err: any) {
+		// 	logger.error(err.message);
+		// 	return fail<ForgotPasswordActionFailure>(500, { error: err.message });
+		// }
+		// return { success: true };
 	}
 };

@@ -15,7 +15,10 @@ import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 
-type BuildConfig = (config: Config, options?: { generate: boolean }) => Promise<CompiledConfig>;
+type BuildConfig = <C extends boolean>(
+	config: Config,
+	options?: { generateFiles?: boolean; compiled?: C }
+) => C extends true ? Promise<CompiledConfig> : Promise<BuiltConfig>;
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -23,7 +26,10 @@ const dev = process.env.NODE_ENV === 'development';
  * Add extra configuration to Globals and Collections
  */
 
-const buildConfig: BuildConfig = async (config: Config, { generate } = { generate: false }) => {
+const buildConfig: BuildConfig = async (config: Config, options) => {
+	const generateFiles = options?.generateFiles || false;
+	const compiled = options?.compiled || true;
+
 	let collections: BuiltCollectionConfig[] = [];
 	let globals: BuiltGlobalConfig[] = [];
 	const icons: Dic = {};
@@ -121,7 +127,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 
 	const compiledConfig = compileConfig(builtConfig);
 
-	if (dev || generate) {
+	if (dev || generateFiles) {
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
 
@@ -132,7 +138,7 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 				throw new RizomError('Config not valid');
 			}
 
-			if (generate) {
+			if (generateFiles) {
 				const generateSchema = await import('rizom/bin/generate/schema/index.js').then(
 					(m) => m.default
 				);
@@ -156,6 +162,9 @@ const buildConfig: BuildConfig = async (config: Config, { generate } = { generat
 		}
 	}
 
+	if (!compiled) {
+		return builtConfig;
+	}
 	return compiledConfig;
 };
 

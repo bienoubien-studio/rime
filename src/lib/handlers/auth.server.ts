@@ -65,7 +65,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	// Check if a user has the proper role
 	// to visit the panel
 	if (event.url.pathname.startsWith('/panel')) {
-		const authorized = rizom.config.raw.panel?.access?.(user);
+		const authorized = rizom.config.raw.panel.access(user);
 		if (!authorized) {
 			throw error(401, 'unauthorized');
 		}

@@ -14,7 +14,7 @@ declare global {
 		// interface Error {}
 
 		interface Locals {
-			session: Session;
+			session: Session | undefined;
 			user: User | undefined;
 			rizom: Rizom;
 			api: LocalAPI;

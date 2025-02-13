@@ -6,10 +6,10 @@
 	import ToggleBlockButton from './ToggleBlockButton.svelte';
 	import { useOnce } from '$lib/panel/utility/Once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import type { RawBlocksField } from '../index.ts';
+	import type { BlocksFieldRaw } from '../index.ts';
 
 	type Props = {
-		config: RawBlocksField['blocks'][number];
+		config: BlocksFieldRaw['blocks'][number];
 		path: string;
 		sorting: boolean;
 		deleteBlock: () => void;

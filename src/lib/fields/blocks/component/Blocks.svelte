@@ -4,7 +4,7 @@
 	import Block from './Block.svelte';
 	import { Field } from 'rizom/panel';
 	import { useSortable } from '$lib/panel/utility/Sortable';
-	import type { BlocksFieldBlock, RawBlocksField } from 'rizom/fields/blocks';
+	import type { BlocksFieldBlock, BlocksFieldRaw } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
 	import './blocks.css';
@@ -51,7 +51,7 @@
 		}
 	});
 
-	function getConfigByBlockType(type: string): RawBlocksField['blocks'][number] {
+	function getConfigByBlockType(type: string): BlocksFieldRaw['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
 			throw new Error(`Block configuration not found for type: ${type}`);

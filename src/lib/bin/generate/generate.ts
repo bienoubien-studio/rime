@@ -32,5 +32,5 @@ export const generate = async (force?: boolean) => {
 
 	await import(configPathJS)
 		.then((module) => module.default)
-		.then(async (config) => await buildConfig(config, { generate: true }));
+		.then(async (config) => await buildConfig(config, { generateFiles: true }));
 };

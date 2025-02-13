@@ -14,7 +14,7 @@ import type { GlobalSlug } from 'rizom/types/doc.js';
 import { dev } from '$app/environment';
 
 export async function createConfigInterface(rawConfig: Config) {
-	const config: CompiledConfig = await buildConfig(rawConfig, { generate: dev });
+	const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });
 
 	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {

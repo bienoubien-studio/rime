@@ -1,7 +1,7 @@
 import type { FieldBuilder } from 'rizom/fields/_builders';
 import type { AnyField } from './fields';
 import type { RawTabsField } from 'rizom/fields/tabs';
-import type { RawBlocksField } from 'rizom/fields/blocks';
+import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 import type { RawGroupField } from 'rizom/fields/group';
 import type { CollectionConfig } from './config';
 import type { RelationValue } from 'rizom/types';
@@ -55,6 +55,8 @@ type WithoutBuilders<T> =
 								}
 							>;
 						}
-					: T extends object
-						? { [K in keyof T]: WithoutBuilders<T[K]> }
-						: T;
+					: T extends Function // Add this case
+						? T
+						: T extends object
+							? { [K in keyof T]: WithoutBuilders<T[K]> }
+							: T;
