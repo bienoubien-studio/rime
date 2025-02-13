@@ -25,9 +25,5 @@
 			flex-direction: row;
 			justify-content: flex-end;
 		}
-
-		.rz-dialog-footer > :not(:first-child) {
-			margin-left: var(--rz-size-2);
-		}
 	}
 </style>
