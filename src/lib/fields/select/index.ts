@@ -36,7 +36,7 @@ export const select = (name: string) => new SelectManyFieldBuilder(name, 'select
 export type SelectField = FormField & {
 	type: 'select';
 	options: Option[];
-	defaultValue: string | string[];
+	defaultValue?: string | string[];
 	many?: boolean;
 };
 

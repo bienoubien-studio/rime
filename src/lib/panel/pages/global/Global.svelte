@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Document from 'rizom/panel/components/areas/document/Document.svelte';
-	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
+	import type { GenericDoc, GlobalSlug } from 'rizom/types/doc';
 
 	type Props = {
-		data: { doc: GenericDoc; readOnly: boolean };
-		slug: PrototypeSlug;
+		data: { doc: GenericDoc | {}; readOnly?: boolean };
+		slug: GlobalSlug;
 	};
 	const { data }: Props = $props();
 </script>

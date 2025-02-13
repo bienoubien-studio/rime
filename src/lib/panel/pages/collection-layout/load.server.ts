@@ -1,10 +1,10 @@
 import { type ServerLoad } from '@sveltejs/kit';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
 
 /////////////////////////////////////////////
 // Layout load
 //////////////////////////////////////////////
-export function layoutLoad(slug: PrototypeSlug) {
+export function layoutLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {
 		const { api, locale, user } = event.locals;
