@@ -88,7 +88,9 @@
 			<div class="rz-doc-upload-header__preview">
 				{#if form.doc.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
-						<img src={form.doc.sizes.thumbnail} alt="preview" />
+						{#key form.doc.title}
+							<img src={form.doc.sizes.thumbnail} alt="preview" />
+						{/key}
 					</div>
 				{:else}
 					{@const FileIcon = mimeTypeToIcon(form.doc.mimeType)}

@@ -7,8 +7,6 @@
 	import { getContext } from 'svelte';
 	import type { GenericDoc, FieldsType } from 'rizom/types';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { Pencil } from 'lucide-svelte';
 	import StatusDot from '../StatusDot.svelte';
 
 	type Props = {
@@ -42,7 +40,9 @@
 		{#if collection.selectMode}
 			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
-				<UploadThumbCell url={doc.sizes.thumbnail} />
+				{#key doc.title}
+					<UploadThumbCell url={doc.sizes.thumbnail} />
+				{/key}
 			{/if}
 			<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
 		{:else}
