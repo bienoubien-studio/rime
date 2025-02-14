@@ -1,17 +1,13 @@
-export const expressServer = `import { handler } from './build/handler.js';
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+export const expressServer = `import polka from 'polka';
+import serveStatic from 'serve-static';
+import { handler } from './build/handler.js';
 
-const app = express();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const serve = serveStatic('./static');
 
-// Serve static files from static/medias
-app.use('/medias', express.static(path.join(__dirname, 'static/medias')));
-
-// SvelteKit handler
-app.use(handler);
-
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
-});`;
+polka()
+	.use(serve)
+	.use(handler)
+	.listen(3000, () => {
+		console.log("server running");
+	});
+`;

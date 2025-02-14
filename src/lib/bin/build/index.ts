@@ -32,7 +32,7 @@ program
 			taskLogger.done('database copied');
 		}
 		writeFileSync('./app/index.js', expressServer);
-		taskLogger.done('express server created at app/index.js');
+		taskLogger.done('polka server created at app/index.js');
 		console.log('');
 		taskLogger.info('Next steps :');
 		taskLogger.info('create a /app/.env file with ORIGIN HOST and PORT variables');
