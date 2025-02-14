@@ -8,5 +8,6 @@ export default {
 	invalid_field: "Le champs $1 n'est pas valide",
 	not_found: 'Non trouvé',
 	hook: 'Hook error',
-	upload: 'Erreur de téléchargement'
+	upload: 'Erreur de téléchargement',
+	first_user_dev: 'First user must not be created in production'
 };

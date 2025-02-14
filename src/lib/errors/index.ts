@@ -12,6 +12,7 @@ class RizomError extends Error {
 	static HOOK = 'hook_error';
 	static UPLOAD = 'upload_error';
 	static INIT = 'init_error';
+	static FIRST_USER_DEV = 'first_user_dev';
 
 	code = RizomError.UNKWONW;
 	status: number;

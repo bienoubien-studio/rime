@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { RizomError } from 'rizom/errors/index.js';
 import type { PrototypeSlug } from 'rizom/types';
@@ -14,10 +15,14 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	});
 
 	// Redirect to the proper route
+
 	// for /panel request
 	if (event.url.pathname.startsWith('/panel')) {
 		const users = await rizom.auth.getAuthUsers();
 		if (users.length === 0) {
+			if (!dev) {
+				throw new RizomError(RizomError.FIRST_USER_DEV);
+			}
 			throw redirect(303, '/init');
 		}
 		if (!authenticated) {
