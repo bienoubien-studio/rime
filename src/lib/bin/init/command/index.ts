@@ -16,7 +16,6 @@ import { cp, mkdir } from 'fs/promises';
 
 type Args = {
 	force?: boolean;
-	skipInstall?: boolean;
 	name?: string;
 };
 
@@ -27,7 +26,7 @@ type EnvVarConfig = {
 
 const PACKAGE = 'rizom';
 
-export const init = async ({ force, skipInstall, name: incomingName }: Args) => {
+export const init = async ({ force, name: incomingName }: Args) => {
 	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
 
@@ -77,9 +76,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			if (!existsSync(configDirPath)) {
 				mkdirSync(configDirPath);
 			}
-			writeFileSync(configPath, templates.emptyConfig(name.toString()));
+			writeFileSync(configPath, templates.defaultConfig(name.toString()));
 		}
-		log.info('Empty rizom.config.ts created');
+		log.info('rizom.config.ts created');
 	}
 
 	function setDatabase() {
@@ -105,9 +104,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 			if (!existsSync(libServerPath)) {
 				mkdirSync(libServerPath);
 			}
-			writeFileSync(schemaPath, templates.emptySchema);
+			writeFileSync(schemaPath, templates.defaultSchema);
 		}
-		log.info('Empty schema added');
+		log.info('schema added');
 	}
 
 	function configureVite() {
@@ -151,42 +150,42 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		}
 	}
 
-	async function installDeps(force = false) {
-		const devDeps = ['drizzle-kit'];
-		const deps = ['better-sqlite3'];
-		if (force) {
-			const packageManager = getPackageManager();
-			const command = getInstallCommand(packageManager);
-			execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
-			log.info('drizzle-kit & better-sqlite3 installed');
-		} else {
-			const packageManager = await select({
-				message: 'Which package manager do you want to install dependencies with?',
-				options: [
-					{ value: 'npm', label: 'npm' },
-					{ value: 'pnpm', label: 'pnpm' },
-					{ value: 'yarn', label: 'yarn', hint: 'not tested' },
-					{ value: 'bun', label: 'bun', hint: 'not tested' }
-				]
-			});
-			if (isCancel(packageManager)) {
-				outro('Operation cancelled');
-				process.exit(0);
-			}
-			const isValidPackageManager = (name: unknown): name is PackageManagerName =>
-				typeof packageManager === 'string' &&
-				['pnpm', 'npm', 'yarn', 'bun'].includes(packageManager);
-			if (!isValidPackageManager(packageManager)) return;
-			const s = spinner();
-			s.start('Installing via ' + packageManager);
-			const command = getInstallCommand(packageManager);
-			execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
-			s.stop('drizzle-kit & better-sqlite3 installed');
-			s.start('Pushing schema');
-			execSync(`npx drizzle-kit push`);
-			s.stop('Schema pushed');
-		}
-	}
+	// async function installDeps(force = false) {
+	// 	const devDeps = ['drizzle-kit'];
+	// 	const deps = ['better-sqlite3', 'sharp'];
+	// 	if (force) {
+	// 		const packageManager = getPackageManager();
+	// 		const command = getInstallCommand(packageManager);
+	// 		execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
+	// 		log.info('drizzle-kit & better-sqlite3 installed');
+	// 	} else {
+	// 		const packageManager = await select({
+	// 			message: 'Which package manager do you want to install dependencies with?',
+	// 			options: [
+	// 				{ value: 'npm', label: 'npm' },
+	// 				{ value: 'pnpm', label: 'pnpm' },
+	// 				{ value: 'yarn', label: 'yarn', hint: 'not tested' },
+	// 				{ value: 'bun', label: 'bun', hint: 'not tested' }
+	// 			]
+	// 		});
+	// 		if (isCancel(packageManager)) {
+	// 			outro('Operation cancelled');
+	// 			process.exit(0);
+	// 		}
+	// 		const isValidPackageManager = (name: unknown): name is PackageManagerName =>
+	// 			typeof packageManager === 'string' &&
+	// 			['pnpm', 'npm', 'yarn', 'bun'].includes(packageManager);
+	// 		if (!isValidPackageManager(packageManager)) return;
+	// 		const s = spinner();
+	// 		s.start('Installing via ' + packageManager);
+	// 		const command = getInstallCommand(packageManager);
+	// 		execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
+	// 		s.stop('drizzle-kit & better-sqlite3 installed');
+	// 		s.start('Pushing schema');
+	// 		execSync(`npx drizzle-kit push`);
+	// 		s.stop('Schema pushed');
+	// 	}
+	// }
 
 	async function copyAssets() {
 		try {
@@ -214,9 +213,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setHooks();
 		configureVite();
 		copyAssets();
-		if (!skipInstall) {
-			await installDeps(true);
-		}
+		// if (!skipInstall) {
+		// 	await installDeps(true);
+		// }
 	} else {
 		intro('This will setup configuration files and install dependencies');
 
@@ -246,9 +245,9 @@ export const init = async ({ force, skipInstall, name: incomingName }: Args) => 
 		setHooks();
 		configureVite();
 		copyAssets();
-		if (!skipInstall) {
-			await installDeps();
-		}
-		outro('done !');
+		// if (!skipInstall) {
+		// 	await installDeps();
+		// }
+		outro('done');
 	}
 };

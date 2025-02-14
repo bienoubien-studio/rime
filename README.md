@@ -51,7 +51,7 @@ cd my-app
 ### 2. Install Rizom
 
 ```bash
-npm install rizom
+npm install rizom sharp better-sqlite drizzle-kit
 npx rizom-init
 ```
 
@@ -63,7 +63,6 @@ The `rizom-init` command will automatically:
 - Add a `drizzle.config.ts`
 - Create `src/hooks.server.ts` with the required initialization code
 - Add the Rizom plugin to `vite.config.ts`
-- Install drizzle-kit
 - Push initial schema
 
 > [!NOTE]

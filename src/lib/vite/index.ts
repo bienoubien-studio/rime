@@ -25,9 +25,12 @@ export function rizom(): Plugin {
 		},
 		config(): UserConfig {
 			return {
+				ssr: {
+					external: ['sharp']
+				},
 				build: {
 					rollupOptions: {
-						external: ['better-sqlite3']
+						external: ['better-sqlite3', 'sharp']
 					},
 					target: 'es2022'
 				}
