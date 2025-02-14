@@ -17,7 +17,7 @@ import type { AnyField } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
-import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/_builders/index.js';
+import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/builders/index.js';
 import { date, relation } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {

@@ -1,12 +1,13 @@
 import type { AnyField, FormField } from 'rizom/types/index.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { FieldBuilder, FormFieldBuilder } from '../_builders/index.js';
-import type { UserDefinedField } from 'rizom/types';
+import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
+
 import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';
 import type { ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
+import type { Field } from 'rizom/types/fields.js';
 
 export const blocks = (name: string) => new BlocksBuilder(name);
 
@@ -63,7 +64,7 @@ class BlockBuilder {
 		this.#block.label = label;
 		return this;
 	}
-	fields(...fields: UserDefinedField[]) {
+	fields(...fields: FieldBuilder<AnyField>[]) {
 		this.#block.fields = [...fields, ...this.#block.fields];
 		return { ...this.#block };
 	}
@@ -96,7 +97,7 @@ export type BlocksFieldRaw = FormField & {
 		description?: string;
 		icon?: ComponentType;
 		renderTitle?: BlocksFieldBlockRenderTitle;
-		fields: AnyField[];
+		fields: Field[];
 	}[];
 };
 

@@ -1,12 +1,11 @@
-import type { BlocksFieldBlock } from 'rizom/fields/types';
-import { isFormField, toFormFields } from '../utils/field';
+import { isBlocksFieldRaw, isFormField, toFormFields } from '../utils/field';
 import { isAuthConfig, isUploadConfig } from './utils';
 import type {
 	CompiledCollectionConfig,
 	CompiledGlobalConfig,
 	CompiledConfig
 } from 'rizom/types/config';
-import type { AnyFormField, PrototypeSlug } from 'rizom/types';
+import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 
@@ -66,12 +65,12 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			.find((f) => f.name === 'roles' && f.type === 'select');
 		const hasEmailField = config.fields
 			.filter(isFormField)
-			.find((f: AnyFormField) => f.name === 'email' && f.type === 'email');
+			.find((f: FormField) => f.name === 'email' && f.type === 'email');
 		if (!hasRolesField) errors.push(`Field roles is missing in collection ${config.slug}`);
 		if (!hasEmailField) errors.push(`Field email is missing in collection ${config.slug}`);
 	}
 
-	const validateBlockField = (fields: AnyFormField[], blockType: string) => {
+	const validateBlockField = (fields: FormField[], blockType: string) => {
 		const reserved = ['path', 'type', 'parentId', 'position'];
 		for (const key of reserved) {
 			if (fields.map((f) => f.name).filter((name) => name === key).length > 1) {
@@ -80,7 +79,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 	};
 
-	const validateFormFields = (fields: AnyFormField[]) => {
+	const validateFormFields = (fields: FormField[]) => {
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {
@@ -88,7 +87,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			}
 		}
 		for (const field of fields) {
-			if (field.type === 'blocks') {
+			if (isBlocksFieldRaw(field)) {
 				for (const block of field.blocks) {
 					if (block.name in registeredBlocks) {
 						const blockDefinedButDiffer =

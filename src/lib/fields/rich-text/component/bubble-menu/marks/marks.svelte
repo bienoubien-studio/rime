@@ -5,8 +5,7 @@
 	import StrikethroughIcon from 'lucide-svelte/icons/strikethrough';
 	import type { Editor } from '@tiptap/core';
 	import { type ComponentType } from 'svelte';
-
-	import type { RichTextFieldMark } from 'rizom/types/fields';
+	import type { RichTextFieldMark } from '../../../index.js';
 
 	type Props = {
 		editor: Editor;

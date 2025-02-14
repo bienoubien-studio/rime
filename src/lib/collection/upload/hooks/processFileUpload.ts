@@ -4,6 +4,7 @@ import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { GenericDoc } from 'rizom/types/doc';
 import { cleanupStoredFiles } from '../disk/delete';
 import { saveFile } from '../disk/save';
+import { isUploadConfig } from 'rizom/config/utils';
 
 /**
  * Hook that handles file upload processing and image resizing operations.
@@ -26,6 +27,8 @@ import { saveFile } from '../disk/save';
  */
 export const processFileUpload: CollectionHookBeforeUpsert = async (args) => {
 	const { operation, config, event, api } = args;
+
+	if (!isUploadConfig(config)) throw new Error('Should never throw');
 
 	let data = args.data || {};
 	const id = (event && event.params.id) || '';

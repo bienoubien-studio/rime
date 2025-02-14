@@ -1,7 +1,7 @@
 import type { FormField, GenericDoc } from 'rizom/types';
 import type { GetRegisterType, RegisterCollection } from 'rizom';
 import RelationComponent from './component/Relation.svelte';
-import { FormFieldBuilder } from '../_builders/index.js';
+import { FormFieldBuilder } from '../builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
 import { capitalize } from 'rizom/utils/string';
 import type { Relation } from 'rizom/db/relations';

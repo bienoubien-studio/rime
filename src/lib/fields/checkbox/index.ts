@@ -1,5 +1,5 @@
 import type { FormField } from 'rizom/types/fields.js';
-import { BooleanFieldBuilder } from '../_builders/boolean.js';
+import { BooleanFieldBuilder } from '../builders/boolean.js';
 import toSnakeCase from 'to-snake-case';
 import Checkbox from './component/Checkbox.svelte';
 

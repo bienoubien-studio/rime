@@ -9,8 +9,8 @@ export type Route = {
 };
 
 export type FieldsComponents = {
-	cell?: Component | null;
-	component: Component;
+	cell?: Component<any> | null;
+	component: Component<any>;
 };
 
 export type FieldPanelTableConfig = {

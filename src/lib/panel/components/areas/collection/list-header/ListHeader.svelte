@@ -3,7 +3,7 @@
 	import { ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import type { AnyFormField } from 'rizom/types/fields';
+	import type { FormField } from 'rizom/types/fields';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();
@@ -17,7 +17,7 @@
 		gridTemplateColumn = `grid-template-columns: repeat(${compact ? 1 : columnLength}, minmax(0, 1fr));`;
 	});
 
-	type TableColumn = Partial<AnyFormField> & { name: string; label?: string };
+	type TableColumn = Partial<FormField> & { name: string; label?: string };
 </script>
 
 {#snippet columnHeader(label: string)}

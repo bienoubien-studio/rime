@@ -1,5 +1,5 @@
-import type { BaseField } from 'rizom/types/fields';
-import { FieldBuilder } from '../_builders/index.js';
+import type { Field } from 'rizom/types/fields';
+import { FieldBuilder } from '../builders/index.js';
 import Separator from './component/Separator.svelte';
 
 class SeparatorFieldBuilder extends FieldBuilder<SeparatorField> {
@@ -15,7 +15,7 @@ export const separator = () =>
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
-export type SeparatorField = BaseField & {
+export type SeparatorField = Field & {
 	type: 'separator';
 };
 

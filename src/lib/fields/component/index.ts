@@ -1,5 +1,5 @@
-import type { BaseField } from 'rizom/types/fields';
-import { FieldBuilder } from '../_builders/index.js';
+import type { Field } from 'rizom/types/fields';
+import { FieldBuilder } from '../builders/index.js';
 import type { FieldAccess } from 'rizom/types/fields';
 import type { Component } from 'svelte';
 
@@ -15,7 +15,7 @@ class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 		this.field.condition = func;
 		return this;
 	}
-	access(access: { read?: FieldAccess }) {
+	access(access: { create: FieldAccess; read: FieldAccess; update: FieldAccess }) {
 		this.field.access = access;
 		return this;
 	}
@@ -25,7 +25,7 @@ class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 // Types
 //////////////////////////////////////////////
 
-export type ComponentField = BaseField & {
+export type ComponentField = Field & {
 	type: 'component';
 	component: Component;
 };

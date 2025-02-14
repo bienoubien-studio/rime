@@ -1,7 +1,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/utils/field.js';
-import { rizom } from '$lib/index.js';
+import { rizom, type FormField } from '$lib/index.js';
 import type {
 	CheckboxField,
 	ComboBoxField,
@@ -19,19 +19,7 @@ import type {
 
 type GetDefaultValue = (args: {
 	key: string;
-	config:
-		| DateField
-		| EmailField
-		| TextField
-		| RichTextField
-		| SelectField
-		| LinkField
-		| ToggleField
-		| RadioField
-		| ComboBoxField
-		| RelationField
-		| CheckboxField
-		| NumberField;
+	config: FormField & { defaultValue: any };
 	adapter: Adapter;
 }) => Promise<any>;
 

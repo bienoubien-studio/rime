@@ -1,6 +1,6 @@
 import type { Option } from 'rizom/types';
 import type { FormField } from 'rizom/types';
-import { SelectFieldBuilder } from '../_builders/index.js';
+import { SelectFieldBuilder } from '../builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Radio from './component/Radio.svelte';
 

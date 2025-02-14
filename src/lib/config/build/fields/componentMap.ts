@@ -1,6 +1,6 @@
-import type { FieldBuilder } from 'rizom/fields/_builders';
+import type { FieldBuilder } from 'rizom/fields/builders';
 import { BlocksBuilder } from 'rizom/fields/blocks/index.js';
-import type { AnyField } from 'rizom/types';
+import type { Field } from 'rizom/types';
 import { isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { FieldsComponents } from 'rizom/types/panel';
 import Email from 'rizom/fields/email/component/Email.svelte';
@@ -8,7 +8,7 @@ import Text from 'rizom/fields/email/component/Email.svelte';
 import { GroupFieldBuilder } from 'rizom/fields/group';
 
 export function buildComponentsMap(
-	fields: FieldBuilder<AnyField>[]
+	fields: FieldBuilder<Field>[]
 ): Record<string, FieldsComponents> {
 	// Add Text and Email by default as needed for Login/Init forms
 	const componentsMap: Record<string, FieldsComponents> = {
@@ -16,7 +16,7 @@ export function buildComponentsMap(
 		text: { component: Text }
 	};
 
-	function addToMap(field: FieldBuilder<AnyField>) {
+	function addToMap(field: FieldBuilder<Field>) {
 		if (field.component) {
 			componentsMap[field.type] = {
 				component: field.component,

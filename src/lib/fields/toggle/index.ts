@@ -1,6 +1,6 @@
 import type { FormField } from 'rizom/types';
 import toSnakeCase from 'to-snake-case';
-import { BooleanFieldBuilder } from '../_builders/boolean.js';
+import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
 

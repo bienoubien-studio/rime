@@ -5,9 +5,7 @@ import type { GetRegisterType } from 'rizom';
 import type { FieldPanelTableConfig } from './panel';
 import type { LocalAPI } from 'rizom/types/api';
 
-export type UserDefinedField = AnyField | FieldBuilder<AnyField>;
-
-type FieldValidationFunc<TConfig extends AnyFormField, TData extends GenericDoc = GenericDoc> = (
+type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
 	metas: {
 		data: Partial<TData>;
@@ -29,7 +27,7 @@ type FieldWidth = '1/3' | '1/2' | '2/3';
 // };
 
 // Base type for all fields
-type BaseField = {
+type Field = {
 	type: FieldsType;
 	live?: boolean;
 	condition?: (doc: any) => boolean;
@@ -43,10 +41,10 @@ type BaseField = {
 };
 
 // Base type for fields that store data
-type FormField = BaseField & {
+type FormField = Field & {
 	name: string;
 	hidden?: boolean;
-	validate?: FieldValidationFunc<AnyFormField, GenericDoc>;
+	validate?: FieldValidationFunc<this, GenericDoc>;
 	required?: boolean;
 	localized?: boolean;
 	label?: string;

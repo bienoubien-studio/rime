@@ -1,32 +1,38 @@
 <script lang="ts">
-	import { DropdownMenu as DropdownMenuPrimitive, type WithoutChild } from 'bits-ui';
+	import { DropdownMenu as DropdownMenuPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
+	import { Minus } from 'lucide-svelte';
 	import Check from 'lucide-svelte/icons/check';
-	import Minus from 'lucide-svelte/icons/minus';
+
+	import type { Snippet } from 'svelte';
 
 	let {
 		ref = $bindable(null),
 		checked = $bindable(false),
+		indeterminate = $bindable(false),
 		class: className,
 		children: childrenProp,
 		...restProps
-	}: WithoutChild<DropdownMenuPrimitive.CheckboxItemProps> = $props();
+	}: WithoutChildrenOrChild<DropdownMenuPrimitive.CheckboxItemProps> & {
+		children?: Snippet;
+	} = $props();
 </script>
 
 <DropdownMenuPrimitive.CheckboxItem
 	bind:ref
 	bind:checked
+	bind:indeterminate
 	class="rz-dropdown-checkbox {className}"
 	{...restProps}
 >
-	{#snippet children({ checked })}
+	{#snippet children({ checked, indeterminate })}
 		<span class="rz-dropdown-checkbox__indicator">
-			{#if checked === 'indeterminate'}
+			{#if indeterminate}
 				<Minus size="13" />
-			{:else}
+			{:else if checked}
 				<Check size="13" />
 			{/if}
 		</span>
-		{@render childrenProp?.({ checked })}
+		{@render childrenProp?.()}
 	{/snippet}
 </DropdownMenuPrimitive.CheckboxItem>
 

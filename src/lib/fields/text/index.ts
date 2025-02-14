@@ -1,6 +1,6 @@
 import type { FormField } from 'rizom/types';
 import toSnakeCase from 'to-snake-case';
-import { FormFieldBuilder } from '../_builders/index.js';
+import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
 

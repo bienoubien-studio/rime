@@ -1,6 +1,5 @@
-import type { AnyField, BaseField } from 'rizom/types/fields';
-import { FieldBuilder } from '../_builders/index.js';
-import type { UserDefinedField } from 'rizom/types';
+import type { AnyField, Field } from 'rizom/types/fields';
+import { FieldBuilder } from '../builders/index.js';
 
 export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 	//
@@ -10,7 +9,7 @@ export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 			this.field.label = label;
 		}
 	}
-	fields(...fields: UserDefinedField[]) {
+	fields(...fields: FieldBuilder<AnyField>[]) {
 		this.field.fields = fields;
 		return this;
 	}
@@ -22,16 +21,16 @@ export const group = (label?: string) => new GroupFieldBuilder(label);
 // Types
 //////////////////////////////////////////////
 
-export type GroupField = BaseField & {
+export type GroupField = Field & {
 	type: 'group';
 	label: string;
 	fields: FieldBuilder<AnyField>[];
 };
 
-export type RawGroupField = BaseField & {
+export type GroupFieldRaw = Field & {
 	type: 'group';
 	label: string;
-	fields: AnyField[];
+	fields: Field[];
 };
 
 /////////////////////////////////////////////

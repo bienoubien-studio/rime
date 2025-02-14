@@ -1,6 +1,6 @@
 import type { GetRegisterType } from 'rizom';
 import type { FormField } from 'rizom/types';
-import { FormFieldBuilder } from '../_builders/index.js';
+import { FormFieldBuilder } from '../builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';

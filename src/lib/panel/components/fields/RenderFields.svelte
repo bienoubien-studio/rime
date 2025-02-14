@@ -2,19 +2,20 @@
 	import {
 		isComponentField,
 		isGroupField,
+		isGroupFieldRaw,
 		isLiveField,
 		isNotHidden,
 		isPresentative
-	} from '$lib/fields/utility.js';
+	} from '$lib/utils/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
+	import type { Field, AnyFormField, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
 	import Group from './Group.svelte';
 
 	type Props = {
 		path?: string;
-		fields: AnyField[];
+		fields: Field[];
 		framed?: boolean;
 		form: DocumentFormContext;
 	};
@@ -30,18 +31,18 @@
 
 	const authorizedFields = $derived(
 		fields.filter((field) => {
-			if (isPresentative(field)) return true;
+			// if (isPresentative(field)) return true;
 			if (field.access && field.access.read) {
 				return field.access.read(user.attributes, { id: form.doc.id });
 			}
 			return true;
-		})
+		}) as AnyField[]
 	);
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
 	const framedClassModifier = $derived(framed ? 'rz-render-fields--framed' : '');
 
-	const widthClassModifier = (field: AnyFormField) =>
+	const widthClassModifier = (field: FormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
 
 	//
@@ -57,7 +58,7 @@
 				</div>
 			{:else if isPresentative(field)}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
-					{#if isGroupField(field)}
+					{#if isGroupFieldRaw(field)}
 						<Group config={field} {path} {form} />
 					{:else if field.type === 'tabs'}
 						{@const Tabs = config.raw.blueprints.tabs.component}

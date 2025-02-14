@@ -1,4 +1,4 @@
-import type { AnyField } from 'rizom/types/fields.js';
+import type { AnyField, Field, FormField } from 'rizom/types/fields.js';
 import {
 	isBlocksField,
 	isFormField,
@@ -10,11 +10,12 @@ import { toPascalCase } from '$lib/utils/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
 import type { LocaleConfig } from 'rizom/types/config.js';
 import type { RelationFieldsMap } from './relations/definition.js';
-import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/_builders/field.js';
+import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
+import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
 const p = toPascalCase;
 
 type Args = {
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 	tableName: string;
 	rootName: string;
 	locales?: LocaleConfig[];
@@ -31,7 +32,7 @@ type Return = {
 	relationFieldsHasLocale: boolean;
 };
 
-function hasLocalizedField(fields: FieldBuilder<AnyField>[]): boolean {
+function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 	// Iterate through each field in the array
 	for (const field of fields) {
 		// Case 1: If it's a group field, check all fields within the group
@@ -84,13 +85,13 @@ const buildRootTable = ({
 	let relationFieldsHasLocale = false;
 
 	const generateFieldsTemplates = (
-		fields: FieldBuilder<AnyField>[],
+		fields: FieldBuilder<Field>[],
 		withLocalized?: boolean
 	): string[] => {
 		/** All key/pair, rizom field / drizzle schema string  */
 		let templates: string[] = [];
 
-		const checkLocalized = (field: FormFieldBuilder) => {
+		const checkLocalized = (field: FormFieldBuilder<FormField>) => {
 			return (
 				(withLocalized && field.raw.localized) ||
 				(!withLocalized && !field.raw.localized) ||
@@ -99,7 +100,7 @@ const buildRootTable = ({
 		};
 
 		for (const field of fields) {
-			if (field.raw.type === 'group') {
+			if (field instanceof GroupFieldBuilder) {
 				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized)];
 			} else if (isTabsField(field.raw)) {
 				for (const tab of field.raw.tabs) {

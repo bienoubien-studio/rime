@@ -2,10 +2,10 @@
 	import type { GroupField } from 'rizom/fields/group';
 	import RenderFields from './RenderFields.svelte';
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
-	import { isFormField } from 'rizom/fields/utility';
 	import { onMount } from 'svelte';
 	import { ChevronDown } from 'lucide-svelte';
 	import type { WithoutBuilders } from 'rizom/types/utility';
+	import { isFormField } from 'rizom/utils/field';
 
 	type Props = { path: string; config: WithoutBuilders<GroupField>; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();

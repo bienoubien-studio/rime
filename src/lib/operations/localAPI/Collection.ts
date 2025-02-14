@@ -11,7 +11,7 @@ import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { AnyFormField } from 'rizom/types/fields.js';
+import type { FormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 
@@ -54,7 +54,7 @@ class CollectionInterface<Doc extends GenericDoc = GenericDoc>
 		if (isAuthConfig(this.config)) {
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
-				.filter((field: AnyFormField) => !privateFieldNames.includes(field.name));
+				.filter((field: FormField) => !privateFieldNames.includes(field.name));
 			return createBlankDocument({
 				...this.config,
 				fields: [...withoutPrivateFields]

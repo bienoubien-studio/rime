@@ -56,13 +56,14 @@ export type {
 
 // Fields types
 export type {
+	Field,
+	FormField,
 	AnyField,
 	AnyFormField,
 	FieldsType,
 	FormField,
 	Option,
-	RelationValue,
-	UserDefinedField
+	RelationValue
 } from './fields.js';
 
 // Hooks types

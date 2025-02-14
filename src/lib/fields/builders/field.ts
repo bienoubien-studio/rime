@@ -1,7 +1,7 @@
 import type { FieldPanelTableConfig, FieldsType } from 'rizom/types';
 import type {
 	AnyFormField,
-	BaseField,
+	Field,
 	FieldAccess,
 	FieldHook,
 	FieldValidationFunc,
@@ -10,7 +10,7 @@ import type {
 } from 'rizom/types/fields';
 import type { Component } from 'svelte';
 
-export class FieldBuilder<T extends BaseField = BaseField> {
+export class FieldBuilder<T extends Field = Field> {
 	field: T;
 
 	constructor(type: FieldsType) {
@@ -51,7 +51,7 @@ export class FieldBuilder<T extends BaseField = BaseField> {
 	}
 }
 
-export class FormFieldBuilder<T extends AnyFormField> extends FieldBuilder<T> {
+export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	//
 	constructor(name: string, type: FieldsType) {
 		super(type);

@@ -1,5 +1,5 @@
 import type { FormField, Option } from 'rizom/types/index.js';
-import { SelectFieldBuilder } from '../_builders/index.js';
+import { SelectFieldBuilder } from '../builders/index.js';
 import toSnakeCase from 'to-snake-case';
 import Select from './component/Select.svelte';
 

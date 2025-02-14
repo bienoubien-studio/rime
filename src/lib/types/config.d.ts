@@ -7,7 +7,7 @@ import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { GetRegisterType } from 'rizom';
-import type { FieldBuilder } from 'rizom/fields/_builders/field.js';
+import type { FieldBuilder } from 'rizom/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
 

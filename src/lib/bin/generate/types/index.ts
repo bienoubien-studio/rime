@@ -3,10 +3,10 @@ import { capitalize, toPascalCase } from '$lib/utils/string.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
 import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
-import type { AnyField } from 'rizom/types/fields.js';
+import type { AnyField, Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
-import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/_builders/field.js';
+import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
 import { isUploadConfig } from 'rizom/config/utils.js';
 
 /* -------------------------------------------------------------------------- */
@@ -68,7 +68,7 @@ export function generateTypesString(config: BuiltConfig) {
 		imports = new Set([...imports, string]);
 	};
 
-	const convertFieldsToTypesTemplates = (fields: FieldBuilder<AnyField>[]): string[] => {
+	const convertFieldsToTypesTemplates = (fields: FieldBuilder<Field>[]): string[] => {
 		let strFields: string[] = [];
 
 		for (const field of fields) {

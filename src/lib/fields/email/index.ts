@@ -1,5 +1,5 @@
 import type { FormField } from 'rizom/types';
-import { FormFieldBuilder } from '../_builders/index.js';
+import { FormFieldBuilder } from '../builders/index.js';
 import validate from 'rizom/utils/validate';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import toSnakeCase from 'to-snake-case';

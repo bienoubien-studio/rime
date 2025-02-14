@@ -16,7 +16,8 @@ export class BooleanFieldBuilder<T extends BooleanField> extends FormFieldBuilde
 
 	toField(): T {
 		if (!this.field.validate) {
-			this.field.validate = (value: any) => typeof value === 'boolean' || 'Should be true/false';
+			this.field.validate = (value: unknown) =>
+				typeof value === 'boolean' || 'Should be true/false';
 		}
 		if (!this.field.defaultValue) {
 			this.field.defaultValue = false;

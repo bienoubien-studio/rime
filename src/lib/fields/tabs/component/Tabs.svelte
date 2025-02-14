@@ -5,10 +5,9 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Cookies from 'js-cookie';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import type { TabsField } from '../index.js';
-	import type { WithoutBuilders } from 'rizom/types/utility';
+	import type { TabsFieldRaw } from '../index.js';
 
-	type Props = { config: WithoutBuilders<TabsField>; path: string; form: DocumentFormContext };
+	type Props = { config: TabsFieldRaw; path: string; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();
 
 	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;

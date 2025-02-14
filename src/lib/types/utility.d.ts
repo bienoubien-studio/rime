@@ -1,8 +1,8 @@
-import type { FieldBuilder } from 'rizom/fields/_builders';
-import type { AnyField } from './fields';
-import type { RawTabsField } from 'rizom/fields/tabs';
+import type { FieldBuilder } from 'rizom/fields/builders';
+import type { AnyField, Field } from './fields';
+import type { TabsFieldRaw } from 'rizom/fields/tabs';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
-import type { RawGroupField } from 'rizom/fields/group';
+import type { GroupFieldRaw } from 'rizom/fields/group';
 import type { CollectionConfig } from './config';
 import type { RelationValue } from 'rizom/types';
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
@@ -35,15 +35,15 @@ type WithRelationPopulated<T> = {
 type WithoutBuilders<T> =
 	T extends Array<infer U>
 		? U extends FieldBuilder<any>
-			? AnyField[]
+			? Field[]
 			: Array<WithoutBuilders<U>>
 		: T extends { fields: FieldBuilder<any>[] }
-			? Omit<T, 'fields'> & { fields: AnyField[] }
+			? Omit<T, 'fields'> & { fields: Field[] }
 			: T extends { tabs: Array<{ fields: FieldBuilder<any>[] }> }
 				? Omit<T, 'tabs'> & {
 						tabs: Array<
 							Omit<T['tabs'][number], 'fields'> & {
-								fields: AnyField[];
+								fields: Field[];
 							}
 						>;
 					}
@@ -51,7 +51,7 @@ type WithoutBuilders<T> =
 					? Omit<T, 'blocks'> & {
 							blocks: Array<
 								Omit<T['blocks'][number], 'fields'> & {
-									fields: AnyField[];
+									fields: Field[];
 								}
 							>;
 						}

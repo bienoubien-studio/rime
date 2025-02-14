@@ -1,10 +1,10 @@
 import type { AnyField } from 'rizom/types';
-import type { BaseField } from 'rizom/types/fields';
-import { FieldBuilder } from '../_builders/index.js';
-import type { UserDefinedField } from 'rizom/types';
+import type { Field } from 'rizom/types/fields';
+import { FieldBuilder } from '../builders/index.js';
+
 import Tabs from './component/Tabs.svelte';
 
-class TabsBuilder extends FieldBuilder<TabsField> {
+export class TabsBuilder extends FieldBuilder<TabsField> {
 	//
 	constructor(...tabs: TabsFieldTab[]) {
 		super('tabs');
@@ -22,7 +22,7 @@ class TabBuilder {
 		this.#tab = { label, fields: [] };
 		return this;
 	}
-	fields(...fields: UserDefinedField[]) {
+	fields(...fields: FieldBuilder<Field>[]) {
 		this.#tab.fields = fields;
 		return this.#tab;
 	}
@@ -36,21 +36,21 @@ export const tab = (label: string) => new TabBuilder(label);
 // Types
 //////////////////////////////////////////////
 
-export type TabsField = BaseField & {
+export type TabsField = Field & {
 	type: 'tabs';
 	tabs: TabsFieldTab[];
 };
 
 export type TabsFieldTab = {
 	label: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 };
 
-export type RawTabsField = BaseField & {
+export type TabsFieldRaw = Field & {
 	type: 'tabs';
 	tabs: {
 		label: string;
-		fields: AnyField[];
+		fields: Field[];
 	}[];
 };
 

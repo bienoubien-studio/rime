@@ -19,8 +19,7 @@ const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { co
 	return true;
 };
 
-type FieldWithOptions<T extends 'select' | 'radio' | 'combobox' = 'radio'> = FormField & {
-	type: T;
+type FieldWithOptions = FormField & {
 	options: Option[];
 	defaultValue?: any;
 };

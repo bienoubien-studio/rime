@@ -15,10 +15,10 @@ import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 
-type BuildConfig = <C extends boolean>(
+type BuildConfig = <C extends boolean | undefined = true>(
 	config: Config,
 	options?: { generateFiles?: boolean; compiled?: C }
-) => C extends true ? Promise<CompiledConfig> : Promise<BuiltConfig>;
+) => C extends false ? Promise<BuiltConfig> : Promise<CompiledConfig>;
 
 const dev = process.env.NODE_ENV === 'development';
 

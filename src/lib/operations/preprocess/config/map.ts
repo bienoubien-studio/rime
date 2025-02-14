@@ -1,4 +1,4 @@
-import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
+import type { AnyField, Field, FormField } from 'rizom/types/fields.js';
 import {
 	isBlocksField,
 	isBlocksFieldRaw,
@@ -8,14 +8,14 @@ import {
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/utility.js';
 
-export type ConfigMap = Record<string, AnyFormField>;
+export type ConfigMap = Record<string, FormField>;
 
-export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields: AnyField[]) => {
+export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields: Field[]) => {
 	let map: ConfigMap = {};
 
 	const formFields = incomingFields.reduce(toFormFields, []);
 
-	const traverseData = (data: Dic, fields: AnyField[], basePath: string) => {
+	const traverseData = (data: Dic, fields: Field[], basePath: string) => {
 		basePath = basePath === '' ? basePath : `${basePath}.`;
 		for (const [key, value] of Object.entries(data)) {
 			const config = fields.filter(isFormField).find((f) => f.name === key);

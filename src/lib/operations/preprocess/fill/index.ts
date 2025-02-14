@@ -19,7 +19,7 @@ export const addDefaultValues: AddDefaultValues = async (args) => {
 			isEmpty = false;
 			console.log(err.message);
 		}
-		if (hasDefaultValue && isEmpty) {
+		if (hasDefaultValue && isEmpty && 'defaultValue' in config) {
 			flatData[key] = await getDefaultValue({ key, config, adapter });
 		}
 	}

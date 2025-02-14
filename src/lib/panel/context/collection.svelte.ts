@@ -4,9 +4,16 @@ import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
 import { isUploadConfig } from '../../config/utils.js';
-import { isFormField, isGroupField, isNotHidden, isTabsField } from '../../utils/field.js';
+import {
+	isFormField,
+	isGroupField,
+	isGroupFieldRaw,
+	isNotHidden,
+	isTabsField,
+	isTabsFieldRaw
+} from '../../utils/field.js';
 import { hasProps } from '../../utils/object.js';
-import type { AnyField, AnyFormField } from 'rizom/types/fields.js';
+import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
@@ -72,14 +79,14 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		await invalidateAll();
 	};
 
-	const buildFieldColumns = (fields: AnyField[]) => {
-		let columns: WithRequired<AnyFormField, 'table'>[] = [];
+	const buildFieldColumns = (fields: Field[]) => {
+		let columns: WithRequired<FormField, 'table'>[] = [];
 		for (const field of fields) {
 			if (isFormField(field) && isNotHidden(field) && hasProps(field, ['table'])) {
 				columns.push(field);
-			} else if (isGroupField(field)) {
-				columns = [...columns, ...buildFieldColumns((field as WithoutBuilders<GroupField>).fields)];
-			} else if (isTabsField(field)) {
+			} else if (isGroupFieldRaw(field)) {
+				columns = [...columns, ...buildFieldColumns(field.fields)];
+			} else if (isTabsFieldRaw(field)) {
 				for (const tab of field.tabs) {
 					columns = [...columns, ...buildFieldColumns(tab.fields)];
 				}
@@ -104,7 +111,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		.sort((a, b) => a.table.position - b.table.position);
 
 	return {
-		columns: columns as WithRequired<AnyFormField, 'table'>[],
+		columns: columns as WithRequired<FormField, 'table'>[],
 		canCreate,
 
 		/////////////////////////////////////////////

@@ -1,11 +1,11 @@
-import { FieldBuilder } from './_builders/index.js';
+import { FieldBuilder } from './builders/index.js';
 
 import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
 import type { TabsFieldTab } from './tabs/index.js';
 import type { BlocksFieldBlock } from './types.js';
-import type { UserDefinedField } from 'rizom/types/fields.js';
+import type { AnyField } from 'rizom/types/fields.js';
 
-export const compileFields = (fields: UserDefinedField[]) => {
+export const compileFields = (fields: FieldBuilder<AnyField>[]) => {
 	return fields.reduce(compile, []);
 };
 
