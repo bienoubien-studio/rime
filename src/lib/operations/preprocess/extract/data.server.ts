@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/errors/index.js';
+import { RizomError, RizomFormError } from '$lib/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from 'rizom/types/doc';
 import { flatten, unflatten } from 'flat';
@@ -67,7 +67,7 @@ const extractData = async (request: RequestEvent['request']) => {
 		}
 	} catch (err: any) {
 		console.log(err.message);
-		throw new RizomError('Cannot parse data');
+		throw new RizomFormError({ form: RizomFormError.CONTENT_LENGTH_LIMIT });
 	}
 
 	return data as Partial<GenericDoc>;

@@ -3,6 +3,7 @@ import type { FormErrors } from 'rizom/types';
 
 class RizomError extends Error {
 	static UNKWONW = 'unknown';
+	static DATA_BASE_ERROR = 'database error';
 	static FORM_ERROR = 'form_error';
 	static INVALID_DATA = 'invalid_data';
 	static USER_BANNED = 'user_banned';
@@ -47,6 +48,7 @@ class RizomFormError extends RizomError {
 	static PASSWORD_NUMBER_MISSING = 'password_number_missing';
 	static PASSWORD_SPECIAL_CHAR_MISSING = 'password_special_char_missing';
 	static NOT_A_STRING = 'not_a_string';
+	static CONTENT_LENGTH_LIMIT = 'content_length_limit';
 
 	errors: FormErrors;
 

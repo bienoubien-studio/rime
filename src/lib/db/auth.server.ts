@@ -298,13 +298,18 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
 		}
 
-		await db
-			.update(userTable)
-			.set({
-				locked: false,
-				loginAttempts: 0
-			})
-			.where(eq(userTable.id, user.id));
+		try {
+			await db
+				.update(userTable)
+				.set({
+					locked: false,
+					loginAttempts: 0
+				})
+				.where(eq(userTable.id, user.id));
+		} catch (err) {
+			console.log(err);
+			throw new RizomError(RizomError.DATA_BASE_ERROR);
+		}
 
 		return {
 			token: signin.headers.get('set-auth-token') as string,
