@@ -20,7 +20,7 @@ program
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
-			execSync(`bun ./src/lib/bin/init/index.ts --name ${name} -s`);
+			execSync(`bun ./src/lib/bin/init/index.ts --name ${name}`);
 
 			// Copy config
 			const testConfigPath = path.join(projectRoot, 'tests', name, 'rizom.config.txt');

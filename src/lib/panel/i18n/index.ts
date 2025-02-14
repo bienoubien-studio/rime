@@ -1,6 +1,6 @@
-import { browser } from '$app/environment';
 import { PACKAGE_NAME } from 'rizom/constant';
 
+const isBrowser = typeof window !== 'undefined';
 const languages = ['fr', 'en'] as const;
 const namespaces = ['errors', 'fields', 'common'] as const;
 const DEFAULT_LOCALE = 'en';
@@ -38,7 +38,7 @@ const loaders = languages.flatMap((locale) =>
 		locale,
 		namespace,
 		loader: async () => {
-			if (browser) {
+			if (isBrowser) {
 				const response = await fetch(`/i18n/${locale}/${namespace}`);
 				if (!response.ok) {
 					throw new Error(`Failed to load translations: ${response.statusText}`);
