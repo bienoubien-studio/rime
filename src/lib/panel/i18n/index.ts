@@ -1,3 +1,6 @@
+import { browser } from '$app/environment';
+import { PACKAGE_NAME } from 'rizom/constant';
+
 const languages = ['fr', 'en'] as const;
 const namespaces = ['errors', 'fields', 'common'] as const;
 const DEFAULT_LOCALE = 'en';
@@ -34,7 +37,18 @@ const loaders = languages.flatMap((locale) =>
 	namespaces.map((namespace) => ({
 		locale,
 		namespace,
-		loader: async () => (await import(`./${locale}/${namespace}.js`)).default
+		loader: async () => {
+			if (browser) {
+				const response = await fetch(`/i18n/${locale}/${namespace}`);
+				if (!response.ok) {
+					throw new Error(`Failed to load translations: ${response.statusText}`);
+				}
+				return response.json();
+			} else {
+				// Server-side: direct import
+				return (await import(`${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`)).default;
+			}
+		}
 	}))
 );
 
