@@ -51,7 +51,8 @@ cd my-app
 ### 2. Install Rizom
 
 ```bash
-npm install rizom sharp better-sqlite drizzle-kit
+npm install rizom sharp better-sqlite3
+npm install -D drizzle-kit
 npx rizom-init
 ```
 
