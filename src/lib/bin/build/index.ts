@@ -14,7 +14,6 @@ program
 		// Delete app folder if it exists
 		if (existsSync('./app')) {
 			rmSync('./app', { recursive: true, force: true });
-			taskLogger.info('app folder deleted');
 		}
 		// Build
 		spawnSync('./node_modules/.bin/vite', ['build'], { stdio: 'inherit' });

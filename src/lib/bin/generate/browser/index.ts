@@ -4,7 +4,7 @@ import { taskLogger } from 'rizom/utils/logger/index.js';
 import cache from '../cache/index.js';
 import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
-import { PACKAGE_NAME } from 'rizom/constant';
+
 import type { FieldsComponents } from 'rizom/types/panel';
 import type { FieldsType } from 'rizom/types';
 import { RizomFormError } from 'rizom/errors/index.js';
