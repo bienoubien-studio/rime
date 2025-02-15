@@ -11,9 +11,9 @@ type BaseDoc = {
 	updatedAt?: Date;
 	createdAt?: Date;
 	locale?: string;
+	url?: string;
 	_prototype: DocPrototype;
 	_type: GetRegisterType<'PrototypeSlug'>;
-	_url?: string;
 	_live?: string;
 };
 

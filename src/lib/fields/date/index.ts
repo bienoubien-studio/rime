@@ -1,9 +1,9 @@
 import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
-import toSnakeCase from 'to-snake-case';
 import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
+import { toSnakeCase } from 'rizom/utils/string.js';
 
 export const date = (name: string) => new DateFieldBuilder(name);
 

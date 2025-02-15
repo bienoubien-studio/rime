@@ -1,8 +1,8 @@
 import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
-import toSnakeCase from 'to-snake-case';
 import Combobox from './component/ComboBox.svelte';
+import { toSnakeCase } from 'rizom/utils/string.js';
 
 class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 	get component() {

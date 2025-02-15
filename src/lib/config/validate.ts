@@ -1,4 +1,10 @@
-import { isBlocksFieldRaw, isFormField, toFormFields } from '../utils/field';
+import {
+	isBlocksFieldRaw,
+	isFormField,
+	isGroupFieldRaw,
+	isTabsFieldRaw,
+	toFormFields
+} from '../utils/field';
 import { isAuthConfig, isUploadConfig } from './utils';
 import type {
 	CompiledCollectionConfig,
@@ -8,6 +14,7 @@ import type {
 import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
+import { isCamelCase } from 'rizom/utils/string';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -80,13 +87,24 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	};
 
 	const validateFormFields = (fields: FormField[]) => {
+		// Check for field name duplication at this level
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {
 				errors.push(`Duplicate field ${duplicate} in ${config.type} ${config.slug}`);
 			}
 		}
+
 		for (const field of fields) {
+			// Check for malformed field.name
+			const withoutLeadingUnderscore = field.name.startsWith('_')
+				? field.name.slice(1)
+				: field.name;
+			if (!isCamelCase(withoutLeadingUnderscore)) {
+				errors.push(`Field ${field.name} of ${config.type} ${config.slug} should be camelCase`);
+			}
+
+			// Recursive check into Blocks Groups and Tabs
 			if (isBlocksFieldRaw(field)) {
 				for (const block of field.blocks) {
 					if (block.name in registeredBlocks) {
@@ -101,6 +119,12 @@ const validateDocumentFields = (config: UnknownConfig) => {
 					validateFormFields(block.fields.filter(isFormField));
 					validateBlockField(block.fields.filter(isFormField), block.name);
 				}
+			} else if (isTabsFieldRaw(field)) {
+				for (const tab of field.tabs) {
+					validateFormFields(tab.fields.filter(isFormField));
+				}
+			} else if (isGroupFieldRaw(field)) {
+				validateFormFields(field.fields.filter(isFormField));
 			}
 		}
 	};

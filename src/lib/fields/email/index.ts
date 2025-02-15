@@ -2,8 +2,8 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import validate from 'rizom/utils/validate';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
-import toSnakeCase from 'to-snake-case';
 import EmailComp from './component/Email.svelte';
+import { toSnakeCase } from 'rizom/utils/string.js';
 
 class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	constructor(name: string) {

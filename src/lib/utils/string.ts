@@ -1,11 +1,18 @@
 import camelCase from 'camelcase';
-import toSnakeCase from 'to-snake-case';
-
-export { toSnakeCase };
+import snakeCase from 'to-snake-case';
 
 export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 export const toCamelCase = (str: string): string => camelCase(str);
 export const toPascalCase = (str: string): string => camelCase(str, { pascalCase: true });
+
+export const toSnakeCase = (str: string) => {
+	const hasLeadingUnderscore = str.startsWith('_');
+	if (hasLeadingUnderscore) {
+		str = str.slice(1);
+	}
+	const out = snakeCase(str);
+	return hasLeadingUnderscore ? `_${out}` : out;
+};
 
 export const slugify = (text: string): string => {
 	return text
@@ -30,3 +37,5 @@ export function toHash(str: string) {
 
 	return Math.abs(h1).toString();
 }
+
+export const isCamelCase = (str: string) => /^[a-z][a-zA-Z0-9]*$/.test(str);

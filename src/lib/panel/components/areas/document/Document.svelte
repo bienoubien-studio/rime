@@ -52,14 +52,14 @@
 	beforeNavigate(async () => {
 		// if (
 		// 	operation === 'update' &&
-		// 	form.doc._editedBy.length &&
-		// 	form.doc._editedBy[0].id === user.attributes.id
+		// 	form.doc.editedBy.length &&
+		// 	form.doc.editedBy[0].id === user.attributes.id
 		// ) {
 		// 	// console.log('untake control');
 		// 	await fetch(`/api/${config.slug}/${initial.id}`, {
 		// 		method: 'PATCH',
 		// 		body: JSON.stringify({
-		// 			_editedBy: []
+		// 			editedBy: []
 		// 		})
 		// 	});
 		// }
@@ -108,8 +108,8 @@
 	method="post"
 >
 	<ScrollArea>
-		{#if form.doc._editedBy && form.doc._editedBy !== user.attributes.id}
-			<CurrentlyEdited by={form.doc._editedBy} doc={form.doc} user={user.attributes} />
+		{#if form.doc.editedBy && form.doc.editedBy !== user.attributes.id}
+			<CurrentlyEdited by={form.doc.editedBy} doc={form.doc} user={user.attributes} />
 		{/if}
 
 		{#if !liveEditing}

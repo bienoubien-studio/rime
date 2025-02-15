@@ -30,7 +30,7 @@ export const beforeRead = async ({
 	// @TODO set all private fields with a double underscore ?
 	const keysToDelete = [...privateFieldNames];
 	if (!isPanel || !user) {
-		keysToDelete.push('authUserId', '_editedBy');
+		keysToDelete.push('authUserId', 'editedBy');
 	}
 	let output = omit(keysToDelete, doc);
 
@@ -105,10 +105,10 @@ export const beforeRead = async ({
 
 	// populate urls
 	if (config.url) {
-		doc._url = config.url(doc as GenericDoc);
+		doc.url = config.url(doc as GenericDoc);
 	}
 	if (config.live && user && config.url) {
-		doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc._url}&slug=${config.slug}&id=${doc.id}`;
+		doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc.url}&slug=${config.slug}&id=${doc.id}`;
 		doc._live += locale ? `&locale=${locale}` : '';
 	}
 

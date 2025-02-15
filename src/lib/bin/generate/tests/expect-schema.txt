@@ -222,9 +222,9 @@ export const tables: Tables = {
   sessions
 }
 export const relationFieldsMap: Record<string, any> = {
-  pages : {"related":{"to":"pages"},"_editedBy":{"to":"users"}},
-  users : {"_editedBy":{"to":"users"}},
-  infos : {"_editedBy":{"to":"users"}}
+  pages : {"related":{"to":"pages"},"editedBy":{"to":"users"}},
+  users : {"editedBy":{"to":"users"}},
+  infos : {"editedBy":{"to":"users"}}
 }
 const schema = {
     pages,

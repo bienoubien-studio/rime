@@ -42,8 +42,8 @@
 	</div>
 
 	<div class="rz-page-header__right">
-		{#if config.url && form.doc._url}
-			<Button icon={Eye} target="_blank" href={form.doc._url} variant="text">
+		{#if config.url && form.doc.url}
+			<Button icon={Eye} target="_blank" href={form.doc.url} variant="text">
 				{t__('common.view_page')}
 			</Button>
 		{/if}

@@ -12,7 +12,7 @@
 		await fetch(fetchURl, {
 			method: 'PATCH',
 			body: JSON.stringify({
-				_editedBy: user.id
+				editedBy: user.id
 			})
 		});
 		window.location.reload();

@@ -16,7 +16,7 @@ export type PagesDoc = BaseDoc &  {
 	published?: Date
 	createdAt?: Date
 	updatedAt?: Date
-	_editedBy?: RelationValue<UsersDoc>
+	editedBy?: RelationValue<UsersDoc>
 }
 
 export type UsersDoc = BaseDoc &  {
@@ -27,7 +27,7 @@ export type UsersDoc = BaseDoc &  {
 	website?: string
 	createdAt?: Date
 	updatedAt?: Date
-	_editedBy?: RelationValue<UsersDoc>
+	editedBy?: RelationValue<UsersDoc>
 }
 
 export type InfosDoc = BaseDoc &  {
@@ -35,7 +35,7 @@ export type InfosDoc = BaseDoc &  {
 	email?: string
 	instagram?: string
 	legals?: Link
-	_editedBy?: RelationValue<UsersDoc>
+	editedBy?: RelationValue<UsersDoc>
 	updatedAt?: Date
 }
 

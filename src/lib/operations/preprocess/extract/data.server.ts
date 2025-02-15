@@ -67,7 +67,7 @@ const extractData = async (request: RequestEvent['request']) => {
 		}
 	} catch (err: any) {
 		console.log(err.message);
-		throw new RizomFormError({ form: RizomFormError.CONTENT_LENGTH_LIMIT });
+		throw new RizomFormError({ _form: RizomFormError.CONTENT_LENGTH_LIMIT });
 	}
 
 	return data as Partial<GenericDoc>;

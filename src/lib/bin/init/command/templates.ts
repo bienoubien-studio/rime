@@ -7,7 +7,6 @@ export const env = () => `BETTER_AUTH_SECRET=${randomId(32)}
 PUBLIC_RIZOM_URL=http://localhost:5173
 
 # RIZOM_CACHE_ENABLED=false
-
 # RIZOM_SMTP_USER=user@mail.com
 # RIZOM_SMTP_PASSWORD=supersecret
 # RIZOM_SMTP_HOST=smtphost.com
@@ -79,7 +78,7 @@ export const defaultSchema = dedent`
     title: text('title').notNull(),
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
-    _editedBy: text('editedby'),
+    editedBy: text('edited_by'),
   })
 
   export const pagesBlocksParagraph = sqliteTable( 'pages_blocks_paragraph', {
@@ -150,7 +149,7 @@ export const defaultSchema = dedent`
     filesize: text('filesize'),
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
-    _editedBy: text('editedby'),
+    editedBy: text('edited_by'),
   })
 
   /** users ============================================== **/
@@ -162,7 +161,7 @@ export const defaultSchema = dedent`
     roles: text('roles', { mode: 'json' }),
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
-    _editedBy: text('editedby'),
+    editedBy: text('edited_by'),
 
     resetTokenExpireAt: integer("reset_token_expire_at", { mode: 'timestamp' }),
     resetToken: text("reset_token"),

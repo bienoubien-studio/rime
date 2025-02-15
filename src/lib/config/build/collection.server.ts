@@ -114,7 +114,7 @@ export const buildCollection = async (
 
 	const fields = buildFields(collection);
 
-	fields.push(text('_editedBy').hidden());
+	fields.push(text('editedBy').hidden());
 
 	let out = {
 		...collection,

@@ -14,7 +14,7 @@ export const buildGlobal = (global: GlobalConfig): BuiltGlobalConfig => {
 		type: 'global',
 		label: global.label ? global.label : capitalize(global.slug),
 		asTitle: fieldTitle ? fieldTitle.name : 'id',
-		fields: [...global.fields, text('_editedBy').hidden(), date('updatedAt').hidden()],
+		fields: [...global.fields, text('editedBy').hidden(), date('updatedAt').hidden()],
 		access: {
 			create: (user) => !!user,
 			read: (user) => !!user,
