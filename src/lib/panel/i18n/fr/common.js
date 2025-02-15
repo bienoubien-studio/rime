@@ -1,5 +1,6 @@
 export default {
 	save: 'Enregistrer',
+	signin: 'Se connecter',
 	create_first: 'Créer votre premi{e|è}r{ |e} $1',
 	create_new: 'Créer {un|une} $1',
 	view_site: 'Voir le site',

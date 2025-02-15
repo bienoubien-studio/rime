@@ -1,5 +1,6 @@
 export default {
 	save: 'Save',
+	signin: 'Sign In',
 	create_first: 'Create your first $1',
 	create_new: 'Create new $1',
 	view_site: 'View website',
