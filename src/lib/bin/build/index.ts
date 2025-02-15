@@ -2,7 +2,7 @@
 import { spawnSync } from 'child_process';
 import { program } from 'commander';
 import { copyFileSync, cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs';
-import { expressServer } from './templates.js';
+import { polkaServer } from './templates.js';
 import { taskLogger } from 'rizom/utils/logger/index.js';
 
 program.version('0.1').description('CMS utilities');
@@ -31,7 +31,7 @@ program
 			cpSync('./db', './app/db', { recursive: true });
 			taskLogger.done('database copied');
 		}
-		writeFileSync('./app/index.js', expressServer);
+		writeFileSync('./app/index.js', polkaServer);
 		taskLogger.done('polka server created at app/index.js');
 		console.log('');
 		taskLogger.info('Next steps :');

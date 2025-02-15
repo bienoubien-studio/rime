@@ -1,4 +1,4 @@
-export const expressServer = `import polka from 'polka';
+export const polkaServer = `import polka from 'polka';
 import serveStatic from 'serve-static';
 import { handler } from './build/handler.js';
 
