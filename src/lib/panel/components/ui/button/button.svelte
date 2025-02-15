@@ -101,6 +101,13 @@
 		border-radius: var(--rz-radius-md);
 	}
 
+	.rz-button--size-xl {
+		height: var(--rz-size-14);
+		font-size: var(--rz-text-md);
+		padding: var(--rz-size-2) var(--rz-size-8);
+		border-radius: var(--rz-radius-md);
+	}
+
 	.rz-button--size-icon {
 		height: var(--rz-size-9);
 		width: var(--rz-size-9);

@@ -9,6 +9,8 @@
 	import { usersFields } from 'rizom/collection/auth/usersFields';
 	import { text } from 'rizom/fields';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { Toaster } from 'rizom/panel/components/ui/sonner';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		forgotPasswordLink?: boolean;
@@ -17,60 +19,89 @@
 	let { form, forgotPasswordLink }: Props = $props();
 
 	const context = setFormContext(form || {}, 'login');
+
+	$effect(() => {
+		const formError = context.errors.get('_form');
+		if (typeof formError === 'string') {
+			toast.error(t__(`errors.${formError}`));
+		}
+	});
 </script>
 
+<Toaster />
 <div class="rz-login">
+	<div class="gradient"></div>
 	<form method="POST" action="/login" use:enhance={context.enhance}>
 		<!-- <form onsubmit={handleSignIn}> -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Connexion</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<Email config={usersFields.email.toField()} form={context} />
-				<Text
-					type="password"
-					config={text('password').label(t__('fields.password')).required().toField()}
-					form={context}
-				/>
-			</Card.Content>
-			<Card.Footer>
-				<Button size="lg" disabled={!context.canSubmit} type="submit">Login</Button>
-				{#if context.errors?.has('_form')}
-					<span class="rz-login__form-error">{t__('errors.' + context.errors.get('_form'))}</span>
-				{/if}
-				{#if forgotPasswordLink}
-					<Button variant="link" href="/forgot-password?slug=users">Forgot your password ?</Button>
-				{/if}
-			</Card.Footer>
-		</Card.Root>
+		<h1>{t__('common.signin')}</h1>
+		<Email config={usersFields.email.toField()} form={context} />
+		<Text
+			type="password"
+			config={text('password').label(t__('fields.password')).required().toField()}
+			form={context}
+		/>
+
+		<Button size="xl" disabled={!context.canSubmit} type="submit">Login</Button>
+
+		{#if forgotPasswordLink}
+			<Button variant="link" href="/forgot-password?slug=users">Forgot your password ?</Button>
+		{/if}
 	</form>
 </div>
 
 <style type="postcss">
 	.rz-login {
 		display: grid;
-		place-content: center;
+		grid-template-columns: 1fr;
+		@media (min-width: 768px) {
+			grid-template-columns: 0.8fr 1.2fr;
+		}
 		height: 100vh;
 		width: 100vw;
-
+		background-color: hsl(var(--rz-ground-7));
+		form {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			width: min(500px, 90%);
+			gap: var(--rz-size-4);
+			margin-bottom: 10vh;
+			padding: var(--rz-size-20);
+			border-left: var(--rz-border);
+			h1 {
+				font-size: var(--rz-text-6xl);
+				@mixin font-semibold;
+			}
+			:global(fieldset label) {
+				display: none;
+			}
+			:global(fieldset label) {
+				display: none;
+			}
+			:global(fieldset .rz-field-error) {
+				top: calc(-1 * var(--rz-size-6));
+			}
+			:global(fieldset input) {
+				font-size: var(--rz-text-md);
+				padding: 0 var(--rz-size-5);
+				height: var(--rz-size-14);
+			}
+		}
 		:global(.rz-login__form-error) {
 			color: hsl(var(--rz-color-error));
 		}
+	}
 
-		:global(.rz-card) {
-			width: var(--rz-size-96);
+	.gradient {
+		display: none;
+		@media (min-width: 768px) {
+			display: block;
 		}
-		:global(.rz-card-content > * + *) {
-			margin-top: var(--rz-size-4);
+		@media (prefers-color-scheme: light) {
+			background-image: linear-gradient(32deg, hsl(210deg 40% 84%) 0%, hsl(250deg 50% 94%) 70%);
 		}
-		:global(.rz-card-footer) {
-			display: grid;
-		}
-		:global(.rz-card-footer .rz-button--link) {
-			@mixin color ground-2;
-			margin-top: var(--rz-size-3);
-			font-size: var(--rz-text-xs);
+		@media (prefers-color-scheme: dark) {
+			background-image: linear-gradient(32deg, hsl(190deg 40% 24%) 0%, hsl(250deg 50% 3%) 80%);
 		}
 	}
 </style>

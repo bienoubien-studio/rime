@@ -32,7 +32,7 @@
 		@mixin color ground-6;
 		@mixin bg color-error;
 		position: absolute;
-		right: var(--rz-fields-padding);
+		right: var(--rz-fields-padding, 0);
 		top: 0;
 		border-radius: var(--rz-radius-sm);
 		@mixin px var(--rz-size-1);

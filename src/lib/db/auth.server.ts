@@ -237,7 +237,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		if (!user) {
 			// fake check
 			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
-			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
+			throw new RizomFormError({
+				_form: RizomFormError.INVALID_CREDENTIALS,
+				email: RizomFormError.INVALID_CREDENTIALS,
+				password: RizomFormError.INVALID_CREDENTIALS
+			});
 		}
 
 		if (user.locked) {
@@ -291,11 +295,19 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 					})
 					.where(eq(userTable.id, user.id));
 			}
-			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
+			throw new RizomFormError({
+				_form: RizomFormError.INVALID_CREDENTIALS,
+				email: RizomFormError.INVALID_CREDENTIALS,
+				password: RizomFormError.INVALID_CREDENTIALS
+			});
 		}
 
 		if (!signin || signin.status !== 200) {
-			throw new RizomFormError({ _form: RizomFormError.INVALID_CREDENTIALS });
+			throw new RizomFormError({
+				_form: RizomFormError.INVALID_CREDENTIALS,
+				email: RizomFormError.INVALID_CREDENTIALS,
+				password: RizomFormError.INVALID_CREDENTIALS
+			});
 		}
 
 		try {

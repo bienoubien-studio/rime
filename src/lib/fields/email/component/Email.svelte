@@ -2,6 +2,7 @@
 	import { Input } from '$lib/panel/components/ui/input';
 	import { Field } from 'rizom/panel';
 	import type { EmailFieldProps } from './props';
+	import { capitalize } from 'rizom/utils/string';
 
 	const { path, config, form }: EmailFieldProps = $props();
 
@@ -24,6 +25,7 @@
 	<Input
 		id={path || config.name}
 		name={path || config.name}
+		placeholder={capitalize(config.label || config.name)}
 		data-error={showError && field.error ? '' : null}
 		value={field.value}
 		onblur={onBlur}

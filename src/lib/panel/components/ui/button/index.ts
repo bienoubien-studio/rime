@@ -7,7 +7,7 @@ type PrimitiveAnchorAttributes = WithElementRef<HTMLAnchorAttributes>;
 type PrimitiveButtonAttributes = WithElementRef<HTMLButtonAttributes>;
 
 export type ButtonVariant = 'default' | 'ghost' | 'link' | 'text' | 'secondary' | 'outline';
-export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm';
+export type ButtonSize = 'default' | 'sm' | 'lg' | 'xl' | 'icon' | 'icon-sm';
 
 type Props = PrimitiveButtonAttributes &
 	PrimitiveAnchorAttributes & {

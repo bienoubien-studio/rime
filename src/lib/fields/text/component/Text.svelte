@@ -2,6 +2,7 @@
 	import { Input } from '$lib/panel/components/ui/input';
 	import { Field } from '$lib/panel';
 	import type { TextFieldProps } from './props.js';
+	import { capitalize } from 'rizom/utils/string.js';
 
 	const { path, config, type = 'text', form }: TextFieldProps = $props();
 
@@ -18,6 +19,7 @@
 	<Input
 		id={path || config.name}
 		name={path || config.name}
+		placeholder={capitalize(config.label || config.name)}
 		data-error={field.error ? '' : null}
 		{type}
 		value={field.value}
