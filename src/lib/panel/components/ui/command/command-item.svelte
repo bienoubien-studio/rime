@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui';
+	import './command-item.css'
 
 	let {
 		ref = $bindable(null),
@@ -9,30 +10,3 @@
 </script>
 
 <CommandPrimitive.Item class="rz-command-item {className}" bind:ref {...restProps} />
-
-<style type="postcss">
-	:global {
-		.rz-command-item {
-			position: relative;
-			display: flex;
-			cursor: pointer;
-			user-select: none;
-			align-items: center;
-			gap: var(--rz-size-2);
-			@mixin px var(--rz-size-2);
-			@mixin py var(--rz-size-1-5);
-			font-size: var(--rz-text-sm);
-			outline: none;
-		}
-
-		.rz-command-item[aria-selected='true'] {
-			background-color: hsl(var(--rz-ground-5));
-			color: hsl(var(--rz-color-fg));
-		}
-
-		.rz-command-item[data-disabled] {
-			pointer-events: none;
-			opacity: 0.5;
-		}
-	}
-</style>

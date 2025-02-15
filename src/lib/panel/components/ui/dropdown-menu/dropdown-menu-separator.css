@@ -1,0 +1,5 @@
+.rz-dropdown-separator {
+	@mixin bg color-border, 0.5;
+	@mixin my var(--rz-size-1);
+	height: 1px;
+}

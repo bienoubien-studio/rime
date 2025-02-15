@@ -1,0 +1,4 @@
+.rz-dialog-title {
+	font-size: var(--rz-text-lg);
+	@mixin font-semibold;
+}

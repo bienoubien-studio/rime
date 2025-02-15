@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui';
+	import './command-group.css'
 
 	let {
 		ref = $bindable(null),
@@ -20,32 +21,3 @@
 	{/if}
 	<CommandPrimitive.GroupItems {children} />
 </CommandPrimitive.Group>
-
-<style type="postcss">
-	:global {
-		.rz-command-group {
-			color: hsl(var(--rz-color-fg));
-			overflow: hidden;
-			padding: var(--rz-size-1);
-		}
-
-		.rz-command-group [data-cmdk-group-heading] {
-			@mixin color color-fg, 0.7;
-			padding-left: var(--rz-size-2);
-			padding-right: var(--rz-size-2);
-			padding-top: var(--rz-size-1-5);
-			padding-bottom: var(--rz-size-1-5);
-			font-size: var(--rz-text-xs);
-			@mixin font-medium;
-		}
-		.rz-command-group__heading {
-			@mixin color color-fg, 0.7;
-			padding-left: var(--rz-size-2);
-			padding-right: var(--rz-size-2);
-			padding-top: var(--rz-size-1-5);
-			padding-bottom: var(--rz-size-1-5);
-			font-size: var(--rz-text-xs);
-			@mixin font-medium;
-		}
-	}
-</style>

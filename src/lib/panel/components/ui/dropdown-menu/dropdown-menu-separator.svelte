@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+	import './dropdown-menu-separator.css';
 
 	let {
 		ref = $bindable(null),
@@ -13,13 +14,3 @@
 	class="rz-dropdown-separator {className}"
 	{...restProps}
 />
-
-<style type="postcss">
-	:global {
-		.rz-dropdown-separator {
-			@mixin bg color-border, 0.5;
-			@mixin my var(--rz-size-1);
-			height: 1px;
-		}
-	}
-</style>

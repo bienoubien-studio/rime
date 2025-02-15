@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui';
+	import './command-list.css'
 
 	let {
 		ref = $bindable(null),
@@ -9,9 +10,3 @@
 </script>
 
 <CommandPrimitive.List class="rz-command-list {className}" {...restProps} bind:ref />
-
-<style type="postcss">
-	:global(.rz-command-list) {
-		overflow-x: hidden;
-	}
-</style>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive } from 'bits-ui';
+	import './dropdown-menu-group-heading.css';
 
 	type Props = DropdownMenuPrimitive.GroupHeadingProps & {
 		inset?: boolean;
@@ -15,17 +16,3 @@
 	class="rz-dropdown-menu-group-heading {insetClass} {className}"
 	{...restProps}
 />
-
-<style type="postcss">
-	:global {
-		.rz-dropdown-menu-group-heading {
-			padding: var(--rz-size-1-5) var(--rz-size-2);
-			font-size: var(--rz-text-sm);
-			@mixin font-semibold;
-		}
-
-		.rz-dropdown-menu-group-heading--inset {
-			padding-left: var(--rz-size-8);
-		}
-	}
-</style>
