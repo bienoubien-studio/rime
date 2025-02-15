@@ -44,7 +44,9 @@ const handleTranslations = async (pathname: string) => {
 
 	try {
 		// Import the translations
-		const translations = await import(`${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`);
+		const translations = await import(
+			/* @vite-ignore */ `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`
+		);
 		return new Response(JSON.stringify(translations.default), {
 			headers: {
 				'Content-Type': 'application/json'

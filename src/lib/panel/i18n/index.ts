@@ -46,7 +46,9 @@ const loaders = languages.flatMap((locale) =>
 				return response.json();
 			} else {
 				// Server-side: direct import
-				return (await import(`${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`)).default;
+				return (
+					await import(/* @vite-ignore */ `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`)
+				).default;
 			}
 		}
 	}))
