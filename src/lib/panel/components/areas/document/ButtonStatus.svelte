@@ -3,7 +3,7 @@
 	import Button from '../../ui/button/button.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import StatusDot from '../collection/StatusDot.svelte';
-	import { type MouseEventHandler } from 'svelte/elements';
+	import type { MouseEventHandler } from 'svelte/elements';
 
 	type Status = { value: string; color: string };
 	type Props = { form: DocumentFormContext; statusList: Status[] };
