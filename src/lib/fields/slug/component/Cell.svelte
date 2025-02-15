@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let value: string;
+	let { value }: { value: string } = $props();
 </script>
 
 <span class="rz-slug-cell">{value}</span>
