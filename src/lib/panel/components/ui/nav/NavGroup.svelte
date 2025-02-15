@@ -74,8 +74,6 @@
 		text-transform: capitalize;
 		justify-content: space-between;
 		text-align: left;
-		/* text-transform: uppercase; */
-		/* letter-spacing: 0.0625rem; */
 		border-bottom: var(--rz-border);
 	}
 </style>
