@@ -46,9 +46,11 @@ const loaders = languages.flatMap((locale) =>
 				return response.json();
 			} else {
 				// Server-side: direct import
-				return (
-					await import(/* @vite-ignore */ `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`)
-				).default;
+				const isPackageDev = process.env.RIZOM_ENV === 'package';
+				const pathToTranslation = isPackageDev
+					? `../i18n/${locale}/${namespace}.js`
+					: `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`;
+				return (await import(/* @vite-ignore */ pathToTranslation)).default;
 			}
 		}
 	}))

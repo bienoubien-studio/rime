@@ -44,16 +44,19 @@ const handleTranslations = async (pathname: string) => {
 
 	try {
 		// Import the translations
-		const translations = await import(
-			/* @vite-ignore */ `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`
-		);
+		const isPackageDev = process.env.RIZOM_ENV === 'package';
+		const pathToTranslation = isPackageDev
+			? `../panel/i18n/${locale}/${namespace}.js`
+			: `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`;
+		const translations = await import(/* @vite-ignore */ pathToTranslation);
+
 		return new Response(JSON.stringify(translations.default), {
 			headers: {
 				'Content-Type': 'application/json'
 			}
 		});
-	} catch (error) {
-		console.error('Failed to load translations:', error);
+	} catch (error: any) {
+		console.error('Failed to load translations:', error.message);
 		return new Response('Translation not found', { status: 404 });
 	}
 };
