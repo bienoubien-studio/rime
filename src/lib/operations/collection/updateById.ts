@@ -10,7 +10,11 @@ import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { CollectionHookBeforeUpdateArgs } from 'rizom/types/hooks.js';
+import type {
+	CollectionHookAfterUpdate,
+	CollectionHookAfterUpdateArgs,
+	CollectionHookBeforeUpdateArgs
+} from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
@@ -208,6 +212,29 @@ export const updateById = async <T extends GenericDoc = GenericDoc>({
 		event,
 		api
 	});
+
+	//////////////////////////////////////////////
+	// Hooks AfterUpdate
+	//////////////////////////////////////////////
+
+	if (config.hooks && config.hooks.afterUpdate) {
+		for (const hook of config.hooks.afterUpdate) {
+			try {
+				const args = (await hook({
+					operation: 'update',
+					config,
+					api,
+					event,
+					doc,
+					rizom
+				})) as CollectionHookAfterUpdateArgs<T>;
+				event = args.event;
+			} catch (err: any) {
+				console.log(err);
+				throw new RizomError(RizomError.HOOK, err.message);
+			}
+		}
+	}
 
 	return doc;
 };

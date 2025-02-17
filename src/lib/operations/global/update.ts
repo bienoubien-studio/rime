@@ -177,5 +177,23 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	const rawDoc = (await adapter.global.get({ slug: config.slug, locale })) as T;
 	doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });
 
+	//////////////////////////////////////////////
+	// Hooks AfterUpdate
+	//////////////////////////////////////////////
+
+	if (config.hooks && config.hooks.afterUpdate) {
+		for (const hook of config.hooks.afterUpdate) {
+			const args = await hook({
+				operation: 'update',
+				config,
+				doc,
+				event,
+				rizom,
+				api
+			});
+			event = args.event;
+		}
+	}
+
 	return doc as T;
 };

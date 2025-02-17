@@ -204,7 +204,6 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 					operation: 'create',
 					config,
 					doc,
-					data,
 					event,
 					rizom,
 					api

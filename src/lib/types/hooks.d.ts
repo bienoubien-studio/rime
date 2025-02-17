@@ -21,18 +21,34 @@ type BaseCollectionHookArgs = BaseHookArgs & {
 export type CollectionHookArgs<T extends GenericDoc = GenericDoc> = BaseCollectionHookArgs &
 	(
 		| { operation: 'create'; data: Partial<T>; doc?: never; originalDoc?: never }
-		| { operation: 'create'; data: Partial<T>; doc: T; originalDoc?: never }
+		| { operation: 'create'; data?: never; doc: T; originalDoc?: never }
 		| { operation: 'update'; data: Partial<T>; originalDoc: T; doc?: never }
+		| { operation: 'update'; doc: T; data?: never; originalDoc?: never }
 		| { operation: 'read'; doc: T; data?: never; originalDoc?: never }
 		| { operation: 'delete'; doc: T; data?: never; originalDoc?: never }
 	);
 
+type HookFunction<TArgs> = (args: TArgs) => Promise<TArgs>;
+export type CollectionHook<T extends GenericDoc = GenericDoc> = HookFunction<CollectionHookArgs<T>>;
+
+/////////////////////////////////////////////
+// UPSERT
+//////////////////////////////////////////////
 export type CollectionHookBeforeUpsertArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
 		data: Partial<T>;
 		operation: 'create' | 'update';
 	};
 
+export type CollectionHookAfterUpsertArgs<T extends GenericDoc = GenericDoc> =
+	BaseCollectionHookArgs & {
+		doc: Partial<T>;
+		operation: 'create' | 'update';
+	};
+
+/////////////////////////////////////////////
+// CREATE
+//////////////////////////////////////////////
 export type CollectionHookBeforeCreateArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
 		data: Partial<T>;
@@ -41,11 +57,13 @@ export type CollectionHookBeforeCreateArgs<T extends GenericDoc = GenericDoc> =
 
 export type CollectionHookAfterCreateArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
-		data: Partial<T>;
 		doc: T;
 		operation: 'create';
 	};
 
+/////////////////////////////////////////////
+// UPDATE
+//////////////////////////////////////////////
 export type CollectionHookBeforeUpdateArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
 		operation: 'update';
@@ -53,6 +71,15 @@ export type CollectionHookBeforeUpdateArgs<T extends GenericDoc = GenericDoc> =
 		originalDoc: T;
 	};
 
+export type CollectionHookAfterUpdateArgs<T extends GenericDoc = GenericDoc> =
+	BaseCollectionHookArgs & {
+		operation: 'update';
+		doc: T;
+	};
+
+/////////////////////////////////////////////
+// READ
+//////////////////////////////////////////////
 export type CollectionHookBeforeReadArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
 		operation: 'read';
@@ -65,15 +92,14 @@ export type CollectionHookBeforeDeleteArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 	};
 
+/////////////////////////////////////////////
+// DELETE
+//////////////////////////////////////////////
 export type CollectionHookAfterDeleteArgs<T extends GenericDoc = GenericDoc> =
 	BaseCollectionHookArgs & {
 		operation: 'delete';
 		doc: T;
 	};
-
-type HookFunction<TArgs> = (args: TArgs) => Promise<TArgs>;
-
-export type CollectionHook<T extends GenericDoc = GenericDoc> = HookFunction<CollectionHookArgs<T>>;
 
 export type CollectionHookBeforeCreate<T extends GenericDoc = GenericDoc> = HookFunction<
 	CollectionHookBeforeCreateArgs<T>
@@ -91,6 +117,10 @@ export type CollectionHookBeforeUpdate<T extends GenericDoc = GenericDoc> = Hook
 	CollectionHookBeforeUpdateArgs<T>
 >;
 
+export type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookAfterUpdateArgs<T>
+>;
+
 export type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = HookFunction<
 	CollectionHookBeforeDeleteArgs<T>
 >;
@@ -102,11 +132,15 @@ export type CollectionHookAfterDelete<T extends GenericDoc = GenericDoc> = HookF
 export type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
 	CollectionHookBeforeUpsertArgs<T>
 >;
+export type CollectionHookAfterUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookAfterUpsertArgs<T>
+>;
 
 export type CollectionHooks = {
 	beforeCreate?: (CollectionHookBeforeCreate | CollectionHookBeforeUpsert | CollectionHook)[];
 	afterCreate?: (CollectionHookAfterCreate | CollectionHook)[];
 	beforeUpdate?: (CollectionHookBeforeUpdate | CollectionHookBeforeUpsert | CollectionHook)[];
+	afterUpdate?: (CollectionHookAfterUpdate | CollectionHookAfterUpsert | CollectionHook)[];
 	beforeRead?: (CollectionHookBeforeRead | CollectionHook)[];
 	beforeDelete?: (CollectionHookBeforeDelete | CollectionHook)[];
 	afterDelete?: (CollectionHookAfterDelete | CollectionHook)[];
@@ -132,6 +166,11 @@ export type GlobalHookBeforeUpdateArgs<T extends GenericDoc = GenericDoc> = Base
 	operation: 'update';
 };
 
+export type GlobalHookAfterUpdateArgs<T extends GenericDoc = GenericDoc> = BaseGlobalHookArgs & {
+	doc: T;
+	operation: 'update';
+};
+
 export type GlobalHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
 	GlobalHookBeforeReadArgs<T>
 >;
@@ -140,7 +179,12 @@ export type GlobalHookBeforeUpdate<T extends GenericDoc = GenericDoc> = HookFunc
 	GlobalHookBeforeUpdateArgs<T>
 >;
 
+export type GlobalHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	GlobalHookAfterUpdateArgs<T>
+>;
+
 export type GlobalHooks = {
 	beforeRead?: GlobalHookBeforeRead[];
 	beforeUpdate?: GlobalHookBeforeUpdate[];
+	afterUpdate?: GlobalHookAfterUpdate[];
 };
