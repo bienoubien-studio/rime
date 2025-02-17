@@ -1,18 +1,19 @@
-import { type Handle } from '@sveltejs/kit';
+import { error, type Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { RizomError } from 'rizom/errors';
 
 export const handleCORS: Handle = async ({ event, resolve }) => {
 	const { rizom } = event.locals;
 
-	const allowedHosts = [...(rizom.config.raw.trustedOrigins || [])];
+	const trustedOrigin = [...(rizom.config.raw.trustedOrigins || [])];
+
 	let cors;
 	const origin = event.request.headers.get('origin');
+
 	if (origin) {
 		try {
-			const url = new URL(origin);
-			const { host, protocol } = url;
-			if (allowedHosts.includes(host)) {
-				cors = `${dev ? protocol : 'https:'}//${host}`;
+			if (trustedOrigin.includes(origin)) {
+				cors = origin;
 			}
 		} catch (err: any) {
 			console.log(err);
@@ -38,6 +39,8 @@ export const handleCORS: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/api')) {
 		if (cors) {
 			response.headers.append('Access-Control-Allow-Origin', cors);
+		} else {
+			throw error(401, RizomError.UNAUTHORIZED);
 		}
 	}
 

@@ -10,6 +10,7 @@ export default function (args: Args) {
 	return [
 		createCMSHandler(args),
 		handleAuth,
+		handleCORS,
 		handleRoutes,
 		...createPluginsHandler({ config: args.config })
 	];
