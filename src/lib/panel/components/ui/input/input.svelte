@@ -28,10 +28,10 @@
 		@mixin py var(--rz-size-1);
 	}
 
-	input.rz-input:-webkit-autofill,
-	input.rz-input:autofill,
-	input.rz-input:-internal-autofill-selected {
-		--color: hsl(var(--rz-color-primary) / 0.2);
+	:global(input.rz-input:-webkit-autofill),
+	:global(input.rz-input:auto-fill),
+	:global(input.rz-input:-internal-autofill-selected) {
+		--color: hsl(var(--rz-color-secondary) / 1);
 		background-color: var(--color) !important;
 		box-shadow: 0 0 0 1000px var(--color) inset !important;
 	}
@@ -55,7 +55,7 @@
 		@mixin ring var(--rz-color-error);
 	}
 
-	.rz-input:-internal-autofill-selected {
+	/* .rz-input:-internal-autofill-selected {
 		background-color: hsl(var(--rz-color-input) / 100) !important;
-	}
+	} */
 </style>

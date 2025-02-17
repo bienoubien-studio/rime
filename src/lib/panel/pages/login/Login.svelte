@@ -98,10 +98,11 @@
 			display: block;
 		}
 		@media (prefers-color-scheme: light) {
-			background-image: linear-gradient(32deg, hsl(210deg 40% 84%) 0%, hsl(250deg 50% 94%) 70%);
+			/* background-image: linear-gradient(32deg, hsl(210deg 40% 84%) 0%, hsl(250deg 50% 94%) 70%); */
+			background-image: linear-gradient(32deg, #c2efee 0%, #d9eddf 100%);
 		}
 		@media (prefers-color-scheme: dark) {
-			background-image: linear-gradient(32deg, hsl(190deg 40% 24%) 0%, hsl(250deg 50% 3%) 80%);
+			background-image: linear-gradient(32deg, #006e6c 0%, #d9eddf 100%);
 		}
 	}
 </style>
