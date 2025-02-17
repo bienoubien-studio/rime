@@ -328,7 +328,7 @@ test('Should update settings', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			stickyHeader: true
+			maintenance: true
 		}
 	});
 	expect(response.status()).toBe(200);
@@ -342,7 +342,7 @@ test('Should get the updated settings', async ({ request }) => {
 			}
 		})
 		.then((r) => r.json());
-	expect(response.doc.stickyHeader).toBe(true);
+	expect(response.doc.maintenance).toBe(true);
 });
 
 test('Should not get settings', async ({ request }) => {

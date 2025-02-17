@@ -56,7 +56,9 @@ test.describe('Login form', () => {
 		await submitButton.click();
 
 		// Check for error message
-		const errorMessage = page.locator('.rz-login__form-error');
+		const errorMessage = page.locator(
+			'.rz-login form .rz-field-root:first-of-type .rz-field-error'
+		);
 		await expect(errorMessage).toBeVisible();
 	});
 
@@ -184,7 +186,7 @@ test.describe('Admin panel', () => {
 			const saveButton = page.locator('.rz-page-header button[type="submit"]');
 			await expect(saveButton).toBeDisabled();
 
-			const footerToggle = page.locator('.rz-field-label-for[for="minimalfooter"]');
+			const footerToggle = page.locator('.rz-field-label-for[for="maintenance"]');
 			await footerToggle.click();
 
 			await expect(saveButton).toBeEnabled();
