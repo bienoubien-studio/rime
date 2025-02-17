@@ -34,17 +34,24 @@ export type CollectionHook<T extends GenericDoc = GenericDoc> = HookFunction<Col
 /////////////////////////////////////////////
 // UPSERT
 //////////////////////////////////////////////
-export type CollectionHookBeforeUpsertArgs<T extends GenericDoc = GenericDoc> =
-	BaseCollectionHookArgs & {
-		data: Partial<T>;
-		operation: 'create' | 'update';
-	};
+// export type CollectionHookBeforeUpsertArgs<T extends GenericDoc = GenericDoc> =
+// 	BaseCollectionHookArgs & {
+// 		data: Partial<T>;
+// 		operation: 'create' | 'update';
+// 	};
 
-export type CollectionHookAfterUpsertArgs<T extends GenericDoc = GenericDoc> =
-	BaseCollectionHookArgs & {
-		doc: Partial<T>;
-		operation: 'create' | 'update';
-	};
+// export type CollectionHookAfterUpsertArgs<T extends GenericDoc = GenericDoc> =
+// 	BaseCollectionHookArgs & {
+// 		doc: Partial<T>;
+// 		operation: 'create' | 'update';
+// 	};
+
+export type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookBeforeUpdateArgs<T> | CollectionHookBeforeCreateArgs<T>
+>;
+export type CollectionHookAfterUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookAfterUpdateArgs<T> | CollectionHookAfterCreateArgs<T>
+>;
 
 /////////////////////////////////////////////
 // CREATE
@@ -60,6 +67,14 @@ export type CollectionHookAfterCreateArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 		operation: 'create';
 	};
+
+export type CollectionHookBeforeCreate<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookBeforeCreateArgs<T>
+>;
+
+export type CollectionHookAfterCreate<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookAfterCreateArgs<T>
+>;
 
 /////////////////////////////////////////////
 // UPDATE
@@ -77,6 +92,14 @@ export type CollectionHookAfterUpdateArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 	};
 
+export type CollectionHookBeforeUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookBeforeUpdateArgs<T>
+>;
+
+export type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookAfterUpdateArgs<T>
+>;
+
 /////////////////////////////////////////////
 // READ
 //////////////////////////////////////////////
@@ -92,6 +115,10 @@ export type CollectionHookBeforeDeleteArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 	};
 
+export type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookBeforeReadArgs<T>
+>;
+
 /////////////////////////////////////////////
 // DELETE
 //////////////////////////////////////////////
@@ -101,26 +128,6 @@ export type CollectionHookAfterDeleteArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 	};
 
-export type CollectionHookBeforeCreate<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookBeforeCreateArgs<T>
->;
-
-export type CollectionHookAfterCreate<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookAfterCreateArgs<T>
->;
-
-export type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookBeforeReadArgs<T>
->;
-
-export type CollectionHookBeforeUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookBeforeUpdateArgs<T>
->;
-
-export type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookAfterUpdateArgs<T>
->;
-
 export type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = HookFunction<
 	CollectionHookBeforeDeleteArgs<T>
 >;
@@ -129,21 +136,14 @@ export type CollectionHookAfterDelete<T extends GenericDoc = GenericDoc> = HookF
 	CollectionHookAfterDeleteArgs<T>
 >;
 
-export type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookBeforeUpsertArgs<T>
->;
-export type CollectionHookAfterUpsert<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookAfterUpsertArgs<T>
->;
-
-export type CollectionHooks = {
-	beforeCreate?: (CollectionHookBeforeCreate | CollectionHookBeforeUpsert | CollectionHook)[];
-	afterCreate?: (CollectionHookAfterCreate | CollectionHook)[];
-	beforeUpdate?: (CollectionHookBeforeUpdate | CollectionHookBeforeUpsert | CollectionHook)[];
-	afterUpdate?: (CollectionHookAfterUpdate | CollectionHookAfterUpsert | CollectionHook)[];
-	beforeRead?: (CollectionHookBeforeRead | CollectionHook)[];
-	beforeDelete?: (CollectionHookBeforeDelete | CollectionHook)[];
-	afterDelete?: (CollectionHookAfterDelete | CollectionHook)[];
+export type CollectionHooks<T extends GenericDoc> = {
+	beforeCreate?: (CollectionHookBeforeCreate<T> | CollectionHookBeforeUpsert<T>)[];
+	afterCreate?: (CollectionHookAfterCreate<T> | CollectionHookAfterUpsert<T>)[];
+	beforeUpdate?: (CollectionHookBeforeUpdate<T> | CollectionHookBeforeUpsert<T>)[];
+	afterUpdate?: (CollectionHookAfterUpdate<T> | CollectionHookAfterUpsert<T>)[];
+	beforeRead?: CollectionHookBeforeRead<T>[];
+	beforeDelete?: CollectionHookBeforeDelete<T>[];
+	afterDelete?: CollectionHookAfterDelete<T>[];
 };
 
 //////////////////////////////////////////////

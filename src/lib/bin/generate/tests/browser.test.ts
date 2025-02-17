@@ -16,7 +16,7 @@ describe('Test schema generation', async () => {
 		blueprints: fieldsComponentsMap
 	});
 
-	it('should return expected schema', async () => {
+	it('should not be dirty', async () => {
 		expect(browserString).not.toContain('__vite_ssr_import');
 		expect(browserString).not.toContain('hash');
 		expect(browserString).not.toContain('toSchema');

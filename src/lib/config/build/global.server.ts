@@ -5,7 +5,7 @@ import type { GlobalSlug } from 'rizom/types/doc';
 import { capitalize } from 'rizom/utils/string.js';
 import { date, relation, text } from 'rizom/fields/index.js';
 
-export const buildGlobal = (global: GlobalConfig): BuiltGlobalConfig => {
+export const buildGlobal = (global: GlobalConfig<any>): BuiltGlobalConfig => {
 	const fieldTitle = findTitleField(global.fields);
 
 	return {

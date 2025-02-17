@@ -6,7 +6,7 @@
 	import type { ChangeEventHandler } from 'svelte/elements';
 
 	type Props = {
-		accept: WithUpload<CollectionConfig>['accept'] | undefined;
+		accept: WithUpload<CollectionConfig<any>>['accept'] | undefined;
 		preview: string | null;
 		file: File | null;
 	};

@@ -8,7 +8,7 @@ import rizom from '$lib/rizom.server.js';
 import { preprocessFields } from '../preprocess/fields.server';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPI } from 'rizom/types/api.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type {
 	CollectionHookAfterUpdate,
@@ -19,6 +19,7 @@ import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
+import type { RegisterCollection } from 'rizom';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -30,7 +31,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	adapter: Adapter;
 };
 
-export const updateById = async <T extends GenericDoc = GenericDoc>({
+export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	id,
 	data,
 	locale,

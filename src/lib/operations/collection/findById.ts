@@ -5,6 +5,9 @@ import type { BuiltCollectionConfig, CompiledCollectionConfig } from 'rizom/type
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { RizomError } from 'rizom/errors/index.js';
+import type { CollectionHookBeforeReadArgs, CollectionSlug } from 'rizom/types';
+import { dev } from '$app/environment';
+import type { RegisterCollection } from 'rizom';
 
 type Args = {
 	id: string;
@@ -16,7 +19,7 @@ type Args = {
 	depth?: number;
 };
 
-export const findById = async <T extends GenericDoc = GenericDoc>({
+export const findById = async <T extends RegisterCollection[CollectionSlug]>({
 	id,
 	locale,
 	config,
@@ -31,7 +34,7 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 
 	const authorized = config.access.read(event.locals.user, { id });
 	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+		throw new RizomError(RizomError.UNAUTHORIZED, dev ? 'at findById ' + config.slug : '');
 	}
 
 	const rawDoc = (await adapter.collection.findById({
@@ -59,7 +62,14 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 	if (config.hooks && config.hooks.beforeRead) {
 		for (const hook of config.hooks.beforeRead) {
 			try {
-				const args = await hook({ operation: 'read', config, doc, event, rizom, api });
+				const args = (await hook({
+					operation: 'read',
+					config,
+					doc,
+					event,
+					rizom,
+					api
+				})) as CollectionHookBeforeReadArgs<T>;
 				doc = args.doc as T;
 				event = args.event;
 			} catch (err: any) {
@@ -68,5 +78,5 @@ export const findById = async <T extends GenericDoc = GenericDoc>({
 		}
 	}
 
-	return doc as T;
+	return doc;
 };

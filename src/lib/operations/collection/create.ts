@@ -13,7 +13,7 @@ import cloneDeep from 'clone-deep';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
-import type { GenericDoc } from 'rizom/types/doc';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc';
 import type { CompiledCollectionConfig } from 'rizom/types/config';
 import logger from 'rizom/utils/logger/index.js';
 import type {
@@ -22,8 +22,9 @@ import type {
 } from 'rizom/types/hooks.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+import type { RegisterCollection } from 'rizom';
 
-export const create = async <T extends GenericDoc = GenericDoc>({
+export const create = async <T extends RegisterCollection[CollectionSlug]>({
 	data,
 	locale,
 	config,
@@ -173,6 +174,8 @@ export const create = async <T extends GenericDoc = GenericDoc>({
 	if (locales.length) {
 		if ('file' in incomingData) {
 			delete incomingData.file;
+		}
+		if ('filename' in incomingData) {
 			delete incomingData.filename;
 		}
 		const otherLocales = locales.filter((code) => code !== locale);

@@ -2,9 +2,9 @@ import { UsersRound } from 'lucide-svelte';
 import { access } from 'rizom/utils/access/index.js';
 import { usersFields } from './usersFields.js';
 import type { CollectionConfig } from 'rizom';
+import { collection } from 'rizom/config/builders.js';
 
-export const panelUsersCollection: CollectionConfig = {
-	slug: 'users',
+export const panelUsersCollection = collection('users', {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
 	auth: true,
 	icon: UsersRound,
@@ -16,4 +16,4 @@ export const panelUsersCollection: CollectionConfig = {
 		delete: (user) => access.isAdmin(user),
 		update: (user, { id }) => access.isAdminOrMe(user, id)
 	}
-};
+});

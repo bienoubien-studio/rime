@@ -1,10 +1,10 @@
 import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
-import type { CollectionConfig } from 'rizom';
+import { collection, type CollectionConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
-import type { GlobalConfig } from 'rizom';
+import { global } from 'rizom';
 import type { PagesDoc } from '../app.generated';
 import {
 	block,
@@ -24,8 +24,7 @@ import {
 // Informations
 //////////////////////////////////////////////
 
-const Informations: GlobalConfig = {
-	slug: 'infos',
+const Informations = global('infos', {
 	icon: ReceiptText,
 	group: 'informations',
 	fields: [
@@ -44,7 +43,7 @@ const Informations: GlobalConfig = {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: true
-};
+});
 
 /////////////////////////////////////////////
 // Pages
@@ -125,8 +124,7 @@ const tabAttributes = tab('Attributes').fields(
 
 const tabContent = tab('Layout').fields(blocks('components').blocks(blockParagraph).table());
 
-const Pages: CollectionConfig = {
-	slug: 'pages',
+const Pages = collection('pages', {
 	icon: Newspaper,
 	group: 'Content',
 	fields: [tabs(tabContent, tabAttributes)],
@@ -146,7 +144,7 @@ const Pages: CollectionConfig = {
 		beforeCreate: [formatslug, setHome],
 		beforeUpdate: [formatslug, setHome]
 	}
-};
+});
 
 const config: Config = {
 	//

@@ -12,7 +12,7 @@ export function isUploadConfig(config: { upload?: boolean }): config is WithUplo
 }
 
 export const isAuthConfig = (
-	config: CollectionConfig | BuiltCollectionConfig | CompiledCollectionConfig
+	config: CollectionConfig<any> | BuiltCollectionConfig | CompiledCollectionConfig
 ) => config.auth === true;
 
 export const isBuiltGlobalConfig = (config: BuiltDocConfig): config is BuiltGlobalConfig =>

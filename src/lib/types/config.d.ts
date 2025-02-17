@@ -1,15 +1,16 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from './auth.js';
-import type { AnyField, FieldsType, Option } from './fields.js';
-import type { GenericDoc } from './doc.js';
+import type { AnyField, Field, FieldsType, Option } from './fields.js';
+import type { CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, GlobalHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
-import type { GetRegisterType } from 'rizom';
+import type { BaseDoc, GetRegisterType, RegisterGlobal } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
+import type { RegisterCollection } from 'rizom';
 
 export type DocumentPrototype = 'collection' | 'global';
 
@@ -103,27 +104,28 @@ type CollectionConfigLabel = {
 	gender: 'f' | 'm';
 };
 
-type BaseDocConfig = {
-	slug: string;
+type BaseDocConfig<S extends string = string> = {
+	slug: S;
 	group?: string;
 	fields: FieldBuilder<AnyField>[];
 	icon?: ComponentType;
 	access?: Access;
-	url?: <T extends GenericDoc>(doc: T) => string;
 	live?: boolean;
 };
 
 export type DocumentStatus = { value: string; color: string };
 
-export type BaseCollectionConfig = {
+export type BaseCollectionConfig<S> = {
+	slug: S;
 	label?: CollectionConfigLabel;
 	auth?: true;
-	upload?: boolean;
-	hooks?: CollectionHooks;
+	// upload?: boolean;
+	hooks?: CollectionHooks<RegisterCollection[S]>;
+	url?: (doc: RegisterCollection[S]) => string;
 	status?: boolean | DocumentStatus[];
 } & BaseDocConfig;
 
-export type CollectionConfig = BaseCollectionConfig &
+export type CollectionConfig<S> = BaseCollectionConfig<S> &
 	(
 		| { upload?: false | undefined }
 		| {
@@ -134,7 +136,8 @@ export type CollectionConfig = BaseCollectionConfig &
 		  }
 	);
 
-export type GlobalConfig = BaseDocConfig & {
+export type GlobalConfig<S> = BaseDocConfig & {
+	url?: (doc: RegisterGlobal[S]) => string;
 	hooks?: GlobalHooks;
 	label?: string;
 };
@@ -180,7 +183,7 @@ export type CustomPanelRoute = {
 	component: ComponentType;
 };
 
-export type BuiltCollectionConfig = Omit<CollectionConfig, 'status'> & {
+export type BuiltCollectionConfig = Omit<CollectionConfig<CollectionSlug>, 'status'> & {
 	type: 'collection';
 	label: CollectionConfigLabel;
 	slug: GetRegisterType<'CollectionSlug'>;
@@ -189,7 +192,7 @@ export type BuiltCollectionConfig = Omit<CollectionConfig, 'status'> & {
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltGlobalConfig = GlobalConfig & {
+export type BuiltGlobalConfig = GlobalConfig<GlobalSlug> & {
 	type: 'global';
 	label: string;
 	slug: GetRegisterType<'GlobalSlug'>;

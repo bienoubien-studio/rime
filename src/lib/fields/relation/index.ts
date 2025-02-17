@@ -1,4 +1,4 @@
-import type { FormField, GenericDoc } from 'rizom/types';
+import type { CollectionSlug, FormField, GenericDoc } from 'rizom/types';
 import type { GetRegisterType, RegisterCollection } from 'rizom';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
@@ -49,9 +49,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 	return output;
 };
 
-class RelationFieldBuilder<Doc extends GenericDoc = GenericDoc> extends FormFieldBuilder<
-	RelationField<GenericDoc>
-> {
+class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<RelationField<Doc>> {
 	//
 	constructor(name: string) {
 		super(name, 'relation');
@@ -72,12 +70,11 @@ class RelationFieldBuilder<Doc extends GenericDoc = GenericDoc> extends FormFiel
 		return this;
 	}
 
-	to<Slug extends GetRegisterType<'CollectionSlug'>>(
-		slug: Slug
-	): RelationFieldBuilder<RegisterCollection[Slug]> {
+	to<Slug extends CollectionSlug>(slug: Slug): RelationFieldBuilder<RegisterCollection[Slug]> {
 		this.field.relationTo = slug;
-		return this as RelationFieldBuilder<RegisterCollection[Slug]>;
+		return this as unknown as RelationFieldBuilder<RegisterCollection[Slug]>;
 	}
+
 	many() {
 		this.field.many = true;
 		return this;

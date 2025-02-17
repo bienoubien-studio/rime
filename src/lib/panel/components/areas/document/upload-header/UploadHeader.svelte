@@ -6,15 +6,14 @@
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { toast } from 'svelte-sonner';
 	import { FileArchive, FileAudio, FileVideo } from 'lucide-svelte';
-
 	import * as util from 'rizom/utils/file.js';
-	import type { CollectionConfig } from 'rizom/types';
 	import type { WithUpload } from 'rizom/types/utility';
+	import type { CompiledCollectionConfig } from 'rizom/types/config';
 
 	type Props = {
 		form: DocumentFormContext;
 		create: boolean;
-		accept: WithUpload<CollectionConfig>['accept'];
+		accept: WithUpload<CompiledCollectionConfig>['accept'];
 	};
 	const { form, create, accept }: Props = $props();
 

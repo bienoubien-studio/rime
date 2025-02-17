@@ -13,7 +13,7 @@ type Args = {
 };
 
 export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<GenericDoc> => {
-	const doc = (await api.collection(config.slug).findById({ id }))! as UploadDoc;
+	const doc = await api.collection<any>(config.slug).findById({ id });
 
 	try {
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);

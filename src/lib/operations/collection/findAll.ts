@@ -2,9 +2,10 @@ import rizom from '$lib/rizom.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { RizomError } from 'rizom/errors/index.js';
+import type { RegisterCollection } from 'rizom';
 
 type Args = {
 	locale?: string | undefined;
@@ -17,7 +18,7 @@ type Args = {
 	limit?: number;
 };
 
-export const findAll = async <T extends GenericDoc = GenericDoc>({
+export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
 	locale,
 	config,
 	adapter,

@@ -8,16 +8,24 @@ import type {
 	CollectionHookBeforeDeleteArgs
 } from 'rizom/types/hooks.js';
 import { RizomError } from 'rizom/errors/index.js';
+import type { RegisterCollection } from 'rizom';
+import type { CollectionSlug } from 'rizom/types';
 
-type DeleteById = (args: {
+type DeleteArgs = {
 	id: string;
 	config: CompiledCollectionConfig;
 	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
-}) => Promise<string>;
+};
 
-export const deleteById: DeleteById = async ({ id, config, event, adapter, api }) => {
+export const deleteById = async <T extends RegisterCollection[CollectionSlug]>({
+	id,
+	config,
+	event,
+	adapter,
+	api
+}: DeleteArgs): Promise<string> => {
 	//////////////////////////////////////////////
 	// Access
 	//////////////////////////////////////////////
@@ -26,7 +34,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	let doc = await adapter.collection.findById({ slug: config.slug, id });
+	let doc = (await adapter.collection.findById({ slug: config.slug, id })) as T;
 
 	if (!doc) {
 		throw new RizomError(RizomError.NOT_FOUND);
@@ -45,7 +53,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 					event,
 					rizom,
 					api
-				})) as CollectionHookBeforeDeleteArgs;
+				})) as CollectionHookBeforeDeleteArgs<T>;
 				doc = args.doc;
 				event = args.event;
 			} catch (err: any) {
@@ -70,7 +78,7 @@ export const deleteById: DeleteById = async ({ id, config, event, adapter, api }
 					event,
 					rizom,
 					api
-				})) as CollectionHookAfterDeleteArgs;
+				})) as CollectionHookAfterDeleteArgs<T>;
 				doc = args.doc;
 				event = args.event;
 			} catch (err: any) {

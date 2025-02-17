@@ -55,12 +55,12 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	});
 
 	if (!user) {
-		throw new RizomError('User not found');
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	// Check admin roles on both better-auth and user attributes
 	if (user.roles.includes('admin') && authUser.role !== 'admin') {
-		throw error(401, 'unauthorized');
+		throw error(401, RizomError.UNAUTHORIZED);
 	}
 
 	// Populate locals
@@ -72,7 +72,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	if (event.url.pathname.startsWith('/panel')) {
 		const authorized = rizom.config.raw.panel.access(user);
 		if (!authorized) {
-			throw error(401, 'unauthorized');
+			throw error(401, RizomError.UNAUTHORIZED);
 		}
 	}
 

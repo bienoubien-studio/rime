@@ -4,6 +4,7 @@ import { buildConfig } from './config/build/index.js';
 
 export { rizom, handlers, buildConfig };
 export { FormFieldBuilder } from 'rizom/fields/builders/field.js';
+export { global, collection } from 'rizom/config/builders.js';
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */

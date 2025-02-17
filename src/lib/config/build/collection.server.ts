@@ -20,8 +20,8 @@ import { text } from 'rizom/fields/text/index.js';
 import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/builders/index.js';
 import { date, relation } from 'rizom/fields/index.js';
 
-const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks> => {
-	let hooks: CollectionHooks = { ...collection.hooks };
+const buildHooks = async (collection: CollectionConfig<any>): Promise<CollectionHooks<any>> => {
+	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const authHooks = await import('$lib/collection/auth/hooks.server.js');
 		const { beforeUpdate, beforeCreate, beforeDelete } = authHooks;
@@ -45,7 +45,7 @@ const buildHooks = async (collection: CollectionConfig): Promise<CollectionHooks
 	return hooks;
 };
 
-const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => {
+const buildFields = (collection: CollectionConfig<any>): FieldBuilder<AnyField>[] => {
 	//
 	let fields = collection.fields;
 
@@ -87,7 +87,7 @@ const buildFields = (collection: CollectionConfig): FieldBuilder<AnyField>[] => 
 };
 
 export const buildCollection = async (
-	collection: CollectionConfig
+	collection: CollectionConfig<any>
 ): Promise<BuiltCollectionConfig> => {
 	// Add generic documents title field if not defined
 	const addAsTitle = () => {

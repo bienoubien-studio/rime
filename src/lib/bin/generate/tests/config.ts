@@ -2,7 +2,7 @@ import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
 import type { CollectionConfig } from 'rizom/index.js';
-import type { CollectionHook } from 'rizom/types/hooks';
+import type { CollectionHook, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom/index.js';
 import type { GlobalConfig } from 'rizom/index.js';
 
@@ -19,9 +19,9 @@ import {
 	toggle,
 	slug
 } from 'rizom/fields/index.js';
+import { collection, global } from 'rizom/config/builders';
 
-const Informations: GlobalConfig = {
-	slug: 'infos',
+const Informations = global<any>('infos', {
 	icon: ReceiptText,
 	group: 'informations',
 	fields: [
@@ -40,13 +40,13 @@ const Informations: GlobalConfig = {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: true
-};
+});
 
 /////////////////////////////////////////////
 // Pages
 //////////////////////////////////////////////
 
-const setHome: CollectionHook = async (args) => {
+const setHome: CollectionHookBeforeUpsert<any> = async (args) => {
 	const { data, api } = args;
 
 	if (data?.home) {
@@ -55,7 +55,7 @@ const setHome: CollectionHook = async (args) => {
 		const pagesIsHome = await api.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await api.collection('pages').updateById({
+			await api.collection<any>('pages').updateById({
 				id: page.id,
 				data: { home: false }
 			});
@@ -65,7 +65,7 @@ const setHome: CollectionHook = async (args) => {
 	return args;
 };
 
-const formatslug: CollectionHook = async (args) => {
+const formatslug: CollectionHookBeforeUpsert<any> = async (args) => {
 	const { data, api, operation, event } = args;
 
 	if (operation === 'create' || operation === 'update') {
@@ -121,8 +121,7 @@ const tabAttributes = tab('Attributes').fields(
 
 const tabContent = tab('Layout').fields(blocks('components').blocks(blockParagraph).table());
 
-const Pages: CollectionConfig = {
-	slug: 'pages',
+const Pages = collection('pages', {
 	icon: Newspaper,
 	group: 'Content',
 	fields: [tabs(tabContent, tabAttributes)],
@@ -142,7 +141,7 @@ const Pages: CollectionConfig = {
 		beforeCreate: [formatslug, setHome],
 		beforeUpdate: [formatslug, setHome]
 	}
-};
+});
 
 const config: Config = {
 	//

@@ -9,13 +9,14 @@ import { findAll } from '../collection/findAll.js';
 import { findById } from '../collection/findById.js';
 import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type { FormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 
 import { RizomError } from 'rizom/errors/index.js';
+import type { RegisterCollection } from 'rizom';
 
 type Args = {
 	config: CompiledCollectionConfig;
@@ -25,7 +26,7 @@ type Args = {
 	event: RequestEvent;
 };
 
-class CollectionInterface<Doc extends GenericDoc = GenericDoc>
+class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]>
 	implements LocalAPICollectionInterface<Doc>
 {
 	#event: RequestEvent;

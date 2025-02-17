@@ -3,10 +3,11 @@ import type { RequestEvent } from '@sveltejs/kit';
 import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { RizomError } from 'rizom/errors/index.js';
+import type { RegisterCollection } from 'rizom';
 
 type FindArgs = {
 	query: OperationQuery;
@@ -20,7 +21,7 @@ type FindArgs = {
 	limit?: number;
 };
 
-export const find = async <T extends GenericDoc = GenericDoc>({
+export const find = async <T extends RegisterCollection[CollectionSlug]>({
 	query,
 	locale,
 	config,

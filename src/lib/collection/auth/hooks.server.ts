@@ -1,3 +1,4 @@
+import type { GenericDoc } from 'rizom/types/index.js';
 import { RizomError } from '../../errors/index.js';
 import type {
 	CollectionHookBeforeCreate,
@@ -30,7 +31,7 @@ export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 	};
 };
 
-export const beforeUpdate: CollectionHookBeforeUpdate = async (args) => {
+export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args) => {
 	const { rizom } = args;
 
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);

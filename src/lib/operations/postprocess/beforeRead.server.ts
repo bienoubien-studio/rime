@@ -105,7 +105,7 @@ export const beforeRead = async ({
 
 	// populate urls
 	if (config.url) {
-		doc.url = config.url(doc as GenericDoc);
+		doc.url = config.url(doc as any);
 	}
 	if (config.live && user && config.url) {
 		doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${doc.url}&slug=${config.slug}&id=${doc.id}`;
