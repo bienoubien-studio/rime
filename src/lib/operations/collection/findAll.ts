@@ -33,11 +33,11 @@ export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
 	//////////////////////////////////////////////
 
 	const authorized = config.access.read(event.locals.user);
-	console.log('findAll', authorized);
+
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
-	console.log(1);
+
 	const rawDocs = (await adapter.collection.findAll({
 		slug: config.slug,
 		sort,
@@ -45,7 +45,6 @@ export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
 		locale
 	})) as T[];
 
-	console.log(2);
 	const docs = await adapter.transform.docs<T>({
 		docs: rawDocs,
 		slug: config.slug,
@@ -55,14 +54,12 @@ export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
 		depth
 	});
 
-	console.log(3);
 	//////////////////////////////////////////////
 	// Hooks BeforeRead
 	//////////////////////////////////////////////
 
 	if (config.hooks && config.hooks.beforeRead) {
 		for (const hook of config.hooks.beforeRead) {
-			console.log(hook);
 			for (const [index, doc] of docs.entries()) {
 				try {
 					const hookArgs = await hook({ operation: 'read', config, doc, event, rizom, api });
@@ -74,8 +71,6 @@ export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
 			}
 		}
 	}
-
-	console.log(4);
 
 	return docs as T[];
 };
