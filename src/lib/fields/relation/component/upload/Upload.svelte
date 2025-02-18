@@ -16,7 +16,7 @@
 		isFull,
 		hasError,
 		addValue,
-		isSortable,
+		many,
 		selectedItems,
 		removeValue,
 		items,
@@ -49,7 +49,7 @@
 	};
 
 	$effect(() => {
-		if (isSortable) {
+		if (many) {
 			sortable(relationList);
 		}
 	});
@@ -70,11 +70,13 @@
 				<File size={18} />
 			{/if}
 		</div>
+
 		<div class="rz-relation-upload__info">
 			<p class="rz-relation-upload__filename">{item.filename}</p>
 			<p class="rz-relation-upload__filesize">{item.filesize}</p>
 			<p class="rz-relation-upload__mimetype">{item.mimeType}</p>
 		</div>
+
 		<button
 			type="button"
 			class="rz-relation-upload__remove"
@@ -102,7 +104,12 @@
 	</div>
 {/snippet}
 
-<div class="rz-relation-upload__list" bind:this={relationList} data-error={hasError ? '' : null}>
+<div
+	class="rz-relation-upload__list"
+	data-many={many ? '' : null}
+	bind:this={relationList}
+	data-error={hasError ? '' : null}
+>
 	{#each selectedItems as item (item.relationId)}
 		{@render row(item)}
 	{/each}

@@ -21,7 +21,7 @@ export type RelationComponentProps = {
 	items: RelationFieldItem[];
 	readOnly: boolean;
 	nothingToSelect: boolean;
-	isSortable: boolean;
+	many: boolean;
 	selectedItems: RelationFieldItem[];
 	relationConfig: CompiledCollectionConfig;
 	onOrderChange: (oldIndex: number, newIndex: number) => void;
