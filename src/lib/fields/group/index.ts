@@ -1,4 +1,4 @@
-import type { AnyField, Field } from 'rizom/types/fields';
+import type { Field } from 'rizom/types/fields';
 import { FieldBuilder } from '../builders/index.js';
 
 export class GroupFieldBuilder extends FieldBuilder<GroupField> {
@@ -9,7 +9,7 @@ export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 			this.field.label = label;
 		}
 	}
-	fields(...fields: FieldBuilder<AnyField>[]) {
+	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = fields;
 		return this;
 	}
@@ -24,7 +24,7 @@ export const group = (label?: string) => new GroupFieldBuilder(label);
 export type GroupField = Field & {
 	type: 'group';
 	label: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 };
 
 export type GroupFieldRaw = Field & {

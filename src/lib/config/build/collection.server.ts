@@ -1,6 +1,5 @@
 import { panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
-import { hasProps } from 'rizom/utils/object.js';
 import { isRolesField } from '../../utils/field.js';
 import { capitalize, toCamelCase } from '$lib/utils/string.js';
 import { isUploadConfig } from '../utils.js';
@@ -8,17 +7,16 @@ import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
 	BuiltCollectionConfig,
-	BuiltConfig,
 	CollectionConfig,
 	ImageSizesConfig,
 	PanelUsersConfig
 } from 'rizom/types/config.js';
-import type { AnyField } from 'rizom/types/fields.js';
+import type { Field } from 'rizom/types/fields.js';
 import type { CollectionHooks } from 'rizom/types/hooks.js';
 import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
 import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/builders/index.js';
-import { date, relation } from 'rizom/fields/index.js';
+import { date } from 'rizom/fields/index.js';
 
 const buildHooks = async (collection: CollectionConfig<any>): Promise<CollectionHooks<any>> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
@@ -45,7 +43,7 @@ const buildHooks = async (collection: CollectionConfig<any>): Promise<Collection
 	return hooks;
 };
 
-const buildFields = (collection: CollectionConfig<any>): FieldBuilder<AnyField>[] => {
+const buildFields = (collection: CollectionConfig<any>): FieldBuilder<Field>[] => {
 	//
 	let fields = collection.fields;
 
