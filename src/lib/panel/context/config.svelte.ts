@@ -1,14 +1,14 @@
 import type {
 	CompiledCollectionConfig,
 	BrowserConfig,
-	CompiledGlobalConfig
+	CompiledAreaConfig
 } from 'rizom/types/config';
 import type { DocPrototype, PrototypeSlug } from 'rizom/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BrowserConfig) {
-	function getGlobalConfig(slug: string): CompiledGlobalConfig {
-		return config.globals.filter((c) => c.slug === slug)[0];
+	function getAreaConfig(slug: string): CompiledAreaConfig {
+		return config.areas.filter((c) => c.slug === slug)[0];
 	}
 
 	function getCollectionConfig(slug: string): CompiledCollectionConfig {
@@ -16,14 +16,14 @@ function createConfigStore(config: BrowserConfig) {
 	}
 
 	function getDocumentConfig({ prototype, slug }: GetDocumentConfigArgs) {
-		return prototype === 'global' ? getGlobalConfig(slug) : getCollectionConfig(slug);
+		return prototype === 'area' ? getAreaConfig(slug) : getCollectionConfig(slug);
 	}
 
 	return {
 		get raw() {
 			return config;
 		},
-		getGlobalConfig,
+		getAreaConfig,
 		getCollectionConfig,
 		getDocumentConfig
 	};

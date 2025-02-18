@@ -5,16 +5,16 @@ import { pick } from '../utils/object.js';
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 
-type GlobalInterfaceArgs = {
+type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	tables: any;
 };
 
-const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
+const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 	//
 	type KeyOfTables = keyof typeof tables;
 
-	/** Get global doc */
+	/** Get area doc */
 	const get: Get = async ({ slug, locale }) => {
 		const withParam = buildWithParam({ slug, locale });
 
@@ -24,7 +24,7 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 		});
 
 		if (!doc) {
-			await createGlobal(slug, {}, locale);
+			await createArea(slug, {}, locale);
 			// @ts-expect-error suck
 			doc = await db.query[slug].findFirst({
 				with: withParam
@@ -36,8 +36,8 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 		return doc;
 	};
 
-	/** Global Create */
-	const createGlobal = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
+	/** Area Create */
+	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
 		const createId = generatePK();
 		const tableLocales = `${slug}Locales` as KeyOfTables;
 		if (locale && tableLocales in tables) {
@@ -69,7 +69,7 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 
 	const update: Update = async ({ slug, data, locale }) => {
 		const rows = await db.select({ id: tables[slug].id }).from(tables[slug]);
-		const global = rows[0];
+		const area = rows[0];
 
 		const columns = Object.keys(getTableColumns(tables[slug]));
 		const values = pick(columns, data);
@@ -80,7 +80,7 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 				...values,
 				updatedAt: new Date()
 			})
-			.where(eq(tables[slug].id, global.id));
+			.where(eq(tables[slug].id, area.id));
 
 		const keyTableLocales = `${slug}Locales`;
 		if (locale && keyTableLocales in tables) {
@@ -95,7 +95,7 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 
 			// @ts-expect-error todo...
 			const localizedRow = await db.query[keyTableLocales as PrototypeSlug].findFirst({
-				where: and(eq(tableLocales.parentId, global.id), eq(tableLocales.locale, locale))
+				where: and(eq(tableLocales.parentId, area.id), eq(tableLocales.locale, locale))
 			});
 
 			if (!localizedRow) {
@@ -103,13 +103,13 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 					...localizedValues,
 					id: generatePK(),
 					locale: locale,
-					parentId: global.id
+					parentId: area.id
 				});
 			} else {
 				await db
 					.update(tableLocales)
 					.set(localizedValues)
-					.where(and(eq(tableLocales.parentId, global.id), eq(tableLocales.locale, locale)));
+					.where(and(eq(tableLocales.parentId, area.id), eq(tableLocales.locale, locale)));
 			}
 		}
 
@@ -118,12 +118,12 @@ const createAdapterGlobalInterface = ({ db, tables }: GlobalInterfaceArgs) => {
 
 	return {
 		update,
-		createGlobal,
+		createArea,
 		get
 	};
 };
 
-export default createAdapterGlobalInterface;
+export default createAdapterAreaInterface;
 
 //////////////////////////////////////////////
 // Types

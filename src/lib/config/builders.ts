@@ -1,9 +1,9 @@
-import type { CollectionConfig, GlobalConfig } from 'rizom/types';
+import type { CollectionConfig, AreaConfig } from 'rizom/types';
 
 type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
 
 type CollectionConfigWithoutSlug<S> = OmitPreservingDiscrimination<CollectionConfig<S>, 'slug'>;
-type GlobalConfigWithoutSlug<S> = OmitPreservingDiscrimination<GlobalConfig<S>, 'slug'>;
+type AreaConfigWithoutSlug<S> = OmitPreservingDiscrimination<AreaConfig<S>, 'slug'>;
 
 export function collection<S extends string>(
 	slug: S,
@@ -15,10 +15,7 @@ export function collection<S extends string>(
 	};
 }
 
-export function global<S extends string>(
-	slug: S,
-	config: GlobalConfigWithoutSlug<S>
-): GlobalConfig<S> {
+export function area<S extends string>(slug: S, config: AreaConfigWithoutSlug<S>): AreaConfig<S> {
 	return {
 		...config,
 		slug

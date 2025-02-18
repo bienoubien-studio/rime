@@ -4,7 +4,7 @@ import { Text } from 'lucide-svelte';
 import { collection, type CollectionConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
-import { global } from 'rizom';
+import { area } from 'rizom';
 import type { PagesDoc } from '../app.generated';
 import {
 	block,
@@ -24,7 +24,7 @@ import {
 // Informations
 //////////////////////////////////////////////
 
-const Informations = global('infos', {
+const Informations = area('infos', {
 	icon: ReceiptText,
 	group: 'informations',
 	fields: [
@@ -152,7 +152,7 @@ const config: Config = {
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages],
-	globals: [Informations],
+	areas: [Informations],
 
 	localization: {
 		locales: [

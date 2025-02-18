@@ -107,13 +107,13 @@ Navigate to `http://localhost:5173/panel` to create your first admin user.
 
 ```typescript
 // ./src/config/rizom.config.ts
-import type { CollectionConfig, GlobalConfig, Config } from 'rizom';
+import type { collection, area } from 'rizom';
+import type { Config } from 'rizom';
 import { Settings2 } from 'lucide-svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/utils";
 
-const Pages: CollectionConfig = {
-  slug: 'pages',
+const Pages = collection('pages', {
   group: 'content',
   fields: [
     text('title').isTitle().required(),
@@ -127,12 +127,11 @@ const Pages: CollectionConfig = {
   }
 };
 
-const Settings: GlobalConfig = {
-  slug: 'settings',
+const Settings = area('settings', {
   icon: Settings2,
   group: 'settings',
   fields: [
-    toggle('stickyHeader').label('Sticky header'),
+    toggle('maintenance').label('Sticky header'),
     link('about').label('About'),
     relation('logo').to('medias')
   ],
@@ -141,8 +140,7 @@ const Settings: GlobalConfig = {
   }
 };
 
-const Medias = {
-  slug: 'medias',
+const Medias = collection('medias', {
   label: {
     singular: 'Media',
     plural: 'Medias',
@@ -157,7 +155,7 @@ const Medias = {
 const config: Config = {
   database: 'my-db.sqlite'
   collections: [Pages, Medias],
-  globals: [Settings],
+  areas: [Settings],
   panel: {
     access: (user) => access.hasRoles(user, 'admin', 'editor'),
     users: {
@@ -183,8 +181,8 @@ export default config;
 ```ts
 export const load = async (event: LayoutServerLoadEvent) => {
   const { api, rizom } = event.locals;
-  // Get a global document
-  const menu = await api.global('menu').find();
+  // Get an Area document
+  const menu = await api.area('menu').find();
   // Get all pages documents
   const pages = await api.collection('pages').findAll({ locale: 'en' });
   // Get a page byId
@@ -217,7 +215,6 @@ const { docs } = await fetch('http://localhost:5173/api/pages?where[author][like
 - [ ] Document version
 - [ ] Working Live Edit system (in developpment)
 - [ ] Tree field
-- [ ] cmd-K menu in admin Panel
 
 ## 🙏 Acknowledgments
 

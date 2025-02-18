@@ -26,18 +26,18 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 		}
 	}
 
-	for (const global of config.globals) {
-		if (user && global.access.read(user)) {
+	for (const area of config.areas) {
+		if (user && area.access.read(user)) {
 			const route = {
-				title: global.label,
-				icon: global.slug,
-				path: `/panel/${global.slug}`
+				title: area.label,
+				icon: area.slug,
+				path: `/panel/${area.slug}`
 			};
-			if (global.group) {
-				if (!(global.group in groups)) {
-					groups[global.group] = [];
+			if (area.group) {
+				if (!(area.group in groups)) {
+					groups[area.group] = [];
 				}
-				groups[global.group].push(route);
+				groups[area.group].push(route);
 			} else {
 				groups.none.push(route);
 			}

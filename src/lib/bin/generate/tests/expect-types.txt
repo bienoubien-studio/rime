@@ -69,7 +69,7 @@ declare module 'rizom' {
 		'pages': PagesDoc
 		'users': UsersDoc;
 	}
-	interface RegisterGlobal {
+	interface RegisterArea {
 		'infos': InfosDoc;
 	}
 }

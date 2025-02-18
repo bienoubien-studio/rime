@@ -5,12 +5,12 @@ import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
 import type {
 	CompiledCollectionConfig,
-	CompiledGlobalConfig,
+	CompiledAreaConfig,
 	CompiledConfig
 } from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
 import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
-import type { GlobalSlug } from 'rizom/types/doc.js';
+import type { AreaSlug } from 'rizom/types/doc.js';
 import { dev } from '$app/environment';
 
 export async function createConfigInterface(rawConfig: Config) {
@@ -19,7 +19,7 @@ export async function createConfigInterface(rawConfig: Config) {
 	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {
 			shouldFlat: ([key]) =>
-				!['cors', 'plugins', 'routes', 'locales', 'globals', 'collections'].includes(key)
+				!['cors', 'plugins', 'routes', 'locales', 'areas', 'collections'].includes(key)
 		});
 	};
 
@@ -38,8 +38,8 @@ export async function createConfigInterface(rawConfig: Config) {
 		}
 	}
 
-	const getGlobal = (slug: string): CompiledGlobalConfig | undefined => {
-		return config.globals.find((g) => g.slug === slug);
+	const getArea = (slug: string): CompiledAreaConfig | undefined => {
+		return config.areas.find((g) => g.slug === slug);
 	};
 
 	const getCollection = (slug: string): CompiledCollectionConfig | undefined => {
@@ -47,22 +47,22 @@ export async function createConfigInterface(rawConfig: Config) {
 	};
 
 	const getBySlug = (slug: string) => {
-		return getGlobal(slug) || getCollection(slug);
+		return getArea(slug) || getCollection(slug);
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug => {
 		return !!getCollection(slug);
 	};
 
-	const isGlobal = (slug: string): slug is GlobalSlug => {
-		return !!getGlobal(slug);
+	const isArea = (slug: string): slug is AreaSlug => {
+		return !!getArea(slug);
 	};
 
 	const getDocumentPrototype = (slug: PrototypeSlug) => {
 		if (isCollection(slug)) {
 			return 'collection';
-		} else if (isGlobal(slug)) {
-			return 'global';
+		} else if (isArea(slug)) {
+			return 'area';
 		}
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
 	};
@@ -89,8 +89,8 @@ export async function createConfigInterface(rawConfig: Config) {
 			return config.collections;
 		},
 
-		get globals() {
-			return config.globals;
+		get areas() {
+			return config.areas;
 		},
 
 		getDefaultLocale() {
@@ -109,10 +109,10 @@ export async function createConfigInterface(rawConfig: Config) {
 		},
 
 		getDocumentPrototype,
-		getGlobal,
+		getArea,
 		getCollection,
 		isCollection,
-		isGlobal,
+		isArea,
 		getBySlug
 	};
 }

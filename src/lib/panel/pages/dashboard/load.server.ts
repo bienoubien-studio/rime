@@ -4,10 +4,9 @@ import type {
 	CollectionSlug,
 	DocPrototype,
 	GenericDoc,
-	GlobalSlug,
+	AreaSlug,
 	PrototypeSlug
 } from 'rizom/types/doc.js';
-import type { BuiltCollectionConfig } from 'rizom/types/config.js';
 
 export type DashboardEntry =
 	| {
@@ -21,10 +20,10 @@ export type DashboardEntry =
 			lastEdited?: GenericDoc[];
 	  }
 	| {
-			slug: GlobalSlug;
+			slug: AreaSlug;
 			title: string;
 			link: string;
-			prototype: 'global';
+			prototype: 'area';
 			lastEdited?: GenericDoc[];
 	  };
 
@@ -68,13 +67,13 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		console.error(err);
 	}
 
-	for (const global of rizom.config.globals) {
-		if (user && global.access.read(user)) {
+	for (const area of rizom.config.areas) {
+		if (user && area.access.read(user)) {
 			entries.push({
-				prototype: 'global',
-				slug: global.slug,
-				link: `/panel/${global.slug}`,
-				title: global.label || capitalize(global.slug)
+				prototype: 'area',
+				slug: area.slug,
+				link: `/panel/${area.slug}`,
+				title: area.label || capitalize(area.slug)
 			});
 		}
 	}

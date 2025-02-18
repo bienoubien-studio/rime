@@ -21,7 +21,7 @@ export async function liveLoad(event: ServerLoadEvent) {
 			const doc = await api.collection(slug).findById({ id, locale });
 			return { ...output, doc, pathToBrowserConfig };
 		} else {
-			const doc = await api.global(slug).find({ locale });
+			const doc = await api.area(slug).find({ locale });
 			return { ...output, doc, pathToBrowserConfig };
 		}
 	} else {

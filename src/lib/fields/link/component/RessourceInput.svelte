@@ -7,7 +7,7 @@
 	type Ressource = {
 		label: string;
 		id: string;
-		_prototype: 'global' | 'collection';
+		_prototype: 'area' | 'collection';
 	};
 
 	type Props = {
@@ -53,7 +53,7 @@
 				ressources = result;
 			})
 			.then(() => {
-				if (ressources[0]._prototype === 'global') {
+				if (ressources[0]._prototype === 'area') {
 					selected = ressources[0];
 				}
 			});

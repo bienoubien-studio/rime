@@ -7,7 +7,7 @@ import { preprocessFields } from '../preprocess/fields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
+import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
@@ -17,7 +17,7 @@ import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
 	locale?: string | undefined;
-	config: CompiledGlobalConfig;
+	config: CompiledAreaConfig;
 	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
@@ -40,7 +40,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const originalDoc = await api.global(config.slug).find({ locale });
+	const originalDoc = await api.area(config.slug).find({ locale });
 
 	//////////////////////////////////////////////
 	// Hooks BeforeUpdate
@@ -94,7 +94,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		configMap
 	});
 
-	let doc = await adapter.global.update({ slug: config.slug, data, locale });
+	let doc = await adapter.area.update({ slug: config.slug, data, locale });
 
 	const existingBlocks = extractBlocks({
 		doc: originalDoc,
@@ -174,7 +174,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		});
 	}
 
-	const rawDoc = (await adapter.global.get({ slug: config.slug, locale })) as T;
+	const rawDoc = (await adapter.area.get({ slug: config.slug, locale })) as T;
 	doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });
 
 	//////////////////////////////////////////////

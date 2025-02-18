@@ -8,8 +8,8 @@ import { compileConfig } from 'rizom/config/compile.server';
 describe('Test schema generation', async () => {
 	const builtConfig = await buildConfig(rawConfig, { generateFiles: false, compiled: false });
 	const collectionFields = builtConfig.collections.flatMap((collection) => collection.fields);
-	const globalFields = builtConfig.globals.flatMap((global) => global.fields);
-	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...globalFields]);
+	const areaFields = builtConfig.areas.flatMap((area) => area.fields);
+	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...areaFields]);
 	const compiledConfig = compileConfig(builtConfig);
 	const browserString = buildConfigString({
 		...compiledConfig,

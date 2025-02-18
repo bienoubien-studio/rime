@@ -1,9 +1,9 @@
 import type { RegisterCollection } from 'rizom';
 import type { GetRegisterType } from 'rizom';
 import type { Dic } from './utility.js';
-import type { RegisterGlobal } from 'rizom';
+import type { RegisterArea } from 'rizom';
 
-export type DocPrototype = 'global' | 'collection';
+export type DocPrototype = 'area' | 'collection';
 
 type BaseDoc = {
 	id: string;
@@ -36,6 +36,6 @@ export type UploadDoc = BaseDoc & {
 	sizes: { [key: string]: string };
 } & Dic;
 
-export type PrototypeSlug = CollectionSlug | GlobalSlug;
+export type PrototypeSlug = CollectionSlug | AreaSlug;
 export type CollectionSlug = keyof RegisterCollection;
-export type GlobalSlug = keyof RegisterGlobal;
+export type AreaSlug = keyof RegisterArea;

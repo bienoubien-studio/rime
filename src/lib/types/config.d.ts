@@ -2,17 +2,17 @@ import type { RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from './auth.js';
 import type { AnyField, Field, FieldsType, Option } from './fields.js';
 import type { CollectionSlug, GenericDoc } from './doc.js';
-import type { CollectionHooks, GlobalHooks } from './hooks.js';
+import type { CollectionHooks, AreaHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
-import type { BaseDoc, GetRegisterType, RegisterGlobal } from 'rizom';
+import type { BaseDoc, GetRegisterType, RegisterArea } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
 import type { RegisterCollection } from 'rizom';
 
-export type DocumentPrototype = 'collection' | 'global';
+export type DocumentPrototype = 'collection' | 'area';
 
 export interface Config {
 	/** The database name inside ./db folder */
@@ -22,8 +22,8 @@ export interface Config {
 	siteUrl?: string;
 	/** List of CollectionConfig  */
 	collections: CollectionConfig[];
-	/** List of GlobalConfig  */
-	globals: GlobalConfig[];
+	/** List of AreaConfig  */
+	areas: AreaConfig[];
 	/** Define locales that will be enabled
 	 * @example
 	 * ```typescript
@@ -77,7 +77,7 @@ export type PanelUsersConfig = {
 	group?: string;
 	access?: Access;
 	label?: CollectionConfigLabel;
-	fields?: FieldBuilder<AnyField>[];
+	fields?: FieldBuilder<Field>[];
 };
 
 export type RouteConfig = {
@@ -107,7 +107,7 @@ type CollectionConfigLabel = {
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
 	group?: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 	icon?: ComponentType;
 	access?: Access;
 	live?: boolean;
@@ -136,22 +136,22 @@ export type CollectionConfig<S> = BaseCollectionConfig<S> &
 		  }
 	);
 
-export type GlobalConfig<S> = BaseDocConfig & {
-	url?: (doc: RegisterGlobal[S]) => string;
-	hooks?: GlobalHooks;
+export type AreaConfig<S> = BaseDocConfig & {
+	url?: (doc: RegisterArea[S]) => string;
+	hooks?: AreaHooks;
 	label?: string;
 };
 
-export type DocConfig = CollectionConfig | GlobalConfig;
+export type DocConfig = CollectionConfig | AreaConfig;
 
 // Built versions of configs
-export type BuiltDocConfig = BuiltCollectionConfig | BuiltGlobalConfig;
+export type BuiltDocConfig = BuiltCollectionConfig | BuiltAreaConfig;
 
 export type BuiltConfig = {
 	database: string;
 	siteUrl?: string;
 	collections: BuiltCollectionConfig[];
-	globals: BuiltGlobalConfig[];
+	areas: BuiltAreaConfig[];
 	localization?: LocalizationConfig;
 	icons: Record<string, any>;
 	trustedOrigins: string[];
@@ -192,12 +192,12 @@ export type BuiltCollectionConfig = Omit<CollectionConfig<CollectionSlug>, 'stat
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltGlobalConfig = GlobalConfig<GlobalSlug> & {
-	type: 'global';
+export type BuiltAreaConfig = AreaConfig<AreaSlug> & {
+	type: 'area';
 	label: string;
-	slug: GetRegisterType<'GlobalSlug'>;
+	slug: GetRegisterType<'AreaSlug'>;
 	asTitle: string;
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
@@ -211,8 +211,8 @@ export type ImageSizesConfig = {
 }>;
 
 type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
-type CompiledGlobalConfig = WithoutBuilders<BuiltGlobalConfig>;
+type CompiledAreaConfig = WithoutBuilders<BuiltAreaConfig>;
 type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
 	collections: Array<CompiledCollectionConfig>;
-	globals: Array<CompiledGlobalConfig>;
+	areas: Array<CompiledAreaConfig>;
 };

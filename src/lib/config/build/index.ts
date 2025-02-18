@@ -3,13 +3,13 @@ import { access } from 'rizom/utils/access/index.js';
 import type {
 	BuiltCollectionConfig,
 	BuiltConfig,
-	BuiltGlobalConfig,
+	BuiltAreaConfig,
 	CompiledConfig,
 	Config
 } from 'rizom/types/config.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { buildGlobal } from './global.server.js';
+import { buildArea } from './area.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
@@ -23,7 +23,7 @@ type BuildConfig = <C extends boolean | undefined = true>(
 const dev = process.env.NODE_ENV === 'development';
 
 /**
- * Add extra configuration to Globals and Collections
+ * Add extra configuration to Areas and Collections
  */
 
 const buildConfig: BuildConfig = async (config: Config, options) => {
@@ -31,7 +31,7 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 	const compiled = options?.compiled || true;
 
 	let collections: BuiltCollectionConfig[] = [];
-	let globals: BuiltGlobalConfig[] = [];
+	let areas: BuiltAreaConfig[] = [];
 	const icons: Dic = {};
 
 	/////////////////////////////////////////////
@@ -54,12 +54,12 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 	}
 
 	/////////////////////////////////////////////
-	// Build global
+	// Build area
 	//////////////////////////////////////////////
-	for (const global of config.globals) {
-		globals = [...globals, buildGlobal(global)];
+	for (const area of config.areas) {
+		areas = [...areas, buildArea(area)];
 		// add icon to iconMap
-		if (global.icon) icons[global.slug] = global.icon;
+		if (area.icon) icons[area.slug] = area.icon;
 	}
 
 	// Add Routes icon to iconMap
@@ -90,15 +90,15 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 		},
 		collections,
 		plugins: {},
-		globals,
+		areas,
 		trustedOrigins,
 		icons
 	};
 
 	const collectionFields = builtConfig.collections.flatMap((collection) => collection.fields);
-	const globalFields = builtConfig.globals.flatMap((global) => global.fields);
+	const areaFields = builtConfig.areas.flatMap((area) => area.fields);
 
-	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...globalFields]);
+	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...areaFields]);
 
 	/////////////////////////////////////////////
 	// Plugins

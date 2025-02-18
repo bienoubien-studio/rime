@@ -147,44 +147,44 @@ export type CollectionHooks<T extends GenericDoc> = {
 };
 
 //////////////////////////////////////////////
-// Global
+// Area
 //////////////////////////////////////////////
 
-type BaseGlobalHookArgs = BaseHookArgs & {
-	config: BuiltGlobalConfig;
+type BaseAreaHookArgs = BaseHookArgs & {
+	config: BuiltAreaConfig;
 	operation: 'update' | 'read';
 };
 
-export type GlobalHookBeforeReadArgs<T extends GenericDoc = GenericDoc> = BaseGlobalHookArgs & {
+export type AreaHookBeforeReadArgs<T extends GenericDoc = GenericDoc> = BaseAreaHookArgs & {
 	doc: T;
 	operation: 'read';
 };
 
-export type GlobalHookBeforeUpdateArgs<T extends GenericDoc = GenericDoc> = BaseGlobalHookArgs & {
+export type AreaHookBeforeUpdateArgs<T extends GenericDoc = GenericDoc> = BaseAreaHookArgs & {
 	data: Partial<T>;
 	originalDoc: T;
 	operation: 'update';
 };
 
-export type GlobalHookAfterUpdateArgs<T extends GenericDoc = GenericDoc> = BaseGlobalHookArgs & {
+export type AreaHookAfterUpdateArgs<T extends GenericDoc = GenericDoc> = BaseAreaHookArgs & {
 	doc: T;
 	operation: 'update';
 };
 
-export type GlobalHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
-	GlobalHookBeforeReadArgs<T>
+export type AreaHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
+	AreaHookBeforeReadArgs<T>
 >;
 
-export type GlobalHookBeforeUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
-	GlobalHookBeforeUpdateArgs<T>
+export type AreaHookBeforeUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	AreaHookBeforeUpdateArgs<T>
 >;
 
-export type GlobalHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
-	GlobalHookAfterUpdateArgs<T>
+export type AreaHookAfterUpdate<T extends GenericDoc = GenericDoc> = HookFunction<
+	AreaHookAfterUpdateArgs<T>
 >;
 
-export type GlobalHooks = {
-	beforeRead?: GlobalHookBeforeRead[];
-	beforeUpdate?: GlobalHookBeforeUpdate[];
-	afterUpdate?: GlobalHookAfterUpdate[];
+export type AreaHooks = {
+	beforeRead?: AreaHookBeforeRead[];
+	beforeUpdate?: AreaHookBeforeUpdate[];
+	afterUpdate?: AreaHookAfterUpdate[];
 };

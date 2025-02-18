@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc, User } from 'rizom/types';
-import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
+import type { User } from 'rizom/types';
+import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config';
 import type { Dic } from 'rizom/types/utility';
 import { omit } from 'rizom/utils/object';
 import { buildConfigMap } from '../preprocess/config/map';
@@ -15,7 +15,7 @@ type BeforReadDocumentArgs = {
 	user?: User;
 	event: RequestEvent;
 	isPanel: boolean;
-	config: CompiledCollectionConfig | CompiledGlobalConfig;
+	config: CompiledCollectionConfig | CompiledAreaConfig;
 	locale?: string;
 };
 

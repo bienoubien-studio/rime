@@ -8,7 +8,7 @@ import {
 import { isAuthConfig, isUploadConfig } from './utils';
 import type {
 	CompiledCollectionConfig,
-	CompiledGlobalConfig,
+	CompiledAreaConfig,
 	CompiledConfig
 } from 'rizom/types/config';
 import type { FormField, PrototypeSlug } from 'rizom/types';
@@ -25,13 +25,13 @@ function hasDuplicateSlug(config: CompiledConfig) {
 	for (const collection of config.collections) {
 		slugs.push(collection.slug);
 	}
-	for (const global of config.globals) {
-		slugs.push(global.slug);
+	for (const area of config.areas) {
+		slugs.push(area.slug);
 	}
 
 	const duplicates = hasDuplicates(slugs);
 	if (duplicates.length) {
-		return ['Duplicated collection/global slugs :' + duplicates.join(', ')];
+		return ['Duplicated collection/area slugs :' + duplicates.join(', ')];
 	}
 	return [];
 }
@@ -50,14 +50,14 @@ const validateFields = (config: CompiledConfig) => {
 		const collectionErrors = validateDocumentFields(collection);
 		errors = [...errors, ...collectionErrors];
 	}
-	for (const global of config.globals) {
-		const collectionErrors = validateDocumentFields(global);
+	for (const area of config.areas) {
+		const collectionErrors = validateDocumentFields(area);
 		errors = [...errors, ...collectionErrors];
 	}
 	return errors;
 };
 
-type UnknownConfig = CompiledCollectionConfig | CompiledGlobalConfig;
+type UnknownConfig = CompiledCollectionConfig | CompiledAreaConfig;
 
 const validateDocumentFields = (config: UnknownConfig) => {
 	const errors: string[] = [];

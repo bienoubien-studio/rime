@@ -1,6 +1,6 @@
 const config = {
     database: 'empty.sqlite',
 	collections: [],
-	globals: []
+	areas: []
 };
 export default config;

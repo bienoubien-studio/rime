@@ -9,7 +9,7 @@ export const load = async (event: ServerLoadEvent) => {
 		event.cookies.set('Locale', locale, { path: '.' });
 	}
 
-	const doc = await api.global('infos').find({ locale, depth: 1 });
+	const doc = await api.area('infos').find({ locale, depth: 1 });
 
 	if (!doc) {
 		throw error(404, 'Not found');
