@@ -106,6 +106,10 @@ function cleanViteImports(str: string) {
 		if (match.endsWith('.validate')) needsValidate = true;
 	});
 
+	if (str.includes('validate.')) {
+		needsValidate = true;
+	}
+
 	// Replace __vite_ssr_import_0__.(validate|access)
 	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
 
