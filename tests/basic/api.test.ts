@@ -294,7 +294,7 @@ test('Should not create a page', async ({ request }) => {
 });
 
 //////////////////////////////////////////////
-// Global
+// Area
 //////////////////////////////////////////////
 
 test('Login should be successfull (again)', async ({ request }) => {

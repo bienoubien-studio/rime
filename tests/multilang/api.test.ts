@@ -380,7 +380,7 @@ test('Should not create a page', async ({ request }) => {
 });
 
 //////////////////////////////////////////////
-// Global
+// Area
 //////////////////////////////////////////////
 
 test('Login should be successfull (again)', async ({ request }) => {
@@ -411,7 +411,7 @@ test('Should update settings', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			stickyHeader: true,
+			maintenance: true,
 			legalMention: 'mentions légales'
 		}
 	});
