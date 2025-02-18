@@ -8,11 +8,12 @@ import {
 	tab,
 	blocks,
 	block,
-	link
+	link,
+	email
 } from 'rizom/fields/index.js';
 import type { CollectionConfig, Config, AreaConfig } from 'rizom';
 import { access } from '$lib/utils/access/index.js';
-import { Images, Menu, Newspaper, Settings2 } from 'lucide-svelte';
+import { Contact, Images, Menu, Newspaper, Settings2 } from 'lucide-svelte';
 import type { PagesDoc } from '../app.generated';
 import type { RegisterCollection } from 'rizom';
 import { collection, area } from 'rizom/config/builders';
@@ -23,7 +24,7 @@ import type {
 } from 'rizom/types/hooks';
 
 const tabAttributes = tab('Attributes').fields(
-	text('title').isTitle().required().layout('compact'),
+	text('title').isTitle().required(),
 	slug('slug').slugify('title'),
 	toggle('isHome').label('Homepage'),
 	relation('thumbnail').to('medias'),
@@ -51,6 +52,7 @@ const Pages = collection('pages', {
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout)],
 	url: (doc) => (doc.isHome ? '/' : `${doc.slug}`),
+	status: true,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -62,19 +64,18 @@ const Pages = collection('pages', {
 	}
 });
 
-const LinkField = link('link').types('pages', 'url');
+const LinkField = link('link').types('pages', 'url').className('panel-field-no-label');
+const LinkBlocks = (name: string) =>
+	blocks(name, [
+		block('link').fields(LinkField, blocks('children', [block('sub_link').fields(LinkField)]))
+	]).label('Menu');
 
 const Navigation = area('navigation', {
 	icon: Menu,
-	group: 'Lecture',
+	group: 'Global',
 	fields: [
-		tabs(
-			tab('header').fields(
-				blocks('links', [
-					block('link').fields(LinkField, blocks('children', [block('sub_link').fields(LinkField)]))
-				])
-			)
-		)
+		//
+		tabs(tab('header').fields(LinkBlocks('mainNav')), tab('footer').fields(LinkBlocks('footerNav')))
 	],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -90,11 +91,26 @@ const Settings = area('settings', {
 	}
 });
 
+const Informations = area('infos', {
+	icon: Contact,
+	group: 'Global',
+	fields: [email('email')],
+	access: {
+		read: () => true
+	}
+});
+
 const Medias = collection('medias', {
 	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
 	upload: true,
 	icon: Images,
 	group: 'content',
+	imageSizes: [
+		{ name: 'sm', width: 640, out: ['webp'] },
+		{ name: 'md', width: 1024, out: ['webp'] },
+		{ name: 'lg', width: 1536, out: ['webp'] },
+		{ name: 'xl', width: 2048, out: ['webp'] }
+	],
 	fields: [text('alt').required()],
 	access: {
 		read: () => true
@@ -104,7 +120,7 @@ const Medias = collection('medias', {
 const config: Config = {
 	database: 'real.sqlite',
 	collections: [Pages, Medias],
-	areas: [Settings, Navigation],
+	areas: [Settings, Navigation, Informations],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]
