@@ -176,7 +176,7 @@
 
 	<RelationComponent
 		{path}
-		many={config.many}
+		many={!!config.many}
 		hasError={!!field.error}
 		formNestedLevel={form.nestedLevel}
 		readOnly={form.readOnly}
