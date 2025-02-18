@@ -20,6 +20,11 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 	}
 
+	tree() {
+		this.field.tree = true;
+		return this;
+	}
+
 	get component() {
 		return Blocks;
 	}
@@ -39,7 +44,12 @@ class BlockBuilder {
 	constructor(name: string) {
 		this.#block = {
 			name,
-			fields: [text('type').hidden(), text('path').hidden(), number('position').hidden()]
+			fields: [
+				text('type').hidden(),
+				text('path').hidden(),
+				number('position').hidden(),
+				number('indent').hidden()
+			]
 		};
 	}
 	/**
@@ -75,6 +85,7 @@ class BlockBuilder {
 //////////////////////////////////////////////
 export type BlocksField = FormField & {
 	type: 'blocks';
+	tree?: boolean;
 	blocks: BlocksFieldBlock[];
 };
 
@@ -91,6 +102,7 @@ export type BlocksFieldBlock = {
 
 export type BlocksFieldRaw = FormField & {
 	type: 'blocks';
+	tree?: boolean;
 	blocks: {
 		name: string;
 		label?: string;
