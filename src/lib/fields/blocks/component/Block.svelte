@@ -104,7 +104,7 @@
 		cursor: grab;
 	}
 
-	.rz-block:hover :global(.rz-block-actions) {
+	.rz-block:hover > :global(.rz-block__content > .rz-block__header > .rz-block-actions) {
 		opacity: 1;
 		pointer-events: all;
 	}
