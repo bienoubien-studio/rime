@@ -96,8 +96,6 @@
 <style type="postcss">
 	.rz-block {
 		position: relative;
-		/* margin-left: calc(-1 * var(--rz-size-7)); */
-		/* padding-left: var(--rz-size-7); */
 	}
 
 	.rz-block__grip {
@@ -150,6 +148,9 @@
 			pointer-events: none;
 			top: var(--rz-size-1);
 			right: var(--rz-size-11);
+		}
+		&:global(:has(.rz-field-error)) {
+			@mixin ring var(--rz-color-error);
 		}
 	}
 
