@@ -1,0 +1,114 @@
+import {
+	relation,
+	richText,
+	text,
+	toggle,
+	slug,
+	tabs,
+	tab,
+	blocks,
+	block,
+	link
+} from 'rizom/fields/index.js';
+import type { CollectionConfig, Config, AreaConfig } from 'rizom';
+import { access } from '$lib/utils/access/index.js';
+import { Images, Menu, Newspaper, Settings2 } from 'lucide-svelte';
+import type { PagesDoc } from '../app.generated';
+import type { RegisterCollection } from 'rizom';
+import { collection, area } from 'rizom/config/builders';
+import type {
+	CollectionHookAfterUpsert,
+	CollectionHookBeforeCreate,
+	CollectionHookBeforeUpsert
+} from 'rizom/types/hooks';
+
+const tabAttributes = tab('Attributes').fields(
+	text('title').isTitle().required().layout('compact'),
+	slug('slug').slugify('title'),
+	toggle('isHome').label('Homepage'),
+	relation('thumbnail').to('medias'),
+	richText('intro'),
+	relation('parent')
+		.to('pages')
+		.query((doc) => `where[id][not_equals]=${doc.id}`)
+);
+
+const blockParagraph = block('paragraph').fields(richText('text'));
+const blockImage = block('image').fields(relation('image').to('medias'));
+const blockSlider = block('slider').fields(relation('images').to('medias').many());
+const tabLayout = tab('Layout').fields(
+	blocks('sections', [blockParagraph, blockImage, blockSlider])
+);
+
+const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
+	args.rizom.plugins.cache.clear();
+	return args;
+};
+
+const Pages = collection('pages', {
+	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
+	group: 'content',
+	icon: Newspaper,
+	fields: [tabs(tabAttributes, tabLayout)],
+	url: (doc) => (doc.isHome ? '/' : `${doc.slug}`),
+	access: {
+		read: () => true,
+		create: (user) => access.isAdmin(user),
+		update: (user) => access.hasRoles(user, 'admin', 'editor')
+	},
+	hooks: {
+		afterUpdate: [clearCacheHook],
+		afterCreate: [clearCacheHook]
+	}
+});
+
+const LinkField = link('link').types('pages', 'url');
+
+const Navigation = area('navigation', {
+	icon: Menu,
+	group: 'Lecture',
+	fields: [
+		tabs(
+			tab('header').fields(
+				blocks('links', [
+					block('link').fields(LinkField, blocks('children', [block('sub_link').fields(LinkField)]))
+				])
+			)
+		)
+	],
+	access: {
+		read: (user) => access.hasRoles(user, 'admin')
+	}
+});
+
+const Settings = area('settings', {
+	icon: Settings2,
+	group: 'system',
+	fields: [toggle('maintenance').label('Maintenance'), relation('logo').to('medias')],
+	access: {
+		read: (user) => access.hasRoles(user, 'admin')
+	}
+});
+
+const Medias = collection('medias', {
+	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
+	upload: true,
+	icon: Images,
+	group: 'content',
+	fields: [text('alt').required()],
+	access: {
+		read: () => true
+	}
+});
+
+const config: Config = {
+	database: 'real.sqlite',
+	collections: [Pages, Medias],
+	areas: [Settings, Navigation],
+	panel: {
+		users: {
+			roles: [{ value: 'editor' }]
+		}
+	}
+};
+export default config;
