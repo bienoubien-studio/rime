@@ -3,7 +3,7 @@ export type {
 	Adapter,
 	AdapterBlocksInterface,
 	AdapterCollectionInterface,
-	AdapterGlobalInterface,
+	AdapterAreaInterface,
 	AdapterRelationsInterface,
 	AdapterTransformInterface,
 	GenericAdapterInterfaceArgs,
@@ -16,7 +16,7 @@ export type {
 	LocalAPI,
 	LocalAPICollectionInterface,
 	LocalAPIConstructorArgs,
-	LocalAPIGlobalInterface,
+	LocalAPIAreaInterface,
 	OperationQuery
 } from './api.js';
 
@@ -30,12 +30,12 @@ export type {
 	BuiltCollectionConfig,
 	BuiltConfig,
 	BuiltDocConfig,
-	BuiltGlobalConfig,
+	BuiltAreaConfig,
 	CollectionConfig,
 	Config,
 	CustomPanelRoute,
 	DocumentPrototype,
-	GlobalConfig,
+	AreaConfig,
 	ImageSizesConfig,
 	LocaleConfig,
 	LocalizationConfig,
@@ -75,11 +75,11 @@ export type {
 	CollectionHookBeforeRead,
 	CollectionHookBeforeReadArgs,
 	CollectionHooks,
-	GlobalHookBeforeRead,
-	GlobalHookBeforeReadArgs,
-	GlobalHookBeforeUpdate,
-	GlobalHookBeforeUpdateArgs,
-	GlobalHooks
+	AreaHookBeforeRead,
+	AreaHookBeforeReadArgs,
+	AreaHookBeforeUpdate,
+	AreaHookBeforeUpdateArgs,
+	AreaHooks
 } from './hooks.js';
 
 // Panel types

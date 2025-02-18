@@ -70,32 +70,32 @@ export function generateSchemaString(config: BuiltConfig): string {
 	}
 
 	/**
-	 * Globals
+	 * Areas
 	 */
-	for (const global of config.globals) {
-		const globalSlug = toSnakeCase(global.slug);
+	for (const area of config.areas) {
+		const areaSlug = toSnakeCase(area.slug);
 
 		const {
-			schema: globalSchema,
+			schema: areaSchema,
 			relationsDic,
 			relationFieldsMap,
 			relationFieldsHasLocale
 		} = buildRootTable({
-			fields: global.fields,
-			rootName: globalSlug,
+			fields: area.fields,
+			rootName: areaSlug,
 			locales: config.localization?.locales || [],
-			tableName: globalSlug
+			tableName: areaSlug
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
-			tableName: globalSlug,
+			tableName: areaSlug,
 			relationFieldsMap,
 			hasLocale: relationFieldsHasLocale
 		});
 
 		if (junctionTable.length) {
-			relationsDic[globalSlug] ??= [];
-			relationsDic[globalSlug].push(junctionTableName);
+			relationsDic[areaSlug] ??= [];
+			relationsDic[areaSlug].push(junctionTableName);
 		}
 
 		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({
@@ -104,14 +104,14 @@ export function generateSchemaString(config: BuiltConfig): string {
 
 		const relationsTableNames = Object.values(relationsDic).flat();
 
-		enumTables = [...enumTables, globalSlug, ...relationsTableNames];
+		enumTables = [...enumTables, areaSlug, ...relationsTableNames];
 		enumRelations = [...enumRelations, ...relationsNames];
 		relationFieldsExportDic = {
 			...relationFieldsExportDic,
-			[globalSlug]: relationFieldsMap
+			[areaSlug]: relationFieldsMap
 		};
 
-		schema.push(templateHead(global.slug), globalSchema, junctionTable, relationsDefinitions);
+		schema.push(templateHead(area.slug), areaSchema, junctionTable, relationsDefinitions);
 	}
 
 	schema.push(templateAuth);

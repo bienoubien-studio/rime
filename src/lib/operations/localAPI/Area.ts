@@ -1,27 +1,27 @@
 import { createBlankDocument } from '../../utils/doc.js';
-import { find } from '../global/find.js';
-import { update } from '../global/update.js';
+import { find } from '../area/find.js';
+import { update } from '../area/update.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { BuiltGlobalConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
+import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import type { LocalAPIGlobalInterface, LocalAPI } from 'rizom/types/api.js';
+import type { LocalAPIAreaInterface, LocalAPI } from 'rizom/types/api.js';
 import type { FormErrors } from 'rizom/types/panel.js';
 
 type Args = {
-	config: CompiledGlobalConfig;
+	config: CompiledAreaConfig;
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
 	event: RequestEvent;
 };
 
-class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGlobalInterface<Doc> {
+class AreaInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIAreaInterface<Doc> {
 	#event: RequestEvent;
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
-	config: CompiledGlobalConfig;
+	config: CompiledAreaConfig;
 
 	constructor({ config, adapter, defaultLocale, event, api }: Args) {
 		this.config = config;
@@ -64,4 +64,4 @@ class GlobalInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIGl
 	}
 }
 
-export { GlobalInterface };
+export { AreaInterface };

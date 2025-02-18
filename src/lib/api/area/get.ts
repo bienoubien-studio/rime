@@ -1,9 +1,9 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
-import type { GlobalSlug } from 'rizom/types/doc';
+import type { AreaSlug } from 'rizom/types/doc';
 import { safe } from 'rizom/utils/safe';
 
-export default function (slug: GlobalSlug) {
+export default function (slug: AreaSlug) {
 	//
 	async function GET(event: RequestEvent) {
 		const { api, locale } = event.locals;
@@ -12,9 +12,7 @@ export default function (slug: GlobalSlug) {
 		const paramDepth = event.url.searchParams.get('depth');
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
-		const [error, doc] = await safe(
-			api.global(slug).find({ locale: paramLocale || locale, depth })
-		);
+		const [error, doc] = await safe(api.area(slug).find({ locale: paramLocale || locale, depth }));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

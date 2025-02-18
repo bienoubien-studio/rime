@@ -8,9 +8,9 @@ export const compileConfig = (config: BuiltConfig) => {
 			...collection,
 			fields: compileFields(collection.fields)
 		})),
-		globals: config.globals.map((global) => ({
-			...global,
-			fields: compileFields(global.fields)
+		areas: config.areas.map((area) => ({
+			...area,
+			fields: compileFields(area.fields)
 		}))
 	};
 };

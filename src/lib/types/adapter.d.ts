@@ -43,7 +43,7 @@ export interface AdapterCollectionInterface {
 	}): Promise<GenericDoc[]>;
 }
 
-export interface AdapterGlobalInterface {
+export interface AdapterAreaInterface {
 	get(args: { slug: PrototypeSlug; locale?: string }): Promise<GenericDoc>;
 
 	update(args: {
@@ -122,7 +122,7 @@ export interface AdapterTransformInterface {
 
 export interface Adapter {
 	collection: AdapterCollectionInterface;
-	global: AdapterGlobalInterface;
+	area: AdapterAreaInterface;
 	blocks: AdapterBlocksInterface;
 	relations: AdapterRelationsInterface;
 	transform: AdapterTransformInterface;

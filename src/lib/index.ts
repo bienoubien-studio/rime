@@ -4,13 +4,13 @@ import { buildConfig } from './config/build/index.js';
 
 export { rizom, handlers, buildConfig };
 export { FormFieldBuilder } from 'rizom/fields/builders/field.js';
-export { global, collection } from 'rizom/config/builders.js';
+export { area, collection } from 'rizom/config/builders.js';
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
 /* -------------------------------------------------------------------------- */
 
-export type { Config, CollectionConfig, GlobalConfig, BrowserConfig } from './types/config.js';
+export type { Config, CollectionConfig, AreaConfig, BrowserConfig } from './types/config.js';
 export type { Link } from 'rizom/fields/link/index.js';
 export type { UploadDoc, BaseDoc } from './types/doc.js';
 export type { User } from 'rizom/types/auth.js';
@@ -32,12 +32,12 @@ declare module 'rizom' {
 	// eslint-disable-next-line
 	export interface RegisterCollection {}
 	// eslint-disable-next-line
-	export interface RegisterGlobal {}
+	export interface RegisterArea {}
 
 	export interface Register {
-		PrototypeSlug: keyof RegisterCollection | keyof RegisterGlobal;
+		PrototypeSlug: keyof RegisterCollection | keyof RegisterArea;
 		CollectionSlug: keyof RegisterCollection;
-		GlobalSlug: keyof RegisterGlobal;
+		AreaSlug: keyof RegisterArea;
 		Plugins: RegisterPlugins;
 		FieldsType: keyof RegisterFieldsType;
 		AnyFormField: RegisterFormFields[keyof RegisterFormFields];

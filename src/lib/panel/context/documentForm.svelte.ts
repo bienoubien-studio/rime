@@ -17,7 +17,7 @@ import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
 import type { GenericBlock, GenericDoc, AnyFormField, BuiltDocConfig } from 'rizom/types';
 import type { Dic } from 'rizom/types/utility';
-import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config.js';
+import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 
 function createDocumentFormState({
@@ -56,7 +56,7 @@ function createDocumentFormState({
 	}
 
 	function initTitle() {
-		if (config.type === 'global') {
+		if (config.type === 'area') {
 			return config.label;
 		} else {
 			$effect(() => (title = doc[config.asTitle] || '[undefined]'));
@@ -455,7 +455,7 @@ type MoveBlock = (from: number, to: number) => void;
 
 type Args = {
 	initial: GenericDoc;
-	config: CompiledGlobalConfig | CompiledCollectionConfig;
+	config: CompiledAreaConfig | CompiledCollectionConfig;
 	readOnly: boolean;
 	onNestedDocumentCreated?: any;
 	onDataChange?: any;

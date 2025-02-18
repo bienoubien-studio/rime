@@ -1,5 +1,5 @@
 import createAdapterCollectionInterface from './collection.js';
-import createAdapterGlobalInterface from './global.js';
+import createAdapterAreaInterface from './area.js';
 import createAdapterBlocksInterface from './blocks.js';
 import createAdapterRelationsInterface from './relations.js';
 import createAdapterAuthInterface from './auth.server.js';
@@ -22,7 +22,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	});
 	const blocks = createAdapterBlocksInterface({ db, tables });
 	const collection = createAdapterCollectionInterface({ db, tables });
-	const global = createAdapterGlobalInterface({ db, tables });
+	const area = createAdapterAreaInterface({ db, tables });
 	const relations = createAdapterRelationsInterface({ db, tables });
 	const transform = databaseTransformInterface({
 		configInterface,
@@ -32,7 +32,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 
 	return {
 		collection,
-		global,
+		area,
 		blocks,
 		relations,
 		transform,

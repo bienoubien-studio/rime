@@ -18,22 +18,22 @@ import { Images, Text } from 'lucide-svelte';
 import type { CollectionConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
-import type { GlobalConfig } from 'rizom';
+import type { AreaConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
 import type { WithUpload } from 'rizom/types/utility';
-import { collection, global } from 'rizom/config/builders';
+import { collection, area } from 'rizom/config/builders';
 
 /////////////////////////////////////////////
 // Settings
 //////////////////////////////////////////////
 
-const Settings = global('settings', {
+const Settings = area('settings', {
 	icon: Settings2,
 	group: 'informations',
 	fields: [
 		toggle('minimalFooter').label('Minimal footer'),
-		toggle('stickyHeader').label('Sticky header'),
+		toggle('maintenance').label('Sticky header'),
 		text('legalMention').label('Legals mentions').localized(),
 		relation('logo').to('medias')
 	],
@@ -68,7 +68,7 @@ const nav = blocks('nav').blocks(
 	block('navItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField, subnav)
 );
 
-const Menu = global('menu', {
+const Menu = area('menu', {
 	group: 'Content',
 	icon: ListTree,
 	access: {
@@ -81,7 +81,7 @@ const Menu = global('menu', {
 // Informations
 //////////////////////////////////////////////
 
-const Informations = global('infos', {
+const Informations = area('infos', {
 	icon: ReceiptText,
 	group: 'informations',
 	fields: [
@@ -252,7 +252,7 @@ const config: Config = {
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages, Medias],
-	globals: [Settings, Informations, Menu],
+	areas: [Settings, Informations, Menu],
 
 	localization: {
 		locales: [

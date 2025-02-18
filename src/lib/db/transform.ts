@@ -71,7 +71,7 @@ export const databaseTransformInterface = ({
 		if (configInterface.isCollection(slug)) {
 			docLocalAPI = api.collection(slug);
 		} else {
-			docLocalAPI = api.global(slug);
+			docLocalAPI = api.area(slug);
 		}
 		const config = docLocalAPI.config;
 		const blankDocument = docLocalAPI.blank();

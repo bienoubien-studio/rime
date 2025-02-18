@@ -36,11 +36,11 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'^panel\.routes',
 		'^panel\.users',
 
-		// Exclude global and collection access
+		// Exclude area and collection access
 		'collections\.\.hooks',
 
-		// Exclude global and collection hooks
-		'globals\.\.hooks',
+		// Exclude area and collection hooks
+		'areas\.\.hooks',
 
 		// Generic patterns
 		'.*\.server', // Exclude any path ending with server

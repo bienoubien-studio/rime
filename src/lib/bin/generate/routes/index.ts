@@ -12,9 +12,9 @@ import {
 	collectionLayoutSvelte,
 	collectionPageSvelte,
 	customRouteSvelte,
-	globalAPIServer,
-	globalPageServer,
-	globalPageSvelte,
+	areaAPIServer,
+	areaPageServer,
+	areaPageSvelte,
 	rootLayoutServer
 } from './templates.js';
 import cache from '../cache/index.js';
@@ -33,7 +33,7 @@ const projectRoot = process.cwd();
 
 function generateRoutes(config: BuiltConfig) {
 	const memo = `
-    globals:${config.globals.map((g) => `${g.slug}`).join(',')}
+    areas:${config.areas.map((g) => `${g.slug}`).join(',')}
     collections:${config.collections.map((c) => `${c.slug}${c.auth ? '.auth' : ''}`).join(',')}
     custom:${
 			config.panel?.routes
@@ -157,23 +157,23 @@ function generateRoutes(config: BuiltConfig) {
 		}
 	}
 
-	for (const global of config.globals) {
-		const globalRoute = path.join(panelRoute, global.slug);
-		const globalAPIRoute = path.join(apiRoute, global.slug);
+	for (const area of config.areas) {
+		const areaRoute = path.join(panelRoute, area.slug);
+		const areaAPIRoute = path.join(apiRoute, area.slug);
 
-		if (!fs.existsSync(globalRoute)) {
-			fs.mkdirSync(globalRoute);
-			fs.writeFileSync(path.join(globalRoute, '+page.server.ts'), globalPageServer(global.slug));
-			fs.writeFileSync(path.join(globalRoute, '+page.svelte'), globalPageSvelte(global.slug));
+		if (!fs.existsSync(areaRoute)) {
+			fs.mkdirSync(areaRoute);
+			fs.writeFileSync(path.join(areaRoute, '+page.server.ts'), areaPageServer(area.slug));
+			fs.writeFileSync(path.join(areaRoute, '+page.svelte'), areaPageSvelte(area.slug));
 		}
 
 		//////////////////////////////////////////////
 		// API routes
 		//////////////////////////////////////////////
 
-		if (!fs.existsSync(globalAPIRoute)) {
-			fs.mkdirSync(globalAPIRoute);
-			fs.writeFileSync(path.join(globalAPIRoute, '+server.ts'), globalAPIServer(global.slug));
+		if (!fs.existsSync(areaAPIRoute)) {
+			fs.mkdirSync(areaAPIRoute);
+			fs.writeFileSync(path.join(areaAPIRoute, '+server.ts'), areaAPIServer(area.slug));
 		}
 	}
 

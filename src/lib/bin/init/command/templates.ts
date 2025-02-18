@@ -14,19 +14,19 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 `;
 
 export const defaultConfig = (name: string) => `
-import type { Config, CollectionConfig } from '${PACKAGE}';
+import type { Config } from '${PACKAGE}';
+import { collection } from '${PACKAGE}';
 import { text } from '${PACKAGE}/fields';
 
-const Pages: CollectionConfig = {
-	slug: 'pages',
+const Pages = collection('pages', {
 	group: 'content',
 	fields: [text('title').isTitle()]
-};
+});
 
 const config: Config = {
   database: '${name}.sqlite',
   collections: [Pages],
-  globals: []
+  areas: []
 };
 export default config;
 `;

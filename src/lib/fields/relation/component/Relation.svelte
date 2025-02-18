@@ -37,7 +37,8 @@
 	let selectedItems = $state<RelationFieldItem[]>([]);
 	let isFull = $derived(
 		(!config.many && selectedIds.length === 1) ||
-			(config.many && selectedIds.length === initialItems.length) || false
+			(config.many && selectedIds.length === initialItems.length) ||
+			false
 	);
 
 	function toRelationFieldItem(doc: GenericDoc) {
@@ -175,7 +176,7 @@
 
 	<RelationComponent
 		{path}
-		isSortable={!!config.many}
+		many={config.many}
 		hasError={!!field.error}
 		formNestedLevel={form.nestedLevel}
 		readOnly={form.readOnly}

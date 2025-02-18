@@ -6,7 +6,7 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { PencilRuler, Eye, Command } from 'lucide-svelte';
-	import type { CompiledCollectionConfig, CompiledGlobalConfig } from 'rizom/types/config';
+	import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
@@ -17,7 +17,7 @@
 		onClose?: any;
 		class?: string;
 		form: DocumentFormContext;
-		config: CompiledGlobalConfig | CompiledCollectionConfig;
+		config: CompiledAreaConfig | CompiledCollectionConfig;
 		collectionUrl?: string;
 	};
 	const { form, onClose, config }: Props = $props();

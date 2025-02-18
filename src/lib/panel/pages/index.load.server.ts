@@ -1,4 +1,4 @@
-import global from './global/load.server.js';
+import area from './area/load.server.js';
 import { layoutLoad } from './collection-layout/load.server.js';
 import { docLoad } from './collection-document/load.server.js';
 import { forgotPasswordLoad as forgotPassword } from './forgot-password/load.server.js';
@@ -13,10 +13,10 @@ const collection = {
 	doc: docLoad
 };
 
-export { global, collection, dashboard, resetPassword, forgotPassword, live, init, login };
+export { area, collection, dashboard, resetPassword, forgotPassword, live, init, login };
 
 export default {
-	global,
+	area,
 	collection,
 	dashboard,
 	resetPassword,

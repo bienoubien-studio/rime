@@ -80,28 +80,28 @@ export const collectionAPIAuthForgotPasswordServer = (slug: string) =>
 export const POST = api.collection.forgotPassword('${slug}')
 `;
 
-/** Global */
+/** Area */
 
-export const globalPageServer = (slug: string) =>
+export const areaPageServer = (slug: string) =>
 	`import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
 
-export const load = pagesLoad.global('${slug}')
-export const actions = pagesActions.global('${slug}')
+export const load = pagesLoad.area('${slug}')
+export const actions = pagesActions.area('${slug}')
 `;
 
-export const globalPageSvelte = (slug: string) =>
+export const areaPageSvelte = (slug: string) =>
 	`<script>
-  import { Global } from '${PACKAGE_NAME}/panel'
+  import { Area } from '${PACKAGE_NAME}/panel'
   const { data } = $props()
 </script>
-<Global {data} slug='${slug}' />
+<Area {data} slug='${slug}' />
 `;
 
-export const globalAPIServer = (slug: string) =>
+export const areaAPIServer = (slug: string) =>
 	`import * as api from '${PACKAGE_NAME}/api';
 
-export const GET = api.global.get('${slug}')
-export const POST = api.global.update('${slug}')
+export const GET = api.area.get('${slug}')
+export const POST = api.area.update('${slug}')
 `;
 
 export const customRouteSvelte = (config: any) => {

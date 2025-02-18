@@ -1,7 +1,7 @@
 import type {
 	BuiltCollectionConfig,
 	BuiltDocConfig,
-	BuiltGlobalConfig,
+	BuiltAreaConfig,
 	CollectionConfig,
 	CompiledCollectionConfig
 } from 'rizom/types/config';
@@ -15,8 +15,8 @@ export const isAuthConfig = (
 	config: CollectionConfig<any> | BuiltCollectionConfig | CompiledCollectionConfig
 ) => config.auth === true;
 
-export const isBuiltGlobalConfig = (config: BuiltDocConfig): config is BuiltGlobalConfig =>
-	config.type === 'global';
+export const isBuiltAreaConfig = (config: BuiltDocConfig): config is BuiltAreaConfig =>
+	config.type === 'area';
 
 export const isBuiltCollectionConfig = (config: BuiltDocConfig): config is BuiltCollectionConfig =>
 	config.type === 'collection';

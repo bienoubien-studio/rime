@@ -27,7 +27,7 @@ export type Block${toPascalCase(slug)} = {
   ${content}
 }`;
 
-const templateRegister = (collectionSlugs: string[], globalSlugs: string[]): string => {
+const templateRegister = (collectionSlugs: string[], areaSlugs: string[]): string => {
 	const registerCollections = collectionSlugs.length
 		? [
 				'\tinterface RegisterCollection {',
@@ -35,14 +35,14 @@ const templateRegister = (collectionSlugs: string[], globalSlugs: string[]): str
 				'\t}'
 			]
 		: [];
-	const registerGlobals = globalSlugs.length
+	const registerAreas = areaSlugs.length
 		? [
-				'\tinterface RegisterGlobal {',
-				`${globalSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\tinterface RegisterArea {',
+				`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
 				'\t}'
 			]
 		: [];
-	return ["declare module 'rizom' {", ...registerCollections, ...registerGlobals, '}'].join('\n');
+	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
 
 function generateImageSizesType(sizes: ImageSizesConfig[]) {
@@ -138,17 +138,17 @@ export type RelationValue<T> =
 		})
 		.join('\n');
 
-	const globalsTypes = config.globals
-		.map((global) =>
-			templateDocType(global.slug, convertFieldsToTypesTemplates(global.fields).join('\n\t'))
+	const areasTypes = config.areas
+		.map((area) =>
+			templateDocType(area.slug, convertFieldsToTypesTemplates(area.fields).join('\n\t'))
 		)
 		.join('\n');
 
 	const collectionSlugs = config.collections.map((c) => c.slug);
-	const globalSlugs = config.globals.map((g) => g.slug);
+	const areaSlugs = config.areas.map((g) => g.slug);
 
 	// const docType = templateAnyDoc(prototypeSlugs);
-	const register = templateRegister(collectionSlugs, globalSlugs);
+	const register = templateRegister(collectionSlugs, areaSlugs);
 
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
@@ -175,7 +175,7 @@ export type RelationValue<T> =
 		typeImports,
 		relationValueType,
 		collectionsTypes,
-		globalsTypes,
+		areasTypes,
 		blocksTypes.join('\n'),
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',

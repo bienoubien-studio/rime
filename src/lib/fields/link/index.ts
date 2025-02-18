@@ -17,7 +17,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 			if (api.rizom.config.isCollection(value.type)) {
 				doc = await api.collection(value.type).findById({ id: value.link || '', locale });
 			} else {
-				doc = await api.global(value.type).find({ locale });
+				doc = await api.area(value.type).find({ locale });
 			}
 			if (!doc) {
 				value.link = null;

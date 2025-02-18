@@ -1,16 +1,16 @@
 import { RizomError, RizomFormError } from '../../errors/index.js';
 import { CollectionInterface } from './Collection.js';
-import { GlobalInterface } from './Global.js';
+import { AreaInterface } from './Area.js';
 import type { Rizom } from '../../rizom.server.js';
 import type {
 	LocalAPI as LocalAPIType,
 	LocalAPIConstructorArgs,
 	LocalAPICollectionInterface,
-	LocalAPIGlobalInterface
+	LocalAPIAreaInterface
 } from 'rizom/types/api.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterCollection } from 'rizom';
-import type { RegisterGlobal } from 'rizom';
+import type { RegisterArea } from 'rizom';
 import type { FormErrors } from 'rizom/types/panel.js';
 import validate from 'rizom/utils/validate.js';
 
@@ -45,16 +45,14 @@ export class LocalAPI implements LocalAPIType {
 		});
 	}
 
-	global<Slug extends keyof RegisterGlobal>(
-		slug: Slug
-	): LocalAPIGlobalInterface<RegisterGlobal[Slug]> {
-		const globalConfig = this.rizom.config.getGlobal(slug);
-		if (!globalConfig) {
-			throw new RizomError(`${slug} is not a global`);
+	area<Slug extends keyof RegisterArea>(slug: Slug): LocalAPIAreaInterface<RegisterArea[Slug]> {
+		const areaConfig = this.rizom.config.getArea(slug);
+		if (!areaConfig) {
+			throw new RizomError(`${slug} is not a area`);
 		}
-		return new GlobalInterface({
+		return new AreaInterface({
 			event: this.#requestEvent,
-			config: globalConfig,
+			config: areaConfig,
 			adapter: this.rizom.adapter,
 			api: this as LocalAPIType,
 			defaultLocale: this.rizom.config.getDefaultLocale()

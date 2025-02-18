@@ -1,16 +1,16 @@
 import { type RequestEvent } from '@sveltejs/kit';
 import extractData from '$lib/operations/preprocess/extract/data.server';
-import type { GlobalSlug } from 'rizom/types/doc';
+import type { AreaSlug } from 'rizom/types/doc';
 import { safe } from 'rizom/utils/safe';
 import { handleError } from 'rizom/errors/handler.server';
 
-export default function (slug: GlobalSlug) {
+export default function (slug: AreaSlug) {
 	const actions = {
 		update: async (event: RequestEvent) => {
 			const { api, locale } = event.locals;
 
 			const [error, doc] = await safe(
-				api.global(slug).update({
+				api.area(slug).update({
 					data: await extractData(event.request),
 					locale
 				})

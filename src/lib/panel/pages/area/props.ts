@@ -1,12 +1,12 @@
 import type { GenericDoc } from 'rizom/types';
-import type { GlobalSlug } from 'rizom/types/doc';
+import type { AreaSlug } from 'rizom/types/doc';
 
-export type GlobalProps = {
-	data: GlobalData;
-	slug: GlobalSlug;
+export type AreaProps = {
+	data: AreaData;
+	slug: AreaSlug;
 };
 
-export type GlobalData =
+export type AreaData =
 	| {
 			status: 401;
 			doc: {};
@@ -22,6 +22,6 @@ export type GlobalData =
 			status: 200;
 			doc: GenericDoc;
 			operation: 'update';
-			slug: GlobalSlug;
+			slug: AreaSlug;
 			readOnly: false;
 	  };
