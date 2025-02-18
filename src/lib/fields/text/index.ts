@@ -43,6 +43,11 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		return this;
 	}
 
+	layout(layout: string) {
+		this.field.layout = layout;
+		return this;
+	}
+
 	toField() {
 		if (!this.field.validate) {
 			this.field.validate = (value: any) => {
@@ -63,6 +68,7 @@ export type TextField = FormField & {
 	defaultValue?: string;
 	unique?: boolean;
 	isTitle?: true;
+	layout: string;
 };
 
 /////////////////////////////////////////////

@@ -75,9 +75,6 @@
 			:global(fieldset label) {
 				display: none;
 			}
-			:global(fieldset label) {
-				display: none;
-			}
 			:global(fieldset .rz-field-error) {
 				top: calc(-1 * var(--rz-size-6));
 			}

@@ -283,7 +283,7 @@
 	.rz-link-field-edit {
 		@mixin font-medium;
 		width: 100%;
-		background-color: hsl(var(--rz-ground-7));
+		background-color: hsl(var(--rz-ground-5) / 0.6);
 		border: var(--rz-border);
 		display: flex;
 		align-items: center;
@@ -296,7 +296,7 @@
 		&:not([data-emtpy]) {
 			span:last-child {
 				@mixin font-normal;
-				color: hsl(var(--rz-ground-3));
+				color: hsl(var(--rz-ground-2));
 			}
 		}
 		&:global([data-error]) {

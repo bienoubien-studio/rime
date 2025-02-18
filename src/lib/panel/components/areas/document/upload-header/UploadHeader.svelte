@@ -131,7 +131,8 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
-		/* border-right: var(--rz-border); */
+		width: clamp(var(--rz-size-60), 40vw, 80%);
+		max-height: 400px;
 		@mixin radius-top md;
 	}
 
@@ -142,7 +143,6 @@
 		.rz-doc-upload-header__preview {
 			@mixin radius-top none;
 			@mixin radius-left md;
-			width: var(--rz-size-60);
 		}
 		.rz-doc-upload-header__info {
 			@mixin px var(--rz-size-8);
