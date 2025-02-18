@@ -9,14 +9,14 @@ import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import type { Field } from 'rizom/types/fields.js';
 
-export const blocks = (name: string) => new BlocksBuilder(name);
+export const blocks = (name: string, blocks: BlocksFieldBlock[]) => new BlocksBuilder(name, blocks);
 
 export const block = (name: string) => new BlockBuilder(name);
 
 export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
-	constructor(name: string) {
+	constructor(name: string, blocks: BlocksFieldBlock[]) {
 		super(name, 'blocks');
-		this.field.blocks = [];
+		this.field.blocks = blocks;
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 	}
 
@@ -27,10 +27,10 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		return Cell;
 	}
 
-	blocks(...blocks: BlocksFieldBlock[]) {
-		this.field.blocks = blocks;
-		return this;
-	}
+	// blocks(...blocks: BlocksFieldBlock[]) {
+	// 	this.field.blocks = blocks;
+	// 	return this;
+	// }
 }
 
 class BlockBuilder {
@@ -64,7 +64,7 @@ class BlockBuilder {
 		this.#block.label = label;
 		return this;
 	}
-	fields(...fields: FieldBuilder<AnyField>[]) {
+	fields(...fields: FieldBuilder<Field>[]) {
 		this.#block.fields = [...fields, ...this.#block.fields];
 		return { ...this.#block };
 	}
@@ -86,7 +86,7 @@ export type BlocksFieldBlock = {
 	description?: string;
 	icon?: ComponentType;
 	renderTitle?: BlocksFieldBlockRenderTitle;
-	fields: FieldBuilder<AnyField>[];
+	fields: FieldBuilder<Field>[];
 };
 
 export type BlocksFieldRaw = FormField & {

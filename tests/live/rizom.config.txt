@@ -1,11 +1,11 @@
 import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
-import { collection, type CollectionConfig } from 'rizom';
+import { collection, area } from 'rizom/config/builders';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
-import { area } from 'rizom';
 import type { PagesDoc } from '../app.generated';
+
 import {
 	block,
 	blocks,
@@ -122,7 +122,7 @@ const tabAttributes = tab('Attributes').fields(
 	date('published')
 );
 
-const tabContent = tab('Layout').fields(blocks('components').blocks(blockParagraph).table());
+const tabContent = tab('Layout').fields(blocks('components', [blockParagraph]).table());
 
 const Pages = collection('pages', {
 	icon: Newspaper,

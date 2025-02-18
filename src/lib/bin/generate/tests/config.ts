@@ -51,9 +51,7 @@ const setHome: CollectionHookBeforeUpsert<any> = async (args) => {
 
 	if (data?.home) {
 		const query = 'where[home][equals]=true';
-
 		const pagesIsHome = await api.collection('pages').find({ query });
-
 		for (const page of pagesIsHome) {
 			await api.collection<any>('pages').updateById({
 				id: page.id,
@@ -71,14 +69,7 @@ const formatslug: CollectionHookBeforeUpsert<any> = async (args) => {
 	if (operation === 'create' || operation === 'update') {
 		if (data.slug) {
 			const baseSlug = data.slug;
-			const query = {
-				where: {
-					slug: {
-						equals: data.slug
-					}
-				}
-			};
-
+			const query = `where[slug][equals]${data.slug}`;
 			let index = 0;
 
 			const pagesWithCurrentSlug = await api.collection('pages').find({
@@ -119,7 +110,7 @@ const tabAttributes = tab('Attributes').fields(
 	date('published')
 );
 
-const tabContent = tab('Layout').fields(blocks('components').blocks(blockParagraph).table());
+const tabContent = tab('Layout').fields(blocks('components', [blockParagraph]).table());
 
 const Pages = collection('pages', {
 	icon: Newspaper,

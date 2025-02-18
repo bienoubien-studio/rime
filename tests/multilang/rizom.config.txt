@@ -15,13 +15,10 @@ import {
 } from 'rizom/fields/index.js';
 import { ListTree, Newspaper, ReceiptText, Settings2 } from 'lucide-svelte';
 import { Images, Text } from 'lucide-svelte';
-import type { CollectionConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom';
-import type { AreaConfig } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
-import type { WithUpload } from 'rizom/types/utility';
 import { collection, area } from 'rizom/config/builders';
 
 /////////////////////////////////////////////
@@ -58,15 +55,13 @@ const renderTitle: BlocksFieldBlockRenderTitle = ({ fields, position }) => {
 	return `${fields.link.label}`;
 };
 
-const subnav = blocks('subnav')
-	.label('Sub Nav')
-	.blocks(
-		block('subNavItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField)
-	);
+const subnav = blocks('subnav', [
+	block('subNavItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField)
+]).label('Sub Nav');
 
-const nav = blocks('nav').blocks(
+const nav = blocks('nav', [
 	block('navItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField, subnav)
-);
+]);
 
 const Menu = area('menu', {
 	group: 'Content',
@@ -195,7 +190,7 @@ const tabAttributes = tab('Attributes').fields(
 );
 
 const tabContent = tab('Layout').fields(
-	blocks('components').blocks(blockParagraph, blockSlider, blockImage).table()
+	blocks('components', [blockParagraph, blockSlider, blockImage]).table()
 );
 
 const tabSeo = tab('Seo').fields(
