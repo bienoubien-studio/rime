@@ -1,6 +1,6 @@
 import { omit } from '../utils/object.js';
 import { getTableColumns } from 'drizzle-orm';
-import { unflatten } from 'flat';
+import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
@@ -182,12 +182,12 @@ export const databaseTransformInterface = ({
 
 		/** Extract all blocks  */
 		const treeTables = treeInterface.getBlocksTableNames(slug);
-		const treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
+		let treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
 
 		/** Place each treeBlock in its path */
 		for (let block of treeBlocks) {
 			const expandedPath = expandTreePath(block.path);
-			console.log(expandedPath);
+
 			if (!(expandedPath in flatDoc)) {
 				flatDoc[expandedPath] = [];
 			}
@@ -216,8 +216,9 @@ export const databaseTransformInterface = ({
 			flatDoc[expandedPath][position] = block;
 		}
 
-		// Clean
+		flatDoc = safeFlattenDoc(flatDoc);
 
+		// Clean
 		let output: Dic = unflatten(flatDoc);
 
 		/** Remove blocks table keys */

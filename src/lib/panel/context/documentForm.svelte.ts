@@ -135,17 +135,12 @@ function createDocumentFormState({
 			console.log('before delete', snapshot(items));
 
 			const getArray = (path: string) => {
-				const parts = path.split('.');
+				const parts = path.split('.').filter((s) => s !== '_children');
 				let current = items;
 
-				for (let i = 0; i < parts.length - 1; i++) {
+				for (let i = 0; i < parts.length; i++) {
 					const key = parts[i];
-
-					if (key === '_children') {
-						current = current._children;
-					} else {
-						current = current[parseInt(key)]._children;
-					}
+					current = current[parseInt(key)] ? current[parseInt(key)]._children : current;
 				}
 
 				return {

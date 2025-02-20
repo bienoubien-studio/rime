@@ -34,25 +34,14 @@ export function defineTreeBlocksDiff({
 		const existing = existingBlocks.find((e) => e.id === newBlock.id);
 		if (!existing) return false;
 
-		// Position change should trigger an update
-		if (existing.position !== newBlock.position) {
-			return true;
-		}
-
-		const normalizeForComparison = (block: WithRequired<TreeBlock, 'path'>) => {
-			const { id, parentId, path, position, _children, ...rest } = block;
-			return Object.entries(rest).reduce((acc, [key, value]) => {
-				if (Array.isArray(value) && value[0]?.type) {
-					return acc;
-				}
-				return { ...acc, [key]: value };
-			}, {});
-		};
-
-		const normalizedExisting = normalizeForComparison(existing);
-		const normalizedNew = normalizeForComparison(newBlock);
-
-		return JSON.stringify(normalizedExisting) !== JSON.stringify(normalizedNew);
+		// Compare all relevant properties
+		return (
+			existing.path !== newBlock.path ||
+			existing.position !== newBlock.position ||
+			existing.label !== newBlock.label ||
+			JSON.stringify(existing.link) !== JSON.stringify(newBlock.link) ||
+			existing.parentId !== newBlock.parentId
+		);
 	});
 
 	return { toAdd, toDelete, toUpdate };
