@@ -4,20 +4,18 @@ import { unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
-import { isUploadConfig } from '../config/utils.js';
-import { buildConfigMap } from '../operations/preprocess/config/map.js';
 import { safeFlattenDoc } from '../utils/doc.js';
-import { postprocessFields } from '../operations/postprocess/fields.server.js';
 import type { CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type {
 	AdapterBlocksInterface,
+	AdapterTreeInterface,
 	TransformContext,
 	TransformManyContext
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
+import { expandTreePath, extractFieldName } from 'rizom/operations/postprocess/tree.server.js';
 
 /////////////////////////////////////////////
 // Types
@@ -26,6 +24,7 @@ import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
 type CreateTransformInterfaceArgs = {
 	configInterface: ConfigInterface;
 	tables: any;
+	treeInterface: AdapterTreeInterface;
 	blocksInterface: AdapterBlocksInterface;
 };
 export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
@@ -37,7 +36,8 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 export const databaseTransformInterface = ({
 	configInterface,
 	tables,
-	blocksInterface
+	blocksInterface,
+	treeInterface
 }: CreateTransformInterfaceArgs) => {
 	const transformDocs = async <T extends GenericDoc = GenericDoc>({
 		docs: rawDocs,
@@ -143,6 +143,10 @@ export const databaseTransformInterface = ({
 			// delete doc[tableNameRelationFields];
 		}
 
+		/////////////////////////////////////////////
+		// Blocks handling
+		//////////////////////////////////////////////
+
 		/** Extract all blocks  */
 		const blocksTables = blocksInterface.getBlocksTableNames(slug);
 		const blocks: Dic[] = [].concat(...blocksTables.map((blockTable) => doc[blockTable]));
@@ -171,6 +175,48 @@ export const databaseTransformInterface = ({
 			/** Assign */
 			flatDoc[path][position] = block;
 		}
+
+		/////////////////////////////////////////////
+		// Tree handling
+		//////////////////////////////////////////////
+
+		/** Extract all blocks  */
+		const treeTables = treeInterface.getBlocksTableNames(slug);
+		const treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
+
+		/** Place each treeBlock in its path */
+		for (let block of treeBlocks) {
+			const expandedPath = expandTreePath(block.path);
+			console.log(expandedPath);
+			if (!(expandedPath in flatDoc)) {
+				flatDoc[expandedPath] = [];
+			}
+
+			const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(extractFieldName(block.path))}Locales`;
+
+			if (locale && treeBlockLocaleTableName in tables) {
+				block = {
+					...((block[treeBlockLocaleTableName][0] as Partial<GenericBlock>) || {}),
+					...block
+				};
+			}
+			/** Clean */
+			const { position, path } = block;
+			if (!block._children) block._children = [];
+
+			if (!isPanel) {
+				delete block.position;
+				delete block.path;
+				delete block.parentId;
+				delete block.locale;
+			}
+			delete block[treeBlockLocaleTableName];
+			/** Assign */
+
+			flatDoc[expandedPath][position] = block;
+		}
+
+		// Clean
 
 		let output: Dic = unflatten(flatDoc);
 

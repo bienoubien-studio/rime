@@ -8,6 +8,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import { databaseTransformInterface } from './transform.js';
 import { env } from '$env/dynamic/public';
+import createAdapterTreeInterface from './tree.js';
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
@@ -21,12 +22,14 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		trustedOrigins: configInterface.raw.trustedOrigins
 	});
 	const blocks = createAdapterBlocksInterface({ db, tables });
+	const tree = createAdapterTreeInterface({ db, tables });
 	const collection = createAdapterCollectionInterface({ db, tables });
 	const area = createAdapterAreaInterface({ db, tables });
 	const relations = createAdapterRelationsInterface({ db, tables });
 	const transform = databaseTransformInterface({
 		configInterface,
 		tables,
+		treeInterface: tree,
 		blocksInterface: blocks
 	});
 
@@ -34,6 +37,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		collection,
 		area,
 		blocks,
+		tree,
 		relations,
 		transform,
 		auth,

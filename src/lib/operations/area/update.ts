@@ -7,14 +7,14 @@ import { preprocessFields } from '../preprocess/fields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config.js';
+import type { CompiledAreaConfig } from 'rizom/types/config.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 import { extractTreeItems } from '../preprocess/tree/extract.server.js';
-import { logToFile } from '../../../log.js';
+import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -101,11 +101,11 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		configMap
 	});
 
-	console.log('\x1Bc');
-	console.log('incomingTreeItems', incomingTreeItems);
-	throw new Error('coucou');
-
 	let doc = await adapter.area.update({ slug: config.slug, data, locale });
+
+	/////////////////////////////////////////////
+	// Blocks handling
+	//////////////////////////////////////////////
 
 	const existingBlocks = extractBlocks({
 		doc: originalDoc,
@@ -139,12 +139,55 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		);
 	}
 
+	/////////////////////////////////////////////
+	// Tree handling
+	//////////////////////////////////////////////
+
+	const existingTreeItems = extractTreeItems({
+		doc: originalDoc,
+		configMap
+	});
+
+	const treeDiff = defineTreeBlocksDiff({
+		existingBlocks: existingTreeItems,
+		incomingBlocks: incomingTreeItems
+	});
+
+	if (treeDiff.toDelete.length) {
+		await Promise.all(
+			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: config.slug, block }))
+		);
+	}
+
+	if (treeDiff.toAdd.length) {
+		await Promise.all(
+			treeDiff.toAdd.map((block) =>
+				adapter.tree.create({ parentSlug: config.slug, parentId: originalDoc.id, block, locale })
+			)
+		);
+	}
+
+	if (treeDiff.toUpdate.length) {
+		await Promise.all(
+			treeDiff.toUpdate.map((block) =>
+				adapter.tree.update({ parentSlug: config.slug, block, locale })
+			)
+		);
+	}
+
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId: doc.id,
 		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
 	});
+
+	/** Delete relations from deletedTreeBlocks */
+	// await adapter.relations.deleteFromPaths({
+	// 	parentSlug: config.slug,
+	// 	parentId: doc.id,
+	// 	paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+	// });
 
 	/** Get existing relations */
 	const existingRelations = await adapter.relations.getAll({

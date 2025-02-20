@@ -96,6 +96,7 @@ function createDocumentFormState({
 
 	function useTree(path: string) {
 		const parts = path.split('.');
+		let stamp = $state(randomId(12));
 
 		const generateTempId = () => 'temp-' + randomId(8);
 
@@ -110,35 +111,93 @@ function createDocumentFormState({
 			flatDoc[path] = items;
 			doc = unflatten(flatDoc);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
+
+			stamp = randomId(12);
 		};
 
-		const addItem: AddBlock = (item) => {
+		const addItem = (emptyFields: Dic) => {
 			let items = [...getItems()];
 			const itemWithPath: TreeBlock = {
-				...item,
+				...emptyFields,
 				id: generateTempId(),
 				path: path,
-				position: items.length
+				position: items.length,
+				_children: []
 			};
 			items = items.toSpliced(items.length, 0, itemWithPath);
 			assignItemsToDoc(items);
 		};
 
-		// const deleteBlock = (index: number) => {
-		// 	const blocks = [...getBlocks()]
-		// 		.filter((_, i) => i !== index)
-		// 		.map((block, index) => ({ ...block, position: index }));
-		// 	errors.deleteAllThatStartWith(`${path}.${index}.`);
-		// 	assignBlocksToDoc(blocks);
-		// };
+		const deleteItem = (atPath: string, index: number) => {
+			let items = cloneDeep(snapshot(getItems()));
+
+			console.log('delete at Path', atPath);
+			console.log('before delete', snapshot(items));
+
+			const getArray = (path: string) => {
+				const parts = path.split('.');
+				let current = items;
+
+				for (let i = 0; i < parts.length - 1; i++) {
+					const key = parts[i];
+
+					if (key === '_children') {
+						current = current._children;
+					} else {
+						current = current[parseInt(key)]._children;
+					}
+				}
+
+				return {
+					array: current
+				};
+			};
+
+			// Get source and target information
+			const target = getArray(atPath.replace(`${path}.`, ''));
+
+			// Perform the move operation
+			target.array.splice(index, 1);
+
+			// Rebuild paths and positions
+			const rebuildPaths = (blocks: TreeBlock[], parentPath = '') => {
+				blocks.forEach((block, index) => {
+					// For root level items
+					if (!parentPath) {
+						block.path = path;
+					} else {
+						// For nested items
+						block.path = parentPath;
+					}
+
+					// Position is always a number
+					block.position = index;
+
+					// Recursively update children if they exist
+					if (block._children?.length > 0) {
+						const newParentPath = parentPath
+							? `${parentPath}.${index}._children`
+							: `${path}.${index}._children`;
+						rebuildPaths(block._children, newParentPath);
+					}
+				});
+			};
+
+			// Rebuild all paths and positions
+			rebuildPaths(items);
+
+			console.log('after delete', snapshot(items));
+
+			// assignItemsToDoc([]);
+			assignItemsToDoc(items);
+		};
 
 		const moveItem = (fromPath: string, toPath: string) => {
 			let items = cloneDeep(snapshot(getItems()));
 
 			console.log('fromPath', fromPath);
 			console.log('toPath', toPath);
-			console.log('before', JSON.stringify(snapshot(items)));
-			// Helper function to get array and index from path
+			console.log('before', snapshot(items));
 
 			const getArrayAndIndex = (path: string) => {
 				const parts = path.split('.');
@@ -201,29 +260,35 @@ function createDocumentFormState({
 			// Rebuild all paths and positions
 			rebuildPaths(items);
 
-			console.log('after', JSON.stringify(snapshot(items)));
+			console.log('after', snapshot(items));
 
 			// assignItemsToDoc([]);
+			// setTimeout(() => {
 			assignItemsToDoc(items);
+			// }, 300);
 		};
-		// const duplicateBlock = (index: number) => {
-		// 	let blocks = [...getBlocks()];
-		// 	const blockCopy = { ...cloneDeep(blocks[index]), id: generateTempId() };
-		// 	blocks.splice(index + 1, 0, blockCopy);
-		// 	blocks = blocks.map((block, index) => ({
-		// 		...block,
-		// 		position: index
-		// 	}));
-		// 	assignBlocksToDoc(blocks);
-		// };
+		const duplicateItem = (atPath: string, index: number) => {
+			// let blocks = [...getBlocks()];
+			// const blockCopy = { ...cloneDeep(blocks[index]), id: generateTempId() };
+			// blocks.splice(index + 1, 0, blockCopy);
+			// blocks = blocks.map((block, index) => ({
+			// 	...block,
+			// 	position: index
+			// }));
+			// assignBlocksToDoc(blocks);
+		};
 
 		return {
 			addItem,
 			moveItem,
-			// deleteBlock,
-			// moveBlock,
-			// duplicateBlock,
+			deleteItem,
+			duplicateItem,
+
+			get stamp() {
+				return stamp;
+			},
 			get items() {
+				// return currentItems;
 				return getItems();
 			}
 		};
@@ -348,25 +413,7 @@ function createDocumentFormState({
 			return true;
 		};
 
-		const props = {
-			get style() {
-				let visible = true;
-				if (config.condition) {
-					try {
-						visible = config.condition(doc);
-					} catch (err: any) {
-						console.log(err.message);
-					}
-				}
-				return visible ? null : 'display:none;';
-			},
-			get disabled() {
-				return readOnly;
-			}
-		};
-
 		return {
-			props,
 			get value() {
 				return getValueFromPath(doc, path, { maxDepth: parts.length });
 			},

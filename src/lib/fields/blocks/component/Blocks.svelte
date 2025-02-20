@@ -4,7 +4,7 @@
 	import Block from './Block.svelte';
 	import { Field } from 'rizom/panel';
 	import { useSortable } from '$lib/panel/utility/Sortable';
-	import type { BlocksFieldBlock, BlocksFieldRaw } from 'rizom/fields/blocks';
+	import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
 	import './blocks.css';

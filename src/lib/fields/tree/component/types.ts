@@ -1,13 +1,19 @@
 import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
-import type { Field } from 'rizom/types';
 import type { TreeFieldRaw } from '..';
+import type { TreeBlock } from 'rizom/types/doc';
+import type { Dic } from 'rizom/types/utility';
 
 export type TreeBlockProps = {
-	fields: Field[];
 	path: string;
 	sorting: boolean;
-	deleteBlock?: () => void;
-	duplicateBlock?: () => void;
+	treeState: {
+		addItem: (emptyValues: Dic) => void;
+		moveItem: (fromPath: string, toPath: string) => void;
+		deleteItem: (path: string, index: number) => void;
+		duplicateItem: (path: string, index: number) => void;
+		readonly stamp: string;
+		readonly items: TreeBlock[];
+	};
 	form: DocumentFormContext;
 	config: TreeFieldRaw;
 	treeKey: string;

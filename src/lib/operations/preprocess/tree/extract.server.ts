@@ -1,53 +1,55 @@
 import type { TreeBlock } from 'rizom/types/doc';
 import type { ConfigMap } from '../config/map';
 import { getValueFromPath } from '$lib/utils/doc';
+import cloneDeep from 'clone-deep';
+import type { WithRequired } from 'rizom/types/utility';
 
 type ExtractTreesArgs = {
 	doc: any;
 	configMap: ConfigMap;
 };
 
-function processTreeItem(
-	item: TreeBlock,
-	path: string,
-	parentRelativePath?: string,
-	items: TreeBlock[] = []
-) {
-	const relativePath = parentRelativePath
-		? `${parentRelativePath}.${item.relativePath}`
-		: item.relativePath;
+export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
+	const items: WithRequired<TreeBlock, 'path'>[] = [];
 
-	// Create clean item without _children
-	const { _children, ...cleanItem } = {
-		...item,
-		path: item.path || path,
-		relativePath
-	};
+	if (!doc || !configMap) return items;
 
-	items.push(cleanItem);
+	function processTreeItem(
+		item: TreeBlock,
+		index: number,
+		rootPath: string,
+		parentPath?: string
+	): void {
+		// Create a copy of the item to avoid modifying the original
+		const processedItem: TreeBlock = cloneDeep({ ...item });
 
-	// Process children if they exist
-	if (_children?.length) {
-		_children.forEach((child, index) => {
+		// Set position if not defined
+		if (typeof processedItem.position !== 'number') {
+			processedItem.position = index;
+		}
+
+		// Set path based on whether it's a root level or nested item
+
+		processedItem.path = parentPath
+			? `${parentPath}` // For nested items, use parent path
+			: rootPath; // For root items, use root path
+
+		// Remove children prop as the will be
+		processedItem._children = [];
+
+		// Add the processed item to the flat array
+		items.push(processedItem as WithRequired<TreeBlock, 'path'>);
+
+		// Process children recursively
+		(item._children || []).forEach((child, childIndex) => {
 			processTreeItem(
-				{
-					...child,
-					relativePath: child.relativePath ?? index.toString()
-				},
-				path,
-				relativePath,
-				items
+				child,
+				childIndex,
+				rootPath,
+				`${processedItem.path}.${processedItem.position}` // Create new parent path based on current item's position
 			);
 		});
 	}
-
-	return items;
-}
-
-export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
-	const items: TreeBlock[] = [];
-
-	if (!doc || !configMap) return items;
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
@@ -56,15 +58,7 @@ export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
 
 			if (!isEmptyValue) {
 				value.forEach((item, index) => {
-					processTreeItem(
-						{
-							...item,
-							relativePath: item.relativePath ?? index.toString()
-						},
-						path,
-						undefined,
-						items
-					);
+					processTreeItem(item, index, path, undefined);
 				});
 			}
 		}

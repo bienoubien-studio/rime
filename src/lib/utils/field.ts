@@ -124,7 +124,7 @@ export function toFormFields(prev: any[], curr: any) {
 	return prev;
 }
 
-export const emptyFieldsFromFieldConfig = <T extends FormField>(arr: T[]): Dic => {
+export const emptyValuesFromFieldConfig = <T extends FormField>(arr: T[]): Dic => {
 	return Object.assign(
 		{},
 		...arr.map((config) => {

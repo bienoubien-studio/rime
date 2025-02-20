@@ -2,13 +2,14 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { Plus } from 'lucide-svelte';
 	import { capitalize } from '$lib/utils/string.js';
-	import { emptyFieldsFromFieldConfig } from '$lib/utils/field.js';
+	import { emptyValuesFromFieldConfig } from '$lib/utils/field.js';
 	import { isFormField } from '$lib/utils/field.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { Field } from 'rizom/types/fields.js';
 	import TreeBlock from './TreeBlock.svelte';
+	import type { Dic } from 'rizom/types/utility';
 
-	type AddItem = (options: Omit<TreeBlock, 'id' | 'path'>) => void;
+	type AddItem = (emptyValues: Dic) => void;
 	type Props = {
 		size: 'default' | 'sm';
 		class: string;
@@ -17,14 +18,8 @@
 	};
 	const { class: className, fields, addItem, size }: Props = $props();
 
-	let open = $state(false);
-
 	const add = () => {
-		open = false;
-		const empty = {
-			_children: [],
-			...emptyFieldsFromFieldConfig(fields.filter(isFormField))
-		};
+		const empty = emptyValuesFromFieldConfig(fields.filter(isFormField));
 		addItem(empty);
 	};
 </script>

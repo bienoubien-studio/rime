@@ -1,31 +1,30 @@
 <script lang="ts">
 	import { CopyPlus, Trash2 } from 'lucide-svelte';
+	import { Button } from 'rizom/panel/components/ui/button';
 
 	type Props = {
-		deleteBlock: () => void;
-		duplicateBlock: () => void;
+		deleteItem: () => void;
+		duplicateItem: () => void;
 	};
 
-	const { deleteBlock, duplicateBlock }: Props = $props();
-
-	let open = $state(false);
+	const { deleteItem, duplicateItem }: Props = $props();
 </script>
 
-<div class="rz-block-actions">
-	<button class="rz-block-action" type="button" onclick={duplicateBlock}>
+<div class="rz-tree-item-actions">
+	<Button variant="outline" size="icon" onclick={duplicateItem}>
 		<CopyPlus size={11} />
-	</button>
-	<button class="rz-block-action" type="button" onclick={deleteBlock}>
+	</Button>
+	<Button variant="outline" size="icon" onclick={deleteItem}>
 		<Trash2 size={11} />
-	</button>
+	</Button>
 </div>
 
 <style type="postcss">
-	.rz-block-actions {
+	.rz-tree-item-actions {
 		display: flex;
 		gap: var(--rz-size-2);
 	}
-	.rz-block-action {
+	/* .rz-tree-item-action {
 		border: var(--rz-border);
 		background-color: hsl(var(--rz-ground-6));
 		border-radius: 1rem;
@@ -34,18 +33,18 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
+	} */
 
-	:global(.rz-block-actions__content) {
+	/* :global(.rz-tree-item-actions__content) {
 		width: auto;
 		padding: var(--rz-size-1);
-	}
+	} */
 
-	:global(.rz-block-actions__delete-button) {
+	/* :global(.rz-tree-item-actions__delete-button) {
 		display: flex;
 		width: 100%;
 		align-items: center;
 		justify-content: flex-end;
 		gap: var(--rz-size-3);
-	}
+	} */
 </style>

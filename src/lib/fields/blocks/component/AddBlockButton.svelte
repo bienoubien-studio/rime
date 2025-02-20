@@ -2,7 +2,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { Plus, ToyBrick } from 'lucide-svelte';
 	import { capitalize } from '$lib/utils/string.js';
-	import { emptyFieldsFromFieldConfig } from '$lib/utils/field.js';
+	import { emptyValuesFromFieldConfig } from '$lib/utils/field.js';
 	import { isFormField } from '$lib/utils/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from 'rizom/types/doc';
@@ -24,7 +24,7 @@
 	const add = (block: WithoutBuilders<BlocksFieldBlock>) => {
 		open = false;
 		const empty = {
-			...emptyFieldsFromFieldConfig(block.fields.filter(isFormField)),
+			...emptyValuesFromFieldConfig(block.fields.filter(isFormField)),
 			type: block.name
 		};
 		addBlock(empty);

@@ -22,8 +22,8 @@ export type GenericDoc = BaseDoc & Dic;
 export type TreeBlock = {
 	id: string;
 	parentId?: string;
-	relativePath?: string;
 	path?: string;
+	position?: number;
 	_children: TreeBlock[];
 } & Dic;
 

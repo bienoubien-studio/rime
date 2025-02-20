@@ -1,48 +1,22 @@
 <script lang="ts">
 	import { GripVertical } from 'lucide-svelte';
-	import { capitalize } from '$lib/utils/string.js';
-	import ToggleBlockButton from './ToggleBlockButton.svelte';
-	import { useOnce } from '$lib/panel/utility/Once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import TreeBlock from './TreeBlock.svelte';
 	import type { TreeBlockProps } from './types';
-	import { snapshot } from 'rizom/utils/state';
+	import TreeBlockActions from './TreeBlockActions.svelte';
 
-	const {
-		config,
-		treeKey,
-		deleteBlock,
-		duplicateBlock,
-		form,
-		sorting = false,
-		path
-	}: TreeBlockProps = $props();
+	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 
-	// let path = $state(path);
-	let isOpen = $state(false);
-	let currentPath = $state(path);
-	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
 	const position = $derived(parseInt(path.split('.').pop() || '0'));
 	const itemValue = $derived(form.useValue(path));
-
-	// $effect(() => {
-	// 	console.log('-------------');
-	// 	console.log(path);
-	// 	console.log(itemValue.path);
-	// });
-
-	const { once } = useOnce();
-
-	once(() => {
-		isOpen = (localStorage.getItem(`${itemValue.id}:open`) || 'true') === 'true';
-	});
+	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
+	let isOpen = $state(false);
 
 	const toggleBlock = (e: MouseEvent) => {
 		if (e && e.stopPropagation) {
 			e.stopPropagation();
 		}
 		isOpen = !isOpen;
-		localStorage.setItem(`${itemValue.id}:open`, isOpen.toString());
 	};
 
 	const renderBlockTitle = () => {
@@ -50,21 +24,16 @@
 			const title = config.renderTitle({ fields: itemValue });
 			if (title) return title;
 		}
-		const title = config.label ? config.label : capitalize(config.name);
-		return title;
+		return `${config.label || config.name} ${position}`;
 	};
 
-	$effect(() => {
-		if (currentPath !== path) {
-			// console.log('reset path', { old: currentPath, new: path });
-			// let pathArr = path.split('.');
-			// form.setValue(`${path}.path`, path.split('.').slice(0, -1).join(''));
-			currentPath = path;
-		}
-	});
+	// $effect(() => {
+	// 	if (currentPath !== path) {
+	// 		currentPath = path;
+	// 	}
+	// });
 </script>
 
-<!-- {console.log('@render ', !!snapshot(itemValue))} -->
 <div data-path={path} data-sorting={sorting} class="rz-tree-item">
 	<div class="rz-tree-item__grip">
 		<GripVertical size={15} />
@@ -74,13 +43,15 @@
 		<header class="rz-tree-item__header">
 			<button type="button" onclick={toggleBlock} class="rz-tree-item__title-button">
 				<div class="rz-tree-item__title">
-					<h3 class="rz-tree-item__heading">
-						{renderBlockTitle()} - {currentPath}
-					</h3>
+					{renderBlockTitle()}
+					<!-- {itemValue.id} -->
 				</div>
 			</button>
 
-			<!-- <BlockActions {duplicateBlock} {deleteBlock} /> -->
+			<TreeBlockActions
+				duplicateItem={() => treeState.duplicateItem(parentPath, position)}
+				deleteItem={() => treeState.deleteItem(parentPath, position)}
+			/>
 		</header>
 
 		<div class="rz-tree-item__fields" class:rz-tree-item__fields--hidden={!isOpen}>
@@ -91,7 +62,14 @@
 	<div data-path={path} data-tree-key={treeKey} class="rz-tree__list">
 		{#if itemValue._children && itemValue._children.length}
 			{#each itemValue._children as child, index (child.id)}
-				<TreeBlock {form} {sorting} {treeKey} path="{path}._children.{index}" {config} />
+				<TreeBlock
+					{treeState}
+					{form}
+					{sorting}
+					{treeKey}
+					path="{path}._children.{index}"
+					{config}
+				/>
 			{/each}
 		{/if}
 	</div>
@@ -110,15 +88,15 @@
 		left: -1rem;
 	}
 
-	.rz-tree-item:hover
-		> :global(.rz-tree-item__content > .rz-tree-item__header > .rz-tree-item-actions) {
-		opacity: 1;
-		pointer-events: all;
+	.rz-tree-item__header:hover {
+		> :global(.rz-tree-item-actions) {
+			opacity: 1;
+			pointer-events: all;
+		}
 	}
 
 	.rz-tree-item__header {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		border: var(--rz-border);
@@ -131,13 +109,6 @@
 	}
 
 	.rz-tree-item__content--closed {
-		:global(.rz-tree-item-actions) {
-			position: absolute;
-			opacity: 0;
-			pointer-events: none;
-			top: var(--rz-size-1);
-			right: var(--rz-size-11);
-		}
 		&:global(:has(.rz-field-error)) {
 			@mixin ring var(--rz-color-error);
 		}
@@ -145,6 +116,8 @@
 
 	.rz-tree-item__content + .rz-tree__list {
 		margin-top: 1rem;
+		min-height: 5px;
+		/* border: 1px solid green; */
 	}
 
 	.rz-tree-item__title {
@@ -173,10 +146,7 @@
 	}
 
 	:global(.rz-tree-item-actions) {
-		position: absolute;
 		opacity: 0;
 		pointer-events: none;
-		top: var(--rz-size-1);
-		right: var(--rz-size-11);
 	}
 </style>

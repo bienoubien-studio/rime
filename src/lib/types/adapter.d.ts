@@ -1,9 +1,10 @@
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GenericDoc, GenericBlock, PrototypeSlug } from 'rizom/types/doc.js';
+import type { GenericDoc, GenericBlock, PrototypeSlug, TreeBlock } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import type { BeforeOperationRelation, Relation } from '../db/relations.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
+import type { WithRequired } from './utility.js';
 
 export interface AdapterCollectionInterface {
 	findAll(args: {
@@ -51,6 +52,25 @@ export interface AdapterAreaInterface {
 		data: Partial<GenericDoc>;
 		locale?: string;
 	}): Promise<GenericDoc>;
+}
+
+export interface AdapterTreeInterface {
+	getBlocksTableNames(slug: string): string[];
+
+	delete(args: { parentSlug: string; block: WithRequired<TreeBlock, 'path'> }): Promise<boolean>;
+
+	update(args: {
+		parentSlug: PrototypeSlug;
+		block: WithRequired<TreeBlock, 'path'>;
+		locale?: string;
+	}): Promise<boolean>;
+
+	create(args: {
+		parentSlug: PrototypeSlug;
+		block: WithRequired<TreeBlock, 'path'>;
+		parentId: string;
+		locale?: string;
+	}): Promise<boolean>;
 }
 
 export interface AdapterBlocksInterface {
@@ -123,6 +143,7 @@ export interface AdapterTransformInterface {
 export interface Adapter {
 	collection: AdapterCollectionInterface;
 	area: AdapterAreaInterface;
+	tree: AdapterTreeInterface;
 	blocks: AdapterBlocksInterface;
 	relations: AdapterRelationsInterface;
 	transform: AdapterTransformInterface;

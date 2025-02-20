@@ -13,11 +13,18 @@ export const safeFlattenDoc = (doc: Dic) =>
 	flattenWithGuard(doc, {
 		shouldFlat: ([, value]) => {
 			if (Array.isArray(value) && value.length) {
+				try {
+					let foo = value[0].constructor;
+				} catch (err) {
+					console.log('value on error is ', value);
+					throw err;
+				}
 				/** prevent relation flatting */
 				if (value[0].constructor === Object && 'relationTo' in value[0]) return false;
 				/** prevent select field flatting */
 				if (typeof value[0] === 'string') return false;
 			}
+
 			/** prevent richText flatting */
 			if (
 				value &&

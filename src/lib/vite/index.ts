@@ -9,7 +9,7 @@ export function rizom(): Plugin {
 		configureServer(server) {
 			server.watcher.add('src/config/**/*.ts');
 			server.watcher.on('change', async (path) => {
-				if (path.includes('config')) {
+				if (path.includes('src/config/rizom.config')) {
 					// Make a dummy request to trigger handler
 					try {
 						const { host, port, https } = server.config.server;
