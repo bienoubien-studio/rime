@@ -208,14 +208,15 @@ type CompiledConfigWithBluePrints = CompiledConfig & {
 
 // Main build function
 const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
+	console.time('generateBrowserConfig');
 	const content = buildConfigString(config);
-
 	if (cache.get('config.browser') !== content) {
 		cache.set('config.browser', content);
 		const browserConfigPath = path.resolve(process.cwd(), './src/lib/rizom.config.browser.js');
 		fs.writeFileSync(browserConfigPath, content);
 		taskLogger.done('Browser config built');
 	}
+	console.timeEnd('generateBrowserConfig');
 };
 
 // Build the final config content

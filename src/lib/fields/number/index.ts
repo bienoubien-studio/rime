@@ -53,11 +53,11 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		return this;
 	}
 
-	toField() {
+	compile() {
 		if (!this.field.defaultValue) {
 			this.field.defaultValue = this.field.min || 0;
 		}
-		return super.toField();
+		return super.compile();
 	}
 }
 

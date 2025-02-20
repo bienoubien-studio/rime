@@ -11,7 +11,6 @@ import { getCollectionContext } from './collection.svelte.js';
 import { randomId } from '../../utils/random.js';
 import { getUserContext } from './user.svelte.js';
 import { getValueFromPath } from '../../utils/doc.js';
-
 import { snapshot } from '../../utils/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
@@ -19,6 +18,7 @@ import type { GenericBlock, GenericDoc, AnyFormField, BuiltDocConfig } from 'riz
 import type { Dic } from 'rizom/types/utility';
 import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
+import type { TreeBlock } from 'rizom/types/doc.js';
 
 function createDocumentFormState({
 	initial,
@@ -92,6 +92,105 @@ function createDocumentFormState({
 	function useValue(path: string) {
 		const parts = path.split('.');
 		return getValueFromPath(doc, path, { maxDepth: parts.length }) || null;
+	}
+
+	function useTree(path: string) {
+		const parts = path.split('.');
+
+		const generateTempId = () => 'temp-' + randomId(8);
+
+		const getItems = (): TreeBlock[] => {
+			return getValueFromPath(doc, path, { maxDepth: parts.length }) || [];
+		};
+
+		const assignItemsToDoc = (items: TreeBlock[]) => {
+			const flatDoc: Dic = flatten(doc, {
+				maxDepth: parts.length
+			});
+			flatDoc[path] = items;
+			doc = unflatten(flatDoc);
+			if (onDataChange) onDataChange({ path, value: snapshot(items) });
+		};
+
+		const addItem: AddBlock = (item) => {
+			let items = [...getItems()];
+			const itemWithPath: TreeBlock = {
+				...item,
+				id: generateTempId(),
+				path: path,
+				position: items.length
+			};
+			items = items.toSpliced(items.length, 0, itemWithPath);
+			assignItemsToDoc(items);
+		};
+
+		// const deleteBlock = (index: number) => {
+		// 	const blocks = [...getBlocks()]
+		// 		.filter((_, i) => i !== index)
+		// 		.map((block, index) => ({ ...block, position: index }));
+		// 	errors.deleteAllThatStartWith(`${path}.${index}.`);
+		// 	assignBlocksToDoc(blocks);
+		// };
+
+		const moveItem = (fromPath: string, toPath: string) => {
+			const items = cloneDeep(getItems());
+
+			// Get array and position from path
+			const getArrayAndPosition = (path: string) => {
+				const parts = path.split('.');
+				const position = parseInt(parts[parts.length - 1]);
+
+				// Root level path (mainNav.X)
+				if (parts.length === 2) {
+					return { array: items, position };
+				}
+
+				// Nested path with _children
+				let current = items;
+				let array = items;
+
+				for (let i = 1; i < parts.length - 1; i++) {
+					if (parts[i] === '_children') {
+						const parentIndex = parseInt(parts[i - 1]);
+						current = current[parentIndex]._children;
+						array = current;
+					}
+				}
+
+				return { array, position };
+			};
+
+			const source = getArrayAndPosition(fromPath);
+			const target = getArrayAndPosition(toPath);
+
+			if (source.array && target.array) {
+				const [itemToMove] = source.array.splice(source.position, 1);
+				target.array.splice(target.position, 0, itemToMove);
+			}
+
+			assignItemsToDoc(items);
+		};
+		// const duplicateBlock = (index: number) => {
+		// 	let blocks = [...getBlocks()];
+		// 	const blockCopy = { ...cloneDeep(blocks[index]), id: generateTempId() };
+		// 	blocks.splice(index + 1, 0, blockCopy);
+		// 	blocks = blocks.map((block, index) => ({
+		// 		...block,
+		// 		position: index
+		// 	}));
+		// 	assignBlocksToDoc(blocks);
+		// };
+
+		return {
+			addItem,
+			moveItem,
+			// deleteBlock,
+			// moveBlock,
+			// duplicateBlock,
+			get items() {
+				return getItems();
+			}
+		};
 	}
 
 	function useBlocks(path: string) {
@@ -261,7 +360,12 @@ function createDocumentFormState({
 				let visible = true;
 				if (config.condition) {
 					try {
-						visible = config.condition(doc);
+						let siblings = doc;
+						if (parts.length > 1) {
+							const upperPath = path.substring(0, path.lastIndexOf('.'));
+							siblings = getValueFromPath(doc, upperPath, { maxDepth: upperPath.length });
+						}
+						visible = config.condition(doc, siblings);
 					} catch (err: any) {
 						console.log(err.message);
 					}
@@ -386,6 +490,7 @@ function createDocumentFormState({
 		readOnly,
 		useValue,
 		useBlocks,
+		useTree,
 		nestedLevel,
 		buildPanelActionUrl,
 		get element() {

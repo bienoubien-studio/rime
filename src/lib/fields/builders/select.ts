@@ -1,6 +1,7 @@
 import type { FieldsType, FieldValidationFunc, FormField, Option } from 'rizom/types/fields';
 import { FormFieldBuilder } from './field';
 import { capitalize } from 'rizom/utils/string';
+import type { WithoutBuilders } from 'rizom/types/utility';
 
 const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { config }) => {
 	const selected = value;
@@ -53,5 +54,15 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
 		return this;
+	}
+
+	compile() {
+		if (!this.field.options) {
+			throw new Error(`${this.field.name} should at least have one option`);
+		}
+		if (!this.field.defaultValue) {
+			this.field.defaultValue = this.field.options[0].value;
+		}
+		return super.compile();
 	}
 }

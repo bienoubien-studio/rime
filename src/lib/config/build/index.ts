@@ -13,6 +13,7 @@ import { buildArea } from './area.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
+import genCache from '../../bin/generate/cache/index.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 
 type BuildConfig = <C extends boolean | undefined = true>(
@@ -125,6 +126,8 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 	// Generate files
 	//////////////////////////////////////////////
 
+	genCache.set('.gen', '');
+
 	const compiledConfig = compileConfig(builtConfig);
 
 	if (dev || generateFiles) {
@@ -162,9 +165,12 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 		}
 	}
 
+	genCache.delete('.gen');
+
 	if (!compiled) {
 		return builtConfig;
 	}
+	// logToFile(compiledConfig);
 	return compiledConfig;
 };
 

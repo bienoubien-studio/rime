@@ -3,6 +3,7 @@ import {
 	isBlocksField,
 	isBlocksFieldRaw,
 	isFormField,
+	isTreeFieldRaw,
 	toFormFields
 } from '../../../utils/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
@@ -17,20 +18,24 @@ export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields
 
 	const traverseData = (data: Dic, fields: Field[], basePath: string) => {
 		basePath = basePath === '' ? basePath : `${basePath}.`;
+		// console.log('traverseData');
 		for (const [key, value] of Object.entries(data)) {
+			// console.log(key);
 			const config = fields.filter(isFormField).find((f) => f.name === key);
 			const path = `${basePath}${key}`;
+
 			if (config) {
 				map = { ...map, [path]: config };
 				if (isBlocksFieldRaw(config) && value && Array.isArray(value)) {
 					const blocks = value;
-
 					for (const [index, block] of blocks.entries()) {
 						const blockConfig = config.blocks.find((b) => b.name === block.type);
 						if (blockConfig) {
 							traverseData(block, blockConfig.fields, `${basePath}${key}.${index}`);
 						}
 					}
+				} else if (isTreeFieldRaw(config)) {
+					traverseData(value, config.fields, path);
 				}
 			}
 		}

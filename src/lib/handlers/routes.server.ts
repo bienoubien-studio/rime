@@ -3,6 +3,12 @@ import apiInit from '../api/init.js';
 import { logout } from 'rizom/panel/pages/logout/actions.server.js';
 import buildNavigation from '$lib/panel/navigation.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
+import { dev } from '$app/environment';
+import { existsSync } from 'fs';
+import path from 'path';
+import cache from 'rizom/bin/generate/cache/index.js';
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;

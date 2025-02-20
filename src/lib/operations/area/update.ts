@@ -13,6 +13,8 @@ import type { Dic } from 'rizom/types/utility.js';
 import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
+import { extractTreeItems } from '../preprocess/tree/extract.server.js';
+import { logToFile } from '../../../log.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -89,10 +91,19 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	// Update data
 	//////////////////////////////////////////////
 
-	const newBlocks = extractBlocks({
+	const incomingBlocks = extractBlocks({
 		doc: data,
 		configMap
 	});
+
+	const incomingTreeItems = extractTreeItems({
+		doc: data,
+		configMap
+	});
+
+	console.log('\x1Bc');
+	console.log('incomingTreeItems', incomingTreeItems);
+	throw new Error('coucou');
 
 	let doc = await adapter.area.update({ slug: config.slug, data, locale });
 
@@ -103,7 +114,7 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
-		newBlocks
+		incomingBlocks
 	});
 
 	if (blocksDiff.toDelete.length) {

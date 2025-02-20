@@ -16,6 +16,10 @@ class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 		const suffix = templateUniqueRequired(this.field);
 		return `${this.field.name}: text('${snake_name}')${suffix}`;
 	}
+	defaultValue(value: string) {
+		this.field.defaultValue = value;
+		return this;
+	}
 }
 
 export const combobox = (name: string) => new ComboBoxFieldBuilder(name, 'combobox');

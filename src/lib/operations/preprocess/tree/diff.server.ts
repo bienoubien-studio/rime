@@ -8,25 +8,22 @@ type BlocksDiff = {
 
 type DefineBlocksDiffArgs = {
 	existingBlocks: GenericBlock[];
-	incomingBlocks: GenericBlock[];
+	newBlocks: GenericBlock[];
 };
 
-export function defineBlocksDiff({
-	existingBlocks,
-	incomingBlocks
-}: DefineBlocksDiffArgs): BlocksDiff {
+export function defineBlocksDiff({ existingBlocks, newBlocks }: DefineBlocksDiffArgs): BlocksDiff {
 	// Consider blocks as new if they have temp ID OR no ID at all
-	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
+	const toAdd = newBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
 
 	const toDelete = existingBlocks.filter((existing) => {
-		return !incomingBlocks.some((newBlock) => {
+		return !newBlocks.some((newBlock) => {
 			// Only compare blocks that have real IDs
 			if (!newBlock.id || newBlock.id.startsWith('temp-')) return false;
 			return newBlock.id === existing.id;
 		});
 	});
 
-	const toUpdate = incomingBlocks.filter((newBlock) => {
+	const toUpdate = newBlocks.filter((newBlock) => {
 		// Skip blocks without IDs or with temp IDs
 		if (!newBlock.id || newBlock.id.startsWith('temp-')) return false;
 

@@ -138,26 +138,25 @@
 				relationConfig.label.singular || relationConfig.slug
 			)}
 		</Button>
-	{/if}
 
-	<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
-		<Sheet.Trigger />
-		<Sheet.Content side="right" showCloseButton={false}>
-			<Document
-				doc={createBlankDocument(relationConfig)}
-				readOnly={false}
-				onClose={() => (create = false)}
-				operation="create"
-				{onNestedDocumentCreated}
-				nestedLevel={formNestedLevel + 1}
-			/>
-		</Sheet.Content>
-	</Sheet.Root>
+		<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
+			<Sheet.Trigger />
+			<Sheet.Content side="right" showCloseButton={false}>
+				<Document
+					doc={createBlankDocument(relationConfig)}
+					readOnly={false}
+					onClose={() => (create = false)}
+					operation="create"
+					{onNestedDocumentCreated}
+					nestedLevel={formNestedLevel + 1}
+				/>
+			</Sheet.Content>
+		</Sheet.Root>
+	{/if}
 </div>
 
 <style type="postcss">
 	.rz-relation {
-		margin-bottom: var(--rz-size-3);
 		position: relative;
 
 		:global(> * + *) {

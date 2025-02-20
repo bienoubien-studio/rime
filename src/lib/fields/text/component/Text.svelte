@@ -3,6 +3,7 @@
 	import { Field } from '$lib/panel';
 	import type { TextFieldProps } from './props.js';
 	import { capitalize } from 'rizom/utils/string.js';
+	import './text.css';
 
 	const { path, config, type = 'text', form }: TextFieldProps = $props();
 
@@ -23,7 +24,7 @@
 	<Input
 		id={path || config.name}
 		name={path || config.name}
-		placeholder={capitalize(config.label || config.name)}
+		placeholder={config.placeholder}
 		data-error={field.error ? '' : null}
 		{type}
 		value={field.value}
@@ -31,39 +32,3 @@
 	/>
 	<Field.Error error={field.error} />
 </Field.Root>
-
-<style>
-	:global(.rz-text-field--compact) {
-		:global(label) {
-			display: none;
-		}
-		:global(fieldset .rz-field-error) {
-			top: calc(-1 * var(--rz-size-6));
-		}
-		:global(.rz-input) {
-			font-size: var(--rz-text-xl);
-			padding: 0 var(--rz-size-5);
-			height: var(--rz-size-14);
-		}
-	}
-	:global(.rz-text-field--title) {
-		--rz-color-ring: red !important;
-
-		:global(label) {
-			display: none;
-		}
-		:global(fieldset .rz-field-error) {
-			top: calc(-1 * var(--rz-size-6));
-		}
-		:global(.rz-input) {
-			font-size: var(--rz-text-3xl);
-			@mixin font-semibold;
-			padding: 0 var(--rz-size-5);
-			height: var(--rz-size-14);
-			background-color: transparent;
-			/* padding: 0; */
-			border: none;
-			border-left: 4px solid hsl(var(--rz-color-border));
-		}
-	}
-</style>

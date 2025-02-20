@@ -26,6 +26,7 @@ import type { AnyField, FormField, Field } from 'rizom/types/fields.js';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
 import type { GroupFieldRaw } from 'rizom/fields/group/index.js';
 import type { TabsFieldRaw } from 'rizom/fields/tabs/index.js';
+import type { TreeFieldRaw } from 'rizom/fields/tree/index.js';
 
 export const isPresentative = (field: Field): field is GroupField | SeparatorField | TabsField =>
 	['group', 'separator', 'tabs'].includes(field.type);
@@ -37,6 +38,7 @@ export const isComponentField = (field: Field): field is ComponentField =>
 	field.type === 'component';
 export const isBlocksField = (field: Field): field is BlocksField => field.type === 'blocks';
 export const isBlocksFieldRaw = (field: Field): field is BlocksFieldRaw => field.type === 'blocks';
+export const isTreeFieldRaw = (field: Field): field is TreeFieldRaw => field.type === 'tree';
 export const isTextField = (field: Field): field is TextField => field.type === 'text';
 export const isEmailField = (field: Field): field is EmailField => field.type === 'email';
 export const isNumberField = (field: Field): field is NumberField => field.type === 'number';
@@ -102,8 +104,11 @@ export const richTextJSONToText = (value: string): string => {
 export function toFormFields(prev: any[], curr: any) {
 	if (curr.type === 'tabs') {
 		return curr.tabs.reduce(toFormFields, prev);
-	} else if (curr.type === 'group') {
-		return curr.fields.reduce(toFormFields, prev);
+	} else if (curr.type === 'tree') {
+		curr = {
+			...curr,
+			fields: curr.fields.reduce(toFormFields, [])
+		};
 	} else if (curr.type === 'blocks') {
 		curr = {
 			...curr,
@@ -119,19 +124,17 @@ export function toFormFields(prev: any[], curr: any) {
 	return prev;
 }
 
-// @TODO
-// add a toBlankValue inside each fields config
 export const emptyFieldsFromFieldConfig = <T extends FormField>(arr: T[]): Dic => {
 	return Object.assign(
 		{},
 		...arr.map((config) => {
 			let emptyValue;
-			if (isBlocksField(config) || isRelationField(config) || isSelectField(config)) {
-				emptyValue = [];
-			} else if (isLinkField(config)) {
-				emptyValue = { label: '', type: 'url', link: null, target: '_self' };
-			} else {
-				emptyValue = null;
+			if ('defaultValue' in config) {
+				if (typeof config.defaultValue === 'function') {
+					emptyValue = config.defaultValue();
+				} else {
+					emptyValue = config.defaultValue;
+				}
 			}
 			return {
 				[config.name]: emptyValue

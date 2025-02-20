@@ -34,10 +34,10 @@
 	<form method="POST" action="/login" use:enhance={context.enhance}>
 		<!-- <form onsubmit={handleSignIn}> -->
 		<h1>{t__('common.signin')}</h1>
-		<Email config={usersFields.email.toField()} form={context} />
+		<Email config={usersFields.email.compile()} form={context} />
 		<Text
 			type="password"
-			config={text('password').label(t__('fields.password')).required().toField()}
+			config={text('password').label(t__('fields.password')).required().compile()}
 			form={context}
 		/>
 

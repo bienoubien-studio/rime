@@ -30,7 +30,7 @@ type FieldWidth = '1/3' | '1/2' | '2/3';
 type Field = {
 	type: FieldsType;
 	live?: boolean;
-	condition?: (doc: any) => boolean;
+	condition?: (doc: any, siblings: any) => boolean;
 	width?: FieldWidth;
 	className?: string;
 	access: {
@@ -50,6 +50,7 @@ type FormField = Field & {
 	label?: string;
 	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
+	defaultValue?: unknnown;
 	isEmpty: (value: unknown) => boolean;
 };
 

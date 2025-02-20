@@ -115,7 +115,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	// Update data
 	//////////////////////////////////////////////
 
-	const newBlocks = extractBlocks({
+	const incomingBlocks = extractBlocks({
 		doc: data,
 		configMap
 	});
@@ -129,7 +129,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
-		newBlocks
+		incomingBlocks
 	});
 
 	if (blocksDiff.toDelete.length) {

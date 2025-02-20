@@ -72,6 +72,8 @@ export async function registerTranslation(locale: PanelLanguage) {
 	} catch (error) {
 		console.error(`Failed to load translations:`, error);
 	}
+
+	return dictionaries;
 }
 
 type TranslationKey = `${Namespace}.${string}`;
