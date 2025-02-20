@@ -133,7 +133,7 @@
 
 		:global(.rz-command-list) {
 			background-color: hsl(var(--rz-color-input));
-			border: var(--rz-border);
+			/* border: var(--rz-border); */
 			border-radius: var(--rz-radius-md);
 			position: absolute;
 			left: 0;
@@ -159,7 +159,7 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: var(--rz-size-1);
-		border: var(--rz-border);
+		border-left: var(--rz-border);
 		border-top: 0;
 		padding: var(--rz-size-2) var(--rz-size-3);
 	}
