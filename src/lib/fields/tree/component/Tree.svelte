@@ -15,19 +15,25 @@
 
 	const treeState = $derived(form.useTree(path));
 	const field = $derived(form.useField(path, config));
-
+	let rootEl;
 	let sortingInitialized = $state(false);
 	let sorting = $state(false);
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
 
+	let currentClone;
 	const sortableOptions = {
 		handle: '.rz-tree-item__grip',
 		animation: 150,
+		swapThreshold: 0.65,
 		group: {
 			name: `list-${path}`
 		},
 		onStart: () => (sorting = true),
 		onUnchoose: () => (sorting = false),
+		// onClone: function (/**Event*/ evt) {
+		// 	var origEl = evt.item;
+		// 	currentClone = evt.clone;
+		// },
 		onEnd: function (evt) {
 			const { oldIndex, newIndex, from, to } = evt;
 
@@ -36,9 +42,24 @@
 			const isTargetPathRoot = targetListPath === path;
 			const targetPath = `${targetListPath}${!isTargetPathRoot ? '._children' : ''}.${newIndex}`;
 
+			console.log('initialPath', initialPath);
+			console.log('targetPath', targetPath);
+			console.log('evt.pullMode', evt.pullMode);
 			if (initialPath !== targetPath) {
-				evt.item.remove();
-				treeState.moveItem(initialPath, targetPath);
+				// if (currentClone) {
+				// 	currentClone.remove();
+				// }
+				if (evt.pullMode) {
+					evt.item.remove();
+				}
+				// if (initialPath.split('.').length !== targetPath.split('.').length) {
+				// evt.item.remove();
+				// }
+				// if (rootEl) {
+				// 	const toDelete = rootEl.querySelector('.rz-tree-item[data-sorting="true"]');
+				// 	if (toDelete) toDelete.remove();
+				// }
+				treeState.moveItem(initialPath.replace(`${path}.`, ''), targetPath.replace(`${path}.`, ''));
 				resetSortable();
 			}
 			// if (from !== to) {
@@ -116,9 +137,11 @@
 
 	<!-- deleteBlock={() => treeState.deleteBlock(index)}
 	duplicateBlock={() => treeState.duplicateBlock(index)} -->
+
 	<div
 		class="rz-tree__list rz-tree__list--root"
 		data-tree-key={path}
+		bind:this={rootEl}
 		data-path={path}
 		data-empty={!hasBlocks ? '' : null}
 	>

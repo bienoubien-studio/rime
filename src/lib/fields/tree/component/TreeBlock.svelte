@@ -6,6 +6,7 @@
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import TreeBlock from './TreeBlock.svelte';
 	import type { TreeBlockProps } from './types';
+	import { snapshot } from 'rizom/utils/state';
 
 	const {
 		config,
@@ -17,10 +18,18 @@
 		path
 	}: TreeBlockProps = $props();
 
-	let currentPath = $state(path);
+	// let path = $state(path);
 	let isOpen = $state(false);
-	const position = $derived(parseInt(currentPath.split('.').pop() || '0'));
+	let currentPath = $state(path);
+	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
+	const position = $derived(parseInt(path.split('.').pop() || '0'));
 	const itemValue = $derived(form.useValue(path));
+
+	// $effect(() => {
+	// 	console.log('-------------');
+	// 	console.log(path);
+	// 	console.log(itemValue.path);
+	// });
 
 	const { once } = useOnce();
 
@@ -47,14 +56,16 @@
 
 	$effect(() => {
 		if (currentPath !== path) {
-			let pathArr = path.split('.');
-			form.setValue(`${path}.path`, pathArr.toSpliced(pathArr.length - 1, 1).join('.'));
+			// console.log('reset path', { old: currentPath, new: path });
+			// let pathArr = path.split('.');
+			// form.setValue(`${path}.path`, path.split('.').slice(0, -1).join(''));
 			currentPath = path;
 		}
 	});
 </script>
 
-<div data-path={currentPath} data-sorting={sorting} class="rz-tree-item">
+<!-- {console.log('@render ', !!snapshot(itemValue))} -->
+<div data-path={path} data-sorting={sorting} class="rz-tree-item">
 	<div class="rz-tree-item__grip">
 		<GripVertical size={15} />
 	</div>
@@ -64,7 +75,7 @@
 			<button type="button" onclick={toggleBlock} class="rz-tree-item__title-button">
 				<div class="rz-tree-item__title">
 					<h3 class="rz-tree-item__heading">
-						{renderBlockTitle()} - {path}
+						{renderBlockTitle()} - {currentPath}
 					</h3>
 				</div>
 			</button>
@@ -77,10 +88,10 @@
 		</div>
 	</div>
 
-	<div data-path={currentPath} data-tree-key={treeKey} class="rz-tree__list">
+	<div data-path={path} data-tree-key={treeKey} class="rz-tree__list">
 		{#if itemValue._children && itemValue._children.length}
 			{#each itemValue._children as child, index (child.id)}
-				<TreeBlock {form} {sorting} {treeKey} path="{currentPath}._children.{index}" {config} />
+				<TreeBlock {form} {sorting} {treeKey} path="{path}._children.{index}" {config} />
 			{/each}
 		{/if}
 	</div>

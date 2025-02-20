@@ -24,7 +24,7 @@ export type TreeBlock = {
 	parentId?: string;
 	relativePath?: string;
 	path?: string;
-	_children?: TreeBlock[];
+	_children: TreeBlock[];
 } & Dic;
 
 export type GenericBlock<T extends string = string> = {

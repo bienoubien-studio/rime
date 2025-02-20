@@ -133,41 +133,77 @@ function createDocumentFormState({
 		// };
 
 		const moveItem = (fromPath: string, toPath: string) => {
-			const items = cloneDeep(getItems());
+			let items = cloneDeep(snapshot(getItems()));
 
-			// Get array and position from path
-			const getArrayAndPosition = (path: string) => {
+			console.log('fromPath', fromPath);
+			console.log('toPath', toPath);
+			console.log('before', JSON.stringify(snapshot(items)));
+			// Helper function to get array and index from path
+
+			const getArrayAndIndex = (path: string) => {
 				const parts = path.split('.');
-				const position = parseInt(parts[parts.length - 1]);
-
-				// Root level path (mainNav.X)
-				if (parts.length === 2) {
-					return { array: items, position };
-				}
-
-				// Nested path with _children
 				let current = items;
-				let array = items;
+				let parentArray = items;
+				let finalIndex = parseInt(parts[parts.length - 1]);
 
-				for (let i = 1; i < parts.length - 1; i++) {
-					if (parts[i] === '_children') {
-						const parentIndex = parseInt(parts[i - 1]);
-						current = current[parentIndex]._children;
-						array = current;
+				for (let i = 0; i < parts.length - 1; i++) {
+					const part = parts[i];
+					if (part === '_children') {
+						continue;
 					}
+					const index = parseInt(part);
+					parentArray = current;
+					if (!current[index]._children) {
+						current[index]._children = [];
+					}
+					current = current[index]._children;
 				}
 
-				return { array, position };
+				return {
+					array: parts.includes('_children') ? current : parentArray,
+					index: finalIndex,
+					fullPath: parts.slice(0, -1).join('.')
+				};
 			};
 
-			const source = getArrayAndPosition(fromPath);
-			const target = getArrayAndPosition(toPath);
+			// Get source and target information
+			const source = getArrayAndIndex(fromPath);
+			const target = getArrayAndIndex(toPath);
 
-			if (source.array && target.array) {
-				const [itemToMove] = source.array.splice(source.position, 1);
-				target.array.splice(target.position, 0, itemToMove);
-			}
+			// Perform the move operation
+			const [itemToMove] = source.array.splice(source.index, 1);
+			target.array.splice(target.index, 0, itemToMove);
 
+			// Rebuild paths and positions
+			const rebuildPaths = (blocks: TreeBlock[], parentPath = '') => {
+				blocks.forEach((block, index) => {
+					// For root level items
+					if (!parentPath) {
+						block.path = path;
+					} else {
+						// For nested items
+						block.path = parentPath;
+					}
+
+					// Position is always a number
+					block.position = index;
+
+					// Recursively update children if they exist
+					if (block._children?.length > 0) {
+						const newParentPath = parentPath
+							? `${parentPath}.${index}._children`
+							: `${path}.${index}._children`;
+						rebuildPaths(block._children, newParentPath);
+					}
+				});
+			};
+
+			// Rebuild all paths and positions
+			rebuildPaths(items);
+
+			console.log('after', JSON.stringify(snapshot(items)));
+
+			// assignItemsToDoc([]);
 			assignItemsToDoc(items);
 		};
 		// const duplicateBlock = (index: number) => {
