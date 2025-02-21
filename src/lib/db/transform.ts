@@ -184,6 +184,8 @@ export const databaseTransformInterface = ({
 		const treeTables = treeInterface.getBlocksTableNames(slug);
 		let treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
 
+		treeBlocks = treeBlocks.sort((a, b) => a.path.localeCompare(b.path));
+
 		/** Place each treeBlock in its path */
 		for (let block of treeBlocks) {
 			const expandedPath = expandTreePath(block.path);

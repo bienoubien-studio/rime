@@ -53,6 +53,22 @@ export const safeFlattenDoc = (doc: Dic) =>
 		}
 	});
 
+export const getValueAtPath = <T extends unknown>(doc: Dic, path: string): T | null | undefined => {
+	const parts = path.split('.');
+	let current = doc;
+	for (const part of parts) {
+		if (/^d+$/.test(part)) {
+			current = current[parseInt(part)];
+		} else {
+			current = current[part];
+		}
+		if (!current) {
+			return current;
+		}
+	}
+	return current;
+};
+
 export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 	opts = opts || {};
 	const delimiter = '.';
@@ -88,6 +104,7 @@ export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 	return output;
 };
 
+// @TODO make each field responsible of its empty value somehow
 export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollectionConfig | CompiledAreaConfig
 ): T => {
@@ -97,7 +114,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		} else if (curr.type === 'group') {
 			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
 		} else if (curr.type === 'link') {
-			const emptyLink: Link = { label: '', link: '', target: '_self', type: 'url' };
+			const emptyLink: Link = { link: '', target: '_self', type: 'url' };
 			prev[curr.name] = emptyLink;
 		} else if (['blocks', 'relation', 'select'].includes(curr.type)) {
 			prev[curr.name] = [];

@@ -6,7 +6,6 @@
 	import { isFormField } from '$lib/utils/field.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { Field } from 'rizom/types/fields.js';
-	import TreeBlock from './TreeBlock.svelte';
 	import type { Dic } from 'rizom/types/utility';
 
 	type AddItem = (emptyValues: Dic) => void;

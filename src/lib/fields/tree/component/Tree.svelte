@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { capitalize } from '$lib/utils/string.js';
 	import AddItemButton from './AddItemButton.svelte';
-	import TreeBlock from './TreeBlock.svelte';
+	import TreeBlockItem from './TreeBlockItem.svelte';
 	import { Field } from 'rizom/panel';
 	import './tree.css';
 	import { t__ } from 'rizom/panel/i18n/index.js';
@@ -10,11 +10,10 @@
 	import type { Dic } from 'rizom/types/utility';
 
 	const { path, config, form }: TreeProps = $props();
-	type Item = (typeof treeState.items)[number];
-	// let blockList: HTMLElement;
 
 	const treeState = $derived(form.useTree(path));
 	const field = $derived(form.useField(path, config));
+
 	let sortingInitialized = $state(false);
 	let sorting = $state(false);
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
@@ -90,7 +89,14 @@
 		>
 			{#if hasBlocks}
 				{#each treeState.items as item, index}
-					<TreeBlock {treeState} treeKey={path} path="{path}.{index}" {form} {sorting} {config} />
+					<TreeBlockItem
+						{treeState}
+						treeKey={path}
+						path="{path}.{index}"
+						{form}
+						{sorting}
+						{config}
+					/>
 				{/each}
 			{/if}
 		</div>

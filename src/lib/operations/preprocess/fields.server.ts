@@ -50,7 +50,10 @@ export const preprocessFields: PreprocessFields = async ({
 		}
 
 		// Unique
-		/** @TODO better unique check like nested ones, locale,... */
+		/** @TODO better unique check like nested ones, locale,...
+		 *   possible to handle this with a try catch on DB update/create
+		 *   and parse the sqlite error
+		 */
 		if ('unique' in config && config.unique && isCollection) {
 			const query = { where: { [key]: { equals: flatData[key] } } };
 			const existing = await adapter.collection.query({ slug, query });

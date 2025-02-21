@@ -1,14 +1,21 @@
 <script lang="ts">
 	import { GripVertical } from 'lucide-svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import TreeBlock from './TreeBlock.svelte';
+	import TreeBlockItem from './TreeBlockItem.svelte';
 	import type { TreeBlockProps } from './types';
 	import TreeBlockActions from './TreeBlockActions.svelte';
+	import type { TreeBlock } from 'rizom/types/doc';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 
+	const depth = $derived(
+		path
+			.replace(`${treeState.path}.`, '')
+			.split('.')
+			.filter((str) => str !== '_children').length
+	);
 	const position = $derived(parseInt(path.split('.').pop() || '0'));
-	const itemValue = $derived(form.useValue(path));
+	const itemValue = $derived(form.useValue<TreeBlock>(path));
 	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
 	let isOpen = $state(false);
 
@@ -21,17 +28,11 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			const title = config.renderTitle({ fields: itemValue });
+			const title = config.renderTitle({ fields: itemValue || {} });
 			if (title) return title;
 		}
 		return `${config.label || config.name} ${position}`;
 	};
-
-	// $effect(() => {
-	// 	if (currentPath !== path) {
-	// 		currentPath = path;
-	// 	}
-	// });
 </script>
 
 <div data-path={path} data-sorting={sorting} class="rz-tree-item">
@@ -44,14 +45,12 @@
 			<button type="button" onclick={toggleBlock} class="rz-tree-item__title-button">
 				<div class="rz-tree-item__title">
 					{renderBlockTitle()}
+					{depth}
 					<!-- {itemValue.id} -->
 				</div>
 			</button>
 
-			<TreeBlockActions
-				duplicateItem={() => treeState.duplicateItem(parentPath, position)}
-				deleteItem={() => treeState.deleteItem(parentPath, position)}
-			/>
+			<TreeBlockActions deleteItem={() => treeState.deleteItem(parentPath, position)} />
 		</header>
 
 		<div class="rz-tree-item__fields" class:rz-tree-item__fields--hidden={!isOpen}>
@@ -59,20 +58,29 @@
 		</div>
 	</div>
 
-	<div data-path={path} data-tree-key={treeKey} class="rz-tree__list">
-		{#if itemValue._children && itemValue._children.length}
-			{#each itemValue._children as child, index (child.id)}
-				<TreeBlock
-					{treeState}
-					{form}
-					{sorting}
-					{treeKey}
-					path="{path}._children.{index}"
-					{config}
-				/>
-			{/each}
-		{/if}
-	</div>
+	{#if depth <= config.maxDepth}
+		<div
+			data-tree-max-depth={depth === config.maxDepth ? '' : null}
+			data-path={path}
+			data-tree-key={treeKey}
+			class="rz-tree__list"
+		>
+			{#if itemValue && itemValue._children && itemValue._children.length}
+				{#each itemValue._children as child, index (child.id)}
+					<TreeBlockItem
+						{treeState}
+						{form}
+						{sorting}
+						{treeKey}
+						path="{path}._children.{index}"
+						{config}
+					/>
+				{/each}
+			{/if}
+		</div>
+	{:else}
+		<div class="rz-tree-item__list-placeholder"></div>
+	{/if}
 </div>
 
 <style type="postcss">
@@ -114,6 +122,7 @@
 		}
 	}
 
+	.rz-tree-item__content + .rz-tree-item__list-placeholder,
 	.rz-tree-item__content + .rz-tree__list {
 		margin-top: 1rem;
 		min-height: 5px;

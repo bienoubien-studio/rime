@@ -1,6 +1,6 @@
 import type { TreeBlock } from 'rizom/types/doc';
 import type { ConfigMap } from '../config/map';
-import { getValueFromPath } from '$lib/utils/doc';
+import { getValueAtPath } from '$lib/utils/doc';
 import cloneDeep from 'clone-deep';
 import type { WithRequired } from 'rizom/types/utility';
 
@@ -53,7 +53,7 @@ export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
-			const value = getValueFromPath(doc, path) as TreeBlock[];
+			const value = getValueAtPath(doc, path) as TreeBlock[];
 			const isEmptyValue = config.isEmpty(value);
 
 			if (!isEmptyValue) {

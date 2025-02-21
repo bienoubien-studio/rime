@@ -10,7 +10,7 @@ export type TreeBlockProps = {
 		addItem: (emptyValues: Dic) => void;
 		moveItem: (fromPath: string, toPath: string) => void;
 		deleteItem: (path: string, index: number) => void;
-		duplicateItem: (path: string, index: number) => void;
+		readonly path: string;
 		readonly stamp: string;
 		readonly items: TreeBlock[];
 	};

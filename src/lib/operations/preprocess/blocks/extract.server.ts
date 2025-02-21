@@ -1,6 +1,6 @@
 import type { GenericBlock } from 'rizom/types/doc';
 import type { ConfigMap } from '../config/map';
-import { getValueFromPath } from '$lib/utils/doc';
+import { getValueAtPath } from '$lib/utils/doc';
 
 type ExtractBlocksArgs = {
 	doc: any;
@@ -14,7 +14,7 @@ export function extractBlocks({ doc, configMap }: ExtractBlocksArgs) {
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'blocks') {
-			const value = getValueFromPath(doc, path) as GenericBlock[];
+			const value = getValueAtPath(doc, path) as GenericBlock[];
 
 			const isEmptyValue = config.isEmpty(value);
 			if (!isEmptyValue) {
