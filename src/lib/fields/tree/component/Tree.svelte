@@ -24,10 +24,9 @@
 		swapThreshold: 0.95,
 		group: {
 			name: `list-${path}`,
-			put: (to, from, el, event) => {
+			put: (to, _, el, __) => {
 				const targetDepth = parseInt(to.el.dataset.treeDepth || '0');
 				const childrenCount = parseInt(el.dataset.treeChildren || '0');
-				console.log({ targetDepth, childrenCount, max: config.maxDepth });
 				return targetDepth + childrenCount <= config.maxDepth;
 			}
 		},
