@@ -23,6 +23,7 @@ import type {
 import type { Dic } from 'rizom/types/utility.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
+import { extractTreeItems } from '../preprocess/tree/extract.server.js';
 
 export const create = async <T extends RegisterCollection[CollectionSlug]>({
 	data,
@@ -131,6 +132,10 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 	// Create doc
 	//////////////////////////////////////////////
 
+	const treeItems = extractTreeItems({
+		doc: data,
+		configMap
+	});
 	const blocks = extractBlocks({ doc: data, configMap });
 	const { relations } = extractRelations({ flatData, configMap, locale });
 
@@ -140,7 +145,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 		locale
 	});
 
-	/** Update Relations */
+	/** Create Relations */
 	await adapter.relations.create({
 		parentSlug: config.slug,
 		parentId: createdId,
@@ -156,6 +161,13 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 				parentId: createdId,
 				locale
 			})
+		)
+	);
+
+	/** Create tree blocks */
+	await Promise.all(
+		treeItems.map((block) =>
+			adapter.tree.create({ parentSlug: config.slug, parentId: createdId, block, locale })
 		)
 	);
 

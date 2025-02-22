@@ -11,7 +11,6 @@ import type { LocalAPI } from 'rizom/types/api.js';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
 import type {
-	CollectionHookAfterUpdate,
 	CollectionHookAfterUpdateArgs,
 	CollectionHookBeforeUpdateArgs
 } from 'rizom/types/hooks.js';
@@ -20,6 +19,8 @@ import { defineRelationsDiff } from '../preprocess/relations/diff.server.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 import type { RegisterCollection } from 'rizom';
+import { extractTreeItems } from '../preprocess/tree/extract.server.js';
+import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -120,7 +121,16 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 		configMap
 	});
 
+	const incomingTreeItems = extractTreeItems({
+		doc: data,
+		configMap
+	});
+
 	await adapter.collection.update({ slug: config.slug, id, data, locale });
+
+	/////////////////////////////////////////////
+	// Handle blocks
+	//////////////////////////////////////////////
 
 	const existingBlocks = extractBlocks({
 		doc: originalDoc,
@@ -160,6 +170,53 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 		parentId: id,
 		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
 	});
+
+	/////////////////////////////////////////////
+	// Tree blocks handling
+	//////////////////////////////////////////////
+
+	const existingTreeItems = extractTreeItems({
+		doc: originalDoc,
+		configMap
+	});
+
+	const treeDiff = defineTreeBlocksDiff({
+		existingBlocks: existingTreeItems,
+		incomingBlocks: incomingTreeItems
+	});
+
+	if (treeDiff.toDelete.length) {
+		await Promise.all(
+			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: config.slug, block }))
+		);
+	}
+
+	if (treeDiff.toAdd.length) {
+		await Promise.all(
+			treeDiff.toAdd.map((block) =>
+				adapter.tree.create({ parentSlug: config.slug, parentId: originalDoc.id, block, locale })
+			)
+		);
+	}
+
+	if (treeDiff.toUpdate.length) {
+		await Promise.all(
+			treeDiff.toUpdate.map((block) =>
+				adapter.tree.update({ parentSlug: config.slug, block, locale })
+			)
+		);
+	}
+
+	/** Delete relations from deletedTreeItems */
+	await adapter.relations.deleteFromPaths({
+		parentSlug: config.slug,
+		parentId: id,
+		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+	});
+
+	/////////////////////////////////////////////
+	// Relation handling
+	//////////////////////////////////////////////
 
 	/** Get existing relations */
 	const existingRelations = await adapter.relations.getAll({

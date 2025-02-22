@@ -142,6 +142,13 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		);
 	}
 
+	/** Delete relations from deletedBlocks */
+	await adapter.relations.deleteFromPaths({
+		parentSlug: config.slug,
+		parentId: doc.id,
+		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+	});
+
 	/////////////////////////////////////////////
 	// Tree handling
 	//////////////////////////////////////////////
@@ -155,8 +162,6 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		existingBlocks: existingTreeItems,
 		incomingBlocks: incomingTreeItems
 	});
-
-	console.log(toNestedRepresentation(incomingTreeItems).toString());
 
 	if (treeDiff.toDelete.length) {
 		await Promise.all(
@@ -180,11 +185,11 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		);
 	}
 
-	/** Delete relations from deletedBlocks */
+	/** Delete relations from deletedTreeItems */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId: doc.id,
-		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
 	});
 
 	/** Delete relations from deletedTreeBlocks */
