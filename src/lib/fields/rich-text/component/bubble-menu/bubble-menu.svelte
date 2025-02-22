@@ -4,7 +4,6 @@
 	import NodeSelector from './node-selector/node-selector.svelte';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
-	import { randomId } from '$lib/utils/random';
 	import Marks from './marks/marks.svelte';
 	import type { RichTextFieldMark, RichTextFieldNode } from 'rizom/fields/rich-text';
 	import './bubble-menu.css';
@@ -22,7 +21,7 @@
 	let marksComponent: any = $state();
 	let isLinkActive = $state(editor && editor.isActive('link'));
 
-	const pluginKey = randomId(12);
+	const pluginKey = new Date().getTime().toString();
 	const updateDelay = 250;
 	const tippyOptions = {
 		moveTransition: 'transform 0.15s ease-out',

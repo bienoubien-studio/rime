@@ -38,6 +38,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.isEmpty = (value: any) => !value || !value.link;
 		this.field.defaultValue = { type: 'url', link: null, target: '_self' };
 		this.field.validate = validate.link;
+		this.field.layout = 'default';
 		this.field.hooks = {
 			beforeRead: [populateRessourceURL],
 			beforeSave: [],
@@ -51,6 +52,11 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 	toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: Link`;
+	}
+
+	layout(str: 'compact' | 'default') {
+		this.field.layout = str;
+		return this;
 	}
 
 	toSchema() {
@@ -83,6 +89,7 @@ export type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'Pro
 export type LinkField = FormField & {
 	type: 'link';
 	defaultValue?: string;
+	layout: 'compact' | 'default';
 	unique?: boolean;
 	types?: LinkType[];
 };

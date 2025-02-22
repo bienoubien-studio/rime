@@ -15,6 +15,7 @@ import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 import { extractTreeItems } from '../preprocess/tree/extract.server.js';
 import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
+import { toNestedRepresentation } from 'rizom/fields/tree/index.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -67,6 +68,8 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	/** Flatten data once for all */
 	let flatData: Dic = safeFlattenDoc(data);
 	const configMap = buildConfigMap(data, config.fields);
+
+	console.log(flatData);
 
 	const { errors, validData, validFlatData } = await preprocessFields({
 		data,
@@ -152,6 +155,8 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 		existingBlocks: existingTreeItems,
 		incomingBlocks: incomingTreeItems
 	});
+
+	console.log(toNestedRepresentation(incomingTreeItems).toString());
 
 	if (treeDiff.toDelete.length) {
 		await Promise.all(

@@ -8,7 +8,6 @@ import { invalidateAll } from '$app/navigation';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
-import { randomId } from '../../utils/random.js';
 import { getUserContext } from './user.svelte.js';
 import { getValueAtPath } from '../../utils/doc.js';
 import { snapshot } from '../../utils/state.js';
@@ -19,7 +18,7 @@ import type { Dic } from 'rizom/types/utility';
 import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
-import { toNestedRepresentation } from 'rizom/fields/tree/index.js';
+import { toNestedRepresentation, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
 
 function createDocumentFormState({
 	initial,
@@ -98,7 +97,7 @@ function createDocumentFormState({
 		const parts = path.split('.');
 		let stamp = $state(new Date().getTime().toString());
 
-		const generateTempId = () => 'temp-' + randomId(8);
+		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getItems = (): TreeBlock[] => {
 			return getValueAtPath(doc, path) || [];
@@ -111,7 +110,8 @@ function createDocumentFormState({
 			flatDoc[path] = items;
 			doc = unflatten(flatDoc);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
-
+			// const repr = toNestedRepresentation(items);
+			// console.log(repr.toString());
 			/** update stamp to rerender */
 			stamp = new Date().getTime().toString();
 		};
@@ -131,6 +131,11 @@ function createDocumentFormState({
 
 		const rebuildPaths = (blocks: TreeBlock[], parentPath = '') => {
 			const copy = cloneDeep(blocks);
+			let replaceTooMuchNestedChildren: Dic = {
+				atPath: null,
+				_children: []
+			};
+
 			copy.forEach((block, index) => {
 				// For root level items
 				if (!parentPath) {
@@ -140,17 +145,17 @@ function createDocumentFormState({
 					block.path = parentPath;
 				}
 
-				// Position is always a number
 				block.position = index;
 
 				// Recursively update children if they exist
 				if (block._children?.length > 0) {
-					const newParentPath = parentPath
-						? `${parentPath}.${index}._children`
-						: `${path}.${index}._children`;
-					rebuildPaths(block._children, newParentPath);
+					let newParentPath = parentPath ? parentPath : path;
+
+					newParentPath += `.${index}._children`;
+					block._children = rebuildPaths(block._children, newParentPath);
 				}
 			});
+
 			return copy;
 		};
 
@@ -247,7 +252,7 @@ function createDocumentFormState({
 	function useBlocks(path: string) {
 		const parts = path.split('.');
 
-		const generateTempId = () => 'temp-' + randomId(8);
+		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
 			return getValueAtPath(doc, path) || [];

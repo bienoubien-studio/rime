@@ -50,10 +50,6 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 			fields: this.field.fields.map((f) => f.compile())
 		};
 	}
-	// blocks(...blocks: TreeFieldBlock[]) {
-	// 	this.field.blocks = blocks;
-	// 	return this;
-	// }
 }
 
 // Utility (debug)
@@ -64,7 +60,13 @@ export const toNestedRepresentation = (blocks: TreeBlock[] | undefined | null) =
 		if (!curr.path || !curr) {
 			throw new Error('wrong tree path');
 		}
-		const representation = { path: curr.path, _children: curr._children.reduce(reduceBlocks, []) };
+		const representation = {
+			path: `${curr.path} - ${curr.position}`,
+			_children:
+				curr._children && Array.isArray(curr._children)
+					? curr._children.reduce(reduceBlocks, [])
+					: []
+		};
 		prev.push(representation);
 		return prev;
 	};

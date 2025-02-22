@@ -5,14 +5,16 @@ import { toPascalCase } from '../utils/string.js';
 import type { TreeBlock, PrototypeSlug } from 'rizom/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
 import type { WithRequired } from 'rizom/types/utility.js';
-import { extractFieldName } from 'rizom/operations/postprocess/tree.server.js';
+import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
 	type KeyOfTables = keyof typeof tables;
 
-	const buildBlockTableName = (slug: string, blockPath: string) =>
-		`${slug}Tree${toPascalCase(extractFieldName(blockPath))}`;
+	const buildBlockTableName = (slug: string, blockPath: string) => {
+		const [fieldName] = extractFieldName(blockPath);
+		return `${slug}Tree${toPascalCase(fieldName)}`;
+	};
 
 	const update: UpdateBlock = async ({ parentSlug, block, locale }) => {
 		const tableName = buildBlockTableName(parentSlug, block.path);

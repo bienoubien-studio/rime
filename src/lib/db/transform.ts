@@ -15,7 +15,7 @@ import type {
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
-import { expandTreePath, extractFieldName } from 'rizom/operations/postprocess/tree.server.js';
+import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
 
 /////////////////////////////////////////////
 // Types
@@ -188,13 +188,12 @@ export const databaseTransformInterface = ({
 
 		/** Place each treeBlock in its path */
 		for (let block of treeBlocks) {
-			const expandedPath = expandTreePath(block.path);
-
-			if (!(expandedPath in flatDoc)) {
-				flatDoc[expandedPath] = [];
+			if (!(block.path in flatDoc)) {
+				flatDoc[block.path] = [];
 			}
 
-			const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(extractFieldName(block.path))}Locales`;
+			const [fieldName] = extractFieldName(block.path);
+			const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(fieldName)}Locales`;
 
 			if (locale && treeBlockLocaleTableName in tables) {
 				block = {
@@ -215,7 +214,7 @@ export const databaseTransformInterface = ({
 			delete block[treeBlockLocaleTableName];
 			/** Assign */
 
-			flatDoc[expandedPath][position] = block;
+			flatDoc[block.path][position] = block;
 		}
 
 		flatDoc = safeFlattenDoc(flatDoc);

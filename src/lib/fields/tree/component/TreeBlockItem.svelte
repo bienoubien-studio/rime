@@ -5,6 +5,7 @@
 	import type { TreeBlockProps } from './types';
 	import TreeBlockActions from './TreeBlockActions.svelte';
 	import type { TreeBlock } from 'rizom/types/doc';
+	import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 
@@ -17,6 +18,17 @@
 	const position = $derived(parseInt(path.split('.').pop() || '0'));
 	const itemValue = $derived(form.useValue<TreeBlock>(path));
 	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
+	const parentPathFormated = $derived.by(() => {
+		if (depth === 1) return '';
+		const [_, relativePath] = extractFieldName(parentPath);
+		return (
+			relativePath
+				.split('.')
+				.filter((str) => str !== '_children')
+				.map((str) => parseInt(str) + 1)
+				.join('.') + '.'
+		);
+	});
 	let isOpen = $state(false);
 
 	const toggleBlock = (e: MouseEvent) => {
@@ -31,11 +43,16 @@
 			const title = config.renderTitle({ fields: itemValue || {} });
 			if (title) return title;
 		}
-		return `${config.label || config.name} ${position}`;
+		return `${config.label || config.name}`;
 	};
 </script>
 
-<div data-path={path} data-sorting={sorting} class="rz-tree-item">
+<div
+	data-path={path}
+	data-tree-children={itemValue?._children.length || 0}
+	data-sorting={sorting}
+	class="rz-tree-item"
+>
 	<div class="rz-tree-item__grip">
 		<GripVertical size={15} />
 	</div>
@@ -44,9 +61,7 @@
 		<header class="rz-tree-item__header">
 			<button type="button" onclick={toggleBlock} class="rz-tree-item__title-button">
 				<div class="rz-tree-item__title">
-					{renderBlockTitle()}
-					{depth}
-					<!-- {itemValue.id} -->
+					{parentPathFormated}{position + 1}. {renderBlockTitle()}
 				</div>
 			</button>
 
@@ -59,12 +74,7 @@
 	</div>
 
 	{#if depth <= config.maxDepth}
-		<div
-			data-tree-max-depth={depth === config.maxDepth ? '' : null}
-			data-path={path}
-			data-tree-key={treeKey}
-			class="rz-tree__list"
-		>
+		<div data-path={path} data-tree-depth={depth} data-tree-key={treeKey} class="rz-tree__list">
 			{#if itemValue && itemValue._children && itemValue._children.length}
 				{#each itemValue._children as child, index (child.id)}
 					<TreeBlockItem

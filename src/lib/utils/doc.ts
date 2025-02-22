@@ -1,5 +1,5 @@
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
-import { flattenWithGuard, isBuffer } from './object.js';
+import { flattenWithGuard, isBuffer, isObjectLiteral } from './object.js';
 import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
@@ -66,7 +66,7 @@ export const getValueAtPath = <T extends unknown>(doc: Dic, path: string): T | n
 			return current;
 		}
 	}
-	return current;
+	return current as T;
 };
 
 export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {

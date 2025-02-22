@@ -2,7 +2,6 @@ import type { ImageSizesConfig } from 'rizom/types/config';
 import type { UploadDoc } from 'rizom';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { randomId } from 'rizom/utils/random';
 import { RizomError } from 'rizom/errors/index.js';
 import { pick } from 'rizom/utils/object';
 import sharp from 'sharp';
@@ -17,7 +16,7 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 	let filename = `${name}.${extension}`;
 	let filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
 	while (existsSync(filePath)) {
-		name += `-${randomId(8)}`;
+		name += `-${new Date().getTime().toString()}`;
 		filename = `${name}.${extension}`;
 		filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
 	}

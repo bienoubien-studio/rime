@@ -94,9 +94,15 @@
 </script>
 
 <Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
-	<Field.Label {config} />
+	{#if config.layout !== 'compact'}
+		<Field.Label {config} />
+	{/if}
 
-	<div class="rz-link-field" data-error={field.error ? 'true' : 'false'}>
+	<div
+		class:rz-link-field--compact={config.layout === 'compact'}
+		class="rz-link-field"
+		data-error={field.error ? 'true' : 'false'}
+	>
 		<div
 			class="rz-link-field__bottom"
 			style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}"
@@ -173,6 +179,9 @@
 		}
 	}
 
+	.rz-link-field--compact {
+	}
+
 	.rz-link-field__bottom {
 		display: flex;
 		position: relative;
@@ -183,7 +192,7 @@
 		}
 
 		:global(.rz-button) {
-			min-width: var(--rz-size-16);
+			min-width: var(--rz-size-20);
 			border-top-left-radius: var(--rz-radius-md);
 			border-top-right-radius: 0;
 			border-bottom-right-radius: 0;
@@ -200,7 +209,7 @@
 			}
 		}
 
-		@container rz-field-root (min-width:640px) {
+		@container rz-field-root (min-width:420px) {
 			.rz-link__type-text {
 				display: block;
 			}

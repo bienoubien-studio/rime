@@ -23,7 +23,13 @@
 		animation: 150,
 		swapThreshold: 0.95,
 		group: {
-			name: `list-${path}`
+			name: `list-${path}`,
+			put: (to, from, el, event) => {
+				const targetDepth = parseInt(to.el.dataset.treeDepth || '0');
+				const childrenCount = parseInt(el.dataset.treeChildren || '0');
+				console.log({ targetDepth, childrenCount, max: config.maxDepth });
+				return targetDepth + childrenCount <= config.maxDepth;
+			}
 		},
 		onStart: () => (sorting = true),
 		onUnchoose: () => (sorting = false),
@@ -84,6 +90,7 @@
 		<div
 			class="rz-tree__list rz-tree__list--root"
 			data-tree-key={path}
+			data-tree-depth="1"
 			data-path={path}
 			data-empty={!hasBlocks ? '' : null}
 		>
