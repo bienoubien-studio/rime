@@ -43,22 +43,25 @@
 
 	<ScrollArea class={gridClass}>
 		{#if !collection.docs.length}
-			<div class="rz-collection-area__empty">
-				<div>
-					<span
-						>{t__(
-							`common.no_document|${collection.config.label.gender}`,
-							collection.config.label.singular
-						)}</span
-					>
-					<Button href="/panel/{collection.config.slug}/create" variant="outline">
-						{t__(
-							`common.create_first|${collection.config.label.gender}`,
-							collection.config.label.singular
-						)}
-					</Button>
+			{#if !compact}
+				<div class="rz-collection-area__empty">
+					<div>
+						<span>
+							{t__(
+								`common.no_document|${collection.config.label.gender}`,
+								collection.config.label.singular
+							)}
+						</span>
+
+						<Button href="/panel/{collection.config.slug}/create" variant="outline">
+							{t__(
+								`common.create_first|${collection.config.label.gender}`,
+								collection.config.label.singular
+							)}
+						</Button>
+					</div>
 				</div>
-			</div>
+			{/if}
 		{:else}
 			<div
 				class:rz-collection-area__list={!collection.isGrid()}
