@@ -50,9 +50,9 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	$effect(() => {
-		console.log($state.snapshot(doc));
-	});
+	// $effect(() => {
+	// 	console.log($state.snapshot(doc));
+	// });
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -179,7 +179,7 @@ function createDocumentFormState({
 
 			// Rebuild all paths and positions
 			items = rebuildPaths(items, path);
-
+			errors.deleteAllThatStartWith(`${path}.${index}.`);
 			assignItemsToDoc(items);
 		};
 
