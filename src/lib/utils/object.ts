@@ -28,7 +28,7 @@ export const withoutNull = <T extends object, K extends keyof T>(obj: T): Partia
 	return res;
 };
 
-export const omitId = <T extends { id: string; [k: string]: any }>(obj: T): Omit<T, 'id'> =>
+export const omitId = <T extends { id?: string; [k: string]: any }>(obj: T): Omit<T, 'id'> =>
 	omit(['id'], obj) as Omit<T, 'id'>;
 
 export function hasProps<T extends object, U extends Array<keyof T>>(

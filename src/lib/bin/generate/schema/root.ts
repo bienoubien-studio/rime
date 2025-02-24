@@ -12,6 +12,7 @@ import type { LocaleConfig } from 'rizom/types/config.js';
 import type { RelationFieldsMap } from './relations/definition.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
 import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
+import { TreeBuilder } from 'rizom/fields/tree/index.js';
 const p = toPascalCase;
 
 type Args = {
@@ -45,7 +46,7 @@ function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 		// Case 2: If it's a tabs field, check all fields within each tab
 		else if (isTabsField(field.raw)) {
 			for (const tab of field.raw.tabs) {
-				if (hasLocalizedField(tab.fields)) {
+				if (hasLocalizedField(tab.raw.fields)) {
 					return true;
 				}
 			}
@@ -54,7 +55,7 @@ function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 		// Case 3: If it's a blocks field, check all fields within each block
 		else if (isBlocksField(field.raw)) {
 			for (const block of field.raw.blocks) {
-				if (hasLocalizedField(block.fields)) {
+				if (hasLocalizedField(block.raw.fields)) {
 					return true;
 				}
 			}
@@ -104,7 +105,7 @@ const buildRootTable = ({
 				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized)];
 			} else if (isTabsField(field.raw)) {
 				for (const tab of field.raw.tabs) {
-					templates = [...templates, ...generateFieldsTemplates(tab.fields, withLocalized)];
+					templates = [...templates, ...generateFieldsTemplates(tab.raw.fields, withLocalized)];
 				}
 			} else if (isRelationField(field.raw)) {
 				if (field.raw.localized) {
@@ -119,7 +120,7 @@ const buildRootTable = ({
 				};
 			} else if (isBlocksField(field.raw)) {
 				for (const block of field.raw.blocks) {
-					const blockTableName = `${rootName}Blocks${p(block.name)}`;
+					const blockTableName = `${rootName}Blocks${p(block.raw.name)}`;
 					if (!registeredBlocks.includes(blockTableName)) {
 						relationsDic = {
 							...relationsDic,
@@ -130,7 +131,7 @@ const buildRootTable = ({
 							relationsDic: nestedRelationsDic,
 							relationFieldsMap: nestedRelationFieldsDic
 						} = buildRootTable({
-							fields: block.fields,
+							fields: block.raw.fields,
 							tableName: blockTableName,
 							hasParent: true,
 							relationsDic,
@@ -143,6 +144,31 @@ const buildRootTable = ({
 						registeredBlocks.push(blockTableName);
 						blocksTables.push(blockTable);
 					}
+				}
+			} else if (field instanceof TreeBuilder) {
+				const treeTableName = `${rootName}Tree${p(field.name)}`;
+				if (!registeredBlocks.includes(treeTableName)) {
+					relationsDic = {
+						...relationsDic,
+						[rootName]: [...(relationsDic[rootName] || []), treeTableName]
+					};
+					const {
+						schema: treeTable,
+						relationsDic: nestedRelationsDic,
+						relationFieldsMap: nestedRelationFieldsDic
+					} = buildRootTable({
+						fields: field.raw.fields,
+						tableName: treeTableName,
+						hasParent: true,
+						relationsDic,
+						relationFieldsMap,
+						locales,
+						rootName
+					});
+					relationsDic = nestedRelationsDic;
+					relationFieldsMap = nestedRelationFieldsDic;
+					registeredBlocks.push(treeTableName);
+					blocksTables.push(treeTable);
 				}
 			} else if (field instanceof FormFieldBuilder) {
 				if (checkLocalized(field)) {

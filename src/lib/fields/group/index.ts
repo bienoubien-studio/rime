@@ -13,6 +13,9 @@ export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 		this.field.fields = fields;
 		return this;
 	}
+	compile() {
+		return { ...this.field, fields: this.field.fields.map((f) => f.compile()) };
+	}
 }
 
 export const group = (label?: string) => new GroupFieldBuilder(label);

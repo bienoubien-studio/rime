@@ -1,9 +1,9 @@
 .rz-relation-upload__list[data-many] {
-	display: grid;
+	display: flex;
+	flex-wrap: wrap;
 	gap: var(--rz-size-4);
-	grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
 	.rz-relation-upload__row {
-		width: 100;
+		width: calc(var(--rz-size-40) + 2 * var(--rz-size-2));
 		.rz-relation-upload__info {
 			display: none;
 		}
@@ -25,6 +25,7 @@
 .rz-relation-upload__thumbnail {
 	width: var(--rz-size-40);
 	height: var(--rz-size-40);
+	flex-shrink: 0;
 	overflow: hidden;
 	border-radius: var(--rz-radius-md);
 }

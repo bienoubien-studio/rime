@@ -1,14 +1,8 @@
-import deepmerge from 'deepmerge';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
-import { addDefaultValues } from '../preprocess/fill/index.js';
-import { buildConfigMap } from '../preprocess/config/map.js';
+import { mergeWithBlankDocument } from '../preprocess/fill/index.js';
 import { extractBlocks } from '../preprocess/blocks/extract.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
-import { createBlankDocument, safeFlattenDoc } from '../../utils/doc.js';
-
-import { isUploadConfig } from '../../config/utils.js';
 import rizom from '$lib/rizom.server.js';
-import { preprocessFields } from '../preprocess/fields.server.js';
 import cloneDeep from 'clone-deep';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api';
@@ -20,9 +14,10 @@ import type {
 	CollectionHookAfterCreateArgs,
 	CollectionHookBeforeCreateArgs
 } from 'rizom/types/hooks.js';
-import type { Dic } from 'rizom/types/utility.js';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
+import { extractTreeItems } from '../preprocess/tree/extract.server.js';
+import { createFieldProvider } from '../preprocess/fields/provider.server.js';
 
 export const create = async <T extends RegisterCollection[CollectionSlug]>({
 	data,
@@ -43,51 +38,24 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 
 	const incomingData = cloneDeep(data);
 
+	console.log('incomingData', incomingData);
+
 	/** Add Password and ConfirmPassword so validation includes these fields */
 	const fields = [...config.fields];
 	if (config.auth) {
 		fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
-	// extract file before merge
-	// or merge fails ...
-	let file;
-	if (isUploadConfig(config) && 'file' in data) {
-		file = data.file;
-		delete data.file;
-	}
+	/** Complete with null values for fields that are not presents in incoming data */
+	const dataMergedWithBlankDocument = mergeWithBlankDocument({ data, config });
 
-	/** Merge data with emptydoc so all required fields will be present in validate */
-	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(
-		createBlankDocument({
-			...config,
-			fields
-		}),
-		data
-	);
+	/** Create an object that provide a value and a config based on a path  */
+	const fieldProvider = createFieldProvider({ data: dataMergedWithBlankDocument, fields });
 
-	// Add file after merge
-	if (file) {
-		dataMergedWithBlankDocument.file = file;
-	}
+	/** Add default values */
+	await fieldProvider.completeWithDefault({ adapter });
 
-	/** Build map between path in data and coresponding config */
-	const configMap = buildConfigMap(dataMergedWithBlankDocument, fields);
-
-	const dataWithDefaultValues = await addDefaultValues({
-		data: dataMergedWithBlankDocument,
-		configMap,
-		adapter
-	});
-
-	/** Flatten data once for all */
-	let flatData: Dic = safeFlattenDoc(dataWithDefaultValues);
-
-	/** Validate */
-	const { errors, validData, validFlatData } = await preprocessFields({
-		data,
-		flatData,
-		configMap,
+	const { errors } = await fieldProvider.validate({
 		operation: 'create',
 		documentId: undefined,
 		user: event.locals.user,
@@ -98,9 +66,6 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 
 	if (errors) {
 		throw new RizomFormError(errors);
-	} else {
-		data = validData as T;
-		flatData = validFlatData;
 	}
 
 	//////////////////////////////////////////////
@@ -113,12 +78,12 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 				const args = (await hook({
 					operation: 'create',
 					config,
-					data,
+					data: fieldProvider.data,
 					event,
 					rizom,
 					api
 				})) as CollectionHookBeforeCreateArgs<T>;
-				data = args.data;
+				fieldProvider.data = args.data;
 				event = args.event;
 			} catch (err: any) {
 				console.log(err);
@@ -131,16 +96,23 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 	// Create doc
 	//////////////////////////////////////////////
 
-	const blocks = extractBlocks({ doc: data, configMap });
-	const { relations } = extractRelations({ flatData, configMap, locale });
+	const treeItems = extractTreeItems({
+		fieldProvider
+	});
+
+	const blocks = extractBlocks({ fieldProvider });
+	const { relations } = extractRelations({ fieldProvider, locale });
+
+	console.log('fieldProvider.data', data);
+	console.log('extracted relations', relations);
 
 	const createdId = await adapter.collection.insert({
 		slug: config.slug,
-		data,
+		data: fieldProvider.data,
 		locale
 	});
 
-	/** Update Relations */
+	/** Create Relations */
 	await adapter.relations.create({
 		parentSlug: config.slug,
 		parentId: createdId,
@@ -156,6 +128,13 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>({
 				parentId: createdId,
 				locale
 			})
+		)
+	);
+
+	/** Create tree blocks */
+	await Promise.all(
+		treeItems.map((block) =>
+			adapter.tree.create({ parentSlug: config.slug, parentId: createdId, block, locale })
 		)
 	);
 

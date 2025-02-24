@@ -5,7 +5,8 @@
 		isGroupFieldRaw,
 		isLiveField,
 		isNotHidden,
-		isPresentative
+		isPresentative,
+		isTabsFieldRaw
 	} from '$lib/utils/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
@@ -60,7 +61,7 @@
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					{#if isGroupFieldRaw(field)}
 						<Group config={field} {path} {form} />
-					{:else if field.type === 'tabs'}
+					{:else if isTabsFieldRaw(field)}
 						{@const Tabs = config.raw.blueprints.tabs.component}
 						<Tabs config={field} {path} {form} />
 					{:else}
@@ -107,6 +108,11 @@
 			left: calc(-1 * var(--rz-size-8));
 			right: calc(-1 * var(--rz-size-8));
 		}
+	}
+
+	/** hide fields that doesn't have any data-visible children */
+	.rz-render-fields__field:not(:has(.rz-field-root[data-visible])) {
+		display: none;
 	}
 
 	.rz-render-fields__field--full,

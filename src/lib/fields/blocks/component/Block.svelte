@@ -7,6 +7,7 @@
 	import { useOnce } from '$lib/panel/utility/Once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { BlocksFieldRaw } from '../index.ts';
+	import type { GenericBlock } from 'rizom/types';
 
 	type Props = {
 		config: BlocksFieldRaw['blocks'][number];
@@ -22,12 +23,14 @@
 	let currentPath = $state.raw(path);
 	let isOpen = $state(true);
 	const position = $derived(parseInt(currentPath.split('.').pop() || '0'));
-	const blockValue = $derived(form.useValue(path));
+	const blockValue = $derived(form.useValue<GenericBlock>(path));
 
 	const { once } = useOnce();
 
 	once(() => {
-		isOpen = (localStorage.getItem(`${blockValue.id}:open`) || 'true') === 'true';
+		if (blockValue) {
+			isOpen = (localStorage.getItem(`${blockValue.id}:open`) || 'true') === 'true';
+		}
 	});
 
 	const toggleBlock = (e: MouseEvent) => {
@@ -35,12 +38,14 @@
 			e.stopPropagation();
 		}
 		isOpen = !isOpen;
-		localStorage.setItem(`${blockValue.id}:open`, isOpen.toString());
+		if (blockValue) {
+			localStorage.setItem(`${blockValue.id}:open`, isOpen.toString());
+		}
 	};
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			const title = config.renderTitle({ fields: blockValue, position });
+			const title = config.renderTitle({ fields: blockValue || {}, position });
 			if (title) return title;
 		}
 		const title = config.label ? config.label : capitalize(config.name);

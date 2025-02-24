@@ -9,8 +9,12 @@ type BuildWithParamArgs = {
 
 export const buildWithParam = ({ slug, locale }: BuildWithParamArgs): Dic => {
 	const blocksTables = rizom.adapter.blocks.getBlocksTableNames(slug);
+	const treeTables = rizom.adapter.tree.getBlocksTableNames(slug);
 	const withParam: Dic = Object.fromEntries(
-		blocksTables.map((k) => [k, { orderBy: [asc(rizom.adapter.tables[k].position)] }])
+		[...blocksTables, ...treeTables].map((k) => [
+			k,
+			{ orderBy: [asc(rizom.adapter.tables[k].position)] }
+		])
 	);
 
 	if (locale) {
@@ -26,6 +30,18 @@ export const buildWithParam = ({ slug, locale }: BuildWithParamArgs): Dic => {
 					with: {
 						[`${blocksTable}Locales`]: {
 							where: eq(rizom.adapter.tables[`${blocksTable}Locales`].locale, locale)
+						}
+					}
+				};
+			}
+		}
+		for (const treeTable of treeTables) {
+			if (`${treeTable}Locales` in rizom.adapter.tables) {
+				withParam[treeTable] = {
+					...withParam[treeTable],
+					with: {
+						[`${treeTable}Locales`]: {
+							where: eq(rizom.adapter.tables[`${treeTable}Locales`].locale, locale)
 						}
 					}
 				};

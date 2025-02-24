@@ -31,9 +31,9 @@
 				<Card.Title>Create the first admin user</Card.Title>
 			</Card.Header>
 			<Card.Content>
-				<Text config={text('name').required().toField()} form={context} />
-				<Email config={usersFields.email.toField()} form={context} />
-				<Text type="password" config={usersFields.password.toField()} form={context} />
+				<Text config={text('name').required().compile()} form={context} />
+				<Email config={usersFields.email.compile()} form={context} />
+				<Text type="password" config={usersFields.password.compile()} form={context} />
 			</Card.Content>
 			<Card.Footer>
 				<Button type="submit" size="lg">Create</Button>

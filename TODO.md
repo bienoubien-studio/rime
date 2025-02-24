@@ -6,8 +6,9 @@
 [v] better login error handling
 [ ] Add loader on image upload
 [ ] More test on access
+[ ] Better logs
 [ ] pnpm  deps issue
+[ ] remove forgot password route for now
 [ ] init command without prompt
 [ ] better-auth + smtp : forgot password
 [ ] basic real life config preset
-[ ] remove forgot password route for now

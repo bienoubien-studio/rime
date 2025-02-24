@@ -1,24 +1,21 @@
 import type { GenericBlock } from 'rizom/types/doc';
-import type { ConfigMap } from '../config/map';
-import { getValueFromPath } from '$lib/utils/doc';
+import type { FieldProviderServer } from '../fields/provider.server';
 
 type ExtractBlocksArgs = {
-	doc: any;
-	configMap: ConfigMap;
+	fieldProvider: FieldProviderServer;
 };
 
-export function extractBlocks({ doc, configMap }: ExtractBlocksArgs) {
+export function extractBlocks({ fieldProvider }: ExtractBlocksArgs) {
 	const blocks: GenericBlock[] = [];
 
-	if (!doc || !configMap) return blocks;
-
-	Object.entries(configMap).forEach(([path, config]) => {
+	Object.entries(fieldProvider.configMap).forEach(([path, config]) => {
 		if (config.type === 'blocks') {
-			const value = getValueFromPath(doc, path) as GenericBlock[];
+			const field = fieldProvider.useFieldServer(path);
 
-			const isEmptyValue = config.isEmpty(value);
+			const isEmptyValue = config.isEmpty(field.value);
+
 			if (!isEmptyValue) {
-				value.forEach((block, index) => {
+				field.value.forEach((block: Partial<GenericBlock>, index: number) => {
 					if (block.type) {
 						const cleanBlock = {
 							...block,
@@ -26,12 +23,13 @@ export function extractBlocks({ doc, configMap }: ExtractBlocksArgs) {
 							position: block.position ?? index
 						};
 
-						// Type-safe way to remove nested blocks
+						// Remove children blocks
 						const finalBlock = Object.entries(cleanBlock).reduce((acc, [key, value]) => {
 							const nestedPath = `${path}.${index}.${key}`;
-							if (configMap[nestedPath]?.type === 'blocks') {
+							if (fieldProvider.configMap[nestedPath]?.type === 'blocks') {
 								return acc;
 							}
+							// @TODO should maybe remove tree also
 							return { ...acc, [key]: value };
 						}, {} as GenericBlock);
 

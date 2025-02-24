@@ -1,0 +1,29 @@
+.rz-tree__title {
+	margin-bottom: var(--rz-size-4);
+	font-size: var(--rz-text-xl);
+	@mixin font-medium;
+}
+
+.rz-tree__title--nested {
+	font-size: var(--rz-text-sm);
+}
+
+.rz-tree__list .rz-tree__list {
+	margin-left: 2rem;
+}
+
+.rz-tree__list {
+	display: grid;
+	margin-left: 1rem;
+}
+
+.rz-tree__empty {
+	border-bottom: var(--rz-border);
+	border-radius: var(--rz-radius-md);
+	padding: var(--rz-size-4);
+	font-size: var(--rz-text-sm);
+}
+
+.rz-tree__add-button {
+	margin-top: var(--rz-size-4);
+}

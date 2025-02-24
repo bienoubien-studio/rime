@@ -8,17 +8,18 @@ import { invalidateAll } from '$app/navigation';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
-import { randomId } from '../../utils/random.js';
 import { getUserContext } from './user.svelte.js';
-import { getValueFromPath } from '../../utils/doc.js';
-
+import { getValueAtPath } from '../../utils/doc.js';
 import { snapshot } from '../../utils/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
-import type { GenericBlock, GenericDoc, AnyFormField, BuiltDocConfig } from 'rizom/types';
+import type { GenericBlock, GenericDoc, AnyFormField } from 'rizom/types';
 import type { Dic } from 'rizom/types/utility';
 import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
+import type { TreeBlock } from 'rizom/types/doc.js';
+import { treeToString, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
+import { isObjectLiteral } from 'rizom/utils/object.js';
 
 function createDocumentFormState({
 	initial,
@@ -49,6 +50,9 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
+	$effect(() => {
+		console.log($state.snapshot(doc));
+	});
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -64,7 +68,41 @@ function createDocumentFormState({
 		}
 	}
 
+	const rebuildPaths = (items: any[], basePath: string, parentPath: string = basePath) => {
+		return items.map((item, index) => {
+			// Clone the item
+			const newItem = { ...item };
+
+			// If item has a path property, update it with parent path
+			if ('path' in newItem) {
+				newItem.path = parentPath;
+			}
+
+			// If item is part of an array, update its position
+			newItem.position = index;
+
+			// Process all properties of the item
+			Object.keys(newItem).forEach((key) => {
+				// If property is an array, process it recursively
+				if (
+					Array.isArray(newItem[key]) &&
+					newItem[key].length &&
+					isObjectLiteral(newItem[key][0])
+				) {
+					const newParentPath = `${parentPath}.${index}.${key}`;
+					newItem[key] = rebuildPaths(newItem[key], basePath, newParentPath);
+				}
+			});
+
+			return newItem;
+		});
+	};
+
 	function setValue(path: string, value: any) {
+		// const success = setValueAtPath(doc, path, value);
+		// if (success) {
+		// 	doc = success;
+		// }
 		const parts = path.split('.');
 		const flatDoc: Dic = flatten(doc, {
 			maxDepth: parts.length
@@ -89,24 +127,136 @@ function createDocumentFormState({
 	 *
 	 * //value will update if doc.blocks.0.title update
 	 */
-	function useValue(path: string) {
+	function useValue<T>(path: string): T | null {
+		return getValueAtPath(doc, path) || null;
+	}
+
+	function useTree(path: string) {
 		const parts = path.split('.');
-		return getValueFromPath(doc, path, { maxDepth: parts.length }) || null;
+		let stamp = $state(new Date().getTime().toString());
+
+		const generateTempId = () => 'temp-' + new Date().getTime().toString();
+
+		const getItems = (): TreeBlock[] => {
+			return getValueAtPath(doc, path) || [];
+		};
+
+		const assignItemsToDoc = (items: TreeBlock[]) => {
+			const flatDoc: Dic = flatten(doc, {
+				maxDepth: parts.length
+			});
+			flatDoc[path] = items;
+			doc = unflatten(flatDoc);
+			if (onDataChange) onDataChange({ path, value: snapshot(items) });
+			// const repr = toNestedRepresentation(items);
+			// console.log(repr.toString());
+			/** update stamp to rerender */
+			stamp = new Date().getTime().toString();
+		};
+
+		const addItem = (emptyFields: Dic) => {
+			let items = [...getItems()];
+			const itemWithPath: TreeBlock = {
+				...emptyFields,
+				id: generateTempId(),
+				path: path,
+				position: items.length,
+				_children: []
+			};
+			items = items.toSpliced(items.length, 0, itemWithPath);
+			assignItemsToDoc(items);
+		};
+
+		const deleteItem = (atPath: string, index: number) => {
+			let items = cloneDeep(snapshot(getItems()));
+
+			// Get target array
+			const targetArray =
+				getValueAtPath<TreeBlock[]>(items, atPath.replace(`${path}.`, '')) || items;
+
+			// Perform the move operation
+			targetArray.splice(index, 1);
+
+			// Rebuild all paths and positions
+			items = rebuildPaths(items, path);
+
+			assignItemsToDoc(items);
+		};
+
+		const moveItem = (fromPath: string, toPath: string) => {
+			let items = cloneDeep(snapshot(getItems()));
+
+			const getArrayAndIndex = (path: string) => {
+				const parts = path.split('.');
+				let current = items;
+				let parentArray = items;
+				let finalIndex = parseInt(parts[parts.length - 1]);
+
+				for (let i = 0; i < parts.length - 1; i++) {
+					const part = parts[i];
+					if (part === '_children') {
+						continue;
+					}
+					const index = parseInt(part);
+					parentArray = current;
+					if (!current[index]._children) {
+						current[index]._children = [];
+					}
+					current = current[index]._children;
+				}
+
+				return {
+					array: parts.includes('_children') ? current : parentArray,
+					index: finalIndex,
+					fullPath: parts.slice(0, -1).join('.')
+				};
+			};
+
+			// Get source and target information
+			const source = getArrayAndIndex(fromPath);
+			const target = getArrayAndIndex(toPath);
+
+			// Perform the move operation
+			const [itemToMove] = source.array.splice(source.index, 1);
+			target.array.splice(target.index, 0, itemToMove);
+
+			// Rebuild paths and positions
+			// console.time('rebuild_paths');
+			items = rebuildPaths(items, path);
+			// console.timeEnd('rebuild_paths');
+
+			assignItemsToDoc(items);
+		};
+
+		return {
+			addItem,
+			moveItem,
+			deleteItem,
+			path,
+			get stamp() {
+				return stamp;
+			},
+			get items() {
+				return getItems();
+			}
+		};
 	}
 
 	function useBlocks(path: string) {
+		// let stamp = $state(new Date().getTime().toString());
 		const parts = path.split('.');
 
-		const generateTempId = () => 'temp-' + randomId(8);
+		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
-			return getValueFromPath(doc, path, { maxDepth: parts.length }) || [];
+			return getValueAtPath(doc, path) || [];
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
 			const flatDoc: Dic = flatten(doc, {
 				maxDepth: parts.length
 			});
+			blocks = rebuildPaths(blocks, path);
 			flatDoc[path] = blocks;
 			doc = unflatten(flatDoc);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
@@ -158,6 +308,7 @@ function createDocumentFormState({
 			deleteBlock,
 			moveBlock,
 			duplicateBlock,
+
 			get blocks() {
 				return getBlocks();
 			}
@@ -177,8 +328,7 @@ function createDocumentFormState({
 	 * // value will not update if doc.blocks.0.title update
 	 */
 	function getRawValue(path: string) {
-		const parts = path.split('.');
-		return snapshot(getValueFromPath(doc, path, { maxDepth: parts.length })) || null;
+		return snapshot(getValueAtPath(doc, path)) || null;
 	}
 
 	function useField(path: string | undefined, config: AnyFormField) {
@@ -213,27 +363,9 @@ function createDocumentFormState({
 			return true;
 		};
 
-		const props = {
-			get style() {
-				let visible = true;
-				if (config.condition) {
-					try {
-						visible = config.condition(doc);
-					} catch (err: any) {
-						console.log(err.message);
-					}
-				}
-				return visible ? null : 'display:none;';
-			},
-			get disabled() {
-				return readOnly;
-			}
-		};
-
 		return {
-			props,
 			get value() {
-				return getValueFromPath(doc, path, { maxDepth: parts.length });
+				return getValueAtPath(doc, path);
 			},
 
 			set value(value: any) {
@@ -261,7 +393,12 @@ function createDocumentFormState({
 				let visible = true;
 				if (config.condition) {
 					try {
-						visible = config.condition(doc);
+						let siblings: Dic = doc;
+						if (parts.length > 1) {
+							const upperPath = path.substring(0, path.lastIndexOf('.'));
+							siblings = getValueAtPath(doc, upperPath) || {};
+						}
+						visible = config.condition(doc, siblings);
 					} catch (err: any) {
 						console.log(err.message);
 					}
@@ -274,10 +411,7 @@ function createDocumentFormState({
 			},
 
 			get isEmpty() {
-				return (
-					!!config.isEmpty &&
-					config.isEmpty(getValueFromPath(doc, path, { maxDepth: parts.length }))
-				);
+				return !!config.isEmpty && config.isEmpty(getValueAtPath(doc, path));
 			}
 			// get props() {
 			// 	return {
@@ -386,6 +520,7 @@ function createDocumentFormState({
 		readOnly,
 		useValue,
 		useBlocks,
+		useTree,
 		nestedLevel,
 		buildPanelActionUrl,
 		get element() {

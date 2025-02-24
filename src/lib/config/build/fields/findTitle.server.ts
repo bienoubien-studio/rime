@@ -4,6 +4,7 @@ import type { Field } from 'rizom/types';
 import { hasMaybeTitle, isGroupField, isTabsField } from 'rizom/utils/field';
 
 export function findTitleField(fields: FieldBuilder<Field>[]): any | null {
+	// console.log(fields);
 	for (const field of fields) {
 		// Direct check for isTitle
 		if (hasMaybeTitle(field.raw) && 'isTitle' in field.raw && field.raw.isTitle === true) {
@@ -19,8 +20,8 @@ export function findTitleField(fields: FieldBuilder<Field>[]): any | null {
 		// Check in tabs
 		if (field instanceof TabsBuilder && field.raw.tabs) {
 			for (const tab of field.raw.tabs) {
-				if (tab.fields) {
-					const found = findTitleField(tab.fields);
+				if (tab.raw.fields) {
+					const found = findTitleField(tab.raw.fields);
 					if (found) return found;
 				}
 			}

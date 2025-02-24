@@ -17,6 +17,13 @@ export default defineConfig({
 			external: ['better-sqlite3', 'sharp']
 		}
 	},
+
+	resolve: process.env.VITEST
+		? {
+				conditions: ['browser']
+			}
+		: undefined,
+
 	test: {
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	}

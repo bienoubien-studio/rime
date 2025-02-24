@@ -1,18 +1,22 @@
 import { isRelationField } from '$lib/utils/field.js';
 import type { BeforeOperationRelation } from '$lib/db/relations.js';
-import type { ConfigMap } from '../config/map.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { FieldProviderServer } from '../fields/provider.server.js';
 
-type Args = { parentId?: string; flatData: Dic; configMap: ConfigMap; locale: string | undefined };
+type Args = {
+	parentId?: string;
+	fieldProvider: FieldProviderServer;
+	locale: string | undefined;
+};
 
-export const extractRelations = ({ parentId, flatData, configMap, locale }: Args) => {
+export const extractRelations = ({ parentId, fieldProvider, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
 	const emptyPaths: string[] = []; // Add this to track empty arrays
 
-	for (const [path, config] of Object.entries(configMap)) {
+	for (const [path, config] of Object.entries(fieldProvider.configMap)) {
 		if (isRelationField(config)) {
+			const field = fieldProvider.useFieldServer(path);
 			const localized = config.localized;
-			const relationRawValue: BeforeOperationRelation[] | string | string[] = flatData[path];
+			const relationRawValue: BeforeOperationRelation[] | string | string[] = field.value;
 			let output: BeforeOperationRelation[] = [];
 
 			const relationFromString = ({ value, position = 0 }: RelationFromStringArgs) => {

@@ -2,6 +2,7 @@ import type { CompiledCollectionConfig } from 'rizom/types/config';
 import type { GenericDoc } from 'rizom/types/doc';
 
 export type RelationFieldItem = {
+	id?: string;
 	relationId: string;
 	label: string;
 	filename?: string;
@@ -13,18 +14,19 @@ export type RelationFieldItem = {
 };
 
 export type RelationComponentProps = {
-	isFull: boolean;
 	path: string;
+	relationConfig: CompiledCollectionConfig;
+	stamp: string;
 	hasError: boolean;
-	addValue: (relationId: string) => void;
-	removeValue: (relationId: string) => void;
-	items: RelationFieldItem[];
+	isFull: boolean;
 	readOnly: boolean;
 	nothingToSelect: boolean;
 	many: boolean;
+	addValue: (relationToId: string) => void;
+	removeValue: (relationToId: string) => void;
+	availableItems: RelationFieldItem[];
 	selectedItems: RelationFieldItem[];
-	relationConfig: CompiledCollectionConfig;
-	onOrderChange: (oldIndex: number, newIndex: number) => void;
 	formNestedLevel: number;
+	onOrderChange: (oldIndex: number, newIndex: number) => void;
 	onRelationCreated: any;
 };

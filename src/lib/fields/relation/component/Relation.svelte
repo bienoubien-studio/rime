@@ -12,6 +12,7 @@
 	import type { Relation } from '$lib/db/relations.js';
 	import type { GenericDoc } from 'rizom/types';
 	import type { RelationField } from '../index';
+	import { watch } from 'runed';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -20,32 +21,37 @@
 	// Context
 	const { getCollectionConfig } = getConfigContext();
 	const locale = getLocaleContext();
-
 	let initialItems: RelationFieldItem[] = $state([]);
 
 	// State
 	const field = $derived(form.useField(path, config));
-	const initialValue = form.getRawValue(path);
-	let initialPath = $state.raw(path);
+
+	let initialValue = form.getRawValue(path) || [];
+
+	let stamp = $state(new Date().getTime().toString());
 
 	const relationConfig = getCollectionConfig(config.relationTo);
 	let isRelationToUpload = isUploadConfig(relationConfig);
-	let items = $state<RelationFieldItem[]>([]);
+	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);
-
-	let selectedIds = $state<string[]>([]);
 	let selectedItems = $state<RelationFieldItem[]>([]);
+	const RelationComponent = isRelationToUpload ? Upload : Default;
+
 	let isFull = $derived(
-		(!config.many && selectedIds.length === 1) ||
-			(config.many && selectedIds.length === initialItems.length) ||
+		(!config.many && selectedItems.length === 1) ||
+			(config.many && selectedItems.length === initialItems.length) ||
 			false
 	);
 
-	function toRelationFieldItem(doc: GenericDoc) {
+	function documentToRelationFieldItem(doc: GenericDoc) {
+		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
 			label: doc[relationConfig.asTitle] || '[undefined]',
 			relationId: doc.id
 		};
+		if (itemInFieldValue) {
+			item.id = itemInFieldValue.id;
+		}
 		if (isUploadConfig(relationConfig)) {
 			const isRelationToImage = doc.mimeType?.includes('image');
 			item.isImage = isRelationToImage;
@@ -80,10 +86,10 @@
 
 		if (res.ok) {
 			const { docs } = await res.json();
-			initialItems = docs.map((doc: GenericDoc) => toRelationFieldItem(doc));
-			if (field.value && Array.isArray(field.value) && field.value.length) {
-				selectedIds = field.value.map((relation: Relation) => relation.relationId);
-			}
+			initialItems = docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
+			selectedItems = initialValue.map((relation: Relation) => {
+				return initialItems.find((item) => item.relationId === relation.relationId);
+			});
 		}
 	};
 
@@ -102,31 +108,33 @@
 		return null;
 	};
 
-	$effect(() => {
-		selectedItems = selectedIds.map(
-			(id) => initialItems.filter((item) => item.relationId === id)[0]
+	const getAvailableItems = () => {
+		return initialItems.filter(
+			(initialItem) =>
+				!selectedItems.some((selectedItem) => selectedItem.relationId === initialItem.relationId)
 		);
-		items = initialItems.filter((item) => !selectedIds.includes(item.relationId));
+	};
+
+	$effect(() => {
+		availableItems = getAvailableItems();
 	});
 
 	// Actions
 	const buildRelationFieldValue = () => {
-		const relations = selectedIds.map((relationId, index) => {
-			const existingRelation = retreiveRelation(relationId);
+		const relations = selectedItems.map((item, index) => {
 			let relation: Omit<Relation, 'parentId'> = {
-				id: existingRelation?.id,
+				id: item.id,
 				relationTo: config.relationTo,
 				path,
 				position: index,
-				relationId: relationId
+				relationId: item.relationId
 			};
 			if (config.localized) {
 				relation.locale = locale.code;
 			}
 			if (form.isLive) {
-				const initialItem = initialItems.find((item) => item.relationId === relationId);
-				if (initialItem && initialItem.livePreview) {
-					relation.livePreview = snapshot(initialItem.livePreview);
+				if (item && item.livePreview) {
+					relation.livePreview = snapshot(item.livePreview);
 				}
 			}
 			return relation;
@@ -136,39 +144,29 @@
 	};
 
 	const onRelationCreated = (doc: GenericDoc) => {
-		initialItems.push(toRelationFieldItem(doc));
+		initialItems.push(documentToRelationFieldItem(doc));
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
-		let selectedIdsCopy = moveItem(selectedIds, oldIndex, newIndex);
-		selectedIds = selectedIdsCopy;
+		selectedItems = moveItem(selectedItems, oldIndex, newIndex);
 		field.value = buildRelationFieldValue();
+		stamp = new Date().getTime().toString();
 	};
 
 	const addValue = async (relationId: string) => {
 		if (isFull) return;
-		selectedIds = [...selectedIds, relationId];
-		items = items.filter((item) => item.relationId !== relationId);
+		const itemToAdd = availableItems.find((item) => item.relationId === relationId);
+		if (!itemToAdd) {
+			throw new Error(`Can't find relation at ${path}`);
+		}
+		selectedItems = [...selectedItems, itemToAdd];
 		field.value = buildRelationFieldValue();
 	};
 
 	const removeValue = async (incomingId: string) => {
-		selectedIds = [...selectedIds].filter((relationId) => relationId !== incomingId);
+		selectedItems = selectedItems.filter((item) => item.relationId !== incomingId);
 		field.value = buildRelationFieldValue();
 	};
-
-	/** When parent iterable (ex:Blocks) order change rebuild to get the correct path field */
-	$effect(() => {
-		async function reBuild() {
-			field.value = buildRelationFieldValue();
-			initialPath = path;
-		}
-		if (initialPath !== path) {
-			reBuild();
-		}
-	});
-
-	const RelationComponent = isRelationToUpload ? Upload : Default;
 </script>
 
 <Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
@@ -183,8 +181,9 @@
 		{nothingToSelect}
 		{onRelationCreated}
 		{isFull}
+		{stamp}
 		{addValue}
-		{items}
+		{availableItems}
 		{selectedItems}
 		{removeValue}
 		{relationConfig}

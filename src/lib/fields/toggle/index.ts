@@ -27,13 +27,13 @@ class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 		return this;
 	}
 
-	toField() {
+	compile() {
 		if (!this.field.validate) {
 			this.field.validate = (value: any) => {
 				return typeof value === 'boolean' || 'Should be a boolean';
 			};
 		}
-		return super.toField();
+		return super.compile();
 	}
 }
 

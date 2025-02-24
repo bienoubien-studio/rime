@@ -22,6 +22,7 @@ const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { co
 type FieldWithOptions = FormField & {
 	options: Option[];
 	defaultValue?: any;
+	many?: boolean;
 };
 
 export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBuilder<T> {
@@ -53,5 +54,15 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
 		return this;
+	}
+
+	compile() {
+		if (!this.field.options) {
+			throw new Error(`${this.field.name} should at least have one option`);
+		}
+		if (!this.field.defaultValue) {
+			this.field.defaultValue = [this.field.options[0].value];
+		}
+		return super.compile();
 	}
 }

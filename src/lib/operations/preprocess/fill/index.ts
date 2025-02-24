@@ -1,34 +1,31 @@
 import type { Adapter } from 'rizom/types/adapter.js';
-import { safeFlattenDoc } from '$lib/utils/doc.js';
-
-import { unflatten } from 'flat';
-import type { ConfigMap } from '../config/map.js';
-import { getDefaultValue } from './field.server.js';
+import { createBlankDocument } from '$lib/utils/doc.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
+import { isUploadConfig } from 'rizom/config/utils.js';
+import deepmerge from 'deepmerge';
+import type { CompiledAreaConfig, CompiledCollectionConfig } from 'rizom/types/config.js';
 
-export const addDefaultValues: AddDefaultValues = async (args) => {
-	const { data, configMap, adapter } = args;
-	const flatData = safeFlattenDoc(data);
-
-	for (const [key, config] of Object.entries(configMap)) {
-		const hasDefaultValue = 'defaultValue' in config;
-		let isEmpty;
-		try {
-			isEmpty = config.isEmpty(flatData[key]);
-		} catch (err: any) {
-			isEmpty = false;
-			console.log(err.message);
-		}
-		if (hasDefaultValue && isEmpty && 'defaultValue' in config) {
-			flatData[key] = await getDefaultValue({ key, config, adapter });
-		}
+export const mergeWithBlankDocument = <T extends GenericDoc>({
+	data,
+	config
+}: {
+	data: Partial<T>;
+	config: CompiledCollectionConfig | CompiledAreaConfig;
+}): T => {
+	let file;
+	if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {
+		file = data.file;
+		delete data.file;
 	}
 
-	return unflatten(flatData);
-};
+	console.log(data);
+	/** Merge data with emptydoc so all required fields will be present in validate */
+	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
 
-type AddDefaultValues<T extends GenericDoc = GenericDoc> = (args: {
-	data: T;
-	configMap: ConfigMap;
-	adapter: Adapter;
-}) => Promise<T>;
+	// Add file after merge
+	if (file) {
+		dataMergedWithBlankDocument.file = file;
+	}
+
+	return dataMergedWithBlankDocument as T;
+};

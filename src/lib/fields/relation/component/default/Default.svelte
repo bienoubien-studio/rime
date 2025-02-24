@@ -20,7 +20,7 @@
 		many,
 		selectedItems,
 		removeValue,
-		items,
+		availableItems,
 		readOnly,
 		nothingToSelect,
 		relationConfig,
@@ -99,7 +99,7 @@
 				</span>
 			{/if}
 
-			{#if !readOnly && !isFull && items.length > 0}
+			{#if !readOnly && !isFull && availableItems.length > 0}
 				<Command.InputSelect
 					onfocus={() => (inputFocused = true)}
 					onblur={() => setTimeout(() => (inputFocused = false), 150)}
@@ -114,7 +114,7 @@
 
 				{#if inputFocused}
 					<Command.List>
-						{#each items as item (item.relationId)}
+						{#each availableItems as item (item.relationId)}
 							<Command.Item value={item.label} onSelect={() => onSelect(item)}>
 								<span>{item.label}</span>
 							</Command.Item>
@@ -138,26 +138,25 @@
 				relationConfig.label.singular || relationConfig.slug
 			)}
 		</Button>
-	{/if}
 
-	<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
-		<Sheet.Trigger />
-		<Sheet.Content side="right" showCloseButton={false}>
-			<Document
-				doc={createBlankDocument(relationConfig)}
-				readOnly={false}
-				onClose={() => (create = false)}
-				operation="create"
-				{onNestedDocumentCreated}
-				nestedLevel={formNestedLevel + 1}
-			/>
-		</Sheet.Content>
-	</Sheet.Root>
+		<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
+			<Sheet.Trigger />
+			<Sheet.Content side="right" showCloseButton={false}>
+				<Document
+					doc={createBlankDocument(relationConfig)}
+					readOnly={false}
+					onClose={() => (create = false)}
+					operation="create"
+					{onNestedDocumentCreated}
+					nestedLevel={formNestedLevel + 1}
+				/>
+			</Sheet.Content>
+		</Sheet.Root>
+	{/if}
 </div>
 
 <style type="postcss">
 	.rz-relation {
-		margin-bottom: var(--rz-size-3);
 		position: relative;
 
 		:global(> * + *) {

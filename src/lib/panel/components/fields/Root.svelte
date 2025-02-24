@@ -13,6 +13,7 @@
 
 <fieldset
 	class="rz-field-root {className}"
+	data-visible={visible ? '' : null}
 	class:rz-field-root--hidden={!visible}
 	{...HTMLFieldsetProps}
 >

@@ -5,12 +5,14 @@
 	import { File, X } from 'lucide-svelte';
 	import Doc from 'rizom/panel/components/areas/document/Document.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { useSortable } from '$lib/panel/utility/Sortable.js';
 	import { createBlankDocument } from '$lib/utils/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
 	import './upload.css';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import Sortable from 'sortablejs';
+	import { onDestroy } from 'svelte';
+	import { randomId } from 'rizom/utils/random.js';
 
 	const {
 		isFull,
@@ -19,28 +21,31 @@
 		many,
 		selectedItems,
 		removeValue,
-		items,
+		availableItems,
 		relationConfig,
 		onOrderChange,
 		formNestedLevel,
-		onRelationCreated
+		onRelationCreated,
+		stamp
 	}: Omit<RelationComponentProps, 'readOnly'> = $props();
 
 	const user = getUserContext();
 
-	let relationList: HTMLElement;
 	let open = $state(false);
 	let create = $state(false);
+	let instance: ReturnType<typeof Sortable.create>;
 
-	const { sortable } = useSortable({
+	const sortableOptions: Sortable.Options = {
 		animation: 150,
+
+		// group: new Date().getTime().toString(),
 		onEnd: function (evt) {
 			const { oldIndex, newIndex } = evt;
 			if (oldIndex !== undefined && newIndex !== undefined) {
 				onOrderChange(oldIndex, newIndex);
 			}
 		}
-	});
+	};
 
 	const onNestedDocumentCreated = (doc: GenericDoc) => {
 		create = false;
@@ -50,7 +55,10 @@
 
 	$effect(() => {
 		if (many) {
-			sortable(relationList);
+			const list = document.querySelector(
+				`.rz-relation-upload__list[data-list="${stamp}"]`
+			) as HTMLDivElement;
+			instance = Sortable.create(list, sortableOptions);
 		}
 	});
 
@@ -58,6 +66,10 @@
 		if (isFull) {
 			open = false;
 		}
+	});
+
+	onDestroy(() => {
+		if (instance) instance.destroy();
 	});
 </script>
 
@@ -104,16 +116,18 @@
 	</div>
 {/snippet}
 
-<div
-	class="rz-relation-upload__list"
-	data-many={many ? '' : null}
-	bind:this={relationList}
-	data-error={hasError ? '' : null}
->
-	{#each selectedItems as item (item.relationId)}
-		{@render row(item)}
-	{/each}
-</div>
+{#key stamp}
+	<div
+		class="rz-relation-upload__list"
+		data-many={many ? '' : null}
+		data-list={stamp}
+		data-error={hasError ? '' : null}
+	>
+		{#each selectedItems as item (item.relationId)}
+			{@render row(item)}
+		{/each}
+	</div>
+{/key}
 
 <div class="rz-relation-upload__actions">
 	{#if !isFull}
@@ -140,7 +154,7 @@
 	<Command.List class="rz-relation-upload__command-list">
 		<Command.Empty>No results found.</Command.Empty>
 		<Command.Group heading={relationConfig.label.plural || relationConfig.slug}>
-			{#each items as item}
+			{#each availableItems as item}
 				<Command.Item
 					class="rz-relation-upload__command-item"
 					value={item.filename}

@@ -76,17 +76,19 @@ export function generateTypesString(config: BuiltConfig) {
 				case isBlocksField(field.raw):
 					{
 						for (const block of field.raw.blocks) {
-							if (!registeredBlocks.includes(block.name)) {
+							if (!registeredBlocks.includes(block.raw.name)) {
 								const templates = convertFieldsToTypesTemplates(
-									block.fields
+									block.raw.fields
 										.filter((field) => field instanceof FormFieldBuilder)
 										.filter((field) => field.raw.name !== 'type')
 								);
-								blocksTypes.push(makeBlockType(block.name, templates.join('\n\t')));
-								registeredBlocks.push(block.name);
+								blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
+								registeredBlocks.push(block.raw.name);
 							}
 						}
-						const blockNames = field.raw.blocks.map((block) => `Block${toPascalCase(block.name)}`);
+						const blockNames = field.raw.blocks.map(
+							(block) => `Block${toPascalCase(block.raw.name)}`
+						);
 						strFields.push(`${field.raw.name}: Array<${blockNames.join(' | ')}>,`);
 					}
 					break;
@@ -97,7 +99,7 @@ export function generateTypesString(config: BuiltConfig) {
 				}
 				case isTabsField(field.raw):
 					for (const tab of field.raw.tabs) {
-						const templates = convertFieldsToTypesTemplates(tab.fields);
+						const templates = convertFieldsToTypesTemplates(tab.raw.fields);
 						strFields = [...strFields, ...templates];
 					}
 					break;

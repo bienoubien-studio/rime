@@ -55,7 +55,7 @@ type WithoutBuilders<T> =
 								}
 							>;
 						}
-					: T extends Function // Add this case
+					: T extends Function
 						? T
 						: T extends object
 							? { [K in keyof T]: WithoutBuilders<T[K]> }

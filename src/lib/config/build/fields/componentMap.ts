@@ -6,6 +6,7 @@ import type { FieldsComponents } from 'rizom/types/panel';
 import Email from 'rizom/fields/email/component/Email.svelte';
 import Text from 'rizom/fields/email/component/Email.svelte';
 import { GroupFieldBuilder } from 'rizom/fields/group';
+import { TreeBuilder } from 'rizom/fields/tree';
 
 export function buildComponentsMap(
 	fields: FieldBuilder<Field>[]
@@ -32,10 +33,15 @@ export function buildComponentsMap(
 		// Check in blocks
 		if (field instanceof BlocksBuilder && field.raw.blocks) {
 			for (const block of field.raw.blocks) {
-				if (block.fields) {
-					Object.assign(componentsMap, buildComponentsMap(block.fields));
+				if (block.raw.fields) {
+					Object.assign(componentsMap, buildComponentsMap(block.raw.fields));
 				}
 			}
+		}
+
+		// Check in trees
+		if (field instanceof TreeBuilder && field.raw.fields) {
+			Object.assign(componentsMap, buildComponentsMap(field.raw.fields));
 		}
 
 		// Check in group
@@ -46,8 +52,8 @@ export function buildComponentsMap(
 		// Check in tabs
 		if (isTabsField(field.raw) && field.raw.tabs) {
 			for (const tab of field.raw.tabs) {
-				if (tab.fields) {
-					Object.assign(componentsMap, buildComponentsMap(tab.fields));
+				if (tab.raw.fields) {
+					Object.assign(componentsMap, buildComponentsMap(tab.raw.fields));
 				}
 			}
 		}

@@ -85,7 +85,7 @@ function createFormStore(initial: Dic, key: string) {
 			},
 
 			get visible() {
-				return config.condition ? config.condition(form) : true;
+				return config.condition ? config.condition(form, {}) : true;
 			},
 
 			get error() {

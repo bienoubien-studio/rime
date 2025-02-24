@@ -1,23 +1,21 @@
 import { omit } from '../utils/object.js';
 import { getTableColumns } from 'drizzle-orm';
-import { unflatten } from 'flat';
+import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
-import { isUploadConfig } from '../config/utils.js';
-import { buildConfigMap } from '../operations/preprocess/config/map.js';
 import { safeFlattenDoc } from '../utils/doc.js';
-import { postprocessFields } from '../operations/postprocess/fields.server.js';
 import type { CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type {
 	AdapterBlocksInterface,
+	AdapterTreeInterface,
 	TransformContext,
 	TransformManyContext
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
+import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
 
 /////////////////////////////////////////////
 // Types
@@ -26,6 +24,7 @@ import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
 type CreateTransformInterfaceArgs = {
 	configInterface: ConfigInterface;
 	tables: any;
+	treeInterface: AdapterTreeInterface;
 	blocksInterface: AdapterBlocksInterface;
 };
 export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
@@ -37,7 +36,8 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 export const databaseTransformInterface = ({
 	configInterface,
 	tables,
-	blocksInterface
+	blocksInterface,
+	treeInterface
 }: CreateTransformInterfaceArgs) => {
 	const transformDocs = async <T extends GenericDoc = GenericDoc>({
 		docs: rawDocs,
@@ -93,7 +93,88 @@ export const databaseTransformInterface = ({
 			delete doc.parentId;
 		}
 
-		let flatDoc: Dic = safeFlattenDoc(doc);
+		let flatDoc: Dic = flatten(doc);
+
+		/////////////////////////////////////////////
+		// Blocks handling
+		//////////////////////////////////////////////
+
+		/** Extract all blocks  */
+		const blocksTables = blocksInterface.getBlocksTableNames(slug);
+		const blocks: Dic[] = [].concat(...blocksTables.map((blockTable) => doc[blockTable]));
+
+		/** Place each block in its path */
+		for (let block of blocks) {
+			if (!(block.path in flatDoc)) {
+				flatDoc[block.path] = [];
+			}
+
+			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
+			if (locale && blockLocaleTableName in tables) {
+				block = {
+					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
+					...block
+				};
+			}
+			/** Clean */
+			const { position, path } = block;
+			if (!isPanel) {
+				delete block.position;
+				delete block.path;
+				delete block.parentId;
+				delete block.locale;
+			}
+			delete block[blockLocaleTableName];
+
+			/** Assign */
+			flatDoc[`${path}.${position}`] = block;
+		}
+
+		/////////////////////////////////////////////
+		// Tree handling
+		//////////////////////////////////////////////
+
+		/** Extract all blocks  */
+		const treeTables = treeInterface.getBlocksTableNames(slug);
+		let treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
+
+		treeBlocks = treeBlocks.sort((a, b) => a.path.localeCompare(b.path));
+
+		/** Place each treeBlock in its path */
+		for (let block of treeBlocks) {
+			try {
+				if (!(block.path in flatDoc)) {
+					flatDoc[block.path] = [];
+				}
+
+				const [fieldName] = extractFieldName(block.path);
+				const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(fieldName)}Locales`;
+
+				if (locale && treeBlockLocaleTableName in tables) {
+					block = {
+						...((block[treeBlockLocaleTableName][0] as Partial<GenericBlock>) || {}),
+						...block
+					};
+				}
+				/** Clean */
+				const { position, path } = block;
+				if (!block._children) block._children = [];
+
+				if (!isPanel) {
+					delete block.position;
+					delete block.path;
+					delete block.parentId;
+					delete block.locale;
+				}
+
+				delete block[treeBlockLocaleTableName];
+				/** Assign */
+
+				flatDoc[`${path}.${position}`] = block;
+			} catch (err) {
+				console.log(block.path);
+			}
+		}
 
 		/** Place relations */
 		if (tableNameRelationFields in tables) {
@@ -134,62 +215,33 @@ export const databaseTransformInterface = ({
 				}
 
 				/** Assign relation */
-				if (!relation.locale) {
-					flatDoc[relationPath] = [...(flatDoc[relationPath] || []), relationOutput];
-				} else if (relation.locale === locale) {
+				if (!relation.locale || relation.locale === locale) {
 					flatDoc[relationPath] = [...(flatDoc[relationPath] || []), relationOutput];
 				}
 			}
-			// delete doc[tableNameRelationFields];
 		}
 
-		/** Extract all blocks  */
-		const blocksTables = blocksInterface.getBlocksTableNames(slug);
-		const blocks: Dic[] = [].concat(...blocksTables.map((blockTable) => doc[blockTable]));
-
-		/** Place each block in its path */
-		for (let block of blocks) {
-			if (!(block.path in flatDoc)) {
-				flatDoc[block.path] = [];
-			}
-			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
-			if (locale && blockLocaleTableName in tables) {
-				block = {
-					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
-					...block
-				};
-			}
-			/** Clean */
-			const { position, path } = block;
-			if (!isPanel) {
-				delete block.position;
-				delete block.path;
-				delete block.parentId;
-				delete block.locale;
-			}
-			delete block[blockLocaleTableName];
-			/** Assign */
-			flatDoc[path][position] = block;
-		}
-
+		// Clean
 		let output: Dic = unflatten(flatDoc);
-
-		/** Remove blocks table keys */
-		const keysToDelete: string[] = blocksTables;
+		/** Remove tree/blocks table keys */
+		const keysToDelete: string[] = [...blocksTables, ...treeTables];
+		// Remove relation table keys
 		if (tableNameRelationFields in output) {
 			keysToDelete.push(tableNameRelationFields);
 		}
 
 		output = omit(keysToDelete, deepmerge(blankDocument, output));
 
-		return (await beforeRead({
+		output = await beforeRead({
 			doc: output,
 			config,
 			user,
 			event,
 			isPanel,
 			locale
-		})) as T;
+		});
+
+		return output as T;
 	};
 
 	return {

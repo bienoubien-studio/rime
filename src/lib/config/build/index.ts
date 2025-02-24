@@ -13,12 +13,13 @@ import { buildArea } from './area.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
+import genCache from '../../bin/generate/cache/index.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 
-type BuildConfig = <C extends boolean | undefined = true>(
+type BuildConfig = <C extends boolean = true>(
 	config: Config,
 	options?: { generateFiles?: boolean; compiled?: C }
-) => C extends false ? Promise<BuiltConfig> : Promise<CompiledConfig>;
+) => C extends true ? Promise<CompiledConfig> : Promise<BuiltConfig>;
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -26,7 +27,10 @@ const dev = process.env.NODE_ENV === 'development';
  * Add extra configuration to Areas and Collections
  */
 
-const buildConfig: BuildConfig = async (config: Config, options) => {
+const buildConfig = async <C extends boolean = true>(
+	config: Config,
+	options: { generateFiles?: boolean; compiled?: C }
+): Promise<C extends true ? CompiledConfig : BuiltConfig> => {
 	const generateFiles = options?.generateFiles || false;
 	const compiled = options?.compiled || true;
 
@@ -125,6 +129,8 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 	// Generate files
 	//////////////////////////////////////////////
 
+	genCache.set('.gen', '');
+
 	const compiledConfig = compileConfig(builtConfig);
 
 	if (dev || generateFiles) {
@@ -162,10 +168,15 @@ const buildConfig: BuildConfig = async (config: Config, options) => {
 		}
 	}
 
+	genCache.delete('.gen');
+
 	if (!compiled) {
-		return builtConfig;
+		return builtConfig as C extends true ? CompiledConfig : BuiltConfig;
 	}
-	return compiledConfig;
+
+	return compiledConfig as C extends true ? CompiledConfig : BuiltConfig;
 };
 
 export { buildConfig };
+
+const foo = buildConfig({ collections: [], areas: [], database: 'foo' }, { compiled: true });

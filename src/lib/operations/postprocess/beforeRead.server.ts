@@ -27,7 +27,6 @@ export const beforeRead = async ({
 	config,
 	locale
 }: BeforReadDocumentArgs) => {
-	// @TODO set all private fields with a double underscore ?
 	const keysToDelete = [...privateFieldNames];
 	if (!isPanel || !user) {
 		keysToDelete.push('authUserId', 'editedBy');
@@ -49,6 +48,7 @@ export const beforeRead = async ({
 	/////////////////////////////////////////////
 	// Populate image sizes
 	//////////////////////////////////////////////
+
 	if (config.type === 'collection' && isUploadConfig(config)) {
 		if ('imageSizes' in config && config.imageSizes) {
 			flatDoc.sizes = {};

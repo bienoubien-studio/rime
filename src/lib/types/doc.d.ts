@@ -19,6 +19,14 @@ type BaseDoc = {
 
 export type GenericDoc = BaseDoc & Dic;
 
+export type TreeBlock = {
+	id: string;
+	parentId?: string;
+	path?: string;
+	position?: number;
+	_children: TreeBlock[];
+} & Dic;
+
 export type GenericBlock<T extends string = string> = {
 	id: string;
 	type: T;

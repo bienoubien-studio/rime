@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { randomId } from '$lib/utils/random';
 	import { buildEditorConfig } from './editor.config';
 	import { Field } from 'rizom/panel';
 	import type { RichTextFieldProps } from './props';
@@ -11,7 +10,7 @@
 	const { path, config, form, class: className }: RichTextFieldProps = $props();
 
 	let element: HTMLElement;
-	const key = `richtext-${randomId(6)}`;
+	const key = `richtext-${new Date().getTime().toString()}`;
 
 	let editor = $state<Editor>();
 	const field = $derived(form.useField(path, config));

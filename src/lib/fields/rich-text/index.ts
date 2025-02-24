@@ -85,6 +85,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	};
 
 	static readonly stringify = (value: string) => {
+		if (typeof value === 'string') return value;
 		try {
 			value = JSON.stringify(value);
 		} catch (err: any) {

@@ -1,6 +1,6 @@
 import { flatten } from 'flat';
 import cache from '../../bin/generate/cache/index.js';
-import type { BuiltConfig } from 'rizom/types/config.js';
+import type { CompiledConfig } from 'rizom/types/config.js';
 import type { Dic } from 'rizom/types/utility.js';
 
 const serializeValue = (value: any): string => {
@@ -37,7 +37,7 @@ const serializeValue = (value: any): string => {
 	}
 };
 
-const writeMemo = (config: BuiltConfig) => {
+const writeMemo = (config: CompiledConfig) => {
 	const memo: Dic = flatten(config);
 	// const memoStr = JSON.stringify(config);
 	const memoStr = Object.entries(memo)

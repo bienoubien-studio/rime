@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
 	import { slugify } from '$lib/utils/string.js';
-	import { randomId } from '$lib/utils/random.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Cookies from 'js-cookie';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
@@ -13,7 +12,9 @@
 	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;
 
 	let tabErrors = $state<string[]>([]);
-	const tabIds = $derived(config.tabs.map((tab) => `${slugify(tab.label)}-${randomId(8)}`));
+	const tabIds = $derived(
+		config.tabs.map((tab) => `${slugify(tab.label)}-${new Date().getTime().toString()}`)
+	);
 
 	function onActiveTabChange(value: string | undefined): void {
 		value = value || slugify(config.tabs[0].label);

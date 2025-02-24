@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import { capitalize, toSnakeCase } from 'rizom/utils/string.js';
 import snakeCase from 'to-snake-case';
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
@@ -21,10 +21,6 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 
 	toSchema() {
 		const snake_name = toSnakeCase(this.field.name);
-		// console.log('----------');
-		// console.log(snakeCase(this.field.name));
-		// console.log(this.field.name);
-		// console.log(snake_name);
 		const suffix = templateUniqueRequired(this.field);
 		return `${this.field.name}: text('${snake_name}')${suffix}`;
 	}
@@ -43,18 +39,28 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		return this;
 	}
 
+	placeholder(str: string) {
+		this.field.placeholder = str;
+		return this;
+	}
+
 	layout(layout: string) {
 		this.field.layout = layout;
 		return this;
 	}
 
-	toField() {
+	compile() {
 		if (!this.field.validate) {
 			this.field.validate = (value: any) => {
 				return typeof value === 'string' || 'Should be a string';
 			};
 		}
-		return super.toField();
+
+		if (!this.field.placeholder) {
+			this.field.placeholder = this.field.label || capitalize(this.field.name);
+		}
+
+		return super.compile();
 	}
 }
 
@@ -68,6 +74,7 @@ export type TextField = FormField & {
 	defaultValue?: string;
 	unique?: boolean;
 	isTitle?: true;
+	placeholder: string;
 	layout: string;
 };
 

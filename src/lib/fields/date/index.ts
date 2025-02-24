@@ -50,7 +50,7 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 		return this;
 	}
 
-	toField(): DateField {
+	compile(): DateField {
 		if (!this.field.defaultValue) {
 			this.field.defaultValue = () => {
 				const date = new Date();
@@ -59,7 +59,7 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 			};
 		}
 
-		return super.toField();
+		return super.compile();
 	}
 }
 

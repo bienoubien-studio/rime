@@ -8,6 +8,7 @@ import type {
 	FieldWidth,
 	FormField
 } from 'rizom/types/fields';
+import type { Dic, WithoutBuilders } from 'rizom/types/utility';
 import type { Component } from 'svelte';
 
 export class FieldBuilder<T extends Field = Field> {
@@ -25,8 +26,8 @@ export class FieldBuilder<T extends Field = Field> {
 		return this;
 	}
 
-	toField(): T {
-		return this.field;
+	compile(): WithoutBuilders<T> {
+		return this.field as WithoutBuilders<T>;
 	}
 
 	live(bool: boolean) {
@@ -56,6 +57,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	constructor(name: string, type: FieldsType) {
 		super(type);
 		this.field.name = name;
+		this.field.defaultValue = null;
 		this.field.isEmpty = (value) => !value;
 		this.field.access = {
 			create: (user) => !!user,
@@ -99,7 +101,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	condition(func: (doc: any) => boolean) {
+	condition(func: (doc: Dic, siblings: Dic) => boolean) {
 		this.field.condition = func;
 		return this;
 	}
