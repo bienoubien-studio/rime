@@ -36,7 +36,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 			}
 			const doc = await retrieveRelation(relationId);
 			if (doc) {
-				output.push(value);
+				output.push(relation);
 			}
 		}
 	} else if (typeof value === 'string') {
