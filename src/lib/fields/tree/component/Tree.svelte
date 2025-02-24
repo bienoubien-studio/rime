@@ -73,7 +73,7 @@
 		resetSortable();
 	};
 
-	watch(() => path, resetSortable);
+	watch(() => treeState.stamp, resetSortable);
 
 	$effect(() => {
 		if (shouldInit) {
