@@ -53,7 +53,7 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 }
 
 // Utility (debug)
-export const toNestedRepresentation = (blocks: TreeBlock[] | undefined | null) => {
+export const treeToString = (blocks: TreeBlock[] | undefined | null) => {
 	if (!blocks || !blocks.length) return '[none]';
 	const copy = cloneDeep(snapshot(blocks));
 	const reduceBlocks = (prev: Dic[], curr: TreeBlock) => {
@@ -61,7 +61,7 @@ export const toNestedRepresentation = (blocks: TreeBlock[] | undefined | null) =
 			throw new Error('wrong tree path');
 		}
 		const representation = {
-			path: `${curr.path} - ${curr.position}`,
+			path: `${curr.path} - ${curr.position} - ${curr.id}`,
 			_children:
 				curr._children && Array.isArray(curr._children)
 					? curr._children.reduce(reduceBlocks, [])
@@ -73,31 +73,23 @@ export const toNestedRepresentation = (blocks: TreeBlock[] | undefined | null) =
 
 	const representation = copy.reduce(reduceBlocks, []);
 
-	return {
-		toString() {
-			function transformToIndentedString(arr: Dic[], indent = 0) {
-				let result = '';
+	function transformToIndentedString(arr: Dic[], indent = 0) {
+		let result = '';
 
-				arr.forEach((item: Dic) => {
-					// Add indentation based on current level
-					result += ' '.repeat(indent * 4) + item.path + '\n';
+		arr.forEach((item: Dic) => {
+			// Add indentation based on current level
+			result += ' '.repeat(indent * 4) + item.path + '\n';
 
-					// Recursively process children if they exist
-					if (item._children && item._children.length > 0) {
-						result += transformToIndentedString(item._children, indent + 1);
-					}
-				});
-
-				return result;
+			// Recursively process children if they exist
+			if (item._children && item._children.length > 0) {
+				result += transformToIndentedString(item._children, indent + 1);
 			}
+		});
 
-			return '=====================\n' + transformToIndentedString(representation);
-		},
+		return result;
+	}
 
-		get value() {
-			return representation;
-		}
-	};
+	return '=====================\n' + transformToIndentedString(representation);
 };
 
 /////////////////////////////////////////////

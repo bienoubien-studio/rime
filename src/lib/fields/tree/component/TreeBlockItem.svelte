@@ -6,9 +6,11 @@
 	import TreeBlockActions from './TreeBlockActions.svelte';
 	import type { TreeBlock } from 'rizom/types/doc';
 	import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
+	import { snapshot } from 'rizom/utils/state';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 
+	const initialPath = $state(snapshot(path));
 	const depth = $derived(
 		path
 			.replace(`${treeState.path}.`, '')
@@ -43,8 +45,15 @@
 			const title = config.renderTitle({ fields: itemValue || {} });
 			if (title) return title;
 		}
-		return `${config.label || config.name}`;
+		return `${config.label || config.name} ${path}`;
 	};
+
+	$effect(() => {
+		if (initialPath !== path) {
+			console.log('set path : ' + path);
+			form.setValue(path, itemValue);
+		}
+	});
 </script>
 
 <div

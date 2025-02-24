@@ -18,7 +18,8 @@ import type { Dic } from 'rizom/types/utility';
 import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
-import { toNestedRepresentation, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
+import { treeToString, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
+import { isObjectLiteral } from 'rizom/utils/object.js';
 
 function createDocumentFormState({
 	initial,
@@ -49,6 +50,9 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
+	$effect(() => {
+		console.log($state.snapshot(doc));
+	});
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -64,7 +68,41 @@ function createDocumentFormState({
 		}
 	}
 
+	const rebuildPaths = (items: any[], basePath: string, parentPath: string = basePath) => {
+		return items.map((item, index) => {
+			// Clone the item
+			const newItem = { ...item };
+
+			// If item has a path property, update it with parent path
+			if ('path' in newItem) {
+				newItem.path = parentPath;
+			}
+
+			// If item is part of an array, update its position
+			newItem.position = index;
+
+			// Process all properties of the item
+			Object.keys(newItem).forEach((key) => {
+				// If property is an array, process it recursively
+				if (
+					Array.isArray(newItem[key]) &&
+					newItem[key].length &&
+					isObjectLiteral(newItem[key][0])
+				) {
+					const newParentPath = `${parentPath}.${index}.${key}`;
+					newItem[key] = rebuildPaths(newItem[key], basePath, newParentPath);
+				}
+			});
+
+			return newItem;
+		});
+	};
+
 	function setValue(path: string, value: any) {
+		// const success = setValueAtPath(doc, path, value);
+		// if (success) {
+		// 	doc = success;
+		// }
 		const parts = path.split('.');
 		const flatDoc: Dic = flatten(doc, {
 			maxDepth: parts.length
@@ -129,63 +167,33 @@ function createDocumentFormState({
 			assignItemsToDoc(items);
 		};
 
-		const rebuildPaths = (blocks: TreeBlock[], parentPath = '') => {
-			const copy = cloneDeep(blocks);
-			let replaceTooMuchNestedChildren: Dic = {
-				atPath: null,
-				_children: []
-			};
-
-			copy.forEach((block, index) => {
-				// For root level items
-				if (!parentPath) {
-					block.path = path;
-				} else {
-					// For nested items
-					block.path = parentPath;
-				}
-
-				block.position = index;
-
-				// Recursively update children if they exist
-				if (block._children?.length > 0) {
-					let newParentPath = parentPath ? parentPath : path;
-
-					newParentPath += `.${index}._children`;
-					block._children = rebuildPaths(block._children, newParentPath);
-				}
-			});
-
-			return copy;
-		};
-
 		const deleteItem = (atPath: string, index: number) => {
 			let items = cloneDeep(snapshot(getItems()));
-
+			// console.log('delete item at ' + atPath + '.' + index);
+			// let repr = toNestedRepresentation(items);
+			// console.log('items before', repr.toString());
 			// Retrive parent array value
-			const getArray = (path: string) => {
-				const parts = path.split('.').filter((s) => s !== '_children');
-				let current = items;
-
-				for (let i = 0; i < parts.length; i++) {
-					const key = parts[i];
-					current = current[parseInt(key)] ? current[parseInt(key)]._children : current;
-				}
-
-				return {
-					array: current
-				};
-			};
 
 			// Get source and target information
-			const target = getArray(atPath.replace(`${path}.`, ''));
+			// const target = getArray(atPath.replace(`${path}.`, ''));
+			const targetArray =
+				getValueAtPath<TreeBlock[]>(items, atPath.replace(`${path}.`, '')) || items;
+
+			// repr = toNestedRepresentation(targetArray);
+			// console.log('before', repr.toString());
 
 			// Perform the move operation
-			target.array.splice(index, 1);
+			targetArray.splice(index, 1);
+
+			// repr = toNestedRepresentation(targetArray);
+			// console.log('before rebuild path', repr.toString());
 
 			// Rebuild all paths and positions
-			items = rebuildPaths(items);
-
+			// console.time('rebuild_paths');
+			items = rebuildPaths(items, path);
+			// console.timeEnd('rebuild_paths');
+			// repr = toNestedRepresentation(items);
+			// console.log('items after', repr.toString());
 			assignItemsToDoc(items);
 		};
 
@@ -227,10 +235,12 @@ function createDocumentFormState({
 			target.array.splice(target.index, 0, itemToMove);
 
 			// Rebuild paths and positions
-			items = rebuildPaths(items);
+			// console.time('rebuild_paths');
+			items = rebuildPaths(items, path);
+			// console.timeEnd('rebuild_paths');
 
-			const repr = toNestedRepresentation(items);
-			console.log(repr.toString());
+			// const repr = toNestedRepresentation(items);
+			// console.log(repr.toString());
 
 			assignItemsToDoc(items);
 		};
@@ -250,6 +260,7 @@ function createDocumentFormState({
 	}
 
 	function useBlocks(path: string) {
+		// let stamp = $state(new Date().getTime().toString());
 		const parts = path.split('.');
 
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
@@ -262,6 +273,7 @@ function createDocumentFormState({
 			const flatDoc: Dic = flatten(doc, {
 				maxDepth: parts.length
 			});
+			blocks = rebuildPaths(blocks, path);
 			flatDoc[path] = blocks;
 			doc = unflatten(flatDoc);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
@@ -313,6 +325,7 @@ function createDocumentFormState({
 			deleteBlock,
 			moveBlock,
 			duplicateBlock,
+
 			get blocks() {
 				return getBlocks();
 			}

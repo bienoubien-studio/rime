@@ -21,6 +21,7 @@ import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 import type { RegisterCollection } from 'rizom';
 import { extractTreeItems } from '../preprocess/tree/extract.server.js';
 import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
+import { treeToString } from 'rizom/fields/tree/index.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -67,6 +68,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	}
 
 	const configMap = buildConfigMap(data, fields);
+	const originalDocConfigMap = buildConfigMap(originalDoc, fields);
 
 	const { errors, validData, validFlatData } = await preprocessFields({
 		data,
@@ -134,7 +136,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 
 	const existingBlocks = extractBlocks({
 		doc: originalDoc,
-		configMap
+		configMap: originalDocConfigMap
 	});
 
 	const blocksDiff = defineBlocksDiff({
@@ -177,7 +179,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 
 	const existingTreeItems = extractTreeItems({
 		doc: originalDoc,
-		configMap
+		configMap: originalDocConfigMap
 	});
 
 	const treeDiff = defineTreeBlocksDiff({
@@ -226,12 +228,12 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	});
 
 	/** Get relations in data */
-	const extractedRelations = extractRelations({ parentId: id, flatData, configMap, locale });
+	const incomingRelations = extractRelations({ parentId: id, flatData, configMap, locale });
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
 		existingRelations,
-		extractedRelations,
+		incomingRelations,
 		locale
 	});
 

@@ -15,7 +15,6 @@ import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import { defineBlocksDiff } from '../preprocess/blocks/diff.server.js';
 import { extractTreeItems } from '../preprocess/tree/extract.server.js';
 import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
-import { toNestedRepresentation } from 'rizom/fields/tree/index.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -193,11 +192,11 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	/** Delete relations from deletedTreeBlocks */
-	// await adapter.relations.deleteFromPaths({
-	// 	parentSlug: config.slug,
-	// 	parentId: doc.id,
-	// 	paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
-	// });
+	await adapter.relations.deleteFromPaths({
+		parentSlug: config.slug,
+		parentId: doc.id,
+		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+	});
 
 	/** Get existing relations */
 	const existingRelations = await adapter.relations.getAll({
@@ -207,14 +206,16 @@ export const update = async <T extends GenericDoc = GenericDoc>({
 	});
 
 	/** Get relations in data */
-	const extractedRelations = extractRelations({ parentId: doc.id, flatData, configMap, locale });
+	const incomingRelations = extractRelations({ parentId: doc.id, flatData, configMap, locale });
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
 		existingRelations,
-		extractedRelations,
+		incomingRelations,
 		locale
 	});
+
+	console.log(relationsDiff);
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({

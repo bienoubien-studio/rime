@@ -8,21 +8,23 @@
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
 	import './blocks.css';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { onDestroy } from 'svelte';
+	import Sortable from 'sortablejs';
 
 	const { path, config, form }: BlocksProps = $props();
 
 	let blockList: HTMLElement;
 
-	const blockState = $derived(form.useBlocks(path));
 	const field = $derived(form.useField(path, config));
-
+	const blockState = $derived(form.useBlocks(path));
+	const hasBlocks = $derived(blockState.blocks && blockState.blocks.length);
 	let sortingInitialized = $state(false);
 	let sorting = $state(false);
 	let sortableInstance = $state<any>(null);
 
-	const { sortable } = useSortable({
+	const sortableOptions: Sortable.Options = {
 		handle: '.rz-block__grip',
+		group: path,
 		animation: 150,
 		onStart: () => (sorting = true),
 		onUnchoose: () => (sorting = false),
@@ -33,7 +35,7 @@
 			}
 			sorting = false;
 		}
-	});
+	};
 
 	const nested = $derived(path.split('.').length > 1);
 
@@ -44,8 +46,11 @@
 		});
 	};
 
+	const shouldInit = $derived(!sortingInitialized && blockState.blocks.length > 0);
+	const { sortable } = useSortable(sortableOptions);
+
 	$effect(() => {
-		if (!sortingInitialized && blockState.blocks.length > 0 && !sortableInstance) {
+		if (shouldInit) {
 			sortableInstance = sortable(blockList);
 			sortingInitialized = true;
 		}
@@ -59,7 +64,9 @@
 		return blockConfig;
 	}
 
-	const hasBlocks = $derived(blockState.blocks && blockState.blocks.length);
+	onDestroy(() => {
+		if (sortableInstance) sortableInstance.destroy();
+	});
 </script>
 
 <Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>

@@ -8,13 +8,17 @@
 		name: string;
 	};
 	const { children, name, navCollapsed }: Props = $props();
-	const initialCollapsed = localStorage.getItem(`NavGroupCollapsed:${name}`) === 'true';
-	let groupCollapsed = $state(initialCollapsed);
+
+	let groupCollapsed = $state(false);
 
 	const setCollapsed = () => {
 		groupCollapsed = !groupCollapsed;
 		localStorage.setItem(`NavGroupCollapsed:${name}`, groupCollapsed.toString());
 	};
+
+	$effect(() => {
+		groupCollapsed = localStorage.getItem(`NavGroupCollapsed:${name}`) === 'true';
+	});
 
 	const navCollapsedClassModifier = $derived(navCollapsed ? 'rz-nav-group--nav-collapsed' : '');
 	const groupCollapsedClassModifier = $derived(groupCollapsed ? 'rz-nav-group--collapsed' : '');

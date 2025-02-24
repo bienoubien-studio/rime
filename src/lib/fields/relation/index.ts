@@ -55,7 +55,7 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 		super(name, 'relation');
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 		this.field.defaultValue = [];
-		this.field.hooks = { beforeValidate: [ensureRelationExists] };
+		this.field.hooks = { beforeValidate: [] };
 	}
 
 	get component() {

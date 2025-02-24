@@ -3,6 +3,7 @@ import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter';
 
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/utility';
+import { omit } from 'rizom/utils/object';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
@@ -66,14 +67,14 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		const table = tables[relationTableName];
 
 		try {
-			for (const relation of relations) {
-				await db
-					.update(table)
-					.set({
-						position: relation.position
-					})
-					.where(eq(table.id, relation.id));
-			}
+			await Promise.all(
+				relations.map((relation) =>
+					db
+						.update(table)
+						.set(omit(['id'], relation))
+						.where(eq(table.id, relation.id))
+				)
+			);
 		} catch (err: any) {
 			console.error('error in db/relations update' + err.message);
 			return false;

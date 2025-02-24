@@ -8,95 +8,72 @@ type RelationDiff = {
 
 type Args = {
 	existingRelations: Relation[];
-	extractedRelations: { relations: BeforeOperationRelation[]; emptyPaths: string[] };
+	incomingRelations: { relations: BeforeOperationRelation[]; emptyPaths: string[] };
 	locale?: string;
 };
 
 export const defineRelationsDiff = ({
 	existingRelations,
-	extractedRelations,
+	incomingRelations,
 	locale
 }: Args): RelationDiff => {
-	// 	locale
-	// });
-
 	const toAdd: BeforeOperationRelation[] = [];
-	let toDelete: Relation[] = [];
+	const toDelete: Relation[] = [];
 	const toUpdate: Relation[] = [];
 
-	const { relations: dataRelations, emptyPaths } = extractedRelations;
+	const { relations: incomingRels, emptyPaths } = incomingRelations;
 
-	// Group existing relations by path
-	const existingByPath = existingRelations.reduce(
-		(acc, rel) => {
-			if (!acc[rel.path]) acc[rel.path] = [];
-			acc[rel.path].push(rel);
-			return acc;
-		},
-		{} as Record<string, Relation[]>
-	);
+	// Process incoming relations
+	for (const incoming of incomingRels) {
+		// Try to find matching existing relation by ID first
+		const existingMatch = existingRelations.find(
+			(existing) =>
+				// If incoming has ID, match by ID
+				(incoming.id && existing.id === incoming.id) ||
+				// Otherwise match by relationId and relationTo
+				(!incoming.id &&
+					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.relationId &&
+					(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
+		);
 
-	// Group data relations by path
-	const dataByPath = dataRelations.reduce(
-		(acc, rel) => {
-			if (!acc[rel.path]) acc[rel.path] = [];
-			acc[rel.path].push(rel);
-			return acc;
-		},
-		{} as Record<string, BeforeOperationRelation[]>
-	);
-
-	// Process data relations to find updates and additions
-	for (const newRel of dataRelations) {
-		const existingForPath = existingByPath[newRel.path] || [];
-
-		const match = existingForPath.find((existing) => {
-			const relationIdKey = `${newRel.relationTo}Id` as keyof typeof existing;
-			const sameId = existing[relationIdKey] === newRel.relationId;
-			const sameLocale = newRel.locale
-				? existing.locale === newRel.locale
-				: existing.locale === null;
-
-			return sameId && sameLocale;
-		});
-
-		if (match) {
-			if (match.position !== newRel.position) {
-				toUpdate.push({ ...match, position: newRel.position });
+		if (existingMatch) {
+			// Check if update is needed (path or position changed)
+			if (existingMatch.path !== incoming.path || existingMatch.position !== incoming.position) {
+				toUpdate.push({
+					...existingMatch,
+					path: incoming.path,
+					position: incoming.position
+				});
 			}
 		} else {
-			toAdd.push(newRel);
+			// No match found, this is a new relation
+			toAdd.push(incoming);
 		}
 	}
 
 	// Find relations to delete
-	toDelete = existingRelations.filter((existing) => {
-		// Keep relations from other locales
-		if (existing.locale && existing.locale !== locale) {
-			return false;
-		}
+	toDelete.push(
+		...existingRelations.filter((existing) => {
+			// Keep relations from other locales
+			if (existing.locale && existing.locale !== locale) {
+				return false;
+			}
 
-		// If path is in emptyPaths, delete the relation
-		if (emptyPaths.includes(existing.path)) {
-			return true;
-		}
+			// Delete if path is in emptyPaths
+			if (emptyPaths.includes(existing.path)) {
+				return true;
+			}
 
-		// Keep relations whose paths aren't in the data and not in emptyPaths
-		if (!dataByPath[existing.path]) {
-			return false;
-		}
-
-		// Delete if not found in new relations for this path
-		const newRelsForPath = dataByPath[existing.path];
-		return !newRelsForPath.some((newRel) => {
-			const relationIdKey = `${newRel.relationTo}Id` as keyof typeof existing;
-			const sameId = existing[relationIdKey] === newRel.relationId;
-			const sameLocale = newRel.locale
-				? existing.locale === newRel.locale
-				: existing.locale === null;
-			return sameId && sameLocale;
-		});
-	});
+			// Delete if not found in incoming relations
+			return !incomingRels.some(
+				(incoming) =>
+					(incoming.id && existing.id === incoming.id) ||
+					(!incoming.id &&
+						existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.relationId &&
+						(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
+			);
+		})
+	);
 
 	return { toAdd, toDelete, toUpdate };
 };

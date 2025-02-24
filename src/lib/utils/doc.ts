@@ -4,6 +4,7 @@ import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/c
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
 import { isUploadConfig } from 'rizom/config/utils.js';
+import cloneDeep from 'clone-deep';
 
 export const isUploadDoc = (doc: GenericDoc): doc is UploadDoc => {
 	return 'mimeType' in doc;
@@ -13,12 +14,6 @@ export const safeFlattenDoc = (doc: Dic) =>
 	flattenWithGuard(doc, {
 		shouldFlat: ([, value]) => {
 			if (Array.isArray(value) && value.length) {
-				try {
-					let foo = value[0].constructor;
-				} catch (err) {
-					console.log('value on error is ', value);
-					throw err;
-				}
 				/** prevent relation flatting */
 				if (value[0].constructor === Object && 'relationTo' in value[0]) return false;
 				/** prevent select field flatting */
@@ -69,6 +64,38 @@ export const getValueAtPath = <T extends unknown>(doc: Dic, path: string): T | n
 	return current as T;
 };
 
+export const setValueAtPath = <T extends any>(obj: T, path: string, value: unknown): T => {
+	const parts = path.split('.');
+
+	let current = obj;
+	// We iterate until the second-to-last part
+	for (let i = 0; i < parts.length - 1; i++) {
+		const part = parts[i];
+		if (/^\d+$/.test(part) && Array.isArray(current)) {
+			current = current[parseInt(part)];
+		} else if (isObjectLiteral(current) && part in current) {
+			current = current[part];
+		} else {
+			throw new Error(`Can't find ${path}`);
+		}
+		if (!current) {
+			throw new Error(`Can't find ${path}`);
+		}
+	}
+
+	// Handle the last part separately for assignment
+	const lastPart = parts[parts.length - 1];
+	if (/^\d+$/.test(lastPart) && Array.isArray(current)) {
+		current[parseInt(lastPart)] = value;
+	} else if (isObjectLiteral(current)) {
+		current[lastPart] = value;
+	} else {
+		throw new Error(`Can't set value at ${path}`);
+	}
+
+	return obj;
+};
+
 export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 	opts = opts || {};
 	const delimiter = '.';
@@ -116,7 +143,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		} else if (curr.type === 'link') {
 			const emptyLink: Link = { link: '', target: '_self', type: 'url' };
 			prev[curr.name] = emptyLink;
-		} else if (['blocks', 'relation', 'select'].includes(curr.type)) {
+		} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
 			prev[curr.name] = [];
 		} else if ('fields' in curr) {
 			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);

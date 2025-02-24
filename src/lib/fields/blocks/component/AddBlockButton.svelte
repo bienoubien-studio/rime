@@ -6,7 +6,7 @@
 	import { isFormField } from '$lib/utils/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from 'rizom/types/doc';
-	import type { BlocksField, BlocksFieldBlock } from '../index.js';
+	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { WithoutBuilders } from 'rizom/types/utility.js';
 
@@ -14,7 +14,7 @@
 	type Props = {
 		size: 'default' | 'sm';
 		class: string;
-		config: WithoutBuilders<BlocksField>;
+		config: BlocksFieldRaw;
 		addBlock: AddBlock;
 	};
 	const { class: className, config, addBlock, size }: Props = $props();
