@@ -27,7 +27,6 @@ export function buildComponentsMap(
 	}
 
 	for (const field of fields) {
-		// console.log(field);
 		// Add current field if it has component
 		addToMap(field);
 

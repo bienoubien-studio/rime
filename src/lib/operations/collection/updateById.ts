@@ -5,7 +5,7 @@ import { extractBlocks } from '../preprocess/blocks/extract.server.js';
 import { extractRelations } from '../preprocess/relations/extract.server';
 import { safeFlattenDoc } from '../../utils/doc.js';
 import rizom from '$lib/rizom.server.js';
-import { preprocessFields } from '../preprocess/fields.server';
+
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
@@ -22,6 +22,8 @@ import type { RegisterCollection } from 'rizom';
 import { extractTreeItems } from '../preprocess/tree/extract.server.js';
 import { defineTreeBlocksDiff } from '../preprocess/tree/diff.server.js';
 import { treeToString } from 'rizom/fields/tree/index.js';
+import { createFieldProvider } from '../preprocess/fields/provider.server.js';
+import { mergeWithBlankDocument } from '../preprocess/fill/index.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	id: string;
@@ -52,14 +54,11 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 		}
 	}
 
+	// Get previous doc from storage
 	const originalDoc = await api.collection(config.slug).findById({ id, locale });
-
 	if (!originalDoc) {
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
-
-	/** Flatten data once for all */
-	let flatData: Dic = safeFlattenDoc(data);
 
 	/** Add Password and ConfirmPassword Configs for Auth collections so validation includes these fields */
 	const fields = config.fields;
@@ -67,13 +66,11 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 		fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
-	const configMap = buildConfigMap(data, fields);
-	const originalDocConfigMap = buildConfigMap(originalDoc, fields);
+	const currentFieldProvider = createFieldProvider({ data, fields });
+	const originalDocFieldProvider = createFieldProvider({ data: originalDoc, fields });
+	await currentFieldProvider.completeWithDefault({ adapter });
 
-	const { errors, validData, validFlatData } = await preprocessFields({
-		data,
-		flatData,
-		configMap,
+	const { errors } = await currentFieldProvider.validate({
 		operation: 'update',
 		documentId: id,
 		user: event?.locals.user,
@@ -84,9 +81,6 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 
 	if (errors) {
 		throw new RizomFormError(errors);
-	} else {
-		data = validData as T;
-		flatData = validFlatData;
 	}
 
 	//////////////////////////////////////////////
@@ -100,12 +94,12 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 					operation: 'update',
 					config,
 					api,
-					data,
+					data: currentFieldProvider.data,
 					originalDoc,
 					event,
 					rizom
 				})) as CollectionHookBeforeUpdateArgs<T>;
-				data = args.data;
+				currentFieldProvider.data = args.data;
 				event = args.event;
 			} catch (err: any) {
 				console.log(err);
@@ -119,24 +113,29 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	//////////////////////////////////////////////
 
 	const incomingBlocks = extractBlocks({
-		doc: data,
-		configMap
+		fieldProvider: currentFieldProvider
 	});
 
 	const incomingTreeItems = extractTreeItems({
-		doc: data,
-		configMap
+		fieldProvider: currentFieldProvider
 	});
 
-	await adapter.collection.update({ slug: config.slug, id, data, locale });
+	await adapter.collection.update({
+		slug: config.slug,
+		id,
+		data: currentFieldProvider.data,
+		locale
+	});
 
 	/////////////////////////////////////////////
 	// Handle blocks
 	//////////////////////////////////////////////
 
-	const existingBlocks = extractBlocks({
-		doc: originalDoc,
-		configMap: originalDocConfigMap
+	let existingBlocks = extractBlocks({
+		fieldProvider: originalDocFieldProvider
+	}).filter((block) => {
+		// filter existing blocks not present in incoming data to not delete
+		return typeof currentFieldProvider.getValue(block.path!) !== 'undefined';
 	});
 
 	const blocksDiff = defineBlocksDiff({
@@ -177,9 +176,11 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	// Tree blocks handling
 	//////////////////////////////////////////////
 
-	const existingTreeItems = extractTreeItems({
-		doc: originalDoc,
-		configMap: originalDocConfigMap
+	let existingTreeItems = extractTreeItems({
+		fieldProvider: originalDocFieldProvider
+	}).filter((item) => {
+		// filter existing tree items not present in incoming data to not delete
+		return typeof currentFieldProvider.getValue(item.path!) !== 'undefined';
 	});
 
 	const treeDiff = defineTreeBlocksDiff({
@@ -221,14 +222,25 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>({
 	//////////////////////////////////////////////
 
 	/** Get existing relations */
-	const existingRelations = await adapter.relations.getAll({
-		parentSlug: config.slug,
-		parentId: id,
-		locale
-	});
+	let existingRelations = await adapter.relations
+		.getAll({
+			parentSlug: config.slug,
+			parentId: id,
+			locale
+		})
+		.then((relations) =>
+			// filter existing relations not present in incoming data to not delete
+			relations.filter((relation) => {
+				return typeof currentFieldProvider.getValue(relation.path!) !== 'undefined';
+			})
+		);
 
 	/** Get relations in data */
-	const incomingRelations = extractRelations({ parentId: id, flatData, configMap, locale });
+	const incomingRelations = extractRelations({
+		parentId: id,
+		fieldProvider: currentFieldProvider,
+		locale
+	});
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({

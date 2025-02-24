@@ -169,31 +169,17 @@ function createDocumentFormState({
 
 		const deleteItem = (atPath: string, index: number) => {
 			let items = cloneDeep(snapshot(getItems()));
-			// console.log('delete item at ' + atPath + '.' + index);
-			// let repr = toNestedRepresentation(items);
-			// console.log('items before', repr.toString());
-			// Retrive parent array value
 
-			// Get source and target information
-			// const target = getArray(atPath.replace(`${path}.`, ''));
+			// Get target array
 			const targetArray =
 				getValueAtPath<TreeBlock[]>(items, atPath.replace(`${path}.`, '')) || items;
-
-			// repr = toNestedRepresentation(targetArray);
-			// console.log('before', repr.toString());
 
 			// Perform the move operation
 			targetArray.splice(index, 1);
 
-			// repr = toNestedRepresentation(targetArray);
-			// console.log('before rebuild path', repr.toString());
-
 			// Rebuild all paths and positions
-			// console.time('rebuild_paths');
 			items = rebuildPaths(items, path);
-			// console.timeEnd('rebuild_paths');
-			// repr = toNestedRepresentation(items);
-			// console.log('items after', repr.toString());
+
 			assignItemsToDoc(items);
 		};
 
@@ -238,9 +224,6 @@ function createDocumentFormState({
 			// console.time('rebuild_paths');
 			items = rebuildPaths(items, path);
 			// console.timeEnd('rebuild_paths');
-
-			// const repr = toNestedRepresentation(items);
-			// console.log(repr.toString());
 
 			assignItemsToDoc(items);
 		};

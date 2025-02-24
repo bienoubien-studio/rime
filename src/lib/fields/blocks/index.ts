@@ -17,7 +17,9 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		super(name, 'blocks');
 		this.field.blocks = blocks;
 		this.field.defaultValue = [];
-		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
+		this.field.isEmpty = (value) => {
+			return !value || (Array.isArray(value) && value.length === 0);
+		};
 	}
 
 	get component() {
@@ -33,12 +35,8 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 			blocks: this.field.blocks.map((block) => {
 				return block.compile();
 			})
-		};
+		} as unknown as WithoutBuilders<BlocksField>;
 	}
-	// blocks(...blocks: BlocksFieldBlock[]) {
-	// 	this.field.blocks = blocks;
-	// 	return this;
-	// }
 }
 
 class BlockBuilder {

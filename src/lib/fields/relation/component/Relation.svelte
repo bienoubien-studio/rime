@@ -90,7 +90,6 @@
 			selectedItems = initialValue.map((relation: Relation) => {
 				return initialItems.find((item) => item.relationId === relation.relationId);
 			});
-			// console.log(path, $state.snapshot(initialValue));
 		}
 	};
 
@@ -168,23 +167,6 @@
 		selectedItems = selectedItems.filter((item) => item.relationId !== incomingId);
 		field.value = buildRelationFieldValue();
 	};
-
-	/** When parent iterable (ex:Blocks) order change rebuild to get the correct path field */
-	// function reBuild() {
-	// 	// form.setValue( path )
-	// 	console.log('-------------> rebuild ' + path);
-	// 	console.log($state.snapshot(selectedItems));
-	// 	// field.value = buildRelationFieldValue();
-	// }
-
-	// watch(
-	// 	() => path,
-	// 	(prev, curr) => {
-	// 		if (prev !== curr) reBuild();
-	// 	}
-	// );
-
-	// $inspect(selectedIds);
 </script>
 
 <Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>

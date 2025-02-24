@@ -36,7 +36,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 			}
 			const doc = await retrieveRelation(relationId);
 			if (doc) {
-				output.push(doc.id);
+				output.push(value);
 			}
 		}
 	} else if (typeof value === 'string') {
@@ -55,7 +55,7 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 		super(name, 'relation');
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 		this.field.defaultValue = [];
-		this.field.hooks = { beforeValidate: [] };
+		this.field.hooks = { beforeValidate: [ensureRelationExists] };
 	}
 
 	get component() {

@@ -63,7 +63,6 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 	};
 
 	const create: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
-		console.log('createBlock at path ', block.path);
 		const table = buildBlockTableName(parentSlug, block.path);
 		const blockId = generatePK();
 		const tableLocales = `${table}Locales`;

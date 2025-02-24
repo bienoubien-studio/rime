@@ -2,7 +2,7 @@ import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelt
 import type { ComboBoxField } from '../index.js';
 
 export type ComboBoxProps = {
-	path?: string;
+	path: string;
 	config: ComboBoxField;
 	form: DocumentFormContext;
 };

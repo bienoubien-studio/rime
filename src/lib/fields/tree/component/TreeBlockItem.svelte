@@ -45,12 +45,11 @@
 			const title = config.renderTitle({ fields: itemValue || {} });
 			if (title) return title;
 		}
-		return `${config.label || config.name} ${path}`;
+		return `${config.label || config.name}`;
 	};
 
 	$effect(() => {
 		if (initialPath !== path) {
-			console.log('set path : ' + path);
 			form.setValue(path, itemValue);
 		}
 	});

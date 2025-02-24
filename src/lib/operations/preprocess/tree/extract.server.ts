@@ -3,16 +3,14 @@ import type { ConfigMap } from '../config/map';
 import { getValueAtPath } from '$lib/utils/doc';
 import cloneDeep from 'clone-deep';
 import type { WithRequired } from 'rizom/types/utility';
+import type { FieldProviderServer } from '../fields/provider.server';
 
 type ExtractTreesArgs = {
-	doc: any;
-	configMap: ConfigMap;
+	fieldProvider: FieldProviderServer;
 };
 
-export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
+export function extractTreeItems({ fieldProvider }: ExtractTreesArgs) {
 	const items: WithRequired<TreeBlock, 'path'>[] = [];
-	console.log('-> extract');
-	if (!doc || !configMap) return items;
 
 	function processTreeItem(
 		item: TreeBlock,
@@ -50,14 +48,13 @@ export function extractTreeItems({ doc, configMap }: ExtractTreesArgs) {
 		});
 	}
 
-	Object.entries(configMap).forEach(([path, config]) => {
+	Object.entries(fieldProvider.configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
-			const value = getValueAtPath(doc, path) as TreeBlock[];
-
-			const isEmptyValue = config.isEmpty(value);
+			const field = fieldProvider.useFieldServer(path);
+			const isEmptyValue = config.isEmpty(field.value);
 			// console.log('in', toNestedRepresentation(value).toString());
 			if (!isEmptyValue) {
-				value.forEach((item, index) => {
+				field.value.forEach((item: TreeBlock, index: number) => {
 					processTreeItem(item, index, path, undefined);
 				});
 			}

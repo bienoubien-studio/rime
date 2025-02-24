@@ -1,6 +1,7 @@
 import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/collection/upload/utils/converter';
 import path from 'path';
+import { logToFile } from '../../src/log';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
 
@@ -76,6 +77,14 @@ test('Should create Home', async ({ request }) => {
 			home: true,
 			author: adminUserId
 		}
+	});
+
+	logToFile('token', token);
+	logToFile('payload', {
+		title: 'Accueil',
+		slug: 'accueil',
+		home: true,
+		author: adminUserId
 	});
 
 	const { doc } = await response.json();
@@ -534,6 +543,15 @@ test('Should create editor user for testing', async ({ request }) => {
 	const { doc } = await response.json();
 	editor2Id = doc.id;
 	expect(doc.name).toBe('Editor2');
+
+	logToFile('bearer', token);
+	logToFile('payload', {
+		title: 'Relations Test',
+		slug: 'relations-test',
+		author: [adminUserId],
+		contributors: [adminUserId, editor2Id],
+		ambassadors: [editor2Id]
+	});
 });
 
 test('Should create page with multiple relations', async ({ request }) => {
@@ -561,6 +579,9 @@ test('Should create page with multiple relations', async ({ request }) => {
 	expect(verifyDoc.author).toBeDefined();
 	expect(verifyDoc.contributors).toBeDefined();
 	expect(verifyDoc.ambassadors).toBeDefined();
+	expect(verifyDoc.author).toHaveLength(1);
+	expect(verifyDoc.ambassadors).toHaveLength(1);
+	expect(verifyDoc.contributors).toHaveLength(2);
 });
 
 test('Should empty author relation', async ({ request }) => {
@@ -578,6 +599,7 @@ test('Should empty author relation', async ({ request }) => {
 
 	expect(verifyDoc.author).toHaveLength(0);
 	expect(verifyDoc.contributors).toHaveLength(2);
+	expect(verifyDoc.ambassadors).toHaveLength(1);
 });
 
 test('Should reduce contributors array', async ({ request }) => {

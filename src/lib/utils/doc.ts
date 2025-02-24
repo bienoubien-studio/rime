@@ -4,7 +4,6 @@ import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/c
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
 import { isUploadConfig } from 'rizom/config/utils.js';
-import cloneDeep from 'clone-deep';
 
 export const isUploadDoc = (doc: GenericDoc): doc is UploadDoc => {
 	return 'mimeType' in doc;
@@ -16,6 +15,8 @@ export const safeFlattenDoc = (doc: Dic) =>
 			if (Array.isArray(value) && value.length) {
 				/** prevent relation flatting */
 				if (value[0].constructor === Object && 'relationTo' in value[0]) return false;
+				/** prevent block flating */
+				if (value[0].constructor === Object && 'type' in value[0]) return false;
 				/** prevent select field flatting */
 				if (typeof value[0] === 'string') return false;
 			}
@@ -32,15 +33,13 @@ export const safeFlattenDoc = (doc: Dic) =>
 				return false;
 			}
 			/** prevent link flatting */
-
 			if (
 				value &&
 				value.constructor === Object &&
 				'type' in value &&
 				'link' in value &&
 				'target' in value &&
-				'label' in value &&
-				[4, 5].includes(Object.keys(value).length)
+				[3, 4].includes(Object.keys(value).length)
 			) {
 				return false;
 			}
@@ -67,7 +66,7 @@ export const getValueAtPath = <T extends unknown>(doc: Dic, path: string): T | n
 export const setValueAtPath = <T extends any>(obj: T, path: string, value: unknown): T => {
 	const parts = path.split('.');
 
-	let current = obj;
+	let current: any = obj;
 	// We iterate until the second-to-last part
 	for (let i = 0; i < parts.length - 1; i++) {
 		const part = parts[i];
@@ -136,19 +135,24 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollectionConfig | CompiledAreaConfig
 ): T => {
 	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
-		if (curr.type === 'tabs') {
-			return curr.tabs.reduce(reduceFieldsToBlankDocument, prev);
-		} else if (curr.type === 'group') {
-			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
-		} else if (curr.type === 'link') {
-			const emptyLink: Link = { link: '', target: '_self', type: 'url' };
-			prev[curr.name] = emptyLink;
-		} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
-			prev[curr.name] = [];
-		} else if ('fields' in curr) {
-			return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
-		} else {
-			prev[curr.name] = null;
+		try {
+			if (curr.type === 'tabs') {
+				return curr.tabs.reduce(reduceFieldsToBlankDocument, prev);
+			} else if (curr.type === 'group') {
+				return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
+			} else if (curr.type === 'link') {
+				const emptyLink: Link = { link: '', target: '_self', type: 'url' };
+				prev[curr.name] = emptyLink;
+			} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
+				prev[curr.name] = [];
+			} else if ('fields' in curr) {
+				return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
+			} else {
+				prev[curr.name] = null;
+			}
+		} catch (err) {
+			console.log(curr);
+			throw err;
 		}
 		return prev;
 	}

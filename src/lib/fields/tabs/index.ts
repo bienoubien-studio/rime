@@ -17,8 +17,11 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 		return Tabs;
 	}
 
-	compile() {
-		return { ...this.field, tabs: this.field.tabs.map((tab) => tab.compile()) };
+	compile(): WithoutBuilders<TabsField> {
+		return {
+			...this.field,
+			tabs: this.field.tabs.map((tab) => tab.compile())
+		} as unknown as WithoutBuilders<TabsField>;
 	}
 }
 

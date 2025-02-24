@@ -20,33 +20,31 @@ export const defineRelationsDiff = ({
 	const toAdd: BeforeOperationRelation[] = [];
 	const toDelete: Relation[] = [];
 	const toUpdate: Relation[] = [];
+	const processedIds = new Set<string>(); // Keep track of processed IDs
 
 	const { relations: incomingRels, emptyPaths } = incomingRelations;
 
 	// Process incoming relations
 	for (const incoming of incomingRels) {
-		// Try to find matching existing relation by ID first
 		const existingMatch = existingRelations.find(
 			(existing) =>
-				// If incoming has ID, match by ID
 				(incoming.id && existing.id === incoming.id) ||
-				// Otherwise match by relationId and relationTo
 				(!incoming.id &&
 					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.relationId &&
 					(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 		);
 
 		if (existingMatch) {
-			// Check if update is needed (path or position changed)
-			if (existingMatch.path !== incoming.path || existingMatch.position !== incoming.position) {
+			// Only add to toUpdate if we haven't processed this ID yet
+			if (!processedIds.has(existingMatch.id!)) {
 				toUpdate.push({
 					...existingMatch,
 					path: incoming.path,
 					position: incoming.position
 				});
+				processedIds.add(existingMatch.id!);
 			}
 		} else {
-			// No match found, this is a new relation
 			toAdd.push(incoming);
 		}
 	}

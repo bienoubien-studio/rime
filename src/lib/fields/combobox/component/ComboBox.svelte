@@ -8,13 +8,12 @@
 	import type { ComboBoxProps } from './props';
 	import type { Option } from 'rizom/types';
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { snapshot } from 'rizom/utils/state';
 
 	const { path, config, form }: ComboBoxProps = $props();
 
 	const field = $derived(form.useField(path, config));
 	const options = config.options;
-	const initialValue = snapshot(field.value);
+	const initialValue = form.getRawValue(path);
 	let search = $state('');
 	let open = $state(false);
 	let value = $state(initialValue);

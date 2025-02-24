@@ -17,10 +17,6 @@ const normalizeValue = (value: any) => {
 		return undefined;
 	}
 
-	if (value === 'null') {
-		return null;
-	}
-
 	if (/^[\d]+$/.test(value)) {
 		return parseInt(value);
 	}
