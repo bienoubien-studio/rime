@@ -25,6 +25,7 @@
 .rz-relation-upload__thumbnail {
 	width: var(--rz-size-40);
 	height: var(--rz-size-40);
+	flex-shrink: 0;
 	overflow: hidden;
 	border-radius: var(--rz-radius-md);
 }
