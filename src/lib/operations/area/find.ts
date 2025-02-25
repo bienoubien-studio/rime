@@ -1,10 +1,13 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
-import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config';
-import { RizomError } from 'rizom/errors/index.js';
+import type { CompiledAreaConfig } from 'rizom/types/config';
+import { createPipe } from '../pipe/index.server';
+import { authorize } from '../pipe/middleware/authorize.server';
+import { fetchAreaRaw } from '../pipe/middleware/area/fetch-raw.server';
+import { transformDocument } from '../pipe/middleware/transform.server';
+import { hooksBeforeRead } from '../pipe/middleware/area/hooks.server';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -22,30 +25,20 @@ export const find = async <T extends GenericDoc = GenericDoc>({
 	api,
 	adapter
 }: FindArgs): Promise<T> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
+	//
+	const findProcess = createPipe({
+		locale,
+		config,
+		event,
+		api,
+		adapter,
+		internal: {},
+		operation: 'read'
+	});
 
-	const authorized = config.access.read(event.locals.user);
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
-	}
+	const result = await findProcess
+		.use(authorize, fetchAreaRaw, transformDocument, hooksBeforeRead)
+		.run();
 
-	const rawDoc = (await adapter.area.get({ slug: config.slug, locale })) as T;
-
-	let doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });
-
-	//////////////////////////////////////////////
-	// Hooks BeforeRead
-	//////////////////////////////////////////////
-
-	if (config.hooks && config.hooks.beforeRead) {
-		for (const hook of config.hooks.beforeRead) {
-			const args = await hook({ operation: 'read', config, doc, event, rizom, api });
-			event = args.event;
-			doc = args.doc as T;
-		}
-	}
-
-	return doc;
+	return result.document as T;
 };
