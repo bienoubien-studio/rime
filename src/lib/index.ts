@@ -11,6 +11,20 @@ export { area, collection } from 'rizom/config/builders.js';
 /* -------------------------------------------------------------------------- */
 
 export type { Config, CollectionConfig, AreaConfig, BrowserConfig } from './types/config.js';
+export type {
+	CollectionHookBeforeUpsert,
+	CollectionHookAfterUpsert,
+	CollectionHookBeforeCreate,
+	CollectionHookAfterCreate,
+	CollectionHookBeforeUpdate,
+	CollectionHookAfterUpdate,
+	CollectionHookBeforeRead,
+	CollectionHookBeforeDelete,
+	CollectionHookAfterDelete,
+	AreaHookBeforeRead,
+	AreaHookBeforeUpdate,
+	AreaHookAfterUpdate
+} from './types/hooks.js';
 export type { Link } from 'rizom/fields/link/index.js';
 export type { UploadDoc, BaseDoc } from './types/doc.js';
 export type { User } from 'rizom/types/auth.js';
