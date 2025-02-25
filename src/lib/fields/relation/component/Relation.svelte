@@ -13,6 +13,7 @@
 	import type { GenericDoc } from 'rizom/types';
 	import type { RelationField } from '../index';
 	import { watch } from 'runed';
+	import { onMount } from 'svelte';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -93,7 +94,7 @@
 		}
 	};
 
-	$effect(() => {
+	onMount(() => {
 		getItems();
 	});
 
