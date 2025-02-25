@@ -12,8 +12,11 @@
 	let element: HTMLElement;
 	const key = `richtext-${new Date().getTime().toString()}`;
 
+	console.log(path);
 	let editor = $state<Editor>();
 	const field = $derived(form.useField(path, config));
+
+	$inspect(field.value);
 
 	onMount(() => {
 		const editorConfig = buildEditorConfig({
@@ -26,6 +29,7 @@
 
 		editor = new Editor(editorConfig);
 
+		console.log(typeof field.value);
 		if (field.value?.content) {
 			editor.commands.setContent(field.value.content);
 		}
