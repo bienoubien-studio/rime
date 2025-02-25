@@ -93,7 +93,7 @@ export type BlocksField = FormField & {
 	blocks: BlockBuilder[];
 };
 
-export type BlocksFieldBlockRenderTitle = (args: { fields: Dic; position: number }) => string;
+export type BlocksFieldBlockRenderTitle = (args: { values: Dic; position: number }) => string;
 
 export type BlocksFieldBlock = {
 	name: string;

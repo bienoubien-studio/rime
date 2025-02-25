@@ -13,7 +13,7 @@
 
 	const field = $derived(form.useField(path, config));
 	const options = config.options;
-	const initialValue = form.getRawValue(path);
+	const initialValue = form.getRawValue(path!);
 	let search = $state('');
 	let open = $state(false);
 	let value = $state(initialValue);

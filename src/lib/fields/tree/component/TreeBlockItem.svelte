@@ -42,7 +42,7 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			const title = config.renderTitle({ fields: itemValue || {} });
+			const title = config.renderTitle({ values: itemValue || {} });
 			if (title) return title;
 		}
 		return `${config.label || config.name}`;

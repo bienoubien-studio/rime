@@ -156,8 +156,11 @@
 		> :global(.rz-scroll-area) {
 			--rz-fields-padding: var(--rz-size-6);
 			@container rz-document (min-width:640px) {
-				--rz-fields-padding: var(--rz-size-8);
+				--rz-fields-padding: var(--rz-size-12);
 			}
+			/* @container rz-document (min-width:960px) {
+				--rz-fields-padding: var(--rz-size-16);
+			} */
 		}
 	}
 	.rz-document__fields {

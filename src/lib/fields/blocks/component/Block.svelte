@@ -45,7 +45,7 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			const title = config.renderTitle({ fields: blockValue || {}, position });
+			const title = config.renderTitle({ values: blockValue || {}, position });
 			if (title) return title;
 		}
 		const title = config.label ? config.label : capitalize(config.name);

@@ -34,7 +34,7 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		return this;
 	}
 
-	renderTitle(render: TreeFieldRenderTitle) {
+	renderTitle(render: TreeFieldBlockRenderTitle) {
 		this.field.renderTitle = render;
 		return this;
 	}
@@ -95,19 +95,19 @@ export const treeToString = (blocks: TreeBlock[] | undefined | null) => {
 /////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
-export type TreeFieldRenderTitle = (args: { fields: Dic }) => string;
+
 export type TreeField = FormField & {
 	type: 'tree';
 	maxDepth: number;
-	renderTitle?: TreeFieldRenderTitle;
+	renderTitle?: TreeFieldBlockRenderTitle;
 	fields: FieldBuilder<Field>[];
 };
 
-export type TreeFieldBlockRenderTitle = (args: { fields: Dic; position: number }) => string;
+export type TreeFieldBlockRenderTitle = (args: { values: Dic }) => string;
 
 export type TreeFieldRaw = FormField & {
 	type: 'tree';
-	renderTitle?: TreeFieldRenderTitle;
+	renderTitle?: TreeFieldBlockRenderTitle;
 	maxDepth: number;
 	fields: Field[];
 };
