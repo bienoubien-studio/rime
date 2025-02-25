@@ -15,4 +15,5 @@ export { separator } from './separator/index.js';
 export { slug } from './slug/index.js';
 export { tabs, tab } from './tabs/index.js';
 export { text } from './text/index.js';
+export { tree } from './tree/index.js';
 export { toggle } from './toggle/index.js';
