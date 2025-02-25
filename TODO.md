@@ -4,10 +4,14 @@
 [v] slug types not generated
 [v] richtext types not generated
 [v] better login error handling
+[ ] Richtext in blocks not saved
 [ ] Add loader on image upload
-[ ] More test on access
+[ ] Change the way panel languages are loaded
+[ ] make file output key sm_jpg, sm_webp, if multilple output format
+[ ] More tests
+[ ] Blocks collapse/uncollapse all
 [ ] Better logs
-[ ] pnpm  deps issue
+[ ] pnpm deps issue
 [ ] remove forgot password route for now
 [ ] init command without prompt
 [ ] better-auth + smtp : forgot password
