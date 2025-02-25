@@ -2,6 +2,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { CollectionConfig } from 'rizom/types';
 	import type { WithUpload } from 'rizom/types/utility';
+	import { toast } from 'svelte-sonner';
 
 	import type { ChangeEventHandler } from 'svelte/elements';
 
@@ -52,8 +53,9 @@
 			file = value;
 		};
 
-		reader.onerror = () => {
-			console.error('There was an issue reading the file.');
+		reader.onerror = (err) => {
+			toast.error('There was an issue reading the file.');
+			console.log(err);
 		};
 
 		reader.readAsDataURL(value);
