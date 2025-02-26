@@ -1,10 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter, GenericBlock, GenericDoc, LocalAPI } from 'rizom/types';
+import type { Adapter, GenericBlock, GenericDoc, LocalAPI, OperationQuery } from 'rizom/types';
 import type { CompiledAreaConfig, CompiledCollectionConfig } from 'rizom/types/config';
 import type { ConfigMap } from './middleware/shared/field-resolver/map/types';
 import type { FieldResolverServer } from './middleware/shared/field-resolver/index.server';
 import type { WithRequired } from 'rizom/types/utility';
 import type { TreeBlock } from 'rizom/types/doc';
+import type { RelationDiff } from './middleware/shared/relations/diff.server';
 
 type BothConfigType = CompiledCollectionConfig | CompiledAreaConfig;
 type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };
@@ -18,12 +19,18 @@ export type Context<T extends BothConfigType = BothConfigType> = {
 	data?: Record<string, any>;
 	document?: GenericDoc;
 	original?: GenericDoc;
+	documents?: GenericDoc[];
+	query?: OperationQuery;
+	sort?: string;
+	limit?: number;
+	depth?: number;
 	internal: {
 		configMap?: ConfigMap;
 		originalFieldsResolver?: FieldResolverServer;
 		incomingFieldsResolver?: FieldResolverServer;
 		blocksDiff?: Diff<GenericBlock>;
 		treeDiff?: Diff<WithRequired<TreeBlock, 'path'>>;
+		relationsDiff?: RelationDiff;
 	};
 };
 

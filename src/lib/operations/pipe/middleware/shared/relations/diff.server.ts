@@ -1,6 +1,6 @@
 import type { BeforeOperationRelation, Relation } from 'rizom/db/relations';
 
-type RelationDiff = {
+export type RelationDiff = {
 	toAdd: BeforeOperationRelation[];
 	toDelete: Relation[];
 	toUpdate: Relation[];

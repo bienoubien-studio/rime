@@ -1,15 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import rizom from '$lib/rizom.server.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { LocalAPI } from 'rizom/types/api.js';
-import type { Adapter } from 'rizom/types/adapter.js';
-import type {
-	CollectionHookAfterDeleteArgs,
-	CollectionHookBeforeDeleteArgs
-} from 'rizom/types/hooks.js';
-import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
-import type { CollectionSlug } from 'rizom/types';
+import type { CollectionSlug, LocalAPI, Adapter, CompiledCollectionConfig } from 'rizom/types';
+import { omitId } from 'rizom/utils/object';
+import { createPipe } from '../pipe/index.server';
+import { authorize } from '../pipe/middleware/shared/authorize.server';
+import { findDocumentRaw } from '../pipe/middleware/collection/find-document-raw.server';
+import { deleteDocument } from '../pipe/middleware/collection/delete-document.server';
+import { hooksDelete } from '../pipe/middleware/collection/hooks-delete.server';
 
 type DeleteArgs = {
 	id: string;
@@ -19,73 +16,20 @@ type DeleteArgs = {
 	api: LocalAPI;
 };
 
-export const deleteById = async <T extends RegisterCollection[CollectionSlug]>({
-	id,
-	config,
-	event,
-	adapter,
-	api
-}: DeleteArgs): Promise<string> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
-	const authorized = config.access.delete(event.locals.user, { id });
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
-	}
+export const deleteById = async <T extends RegisterCollection[CollectionSlug]>(
+	args: DeleteArgs
+): Promise<string> => {
+	//
+	const deleteByIdOperation = createPipe({
+		...omitId(args),
+		data: { id: args.id },
+		operation: 'delete',
+		internal: {}
+	});
 
-	let doc = (await adapter.collection.findById({ slug: config.slug, id })) as T;
+	const result = await deleteByIdOperation
+		.use(authorize, findDocumentRaw, hooksDelete('before'), deleteDocument, hooksDelete('after'))
+		.run();
 
-	if (!doc) {
-		throw new RizomError(RizomError.NOT_FOUND);
-	}
-
-	//////////////////////////////////////////////
-	// Hooks BeforeDelete
-	//////////////////////////////////////////////
-	if (config.hooks && config.hooks.beforeDelete) {
-		for (const hook of config.hooks.beforeDelete) {
-			try {
-				const args = (await hook({
-					operation: 'delete',
-					config,
-					doc,
-					event,
-					rizom,
-					api
-				})) as CollectionHookBeforeDeleteArgs<T>;
-				doc = args.doc;
-				event = args.event;
-			} catch (err: any) {
-				throw new RizomError(RizomError.HOOK, err.message);
-			}
-		}
-	}
-
-	// Delete
-	await adapter.collection.deleteById({ slug: config.slug, id });
-
-	//////////////////////////////////////////////
-	// Hooks AfterDelete
-	//////////////////////////////////////////////
-	if (config.hooks && config.hooks.afterDelete) {
-		for (const hook of config.hooks.afterDelete) {
-			try {
-				const args = (await hook({
-					operation: 'delete',
-					config,
-					doc,
-					event,
-					rizom,
-					api
-				})) as CollectionHookAfterDeleteArgs<T>;
-				doc = args.doc;
-				event = args.event;
-			} catch (err: any) {
-				throw new RizomError(RizomError.HOOK, err.message);
-			}
-		}
-	}
-
-	return id;
+	return args.id;
 };

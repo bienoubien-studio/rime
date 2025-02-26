@@ -25,22 +25,10 @@ type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	api: LocalAPI;
 };
 
-export const update = async <T extends GenericDoc = GenericDoc>({
-	data,
-	locale,
-	config,
-	api,
-	event,
-	adapter
-}: UpdateArgs<T>) => {
+export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
 	const updateProcess = createPipe({
-		data,
-		locale,
-		config,
-		event,
-		api,
-		adapter,
+		...args,
 		internal: {},
 		operation: 'update'
 	});

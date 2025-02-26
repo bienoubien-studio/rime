@@ -1,13 +1,15 @@
 import type { RequestEvent } from '@sveltejs/kit';
-
-import rizom from '$lib/rizom.server.js';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
+import { authorize } from '../pipe/middleware/shared/authorize.server';
+import { createPipe } from '../pipe/index.server';
+import { queryCollectionDocumentsRaw } from '../pipe/middleware/collection/query-documents-raw.server.js';
+import { transformAllDocuments } from '../pipe/middleware/shared/transform-all.server';
+import { hooksBeforeRead } from '../pipe/middleware/collection/hooks-before-read.server';
 
 type FindArgs = {
 	query: OperationQuery;
@@ -21,60 +23,24 @@ type FindArgs = {
 	limit?: number;
 };
 
-export const find = async <T extends RegisterCollection[CollectionSlug]>({
-	query,
-	locale,
-	config,
-	event,
-	api,
-	adapter,
-	sort,
-	depth,
-	limit
-}: FindArgs): Promise<T[]> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
-
-	const authorized = config.access.read(event.locals.user);
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
-	}
-
-	const rawDocs = (await adapter.collection.query({
-		slug: config.slug,
-		query,
-		sort,
-		limit,
-		locale
-	})) as T[];
-
-	const docs = await adapter.transform.docs<T>({
-		docs: rawDocs,
-		slug: config.slug,
-		api,
-		locale,
-		event,
-		depth
+export const find = async <T extends RegisterCollection[CollectionSlug]>(
+	args: FindArgs
+): Promise<T[]> => {
+	//
+	const findOperation = createPipe({
+		...args,
+		operation: 'read',
+		internal: {}
 	});
 
-	//////////////////////////////////////////////
-	// Hooks BeforeRead
-	//////////////////////////////////////////////
+	const result = await findOperation
+		.use(
+			authorize,
+			queryCollectionDocumentsRaw,
+			transformAllDocuments,
+			hooksBeforeRead({ multiple: true })
+		)
+		.run();
 
-	if (config.hooks && config.hooks.beforeRead) {
-		for (const hook of config.hooks.beforeRead) {
-			for (const [index, doc] of docs.entries()) {
-				try {
-					const args = await hook({ operation: 'read', config, doc, event, rizom, api });
-					event = args.event;
-					docs[index] = doc;
-				} catch (err: any) {
-					throw new RizomError(RizomError.HOOK, err.message);
-				}
-			}
-		}
-	}
-
-	return docs as T[];
+	return result.documents as T[];
 };

@@ -4,9 +4,9 @@ import type { Adapter } from 'rizom/types/adapter';
 import type { GenericDoc } from 'rizom/types/doc';
 import type { CompiledAreaConfig } from 'rizom/types/config';
 import { createPipe } from '../pipe/index.server';
-import { authorize } from '../pipe/middleware/authorize.server';
+import { authorize } from '../pipe/middleware/shared/authorize.server';
 import { fetchAreaRaw } from '../pipe/middleware/area/fetch-raw.server';
-import { transformDocument } from '../pipe/middleware/transform.server';
+import { transformDocument } from '../pipe/middleware/shared/transform.server';
 import { hooksBeforeRead } from '../pipe/middleware/area/hooks.server';
 
 type FindArgs = {
@@ -18,20 +18,10 @@ type FindArgs = {
 	depth?: number;
 };
 
-export const find = async <T extends GenericDoc = GenericDoc>({
-	locale,
-	config,
-	event,
-	api,
-	adapter
-}: FindArgs): Promise<T> => {
+export const find = async <T extends GenericDoc = GenericDoc>(args: FindArgs): Promise<T> => {
 	//
 	const findProcess = createPipe({
-		locale,
-		config,
-		event,
-		api,
-		adapter,
+		...args,
 		internal: {},
 		operation: 'read'
 	});

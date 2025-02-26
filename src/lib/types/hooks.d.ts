@@ -109,12 +109,6 @@ export type CollectionHookBeforeReadArgs<T extends GenericDoc = GenericDoc> =
 		doc: T;
 	};
 
-export type CollectionHookBeforeDeleteArgs<T extends GenericDoc = GenericDoc> =
-	BaseCollectionHookArgs & {
-		operation: 'delete';
-		doc: T;
-	};
-
 export type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFunction<
 	CollectionHookBeforeReadArgs<T>
 >;
@@ -122,18 +116,16 @@ export type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = HookFu
 /////////////////////////////////////////////
 // DELETE
 //////////////////////////////////////////////
-export type CollectionHookAfterDeleteArgs<T extends GenericDoc = GenericDoc> =
-	BaseCollectionHookArgs & {
-		operation: 'delete';
-		doc: T;
-	};
-
-export type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookBeforeDeleteArgs<T>
->;
+export type CollectionHookDeleteArgs<T extends GenericDoc = GenericDoc> = BaseCollectionHookArgs & {
+	operation: 'delete';
+	doc: T;
+};
 
 export type CollectionHookAfterDelete<T extends GenericDoc = GenericDoc> = HookFunction<
-	CollectionHookAfterDeleteArgs<T>
+	CollectionHookDeleteArgs<T>
+>;
+export type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = HookFunction<
+	CollectionHookDeleteArgs<T>
 >;
 
 export type CollectionHooks<T extends GenericDoc> = {
