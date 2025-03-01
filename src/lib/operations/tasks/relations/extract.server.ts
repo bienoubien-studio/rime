@@ -1,24 +1,25 @@
 import { isRelationField } from '$lib/utils/field.js';
 import type { BeforeOperationRelation } from '$lib/db/relations.js';
-import type { FieldResolverServer } from '../field-resolver/index.server';
-import type { ConfigMap } from '../field-resolver/map/types';
+import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from '../config-map/types';
+import { getValueAtPath } from 'rizom/utils/doc';
 
 type Args = {
 	parentId?: string;
-	resolver: FieldResolverServer;
+	data: Dic;
 	configMap: ConfigMap;
 	locale: string | undefined;
 };
 
-export const extractRelations = ({ parentId, resolver, configMap, locale }: Args) => {
+export const extractRelations = ({ parentId, data, configMap, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
 	const emptyPaths: string[] = [];
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
-			const field = resolver.useFieldServer(path);
+			const value = getValueAtPath<BeforeOperationRelation[] | string | string[]>(data, path);
 			const localized = config.localized;
-			const relationRawValue: BeforeOperationRelation[] | string | string[] = field.value;
+			const relationRawValue = value;
 			let output: BeforeOperationRelation[] = [];
 
 			const relationFromString = ({ value, position = 0 }: RelationFromStringArgs) => {

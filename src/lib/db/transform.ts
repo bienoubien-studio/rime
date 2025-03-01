@@ -15,6 +15,7 @@ import type {
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { extractFieldName } from 'rizom/fields/tree/utils.js';
+import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
 
 /////////////////////////////////////////////
 // Types
@@ -38,20 +39,6 @@ export const databaseTransformInterface = ({
 	blocksInterface,
 	treeInterface
 }: CreateTransformInterfaceArgs) => {
-	const transformDocs = async <T extends GenericDoc = GenericDoc>({
-		docs: rawDocs,
-		slug,
-		locale,
-		api,
-		event,
-		depth = 0
-	}: TransformManyContext<T>) => {
-		const docs: GenericDoc[] = await Promise.all(
-			rawDocs.map((doc) => transformDoc({ doc, slug, locale, event, api, depth }))
-		);
-		return docs as T[];
-	};
-
 	const transformDoc = async <T extends GenericDoc = GenericDoc>({
 		doc,
 		slug,
@@ -61,7 +48,7 @@ export const databaseTransformInterface = ({
 		depth = 0
 	}: TransformContext<Dic>) => {
 		//
-		const user = event.locals.user;
+
 		const tableNameRelationFields = `${slug}Rels`;
 		const tableNameLocales = `${slug}Locales`;
 		const isLive = event.url.pathname.startsWith('/live');
@@ -229,13 +216,17 @@ export const databaseTransformInterface = ({
 			keysToDelete.push(tableNameRelationFields);
 		}
 
+		if (!isPanel || event.locals.user) {
+			keysToDelete.push('authUserId', 'editedBy');
+		}
+
+		keysToDelete.push(...privateFieldNames);
 		output = omit(keysToDelete, deepmerge(blankDocument, output));
 
 		return output as T;
 	};
 
 	return {
-		doc: transformDoc,
-		docs: transformDocs
+		doc: transformDoc
 	};
 };

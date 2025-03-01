@@ -1,6 +1,6 @@
 import { error, type ServerLoad } from '@sveltejs/kit';
-import { buildConfigMap } from 'rizom/operations/preprocess/config/map.js';
-import { createFieldProvider } from 'rizom/operations/preprocess/fields/provider.server';
+import { buildConfigMap } from 'rizom/operations/tasks/configMap/index.server';
+import { setDefaultValues } from 'rizom/operations/tasks/setDefaultValues';
 
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 
@@ -26,13 +26,9 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			const blankDocument = collection.blank();
-			const fieldProvider = createFieldProvider({
-				data: blankDocument,
-				fields: collection.config.fields
-			});
-			await fieldProvider.completeWithDefault({ adapter: rizom.adapter });
-			doc = fieldProvider.data as GenericDoc;
+			let blankDocument = collection.blank();
+			const configMap = buildConfigMap(blankDocument, collection.config.fields);
+			doc = await setDefaultValues({ data: blankDocument, adapter: rizom.adapter, configMap });
 		} else {
 			/** Check for authorizations */
 			const authorizedRead = collection.config.access.read(user, { id });

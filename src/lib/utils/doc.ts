@@ -95,6 +95,22 @@ export const setValueAtPath = <T extends any>(obj: T, path: string, value: unkno
 	return obj;
 };
 
+export function deleteValueAtPath<T>(obj: T, path: string): T {
+	const parts = path.split('.');
+	const last = parts.pop()!;
+
+	let current: any = obj;
+	for (const part of parts) {
+		const key = !isNaN(Number(part)) ? Number(part) : part;
+		if (!(key in current)) return obj;
+		current = current[key];
+	}
+
+	const finalKey = !isNaN(Number(last)) ? Number(last) : last;
+	delete current[finalKey];
+	return obj;
+}
+
 export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 	opts = opts || {};
 	const delimiter = '.';

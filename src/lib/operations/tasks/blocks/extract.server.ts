@@ -1,23 +1,24 @@
 import type { GenericBlock } from 'rizom/types/doc';
-import type { ConfigMap } from '../field-resolver/map/types';
-import type { FieldResolverServer } from '../field-resolver/index.server';
+import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from '../config-map/types';
+import { getValueAtPath } from 'rizom/utils/doc';
 
 type ExtractBlocksArgs = {
-	resolver: FieldResolverServer;
+	data: Dic;
 	configMap: ConfigMap;
 };
 
-export function extractBlocks({ resolver, configMap }: ExtractBlocksArgs) {
+export function extractBlocks({ data, configMap }: ExtractBlocksArgs) {
 	const blocks: GenericBlock[] = [];
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'blocks') {
-			const field = resolver.useFieldServer(path);
+			const value = getValueAtPath<GenericBlock[]>(data, path);
 
-			const isEmptyValue = config.isEmpty(field.value);
+			const isEmptyValue = config.isEmpty(value);
 
-			if (!isEmptyValue) {
-				field.value.forEach((block: Partial<GenericBlock>, index: number) => {
+			if (value && !isEmptyValue) {
+				value.forEach((block: Partial<GenericBlock>, index: number) => {
 					if (block.type) {
 						const cleanBlock = {
 							...block,

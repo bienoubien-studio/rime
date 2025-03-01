@@ -1,38 +1,36 @@
-import { flatten, unflatten } from 'flat';
-import { RizomError } from 'rizom/errors';
 import { hasProps } from 'rizom/utils/object';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/utils/field.js';
 import { rizom, type FormField } from '$lib/index.js';
-import type { Task } from '../../../index.server';
 import type { RelationField, SelectField } from 'rizom/fields/types';
 import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from './configMap/types';
+import { getValueAtPath, setValueAtPath } from 'rizom/utils/doc';
 
-export const setDefaultValues: Task = async (ctx, next) => {
-	const { adapter } = ctx;
-	const { configMap, incomingFieldsResolver } = ctx.internal;
-
-	if (!configMap || !incomingFieldsResolver) throw new RizomError(RizomError.PIPE_ERROR);
-	const output: Dic = flatten(ctx.data);
-
+export const setDefaultValues = async <T extends Dic>(args: {
+	data: T;
+	configMap: ConfigMap;
+	adapter: Adapter;
+}) => {
+	const { adapter, configMap } = args;
+	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
-		const field = incomingFieldsResolver.useFieldServer(key);
+		let value = getValueAtPath(output, key);
 		let isEmpty;
 		try {
-			isEmpty = config.isEmpty(field.value);
+			isEmpty = config.isEmpty(value);
 		} catch (err: any) {
 			isEmpty = false;
 			console.log(err.message);
 		}
 		if (isEmpty && hasProps(config, ['defaultValue'])) {
-			output[key] = await getDefaultValue({ key, config, adapter });
+			value = await getDefaultValue({ key, config, adapter });
+			output = setValueAtPath(output, key, value);
 		}
 	}
 
-	ctx.data = unflatten(output);
-
-	await next();
+	return output;
 };
 
 type GetDefaultValue = (args: {

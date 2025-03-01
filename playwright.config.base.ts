@@ -9,8 +9,8 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 		webServer: {
 			command: `pnpm rizom:use ${name} && vite dev`,
 			port: 5173,
-			stdout: 'ignore',
-			stderr: 'ignore'
+			stdout: 'pipe',
+			stderr: 'pipe'
 		},
 		// retries: 3,
 		expect: {

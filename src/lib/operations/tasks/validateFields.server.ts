@@ -1,30 +1,34 @@
 import { RizomError, RizomFormError } from 'rizom/errors';
-import type { Context, Task } from '../../../index.server';
-import type { CompiledArea, CompiledCollection } from 'rizom/types/config';
-import type { FormErrors, GenericDoc } from 'rizom/types';
+import type {
+	CompiledArea,
+	CompiledCollection,
+	FormErrors,
+	GenericDoc,
+	LocalAPI,
+	User
+} from 'rizom/types';
+import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from './config-map/types';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/utils/doc';
 
-type Validate = (ctx: Context) => Promise<{
-	errors: FormErrors | null;
-}>;
-
-export const validate: Task<CompiledArea | CompiledCollection> = async (ctx, next) => {
-	const { errors } = await validateFields(ctx);
-	if (errors) {
-		throw new RizomFormError(errors);
-	}
-	await next();
-};
-
-const validateFields: Validate = async (ctx: Context) => {
+export const validateFields = async <T extends Dic>(args: {
+	data: T;
+	api: LocalAPI;
+	locale?: string;
+	config: CompiledArea | CompiledCollection;
+	configMap: ConfigMap;
+	original?: T;
+	operation: 'create' | 'update';
+	user?: User;
+}) => {
 	const errors: FormErrors = {};
-	const { api, locale } = ctx;
+	const { api, locale, configMap, original, operation, user } = args;
 	const { adapter } = api.rizom;
-	const isCollection = api.rizom.config.getDocumentPrototype(ctx.config.slug);
+	const isCollection = api.rizom.config.getDocumentPrototype(args.config.slug);
+	let output = { ...args.data };
 
-	if (!ctx.internal.incomingFieldsResolver) throw new RizomError(RizomError.PIPE_ERROR);
-
-	for (const [key, config] of Object.entries(ctx.internal.configMap || {})) {
-		const field = ctx.internal.incomingFieldsResolver.useFieldServer(key);
+	for (const [key, config] of Object.entries(configMap)) {
+		let value: any = getValueAtPath(output, key);
 
 		if (key === 'hashedPassword') {
 			//
@@ -35,7 +39,7 @@ const validateFields: Validate = async (ctx: Context) => {
 			//
 			// [EDIT] Should not be there with better-auth
 			//
-			if (field.value) {
+			if (getValueAtPath(output, key)) {
 				throw new RizomError('hashedPassword should be empty while preprocessing incoming data');
 			}
 			// No need for validation / transform / access
@@ -46,13 +50,8 @@ const validateFields: Validate = async (ctx: Context) => {
 		// Validation
 		//////////////////////////////////////////////
 
-		console.log('------------------------');
-		console.log('key', key);
-		console.log('field', field);
-		console.log('field.value', field.value);
-
 		// Required
-		if (config.required && config.isEmpty(field.value)) {
+		if (config.required && config.isEmpty(value)) {
 			errors[key] = RizomFormError.REQUIRED_FIELD;
 		}
 
@@ -62,10 +61,10 @@ const validateFields: Validate = async (ctx: Context) => {
 		 *   and parse the sqlite error ??
 		 */
 		if ('unique' in config && config.unique && isCollection) {
-			const query = { where: { [key]: { equals: field.value } } };
+			const query = { where: { [key]: { equals: value } } };
 			// const query = `where[${key}][equals]=${field.value}`;
-			const existing = await adapter.collection.query({ slug: ctx.config.slug, query });
-			if (ctx.original?.id && existing.length && existing[0].id !== ctx.original?.id) {
+			const existing = await adapter.collection.query({ slug: args.config.slug, query });
+			if (original?.id && existing.length && existing[0].id !== original?.id) {
 				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}
 		}
@@ -75,9 +74,10 @@ const validateFields: Validate = async (ctx: Context) => {
 		//////////////////////////////////////////////
 
 		if (config.hooks?.beforeValidate) {
-			if (field.value) {
+			if (value) {
 				for (const hook of config.hooks.beforeValidate) {
-					field.value = await hook(field.value, { config, api, locale });
+					value = await hook(value, { config, api, locale });
+					output = setValueAtPath(output, key, value);
 				}
 			}
 		}
@@ -86,14 +86,13 @@ const validateFields: Validate = async (ctx: Context) => {
 		// Validate
 		//////////////////////////////////////////////
 
-		if (config.validate && field.value) {
-			if (!isWriteOperation(ctx.operation)) throw new RizomError(RizomError.PIPE_ERROR);
+		if (config.validate && value) {
 			try {
-				const valid = config.validate(field.value, {
-					data: ctx.data as Partial<GenericDoc>,
-					operation: ctx.operation!,
-					id: ctx.original?.id,
-					user: ctx.event.locals.user,
+				const valid = config.validate(value, {
+					data: output as Partial<GenericDoc>,
+					operation,
+					id: original?.id,
+					user: user,
 					locale,
 					config
 				});
@@ -111,9 +110,10 @@ const validateFields: Validate = async (ctx: Context) => {
 		//////////////////////////////////////////////
 
 		if (config.hooks?.beforeSave) {
-			if (field.value) {
+			if (value) {
 				for (const hook of config.hooks.beforeSave) {
-					field.value = await hook(field.value, { config, api, locale });
+					value = await hook(value, { config, api, locale });
+					output = setValueAtPath(output, key, value);
 				}
 			}
 		}
@@ -122,28 +122,31 @@ const validateFields: Validate = async (ctx: Context) => {
 		// Access
 		//////////////////////////////////////////////
 
-		if (config.access && config.access.update && ctx.operation === 'update') {
-			const authorizedFieldUpdate = config.access.update(ctx.event.locals.user, {
-				id: ctx.original?.id
+		if (config.access && config.access.update && operation === 'update') {
+			const authorizedFieldUpdate = config.access.update(user, {
+				id: original?.id
 			});
 			if (!authorizedFieldUpdate) {
-				field.delete();
+				output = deleteValueAtPath(output, value);
 			}
 		}
 
-		if (config.access && config.access.create && ctx.operation === 'create') {
-			const authorizedFieldCreate = config.access.create(ctx.event.locals.user, {
+		if (config.access && config.access.create && operation === 'create') {
+			const authorizedFieldCreate = config.access.create(user, {
 				id: undefined
 			});
 			if (!authorizedFieldCreate) {
-				field.delete();
+				output = deleteValueAtPath(output, value);
 			}
 		}
 	}
 
-	return {
-		errors: Object.keys(errors).length ? errors : null
-	};
+	if (Object.keys(errors).length) {
+		console.log(errors);
+		throw new RizomFormError(errors);
+	}
+
+	return output;
 };
 
 function isWriteOperation(

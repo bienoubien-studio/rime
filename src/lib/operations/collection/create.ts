@@ -1,30 +1,22 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type {
 	LocalAPI,
-	CollectionHooks,
 	Adapter,
 	CollectionSlug,
 	GenericDoc,
 	CompiledCollection
 } from 'rizom/types';
 import type { RegisterCollection } from 'rizom';
-import { operationRunner } from '../pipe/index.server.js';
-import { authorize } from '../pipe/tasks/shared/authorize.server.js';
-import { provideFieldResolver } from '../pipe/tasks/shared/field-resolver/index.server.js';
-import { setDefaultValues } from '../pipe/tasks/shared/fields/set-default-values.js';
-import { validate } from '../pipe/tasks/shared/fields/validate.server.js';
-import { processHooks } from '../pipe/tasks/shared/hooks.server.js';
-import { insertRoot } from '../pipe/tasks/collection/insert-root.server.js';
-import { saveBlocks } from '../pipe/tasks/shared/blocks/index.server.js';
-import { saveTreeBlocks } from '../pipe/tasks/shared/tree/index.server.js';
-import { saveRelations } from '../pipe/tasks/shared/relations/index.server.js';
-import { fetchRaw } from '../pipe/tasks/collection/fetch-raw.server.js';
-import { fallbackLocale } from '../pipe/tasks/collection/fallback-locale.server.js';
 import cloneDeep from 'clone-deep';
-import { transformDocument } from '../pipe/tasks/shared/transform.server.js';
-import { addAuthFields } from '../pipe/tasks/collection/add-auth-fields.js';
-import { mergeDataWithBlankDocument } from '../pipe/tasks/collection/merge-with-blank.js';
-import { provideConfigMap } from '../pipe/tasks/shared/config-map/index.server.js';
+import { RizomError } from 'rizom/errors/index.js';
+import { usersFields } from 'rizom/collection/auth/usersFields.js';
+import { mergeWithBlankDocument } from '../tasks/mergeWithBlank.js';
+import { setDefaultValues } from '../tasks/setDefaultValues.js';
+import { buildConfigMap } from '../tasks/configMap/index.server.js';
+import { validateFields } from '../tasks/validateFields.server.js';
+import { saveTreeBlocks } from '../tasks/tree/index.server.js';
+import { saveBlocks } from '../tasks/blocks/index.server.js';
+import { saveRelations } from '../tasks/relations/index.server.js';
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -38,35 +30,115 @@ type Args<T extends GenericDoc = GenericDoc> = {
 };
 
 export const create = async <T extends RegisterCollection[CollectionSlug]>(args: Args<T>) => {
-	const incomingData = cloneDeep(args.data);
+	const { config, event, adapter, locale, api } = args;
+
+	let data = args.data;
+	const incomingData = cloneDeep(data);
 	//
-	const operation = operationRunner({
-		...args,
+
+	const authorized = config.access.create(event.locals.user);
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
+	}
+
+	if (config.auth) {
+		/** Add auth fields into validation process */
+		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
+	}
+
+	data = mergeWithBlankDocument({
+		data: data as Partial<GenericDoc>,
+		config
+	}) as Partial<T>;
+
+	const configMap = buildConfigMap(data, config.fields);
+	data = await setDefaultValues({ data, adapter, configMap });
+	data = await validateFields({
+		data,
+		api,
+		locale,
+		config,
+		configMap,
 		operation: 'create',
-		internal: {}
+		user: event.locals.user
 	});
 
-	const result = await operation
-		.use(
-			authorize,
-			addAuthFields,
-			mergeDataWithBlankDocument,
-			provideConfigMap('data'),
-			provideFieldResolver('incoming'),
-			setDefaultValues,
-			validate,
-			processHooks<CollectionHooks>('beforeCreate'),
-			insertRoot,
-			saveBlocks,
-			saveTreeBlocks,
-			saveRelations,
-			fetchRaw,
-			fallbackLocale(incomingData),
-			transformDocument,
-			processHooks<CollectionHooks>('afterCreate')
-		)
-		.run();
+	for (const hook of config.hooks?.beforeCreate || []) {
+		const result = await hook({
+			data,
+			config,
+			operation: 'create',
+			api,
+			rizom: event.locals.rizom,
+			event
+		});
+		data = result.data as Partial<T>;
+	}
 
-	const doc = result.document as T;
-	return { doc };
+	const createdId = await adapter.collection.insert({
+		slug: config.slug,
+		data,
+		locale
+	});
+
+	const blocksDiff = await saveBlocks({
+		parentId: createdId,
+		configMap,
+		data,
+		adapter,
+		config,
+		locale
+	});
+
+	const treeDiff = await saveTreeBlocks({
+		parentId: createdId,
+		configMap,
+		data,
+		adapter,
+		config,
+		locale
+	});
+
+	await saveRelations({
+		parentId: createdId,
+		configMap,
+		data,
+		adapter,
+		config,
+		locale,
+		blocksDiff,
+		treeDiff
+	});
+
+	let document = (await api.collection(config.slug).findById({ id: createdId, locale })) as T;
+
+	const locales = event.locals.rizom.config.getLocalesCodes();
+	if (locales.length) {
+		if ('file' in incomingData) {
+			delete incomingData.file;
+		}
+		if ('filename' in incomingData) {
+			delete incomingData.filename;
+		}
+		const otherLocales = locales.filter((code) => code !== locale);
+		for (const otherLocale of otherLocales) {
+			api.enforceLocale(otherLocale);
+			await api
+				.collection(config.slug)
+				.updateById({ id: createdId, data: incomingData, locale: otherLocale });
+		}
+	}
+
+	for (const hook of config.hooks?.afterCreate || []) {
+		await hook({
+			doc: document,
+			config,
+			operation: 'create',
+			api,
+			rizom: event.locals.rizom,
+			event
+		});
+	}
+
+	return { doc: document };
 };

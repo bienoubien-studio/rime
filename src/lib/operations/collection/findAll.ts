@@ -4,12 +4,11 @@ import type { CompiledCollection } from 'rizom/types/config.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { RegisterCollection } from 'rizom';
-import { operationRunner, stack } from '../pipe/index.server';
-import { authorize } from '../pipe/tasks/shared/authorize.server';
-import { processHooks } from '../pipe/tasks/shared/hooks.server';
-import type { CollectionHooks } from 'rizom/types';
-import { fetchRaws } from '../pipe/tasks/collection/fetch-raws.server';
-import { transformDocument } from '../pipe/tasks/shared/transform.server';
+import { RizomError } from 'rizom/errors';
+import type { Dic } from 'rizom/types/utility';
+import { buildConfigMap } from '../tasks/configMap/index.server';
+import { augmentDocument } from '../tasks/augmentDocument.server';
+import { postprocessFields } from '../tasks/postProcessFields.server';
 
 type Args = {
 	locale?: string | undefined;
@@ -25,24 +24,56 @@ type Args = {
 export const findAll = async <T extends RegisterCollection[CollectionSlug]>(
 	args: Args
 ): Promise<T[]> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
+	const { config, event, locale, adapter, sort, limit, api, depth } = args;
 
-	const operation = operationRunner({
-		...args,
-		operation: 'read',
-		internal: {}
+	const authorized = config.access.read(event.locals.user);
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
+	}
+
+	let documentsRaw = await adapter.collection.findAll({
+		slug: config.slug,
+		sort,
+		limit,
+		locale
 	});
 
-	const result = await operation
-		.use(
-			authorize,
-			fetchRaws,
-			stack(transformDocument),
-			stack(processHooks<CollectionHooks>('beforeRead'))
-		)
-		.run();
+	const processDocument = async (docRaw: Dic) => {
+		let documentRaw = await adapter.transform.doc({
+			doc: docRaw,
+			slug: config.slug,
+			locale,
+			event,
+			api,
+			depth
+		});
+		const configMap = buildConfigMap(documentRaw, config.fields);
+		let document = augmentDocument({ document: documentRaw, config, event, locale });
+		document = await postprocessFields({
+			document,
+			configMap,
+			user: event.locals.user,
+			api,
+			locale
+		});
 
-	return result.documents as T[];
+		for (const hook of config.hooks?.beforeRead || []) {
+			const result = await hook({
+				doc: document as T,
+				config,
+				operation: 'read',
+				api,
+				rizom: event.locals.rizom,
+				event
+			});
+			//@ts-ignore
+			document = result.doc as T;
+		}
+
+		return document;
+	};
+
+	const documents = await Promise.all(documentsRaw.map((doc) => processDocument(doc)));
+
+	return documents as T[];
 };

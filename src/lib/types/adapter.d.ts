@@ -45,7 +45,7 @@ export interface AdapterCollectionInterface {
 }
 
 export interface AdapterAreaInterface {
-	get(args: { slug: PrototypeSlug; locale?: string }): Promise<GenericDoc>;
+	get(args: { slug: PrototypeSlug; locale?: string }): Promise<Partial<GenericDoc>>;
 
 	update(args: {
 		slug: PrototypeSlug;
@@ -123,20 +123,15 @@ export interface AdapterRelationsInterface {
 	}): Promise<Relation[]>;
 }
 
-export type TransformContext<T = GenericDoc> = {
-	doc: Partial<T>;
-	slug: PrototypeSlug;
-	locale?: string;
-	event: RequestEvent;
-	api: LocalAPI;
-	depth?: number;
-};
-export type TransformManyContext<T = GenericDoc> = Omit<TransformContext<T>, 'doc'> & {
-	docs: T[];
-};
-
 export interface AdapterTransformInterface {
-	doc: <T extends GenericDoc = GenericDoc>(args: TransformContext<T>) => Promise<Partial<T>>;
+	doc: <T extends GenericDoc = GenericDoc>(args: {
+		doc: Partial<T>;
+		slug: PrototypeSlug;
+		locale?: string;
+		event: RequestEvent;
+		api: LocalAPI;
+		depth?: number;
+	}) => Promise<Partial<T> & { id: string }>;
 }
 
 export interface Adapter {

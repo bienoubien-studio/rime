@@ -2,25 +2,10 @@ import type { Field } from 'rizom/types/fields.js';
 import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, toFormFields } from 'rizom/utils/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { buildTreeFieldsMap } from './build-tree-map.server.js';
+import { buildTreeFieldsMap } from './buildTreeMap.server.js';
 import type { ConfigMap } from './types.js';
-import type { Task } from 'rizom/operations/pipe/index.server.js';
-import { RizomError } from 'rizom/errors/index.js';
 
-type DataType = 'original' | 'data' | 'document' | 'documents';
-
-export const provideConfigMap = (key: DataType) => {
-	const task: Task = async (ctx, next) => {
-		const data = key === 'documents' ? ctx.documents?.[0] || {} : ctx[key];
-		if (!data) throw new RizomError(RizomError.PIPE_ERROR, '@provideConfigMap missing ' + key);
-
-		ctx.internal.configMap = buildConfigMap(data, ctx.config.fields);
-		await next();
-	};
-	return task;
-};
-
-const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields: Field[]) => {
+export const buildConfigMap = (data: Partial<GenericDoc>, incomingFields: Field[]) => {
 	let map: ConfigMap = {};
 
 	const formFields = incomingFields.reduce(toFormFields, []);
@@ -49,7 +34,7 @@ const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields: Field
 		}
 	};
 
-	traverseData(incomingData, formFields, '');
+	traverseData(data, formFields, '');
 
 	return map;
 };

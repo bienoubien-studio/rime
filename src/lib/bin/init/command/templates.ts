@@ -162,9 +162,6 @@ export const defaultSchema = dedent`
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
     editedBy: text('edited_by'),
-
-    resetTokenExpireAt: integer("reset_token_expire_at", { mode: 'timestamp' }),
-    resetToken: text("reset_token"),
     loginAttempts: integer("login_attempts").notNull().default(0),
     locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
     lockedAt: integer("locked_at", { mode: 'timestamp'}),

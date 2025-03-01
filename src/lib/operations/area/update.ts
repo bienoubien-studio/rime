@@ -1,17 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter, CompiledArea, GenericDoc, AreaHooks, LocalAPI } from 'rizom/types';
-import { operationRunner } from '../pipe/index.server.js';
-import { authorize } from '../pipe/tasks/shared/authorize.server.js';
-import { fetchOriginal } from '../pipe/tasks/area/fetch-original.server.js';
-import { provideFieldResolver } from '../pipe/tasks/shared/field-resolver/index.server.js';
-import { validate } from '../pipe/tasks/shared/fields/validate.server.js';
-import { updateRoot } from '../pipe/tasks/area/updateRoot.server.js';
-import { saveBlocks } from '../pipe/tasks/shared/blocks/index.server.js';
-import { saveTreeBlocks } from '../pipe/tasks/shared/tree/index.server.js';
-import { saveRelations } from '../pipe/tasks/shared/relations/index.server.js';
-import { fetchAreaRaw } from '../pipe/tasks/area/fetch-raw.server.js';
-import { transformDocument } from '../pipe/tasks/shared/transform.server.js';
-import { processHooks } from '../pipe/tasks/shared/hooks.server.js';
+import { RizomError } from 'rizom/errors/index.js';
+import { validateFields } from '../tasks/validateFields.server.js';
+import { buildConfigMap } from '../tasks/configMap/index.server.js';
+import { saveBlocks } from '../tasks/blocks/index.server.js';
+import { saveTreeBlocks } from '../tasks/tree/index.server.js';
+import { saveRelations } from '../tasks/relations/index.server.js';
 
 type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	data: Partial<T>;
@@ -24,29 +18,90 @@ type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const operation = operationRunner({
-		...args,
-		internal: {},
-		operation: 'update'
+	const { config, event, adapter, locale, api } = args;
+	let data = args.data;
+
+	const authorized = config.access.update(event.locals.user);
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
+	}
+
+	const original = await api.area(config.slug).find({ locale });
+
+	const configMap = buildConfigMap(data, config.fields);
+	data = await validateFields({
+		data,
+		api,
+		locale,
+		config,
+		configMap,
+		original,
+		operation: 'update',
+		user: event.locals.user
 	});
 
-	const result = await operation
-		.use(
-			authorize,
-			fetchOriginal,
-			provideFieldResolver('original'),
-			provideFieldResolver('incoming'),
-			validate,
-			processHooks<AreaHooks>('beforeUpdate'),
-			updateRoot,
-			saveBlocks,
-			saveTreeBlocks,
-			saveRelations,
-			fetchAreaRaw,
-			transformDocument,
-			processHooks<AreaHooks>('afterUpdate')
-		)
-		.run();
+	for (const hook of config.hooks?.beforeUpdate || []) {
+		const result = await hook({
+			data,
+			config,
+			originalDoc: original,
+			operation: 'update',
+			api,
+			rizom: event.locals.rizom,
+			event
+		});
+		data = result.data as Partial<T>;
+	}
 
-	return result.document as T;
+	await adapter.area.update({
+		slug: config.slug,
+		data,
+		locale
+	});
+
+	const blocksDiff = await saveBlocks({
+		parentId: original.id,
+		configMap,
+		data,
+		original,
+		adapter,
+		config,
+		locale
+	});
+
+	const treeDiff = await saveTreeBlocks({
+		parentId: original.id,
+		configMap,
+		data,
+		original,
+		adapter,
+		config,
+		locale
+	});
+
+	await saveRelations({
+		parentId: original.id,
+		configMap,
+		data,
+		adapter,
+		config,
+		locale,
+		blocksDiff,
+		treeDiff
+	});
+
+	const document = await api.area(config.slug).find({ locale });
+
+	for (const hook of config.hooks?.afterUpdate || []) {
+		await hook({
+			doc: document,
+			config,
+			operation: 'update',
+			api,
+			rizom: event.locals.rizom,
+			event
+		});
+	}
+
+	return document as T;
 };
