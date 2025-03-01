@@ -20,10 +20,10 @@ export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
-	/** List of CollectionConfig  */
-	collections: CollectionConfig[];
-	/** List of AreaConfig  */
-	areas: AreaConfig[];
+	/** List of Collection  */
+	collections: Collection[];
+	/** List of Area  */
+	areas: Area[];
 	/** Define locales that will be enabled
 	 * @example
 	 * ```typescript
@@ -76,7 +76,7 @@ export type PanelUsersConfig = {
 	roles?: Option[];
 	group?: string;
 	access?: Access;
-	label?: CollectionConfigLabel;
+	label?: CollectionLabel;
 	fields?: FieldBuilder<Field>[];
 };
 
@@ -98,7 +98,7 @@ export type LocaleConfig = {
 	bcp47: string;
 };
 
-type CollectionConfigLabel = {
+type CollectionLabel = {
 	singular: string;
 	plural: string;
 	gender: 'f' | 'm';
@@ -115,9 +115,9 @@ type BaseDocConfig<S extends string = string> = {
 
 export type DocumentStatus = { value: string; color: string };
 
-export type BaseCollectionConfig<S> = {
+export type BaseCollection<S> = {
 	slug: S;
-	label?: CollectionConfigLabel;
+	label?: CollectionLabel;
 	auth?: true;
 	// upload?: boolean;
 	hooks?: CollectionHooks<RegisterCollection[S]>;
@@ -125,7 +125,7 @@ export type BaseCollectionConfig<S> = {
 	status?: boolean | DocumentStatus[];
 } & BaseDocConfig;
 
-export type CollectionConfig<S> = BaseCollectionConfig<S> &
+export type Collection<S> = BaseCollection<S> &
 	(
 		| { upload?: false | undefined }
 		| {
@@ -136,22 +136,22 @@ export type CollectionConfig<S> = BaseCollectionConfig<S> &
 		  }
 	);
 
-export type AreaConfig<S> = BaseDocConfig & {
+export type Area<S> = BaseDocConfig & {
 	url?: (doc: RegisterArea[S]) => string;
 	hooks?: AreaHooks;
 	label?: string;
 };
 
-export type DocConfig = CollectionConfig | AreaConfig;
+export type DocConfig = Collection | Area;
 
 // Built versions of configs
-export type BuiltDocConfig = BuiltCollectionConfig | BuiltAreaConfig;
+export type BuiltDocConfig = BuiltCollection | BuiltArea;
 
 export type BuiltConfig = {
 	database: string;
 	siteUrl?: string;
-	collections: BuiltCollectionConfig[];
-	areas: BuiltAreaConfig[];
+	collections: BuiltCollection[];
+	areas: BuiltArea[];
 	localization?: LocalizationConfig;
 	icons: Record<string, any>;
 	trustedOrigins: string[];
@@ -183,16 +183,16 @@ export type CustomPanelRoute = {
 	component: ComponentType;
 };
 
-export type BuiltCollectionConfig = Omit<CollectionConfig<CollectionSlug>, 'status'> & {
+export type BuiltCollection = Omit<Collection<CollectionSlug>, 'status'> & {
 	type: 'collection';
-	label: CollectionConfigLabel;
+	label: CollectionLabel;
 	slug: GetRegisterType<'CollectionSlug'>;
 	asTitle: string;
 	status?: DocumentStatus[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltAreaConfig = AreaConfig<AreaSlug> & {
+export type BuiltArea = Area<AreaSlug> & {
 	type: 'area';
 	label: string;
 	slug: GetRegisterType<'AreaSlug'>;
@@ -210,9 +210,9 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
-type CompiledCollectionConfig = WithoutBuilders<BuiltCollectionConfig>;
-type CompiledAreaConfig = WithoutBuilders<BuiltAreaConfig>;
+type CompiledCollection = WithoutBuilders<BuiltCollection>;
+type CompiledArea = WithoutBuilders<BuiltArea>;
 type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
-	collections: Array<CompiledCollectionConfig>;
-	areas: Array<CompiledAreaConfig>;
+	collections: Array<CompiledCollection>;
+	areas: Array<CompiledArea>;
 };

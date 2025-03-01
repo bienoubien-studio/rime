@@ -14,8 +14,7 @@ import type {
 	TransformManyContext
 } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
-import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
+import { extractFieldName } from 'rizom/fields/tree/utils.js';
 
 /////////////////////////////////////////////
 // Types
@@ -231,15 +230,6 @@ export const databaseTransformInterface = ({
 		}
 
 		output = omit(keysToDelete, deepmerge(blankDocument, output));
-
-		output = await beforeRead({
-			doc: output,
-			config,
-			user,
-			event,
-			isPanel,
-			locale
-		});
 
 		return output as T;
 	};

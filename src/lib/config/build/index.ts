@@ -1,9 +1,9 @@
 import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
 import { access } from 'rizom/utils/access/index.js';
 import type {
-	BuiltCollectionConfig,
+	BuiltCollection,
 	BuiltConfig,
-	BuiltAreaConfig,
+	BuiltArea,
 	CompiledConfig,
 	Config
 } from 'rizom/types/config.js';
@@ -34,8 +34,8 @@ const buildConfig = async <C extends boolean = true>(
 	const generateFiles = options?.generateFiles || false;
 	const compiled = options?.compiled || true;
 
-	let collections: BuiltCollectionConfig[] = [];
-	let areas: BuiltAreaConfig[] = [];
+	let collections: BuiltCollection[] = [];
+	let areas: BuiltArea[] = [];
 	const icons: Dic = {};
 
 	/////////////////////////////////////////////

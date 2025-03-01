@@ -1,20 +1,23 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/types/api.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { CollectionSlug } from 'rizom/types/doc.js';
-import type { OperationQuery } from 'rizom/types/api.js';
-import type { Adapter } from 'rizom/types/adapter.js';
+import type {
+	CollectionHooks,
+	Adapter,
+	CollectionSlug,
+	CompiledCollection,
+	LocalAPI,
+	OperationQuery
+} from 'rizom/types';
 import type { RegisterCollection } from 'rizom';
-import { authorize } from '../pipe/middleware/shared/authorize.server';
-import { createPipe } from '../pipe/index.server';
-import { queryCollectionDocumentsRaw } from '../pipe/middleware/collection/query-documents-raw.server.js';
-import { transformAllDocuments } from '../pipe/middleware/shared/transform-all.server';
-import { hooksBeforeRead } from '../pipe/middleware/collection/hooks-before-read.server';
+import { authorize } from '../pipe/tasks/shared/authorize.server';
+import { operationRunner, stack } from '../pipe/index.server';
+import { fetchRaws } from '../pipe/tasks/collection/fetch-raws.server';
+import { processHooks } from '../pipe/tasks/shared/hooks.server';
+import { transformDocument } from '../pipe/tasks/shared/transform.server';
 
 type FindArgs = {
 	query: OperationQuery;
 	locale?: string | undefined;
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
@@ -27,18 +30,18 @@ export const find = async <T extends RegisterCollection[CollectionSlug]>(
 	args: FindArgs
 ): Promise<T[]> => {
 	//
-	const findOperation = createPipe({
+	const operation = operationRunner({
 		...args,
 		operation: 'read',
 		internal: {}
 	});
 
-	const result = await findOperation
+	const result = await operation
 		.use(
 			authorize,
-			queryCollectionDocumentsRaw,
-			transformAllDocuments,
-			hooksBeforeRead({ multiple: true })
+			fetchRaws,
+			stack(transformDocument),
+			stack(processHooks<CollectionHooks>('beforeRead'))
 		)
 		.run();
 

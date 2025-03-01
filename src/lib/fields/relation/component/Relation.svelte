@@ -20,7 +20,7 @@
 	const { path, config, form }: Props = $props();
 
 	// Context
-	const { getCollectionConfig } = getConfigContext();
+	const { getCollection } = getConfigContext();
 	const locale = getLocaleContext();
 	let initialItems: RelationFieldItem[] = $state([]);
 
@@ -31,7 +31,7 @@
 
 	let stamp = $state(new Date().getTime().toString());
 
-	const relationConfig = getCollectionConfig(config.relationTo);
+	const relationConfig = getCollection(config.relationTo);
 	let isRelationToUpload = isUploadConfig(relationConfig);
 	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);

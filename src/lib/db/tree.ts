@@ -5,7 +5,7 @@ import { toPascalCase } from '../utils/string.js';
 import type { TreeBlock, PrototypeSlug } from 'rizom/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
 import type { WithRequired } from 'rizom/types/utility.js';
-import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
+import { extractFieldName } from 'rizom/fields/tree/utils.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//

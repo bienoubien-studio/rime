@@ -1,5 +1,5 @@
 import { redirect, type RequestEvent } from '@sveltejs/kit';
-import extractData from 'rizom/operations/preprocess/extract/data.server';
+import { extractData } from 'rizom/operations/data.server.js';
 import { handleError } from 'rizom/errors/handler.server';
 
 export const initActions = {

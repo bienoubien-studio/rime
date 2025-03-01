@@ -1,7 +1,7 @@
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { Rizom } from 'rizom/rizom.server';
-import type { BuiltCollectionConfig, GenericDoc } from '.';
-import type { CompiledCollectionConfig } from './config';
+import type { BuiltCollection, GenericDoc } from '.';
+import type { CompiledCollection } from './config';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
@@ -14,7 +14,7 @@ type BaseHookArgs = {
 };
 
 type BaseCollectionHookArgs = BaseHookArgs & {
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	operation: 'update' | 'create' | 'read' | 'delete';
 };
 
@@ -128,7 +128,7 @@ export type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = Hook
 	CollectionHookDeleteArgs<T>
 >;
 
-export type CollectionHooks<T extends GenericDoc> = {
+export type CollectionHooks<T extends GenericDoc = GenericDoc> = {
 	beforeCreate?: (CollectionHookBeforeCreate<T> | CollectionHookBeforeUpsert<T>)[];
 	afterCreate?: (CollectionHookAfterCreate<T> | CollectionHookAfterUpsert<T>)[];
 	beforeUpdate?: (CollectionHookBeforeUpdate<T> | CollectionHookBeforeUpsert<T>)[];
@@ -143,7 +143,7 @@ export type CollectionHooks<T extends GenericDoc> = {
 //////////////////////////////////////////////
 
 type BaseAreaHookArgs = BaseHookArgs & {
-	config: BuiltAreaConfig;
+	config: BuiltArea;
 	operation: 'update' | 'read';
 };
 

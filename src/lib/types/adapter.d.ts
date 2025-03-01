@@ -124,7 +124,7 @@ export interface AdapterRelationsInterface {
 }
 
 export type TransformContext<T = GenericDoc> = {
-	doc: T;
+	doc: Partial<T>;
 	slug: PrototypeSlug;
 	locale?: string;
 	event: RequestEvent;
@@ -136,8 +136,7 @@ export type TransformManyContext<T = GenericDoc> = Omit<TransformContext<T>, 'do
 };
 
 export interface AdapterTransformInterface {
-	doc: <T extends GenericDoc = GenericDoc>(args: TransformContext<T>) => Promise<T>;
-	docs: <T extends GenericDoc = GenericDoc>(args: TransformManyContext<T>) => Promise<T[]>;
+	doc: <T extends GenericDoc = GenericDoc>(args: TransformContext<T>) => Promise<Partial<T>>;
 }
 
 export interface Adapter {

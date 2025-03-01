@@ -1,30 +1,26 @@
-import type {
-	CompiledCollectionConfig,
-	BrowserConfig,
-	CompiledAreaConfig
-} from 'rizom/types/config';
+import type { CompiledCollection, BrowserConfig, CompiledArea } from 'rizom/types/config';
 import type { DocPrototype, PrototypeSlug } from 'rizom/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BrowserConfig) {
-	function getAreaConfig(slug: string): CompiledAreaConfig {
+	function getArea(slug: string): CompiledArea {
 		return config.areas.filter((c) => c.slug === slug)[0];
 	}
 
-	function getCollectionConfig(slug: string): CompiledCollectionConfig {
+	function getCollection(slug: string): CompiledCollection {
 		return config.collections.filter((c) => c.slug === slug)[0];
 	}
 
 	function getDocumentConfig({ prototype, slug }: GetDocumentConfigArgs) {
-		return prototype === 'area' ? getAreaConfig(slug) : getCollectionConfig(slug);
+		return prototype === 'area' ? getArea(slug) : getCollection(slug);
 	}
 
 	return {
 		get raw() {
 			return config;
 		},
-		getAreaConfig,
-		getCollectionConfig,
+		getArea,
+		getCollection,
 		getDocumentConfig
 	};
 }

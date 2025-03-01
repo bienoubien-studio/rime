@@ -1,16 +1,22 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterCollection } from 'rizom';
-import type { CollectionSlug, LocalAPI, Adapter, CompiledCollectionConfig } from 'rizom/types';
+import type {
+	CollectionSlug,
+	LocalAPI,
+	Adapter,
+	CompiledCollection,
+	CollectionHooks
+} from 'rizom/types';
 import { omitId } from 'rizom/utils/object';
-import { createPipe } from '../pipe/index.server';
-import { authorize } from '../pipe/middleware/shared/authorize.server';
-import { findDocumentRaw } from '../pipe/middleware/collection/find-document-raw.server';
-import { deleteDocument } from '../pipe/middleware/collection/delete-document.server';
-import { hooksDelete } from '../pipe/middleware/collection/hooks-delete.server';
+import { operationRunner } from '../pipe/index.server';
+import { authorize } from '../pipe/tasks/shared/authorize.server';
+import { deleteDocument } from '../pipe/tasks/collection/delete-document.server';
+import { processHooks } from '../pipe/tasks/shared/hooks.server';
+import { fetchRaw } from '../pipe/tasks/collection/fetch-raw.server';
 
 type DeleteArgs = {
 	id: string;
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
@@ -20,15 +26,22 @@ export const deleteById = async <T extends RegisterCollection[CollectionSlug]>(
 	args: DeleteArgs
 ): Promise<string> => {
 	//
-	const deleteByIdOperation = createPipe({
+	const operation = operationRunner({
 		...omitId(args),
 		data: { id: args.id },
 		operation: 'delete',
 		internal: {}
 	});
 
-	const result = await deleteByIdOperation
-		.use(authorize, findDocumentRaw, hooksDelete('before'), deleteDocument, hooksDelete('after'))
+	await operation
+		.use(
+			//
+			authorize,
+			fetchRaw,
+			processHooks<CollectionHooks>('beforeDelete'),
+			deleteDocument,
+			processHooks<CollectionHooks>('afterDelete')
+		)
 		.run();
 
 	return args.id;

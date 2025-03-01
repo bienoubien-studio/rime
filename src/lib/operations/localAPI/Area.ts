@@ -2,14 +2,14 @@ import { createBlankDocument } from '../../utils/doc.js';
 import { find } from '../area/find.js';
 import { update } from '../area/update.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config.js';
+import type { BuiltArea, CompiledArea } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { LocalAPIAreaInterface, LocalAPI } from 'rizom/types/api.js';
 import type { FormErrors } from 'rizom/types/panel.js';
 
 type Args = {
-	config: CompiledAreaConfig;
+	config: CompiledArea;
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
@@ -21,7 +21,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> implements LocalAPIArea
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
-	config: CompiledAreaConfig;
+	config: CompiledArea;
 
 	constructor({ config, adapter, defaultLocale, event, api }: Args) {
 		this.config = config;

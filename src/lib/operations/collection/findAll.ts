@@ -1,20 +1,19 @@
-import rizom from '$lib/rizom.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
+import type { CompiledCollection } from 'rizom/types/config.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
-import { createPipe } from '../pipe/index.server';
-import { authorize } from '../pipe/middleware/shared/authorize.server';
-import { queryCollectionDocumentsRaw } from '../pipe/middleware/collection/query-documents-raw.server';
-import { transformAllDocuments } from '../pipe/middleware/shared/transform-all.server';
-import { hooksBeforeRead } from '../pipe/middleware/collection/hooks-before-read.server';
+import { operationRunner, stack } from '../pipe/index.server';
+import { authorize } from '../pipe/tasks/shared/authorize.server';
+import { processHooks } from '../pipe/tasks/shared/hooks.server';
+import type { CollectionHooks } from 'rizom/types';
+import { fetchRaws } from '../pipe/tasks/collection/fetch-raws.server';
+import { transformDocument } from '../pipe/tasks/shared/transform.server';
 
 type Args = {
 	locale?: string | undefined;
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
@@ -30,18 +29,18 @@ export const findAll = async <T extends RegisterCollection[CollectionSlug]>(
 	// Access
 	//////////////////////////////////////////////
 
-	const findAllOperation = createPipe({
+	const operation = operationRunner({
 		...args,
 		operation: 'read',
 		internal: {}
 	});
 
-	const result = await findAllOperation
+	const result = await operation
 		.use(
 			authorize,
-			queryCollectionDocumentsRaw,
-			transformAllDocuments,
-			hooksBeforeRead({ multiple: true })
+			fetchRaws,
+			stack(transformDocument),
+			stack(processHooks<CollectionHooks>('beforeRead'))
 		)
 		.run();
 

@@ -1,4 +1,4 @@
-import type { CompiledCollectionConfig } from 'rizom/types/config';
+import type { CompiledCollection } from 'rizom/types/config';
 import type { GenericDoc } from 'rizom/types/doc';
 
 export type RelationFieldItem = {
@@ -15,7 +15,7 @@ export type RelationFieldItem = {
 
 export type RelationComponentProps = {
 	path: string;
-	relationConfig: CompiledCollectionConfig;
+	relationConfig: CompiledCollection;
 	stamp: string;
 	hasError: boolean;
 	isFull: boolean;

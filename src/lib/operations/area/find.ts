@@ -1,17 +1,14 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/types/api';
-import type { Adapter } from 'rizom/types/adapter';
-import type { GenericDoc } from 'rizom/types/doc';
-import type { CompiledAreaConfig } from 'rizom/types/config';
-import { createPipe } from '../pipe/index.server';
-import { authorize } from '../pipe/middleware/shared/authorize.server';
-import { fetchAreaRaw } from '../pipe/middleware/area/fetch-raw.server';
-import { transformDocument } from '../pipe/middleware/shared/transform.server';
-import { hooksBeforeRead } from '../pipe/middleware/area/hooks.server';
+import type { AreaHooks, LocalAPI, CompiledArea, GenericDoc, Adapter } from 'rizom/types';
+import { operationRunner } from '../pipe/index.server';
+import { authorize } from '../pipe/tasks/shared/authorize.server';
+import { fetchAreaRaw } from '../pipe/tasks/area/fetch-raw.server';
+import { transformDocument } from '../pipe/tasks/shared/transform.server';
+import { processHooks } from '../pipe/tasks/shared/hooks.server';
 
 type FindArgs = {
 	locale?: string | undefined;
-	config: CompiledAreaConfig;
+	config: CompiledArea;
 	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
@@ -20,14 +17,20 @@ type FindArgs = {
 
 export const find = async <T extends GenericDoc = GenericDoc>(args: FindArgs): Promise<T> => {
 	//
-	const findProcess = createPipe({
+	const operation = operationRunner({
 		...args,
 		internal: {},
 		operation: 'read'
 	});
 
-	const result = await findProcess
-		.use(authorize, fetchAreaRaw, transformDocument, hooksBeforeRead)
+	const result = await operation
+		.use(
+			//
+			authorize,
+			fetchAreaRaw,
+			transformDocument,
+			processHooks<AreaHooks>('beforeRead')
+		)
 		.run();
 
 	return result.document as T;

@@ -11,7 +11,7 @@ import {
 	link,
 	email
 } from 'rizom/fields/index.js';
-import type { CollectionConfig, Config, AreaConfig } from 'rizom';
+import type { Collection, Config, Area } from 'rizom';
 import { access } from '$lib/utils/access/index.js';
 import { Contact, Images, Menu, Newspaper, Settings2 } from 'lucide-svelte';
 import type { PagesDoc } from '../app.generated';

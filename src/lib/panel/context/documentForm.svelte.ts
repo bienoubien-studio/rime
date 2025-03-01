@@ -15,7 +15,7 @@ import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
 import type { GenericBlock, GenericDoc, AnyFormField } from 'rizom/types';
 import type { Dic } from 'rizom/types/utility';
-import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
+import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
 import { treeToString, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
@@ -590,7 +590,7 @@ type MoveBlock = (from: number, to: number) => void;
 
 type Args = {
 	initial: GenericDoc;
-	config: CompiledAreaConfig | CompiledCollectionConfig;
+	config: CompiledArea | CompiledCollection;
 	readOnly: boolean;
 	onNestedDocumentCreated?: any;
 	onDataChange?: any;

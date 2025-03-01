@@ -1,6 +1,6 @@
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
 import { flattenWithGuard, isBuffer, isObjectLiteral } from './object.js';
-import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
+import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
 import { isUploadConfig } from 'rizom/config/utils.js';
@@ -132,7 +132,7 @@ export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
 
 // @TODO make each field responsible of its empty value somehow
 export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
-	config: CompiledCollectionConfig | CompiledAreaConfig
+	config: CompiledCollection | CompiledArea
 ): T => {
 	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
 		try {

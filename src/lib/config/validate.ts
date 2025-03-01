@@ -6,11 +6,7 @@ import {
 	toFormFields
 } from '../utils/field';
 import { isAuthConfig, isUploadConfig } from './utils';
-import type {
-	CompiledCollectionConfig,
-	CompiledAreaConfig,
-	CompiledConfig
-} from 'rizom/types/config';
+import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config';
 import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
@@ -57,11 +53,11 @@ const validateFields = (config: CompiledConfig) => {
 	return errors;
 };
 
-type UnknownConfig = CompiledCollectionConfig | CompiledAreaConfig;
+type UnknownConfig = CompiledCollection | CompiledArea;
 
 const validateDocumentFields = (config: UnknownConfig) => {
 	const errors: string[] = [];
-	const isCollection = (config: UnknownConfig): config is CompiledCollectionConfig =>
+	const isCollection = (config: UnknownConfig): config is CompiledCollection =>
 		config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
 	const registeredBlocks: Record<string, BlocksFieldRaw['blocks'][number]> = {};

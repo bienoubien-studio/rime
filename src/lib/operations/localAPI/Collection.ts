@@ -10,7 +10,7 @@ import { findById } from '../collection/findById.js';
 import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
+import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
 import type { Adapter } from 'rizom/types/adapter';
@@ -19,7 +19,7 @@ import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
 
 type Args = {
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	adapter: Adapter;
 	defaultLocale: string | undefined;
 	api: LocalAPI;
@@ -33,7 +33,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]>
 	#adapter: Adapter;
 	#api: LocalAPI;
 	defaultLocale: string | undefined;
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 
 	constructor({ config, adapter, defaultLocale, event, api }: Args) {
 		this.config = config;

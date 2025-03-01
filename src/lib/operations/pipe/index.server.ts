@@ -1,13 +1,14 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter, GenericBlock, GenericDoc, LocalAPI, OperationQuery } from 'rizom/types';
-import type { CompiledAreaConfig, CompiledCollectionConfig } from 'rizom/types/config';
-import type { ConfigMap } from './middleware/shared/field-resolver/map/types';
-import type { FieldResolverServer } from './middleware/shared/field-resolver/index.server';
+import type { CompiledArea, CompiledCollection } from 'rizom/types/config';
+import type { FieldResolverServer } from './tasks/shared/field-resolver/index.server';
 import type { WithRequired } from 'rizom/types/utility';
 import type { TreeBlock } from 'rizom/types/doc';
-import type { RelationDiff } from './middleware/shared/relations/diff.server';
+import type { RelationDiff } from './tasks/shared/relations/diff.server';
+import { RizomError } from 'rizom/errors';
+import type { ConfigMap } from './tasks/shared/config-map/types';
 
-type BothConfigType = CompiledCollectionConfig | CompiledAreaConfig;
+type BothConfigType = CompiledCollection | CompiledArea;
 type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };
 export type Context<T extends BothConfigType = BothConfigType> = {
 	config: T;
@@ -16,7 +17,7 @@ export type Context<T extends BothConfigType = BothConfigType> = {
 	api: LocalAPI;
 	adapter: Adapter;
 	operation: 'create' | 'read' | 'update' | 'delete';
-	data?: Record<string, any>;
+	data?: Partial<GenericDoc>;
 	document?: GenericDoc;
 	original?: GenericDoc;
 	documents?: GenericDoc[];
@@ -35,26 +36,28 @@ export type Context<T extends BothConfigType = BothConfigType> = {
 };
 
 export type NextFunction = () => Promise<void>;
-export type Middleware<T extends BothConfigType = BothConfigType> = (
+export type Task<T extends BothConfigType = BothConfigType> = (
 	ctx: Context<T>,
 	next: NextFunction
 ) => Promise<void>;
 
-export function createPipe<T extends BothConfigType = BothConfigType>(initialContext: Context<T>) {
-	const middlewares: Middleware<T>[] = [];
+export function operationRunner<T extends BothConfigType = BothConfigType>(
+	initialContext: Context<T>
+) {
+	const tasks: Task<T>[] = [];
 
 	return {
-		use(...fns: Middleware<T>[]) {
-			middlewares.push(...fns);
+		use(...fns: Task<T>[]) {
+			tasks.push(...fns);
 			return this;
 		},
 		async run() {
 			let index = 0;
 			const next = async () => {
-				const middleware = middlewares[index];
+				const task = tasks[index];
 				index++;
-				if (middleware) {
-					await middleware(initialContext, next);
+				if (task) {
+					await task(initialContext, next);
 				}
 			};
 			await next();
@@ -62,3 +65,21 @@ export function createPipe<T extends BothConfigType = BothConfigType>(initialCon
 		}
 	};
 }
+
+export const stack =
+	(singleTask: Task): Task =>
+	async (ctx, next) => {
+		if (!ctx.documents) {
+			throw new RizomError(RizomError.PIPE_ERROR, 'Stack task requires documents array in context');
+		}
+
+		ctx.documents = await Promise.all(
+			ctx.documents.map(async (doc) => {
+				const localCtx = { ...ctx, documents: undefined };
+				await singleTask(localCtx, async () => {});
+				return localCtx.document!;
+			})
+		);
+
+		await next();
+	};

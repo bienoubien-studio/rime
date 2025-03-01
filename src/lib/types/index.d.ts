@@ -25,19 +25,19 @@ export type { Access, User } from './auth';
 
 // Config types
 export type {
-	BaseCollectionConfig,
+	BaseCollection,
 	BrowserConfig,
-	BuiltCollectionConfig,
-	CompiledCollectionConfig,
+	BuiltCollection,
+	CompiledCollection,
 	BuiltConfig,
 	BuiltDocConfig,
-	BuiltAreaConfig,
-	CompiledAreaConfig,
-	CollectionConfig,
+	BuiltArea,
+	CompiledArea,
+	Collection,
 	Config,
 	CustomPanelRoute,
 	DocumentPrototype,
-	AreaConfig,
+	Area,
 	ImageSizesConfig,
 	LocaleConfig,
 	LocalizationConfig,
@@ -70,18 +70,18 @@ export type {
 
 // Hooks types
 export type {
-	CollectionHook,
-	CollectionHookAfterDelete,
-	CollectionHookArgs,
-	CollectionHookBeforeDelete,
-	CollectionHookDeleteArgs,
-	CollectionHookBeforeRead,
-	CollectionHookBeforeReadArgs,
 	CollectionHooks,
+	CollectionHook,
+	CollectionHookBeforeUpdate,
+	CollectionHookAfterUpdate,
+	CollectionHookBeforeCreate,
+	CollectionHookAfterCreate,
+	CollectionHookBeforeDelete,
+	CollectionHookAfterDelete,
+	CollectionHookBeforeRead,
 	AreaHookBeforeRead,
-	AreaHookBeforeReadArgs,
 	AreaHookBeforeUpdate,
-	AreaHookBeforeUpdateArgs,
+	AreaHookAfterUpdate,
 	AreaHooks
 } from './hooks.js';
 
