@@ -10,6 +10,7 @@ import type { Field } from 'rizom/types/fields.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
 import cloneDeep from 'clone-deep';
 import { snapshot } from 'rizom/utils/state.js';
+import { isFormField } from 'rizom/utils/field.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
@@ -27,6 +28,14 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	}
 	get cell() {
 		return Cell;
+	}
+
+	toType() {
+		const fieldsTypes = this.field.fields
+			.filter((field) => field instanceof FormFieldBuilder)
+			.map((field) => field.toType())
+			.join(',\n');
+		return `${this.field.name}: Array<{${fieldsTypes}}>`;
 	}
 
 	fields(...fields: FieldBuilder<Field>[]) {
