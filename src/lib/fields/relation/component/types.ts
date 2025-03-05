@@ -29,4 +29,5 @@ export type RelationComponentProps = {
 	formNestedLevel: number;
 	onOrderChange: (oldIndex: number, newIndex: number) => void;
 	onRelationCreated: any;
+	onRelationCreation: any;
 };

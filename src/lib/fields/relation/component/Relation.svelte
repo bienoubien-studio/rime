@@ -144,8 +144,14 @@
 		return relations;
 	};
 
+	const onRelationCreation = () => {
+		form.readOnly = true;
+	};
+
 	const onRelationCreated = (doc: GenericDoc) => {
+		form.readOnly = false;
 		initialItems.push(documentToRelationFieldItem(doc));
+		availableItems.push(documentToRelationFieldItem(doc));
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
@@ -181,6 +187,7 @@
 		readOnly={form.readOnly}
 		{nothingToSelect}
 		{onRelationCreated}
+		{onRelationCreation}
 		{isFull}
 		{stamp}
 		{addValue}

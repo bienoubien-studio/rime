@@ -26,7 +26,8 @@
 		relationConfig,
 		onOrderChange,
 		formNestedLevel,
-		onRelationCreated
+		onRelationCreated,
+		onRelationCreation
 	}: RelationComponentProps = $props();
 
 	const user = getUserContext();

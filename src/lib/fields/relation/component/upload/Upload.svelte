@@ -134,6 +134,9 @@
 		<Button onclick={() => (open = true)} variant="outline">
 			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
+	{/if}
+
+	{#if (selectedItems.length === 0 && availableItems.length === 0) || !isFull}
 		{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
 			<Button onclick={() => (create = true)} variant="secondary">
 				Create new {relationConfig.label.singular || relationConfig.slug}
