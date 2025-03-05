@@ -146,6 +146,8 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 export default createAdapterRelationsInterface;
 
+export type AdapterRelationsInterface = ReturnType<typeof createAdapterRelationsInterface>;
+
 export type Relation = {
 	id?: string;
 	parentId: string;

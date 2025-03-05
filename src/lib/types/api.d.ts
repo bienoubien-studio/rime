@@ -58,7 +58,7 @@ export interface LocalAPICollectionInterface<Doc extends GenericDoc = GenericDoc
 		limit?: number;
 	}): Promise<Doc[]>;
 
-	findById(args: { id?: string; locale?: string; depth?: number }): Promise<Doc | null>;
+	findById(args: { id?: string; locale?: string; depth?: number }): Promise<Doc>;
 
 	updateById(args: { id?: string; data: Partial<Doc>; locale?: string }): Promise<Doc>;
 

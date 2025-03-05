@@ -7,12 +7,11 @@ import type {
 	LocalAPI,
 	User
 } from 'rizom/types';
-import type { Dic } from 'rizom/types/utility';
-import type { ConfigMap } from './config-map/types';
+import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/utils/doc';
 
-export const validateFields = async <T extends Dic>(args: {
-	data: T;
+export const validateFields = async <T extends GenericDoc>(args: {
+	data: Partial<T>;
 	api: LocalAPI;
 	locale?: string;
 	config: CompiledArea | CompiledCollection;
@@ -148,9 +147,3 @@ export const validateFields = async <T extends Dic>(args: {
 
 	return output;
 };
-
-function isWriteOperation(
-	operation: 'create' | 'read' | 'update' | 'delete'
-): operation is 'create' | 'update' {
-	return ['create', 'update'].includes(operation);
-}

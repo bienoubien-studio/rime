@@ -1,5 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter, CompiledArea, GenericDoc, AreaHooks, LocalAPI } from 'rizom/types';
+import type { Adapter, CompiledArea, GenericDoc, LocalAPI } from 'rizom/types';
 import { RizomError } from 'rizom/errors/index.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
@@ -7,7 +7,7 @@ import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 
-type UpdateArgs<T extends GenericDoc = GenericDoc> = {
+type UpdateArgs<T> = {
 	data: Partial<T>;
 	locale?: string | undefined;
 	config: CompiledArea;
@@ -16,7 +16,7 @@ type UpdateArgs<T extends GenericDoc = GenericDoc> = {
 	api: LocalAPI;
 };
 
-export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
+export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	//
 	const { config, event, adapter, locale, api } = args;
 	let data = args.data;
@@ -26,7 +26,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = await api.area(config.slug).find({ locale });
+	const original = (await api.area(config.slug).find({ locale })) as T;
 
 	const configMap = buildConfigMap(data, config.fields);
 	data = await validateFields({

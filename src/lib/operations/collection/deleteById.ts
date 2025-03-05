@@ -1,7 +1,13 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { RegisterCollection } from 'rizom';
-import type { CollectionSlug, LocalAPI, Adapter, CompiledCollection } from 'rizom/types';
+import type {
+	LocalAPI,
+	Adapter,
+	CompiledCollection,
+	GenericDoc,
+	CollectionSlug
+} from 'rizom/types';
 import { RizomError } from 'rizom/errors';
+import type { RegisterCollection } from 'rizom';
 
 type DeleteArgs = {
 	id: string;
@@ -11,9 +17,7 @@ type DeleteArgs = {
 	api: LocalAPI;
 };
 
-export const deleteById = async <T extends RegisterCollection[CollectionSlug]>(
-	args: DeleteArgs
-): Promise<string> => {
+export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promise<string> => {
 	const { event, id, config, api, adapter } = args;
 
 	const authorized = config.access.delete(event.locals.user, { id });
@@ -28,7 +32,7 @@ export const deleteById = async <T extends RegisterCollection[CollectionSlug]>(
 
 	for (const hook of config.hooks?.beforeDelete || []) {
 		await hook({
-			doc: document,
+			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'delete',
 			api,
@@ -41,7 +45,7 @@ export const deleteById = async <T extends RegisterCollection[CollectionSlug]>(
 
 	for (const hook of config.hooks?.afterDelete || []) {
 		await hook({
-			doc: document,
+			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'delete',
 			api,

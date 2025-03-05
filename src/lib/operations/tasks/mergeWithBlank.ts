@@ -16,8 +16,6 @@ export const mergeWithBlankDocument = <T extends GenericDoc>({
 		delete data.file;
 	}
 
-	console.log(data);
-	/** Merge data with emptydoc so all required fields will be present in validate */
 	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
 
 	// Add file after merge

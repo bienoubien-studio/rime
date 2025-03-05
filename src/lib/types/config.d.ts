@@ -1,7 +1,7 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from './auth.js';
 import type { AnyField, Field, FieldsType, Option } from './fields.js';
-import type { CollectionSlug, GenericDoc } from './doc.js';
+import type { AreaSlug, CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
@@ -138,7 +138,7 @@ export type Collection<S> = BaseCollection<S> &
 
 export type Area<S> = BaseDocConfig & {
 	url?: (doc: RegisterArea[S]) => string;
-	hooks?: AreaHooks;
+	hooks?: AreaHooks<RegisterArea[S]>;
 	label?: string;
 };
 
@@ -186,7 +186,7 @@ export type CustomPanelRoute = {
 export type BuiltCollection = Omit<Collection<CollectionSlug>, 'status'> & {
 	type: 'collection';
 	label: CollectionLabel;
-	slug: GetRegisterType<'CollectionSlug'>;
+	slug: CollectionSlug;
 	asTitle: string;
 	status?: DocumentStatus[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
@@ -195,7 +195,7 @@ export type BuiltCollection = Omit<Collection<CollectionSlug>, 'status'> & {
 export type BuiltArea = Area<AreaSlug> & {
 	type: 'area';
 	label: string;
-	slug: GetRegisterType<'AreaSlug'>;
+	slug: AreaSlug;
 	asTitle: string;
 	fields: FieldBuilder<Field>[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;

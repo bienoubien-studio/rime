@@ -1,10 +1,14 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CollectionSlug, Adapter, CompiledCollection, LocalAPI } from 'rizom/types';
-import type { RegisterCollection } from 'rizom';
+import type {
+	Adapter,
+	CompiledCollection,
+	LocalAPI,
+	GenericDoc,
+	CollectionSlug
+} from 'rizom/types';
 import { RizomError } from 'rizom/errors';
-import { buildConfigMap } from '../tasks/configMap/index.server';
-import { augmentDocument } from '../tasks/augmentDocument.server';
-import { postprocessFields } from '../tasks/postProcessFields.server';
+import { transformDocument } from '../tasks/transformDocument.server';
+import type { RegisterCollection } from 'rizom';
 
 type Args = {
 	id: string;
@@ -16,45 +20,39 @@ type Args = {
 	depth?: number;
 };
 
-export const findById = async <T extends RegisterCollection[CollectionSlug]>(args: Args) => {
+export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, adapter, locale, api, depth } = args;
+
+	/////////////////////////////////////////////
+	// Authorized
+	//////////////////////////////////////////////
 	const authorized = config.access.read(event.locals.user, { id });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
+	/////////////////////////////////////////////
+	//
+	//////////////////////////////////////////////
 	let documentRaw = await adapter.collection.findById({
 		slug: config.slug,
 		id,
 		locale
 	});
 
-	if (!documentRaw) {
-		throw new RizomError(RizomError.NOT_FOUND);
-	}
-
-	documentRaw = await adapter.transform.doc({
-		doc: documentRaw,
-		slug: config.slug,
+	let document = await transformDocument<T>({
+		raw: documentRaw,
+		config,
+		api,
+		adapter,
 		locale,
-		event,
-		api,
-		depth
-	});
-
-	const configMap = buildConfigMap(documentRaw, config.fields);
-	let document = augmentDocument({ document: documentRaw, config, event, locale });
-	document = await postprocessFields({
-		document,
-		configMap,
-		user: event.locals.user,
-		api,
-		locale
+		depth,
+		event
 	});
 
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
-			doc: document as T,
+			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'read',
 			api,
@@ -64,5 +62,5 @@ export const findById = async <T extends RegisterCollection[CollectionSlug]>(arg
 		document = result.doc as T;
 	}
 
-	return document as T;
+	return document;
 };

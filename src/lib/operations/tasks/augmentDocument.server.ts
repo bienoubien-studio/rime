@@ -1,6 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea, CompiledCollection, GenericDoc } from 'rizom/types';
 
+/**
+ * Augment document with locale, _type, _prototype
+ * add the title prop as defined in config or with default : id or filename for a collection
+ * add the _live url if relevant, based on the config.
+ */
 export const augmentDocument = <T extends GenericDoc>(args: {
 	document: Partial<T>;
 	config: CompiledCollection | CompiledArea;

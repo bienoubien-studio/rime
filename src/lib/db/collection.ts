@@ -4,12 +4,18 @@ import { generatePK } from './utils.js';
 import { pick } from '../utils/object.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
-import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { GenericDoc, PrototypeSlug, RawDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
-import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
 import type { Dic } from 'rizom/types/utility.js';
+import { RizomError } from 'rizom/errors/index.js';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 
-const createAdapterCollectionInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+type Args = {
+	db: BetterSQLite3Database<any>;
+	tables: any;
+};
+
+const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	//////////////////////////////////////////////
 	// Find All documents in a collection
 	//////////////////////////////////////////////
@@ -38,7 +44,7 @@ const createAdapterCollectionInterface = ({ db, tables }: GenericAdapterInterfac
 		});
 
 		if (!doc) {
-			return undefined;
+			throw new RizomError(RizomError.NOT_FOUND);
 		}
 
 		return doc;
@@ -50,7 +56,7 @@ const createAdapterCollectionInterface = ({ db, tables }: GenericAdapterInterfac
 	const deleteById: DeleteById = async ({ slug, id }) => {
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
-			return undefined;
+			throw new RizomError(RizomError.NOT_FOUND);
 		}
 		return docs[0].id;
 	};
@@ -167,6 +173,8 @@ const createAdapterCollectionInterface = ({ db, tables }: GenericAdapterInterfac
 
 export default createAdapterCollectionInterface;
 
+export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollectionInterface>;
+
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
@@ -176,7 +184,7 @@ type FindAll = (args: {
 	sort?: string;
 	limit?: number;
 	locale?: string;
-}) => Promise<GenericDoc[]>;
+}) => Promise<RawDoc[]>;
 
 type QueryDocuments = (args: {
 	slug: PrototypeSlug;
@@ -184,13 +192,9 @@ type QueryDocuments = (args: {
 	sort?: string;
 	limit?: number;
 	locale?: string;
-}) => Promise<GenericDoc[]>;
+}) => Promise<RawDoc[]>;
 
-type FindById = (args: {
-	slug: PrototypeSlug;
-	id: string;
-	locale?: string;
-}) => Promise<GenericDoc | undefined>;
+type FindById = (args: { slug: PrototypeSlug; id: string; locale?: string }) => Promise<RawDoc>;
 
 type DeleteById = (args: { slug: PrototypeSlug; id: string }) => Promise<string | undefined>;
 

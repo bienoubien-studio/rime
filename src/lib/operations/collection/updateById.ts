@@ -2,11 +2,10 @@ import { type RequestEvent } from '@sveltejs/kit';
 import type {
 	Adapter,
 	LocalAPI,
-	CollectionSlug,
 	GenericDoc,
-	CompiledCollection
+	CompiledCollection,
+	CollectionSlug
 } from 'rizom/types';
-import type { RegisterCollection } from 'rizom';
 import { RizomError } from 'rizom/errors/index.js';
 import { usersFields } from 'rizom/collection/auth/usersFields.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
@@ -15,8 +14,9 @@ import { setDefaultValues } from '../tasks/setDefaultValues.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
+import type { RegisterCollection } from 'rizom';
 
-type Args<T extends GenericDoc = GenericDoc> = {
+type Args<T> = {
 	id: string;
 	data: Partial<T>;
 	locale?: string | undefined;
@@ -26,7 +26,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	adapter: Adapter;
 };
 
-export const updateById = async <T extends RegisterCollection[CollectionSlug]>(args: Args<T>) => {
+export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 	const { config, event, adapter, locale, api, id } = args;
 	let data = args.data;
 
@@ -35,7 +35,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>(a
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = await api.collection(config.slug).findById({ locale, id });
+	const original = (await api.collection(config.slug).findById({ locale, id })) as T;
 
 	if (config.auth) {
 		/** Add auth fields into validation process */
@@ -59,7 +59,7 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>(a
 		const result = await hook({
 			data,
 			config,
-			originalDoc: original,
+			originalDoc: original as RegisterCollection[CollectionSlug],
 			operation: 'update',
 			api,
 			rizom: event.locals.rizom,
@@ -119,5 +119,5 @@ export const updateById = async <T extends RegisterCollection[CollectionSlug]>(a
 		});
 	}
 
-	return document as T;
+	return document;
 };

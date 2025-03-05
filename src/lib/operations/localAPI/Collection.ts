@@ -13,10 +13,9 @@ import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FormField } from 'rizom/types/fields.js';
 import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
-import type { Adapter } from 'rizom/types/adapter';
-
 import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
+import type { Adapter } from 'rizom/db/index.server.js';
 
 type Args = {
 	config: CompiledCollection;

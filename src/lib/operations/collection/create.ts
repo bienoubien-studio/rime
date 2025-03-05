@@ -2,11 +2,10 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type {
 	LocalAPI,
 	Adapter,
-	CollectionSlug,
 	GenericDoc,
-	CompiledCollection
+	CompiledCollection,
+	CollectionSlug
 } from 'rizom/types';
-import type { RegisterCollection } from 'rizom';
 import cloneDeep from 'clone-deep';
 import { RizomError } from 'rizom/errors/index.js';
 import { usersFields } from 'rizom/collection/auth/usersFields.js';
@@ -17,8 +16,9 @@ import { validateFields } from '../tasks/validateFields.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
+import type { RegisterCollection } from 'rizom';
 
-type Args<T extends GenericDoc = GenericDoc> = {
+type Args<T> = {
 	data: Partial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
@@ -29,7 +29,7 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	adapter: Adapter;
 };
 
-export const create = async <T extends RegisterCollection[CollectionSlug]>(args: Args<T>) => {
+export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	const { config, event, adapter, locale, api } = args;
 
 	let data = args.data;
@@ -47,9 +47,9 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 	}
 
 	data = mergeWithBlankDocument({
-		data: data as Partial<GenericDoc>,
+		data: data,
 		config
-	}) as Partial<T>;
+	});
 
 	const configMap = buildConfigMap(data, config.fields);
 	data = await setDefaultValues({ data, adapter, configMap });
@@ -131,7 +131,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 
 	for (const hook of config.hooks?.afterCreate || []) {
 		await hook({
-			doc: document,
+			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'create',
 			api,

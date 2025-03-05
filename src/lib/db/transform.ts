@@ -4,18 +4,22 @@ import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import { safeFlattenDoc } from '../utils/doc.js';
-import type { CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type {
-	AdapterBlocksInterface,
-	AdapterTreeInterface,
-	TransformContext,
-	TransformManyContext
-} from 'rizom/types/adapter.js';
+	AreaSlug,
+	CollectionSlug,
+	GenericBlock,
+	GenericDoc,
+	PrototypeSlug,
+	RawDoc
+} from 'rizom/types/doc.js';
+import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { extractFieldName } from 'rizom/fields/tree/utils.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
+import type { AdapterTreeInterface } from './tree.js';
+import type { AdapterBlocksInterface } from './blocks.js';
+import { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 /////////////////////////////////////////////
 // Types
@@ -39,15 +43,22 @@ export const databaseTransformInterface = ({
 	blocksInterface,
 	treeInterface
 }: CreateTransformInterfaceArgs) => {
-	const transformDoc = async <T extends GenericDoc = GenericDoc>({
-		doc,
-		slug,
-		locale,
-		api,
-		event,
-		depth = 0
-	}: TransformContext<Dic>) => {
+	type Transformed<T> = Omit<T, '_url' | '_type' | '_prototype'> & {
+		title?: string;
+	};
+
+	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
+		doc: RawDoc;
+		slug: AreaSlug | CollectionSlug;
+		locale?: string;
+		api: LocalAPI;
+		event: RequestEvent;
+		depth?: number;
+	}): Promise<Transformed<T>> => {
 		//
+
+		const { slug, locale, api, event, depth = 0 } = args;
+		let doc = args.doc;
 
 		const tableNameRelationFields = `${slug}Rels`;
 		const tableNameLocales = `${slug}Locales`;
@@ -230,3 +241,5 @@ export const databaseTransformInterface = ({
 		doc: transformDoc
 	};
 };
+
+export type AdapterTransformInterface = ReturnType<typeof databaseTransformInterface>;

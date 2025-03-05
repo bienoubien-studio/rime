@@ -165,6 +165,8 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 
 export default createAdapterTreeInterface;
 
+export type AdapterTreeInterface = ReturnType<typeof createAdapterTreeInterface>;
+
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////

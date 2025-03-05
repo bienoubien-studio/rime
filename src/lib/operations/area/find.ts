@@ -1,9 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI, CompiledArea, GenericDoc, Adapter } from 'rizom/types';
 import { RizomError } from 'rizom/errors';
-import { augmentDocument } from '../tasks/augmentDocument.server';
-import { buildConfigMap } from '../tasks/configMap/index.server';
-import { postprocessFields } from '../tasks/postProcessFields.server';
+import { transformDocument } from '../tasks/transformDocument.server';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -14,7 +12,7 @@ type FindArgs = {
 	depth?: number;
 };
 
-export const find = async <T extends GenericDoc = GenericDoc>(args: FindArgs): Promise<T> => {
+export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
 	//
 	const { config, event, adapter, locale, api, depth } = args;
 
@@ -28,18 +26,15 @@ export const find = async <T extends GenericDoc = GenericDoc>(args: FindArgs): P
 		locale
 	});
 
-	documentRaw = await adapter.transform.doc({
-		doc: documentRaw,
-		slug: config.slug,
-		locale,
-		event,
+	let document = await transformDocument<T>({
+		raw: documentRaw,
+		config,
 		api,
-		depth
+		adapter,
+		locale,
+		depth,
+		event
 	});
-
-	const configMap = buildConfigMap(documentRaw, config.fields);
-	let document = augmentDocument({ document: documentRaw, config, event, locale }) as GenericDoc;
-	document = await postprocessFields({ document, configMap, user: event.locals.user, api, locale });
 
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
@@ -50,8 +45,8 @@ export const find = async <T extends GenericDoc = GenericDoc>(args: FindArgs): P
 			rizom: event.locals.rizom,
 			event
 		});
-		document = result.doc;
+		document = result.doc as T;
 	}
 
-	return document as T;
+	return document;
 };

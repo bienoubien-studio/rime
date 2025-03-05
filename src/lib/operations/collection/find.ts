@@ -3,6 +3,7 @@ import type {
 	Adapter,
 	CollectionSlug,
 	CompiledCollection,
+	GenericDoc,
 	LocalAPI,
 	OperationQuery
 } from 'rizom/types';
@@ -12,6 +13,8 @@ import type { Dic } from 'rizom/types/utility';
 import { buildConfigMap } from '../tasks/configMap/index.server';
 import { augmentDocument } from '../tasks/augmentDocument.server';
 import { postprocessFields } from '../tasks/postProcessFields.server';
+import { transformDocument } from '../tasks/transformDocument.server';
+import type { RawDoc } from 'rizom/types/doc';
 
 type FindArgs = {
 	query: OperationQuery;
@@ -25,9 +28,7 @@ type FindArgs = {
 	limit?: number;
 };
 
-export const find = async <T extends RegisterCollection[CollectionSlug]>(
-	args: FindArgs
-): Promise<T[]> => {
+export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> => {
 	//
 	const { config, event, locale, adapter, sort, limit, api, depth, query } = args;
 
@@ -44,35 +45,26 @@ export const find = async <T extends RegisterCollection[CollectionSlug]>(
 		locale
 	});
 
-	const processDocument = async (docRaw: Dic) => {
-		let documentRaw = await adapter.transform.doc({
-			doc: docRaw,
-			slug: config.slug,
+	const processDocument = async (documentRaw: RawDoc) => {
+		let document = await transformDocument<T>({
+			raw: documentRaw,
+			config,
+			api,
+			adapter,
 			locale,
-			event,
-			api,
-			depth
-		});
-		const configMap = buildConfigMap(documentRaw, config.fields);
-		let document = augmentDocument({ document: documentRaw, config, event, locale });
-		document = await postprocessFields({
-			document,
-			configMap,
-			user: event.locals.user,
-			api,
-			locale
+			depth,
+			event
 		});
 
 		for (const hook of config.hooks?.beforeRead || []) {
 			const result = await hook({
-				doc: document as T,
+				doc: document as RegisterCollection[CollectionSlug],
 				config,
 				operation: 'read',
 				api,
 				rizom: event.locals.rizom,
 				event
 			});
-			//@ts-ignore
 			document = result.doc as T;
 		}
 
@@ -81,5 +73,5 @@ export const find = async <T extends RegisterCollection[CollectionSlug]>(
 
 	const documents = await Promise.all(documentsRaw.map((doc) => processDocument(doc)));
 
-	return documents as T[];
+	return documents;
 };

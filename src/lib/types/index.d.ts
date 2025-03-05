@@ -6,9 +6,7 @@ export type {
 	AdapterAreaInterface,
 	AdapterRelationsInterface,
 	AdapterTransformInterface,
-	GenericAdapterInterfaceArgs,
-	TransformContext,
-	TransformManyContext
+	GenericAdapterInterfaceArgs
 } from './adapter.js';
 
 // API types
@@ -75,6 +73,8 @@ export type {
 	CollectionHookBeforeUpdate,
 	CollectionHookAfterUpdate,
 	CollectionHookBeforeCreate,
+	CollectionHookAfterUpsert,
+	CollectionHookAfterUpsert,
 	CollectionHookAfterCreate,
 	CollectionHookBeforeDelete,
 	CollectionHookAfterDelete,
