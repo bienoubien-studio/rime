@@ -7,17 +7,18 @@
 [v] better login error handling
 [v] Richtext in blocks not saved
 [v] Add loader on image upload
-[ ] Change the way panel languages are loaded
+[v] Prevent parent forms saving on nested document creation
 [ ] make file output key sm_jpg, sm_webp, if multilple output format
-[ ] More tests
+[ ] Change the way panel languages are loaded
+[ ] better-auth + smtp : forgot password
 [ ] Blocks collapse/uncollapse all
 [ ] Better logs
 [ ] pnpm deps issue
 [ ] remove forgot password route for now
-[ ] basic real life config preset
 [ ] init command without prompt
-[ ] better-auth + smtp : forgot password
 [ ] Fix the sortable error on file change
+[ ] More tests
+[ ] basic real life config preset
 
 # V1
 [ ] collection nested

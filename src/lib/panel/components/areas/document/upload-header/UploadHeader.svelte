@@ -35,6 +35,9 @@
 		form.setValue(`size.thumbnail`, null);
 	};
 
+	const onGeneratingPreviewStart = () => (form.isDisabled = true);
+	const onGeneratingPreviewEnd = () => (form.isDisabled = false);
+
 	$effect(() => {
 		if (file) {
 			const validMimeType =
@@ -109,7 +112,7 @@
 			</div>
 		</div>
 	{:else}
-		<DropZone bind:preview bind:file {accept} />
+		<DropZone bind:preview bind:file {onGeneratingPreviewStart} {onGeneratingPreviewEnd} {accept} />
 	{/if}
 </div>
 

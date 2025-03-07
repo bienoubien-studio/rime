@@ -33,7 +33,7 @@ function createDocumentFormState({
 	let intialDoc = $state(initial);
 	let doc = $state(initial);
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
-
+	let isDisabled = $state(readOnly);
 	const isCreateDoc = (doc: typeof initial): doc is GenericDoc => !doc.id;
 	let processing = $state(false);
 	let element = $state<HTMLFormElement>();
@@ -42,7 +42,9 @@ function createDocumentFormState({
 	const isCollection = config.type === 'collection';
 	const collection = isCollection ? getCollectionContext(config.slug) : null;
 	const hasError = $derived(errors.length);
-	const canSubmit = $derived(!readOnly && Object.keys(changes).length > 0 && !hasError);
+	const canSubmit = $derived(
+		!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError
+	);
 	const nestedLevel = initLevel();
 	const initialTitle = initTitle();
 	const isLiveEdit = !!onDataChange;
@@ -96,10 +98,6 @@ function createDocumentFormState({
 	};
 
 	function setValue(path: string, value: any) {
-		// const success = setValueAtPath(doc, path, value);
-		// if (success) {
-		// 	doc = success;
-		// }
 		const parts = path.split('.');
 		const flatDoc: Dic = flatten(doc, {
 			maxDepth: parts.length
@@ -440,7 +438,7 @@ function createDocumentFormState({
 			}
 			// get props() {
 			// 	return {
-			//        get disabled() { return readOnly },
+			//        get disabled() { return isDisabled },
 			//        get visible() { return visible },
 			// 	};
 			// }
@@ -538,16 +536,26 @@ function createDocumentFormState({
 	};
 
 	return {
+		key,
 		setValue,
 		getRawValue,
 		enhance,
 		useField,
-		readOnly,
 		useValue,
 		useBlocks,
 		useTree,
 		nestedLevel,
 		buildPanelActionUrl,
+		readOnly,
+
+		get isDisabled() {
+			return isDisabled;
+		},
+
+		set isDisabled(bool: boolean) {
+			isDisabled = bool;
+		},
+
 		get element() {
 			return element;
 		},

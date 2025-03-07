@@ -146,11 +146,11 @@
 	};
 
 	const onRelationCreation = () => {
-		form.readOnly = true;
+		form.isDisabled = true;
 	};
 
 	const onRelationCreated = (doc: GenericDoc) => {
-		form.readOnly = false;
+		form.isDisabled = false;
 		initialItems.push(documentToRelationFieldItem(doc));
 		availableItems.push(documentToRelationFieldItem(doc));
 	};

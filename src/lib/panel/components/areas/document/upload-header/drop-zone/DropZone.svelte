@@ -11,9 +11,17 @@
 		accept: WithUpload<Collection<any>>['accept'] | undefined;
 		preview: string | null;
 		file: File | null;
+		onGeneratingPreviewStart: () => void;
+		onGeneratingPreviewEnd: () => void;
 	};
 
-	let { preview = $bindable(), file = $bindable(), accept }: Props = $props();
+	let {
+		preview = $bindable(),
+		file = $bindable(),
+		accept,
+		onGeneratingPreviewStart,
+		onGeneratingPreviewEnd
+	}: Props = $props();
 
 	let input: HTMLInputElement;
 	let dragOver = $state(false);
@@ -48,15 +56,19 @@
 
 	const processFile = (value: File) => {
 		processingFile = true;
+		onGeneratingPreviewStart();
 		const reader = new FileReader();
 
 		reader.onloadend = () => {
 			preview = typeof reader.result === 'string' ? reader.result : null;
 			file = value;
 			processingFile = false;
+			onGeneratingPreviewEnd();
 		};
 
 		reader.onerror = (err) => {
+			processingFile = false;
+			onGeneratingPreviewEnd();
 			toast.error('There was an issue reading the file.');
 			console.log(err);
 		};
