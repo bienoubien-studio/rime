@@ -83,6 +83,7 @@
 
 <style type="postcss">
 	.rz-collection-area {
+		container: collection-area / inline-size;
 		height: 100vh;
 		width: 100%;
 		overflow-y: scroll;
@@ -100,10 +101,15 @@
 
 	.rz-collection-area__grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-		gap: var(--rz-size-6);
-		padding: var(--rz-size-6);
+		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+		gap: var(--rz-size-4);
+		padding: var(--rz-size-4);
+		@container collection-area (min-width:420px) {
+			gap: var(--rz-size-6);
+			grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+		}
 	}
+
 	.rz-collection-area__list {
 		padding: 0 var(--rz-size-5);
 	}

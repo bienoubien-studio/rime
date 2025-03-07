@@ -8,7 +8,7 @@ export type RelationDiff = {
 
 type Args = {
 	existingRelations: Relation[];
-	incomingRelations: { relations: BeforeOperationRelation[]; emptyPaths: string[] };
+	incomingRelations: BeforeOperationRelation[];
 	locale?: string;
 };
 
@@ -22,10 +22,8 @@ export const defineRelationsDiff = ({
 	const toUpdate: Relation[] = [];
 	const processedIds = new Set<string>(); // Keep track of processed IDs
 
-	const { relations: incomingRels, emptyPaths } = incomingRelations;
-
 	// Process incoming relations
-	for (const incoming of incomingRels) {
+	for (const incoming of incomingRelations) {
 		const existingMatch = existingRelations.find(
 			(existing) =>
 				(incoming.id && existing.id === incoming.id) ||
@@ -57,13 +55,8 @@ export const defineRelationsDiff = ({
 				return false;
 			}
 
-			// Delete if path is in emptyPaths
-			if (emptyPaths.includes(existing.path)) {
-				return true;
-			}
-
 			// Delete if not found in incoming relations
-			return !incomingRels.some(
+			return !incomingRelations.some(
 				(incoming) =>
 					(incoming.id && existing.id === incoming.id) ||
 					(!incoming.id &&

@@ -1,8 +1,8 @@
 import { isRelationField } from '$lib/utils/field.js';
 import type { BeforeOperationRelation } from '$lib/db/relations.js';
 import type { Dic } from 'rizom/types/utility';
-import type { ConfigMap } from '../config-map/types';
-import { getValueAtPath } from 'rizom/utils/doc';
+import type { ConfigMap } from '../configMap/types';
+import { getValueAtPath } from 'rizom/utils/object';
 
 type Args = {
 	parentId?: string;
@@ -13,7 +13,6 @@ type Args = {
 
 export const extractRelations = ({ parentId, data, configMap, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
-	const emptyPaths: string[] = [];
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
@@ -36,11 +35,7 @@ export const extractRelations = ({ parentId, data, configMap, locale }: Args) =>
 				return result;
 			};
 
-			// Check if it's an empty array
-			if (Array.isArray(relationRawValue) && relationRawValue.length === 0) {
-				emptyPaths.push(path);
-				// Check if it's an array
-			} else if (Array.isArray(relationRawValue)) {
+			if (Array.isArray(relationRawValue)) {
 				output = relationRawValue.map((value, n) => {
 					if (typeof value === 'string') {
 						return relationFromString({ value, position: n });
@@ -55,7 +50,7 @@ export const extractRelations = ({ parentId, data, configMap, locale }: Args) =>
 		}
 	}
 
-	return { relations, emptyPaths };
+	return relations;
 };
 
 type RelationFromStringArgs = {

@@ -68,7 +68,7 @@
 		:global(.rz-upload-preview-cell) {
 			width: 100%;
 			height: 100%;
-			aspect-ratio: 16/9;
+			aspect-ratio: 5/4;
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
 			padding: var(--rz-size-2);
@@ -83,6 +83,7 @@
 		}
 		:global(.rz-card-footer) {
 			display: block;
+			padding: 0 0.6rem 0.6rem 0.6rem;
 		}
 	}
 
@@ -93,7 +94,7 @@
 	}
 
 	.rz-grid-item__title {
-		margin-top: var(--rz-size-4);
+		margin-top: var(--rz-size-2);
 		display: -webkit-box;
 		-webkit-line-clamp: 1;
 		-webkit-box-orient: vertical;
@@ -107,5 +108,9 @@
 		margin-top: var(--rz-size-1);
 		margin-bottom: var(--rz-size-1);
 		font-size: var(--rz-text-xs);
+		display: none;
+		@container collection-area (min-width:420px) {
+			display: block;
+		}
 	}
 </style>

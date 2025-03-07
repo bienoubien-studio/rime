@@ -7,6 +7,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { Field } from 'rizom/types/fields.js';
 	import type { Dic } from 'rizom/types/utility';
+	import type { Snippet } from 'svelte';
 
 	type AddItem = (emptyValues: Dic) => void;
 	type Props = {
@@ -14,8 +15,9 @@
 		class: string;
 		fields: Field[];
 		addItem: AddItem;
+		children: Snippet;
 	};
-	const { class: className, fields, addItem, size }: Props = $props();
+	const { class: className, fields, addItem, size, children }: Props = $props();
 
 	const add = () => {
 		const empty = emptyValuesFromFieldConfig(fields.filter(isFormField));
@@ -31,7 +33,7 @@
 	{size}
 >
 	<span>
-		{t__('fields.create_one')}
+		{@render children()}
 	</span>
 </Button>
 

@@ -75,6 +75,8 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		data = result.data as Partial<T>;
 	}
 
+	const incomingPaths = Object.keys(data);
+
 	const createdId = await adapter.collection.insert({
 		slug: config.slug,
 		data,
@@ -85,6 +87,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		parentId: createdId,
 		configMap,
 		data,
+		incomingPaths,
 		adapter,
 		config,
 		locale
@@ -94,6 +97,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		parentId: createdId,
 		configMap,
 		data,
+		incomingPaths,
 		adapter,
 		config,
 		locale
@@ -103,6 +107,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		parentId: createdId,
 		configMap,
 		data,
+		incomingPaths,
 		adapter,
 		config,
 		locale,

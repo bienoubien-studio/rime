@@ -1,14 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type {
-	Adapter,
-	CompiledCollection,
-	LocalAPI,
-	GenericDoc,
-	CollectionSlug
-} from 'rizom/types';
+import type { Adapter, CompiledCollection, GenericDoc, CollectionSlug } from 'rizom/types';
 import { RizomError } from 'rizom/errors';
 import { transformDocument } from '../tasks/transformDocument.server';
 import type { RegisterCollection } from 'rizom';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type Args = {
 	id: string;
@@ -31,9 +26,6 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	/////////////////////////////////////////////
-	//
-	//////////////////////////////////////////////
 	let documentRaw = await adapter.collection.findById({
 		slug: config.slug,
 		id,

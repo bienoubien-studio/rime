@@ -7,6 +7,7 @@
 	import type { TreeBlock } from 'rizom/types/doc';
 	import { snapshot } from 'rizom/utils/state';
 	import { extractFieldName } from '../utils';
+	import { useOnce } from 'rizom/panel/utility/Once.svelte';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 
@@ -33,11 +34,22 @@
 	});
 	let isOpen = $state(false);
 
+	const { once } = useOnce();
+
+	once(() => {
+		if (itemValue) {
+			isOpen = (localStorage.getItem(`${itemValue.id}:open`) || 'true') === 'true';
+		}
+	});
+
 	const toggleBlock = (e: MouseEvent) => {
 		if (e && e.stopPropagation) {
 			e.stopPropagation();
 		}
 		isOpen = !isOpen;
+		if (itemValue) {
+			localStorage.setItem(`${itemValue.id}:open`, isOpen.toString());
+		}
 	};
 
 	const renderBlockTitle = () => {

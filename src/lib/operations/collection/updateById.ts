@@ -15,6 +15,7 @@ import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
+import { stringRepresentation } from 'rizom/utils/doc.js';
 
 type Args<T> = {
 	id: string;
@@ -43,6 +44,7 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 	}
 
 	const configMap = buildConfigMap(data, config.fields);
+	const originalConfigMap = buildConfigMap(original, config.fields);
 	data = await setDefaultValues({ data, adapter, configMap });
 	data = await validateFields({
 		data,
@@ -68,6 +70,9 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 		data = result.data as Partial<T>;
 	}
 
+	const incomingPaths = Object.keys(data);
+	console.log('incomingPaths', incomingPaths);
+
 	await adapter.collection.update({
 		id,
 		slug: config.slug,
@@ -78,7 +83,9 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 	const blocksDiff = await saveBlocks({
 		parentId: original.id,
 		configMap,
+		originalConfigMap,
 		data,
+		incomingPaths,
 		original,
 		adapter,
 		config,
@@ -88,7 +95,9 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 	const treeDiff = await saveTreeBlocks({
 		parentId: original.id,
 		configMap,
+		originalConfigMap,
 		data,
+		incomingPaths,
 		original,
 		adapter,
 		config,
@@ -99,6 +108,7 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 		parentId: original.id,
 		configMap,
 		data,
+		incomingPaths,
 		adapter,
 		config,
 		locale,

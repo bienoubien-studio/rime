@@ -6,6 +6,7 @@ import { buildConfigMap } from '../tasks/configMap/index.server.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
+import { logToFile } from '../../../log.js';
 
 type UpdateArgs<T> = {
 	data: Partial<T>;
@@ -21,14 +22,17 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	const { config, event, adapter, locale, api } = args;
 	let data = args.data;
 
+	logToFile('data', data);
+
 	const authorized = config.access.update(event.locals.user);
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
 	const original = (await api.area(config.slug).find({ locale })) as T;
-
+	const originalConfigMap = buildConfigMap(original, config.fields);
 	const configMap = buildConfigMap(data, config.fields);
+
 	data = await validateFields({
 		data,
 		api,
@@ -53,6 +57,8 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		data = result.data as Partial<T>;
 	}
 
+	const incomingPaths = Object.keys(data);
+
 	await adapter.area.update({
 		slug: config.slug,
 		data,
@@ -63,7 +69,9 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		parentId: original.id,
 		configMap,
 		data,
+		incomingPaths,
 		original,
+		originalConfigMap,
 		adapter,
 		config,
 		locale
@@ -73,7 +81,9 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		parentId: original.id,
 		configMap,
 		data,
+		incomingPaths,
 		original,
+		originalConfigMap,
 		adapter,
 		config,
 		locale
@@ -83,6 +93,7 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		parentId: original.id,
 		configMap,
 		data,
+		incomingPaths,
 		adapter,
 		config,
 		locale,
@@ -91,6 +102,8 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	});
 
 	const document = await api.area(config.slug).find({ locale });
+
+	logToFile('result', document);
 
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({

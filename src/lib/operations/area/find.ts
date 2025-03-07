@@ -1,7 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI, CompiledArea, GenericDoc, Adapter } from 'rizom/types';
+import type { CompiledArea, GenericDoc, Adapter } from 'rizom/types';
 import { RizomError } from 'rizom/errors';
 import { transformDocument } from '../tasks/transformDocument.server';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type FindArgs = {
 	locale?: string | undefined;

@@ -9,7 +9,8 @@ import {
 	blocks,
 	block,
 	link,
-	email
+	email,
+	select
 } from 'rizom/fields/index.js';
 import type { Collection, Config, Area } from 'rizom';
 import { access } from '$lib/utils/access/index.js';
@@ -35,11 +36,28 @@ const tabAttributes = tab('Attributes').fields(
 		.query((doc) => `where[id][not_equals]=${doc.id}`)
 );
 
+const blockKeyFacts = block('keyFacts').fields(
+	tree('facts')
+		.fields(
+			//
+			text('title'),
+			richText('description'),
+			select('icon').options('one', 'two'),
+			relation('image').to('medias')
+		)
+		.renderTitle(({ values }) => values.title)
+);
+
 const blockParagraph = block('paragraph').fields(richText('text'));
 const blockImage = block('image').fields(relation('image').to('medias'));
 const blockSlider = block('slider').fields(relation('images').to('medias').many());
+const blockSubContent = block('content').fields(text('title'), richText('text'));
+const blockBlack = block('black').fields(
+	text('title'),
+	blocks('text', [blockParagraph, blockImage, blockSlider, blockSubContent])
+);
 const tabLayout = tab('Layout').fields(
-	blocks('sections', [blockParagraph, blockImage, blockSlider])
+	blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
 );
 
 const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
@@ -52,7 +70,8 @@ const Pages = collection('pages', {
 	group: 'content',
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout)],
-	url: (doc) => (doc.isHome ? '/' : `${doc.slug}`),
+	url: (doc) =>
+		doc.isHome ? `${process.env.PUBLIC_RIZOM_URL}/` : `${process.env.PUBLIC_RIZOM_URL}/${doc.slug}`,
 	status: true,
 	access: {
 		read: () => true,
@@ -67,7 +86,8 @@ const Pages = collection('pages', {
 
 const Link = [
 	text('label').layout('compact'),
-	link('link').types('pages', 'url').layout('compact')
+	link('link').types('pages', 'url').layout('compact'),
+	relation('image').to('medias')
 ];
 
 const Navigation = area('navigation', {
@@ -79,7 +99,9 @@ const Navigation = area('navigation', {
 			tab('header').fields(
 				tree('mainNav')
 					.fields(...Link)
-					.renderTitle(({ values }) => values.label)
+					.renderTitle(({ values }) => values.label || 'Lien')
+					.label('Menu principal')
+					.addItemLabel('Ajouter un lien')
 			),
 			tab('footer').fields(tree('footerNav').fields(...Link))
 		)

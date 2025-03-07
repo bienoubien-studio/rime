@@ -26,7 +26,6 @@
 
 		editor = new Editor(editorConfig);
 
-		console.log(typeof field.value);
 		if (field.value?.content) {
 			editor.commands.setContent(field.value.content);
 		}

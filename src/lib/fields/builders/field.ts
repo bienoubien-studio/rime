@@ -96,13 +96,13 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	validate(func: FieldValidationFunc<T>) {
-		this.field.validate = func as FieldValidationFunc<AnyFormField>;
+	validate(validateFunction: FieldValidationFunc<T>) {
+		this.field.validate = validateFunction as FieldValidationFunc<AnyFormField>;
 		return this;
 	}
 
-	condition(func: (doc: Dic, siblings: Dic) => boolean) {
-		this.field.condition = func;
+	condition(conditionFunction: (doc: Dic, siblings: Dic) => boolean) {
+		this.field.condition = conditionFunction;
 		return this;
 	}
 

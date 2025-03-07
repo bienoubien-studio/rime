@@ -4,17 +4,13 @@ import type {
 	CollectionSlug,
 	CompiledCollection,
 	GenericDoc,
-	LocalAPI,
 	OperationQuery
 } from 'rizom/types';
 import type { RegisterCollection } from 'rizom';
 import { RizomError } from 'rizom/errors';
-import type { Dic } from 'rizom/types/utility';
-import { buildConfigMap } from '../tasks/configMap/index.server';
-import { augmentDocument } from '../tasks/augmentDocument.server';
-import { postprocessFields } from '../tasks/postProcessFields.server';
 import { transformDocument } from '../tasks/transformDocument.server';
 import type { RawDoc } from 'rizom/types/doc';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type FindArgs = {
 	query: OperationQuery;

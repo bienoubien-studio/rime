@@ -6,7 +6,7 @@ import { rizom, type FormField } from '$lib/index.js';
 import type { RelationField, SelectField } from 'rizom/fields/types';
 import type { Dic } from 'rizom/types/utility';
 import type { ConfigMap } from './configMap/types';
-import { getValueAtPath, setValueAtPath } from 'rizom/utils/doc';
+import { getValueAtPath, setValueAtPath } from 'rizom/utils/object';
 
 export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;

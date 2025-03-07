@@ -8,7 +8,7 @@ import type {
 	User
 } from 'rizom/types';
 import type { ConfigMap } from './configMap/types';
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/utils/doc';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/utils/object';
 
 export const validateFields = async <T extends GenericDoc>(args: {
 	data: Partial<T>;

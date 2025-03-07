@@ -2,39 +2,63 @@ import { extractBlocks } from './extract.server';
 import type { Adapter, CompiledArea, CompiledCollection, GenericBlock } from 'rizom/types';
 import { defineBlocksDiff } from './diff.server';
 import type { Dic } from 'rizom/types/utility';
-import type { ConfigMap } from '../config-map/types';
+import type { ConfigMap } from '../configMap/types';
+
+import { RizomError } from 'rizom/errors';
 
 export const saveBlocks = async (args: {
 	configMap: ConfigMap;
 	data: Dic;
+	incomingPaths: string[];
 	original?: Dic;
+	originalConfigMap?: ConfigMap;
 	adapter: Adapter;
 	config: CompiledArea | CompiledCollection;
 	parentId: string;
 	locale?: string;
 }) => {
-	const { data, configMap, original, adapter, config, parentId, locale } = args;
+	const {
+		data,
+		configMap,
+		incomingPaths,
+		original,
+		originalConfigMap,
+		adapter,
+		config,
+		parentId,
+		locale
+	} = args;
 
 	const incomingBlocks = extractBlocks({
 		data,
 		configMap
 	});
 
-	const incomingBlocksPaths = incomingBlocks.map((block) => block.path);
-	let existingBlocks: GenericBlock[] = [];
+	console.log('incomingBlocks', incomingBlocks);
 
-	if (original)
-		existingBlocks = extractBlocks({
+	let existingBlocks: GenericBlock[] = [];
+	if (original) {
+		if (!originalConfigMap) throw new RizomError(RizomError.PIPE_ERROR, 'missing original');
+		const blocks = extractBlocks({
 			data: original,
-			configMap
-		}).filter((block) => {
-			return incomingBlocksPaths.includes(block.path);
+			configMap: originalConfigMap
 		});
+		console.log('existingBlocks before filter', blocks);
+		// filter path that are not present in incoming data
+		// in order to not delete unmodified blocks fields
+		existingBlocks = blocks.filter((block) => {
+			return incomingPaths.some((path) => block.path?.startsWith(path));
+		});
+	}
+
+	console.log('existingBlocks', existingBlocks);
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
 		incomingBlocks
 	});
+
+	console.log('blocksDiff', blocksDiff);
 
 	if (blocksDiff.toDelete.length) {
 		await Promise.all(

@@ -1,8 +1,8 @@
 import type { TreeBlock } from 'rizom/types/doc';
 import cloneDeep from 'clone-deep';
 import type { Dic, WithRequired } from 'rizom/types/utility';
-import type { ConfigMap } from '../config-map/types';
-import { getValueAtPath } from 'rizom/utils/doc';
+import type { ConfigMap } from '../configMap/types';
+import { getValueAtPath } from 'rizom/utils/object';
 
 type ExtractTreesArgs = {
 	data: Dic;
@@ -10,7 +10,7 @@ type ExtractTreesArgs = {
 };
 
 export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
-	const items: WithRequired<TreeBlock, 'path'>[] = [];
+	const blocks: WithRequired<TreeBlock, 'path'>[] = [];
 
 	function processTreeItem(
 		item: TreeBlock,
@@ -28,14 +28,14 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 
 		// Set path based on whether it's a root level or nested item
 		processedItem.path = parentPath
-			? `${parentPath}` // For nested items, use parent path
-			: rootPath; // For root items, use root path
+			? `${parentPath}` // For nested blocks, use parent path
+			: rootPath; // For root blocks, use root path
 
 		// Remove children prop as they will be extracted
 		processedItem._children = [];
 
 		// Add the processed item to the flat array
-		items.push(processedItem as WithRequired<TreeBlock, 'path'>);
+		blocks.push(processedItem as WithRequired<TreeBlock, 'path'>);
 
 		// Process children recursively
 		(item._children || []).forEach((child, childIndex) => {
@@ -51,6 +51,7 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
 			const value = getValueAtPath<TreeBlock[]>(data, path);
+
 			const isEmptyValue = config.isEmpty(value);
 			// console.log('in', toNestedRepresentation(value).toString());
 			if (value && !isEmptyValue) {
@@ -61,5 +62,5 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 		}
 	});
 
-	return items;
+	return blocks;
 }

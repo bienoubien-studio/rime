@@ -1,149 +1,78 @@
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
-import { flattenWithGuard, isBuffer, isObjectLiteral } from './object.js';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
 import type { Dic } from 'rizom/types/utility.js';
 import { isUploadConfig } from 'rizom/config/utils.js';
+import { flatten } from 'flat';
+
+export function stringRepresentation(obj: any, indent = 0): string {
+	let result = '';
+
+	// Handle richtext pattern
+	if (obj?.type === 'doc' && Array.isArray(obj?.content)) {
+		return '';
+	}
+
+	// Handle arrays
+	if (Array.isArray(obj)) {
+		return obj
+			.map((item) => stringRepresentation(item, indent))
+			.filter(Boolean)
+			.join('\n');
+	}
+
+	// Handle objects
+	if (obj && typeof obj === 'object') {
+		// If object has a path property, use it (with position if available)
+		if ('path' in obj) {
+			const position = 'position' in obj ? `.${obj.position}` : '';
+			result += ' '.repeat(indent) + obj.path + position;
+
+			// Show content fields
+			if (obj.title) {
+				result += '\n' + ' '.repeat(indent + 2) + 'title';
+			}
+			if (obj.description) {
+				result += '\n' + ' '.repeat(indent + 2) + 'description';
+			}
+
+			// Process children of this object
+			const childrenResult = Object.entries(obj)
+				.filter(
+					([key, value]) =>
+						value && typeof value === 'object' && !['title', 'description'].includes(key)
+				)
+				.map(([_, value]) => stringRepresentation(value, indent + 2))
+				.filter(Boolean)
+				.join('\n');
+
+			if (childrenResult) {
+				result += '\n' + childrenResult;
+			}
+		} else {
+			// Process regular object properties
+			const entries = Object.entries(obj)
+				.filter(([_, value]) => value !== null)
+				.filter(([key]) => !['path', 'position'].includes(key));
+
+			result += entries
+				.map(([key, value]) => {
+					if (typeof value === 'object') {
+						const subTree = stringRepresentation(value, indent + 2);
+						return ' '.repeat(indent) + key + (subTree ? '\n' + subTree : '');
+					}
+					return ' '.repeat(indent) + key;
+				})
+				.filter(Boolean)
+				.join('\n');
+		}
+	}
+
+	return result;
+}
 
 export const isUploadDoc = (doc: GenericDoc): doc is UploadDoc => {
 	return 'mimeType' in doc;
-};
-
-export const safeFlattenDoc = (doc: Dic) =>
-	flattenWithGuard(doc, {
-		shouldFlat: ([, value]) => {
-			if (Array.isArray(value) && value.length) {
-				/** prevent relation flatting */
-				if (value[0].constructor === Object && 'relationTo' in value[0]) return false;
-				/** prevent block flating */
-				if (value[0].constructor === Object && 'type' in value[0]) return false;
-				/** prevent select field flatting */
-				if (typeof value[0] === 'string') return false;
-			}
-
-			/** prevent richText flatting */
-			if (
-				value &&
-				value.constructor === Object &&
-				'type' in value &&
-				value.type === 'doc' &&
-				'content' in value &&
-				Object.keys(value).length === 2
-			) {
-				return false;
-			}
-			/** prevent link flatting */
-			if (
-				value &&
-				value.constructor === Object &&
-				'type' in value &&
-				'link' in value &&
-				'target' in value &&
-				[3, 4].includes(Object.keys(value).length)
-			) {
-				return false;
-			}
-			return true;
-		}
-	});
-
-export const getValueAtPath = <T extends unknown>(doc: Dic, path: string): T | null | undefined => {
-	const parts = path.split('.');
-	let current = doc;
-	for (const part of parts) {
-		if (/^d+$/.test(part)) {
-			current = current[parseInt(part)];
-		} else {
-			current = current[part];
-		}
-		if (!current) {
-			return current;
-		}
-	}
-	return current as T;
-};
-
-export const setValueAtPath = <T extends any>(obj: T, path: string, value: unknown): T => {
-	const parts = path.split('.');
-
-	let current: any = obj;
-	// We iterate until the second-to-last part
-	for (let i = 0; i < parts.length - 1; i++) {
-		const part = parts[i];
-		if (/^\d+$/.test(part) && Array.isArray(current)) {
-			current = current[parseInt(part)];
-		} else if (isObjectLiteral(current) && part in current) {
-			current = current[part];
-		} else {
-			throw new Error(`Can't find ${path}`);
-		}
-		if (!current) {
-			throw new Error(`Can't find ${path}`);
-		}
-	}
-
-	// Handle the last part separately for assignment
-	const lastPart = parts[parts.length - 1];
-	if (/^\d+$/.test(lastPart) && Array.isArray(current)) {
-		current[parseInt(lastPart)] = value;
-	} else if (isObjectLiteral(current)) {
-		current[lastPart] = value;
-	} else {
-		throw new Error(`Can't set value at ${path}`);
-	}
-
-	return obj;
-};
-
-export function deleteValueAtPath<T>(obj: T, path: string): T {
-	const parts = path.split('.');
-	const last = parts.pop()!;
-
-	let current: any = obj;
-	for (const part of parts) {
-		const key = !isNaN(Number(part)) ? Number(part) : part;
-		if (!(key in current)) return obj;
-		current = current[key];
-	}
-
-	const finalKey = !isNaN(Number(last)) ? Number(last) : last;
-	delete current[finalKey];
-	return obj;
-}
-
-export const getValueFromPath: GetValueFromPath = (doc, path, opts) => {
-	opts = opts || {};
-	const delimiter = '.';
-	const maxDepth = opts.maxDepth;
-	let output: any = null;
-	function parse(object: Dic, prev?: string, currentDepth?: number) {
-		currentDepth = currentDepth || 1;
-		Object.keys(object).forEach(function (key) {
-			const value = object[key];
-			const type = Object.prototype.toString.call(value);
-			const isbuffer = isBuffer(value);
-			const isobject = type === '[object Object]' || type === '[object Array]';
-
-			const newKey = prev ? prev + delimiter + key : key;
-
-			if (newKey === path) {
-				return (output = value);
-			}
-
-			if (
-				!isbuffer &&
-				isobject &&
-				Object.keys(value).length &&
-				(!maxDepth || currentDepth < maxDepth)
-			) {
-				return parse(value, newKey, currentDepth + 1);
-			}
-		});
-	}
-
-	parse(doc);
-
-	return output;
 };
 
 // @TODO make each field responsible of its empty value somehow
@@ -192,11 +121,27 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	return empty as T;
 };
 
-type GetValueFromPathOptions = {
-	maxDepth?: number;
-};
-type GetValueFromPath = (
-	doc: Partial<GenericDoc>,
-	path: string,
-	opts?: GetValueFromPathOptions
-) => any;
+// Utility function to convert path to regexp pattern ex:
+// some.0.image --> some\.\d+\.image
+// other.1.blocks.4.author --> other.\d+.blocks.\d+.author
+// export const convertPathToPattern = (path: string) => {
+// 	return path
+// 		.split('.')
+// 		.map((segment) => (/^\d+$/.test(segment) ? '\\d+' : segment))
+// 		.join('.');
+// };
+
+// Utility function to convert list of path to a set of regexp patterns
+// export const buildSetOfPathPatterns = (paths: string[], options?: { endAnchor?: boolean }) => {
+// 	const withEndAnchor = typeof options?.endAnchor === 'boolean' ? options?.endAnchor : true;
+// 	const patterns = new Set(paths.map(convertPathToPattern));
+// 	const suffix = withEndAnchor ? '$' : '';
+// 	return Array.from(patterns).map((pattern) => new RegExp('^' + pattern + suffix));
+// };
+
+// export const extractPaths = (doc: Dic) => {
+// 	const flatDoc: Dic = flatten(doc);
+// 	return Object.entries(flatDoc)
+// 		.map(([key, value]) => (key.endsWith('.path') ? value : null))
+// 		.filter(Boolean);
+// };

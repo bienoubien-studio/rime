@@ -40,7 +40,7 @@
 
 	let isFull = $derived(
 		(!config.many && selectedItems.length === 1) ||
-			(config.many && selectedItems.length === initialItems.length) ||
+			(config.many && selectedItems.length === availableItems.length) ||
 			false
 	);
 
@@ -48,7 +48,8 @@
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
 			label: doc[relationConfig.asTitle] || '[undefined]',
-			relationId: doc.id
+			relationId: doc.id,
+			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
 		};
 		if (itemInFieldValue) {
 			item.id = itemInFieldValue.id;

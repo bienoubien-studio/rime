@@ -20,6 +20,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 	let enumTables: string[] = [];
 	let enumRelations: string[] = [];
 	let relationFieldsExportDic: Dic = {};
+	let blocksRegister: string[] = [];
 
 	for (const collection of config.collections) {
 		const collectionSlug = toSnakeCase(collection.slug);
@@ -30,6 +31,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 			relationFieldsMap,
 			relationFieldsHasLocale
 		} = buildRootTable({
+			blocksRegister,
 			fields: collection.fields,
 			rootName: collectionSlug,
 			locales: config.localization?.locales || [],
@@ -81,6 +83,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 			relationFieldsMap,
 			relationFieldsHasLocale
 		} = buildRootTable({
+			blocksRegister,
 			fields: area.fields,
 			rootName: areaSlug,
 			locales: config.localization?.locales || [],

@@ -5,5 +5,6 @@ export default {
 	add_block: 'Add block',
 	no_block: 'No block yet',
 	delete_block: 'Delete block',
+	create_one: 'Create one $1',
 	generate_from: 'Generate from $1'
 };

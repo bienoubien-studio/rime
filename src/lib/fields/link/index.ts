@@ -23,6 +23,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 				value.link = null;
 				return value;
 			}
+			console.log(doc);
 			if (doc.url) value.url = doc.url;
 		} catch (err) {
 			console.log(err);

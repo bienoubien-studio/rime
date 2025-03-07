@@ -11,6 +11,7 @@ export type RelationFieldItem = {
 	isImage?: boolean;
 	imageURL?: string;
 	livePreview?: GenericDoc;
+	editUrl: string;
 };
 
 export type RelationComponentProps = {

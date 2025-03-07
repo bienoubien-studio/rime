@@ -124,5 +124,7 @@
 		class="rz-tree__add-button"
 		size={nested ? 'sm' : 'default'}
 		fields={config.fields}
-	/>
+	>
+		{config.addItemLabel}
+	</AddItemButton>
 </Field.Root>

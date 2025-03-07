@@ -1,15 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/types/api.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from 'rizom/types/doc.js';
 import type { RegisterCollection } from 'rizom';
 import { RizomError } from 'rizom/errors';
-import type { Dic } from 'rizom/types/utility';
-import { buildConfigMap } from '../tasks/configMap/index.server';
-import { augmentDocument } from '../tasks/augmentDocument.server';
-import { postprocessFields } from '../tasks/postProcessFields.server';
 import type { Adapter } from 'rizom/db/index.server';
 import { transformDocument } from '../tasks/transformDocument.server';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type Args = {
 	locale?: string | undefined;

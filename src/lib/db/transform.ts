@@ -18,8 +18,8 @@ import { extractFieldName } from 'rizom/fields/tree/utils.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
 import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
-import { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 
 /////////////////////////////////////////////
 // Types
@@ -102,10 +102,6 @@ export const databaseTransformInterface = ({
 
 		/** Place each block in its path */
 		for (let block of blocks) {
-			if (!(block.path in flatDoc)) {
-				flatDoc[block.path] = [];
-			}
-
 			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
 			if (locale && blockLocaleTableName in tables) {
 				block = {
@@ -140,10 +136,6 @@ export const databaseTransformInterface = ({
 		/** Place each treeBlock in its path */
 		for (let block of treeBlocks) {
 			try {
-				if (!(block.path in flatDoc)) {
-					flatDoc[block.path] = [];
-				}
-
 				const [fieldName] = extractFieldName(block.path);
 				const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(fieldName)}Locales`;
 
