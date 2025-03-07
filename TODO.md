@@ -4,7 +4,7 @@
 [v] slug types not generated
 [v] richtext types not generated
 [v] better login error handling
-[ ] Richtext in blocks not saved
+[v] Richtext in blocks not saved
 [ ] Add loader on image upload
 [ ] Change the way panel languages are loaded
 [ ] make file output key sm_jpg, sm_webp, if multilple output format
@@ -16,3 +16,4 @@
 [ ] init command without prompt
 [ ] better-auth + smtp : forgot password
 [ ] basic real life config preset
+[ ] collection nested

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { Collection } from 'rizom/types';
 	import type { WithUpload } from 'rizom/types/utility';
@@ -16,6 +17,7 @@
 
 	let input: HTMLInputElement;
 	let dragOver = $state(false);
+	let processingFile = $state(false);
 
 	const handleDragOver = (event: DragEvent) => {
 		dragOver = true;
@@ -40,17 +42,18 @@
 
 		if ('dataTransfer' in event && event.dataTransfer && event.dataTransfer.files) {
 			const droppedFiles = Array.from(event.dataTransfer.files);
-
 			processFile(droppedFiles[0]);
 		}
 	};
 
 	const processFile = (value: File) => {
+		processingFile = true;
 		const reader = new FileReader();
 
 		reader.onloadend = () => {
 			preview = typeof reader.result === 'string' ? reader.result : null;
 			file = value;
+			processingFile = false;
 		};
 
 		reader.onerror = (err) => {
@@ -71,12 +74,20 @@
 	ondragleave={handleDragLeave}
 	ondrop={handleDrop}
 >
-	<p>{t__('common.drop_file')} {t__('common.or')} <strong>{t__('common.browse')}</strong></p>
-	{#if accept}
-		<p class="rz-doc-upload-dropzone__accept">{accept.join(', ')} accepted</p>
+	{#if processingFile}
+		<div class="rz-doc-upload-dropzone__processing">
+			<SpinLoader />
+			<p>{t__('common.generatingPreview')}</p>
+		</div>
+	{:else}
+		<p>{t__('common.drop_file')} {t__('common.or')} <strong>{t__('common.browse')}</strong></p>
+		{#if accept}
+			<p class="rz-doc-upload-dropzone__accept">{accept.join(', ')} accepted</p>
+		{/if}
 	{/if}
 
 	<input
+		disabled={processingFile}
 		bind:this={input}
 		onchange={handleChange}
 		id="file"
@@ -97,6 +108,12 @@
 		background: transparent;
 		text-align: center;
 		font-size: var(--rz-text-sm);
+	}
+
+	.rz-doc-upload-dropzone__processing {
+		display: flex;
+		align-items: center;
+		gap: var(--rz-size-2);
 	}
 
 	.rz-doc-upload-dropzone:focus-visible {
