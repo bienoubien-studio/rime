@@ -5,19 +5,22 @@
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import type { FormField } from 'rizom/types/fields';
 
+	type TableColumn = Partial<FormField> & { name: string; label?: string };
 	type Props = { compact: boolean };
+
 	const { compact }: Props = $props();
 
 	const collection = getContext<CollectionContext>('collectionList');
-
 	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
+
+	function sortBy(name: string) {
+		collection.sortBy(name);
+	}
 
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
 		gridTemplateColumn = `grid-template-columns: repeat(${compact ? 1 : columnLength}, minmax(0, 1fr));`;
 	});
-
-	type TableColumn = Partial<FormField> & { name: string; label?: string };
 </script>
 
 {#snippet columnHeader(label: string)}
@@ -29,7 +32,7 @@
 {#snippet sortableColumnHeader(column: TableColumn)}
 	<div>
 		<button
-			onclick={() => collection.sortBy(column.name)}
+			onclick={() => sortBy(column.name)}
 			aria-label="sort {column.name}"
 			type="button"
 			class="rz-list-header__sort-button"

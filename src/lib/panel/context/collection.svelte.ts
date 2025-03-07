@@ -1,5 +1,5 @@
 import { invalidateAll } from '$app/navigation';
-import { getContext, setContext } from 'svelte';
+import { getContext, onMount, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
@@ -34,9 +34,40 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		(localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list'
 	);
 
+	onMount(() => {
+		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
+		sortingBy = localSortBy || 'updatedAt';
+		sortingOrder = (localStorage.getItem(`collection.${config.slug}.sortOrder`) ||
+			'asc') as SortMode;
+		if (localSortBy) {
+			sortBy(sortingBy);
+		}
+	});
+
 	$effect(() => {
 		if (!selectMode) selected = [];
 	});
+
+	const sortBy = (fieldName: string) => {
+		if (sortingBy !== fieldName) {
+			sortingBy = fieldName;
+			sortingOrder = sortingOrder || 'asc';
+		} else {
+			sortingOrder = sortingOrder === 'asc' ? 'dsc' : 'asc';
+		}
+		const orderMult = sortingOrder === 'asc' ? 1 : -1;
+		docs = docs.sort((a, b) => {
+			if (a[fieldName] < b[fieldName]) {
+				return -1 * orderMult;
+			}
+			if (a[fieldName] > b[fieldName]) {
+				return 1 * orderMult;
+			}
+			return 0;
+		});
+		localStorage.setItem(`collection.${config.slug}.sortBy`, fieldName);
+		localStorage.setItem(`collection.${config.slug}.sortOrder`, sortingOrder);
+	};
 
 	const deleteDocs = async (ids: string[]) => {
 		// Build the promise for each doc
@@ -111,6 +142,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		.sort((a, b) => a.table.position - b.table.position);
 
 	return {
+		sortBy,
 		columns: columns as WithRequired<FormField, 'table'>[],
 		canCreate,
 
@@ -172,25 +204,6 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		},
 		get sortingBy() {
 			return sortingBy;
-		},
-
-		sortBy(fieldName: string) {
-			if (sortingBy !== fieldName) {
-				sortingBy = fieldName;
-				sortingOrder = 'asc';
-			} else {
-				sortingOrder = sortingOrder === 'asc' ? 'dsc' : 'asc';
-			}
-			const orderMult = sortingOrder === 'asc' ? 1 : -1;
-			docs = docs.sort((a, b) => {
-				if (a[fieldName] < b[fieldName]) {
-					return -1 * orderMult;
-				}
-				if (a[fieldName] > b[fieldName]) {
-					return 1 * orderMult;
-				}
-				return 0;
-			});
 		},
 
 		filterBy(inputValue: string) {
