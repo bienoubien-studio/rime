@@ -30,7 +30,7 @@ export const saveRelations = async (args: {
 		data
 	} = args;
 
-	console.log('RELATIONS ===========================================');
+	// console.log('RELATIONS ===========================================');
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
@@ -46,15 +46,6 @@ export const saveRelations = async (args: {
 		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
 	});
 
-	// console.log(
-	// 	'deletedblocksPath',
-	// 	blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
-	// );
-	// console.log(
-	// 	'deletedTreeblocksPath',
-	// 	treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
-	// );
-
 	/** Get relations in data */
 	const incomingRelations = extractRelations({
 		parentId,
@@ -63,7 +54,7 @@ export const saveRelations = async (args: {
 		locale
 	});
 
-	console.log('incomingRelations', incomingRelations);
+	// console.log('incomingRelations', incomingRelations);
 
 	// get existing relations filtered by path
 	// if not present in incoming paths don't keep it.
@@ -81,7 +72,7 @@ export const saveRelations = async (args: {
 			});
 		});
 
-	console.log('existingRelations', existingRelations);
+	// console.log('existingRelations', existingRelations);
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
@@ -90,7 +81,7 @@ export const saveRelations = async (args: {
 		locale: locale
 	});
 
-	console.log('relationsDiff', relationsDiff);
+	// console.log('relationsDiff', relationsDiff);
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({

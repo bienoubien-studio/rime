@@ -49,7 +49,7 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	console.log(snapshot(doc));
+	// console.log(snapshot(doc));
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);

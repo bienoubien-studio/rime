@@ -30,7 +30,7 @@ export const saveTreeBlocks = async (args: {
 		locale
 	} = args;
 
-	console.log(' TREE BLOCKS ===========================================');
+	// console.log(' TREE BLOCKS ===========================================');
 
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({
@@ -38,7 +38,7 @@ export const saveTreeBlocks = async (args: {
 		configMap
 	});
 
-	console.log('incomingTreeBlocks', incomingTreeBlocks);
+	// console.log('incomingTreeBlocks', incomingTreeBlocks);
 	//
 
 	// Get existings
@@ -49,7 +49,7 @@ export const saveTreeBlocks = async (args: {
 			data: original,
 			configMap: originalConfigMap
 		});
-		console.log('existingTreeBlocks before filter', blocks);
+		// console.log('existingTreeBlocks before filter', blocks);
 		existingTreeBlocks = blocks.filter((block) => {
 			// filter path that are not present in incoming data
 			// in order to not delete unmodified blocks fields
@@ -58,14 +58,14 @@ export const saveTreeBlocks = async (args: {
 		// existingTreeBlocks = blocks;
 	}
 
-	console.log('existingTreeBlocks', existingTreeBlocks);
+	// console.log('existingTreeBlocks', existingTreeBlocks);
 
 	const treeDiff = defineTreeBlocksDiff({
 		existingBlocks: existingTreeBlocks,
 		incomingBlocks: incomingTreeBlocks
 	});
 
-	console.log('treeDiff', treeDiff);
+	// console.log('treeDiff', treeDiff);
 
 	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {

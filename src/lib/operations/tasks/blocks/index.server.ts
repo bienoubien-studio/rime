@@ -34,7 +34,7 @@ export const saveBlocks = async (args: {
 		configMap
 	});
 
-	console.log('incomingBlocks', incomingBlocks);
+	// console.log('incomingBlocks', incomingBlocks);
 
 	let existingBlocks: GenericBlock[] = [];
 	if (original) {
@@ -51,14 +51,14 @@ export const saveBlocks = async (args: {
 		});
 	}
 
-	console.log('existingBlocks', existingBlocks);
+	// console.log('existingBlocks', existingBlocks);
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
 		incomingBlocks
 	});
 
-	console.log('blocksDiff', blocksDiff);
+	// console.log('blocksDiff', blocksDiff);
 
 	if (blocksDiff.toDelete.length) {
 		await Promise.all(
