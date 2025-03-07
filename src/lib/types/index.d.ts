@@ -6,9 +6,7 @@ export type {
 	AdapterAreaInterface,
 	AdapterRelationsInterface,
 	AdapterTransformInterface,
-	GenericAdapterInterfaceArgs,
-	TransformContext,
-	TransformManyContext
+	GenericAdapterInterfaceArgs
 } from './adapter.js';
 
 // API types
@@ -25,17 +23,19 @@ export type { Access, User } from './auth';
 
 // Config types
 export type {
-	BaseCollectionConfig,
+	BaseCollection,
 	BrowserConfig,
-	BuiltCollectionConfig,
+	BuiltCollection,
+	CompiledCollection,
 	BuiltConfig,
 	BuiltDocConfig,
-	BuiltAreaConfig,
-	CollectionConfig,
+	BuiltArea,
+	CompiledArea,
+	Collection,
 	Config,
 	CustomPanelRoute,
 	DocumentPrototype,
-	AreaConfig,
+	Area,
 	ImageSizesConfig,
 	LocaleConfig,
 	LocalizationConfig,
@@ -68,17 +68,20 @@ export type {
 
 // Hooks types
 export type {
-	CollectionHook,
-	CollectionHookAfterDelete,
-	CollectionHookArgs,
-	CollectionHookBeforeDelete,
-	CollectionHookBeforeRead,
-	CollectionHookBeforeReadArgs,
 	CollectionHooks,
+	CollectionHook,
+	CollectionHookBeforeUpdate,
+	CollectionHookAfterUpdate,
+	CollectionHookBeforeCreate,
+	CollectionHookAfterUpsert,
+	CollectionHookAfterUpsert,
+	CollectionHookAfterCreate,
+	CollectionHookBeforeDelete,
+	CollectionHookAfterDelete,
+	CollectionHookBeforeRead,
 	AreaHookBeforeRead,
-	AreaHookBeforeReadArgs,
 	AreaHookBeforeUpdate,
-	AreaHookBeforeUpdateArgs,
+	AreaHookAfterUpdate,
 	AreaHooks
 } from './hooks.js';
 

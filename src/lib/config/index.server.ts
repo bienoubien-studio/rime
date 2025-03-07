@@ -3,11 +3,7 @@ import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../utils/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
-import type {
-	CompiledCollectionConfig,
-	CompiledAreaConfig,
-	CompiledConfig
-} from 'rizom/types/config.js';
+import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
 import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
 import type { AreaSlug } from 'rizom/types/doc.js';
@@ -38,11 +34,11 @@ export async function createConfigInterface(rawConfig: Config) {
 		}
 	}
 
-	const getArea = (slug: string): CompiledAreaConfig | undefined => {
+	const getArea = (slug: string): CompiledArea | undefined => {
 		return config.areas.find((g) => g.slug === slug);
 	};
 
-	const getCollection = (slug: string): CompiledCollectionConfig | undefined => {
+	const getCollection = (slug: string): CompiledCollection | undefined => {
 		return config.collections.find((c) => c.slug === slug);
 	};
 

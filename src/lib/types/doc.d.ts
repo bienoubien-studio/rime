@@ -5,6 +5,8 @@ import type { RegisterArea } from 'rizom';
 
 export type DocPrototype = 'area' | 'collection';
 
+export type RawDoc = Dic & { id: string };
+
 type BaseDoc = {
 	id: string;
 	title: string;

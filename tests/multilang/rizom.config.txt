@@ -47,12 +47,12 @@ const Settings = area('settings', {
 const linkField = link('link').types('pages', 'infos', 'url').required();
 
 const renderTitle: BlocksFieldBlockRenderTitle = ({ values, position }) => {
-	const hasLink = 'link' in fields;
-	const hasLabel = hasLink && 'label' in fields.link && typeof fields.link.label === 'string';
+	const hasLink = 'link' in values;
+	const hasLabel = hasLink && 'label' in values.link && typeof values.link.label === 'string';
 	if (!hasLabel) {
 		return 'Link ' + position;
 	}
-	return `${fields.link.label}`;
+	return `${values.link.label}`;
 };
 
 const subnav = blocks('subnav', [

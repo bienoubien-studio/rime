@@ -16,11 +16,11 @@
 	};
 
 	const { slug, data, children }: Props = $props();
-	const { getCollectionConfig } = getConfigContext();
+	const { getCollection } = getConfigContext();
 
 	setCollectionContext({
 		initial: data.docs,
-		config: getCollectionConfig(slug),
+		config: getCollection(slug),
 		canCreate: data.canCreate,
 		key: slug
 	});

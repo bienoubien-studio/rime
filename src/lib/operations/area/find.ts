@@ -1,51 +1,53 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import rizom from '$lib/rizom.server.js';
-import type { LocalAPI } from 'rizom/types/api';
-import type { Adapter } from 'rizom/types/adapter';
-import type { GenericDoc } from 'rizom/types/doc';
-import type { BuiltAreaConfig, CompiledAreaConfig } from 'rizom/types/config';
-import { RizomError } from 'rizom/errors/index.js';
+import type { CompiledArea, GenericDoc, Adapter } from 'rizom/types';
+import { RizomError } from 'rizom/errors';
+import { transformDocument } from '../tasks/transformDocument.server';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type FindArgs = {
 	locale?: string | undefined;
-	config: CompiledAreaConfig;
+	config: CompiledArea;
 	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
 	depth?: number;
 };
 
-export const find = async <T extends GenericDoc = GenericDoc>({
-	locale,
-	config,
-	event,
-	api,
-	adapter
-}: FindArgs): Promise<T> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
+export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
+	//
+	const { config, event, adapter, locale, api, depth } = args;
 
 	const authorized = config.access.read(event.locals.user);
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const rawDoc = (await adapter.area.get({ slug: config.slug, locale })) as T;
+	let documentRaw = await adapter.area.get({
+		slug: config.slug,
+		locale
+	});
 
-	let doc = await adapter.transform.doc<T>({ doc: rawDoc, slug: config.slug, locale, event, api });
+	let document = await transformDocument<T>({
+		raw: documentRaw,
+		config,
+		api,
+		adapter,
+		locale,
+		depth,
+		event
+	});
 
-	//////////////////////////////////////////////
-	// Hooks BeforeRead
-	//////////////////////////////////////////////
-
-	if (config.hooks && config.hooks.beforeRead) {
-		for (const hook of config.hooks.beforeRead) {
-			const args = await hook({ operation: 'read', config, doc, event, rizom, api });
-			event = args.event;
-			doc = args.doc as T;
-		}
+	for (const hook of config.hooks?.beforeRead || []) {
+		const result = await hook({
+			doc: document,
+			config,
+			operation: 'read',
+			api,
+			rizom: event.locals.rizom,
+			event
+		});
+		document = result.doc as T;
 	}
 
-	return doc;
+	return document;
 };

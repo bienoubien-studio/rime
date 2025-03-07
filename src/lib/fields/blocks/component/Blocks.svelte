@@ -56,9 +56,10 @@
 		}
 	});
 
-	function getConfigByBlockType(type: string): BlocksFieldRaw['blocks'][number] {
+	function getConfigByBlockType(type: string, block: any): BlocksFieldRaw['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
+			console.log(block);
 			throw new Error(`Block configuration not found for type: ${type}`);
 		}
 		return blockConfig;
@@ -85,7 +86,7 @@
 					{form}
 					{sorting}
 					path="{path}.{index}"
-					config={getConfigByBlockType(block.type)}
+					config={getConfigByBlockType(block.type, block)}
 				/>
 			{/each}
 		{/if}

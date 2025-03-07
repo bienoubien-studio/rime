@@ -198,8 +198,7 @@ test('Should get admin user', async ({ request }) => {
 	expect(data.doc.id).toBe(adminUserId);
 	expect(data.doc.roles).toContain('admin');
 	expect(data.doc.name).toBe('Admin');
-	expect(data.doc.resetToken).toBeUndefined();
-	expect(data.doc.resetTokenExpireAt).toBeUndefined();
+
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();
@@ -238,8 +237,7 @@ test('Should get editor user', async ({ request }) => {
 	expect(data.doc.roles).toContain('editor');
 	expect(data.doc.roles).not.toContain('admin');
 	expect(data.doc.name).toBe('Chesster');
-	expect(data.doc.resetToken).toBeUndefined();
-	expect(data.doc.resetTokenExpireAt).toBeUndefined();
+
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();

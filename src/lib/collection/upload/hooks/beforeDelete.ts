@@ -2,7 +2,7 @@ import type { CollectionHookBeforeDelete } from 'rizom/types/hooks';
 
 import { cleanupStoredFiles } from '../disk/delete';
 import type { WithUpload } from 'rizom/types/utility';
-import type { CompiledCollectionConfig } from 'rizom/types/config';
+import type { CompiledCollection } from 'rizom/types/config';
 
 /**
  * Hook executed before deleting a document to clean up associated files from storage.
@@ -17,7 +17,7 @@ import type { CompiledCollectionConfig } from 'rizom/types/config';
  * @returns Unmodified args object after file cleanup
  */
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
-	const config = args.config as WithUpload<CompiledCollectionConfig>;
+	const config = args.config as WithUpload<CompiledCollection>;
 	const event = args.event;
 	const id = (event && event.params.id) || '';
 	await cleanupStoredFiles({ config, api: args.api, id });

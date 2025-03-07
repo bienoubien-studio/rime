@@ -68,12 +68,12 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 		try {
 			await Promise.all(
-				relations.map((relation) =>
-					db
+				relations.map((relation) => {
+					return db
 						.update(table)
 						.set(omit(['id'], relation))
-						.where(eq(table.id, relation.id))
-				)
+						.where(eq(table.id, relation.id));
+				})
 			);
 		} catch (err: any) {
 			console.error('error in db/relations update' + err.message);
@@ -145,6 +145,8 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 };
 
 export default createAdapterRelationsInterface;
+
+export type AdapterRelationsInterface = ReturnType<typeof createAdapterRelationsInterface>;
 
 export type Relation = {
 	id?: string;

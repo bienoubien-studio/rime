@@ -6,8 +6,8 @@ import { isUploadConfig } from '../utils.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
-	BuiltCollectionConfig,
-	CollectionConfig,
+	BuiltCollection,
+	Collection,
 	ImageSizesConfig,
 	PanelUsersConfig
 } from 'rizom/types/config.js';
@@ -18,7 +18,7 @@ import { text } from 'rizom/fields/text/index.js';
 import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/builders/index.js';
 import { date } from 'rizom/fields/index.js';
 
-const buildHooks = async (collection: CollectionConfig<any>): Promise<CollectionHooks<any>> => {
+const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<any>> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const authHooks = await import('$lib/collection/auth/hooks.server.js');
@@ -32,18 +32,19 @@ const buildHooks = async (collection: CollectionConfig<any>): Promise<Collection
 	}
 	if (collection.upload) {
 		const uploadHooks = await import('rizom/collection/upload/hooks/index.server.js');
-		const { castBase64ToFile, processFileUpload, beforeDelete } = uploadHooks;
+		const { castBase64ToFile, processFileUpload, beforeDelete, populateSizes } = uploadHooks;
 		hooks = {
 			...hooks,
 			beforeUpdate: [castBase64ToFile, processFileUpload, ...(hooks?.beforeUpdate || [])],
 			beforeCreate: [castBase64ToFile, processFileUpload, ...(hooks?.beforeCreate || [])],
-			beforeDelete: [beforeDelete, ...(hooks?.beforeDelete || [])]
+			beforeDelete: [beforeDelete, ...(hooks?.beforeDelete || [])],
+			beforeRead: [populateSizes, ...(hooks?.beforeRead || [])]
 		};
 	}
 	return hooks;
 };
 
-const buildFields = (collection: CollectionConfig<any>): FieldBuilder<Field>[] => {
+const buildFields = (collection: Collection<any>): FieldBuilder<Field>[] => {
 	//
 	let fields = collection.fields;
 
@@ -84,9 +85,7 @@ const buildFields = (collection: CollectionConfig<any>): FieldBuilder<Field>[] =
 	return fields;
 };
 
-export const buildCollection = async (
-	collection: CollectionConfig<any>
-): Promise<BuiltCollectionConfig> => {
+export const buildCollection = async (collection: Collection<any>): Promise<BuiltCollection> => {
 	// Add generic documents title field if not defined
 	const addAsTitle = () => {
 		const fieldTitle = findTitleField(collection.fields);
@@ -143,7 +142,7 @@ export const buildCollection = async (
 		}
 		out.fields.push(text('status').defaultValue(collection.status[0].value).hidden());
 	}
-	return out as BuiltCollectionConfig;
+	return out as BuiltCollection;
 };
 
 export const mergePanelUsersCollectionWithDefault = ({

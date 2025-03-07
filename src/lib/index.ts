@@ -10,7 +10,7 @@ export { area, collection } from 'rizom/config/builders.js';
 /*                                    Types                                   */
 /* -------------------------------------------------------------------------- */
 
-export type { Config, CollectionConfig, AreaConfig, BrowserConfig } from './types/config.js';
+export type { Config, Collection, Area, BrowserConfig } from './types/config.js';
 export type {
 	CollectionHookBeforeUpsert,
 	CollectionHookAfterUpsert,

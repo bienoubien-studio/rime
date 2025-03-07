@@ -38,11 +38,19 @@
 
 .rz-relation-upload__info {
 	margin-top: var(--rz-size-3);
+	padding-right: 2rem;
 }
 
 .rz-relation-upload__filename {
 	font-size: var(--rz-text-sm);
 	@mixin font-semibold;
+	a {
+		display: inline-block;
+		padding: 0 0.3rem;
+		svg {
+			translate: 0 0.25rem;
+		}
+	}
 }
 
 .rz-relation-upload__filesize,

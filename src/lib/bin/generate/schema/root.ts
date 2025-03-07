@@ -24,6 +24,7 @@ type Args = {
 	relationFieldsMap?: RelationFieldsMap;
 	relationsDic?: Record<string, string[]>;
 	hasAuth?: boolean;
+	blocksRegister: string[];
 };
 
 type Return = {
@@ -79,9 +80,9 @@ const buildRootTable = ({
 	locales,
 	relationFieldsMap = {},
 	relationsDic = {},
-	hasAuth
+	hasAuth,
+	blocksRegister
 }: Args): Return => {
-	const registeredBlocks: string[] = [];
 	const blocksTables: string[] = [];
 	let relationFieldsHasLocale = false;
 
@@ -121,16 +122,19 @@ const buildRootTable = ({
 			} else if (isBlocksField(field.raw)) {
 				for (const block of field.raw.blocks) {
 					const blockTableName = `${rootName}Blocks${p(block.raw.name)}`;
-					if (!registeredBlocks.includes(blockTableName)) {
+					if (!blocksRegister.includes(blockTableName)) {
+						// Add the blocks as a relation of the root collection
 						relationsDic = {
 							...relationsDic,
 							[rootName]: [...(relationsDic[rootName] || []), blockTableName]
 						};
+						// Build the child blocks table
 						const {
 							schema: blockTable,
 							relationsDic: nestedRelationsDic,
 							relationFieldsMap: nestedRelationFieldsDic
 						} = buildRootTable({
+							blocksRegister,
 							fields: block.raw.fields,
 							tableName: blockTableName,
 							hasParent: true,
@@ -141,13 +145,14 @@ const buildRootTable = ({
 						});
 						relationsDic = nestedRelationsDic;
 						relationFieldsMap = nestedRelationFieldsDic;
-						registeredBlocks.push(blockTableName);
+						blocksRegister.push(blockTableName);
 						blocksTables.push(blockTable);
 					}
 				}
 			} else if (field instanceof TreeBuilder) {
 				const treeTableName = `${rootName}Tree${p(field.name)}`;
-				if (!registeredBlocks.includes(treeTableName)) {
+				if (!blocksRegister.includes(treeTableName)) {
+					// Add the tree table as relation of the root collection
 					relationsDic = {
 						...relationsDic,
 						[rootName]: [...(relationsDic[rootName] || []), treeTableName]
@@ -157,6 +162,7 @@ const buildRootTable = ({
 						relationsDic: nestedRelationsDic,
 						relationFieldsMap: nestedRelationFieldsDic
 					} = buildRootTable({
+						blocksRegister,
 						fields: field.raw.fields,
 						tableName: treeTableName,
 						hasParent: true,
@@ -167,7 +173,7 @@ const buildRootTable = ({
 					});
 					relationsDic = nestedRelationsDic;
 					relationFieldsMap = nestedRelationFieldsDic;
-					registeredBlocks.push(treeTableName);
+					blocksRegister.push(treeTableName);
 					blocksTables.push(treeTable);
 				}
 			} else if (field instanceof FormFieldBuilder) {

@@ -9,16 +9,15 @@ import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
 import { getUserContext } from './user.svelte.js';
-import { getValueAtPath } from '../../utils/doc.js';
+import { getValueAtPath } from '../../utils/object.js';
 import { snapshot } from '../../utils/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
 import type { GenericBlock, GenericDoc, AnyFormField } from 'rizom/types';
 import type { Dic } from 'rizom/types/utility';
-import type { CompiledCollectionConfig, CompiledAreaConfig } from 'rizom/types/config.js';
+import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
-import { treeToString, type TreeFieldRaw } from 'rizom/fields/tree/index.js';
 import { isObjectLiteral } from 'rizom/utils/object.js';
 
 function createDocumentFormState({
@@ -50,9 +49,7 @@ function createDocumentFormState({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	// $effect(() => {
-	// 	console.log($state.snapshot(doc));
-	// });
+	console.log(snapshot(doc));
 	function initLevel() {
 		const last = key.split('.').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -71,7 +68,7 @@ function createDocumentFormState({
 	const rebuildPaths = (items: any[], basePath: string, parentPath: string = basePath) => {
 		return items.map((item, index) => {
 			// Clone the item
-			const newItem = { ...item };
+			const newItem = cloneDeep(item);
 
 			// If item has a path property, update it with parent path
 			if ('path' in newItem) {
@@ -83,7 +80,7 @@ function createDocumentFormState({
 
 			// Process all properties of the item
 			Object.keys(newItem).forEach((key) => {
-				// If property is an array, process it recursively
+				// If property is an array of object, process it recursively
 				if (
 					Array.isArray(newItem[key]) &&
 					newItem[key].length &&
@@ -249,7 +246,7 @@ function createDocumentFormState({
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
-			return getValueAtPath(doc, path) || [];
+			return cloneDeep(getValueAtPath(doc, path)) || [];
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
@@ -293,8 +290,36 @@ function createDocumentFormState({
 		};
 
 		const duplicateBlock = (index: number) => {
+			// return;
 			let blocks = [...getBlocks()];
-			const blockCopy = { ...cloneDeep(blocks[index]), id: generateTempId() };
+
+			const cloneBlock = <T>(block: GenericBlock) => {
+				// First deep clone the block so duplicate origin
+				// is not impacted.
+				let clone = cloneDeep(block);
+				// Function to reset all nested id properties
+				// so nested elements are threated as created elements
+				const resetIds = <T extends Record<string, any>>(obj: T) => {
+					if ('id' in obj) {
+						obj = { ...obj, id: generateTempId() };
+					}
+					for (const key of Object.keys(obj)) {
+						let value = obj[key];
+						if (Array.isArray(value) && value.length && isObjectLiteral(value[0])) {
+							obj = {
+								...obj,
+								[key]: value.map((child) => resetIds(child))
+							};
+						}
+					}
+					return obj;
+				};
+				// set temp-ids for nested elements
+				return resetIds(clone);
+			};
+
+			const blockCopy = cloneBlock(blocks[index]);
+
 			blocks.splice(index + 1, 0, blockCopy);
 			blocks = blocks.map((block, index) => ({
 				...block,
@@ -585,12 +610,11 @@ export function getDocumentFormContext(key: string = 'root') {
 export type DocumentFormContext = ReturnType<typeof setDocumentFormContext>;
 
 type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
-type DeleteBlock = (index: number) => void;
 type MoveBlock = (from: number, to: number) => void;
 
 type Args = {
 	initial: GenericDoc;
-	config: CompiledAreaConfig | CompiledCollectionConfig;
+	config: CompiledArea | CompiledCollection;
 	readOnly: boolean;
 	onNestedDocumentCreated?: any;
 	onDataChange?: any;

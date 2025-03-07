@@ -3,7 +3,7 @@ import type { AnyField, Field } from './fields';
 import type { TabsFieldRaw } from 'rizom/fields/tabs';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 import type { GroupFieldRaw } from 'rizom/fields/group';
-import type { CollectionConfig } from './config';
+import type { Collection } from './config';
 import type { RelationValue } from 'rizom/types';
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;

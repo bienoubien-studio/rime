@@ -20,7 +20,7 @@
 	const { path, config, form }: Props = $props();
 
 	// Context
-	const { getCollectionConfig } = getConfigContext();
+	const { getCollection } = getConfigContext();
 	const locale = getLocaleContext();
 	let initialItems: RelationFieldItem[] = $state([]);
 
@@ -31,7 +31,7 @@
 
 	let stamp = $state(new Date().getTime().toString());
 
-	const relationConfig = getCollectionConfig(config.relationTo);
+	const relationConfig = getCollection(config.relationTo);
 	let isRelationToUpload = isUploadConfig(relationConfig);
 	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);
@@ -40,7 +40,7 @@
 
 	let isFull = $derived(
 		(!config.many && selectedItems.length === 1) ||
-			(config.many && selectedItems.length === initialItems.length) ||
+			(config.many && selectedItems.length === availableItems.length) ||
 			false
 	);
 
@@ -48,7 +48,8 @@
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
 			label: doc[relationConfig.asTitle] || '[undefined]',
-			relationId: doc.id
+			relationId: doc.id,
+			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
 		};
 		if (itemInFieldValue) {
 			item.id = itemInFieldValue.id;
@@ -144,8 +145,14 @@
 		return relations;
 	};
 
+	const onRelationCreation = () => {
+		form.readOnly = true;
+	};
+
 	const onRelationCreated = (doc: GenericDoc) => {
+		form.readOnly = false;
 		initialItems.push(documentToRelationFieldItem(doc));
+		availableItems.push(documentToRelationFieldItem(doc));
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
@@ -181,6 +188,7 @@
 		readOnly={form.readOnly}
 		{nothingToSelect}
 		{onRelationCreated}
+		{onRelationCreation}
 		{isFull}
 		{stamp}
 		{addValue}

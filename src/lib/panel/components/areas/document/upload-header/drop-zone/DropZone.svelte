@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import type { CollectionConfig } from 'rizom/types';
+	import type { Collection } from 'rizom/types';
 	import type { WithUpload } from 'rizom/types/utility';
 	import { toast } from 'svelte-sonner';
 
 	import type { ChangeEventHandler } from 'svelte/elements';
 
 	type Props = {
-		accept: WithUpload<CollectionConfig<any>>['accept'] | undefined;
+		accept: WithUpload<Collection<any>>['accept'] | undefined;
 		preview: string | null;
 		file: File | null;
 	};

@@ -1,4 +1,4 @@
-import type { CompiledCollectionConfig } from 'rizom/types/config';
+import type { CompiledCollection } from 'rizom/types/config';
 import type { GenericDoc } from 'rizom/types/doc';
 
 export type RelationFieldItem = {
@@ -11,11 +11,12 @@ export type RelationFieldItem = {
 	isImage?: boolean;
 	imageURL?: string;
 	livePreview?: GenericDoc;
+	editUrl: string;
 };
 
 export type RelationComponentProps = {
 	path: string;
-	relationConfig: CompiledCollectionConfig;
+	relationConfig: CompiledCollection;
 	stamp: string;
 	hasError: boolean;
 	isFull: boolean;
@@ -29,4 +30,5 @@ export type RelationComponentProps = {
 	formNestedLevel: number;
 	onOrderChange: (oldIndex: number, newIndex: number) => void;
 	onRelationCreated: any;
+	onRelationCreation: any;
 };

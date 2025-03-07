@@ -125,6 +125,8 @@ const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 
 export default createAdapterAreaInterface;
 
+export type AdapterAreaInterface = ReturnType<typeof createAdapterAreaInterface>;
+
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////

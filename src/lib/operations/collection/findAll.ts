@@ -1,15 +1,15 @@
-import rizom from '$lib/rizom.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/types/api.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
-import type { Adapter } from 'rizom/types/adapter.js';
-import { RizomError } from 'rizom/errors/index.js';
+import type { CompiledCollection } from 'rizom/types/config.js';
+import type { CollectionSlug, GenericDoc, RawDoc } from 'rizom/types/doc.js';
 import type { RegisterCollection } from 'rizom';
+import { RizomError } from 'rizom/errors';
+import type { Adapter } from 'rizom/db/index.server';
+import { transformDocument } from '../tasks/transformDocument.server';
+import type { LocalAPI } from '../localAPI/index.server';
 
 type Args = {
 	locale?: string | undefined;
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
 	adapter: Adapter;
 	api: LocalAPI;
@@ -18,59 +18,49 @@ type Args = {
 	limit?: number;
 };
 
-export const findAll = async <T extends RegisterCollection[CollectionSlug]>({
-	locale,
-	config,
-	adapter,
-	api,
-	depth,
-	sort,
-	limit,
-	event
-}: Args): Promise<T[]> => {
-	//////////////////////////////////////////////
-	// Access
-	//////////////////////////////////////////////
+export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> => {
+	const { config, event, locale, adapter, sort, limit, api, depth } = args;
 
 	const authorized = config.access.read(event.locals.user);
-
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const rawDocs = (await adapter.collection.findAll({
+	let documentsRaw = await adapter.collection.findAll({
 		slug: config.slug,
 		sort,
 		limit,
 		locale
-	})) as T[];
-
-	const docs = await adapter.transform.docs<T>({
-		docs: rawDocs,
-		slug: config.slug,
-		locale,
-		api,
-		event,
-		depth
 	});
 
-	//////////////////////////////////////////////
-	// Hooks BeforeRead
-	//////////////////////////////////////////////
+	const processDocument = async (documentRaw: RawDoc) => {
+		//
+		let document = await transformDocument<T>({
+			raw: documentRaw,
+			config,
+			api,
+			adapter,
+			locale,
+			depth,
+			event
+		});
 
-	if (config.hooks && config.hooks.beforeRead) {
-		for (const hook of config.hooks.beforeRead) {
-			for (const [index, doc] of docs.entries()) {
-				try {
-					const hookArgs = await hook({ operation: 'read', config, doc, event, rizom, api });
-					event = hookArgs.event;
-					docs[index] = doc;
-				} catch (err: any) {
-					throw new RizomError(RizomError.HOOK, err.message);
-				}
-			}
+		for (const hook of config.hooks?.beforeRead || []) {
+			const result = await hook({
+				doc: document as RegisterCollection[CollectionSlug],
+				config,
+				operation: 'read',
+				api,
+				rizom: event.locals.rizom,
+				event
+			});
+			document = result.doc as T;
 		}
-	}
 
-	return docs as T[];
+		return document;
+	};
+
+	const documents = await Promise.all(documentsRaw.map((raw) => processDocument(raw)));
+
+	return documents;
 };

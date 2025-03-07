@@ -102,3 +102,67 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
 
 	return output;
 };
+
+export const getValueAtPath = <T extends unknown>(obj: Dic, path: string): T | null | undefined => {
+	const parts = path.split('.');
+	let current = obj;
+	for (const part of parts) {
+		if (/^d+$/.test(part)) {
+			current = current[parseInt(part)];
+		} else {
+			current = current[part];
+		}
+		if (!current) {
+			return current;
+		}
+	}
+	return current as T;
+};
+
+export const setValueAtPath = <T extends any>(obj: T, path: string, value: unknown): T => {
+	const parts = path.split('.');
+
+	let current: any = obj;
+	// We iterate until the second-to-last part
+	for (let i = 0; i < parts.length - 1; i++) {
+		const part = parts[i];
+		if (/^\d+$/.test(part) && Array.isArray(current)) {
+			current = current[parseInt(part)];
+		} else if (isObjectLiteral(current) && part in current) {
+			current = current[part];
+		} else {
+			throw new Error(`Can't find ${path}`);
+		}
+		if (!current) {
+			throw new Error(`Can't find ${path}`);
+		}
+	}
+
+	// Handle the last part separately for assignment
+	const lastPart = parts[parts.length - 1];
+	if (/^\d+$/.test(lastPart) && Array.isArray(current)) {
+		current[parseInt(lastPart)] = value;
+	} else if (isObjectLiteral(current)) {
+		current[lastPart] = value;
+	} else {
+		throw new Error(`Can't set value at ${path}`);
+	}
+
+	return obj;
+};
+
+export function deleteValueAtPath<T>(obj: T, path: string): T {
+	const parts = path.split('.');
+	const last = parts.pop()!;
+
+	let current: any = obj;
+	for (const part of parts) {
+		const key = !isNaN(Number(part)) ? Number(part) : part;
+		if (!(key in current)) return obj;
+		current = current[key];
+	}
+
+	const finalKey = !isNaN(Number(last)) ? Number(last) : last;
+	delete current[finalKey];
+	return obj;
+}

@@ -15,7 +15,7 @@ import {
 import { hasProps } from '../../utils/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { CompiledCollectionConfig } from 'rizom/types/config.js';
+import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
 import type { WithoutBuilders, WithRequired } from 'rizom/types/utility.js';
 import type { GroupField } from 'rizom/fields/types.js';
@@ -295,7 +295,7 @@ export type CollectionContext = ReturnType<typeof setCollectionContext>;
 
 type Args = {
 	initial: GenericDoc[];
-	config: CompiledCollectionConfig;
+	config: CompiledCollection;
 	canCreate: boolean;
 	key?: string;
 };

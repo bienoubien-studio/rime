@@ -1,18 +1,11 @@
-import type { AnyField, Field, FormField } from 'rizom/types/fields.js';
-import {
-	isBlocksField,
-	isBlocksFieldRaw,
-	isFormField,
-	isTreeFieldRaw,
-	toFormFields
-} from '../../../utils/field.js';
+import type { Field } from 'rizom/types/fields.js';
+import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, toFormFields } from 'rizom/utils/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { buildTreeFieldsMap } from './tree.js';
+import { buildTreeFieldsMap } from './buildTreeMap.server.js';
+import type { ConfigMap } from './types.js';
 
-export type ConfigMap = Record<string, FormField>;
-
-export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields: Field[]) => {
+export const buildConfigMap = (data: Partial<GenericDoc>, incomingFields: Field[]) => {
 	let map: ConfigMap = {};
 
 	const formFields = incomingFields.reduce(toFormFields, []);
@@ -41,7 +34,7 @@ export const buildConfigMap = (incomingData: Partial<GenericDoc>, incomingFields
 		}
 	};
 
-	traverseData(incomingData, formFields, '');
+	traverseData(data, formFields, '');
 
 	return map;
 };

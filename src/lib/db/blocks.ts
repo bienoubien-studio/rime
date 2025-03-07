@@ -164,6 +164,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 
 export default createAdapterBlocksInterface;
 
+export type AdapterBlocksInterface = ReturnType<typeof createAdapterBlocksInterface>;
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////

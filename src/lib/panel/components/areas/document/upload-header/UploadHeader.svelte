@@ -8,12 +8,12 @@
 	import { FileArchive, FileAudio, FileVideo } from 'lucide-svelte';
 	import * as util from 'rizom/utils/file.js';
 	import type { WithUpload } from 'rizom/types/utility';
-	import type { CompiledCollectionConfig } from 'rizom/types/config';
+	import type { CompiledCollection } from 'rizom/types/config';
 
 	type Props = {
 		form: DocumentFormContext;
 		create: boolean;
-		accept: WithUpload<CompiledCollectionConfig>['accept'];
+		accept: WithUpload<CompiledCollection>['accept'];
 	};
 	const { form, create, accept }: Props = $props();
 

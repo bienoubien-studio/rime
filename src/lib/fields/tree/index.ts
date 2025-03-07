@@ -1,9 +1,8 @@
-import type { AnyField, FormField } from 'rizom/types/index.js';
+import type { FormField } from 'rizom/types/index.js';
 import type { Dic } from 'rizom/types/utility.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tree from './component/Tree.svelte';
 import Cell from './component/Cell.svelte';
-import type { ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import type { Field } from 'rizom/types/fields.js';
@@ -20,6 +19,7 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 		this.field.fields = [text('path').hidden(), number('position').hidden()];
 		this.field.maxDepth = 50;
+		this.field.addItemLabel = 'Add an item';
 	}
 
 	get component() {
@@ -29,8 +29,21 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		return Cell;
 	}
 
+	toType() {
+		const fieldsTypes = this.field.fields
+			.filter((field) => field instanceof FormFieldBuilder)
+			.map((field) => field.toType())
+			.join(',\n');
+		return `${this.field.name}: Array<{${fieldsTypes}}>`;
+	}
+
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = [...(this.field.fields || []), ...fields];
+		return this;
+	}
+
+	addItemLabel(label: string) {
+		this.field.addItemLabel = label;
 		return this;
 	}
 
@@ -101,16 +114,12 @@ export type TreeField = FormField & {
 	maxDepth: number;
 	renderTitle?: TreeFieldBlockRenderTitle;
 	fields: FieldBuilder<Field>[];
+	addItemLabel: string;
 };
 
 export type TreeFieldBlockRenderTitle = (args: { values: Dic }) => string;
 
-export type TreeFieldRaw = FormField & {
-	type: 'tree';
-	renderTitle?: TreeFieldBlockRenderTitle;
-	maxDepth: number;
-	fields: Field[];
-};
+export type TreeFieldRaw = FormField & Omit<TreeField, 'fields'> & { fields: Field[] };
 
 /////////////////////////////////////////////
 // Register

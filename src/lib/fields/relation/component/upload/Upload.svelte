@@ -1,18 +1,17 @@
 <script lang="ts">
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index';
-	import { File, X } from 'lucide-svelte';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Sortable from 'sortablejs';
+	import { Edit, File, X } from 'lucide-svelte';
 	import Doc from 'rizom/panel/components/areas/document/Document.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { createBlankDocument } from '$lib/utils/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
-	import './upload.css';
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import Sortable from 'sortablejs';
 	import { onDestroy } from 'svelte';
-	import { randomId } from 'rizom/utils/random.js';
+	import './upload.css';
 
 	const {
 		isFull,
@@ -25,6 +24,7 @@
 		relationConfig,
 		onOrderChange,
 		formNestedLevel,
+		onRelationCreation,
 		onRelationCreated,
 		stamp
 	}: Omit<RelationComponentProps, 'readOnly'> = $props();
@@ -84,7 +84,9 @@
 		</div>
 
 		<div class="rz-relation-upload__info">
-			<p class="rz-relation-upload__filename">{item.filename}</p>
+			<p class="rz-relation-upload__filename">
+				{item.filename} <a href={item.editUrl}><Edit size="12" /></a>
+			</p>
 			<p class="rz-relation-upload__filesize">{item.filesize}</p>
 			<p class="rz-relation-upload__mimetype">{item.mimeType}</p>
 		</div>
@@ -131,11 +133,20 @@
 
 <div class="rz-relation-upload__actions">
 	{#if !isFull}
-		<Button onclick={() => (open = true)} variant="outline">
+		<Button onclick={() => (open = true)} variant="outline" disabled={availableItems.length === 0}>
 			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
+	{/if}
+
+	{#if (selectedItems.length === 0 && availableItems.length === 0) || !isFull}
 		{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
-			<Button onclick={() => (create = true)} variant="secondary">
+			<Button
+				onclick={() => {
+					create = true;
+					onRelationCreation();
+				}}
+				variant="secondary"
+			>
 				Create new {relationConfig.label.singular || relationConfig.slug}
 			</Button>
 		{/if}

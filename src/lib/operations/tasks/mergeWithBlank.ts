@@ -1,16 +1,14 @@
-import type { Adapter } from 'rizom/types/adapter.js';
-import { createBlankDocument } from '$lib/utils/doc.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import { isUploadConfig } from 'rizom/config/utils.js';
+import type { CompiledCollection, GenericDoc } from 'rizom/types';
+import { isUploadConfig } from 'rizom/config/utils';
 import deepmerge from 'deepmerge';
-import type { CompiledAreaConfig, CompiledCollectionConfig } from 'rizom/types/config.js';
+import { createBlankDocument } from 'rizom/utils/doc';
 
 export const mergeWithBlankDocument = <T extends GenericDoc>({
 	data,
 	config
 }: {
 	data: Partial<T>;
-	config: CompiledCollectionConfig | CompiledAreaConfig;
+	config: CompiledCollection;
 }): T => {
 	let file;
 	if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {
@@ -18,8 +16,6 @@ export const mergeWithBlankDocument = <T extends GenericDoc>({
 		delete data.file;
 	}
 
-	console.log(data);
-	/** Merge data with emptydoc so all required fields will be present in validate */
 	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
 
 	// Add file after merge

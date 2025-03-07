@@ -1,21 +1,37 @@
+import { hasProps } from 'rizom/utils/object';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/utils/field.js';
 import { rizom, type FormField } from '$lib/index.js';
-import type {
-	CheckboxField,
-	ComboBoxField,
-	DateField,
-	EmailField,
-	LinkField,
-	NumberField,
-	RadioField,
-	RelationField,
-	RichTextField,
-	SelectField,
-	TextField,
-	ToggleField
-} from 'rizom/fields/types';
+import type { RelationField, SelectField } from 'rizom/fields/types';
+import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from './configMap/types';
+import { getValueAtPath, setValueAtPath } from 'rizom/utils/object';
+
+export const setDefaultValues = async <T extends Dic>(args: {
+	data: T;
+	configMap: ConfigMap;
+	adapter: Adapter;
+}) => {
+	const { adapter, configMap } = args;
+	let output = { ...args.data };
+	for (const [key, config] of Object.entries(configMap)) {
+		let value = getValueAtPath(output, key);
+		let isEmpty;
+		try {
+			isEmpty = config.isEmpty(value);
+		} catch (err: any) {
+			isEmpty = false;
+			console.log(err.message);
+		}
+		if (isEmpty && hasProps(config, ['defaultValue'])) {
+			value = await getDefaultValue({ key, config, adapter });
+			output = setValueAtPath(output, key, value);
+		}
+	}
+
+	return output;
+};
 
 type GetDefaultValue = (args: {
 	key: string;

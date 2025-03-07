@@ -1,10 +1,10 @@
 import { access } from '$lib/utils/access/index.js';
 import { Newspaper, ReceiptText } from 'lucide-svelte';
 import { Text } from 'lucide-svelte';
-import type { CollectionConfig } from 'rizom/index.js';
+import type { Collection } from 'rizom/index.js';
 import type { CollectionHook, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom/index.js';
-import type { AreaConfig } from 'rizom/index.js';
+import type { Area } from 'rizom/index.js';
 
 import {
 	block,

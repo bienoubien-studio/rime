@@ -1,22 +1,24 @@
 import { isRelationField } from '$lib/utils/field.js';
 import type { BeforeOperationRelation } from '$lib/db/relations.js';
-import type { FieldProviderServer } from '../fields/provider.server.js';
+import type { Dic } from 'rizom/types/utility';
+import type { ConfigMap } from '../configMap/types';
+import { getValueAtPath } from 'rizom/utils/object';
 
 type Args = {
 	parentId?: string;
-	fieldProvider: FieldProviderServer;
+	data: Dic;
+	configMap: ConfigMap;
 	locale: string | undefined;
 };
 
-export const extractRelations = ({ parentId, fieldProvider, locale }: Args) => {
+export const extractRelations = ({ parentId, data, configMap, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
-	const emptyPaths: string[] = []; // Add this to track empty arrays
 
-	for (const [path, config] of Object.entries(fieldProvider.configMap)) {
+	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
-			const field = fieldProvider.useFieldServer(path);
+			const value = getValueAtPath<BeforeOperationRelation[] | string | string[]>(data, path);
 			const localized = config.localized;
-			const relationRawValue: BeforeOperationRelation[] | string | string[] = field.value;
+			const relationRawValue = value;
 			let output: BeforeOperationRelation[] = [];
 
 			const relationFromString = ({ value, position = 0 }: RelationFromStringArgs) => {
@@ -33,16 +35,14 @@ export const extractRelations = ({ parentId, fieldProvider, locale }: Args) => {
 				return result;
 			};
 
-			// Check if it's an empty array
-			if (Array.isArray(relationRawValue) && relationRawValue.length === 0) {
-				emptyPaths.push(path);
-			} else if (Array.isArray(relationRawValue)) {
+			if (Array.isArray(relationRawValue)) {
 				output = relationRawValue.map((value, n) => {
 					if (typeof value === 'string') {
 						return relationFromString({ value, position: n });
 					}
 					return value;
 				});
+				// Check if it's a string
 			} else if (typeof relationRawValue === 'string') {
 				output = [relationFromString({ value: relationRawValue, position: 0 })];
 			}
@@ -50,7 +50,7 @@ export const extractRelations = ({ parentId, fieldProvider, locale }: Args) => {
 		}
 	}
 
-	return { relations, emptyPaths };
+	return relations;
 };
 
 type RelationFromStringArgs = {

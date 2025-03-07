@@ -1,11 +1,11 @@
-import type { BuiltAreaConfig, AreaConfig } from 'rizom/types';
+import type { BuiltArea, Area } from 'rizom/types';
 
 import { findTitleField } from './fields/findTitle.server.js';
 import type { AreaSlug } from 'rizom/types/doc';
 import { capitalize } from 'rizom/utils/string.js';
 import { date, relation, text } from 'rizom/fields/index.js';
 
-export const buildArea = (area: AreaConfig<any>): BuiltAreaConfig => {
+export const buildArea = (area: Area<any>): BuiltArea => {
 	const fieldTitle = findTitleField(area.fields);
 
 	return {

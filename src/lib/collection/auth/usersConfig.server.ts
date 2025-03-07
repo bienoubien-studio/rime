@@ -1,7 +1,7 @@
 import { UsersRound } from 'lucide-svelte';
 import { access } from 'rizom/utils/access/index.js';
 import { usersFields } from './usersFields.js';
-import type { CollectionConfig } from 'rizom';
+import type { Collection } from 'rizom';
 import { collection } from 'rizom/config/builders.js';
 
 export const panelUsersCollection = collection('users', {

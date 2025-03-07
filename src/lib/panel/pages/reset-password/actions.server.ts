@@ -1,5 +1,5 @@
 import { fail, redirect, error, type RequestEvent } from '@sveltejs/kit';
-import extractData from 'rizom/operations/preprocess/extract/data.server';
+import { extractData } from 'rizom/operations/data.server.js';
 import type { PanelActionFailure } from 'rizom/types/panel';
 
 type ResetPasswordForm = {

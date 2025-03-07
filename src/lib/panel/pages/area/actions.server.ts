@@ -1,5 +1,5 @@
 import { type RequestEvent } from '@sveltejs/kit';
-import extractData from '$lib/operations/preprocess/extract/data.server';
+import { extractData } from 'rizom/operations/data.server.js';
 import type { AreaSlug } from 'rizom/types/doc';
 import { safe } from 'rizom/utils/safe';
 import { handleError } from 'rizom/errors/handler.server';

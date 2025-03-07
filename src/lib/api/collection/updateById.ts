@@ -1,4 +1,4 @@
-import extractData from '$lib/operations/preprocess/extract/data.server';
+import { extractData } from 'rizom/operations/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
 import type { CollectionSlug } from 'rizom/types/doc';

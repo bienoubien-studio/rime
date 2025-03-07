@@ -1,16 +1,16 @@
 import type { TreeBlock } from 'rizom/types/doc';
-import type { ConfigMap } from '../config/map';
-import { getValueAtPath } from '$lib/utils/doc';
 import cloneDeep from 'clone-deep';
-import type { WithRequired } from 'rizom/types/utility';
-import type { FieldProviderServer } from '../fields/provider.server';
+import type { Dic, WithRequired } from 'rizom/types/utility';
+import type { ConfigMap } from '../configMap/types';
+import { getValueAtPath } from 'rizom/utils/object';
 
 type ExtractTreesArgs = {
-	fieldProvider: FieldProviderServer;
+	data: Dic;
+	configMap: ConfigMap;
 };
 
-export function extractTreeItems({ fieldProvider }: ExtractTreesArgs) {
-	const items: WithRequired<TreeBlock, 'path'>[] = [];
+export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
+	const blocks: WithRequired<TreeBlock, 'path'>[] = [];
 
 	function processTreeItem(
 		item: TreeBlock,
@@ -28,14 +28,14 @@ export function extractTreeItems({ fieldProvider }: ExtractTreesArgs) {
 
 		// Set path based on whether it's a root level or nested item
 		processedItem.path = parentPath
-			? `${parentPath}` // For nested items, use parent path
-			: rootPath; // For root items, use root path
+			? `${parentPath}` // For nested blocks, use parent path
+			: rootPath; // For root blocks, use root path
 
 		// Remove children prop as they will be extracted
 		processedItem._children = [];
 
 		// Add the processed item to the flat array
-		items.push(processedItem as WithRequired<TreeBlock, 'path'>);
+		blocks.push(processedItem as WithRequired<TreeBlock, 'path'>);
 
 		// Process children recursively
 		(item._children || []).forEach((child, childIndex) => {
@@ -48,20 +48,19 @@ export function extractTreeItems({ fieldProvider }: ExtractTreesArgs) {
 		});
 	}
 
-	Object.entries(fieldProvider.configMap).forEach(([path, config]) => {
+	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
-			const field = fieldProvider.useFieldServer(path);
-			const isEmptyValue = config.isEmpty(field.value);
+			const value = getValueAtPath<TreeBlock[]>(data, path);
+
+			const isEmptyValue = config.isEmpty(value);
 			// console.log('in', toNestedRepresentation(value).toString());
-			if (!isEmptyValue) {
-				field.value.forEach((item: TreeBlock, index: number) => {
+			if (value && !isEmptyValue) {
+				value.forEach((item: TreeBlock, index: number) => {
 					processTreeItem(item, index, path, undefined);
 				});
 			}
 		}
 	});
 
-	// console.log('out', toNestedRepresentation(items).toString());
-
-	return items;
+	return blocks;
 }

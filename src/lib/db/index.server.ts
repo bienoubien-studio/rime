@@ -1,14 +1,13 @@
-import createAdapterCollectionInterface from './collection.js';
-import createAdapterAreaInterface from './area.js';
-import createAdapterBlocksInterface from './blocks.js';
-import createAdapterRelationsInterface from './relations.js';
+import createAdapterCollectionInterface, { type AdapterCollectionInterface } from './collection.js';
+import createAdapterAreaInterface, { type AdapterAreaInterface } from './area.js';
+import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blocks.js';
+import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
 import createAdapterAuthInterface from './auth.server.js';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
-import { databaseTransformInterface } from './transform.js';
-import { env } from '$env/dynamic/public';
-import createAdapterTreeInterface from './tree.js';
+import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
+import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
@@ -21,12 +20,12 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		schema,
 		trustedOrigins: configInterface.raw.trustedOrigins
 	});
-	const blocks = createAdapterBlocksInterface({ db, tables });
-	const tree = createAdapterTreeInterface({ db, tables });
-	const collection = createAdapterCollectionInterface({ db, tables });
-	const area = createAdapterAreaInterface({ db, tables });
-	const relations = createAdapterRelationsInterface({ db, tables });
-	const transform = databaseTransformInterface({
+	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
+	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
+	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({ db, tables });
+	const area: AdapterAreaInterface = createAdapterAreaInterface({ db, tables });
+	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
+	const transform: AdapterTransformInterface = databaseTransformInterface({
 		configInterface,
 		tables,
 		treeInterface: tree,
@@ -54,6 +53,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 
 export default createAdapter;
 
+export type Adapter = ReturnType<typeof createAdapter>;
 //////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////

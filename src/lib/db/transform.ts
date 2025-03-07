@@ -4,18 +4,22 @@ import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../utils/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import { safeFlattenDoc } from '../utils/doc.js';
-import type { CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type {
-	AdapterBlocksInterface,
-	AdapterTreeInterface,
-	TransformContext,
-	TransformManyContext
-} from 'rizom/types/adapter.js';
+	AreaSlug,
+	CollectionSlug,
+	GenericBlock,
+	GenericDoc,
+	PrototypeSlug,
+	RawDoc
+} from 'rizom/types/doc.js';
+import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type { Dic } from 'rizom/types/utility.js';
-import { beforeRead } from 'rizom/operations/postprocess/beforeRead.server.js';
-import { extractFieldName } from 'rizom/operations/postprocess/tree.js';
+import { extractFieldName } from 'rizom/fields/tree/utils.js';
+import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
+import type { AdapterTreeInterface } from './tree.js';
+import type { AdapterBlocksInterface } from './blocks.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 
 /////////////////////////////////////////////
 // Types
@@ -39,30 +43,23 @@ export const databaseTransformInterface = ({
 	blocksInterface,
 	treeInterface
 }: CreateTransformInterfaceArgs) => {
-	const transformDocs = async <T extends GenericDoc = GenericDoc>({
-		docs: rawDocs,
-		slug,
-		locale,
-		api,
-		event,
-		depth = 0
-	}: TransformManyContext<T>) => {
-		const docs: GenericDoc[] = await Promise.all(
-			rawDocs.map((doc) => transformDoc({ doc, slug, locale, event, api, depth }))
-		);
-		return docs as T[];
+	type Transformed<T> = Omit<T, '_url' | '_type' | '_prototype'> & {
+		title?: string;
 	};
 
-	const transformDoc = async <T extends GenericDoc = GenericDoc>({
-		doc,
-		slug,
-		locale,
-		api,
-		event,
-		depth = 0
-	}: TransformContext<Dic>) => {
+	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
+		doc: RawDoc;
+		slug: AreaSlug | CollectionSlug;
+		locale?: string;
+		api: LocalAPI;
+		event: RequestEvent;
+		depth?: number;
+	}): Promise<Transformed<T>> => {
 		//
-		const user = event.locals.user;
+
+		const { slug, locale, api, event, depth = 0 } = args;
+		let doc = args.doc;
+
 		const tableNameRelationFields = `${slug}Rels`;
 		const tableNameLocales = `${slug}Locales`;
 		const isLive = event.url.pathname.startsWith('/live');
@@ -105,10 +102,6 @@ export const databaseTransformInterface = ({
 
 		/** Place each block in its path */
 		for (let block of blocks) {
-			if (!(block.path in flatDoc)) {
-				flatDoc[block.path] = [];
-			}
-
 			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
 			if (locale && blockLocaleTableName in tables) {
 				block = {
@@ -143,10 +136,6 @@ export const databaseTransformInterface = ({
 		/** Place each treeBlock in its path */
 		for (let block of treeBlocks) {
 			try {
-				if (!(block.path in flatDoc)) {
-					flatDoc[block.path] = [];
-				}
-
 				const [fieldName] = extractFieldName(block.path);
 				const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(fieldName)}Locales`;
 
@@ -230,22 +219,19 @@ export const databaseTransformInterface = ({
 			keysToDelete.push(tableNameRelationFields);
 		}
 
-		output = omit(keysToDelete, deepmerge(blankDocument, output));
+		if (!isPanel || event.locals.user) {
+			keysToDelete.push('authUserId', 'editedBy');
+		}
 
-		output = await beforeRead({
-			doc: output,
-			config,
-			user,
-			event,
-			isPanel,
-			locale
-		});
+		keysToDelete.push(...privateFieldNames);
+		output = omit(keysToDelete, deepmerge(blankDocument, output));
 
 		return output as T;
 	};
 
 	return {
-		doc: transformDoc,
-		docs: transformDocs
+		doc: transformDoc
 	};
 };
+
+export type AdapterTransformInterface = ReturnType<typeof databaseTransformInterface>;
