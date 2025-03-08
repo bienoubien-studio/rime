@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
-	import { isUploadConfig } from '$lib/config/util.js';
+	import { isUploadConfig } from '$lib/util/config.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getContext } from 'svelte';

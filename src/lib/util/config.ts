@@ -1,10 +1,4 @@
-import type {
-	BuiltCollection,
-	BuiltDocConfig,
-	BuiltArea,
-	Collection,
-	CompiledCollection
-} from 'rizom/types/config';
+import type { BuiltCollection, Collection, CompiledCollection } from 'rizom/types';
 import type { WithUpload } from 'rizom/types/util';
 
 export function isUploadConfig(config: { upload?: boolean }): config is WithUpload<typeof config> {

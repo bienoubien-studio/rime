@@ -139,7 +139,7 @@
 	{/if}
 
 	{#if (selectedItems.length === 0 && availableItems.length === 0) || !isFull}
-		{#if relationConfig.access.create && relationConfig.access.create(user.attributes)}
+		{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {})}
 			<Button
 				onclick={() => {
 					create = true;

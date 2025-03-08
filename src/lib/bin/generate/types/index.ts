@@ -7,7 +7,7 @@ import type { AnyField, Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
-import { isUploadConfig } from 'rizom/config/util.js';
+import { isUploadConfig } from 'rizom/util/config.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
