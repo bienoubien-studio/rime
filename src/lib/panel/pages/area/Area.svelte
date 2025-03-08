@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Document from 'rizom/panel/components/areas/document/Document.svelte';
+	import Document from 'rizom/panel/components/sections/document/Document.svelte';
 	import type { AreaProps } from './props.js';
-	import Unauthorized from 'rizom/panel/components/areas/unauthorized/Unauthorized.svelte';
+	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
 
 	const { data }: AreaProps = $props();
 </script>

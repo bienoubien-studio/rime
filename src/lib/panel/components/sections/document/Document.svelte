@@ -6,7 +6,7 @@
 	import Header from './Header.svelte';
 	import { setDocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
-	import { isAuthConfig, isUploadConfig } from '$lib/config/utils.js';
+	import { isAuthConfig, isUploadConfig } from '$lib/config/util.js';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import type { GenericDoc } from 'rizom/types/doc';

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { taskLogger } from 'rizom/utils/logger/index.js';
+import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
 import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
@@ -245,8 +245,8 @@ export function buildConfigString(config: CompiledConfigWithBluePrints) {
 
 	const packageName = 'rizom';
 	const imports = [
-		needsValidate ? `import { validate } from '${packageName}/utils'` : '',
-		needsAccess ? `import { access } from '${packageName}/utils'` : '',
+		needsValidate ? `import { validate } from '${packageName}/util'` : '',
+		needsAccess ? `import { access } from '${packageName}/util'` : '',
 		hasEnv ? "import { env } from '$env/dynamic/public'" : ''
 	]
 		.filter(Boolean)

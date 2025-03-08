@@ -21,7 +21,7 @@ export function docLoad(slug: CollectionSlug) {
 		const operation = id === 'create' ? 'create' : 'update';
 
 		if (id === 'create') {
-			const authorized = collection.config.access.create(user);
+			const authorized = collection.config.access.create(user, {});
 			if (!authorized) {
 				return { doc: {}, operation, status: 401 };
 			}

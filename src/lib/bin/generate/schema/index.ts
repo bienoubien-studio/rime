@@ -1,6 +1,6 @@
 import buildRootTable from './root.js';
 import write from './write.js';
-import { toSnakeCase } from '$lib/utils/string.js';
+import { toSnakeCase } from '$lib/util/string.js';
 
 import {
 	templateAuth,
@@ -11,7 +11,7 @@ import {
 	templateImports
 } from './templates.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
 

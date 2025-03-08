@@ -3,11 +3,11 @@ import type { UploadDoc } from 'rizom';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { RizomError } from 'rizom/errors/index.js';
-import { pick } from 'rizom/utils/object';
+import { pick } from 'rizom/util/object';
 import sharp from 'sharp';
-import { toCamelCase } from 'rizom/utils/string';
-import { normalizeFileName } from 'rizom/utils/file';
-import type { Dic } from 'rizom/types/utility';
+import { toCamelCase } from 'rizom/util/string';
+import { normalizeFileName } from 'rizom/util/file';
+import type { Dic } from 'rizom/types/util';
 
 export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | false) => {
 	const { name: initialName, extension } = normalizeFileName(file.name);

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import LiveProvider from '$lib/panel/components/areas/live/Provider.svelte';
-	import { classList } from '$lib/utils/classList';
+	import LiveProvider from '$lib/panel/components/sections/live/Provider.svelte';
+	import { classList } from '$lib/util/classList';
 
 	const { children } = $props();
 </script>

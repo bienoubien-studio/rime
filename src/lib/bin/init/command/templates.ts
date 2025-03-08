@@ -1,4 +1,4 @@
-import { randomId } from '$lib/utils/random.js';
+import { randomId } from '$lib/util/random.js';
 import dedent from 'dedent';
 
 const PACKAGE = 'rizom';

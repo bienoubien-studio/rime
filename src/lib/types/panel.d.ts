@@ -1,6 +1,6 @@
 import type { Component, Snippet } from 'svelte';
-import type { GenericDoc } from './doc';
-import type { Dic } from './utility';
+import type { GenericDoc } from './doc.js';
+import type { Dic } from './util.js';
 
 export type Route = {
 	title: string;

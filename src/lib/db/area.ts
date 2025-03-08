@@ -1,7 +1,7 @@
 import { and, eq, getTableColumns } from 'drizzle-orm';
-import { generatePK } from './utils.js';
+import { generatePK } from './util.js';
 import { buildWithParam } from './with.js';
-import { pick } from '../utils/object.js';
+import { pick } from '../util/object.js';
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 

@@ -4,7 +4,7 @@ import { applyAction } from '$app/forms';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte';
 import type { AnyFormField } from 'rizom/types/fields';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 
 type Status = ActionResult['type'];
 

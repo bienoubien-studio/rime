@@ -24,7 +24,7 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 
 	logToFile('data', data);
 
-	const authorized = config.access.update(event.locals.user);
+	const authorized = config.access.update(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}

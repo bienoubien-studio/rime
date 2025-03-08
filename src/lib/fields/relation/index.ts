@@ -3,7 +3,7 @@ import type { GetRegisterType, RegisterCollection } from 'rizom';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
-import { capitalize } from 'rizom/utils/string';
+import { capitalize } from 'rizom/util/string';
 import type { Relation } from 'rizom/db/relations';
 
 type RelationValue = string | Array<Relation | string>;

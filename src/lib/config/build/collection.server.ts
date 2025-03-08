@@ -1,8 +1,8 @@
 import { panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js';
 import { usersFields } from '$lib/collection/auth/usersFields.js';
-import { isRolesField } from '../../utils/field.js';
-import { capitalize, toCamelCase } from '$lib/utils/string.js';
-import { isUploadConfig } from '../utils.js';
+import { isRolesField } from '../../util/field.js';
+import { capitalize, toCamelCase } from '$lib/util/string.js';
+import { isUploadConfig } from '../util.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {

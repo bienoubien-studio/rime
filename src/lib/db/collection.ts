@@ -1,12 +1,12 @@
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
-import { generatePK } from './utils.js';
-import { pick } from '../utils/object.js';
+import { generatePK } from './util.js';
+import { pick } from '../util/object.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 

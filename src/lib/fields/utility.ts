@@ -1,6 +1,6 @@
 import type { GenericBlock } from 'rizom/types/doc.js';
 import type { Relation } from '../db/relations.js';
-import { hasProps, isObjectLiteral } from 'rizom/utils/object.js';
+import { hasProps, isObjectLiteral } from 'rizom/util/object.js';
 import type {
 	BlocksField,
 	CheckboxField,
@@ -21,7 +21,7 @@ import type {
 	TextField,
 	ToggleField
 } from 'rizom/fields/types.js';
-import type { Dic, WithoutBuilders } from 'rizom/types/utility.js';
+import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import type { AnyField, AnyFormField, FieldsType } from 'rizom/types/fields.js';
 
 export const isFormField = (field: AnyField): field is AnyFormField => 'name' in field;

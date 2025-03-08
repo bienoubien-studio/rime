@@ -1,6 +1,6 @@
 import type { User } from 'rizom/types/auth';
 import type { CompiledConfig } from 'rizom/types/config';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 
 const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
 	//
@@ -9,7 +9,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 	};
 
 	for (const collection of config.collections) {
-		if (user && collection.access.read(user)) {
+		if (user && collection.access.read(user, {})) {
 			const route = {
 				title: collection.label.plural,
 				icon: collection.slug,
@@ -27,7 +27,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 	}
 
 	for (const area of config.areas) {
-		if (user && area.access.read(user)) {
+		if (user && area.access.read(user, {})) {
 			const route = {
 				title: area.label,
 				icon: area.slug,

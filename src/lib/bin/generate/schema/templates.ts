@@ -1,5 +1,5 @@
 import dedent from 'dedent';
-import { toSnakeCase } from 'rizom/utils/string';
+import { toSnakeCase } from 'rizom/util/string';
 const s = toSnakeCase;
 
 export const templateImports = `

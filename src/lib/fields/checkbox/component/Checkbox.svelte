@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/panel/components/ui/checkbox/index.js';
-	import { slugify } from '$lib/utils/string.js';
+	import { slugify } from '$lib/util/string.js';
 	import { Field } from 'rizom/panel';
 	import './checkbox.css';
 	import type { CheckboxProps } from './props';

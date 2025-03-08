@@ -2,7 +2,7 @@
 	import { Input } from '$lib/panel/components/ui/input';
 	import { Field } from 'rizom/panel';
 	import type { EmailFieldProps } from './props';
-	import { capitalize } from 'rizom/utils/string';
+	import { capitalize } from 'rizom/util/string';
 	import './email.css';
 
 	const { path, config, form }: EmailFieldProps = $props();

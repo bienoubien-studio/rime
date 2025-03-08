@@ -1,8 +1,8 @@
-import { isRelationField } from '$lib/utils/field.js';
+import { isRelationField } from '$lib/util/field.js';
 import type { BeforeOperationRelation } from '$lib/db/relations.js';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 import type { ConfigMap } from '../configMap/types';
-import { getValueAtPath } from 'rizom/utils/object';
+import { getValueAtPath } from 'rizom/util/object';
 
 type Args = {
 	parentId?: string;

@@ -1,7 +1,7 @@
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/utils/object';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
 import type { ConfigMap } from './configMap/types';
 import type { LocalAPI, User } from 'rizom/types';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 
 export const postprocessFields = async <T extends Dic>(args: {
 	document: T;

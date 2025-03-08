@@ -1,4 +1,4 @@
-import { toPascalCase } from '$lib/utils/string.js';
+import { toPascalCase } from '$lib/util/string.js';
 import { templateRelationMany, templateRelationOne } from '../templates.js';
 const p = toPascalCase;
 

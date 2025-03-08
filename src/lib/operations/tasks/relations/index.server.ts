@@ -3,7 +3,7 @@ import { defineRelationsDiff } from './diff.server';
 import type { ConfigMap } from '../configMap/types';
 import type { Adapter, CompiledArea, CompiledCollection, GenericBlock } from 'rizom/types';
 
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 import type { TreeBlocksDiff } from '../tree/diff.server';
 
 type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };

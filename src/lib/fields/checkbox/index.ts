@@ -1,7 +1,7 @@
 import type { FormField } from 'rizom/types/fields.js';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Checkbox from './component/Checkbox.svelte';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import { toSnakeCase } from 'rizom/util/string.js';
 
 class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
 	get component() {

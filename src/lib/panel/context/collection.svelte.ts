@@ -3,22 +3,14 @@ import { getContext, onMount, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
-import { isUploadConfig } from '../../config/utils.js';
-import {
-	isFormField,
-	isGroupField,
-	isGroupFieldRaw,
-	isNotHidden,
-	isTabsField,
-	isTabsFieldRaw
-} from '../../utils/field.js';
-import { hasProps } from '../../utils/object.js';
+import { isUploadConfig } from '../../config/util.js';
+import { isFormField, isGroupFieldRaw, isNotHidden, isTabsFieldRaw } from '../../util/field.js';
+import { hasProps } from '../../util/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
-import type { WithoutBuilders, WithRequired } from 'rizom/types/utility.js';
-import type { GroupField } from 'rizom/fields/types.js';
+import type { WithRequired } from 'rizom/types/util.js';
 
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid';

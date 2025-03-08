@@ -18,13 +18,13 @@ import {
 	rootLayoutServer
 } from './templates.js';
 import cache from '../cache/index.js';
-import { taskLogger } from 'rizom/utils/logger/index.js';
-import { slugify } from '$lib/utils/string.js';
+import { taskLogger } from 'rizom/util/logger/index.js';
+import { slugify } from '$lib/util/string.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import type { BuiltConfig } from 'rizom/types/config.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

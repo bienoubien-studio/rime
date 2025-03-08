@@ -35,9 +35,9 @@
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
 		},
-		"./utils": {
-			"types": "./dist/utils/index.d.ts",
-			"import": "./dist/utils/index.js"
+		"./util": {
+			"types": "./dist/util/index.d.ts",
+			"import": "./dist/util/index.js"
 		},
 		"./panel": {
 			"types": "./dist/panel/index.d.ts",

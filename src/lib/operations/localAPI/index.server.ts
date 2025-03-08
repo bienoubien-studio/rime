@@ -6,7 +6,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterCollection } from 'rizom';
 import type { RegisterArea } from 'rizom';
 import type { FormErrors } from 'rizom/types/panel.js';
-import validate from 'rizom/utils/validate.js';
+import validate from 'rizom/util/validate.js';
 
 export type LocalAPIConstructorArgs = {
 	rizom: Rizom;

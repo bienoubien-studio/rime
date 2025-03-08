@@ -1,4 +1,4 @@
-import { createBlankDocument } from '../../utils/doc.js';
+import { createBlankDocument } from '../../util/doc.js';
 import { find } from '../area/find.js';
 import { update } from '../area/update.js';
 import type { RequestEvent } from '@sveltejs/kit';

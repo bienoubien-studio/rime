@@ -1,7 +1,7 @@
 import type { FieldBuilder } from 'rizom/fields/builders';
 import { BlocksBuilder } from 'rizom/fields/blocks/index.js';
 import type { Field } from 'rizom/types';
-import { isGroupField, isTabsField } from 'rizom/utils/field.js';
+import { isGroupField, isTabsField } from 'rizom/util/field.js';
 import type { FieldsComponents } from 'rizom/types/panel';
 import Email from 'rizom/fields/email/component/Email.svelte';
 import Text from 'rizom/fields/email/component/Email.svelte';

@@ -1,5 +1,5 @@
-import validate from '$lib/utils/validate.js';
-import logger from '$lib/utils/logger/index.js';
+import validate from '$lib/util/validate.js';
+import logger from '$lib/util/logger/index.js';
 import { fail, type RequestEvent } from '@sveltejs/kit';
 import type { PanelActionFailure } from 'rizom/types/panel';
 

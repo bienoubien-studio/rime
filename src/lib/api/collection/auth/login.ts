@@ -1,7 +1,7 @@
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
-import { safe } from 'rizom/utils/safe';
+import { safe } from 'rizom/util/safe';
 
 export default function (slug: PrototypeSlug) {
 	//

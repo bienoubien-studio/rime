@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { moveItem } from '$lib/utils/array.js';
-	import { isUploadConfig } from '$lib/config/utils.js';
+	import { moveItem } from '$lib/util/array.js';
+	import { isUploadConfig } from '$lib/config/util.js';
 	import Upload from './upload/Upload.svelte';
 	import Default from './default/Default.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import { Field } from 'rizom/panel';
-	import { snapshot } from '$lib/utils/state.js';
+	import { snapshot } from '$lib/util/state.js';
 	import type { RelationFieldItem } from './types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import type { Relation } from '$lib/db/relations.js';

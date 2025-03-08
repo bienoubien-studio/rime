@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import AddItemButton from './AddItemButton.svelte';
 	import TreeBlockItem from './TreeBlockItem.svelte';
 	import { Field } from 'rizom/panel';
-	import './tree.css';
-	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Sortable from 'sortablejs';
 	import type { TreeProps } from './props';
-	import type { Dic } from 'rizom/types/utility';
+	import type { Dic } from 'rizom/types/util.js';
 	import { onDestroy } from 'svelte';
 	import { watch } from 'runed';
+	import './tree.css';
+
 	const { path, config, form }: TreeProps = $props();
 
 	const treeState = $derived(form.useTree(path));

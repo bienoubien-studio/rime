@@ -1,10 +1,10 @@
-import { hasProps, omit } from 'rizom/utils/object';
-import { toCamelCase } from 'rizom/utils/string';
+import { hasProps, omit } from 'rizom/util/object';
+import { toCamelCase } from 'rizom/util/string';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { GenericDoc } from 'rizom/types/doc';
 import { cleanupStoredFiles } from '../disk/delete';
 import { saveFile } from '../disk/save';
-import { isUploadConfig } from 'rizom/config/utils';
+import { isUploadConfig } from 'rizom/config/util';
 
 /**
  * Hook that handles file upload processing and image resizing operations.

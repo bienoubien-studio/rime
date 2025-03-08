@@ -2,7 +2,7 @@ import type { AnyField } from 'rizom/types';
 import type { Field } from 'rizom/types/fields';
 import { FieldBuilder } from '../builders/index.js';
 import Tabs from './component/Tabs.svelte';
-import type { WithoutBuilders } from 'rizom/types/utility.js';
+import type { WithoutBuilders } from 'rizom/types/util.js';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
 export const tab = (label: string) => new TabBuilder(label);

@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import { toSnakeCase } from 'rizom/util/string.js';
 
 class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	get component() {

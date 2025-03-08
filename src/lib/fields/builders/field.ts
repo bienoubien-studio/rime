@@ -8,7 +8,7 @@ import type {
 	FieldWidth,
 	FormField
 } from 'rizom/types/fields';
-import type { Dic, WithoutBuilders } from 'rizom/types/utility';
+import type { Dic, WithoutBuilders } from 'rizom/types/util';
 import type { Component } from 'svelte';
 
 export class FieldBuilder<T extends Field = Field> {

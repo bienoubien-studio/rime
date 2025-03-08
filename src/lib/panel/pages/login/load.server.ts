@@ -1,5 +1,5 @@
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 
 export const loginLoad = async ({ locals, url }: ServerLoadEvent) => {
 	const { session, rizom } = locals;

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Collection from 'rizom/panel/components/areas/collection/Collection.svelte';
+	import Collection from 'rizom/panel/components/sections/collection/Collection.svelte';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
-	import Unauthorized from 'rizom/panel/components/areas/unauthorized/Unauthorized.svelte';
-	import Document from 'rizom/panel/components/areas/document/Document.svelte';
+	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
+	import Document from 'rizom/panel/components/sections/document/Document.svelte';
 
 	type Props = {
 		slug: PrototypeSlug;

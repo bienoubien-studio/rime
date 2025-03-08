@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { setCollectionContext } from '$lib/panel/context/collection.svelte';
 	import { type Snippet } from 'svelte';
-	import Unauthorized from 'rizom/panel/components/areas/unauthorized/Unauthorized.svelte';
+	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
 

@@ -1,9 +1,9 @@
 import { getContext, setContext } from 'svelte';
 import type { BeforeNavigate } from '@sveltejs/kit';
 import { flatten, unflatten } from 'flat';
-import { isObjectLiteral } from '../../utils/object.js';
+import { isObjectLiteral } from '../../util/object.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 

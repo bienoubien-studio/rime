@@ -2,8 +2,8 @@ import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from '
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter';
 
 import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/utility';
-import { omit } from 'rizom/utils/object';
+import type { Dic } from 'rizom/types/util';
+import { omit } from 'rizom/util/object';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//

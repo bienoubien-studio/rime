@@ -4,7 +4,7 @@ import type { AnyField, Field, FieldsType, Option } from './fields.js';
 import type { AreaSlug, CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
-import type { AtLeastOne, WithoutBuilders, WithRequired } from './utility.js';
+import type { AtLeastOne, WithoutBuilders, WithRequired } from './util.js';
 import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { BaseDoc, GetRegisterType, RegisterArea } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/builders/field.js';

@@ -3,7 +3,7 @@
 	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
 	import { Label } from '$lib/panel/components/ui/label/index.js';
 	import { Field } from 'rizom/panel';
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
 	const { path, config, form }: RadioFieldProps = $props();
 

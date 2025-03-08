@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import { ChevronDown, ChevronUp } from 'lucide-svelte';
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';

@@ -15,7 +15,7 @@ import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
-import { stringRepresentation } from 'rizom/utils/doc.js';
+import { stringRepresentation } from 'rizom/util/doc.js';
 
 type Args<T> = {
 	id: string;

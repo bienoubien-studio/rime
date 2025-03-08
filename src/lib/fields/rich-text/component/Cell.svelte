@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { richTextJSONToText } from '$lib/utils/field.js';
+	import { richTextJSONToText } from '$lib/util/field.js';
 
 	let { value }: { value: string } = $props();
 

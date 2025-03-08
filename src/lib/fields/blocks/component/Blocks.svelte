@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import AddBlockButton from './AddBlockButton.svelte';
 	import Block from './Block.svelte';
 	import { Field } from 'rizom/panel';
-	import { useSortable } from '$lib/panel/utility/Sortable';
+	import { useSortable } from '$lib/panel/util/Sortable';
 	import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';

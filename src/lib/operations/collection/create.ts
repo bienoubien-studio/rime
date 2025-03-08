@@ -36,7 +36,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	const incomingData = cloneDeep(data);
 	//
 
-	const authorized = config.access.create(event.locals.user);
+	const authorized = config.access.create(event.locals.user, { id: undefined });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}

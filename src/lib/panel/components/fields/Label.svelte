@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import { Label } from '../ui/label/index.js';
 	import type { Snippet } from 'svelte';
 	import type { AnyFormField } from 'rizom/types/fields';

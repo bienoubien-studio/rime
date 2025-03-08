@@ -1,12 +1,6 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { capitalize } from 'rizom/utils/string.js';
-import type {
-	CollectionSlug,
-	DocPrototype,
-	GenericDoc,
-	AreaSlug,
-	PrototypeSlug
-} from 'rizom/types/doc.js';
+import { capitalize } from 'rizom/util/string.js';
+import type { CollectionSlug, GenericDoc, AreaSlug } from 'rizom/types/doc.js';
 
 export type DashboardEntry =
 	| {
@@ -33,7 +27,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 	const entries: DashboardEntry[] = [];
 
 	const requests = rizom.config.collections.map((collection) =>
-		user && collection.access.read(user)
+		user && collection.access.read(user, {})
 			? api
 					.collection(collection.slug)
 					.findAll({
@@ -46,7 +40,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 							prototype: 'collection',
 							slug: collection.slug,
 							gender: collection.label?.gender || 'm',
-							canCreate: user && collection.access.create(user),
+							canCreate: user && collection.access.create(user, {}),
 							link: `/panel/${collection.slug}`,
 							titleSingular: collection.label.singular,
 							title: collection.label.plural,
@@ -68,7 +62,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 	}
 
 	for (const area of rizom.config.areas) {
-		if (user && area.access.read(user)) {
+		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',
 				slug: area.slug,

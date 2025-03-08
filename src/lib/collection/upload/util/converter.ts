@@ -1,7 +1,7 @@
-import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../utils/mime.js';
+import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../util/mime.js';
 import type { JsonFile } from 'rizom/types/upload';
 import { readFile } from 'fs/promises';
-import { fileSizeToString } from 'rizom/utils/file.js';
+import { fileSizeToString } from 'rizom/util/file.js';
 import { RizomError } from 'rizom/errors/index.js';
 
 export const jsonFileToFile = (jsonFile: JsonFile) => {

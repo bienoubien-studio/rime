@@ -1,5 +1,5 @@
-import { validate } from 'rizom/utils/index.js';
-import { access } from 'rizom/utils/access/index.js';
+import { validate } from 'rizom/util/index.js';
+import { access } from 'rizom/util/access/index.js';
 import { email, select, text } from 'rizom/fields';
 
 const emailField = email('email')

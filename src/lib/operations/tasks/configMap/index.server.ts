@@ -1,7 +1,7 @@
 import type { Field } from 'rizom/types/fields.js';
-import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, toFormFields } from 'rizom/utils/field.js';
+import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, toFormFields } from 'rizom/util/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import { buildTreeFieldsMap } from './buildTreeMap.server.js';
 import type { ConfigMap } from './types.js';
 

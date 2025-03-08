@@ -7,7 +7,7 @@
 		isNotHidden,
 		isPresentative,
 		isTabsFieldRaw
-	} from '$lib/utils/field.js';
+	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { Field, AnyFormField, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';

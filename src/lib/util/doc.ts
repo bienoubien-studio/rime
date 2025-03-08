@@ -1,8 +1,8 @@
 import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import type { Link } from 'rizom';
-import type { Dic } from 'rizom/types/utility.js';
-import { isUploadConfig } from 'rizom/config/utils.js';
+import type { Dic } from 'rizom/types/util.js';
+import { isUploadConfig } from 'rizom/config/util.js';
 import { flatten } from 'flat';
 
 export function stringRepresentation(obj: any, indent = 0): string {
