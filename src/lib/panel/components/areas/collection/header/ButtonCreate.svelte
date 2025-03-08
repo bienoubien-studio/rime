@@ -7,7 +7,7 @@
 
 	type ButtonSize = 'sm' | 'default';
 	const { size = 'default' }: { size?: ButtonSize } = $props();
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const isSmallSize = $derived(size === 'sm');
 	const buttonVariant = $derived(isSmallSize ? 'ghost' : 'default');

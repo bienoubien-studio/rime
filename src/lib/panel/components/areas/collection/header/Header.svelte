@@ -6,17 +6,20 @@
 	import SearchInput from './SearchInput.svelte';
 	import SelectUI from './SelectUI.svelte';
 	import ButtonCreate from './ButtonCreate.svelte';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const showSelectUI = $derived(!compact);
 	const showSearchInput = $derived(!collection.selectMode);
 	const showDisplayMode = $derived(collection.isUpload && !compact);
 	const showCompactCreateButton = $derived(compact);
 	const showFullHeader = $derived(!compact);
+
+	const config = getConfigContext();
 </script>
 
 <div class:rz-collection-header--compact={compact} class="rz-collection-header">
@@ -82,6 +85,6 @@
 
 	.rz-collection-header__right {
 		display: flex;
-		gap: var(--rz-size-2);
+		gap: var(--rz-size-4);
 	}
 </style>

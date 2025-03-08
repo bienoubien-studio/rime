@@ -4,7 +4,7 @@
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const listIconClass = $derived(collection.isList() ? 'rz-header-display-mode__icon--active' : '');
 	const gridIconClass = $derived(collection.isGrid() ? 'rz-header-display-mode__icon--active' : '');

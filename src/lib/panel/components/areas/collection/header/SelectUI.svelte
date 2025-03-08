@@ -5,7 +5,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const isAllSelected = $derived(collection.selected.length === collection.docs.length);
 	const selectedCount = $derived(collection.selected.length);

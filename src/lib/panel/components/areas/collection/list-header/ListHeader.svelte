@@ -10,7 +10,7 @@
 
 	const { compact }: Props = $props();
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
 
 	function sortBy(name: string) {

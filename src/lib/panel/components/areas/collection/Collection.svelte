@@ -21,7 +21,7 @@
 	const title = getContext<{ value: string }>('title');
 
 	const collection = getCollectionContext(slug);
-	setContext('collectionList', collection);
+	setContext('rizom.collectionList', collection);
 
 	let currentDoc = $derived($page.params.id || null);
 
@@ -94,6 +94,7 @@
 		}
 		& :global(.rz-scroll-area--grid) {
 			height: calc(100vh - 4rem);
+			background-color: hsl(var(--rz-ground-6));
 		}
 
 		background-color: hsl(var(--rz-ground-6));

@@ -8,7 +8,7 @@
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let filterValue = $state('');
 
 	$effect(() => {

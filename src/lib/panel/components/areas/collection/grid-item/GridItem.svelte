@@ -10,7 +10,7 @@
 	type Props = { checked: boolean; doc: GenericDoc };
 	const { checked, doc }: Props = $props();
 
-	const collection = getContext<CollectionContext>('collectionList');
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const isUploadCollection = $derived(isUploadConfig(collection.config));
 	const thumbnailUrl = $derived.by(() => {
@@ -62,6 +62,7 @@
 <style lang="postcss">
 	.rz-grid-item {
 		--checkbox-border: hsl(var(--rz-ground-6));
+		--rz-card-color-bg: var(--rz-ground-6);
 		display: block;
 		position: relative;
 
@@ -71,7 +72,8 @@
 			aspect-ratio: 5/4;
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: 0;
-			padding: var(--rz-size-2);
+			padding: var(--rz-size-1);
+
 			> :global(div) {
 				border-radius: var(--rz-radius-sm);
 				overflow: hidden;
