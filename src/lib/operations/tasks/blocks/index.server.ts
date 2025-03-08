@@ -1,7 +1,7 @@
 import { extractBlocks } from './extract.server';
 import type { Adapter, CompiledArea, CompiledCollection, GenericBlock } from 'rizom/types';
 import { defineBlocksDiff } from './diff.server';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 import type { ConfigMap } from '../configMap/types';
 
 import { RizomError } from 'rizom/errors';

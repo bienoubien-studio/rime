@@ -10,7 +10,7 @@ export function layoutLoad(slug: CollectionSlug) {
 		const { api, locale, user } = event.locals;
 
 		const collection = api.collection(slug);
-		const authorizedCreate = collection.config.access.create(user);
+		const authorizedCreate = collection.config.access.create(user, {});
 
 		const docs = await collection.findAll({ locale });
 

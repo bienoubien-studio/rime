@@ -3,7 +3,7 @@ import path from 'path';
 import * as templates from './templates.js';
 import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
-import { randomId } from 'rizom/utils/random.js';
+import { randomId } from 'rizom/util/random.js';
 
 import {
 	getInstallCommand,

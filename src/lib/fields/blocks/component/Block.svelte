@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { GripVertical, ToyBrick } from 'lucide-svelte';
 	import BlockActions from './BlockActions.svelte';
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import ToggleBlockButton from './ToggleBlockButton.svelte';
-	import { useOnce } from '$lib/panel/utility/Once.svelte';
+
+	import { useOnce } from 'rizom/panel/util/once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { BlocksFieldRaw } from '../index.ts';
 	import type { GenericBlock } from 'rizom/types';

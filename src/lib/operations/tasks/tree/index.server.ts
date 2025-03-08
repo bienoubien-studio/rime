@@ -1,6 +1,6 @@
 import { extractTreeBlocks } from './extract.server';
 import type { TreeBlock } from 'rizom/types/doc';
-import type { Dic, WithRequired } from 'rizom/types/utility';
+import type { Dic, WithRequired } from 'rizom/types/util';
 import { defineTreeBlocksDiff } from './diff.server';
 import type { Adapter, CompiledArea, CompiledCollection } from 'rizom/types';
 import type { ConfigMap } from '../configMap/types';

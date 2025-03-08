@@ -3,7 +3,7 @@ import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Slug from './component/Slug.svelte';
 import Cell from './component/Cell.svelte';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import { toSnakeCase } from 'rizom/util/string.js';
 
 export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
 

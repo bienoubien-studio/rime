@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { moveItem } from '$lib/utils/array';
+	import { moveItem } from '$lib/util/array';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { Field } from 'rizom/panel';
-	import { useSortable } from '$lib/panel/utility/Sortable';
+	import { useSortable } from '$lib/panel/util/Sortable';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';

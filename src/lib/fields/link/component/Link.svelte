@@ -4,13 +4,13 @@
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu';
 	import { Field } from 'rizom/panel';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { capitalize } from '$lib/utils/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown, Edit } from 'lucide-svelte';
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { dataError } from 'rizom/panel/utility/dataError';
+	import { dataError } from 'rizom/panel/util/dataError';
 
 	const { path, config, form }: LinkFieldProps = $props();
 

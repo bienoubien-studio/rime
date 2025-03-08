@@ -1,6 +1,6 @@
 import { type Handle } from '@sveltejs/kit';
 import rizom from '../rizom.server.js';
-import { requestLogger } from 'rizom/utils/logger/index.js';
+import { requestLogger } from 'rizom/util/logger/index.js';
 import { dev } from '$app/environment';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from 'rizom/types/index.js';

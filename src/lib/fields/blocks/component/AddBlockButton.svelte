@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { Plus, ToyBrick } from 'lucide-svelte';
-	import { capitalize } from '$lib/utils/string.js';
-	import { emptyValuesFromFieldConfig } from '$lib/utils/field.js';
-	import { isFormField } from '$lib/utils/field.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
+	import { isFormField } from '$lib/util/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import type { WithoutBuilders } from 'rizom/types/utility.js';
+	import type { WithoutBuilders } from 'rizom/types/util.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {

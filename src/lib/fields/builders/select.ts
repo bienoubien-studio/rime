@@ -1,6 +1,6 @@
 import type { FieldsType, FieldValidationFunc, FormField, Option } from 'rizom/types/fields';
 import { FormFieldBuilder } from './field';
-import { capitalize } from 'rizom/utils/string';
+import { capitalize } from 'rizom/util/string';
 
 const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { config }) => {
 	const selected = value;

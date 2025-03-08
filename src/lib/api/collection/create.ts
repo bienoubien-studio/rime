@@ -1,9 +1,9 @@
-import { isAuthConfig } from '$lib/config/utils.js';
+import { isAuthConfig } from '$lib/config/util.js';
 import { extractData } from 'rizom/operations/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
 import type { CollectionSlug } from 'rizom/types';
-import { safe } from 'rizom/utils/safe';
+import { safe } from 'rizom/util/safe';
 
 export default function (slug: CollectionSlug) {
 	//

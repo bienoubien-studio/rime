@@ -3,7 +3,7 @@ import { spawnSync } from 'child_process';
 import { program } from 'commander';
 import { copyFileSync, cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { polkaServer } from './templates.js';
-import { taskLogger } from 'rizom/utils/logger/index.js';
+import { taskLogger } from 'rizom/util/logger/index.js';
 
 program.version('0.1').description('CMS utilities');
 

@@ -1,7 +1,7 @@
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
-import { isAuthConfig } from '../../config/utils.js';
-import { createBlankDocument } from '../../utils/doc.js';
-import { isFormField } from '../../utils/field.js';
+import { isAuthConfig } from '../../config/util.js';
+import { createBlankDocument } from '../../util/doc.js';
+import { isFormField } from '../../util/field.js';
 import { create } from '../collection/create.js';
 import { deleteById } from '../collection/deleteById.js';
 import { find } from '../collection/find.js';

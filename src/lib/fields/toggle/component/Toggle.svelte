@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './toggle.css';
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { slugify } from '$lib/utils/string.js';
+	import { slugify } from '$lib/util/string.js';
 	import { Field } from 'rizom/panel';
 	import type { ToggleProps } from './props';
 

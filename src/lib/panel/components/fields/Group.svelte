@@ -4,8 +4,8 @@
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import { onMount } from 'svelte';
 	import { ChevronDown } from 'lucide-svelte';
-	import type { WithoutBuilders } from 'rizom/types/utility';
-	import { isFormField } from 'rizom/utils/field';
+	import type { WithoutBuilders } from 'rizom/types/util';
+	import { isFormField } from 'rizom/util/field';
 
 	type Props = { path: string; config: WithoutBuilders<GroupField>; form: DocumentFormContext };
 	const { config, path, form }: Props = $props();

@@ -2,19 +2,21 @@ import { extractData } from 'rizom/operations/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
 import type { CollectionSlug } from 'rizom/types/doc';
-import { safe } from 'rizom/utils/safe';
+import { safe } from 'rizom/util/safe';
+import { RizomError } from 'rizom/errors';
 
 export default function (slug: CollectionSlug) {
 	//
 	async function PATCH(event: RequestEvent) {
 		const { api, locale } = event.locals;
-		const id = event.params.id;
 
-		const collection = api.collection(slug);
+		const id = event.params.id;
+		if (!id) throw new RizomError(RizomError.NOT_FOUND);
+
 		const data = await extractData(event.request);
 
 		const [error, doc] = await safe(
-			collection.updateById({
+			api.collection(slug).updateById({
 				id,
 				data,
 				locale: data.locale || locale

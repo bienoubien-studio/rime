@@ -4,10 +4,10 @@ import qs, { type ParsedQs } from 'qs';
 import { rizom } from '$lib/index.js';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { Dic } from '../types/utility';
+import type { Dic } from '../types/util';
 
 import { RizomError } from '../errors/index.js';
-import { isObjectLiteral } from '../utils/object';
+import { isObjectLiteral } from '../util/object';
 import type { OperationQuery } from '../types';
 
 type BuildWhereArgs = {

@@ -1,12 +1,12 @@
-import { hasProps } from 'rizom/utils/object';
+import { hasProps } from 'rizom/util/object';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
-import { isRelationField, isSelectField } from '$lib/utils/field.js';
+import { isRelationField, isSelectField } from '$lib/util/field.js';
 import { rizom, type FormField } from '$lib/index.js';
 import type { RelationField, SelectField } from 'rizom/fields/types';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 import type { ConfigMap } from './configMap/types';
-import { getValueAtPath, setValueAtPath } from 'rizom/utils/object';
+import { getValueAtPath, setValueAtPath } from 'rizom/util/object';
 
 export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;

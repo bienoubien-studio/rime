@@ -5,9 +5,9 @@
 	import type { TreeBlockProps } from './types';
 	import TreeBlockActions from './TreeBlockActions.svelte';
 	import type { TreeBlock } from 'rizom/types/doc';
-	import { snapshot } from 'rizom/utils/state';
-	import { extractFieldName } from '../utils';
-	import { useOnce } from 'rizom/panel/utility/Once.svelte';
+	import { snapshot } from 'rizom/util/state';
+	import { extractFieldName } from '../util.js';
+	import { useOnce } from 'rizom/panel/util/once.svelte';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 

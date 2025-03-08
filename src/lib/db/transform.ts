@@ -1,7 +1,7 @@
-import { omit } from '../utils/object.js';
+import { omit } from '../util/object.js';
 import { getTableColumns } from 'drizzle-orm';
 import { flatten, unflatten } from 'flat';
-import { toPascalCase } from '../utils/string.js';
+import { toPascalCase } from '../util/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
 import type {
@@ -13,8 +13,8 @@ import type {
 	RawDoc
 } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
-import type { Dic } from 'rizom/types/utility.js';
-import { extractFieldName } from 'rizom/fields/tree/utils.js';
+import type { Dic } from 'rizom/types/util.js';
+import { extractFieldName } from 'rizom/fields/tree/util.js';
 import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
 import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';

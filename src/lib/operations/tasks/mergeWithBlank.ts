@@ -1,7 +1,7 @@
 import type { CompiledCollection, GenericDoc } from 'rizom/types';
-import { isUploadConfig } from 'rizom/config/utils';
+import { isUploadConfig } from 'rizom/config/util.js';
 import deepmerge from 'deepmerge';
-import { createBlankDocument } from 'rizom/utils/doc';
+import { createBlankDocument } from 'rizom/util/doc';
 
 export const mergeWithBlankDocument = <T extends GenericDoc>({
 	data,

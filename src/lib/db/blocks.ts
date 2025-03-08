@@ -1,7 +1,7 @@
-import { omit, pick, omitId } from '../utils/object.js';
+import { omit, pick, omitId } from '../util/object.js';
 import { and, eq, getTableColumns, inArray, notInArray, type SQLWrapper } from 'drizzle-orm';
-import { generatePK } from './utils.js';
-import { toPascalCase } from '../utils/string.js';
+import { generatePK } from './util.js';
+import { toPascalCase } from '../util/string.js';
 import type { GenericBlock, PrototypeSlug } from 'rizom/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
 

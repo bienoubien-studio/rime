@@ -3,8 +3,8 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
-import validate from 'rizom/utils/validate.js';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import validate from 'rizom/util/validate.js';
+import { toSnakeCase } from 'rizom/util/string.js';
 
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale }) => {
 	const hasValue = !!value;
@@ -23,7 +23,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 				value.link = null;
 				return value;
 			}
-			console.log(doc);
+
 			if (doc.url) value.url = doc.url;
 		} catch (err) {
 			console.log(err);

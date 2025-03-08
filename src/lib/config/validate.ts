@@ -4,13 +4,13 @@ import {
 	isGroupFieldRaw,
 	isTabsFieldRaw,
 	toFormFields
-} from '../utils/field';
-import { isAuthConfig, isUploadConfig } from './utils';
+} from '../util/field';
+import { isAuthConfig, isUploadConfig } from './util';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config';
 import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
-import { isCamelCase } from 'rizom/utils/string';
+import { isCamelCase } from 'rizom/util/string';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];

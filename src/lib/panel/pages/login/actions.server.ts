@@ -3,7 +3,7 @@ import { error, fail, redirect, type Actions, type RequestEvent } from '@sveltej
 import { handleError } from 'rizom/errors/handler.server';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { PanelActionFailure } from 'rizom/types/panel';
-import { safe } from 'rizom/utils/safe';
+import { safe } from 'rizom/util/safe';
 
 type LoginForm = {
 	email?: string;

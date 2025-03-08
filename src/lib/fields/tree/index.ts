@@ -1,5 +1,5 @@
 import type { FormField } from 'rizom/types/index.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tree from './component/Tree.svelte';
 import Cell from './component/Cell.svelte';
@@ -8,7 +8,7 @@ import { number } from '../number/index.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
 import cloneDeep from 'clone-deep';
-import { snapshot } from 'rizom/utils/state.js';
+import { snapshot } from 'rizom/util/state.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 

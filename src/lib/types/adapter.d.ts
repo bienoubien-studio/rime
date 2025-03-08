@@ -4,7 +4,7 @@ import type { OperationQuery } from 'rizom/types/api.js';
 import type { BeforeOperationRelation, Relation } from '../db/relations.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
-import type { WithRequired } from './utility.js';
+import type { WithRequired } from './util.js';
 
 // export interface AdapterCollectionInterface {
 // 	findAll(args: {

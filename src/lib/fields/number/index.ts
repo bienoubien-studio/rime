@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
 import type { FieldValidationFunc } from 'rizom/types/fields.js';
-import { toSnakeCase } from 'rizom/utils/string.js';
+import { toSnakeCase } from 'rizom/util/string.js';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
 

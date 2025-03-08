@@ -1,10 +1,10 @@
 import path from 'path';
 import { RizomError } from '../errors/index.js';
-import { flattenWithGuard } from '../utils/object.js';
+import { flattenWithGuard } from '../util/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config.js';
-import type { AsyncReturnType, Dic } from 'rizom/types/utility.js';
+import type { AsyncReturnType, Dic } from 'rizom/types/util.js';
 import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
 import type { AreaSlug } from 'rizom/types/doc.js';
 import { dev } from '$app/environment';

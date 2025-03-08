@@ -21,7 +21,7 @@ type Args = {
 export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> => {
 	const { config, event, locale, adapter, sort, limit, api, depth } = args;
 
-	const authorized = config.access.read(event.locals.user);
+	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}

@@ -2,7 +2,7 @@ import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import { Cache } from './cache.server.js';
 import type { Plugin } from 'rizom';
 import { handler } from './handler.server.js';
-import { toHash } from 'rizom/utils/string.js';
+import { toHash } from 'rizom/util/string.js';
 import HeaderButton from './HeaderButton.svelte';
 
 type Enabled = (event: RequestEvent) => boolean;

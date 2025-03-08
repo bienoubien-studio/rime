@@ -5,8 +5,8 @@ import {
 	isGroupField,
 	isRelationField,
 	isTabsField
-} from 'rizom/utils/field.js';
-import { toPascalCase } from '$lib/utils/string.js';
+} from 'rizom/util/field.js';
+import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
 import type { LocaleConfig } from 'rizom/types/config.js';
 import type { RelationFieldsMap } from './relations/definition.js';

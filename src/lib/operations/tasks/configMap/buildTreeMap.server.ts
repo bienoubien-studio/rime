@@ -1,5 +1,5 @@
 import type { ConfigMap } from './types';
-import { isFormField } from 'rizom/utils/field';
+import { isFormField } from 'rizom/util/field';
 import type { TreeFieldRaw } from 'rizom/fields/tree';
 
 export function buildTreeFieldsMap(

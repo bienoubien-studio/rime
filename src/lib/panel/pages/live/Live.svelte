@@ -2,7 +2,7 @@
 	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
 	import { goto } from '$app/navigation';
 	import type { GenericDoc } from 'rizom/types/doc';
-	import LiveSidePanel from 'rizom/panel/components/areas/live/SidePanel.svelte';
+	import LiveSidePanel from 'rizom/panel/components/sections/live/SidePanel.svelte';
 	import type { BrowserConfig } from 'rizom/types/config';
 	import { browser } from '$app/environment';
 

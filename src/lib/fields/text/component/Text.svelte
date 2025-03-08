@@ -2,7 +2,7 @@
 	import { Input } from '$lib/panel/components/ui/input';
 	import { Field } from '$lib/panel';
 	import type { TextFieldProps } from './props.js';
-	import { capitalize } from 'rizom/utils/string.js';
+	import { capitalize } from 'rizom/util/string.js';
 	import './text.css';
 
 	const { path, config, type = 'text', form }: TextFieldProps = $props();

@@ -2,15 +2,15 @@
 	import { X } from 'lucide-svelte';
 	import * as Command from '$lib/panel/components/ui/command/index';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index';
-	import Document from 'rizom/panel/components/areas/document/Document.svelte';
+	import Document from 'rizom/panel/components/sections/document/Document.svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { createBlankDocument } from '$lib/utils/doc.js';
-	import { dataError } from '$lib/panel/utility/dataError.js';
-	import { dataFocused } from '$lib/panel/utility/dataFocused.js';
+	import { createBlankDocument } from '$lib/util/doc.js';
+	import { dataError } from '$lib/panel/util/dataError.js';
+	import { dataFocused } from '$lib/panel/util/dataFocused.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types/doc';
-	import { useSortable } from 'rizom/panel/utility/Sortable';
+	import { useSortable } from 'rizom/panel/util/Sortable';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 
 	const {

@@ -2,7 +2,7 @@
 	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { Collection } from 'rizom/types';
-	import type { WithUpload } from 'rizom/types/utility';
+	import type { WithUpload } from 'rizom/types/util';
 	import { toast } from 'svelte-sonner';
 
 	import type { ChangeEventHandler } from 'svelte/elements';

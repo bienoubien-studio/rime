@@ -1,5 +1,5 @@
 import type { FormField } from 'rizom/types/index.js';
-import type { Dic, WithoutBuilders } from 'rizom/types/utility.js';
+import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';

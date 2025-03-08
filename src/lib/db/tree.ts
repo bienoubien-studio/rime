@@ -1,11 +1,11 @@
-import { omit, pick, omitId } from '../utils/object.js';
+import { omit, pick, omitId } from '../util/object.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
-import { generatePK } from './utils.js';
-import { toPascalCase } from '../utils/string.js';
+import { generatePK } from './util.js';
+import { toPascalCase } from '../util/string.js';
 import type { TreeBlock, PrototypeSlug } from 'rizom/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
-import type { WithRequired } from 'rizom/types/utility.js';
-import { extractFieldName } from 'rizom/fields/tree/utils.js';
+import type { WithRequired } from 'rizom/types/util.js';
+import { extractFieldName } from 'rizom/fields/tree/util.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//

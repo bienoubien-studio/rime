@@ -21,7 +21,7 @@ import type {
 	TextField,
 	ToggleField
 } from 'rizom/fields/types';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import type { AnyField, FormField, Field } from 'rizom/types/fields.js';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
 import type { GroupFieldRaw } from 'rizom/fields/group/index.js';

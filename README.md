@@ -111,7 +111,7 @@ import type { collection, area } from 'rizom';
 import type { Config } from 'rizom';
 import { Settings2 } from 'lucide-svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
-import { access } from "rizom/utils";
+import { access } from "rizom/util";
 
 const Pages = collection('pages', {
   group: 'content',

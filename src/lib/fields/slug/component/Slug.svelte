@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Input } from '$lib/panel/components/ui/input';
-	import { slugify } from '$lib/utils/string.js';
+	import { slugify } from '$lib/util/string.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import type { SlugField } from '../index';

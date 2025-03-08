@@ -1,7 +1,7 @@
 import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 import type { TreeFieldRaw } from '..';
 import type { TreeBlock } from 'rizom/types/doc';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 
 export type TreeBlockProps = {
 	path: string;

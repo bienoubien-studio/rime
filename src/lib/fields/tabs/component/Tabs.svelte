@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
-	import { slugify } from '$lib/utils/string.js';
+	import { slugify } from '$lib/util/string.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Cookies from 'js-cookie';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';

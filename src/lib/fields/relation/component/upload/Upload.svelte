@@ -4,9 +4,9 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import Sortable from 'sortablejs';
 	import { Edit, File, X } from 'lucide-svelte';
-	import Doc from 'rizom/panel/components/areas/document/Document.svelte';
+	import Doc from 'rizom/panel/components/sections/document/Document.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { createBlankDocument } from '$lib/utils/doc.js';
+	import { createBlankDocument } from '$lib/util/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from 'rizom/types';
 	import { t__ } from 'rizom/panel/i18n/index.js';

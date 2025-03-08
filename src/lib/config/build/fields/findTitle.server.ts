@@ -1,7 +1,7 @@
 import type { FieldBuilder } from 'rizom/fields/builders/index.js';
 import { TabsBuilder } from 'rizom/fields/tabs';
 import type { Field } from 'rizom/types';
-import { hasMaybeTitle, isGroupField, isTabsField } from 'rizom/utils/field';
+import { hasMaybeTitle, isGroupField, isTabsField } from 'rizom/util/field';
 
 export function findTitleField(fields: FieldBuilder<Field>[]): any | null {
 	// console.log(fields);

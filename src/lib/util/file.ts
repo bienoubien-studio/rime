@@ -1,4 +1,4 @@
-import { slugify } from '$lib/utils/string.js';
+import { slugify } from '$lib/util/string.js';
 
 export const fileSizeToString = (size: number) => {
 	if (size < 1_000_000) {

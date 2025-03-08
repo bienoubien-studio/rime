@@ -1,13 +1,13 @@
 import fs from 'fs';
-import { capitalize, toPascalCase } from '$lib/utils/string.js';
-import { taskLogger } from 'rizom/utils/logger/index.js';
+import { capitalize, toPascalCase } from '$lib/util/string.js';
+import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
-import { isBlocksField, isGroupField, isTabsField } from 'rizom/utils/field.js';
+import { isBlocksField, isGroupField, isTabsField } from 'rizom/util/field.js';
 import type { AnyField, Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
-import { isUploadConfig } from 'rizom/config/utils.js';
+import { isUploadConfig } from 'rizom/config/util.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */

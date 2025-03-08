@@ -1,5 +1,5 @@
 import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
-import { access } from 'rizom/utils/access/index.js';
+import { access } from 'rizom/util/access/index.js';
 import type {
 	BuiltCollection,
 	BuiltConfig,
@@ -8,7 +8,7 @@ import type {
 	Config
 } from 'rizom/types/config.js';
 import { RizomError } from 'rizom/errors/index.js';
-import type { Dic } from 'rizom/types/utility.js';
+import type { Dic } from 'rizom/types/util.js';
 import { buildArea } from './area.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';

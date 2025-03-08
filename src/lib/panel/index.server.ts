@@ -1,3 +1,3 @@
-import { checkLiveRedirect } from './utility/live.server.js';
+import { checkLiveRedirect } from './util/live.server.js';
 
 export { checkLiveRedirect };

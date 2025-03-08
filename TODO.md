@@ -17,8 +17,9 @@
 [ ] remove forgot password route for now
 [ ] init command without prompt
 [ ] Fix the sortable error on file change
-[ ] More tests
 [ ] basic real life config preset
+[ ] Panel relation API call proxy
+[ ] More tests
 
 # V1
 [ ] collection nested

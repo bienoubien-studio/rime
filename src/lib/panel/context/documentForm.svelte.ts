@@ -3,22 +3,22 @@ import cloneDeep from 'clone-deep';
 import { diff } from 'deep-object-diff';
 import { applyAction, deserialize } from '$app/forms';
 import { toast } from 'svelte-sonner';
-import { moveItem } from '../../utils/array.js';
+import { moveItem } from '../../util/array.js';
 import { invalidateAll } from '$app/navigation';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
 import { getUserContext } from './user.svelte.js';
-import { getValueAtPath } from '../../utils/object.js';
-import { snapshot } from '../../utils/state.js';
+import { getValueAtPath } from '../../util/object.js';
+import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
 import type { GenericBlock, GenericDoc, AnyFormField } from 'rizom/types';
-import type { Dic } from 'rizom/types/utility';
+import type { Dic } from 'rizom/types/util';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
-import { isObjectLiteral } from 'rizom/utils/object.js';
+import { isObjectLiteral } from 'rizom/util/object.js';
 
 function createDocumentFormState({
 	initial,

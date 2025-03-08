@@ -28,7 +28,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	//
 	const { config, event, locale, adapter, sort, limit, api, depth, query } = args;
 
-	const authorized = config.access.read(event.locals.user);
+	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}

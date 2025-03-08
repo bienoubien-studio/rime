@@ -1,5 +1,5 @@
 import test, { expect } from '@playwright/test';
-import { filePathToBase64 } from 'rizom/collection/upload/utils/converter';
+import { filePathToBase64 } from 'rizom/collection/upload/util/converter';
 import path from 'path';
 import { logToFile } from '../../src/log';
 
