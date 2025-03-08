@@ -2,19 +2,18 @@ import { RizomError, RizomFormError } from '../../errors/index.js';
 import { CollectionInterface } from './Collection.js';
 import { AreaInterface } from './Area.js';
 import type { Rizom } from '../../rizom.server.js';
-import type {
-	LocalAPI as LocalAPIType,
-	LocalAPIConstructorArgs,
-	LocalAPICollectionInterface,
-	LocalAPIAreaInterface
-} from 'rizom/types/api.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterCollection } from 'rizom';
 import type { RegisterArea } from 'rizom';
 import type { FormErrors } from 'rizom/types/panel.js';
 import validate from 'rizom/utils/validate.js';
 
-export class LocalAPI implements LocalAPIType {
+export type LocalAPIConstructorArgs = {
+	rizom: Rizom;
+	event: RequestEvent;
+};
+
+export class LocalAPI {
 	//
 	#requestEvent: RequestEvent;
 	rizom: Rizom;
@@ -28,9 +27,7 @@ export class LocalAPI implements LocalAPIType {
 		this.#requestEvent.locals.locale = locale;
 	}
 
-	collection<Slug extends keyof RegisterCollection>(
-		slug: Slug
-	): LocalAPICollectionInterface<RegisterCollection[Slug]> {
+	collection<Slug extends keyof RegisterCollection>(slug: Slug) {
 		const collectionConfig = this.rizom.config.getCollection(slug);
 		if (!collectionConfig) {
 			throw new RizomError(`${slug} is not a collection`);
@@ -40,12 +37,12 @@ export class LocalAPI implements LocalAPIType {
 			event: this.#requestEvent,
 			config: collectionConfig,
 			adapter: this.rizom.adapter,
-			api: this as LocalAPIType,
+			api: this,
 			defaultLocale: this.rizom.config.getDefaultLocale()
 		});
 	}
 
-	area<Slug extends keyof RegisterArea>(slug: Slug): LocalAPIAreaInterface<RegisterArea[Slug]> {
+	area<Slug extends keyof RegisterArea>(slug: Slug) {
 		const areaConfig = this.rizom.config.getArea(slug);
 		if (!areaConfig) {
 			throw new RizomError(`${slug} is not a area`);
@@ -54,7 +51,7 @@ export class LocalAPI implements LocalAPIType {
 			event: this.#requestEvent,
 			config: areaConfig,
 			adapter: this.rizom.adapter,
-			api: this as LocalAPIType,
+			api: this,
 			defaultLocale: this.rizom.config.getDefaultLocale()
 		});
 	}

@@ -2,7 +2,8 @@
 import type { Navigation } from '$lib/panel/navigation.ts';
 import type { Session } from 'better-auth';
 import type { Rizom } from 'rizom';
-import type { LocalAPI, User } from 'rizom/types/index.js';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server';
+import type { User } from 'rizom/types/index.js';
 
 declare global {
 	//

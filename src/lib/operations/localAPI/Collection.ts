@@ -12,10 +12,11 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FormField } from 'rizom/types/fields.js';
-import type { OperationQuery, LocalAPICollectionInterface, LocalAPI } from 'rizom/types/api';
+import type { OperationQuery } from 'rizom/types/api';
 import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
 import type { Adapter } from 'rizom/db/index.server.js';
+import type { LocalAPI } from './index.server.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -25,9 +26,7 @@ type Args = {
 	event: RequestEvent;
 };
 
-class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]>
-	implements LocalAPICollectionInterface<Doc>
-{
+class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
 	#adapter: Adapter;
 	#api: LocalAPI;
