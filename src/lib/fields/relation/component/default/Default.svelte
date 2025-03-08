@@ -127,7 +127,7 @@
 		</div>
 	</Command.Root>
 
-	{#if relationConfig.access.create && relationConfig.access.create(user.attributes) && !isFull}
+	{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {}) && !isFull}
 		<Button
 			class="rz-relation__create-button"
 			onclick={() => (create = true)}

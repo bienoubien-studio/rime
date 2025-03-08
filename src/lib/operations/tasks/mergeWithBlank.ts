@@ -1,5 +1,5 @@
 import type { CompiledCollection, GenericDoc } from 'rizom/types';
-import { isUploadConfig } from 'rizom/config/util.js';
+import { isUploadConfig } from 'rizom/util/config.js';
 import deepmerge from 'deepmerge';
 import { createBlankDocument } from 'rizom/util/doc';
 

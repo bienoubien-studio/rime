@@ -3,9 +3,9 @@ import { getContext, onMount, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
-import { isUploadConfig } from '../../config/util.js';
+import { isUploadConfig } from 'rizom/util/config.js';
 import { isFormField, isGroupFieldRaw, isNotHidden, isTabsFieldRaw } from '../../util/field.js';
-import { hasProps } from '../../util/object.js';
+import { hasProps } from 'rizom/util/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';

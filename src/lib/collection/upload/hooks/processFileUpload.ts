@@ -4,7 +4,7 @@ import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { GenericDoc } from 'rizom/types/doc';
 import { cleanupStoredFiles } from '../disk/delete';
 import { saveFile } from '../disk/save';
-import { isUploadConfig } from 'rizom/config/util';
+import { isUploadConfig } from 'rizom/util/config';
 
 /**
  * Hook that handles file upload processing and image resizing operations.

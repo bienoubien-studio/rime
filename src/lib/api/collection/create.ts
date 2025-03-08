@@ -1,4 +1,4 @@
-import { isAuthConfig } from '$lib/config/util.js';
+import { isAuthConfig } from '$lib/util/config.js';
 import { extractData } from 'rizom/operations/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
