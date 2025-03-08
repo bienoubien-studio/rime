@@ -65,7 +65,7 @@ export const saveRelations = async (args: {
 			locale: locale
 		})
 		.then((relations) => {
-			console.log('existingRelations before filter', relations);
+			// console.log('existingRelations before filter', relations);
 			// Filter existing relations
 			return relations.filter((relation) => {
 				return incomingPaths.some((path) => relation.path?.startsWith(path));

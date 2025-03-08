@@ -111,7 +111,7 @@ const buildConfig = async <C extends boolean = true>(
 	// IMPORTANT !
 	// Mandatory plugins that includes handlers should be added also here :
 	// src/lib/handlers/plugins.server.ts
-	// to register handlers as the config is built from inside the first handler
+	// because the config is built from inside the first handler
 	// in order to reload/rebuild on refresh if dev mode
 	const plugins = [cache(config.cache || {}), ...(config.plugins || [])];
 

@@ -43,7 +43,7 @@ export const saveBlocks = async (args: {
 			data: original,
 			configMap: originalConfigMap
 		});
-		console.log('existingBlocks before filter', blocks);
+		// console.log('existingBlocks before filter', blocks);
 		// filter path that are not present in incoming data
 		// in order to not delete unmodified blocks fields
 		existingBlocks = blocks.filter((block) => {

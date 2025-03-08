@@ -53,7 +53,7 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 			const value = getValueAtPath<TreeBlock[]>(data, path);
 
 			const isEmptyValue = config.isEmpty(value);
-			// console.log('in', toNestedRepresentation(value).toString());
+
 			if (value && !isEmptyValue) {
 				value.forEach((item: TreeBlock, index: number) => {
 					processTreeItem(item, index, path, undefined);

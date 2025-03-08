@@ -45,6 +45,7 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 
 	const configMap = buildConfigMap(data, config.fields);
 	const originalConfigMap = buildConfigMap(original, config.fields);
+
 	data = await setDefaultValues({ data, adapter, configMap });
 	data = await validateFields({
 		data,
@@ -71,7 +72,6 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 	}
 
 	const incomingPaths = Object.keys(data);
-	console.log('incomingPaths', incomingPaths);
 
 	await adapter.collection.update({
 		id,
