@@ -164,20 +164,18 @@
 
 	<Command.List class="rz-relation-upload__command-list">
 		<Command.Empty>No results found.</Command.Empty>
-		<Command.Group heading={relationConfig.label.plural || relationConfig.slug}>
-			{#each availableItems as item}
-				<Command.Item
-					class="rz-relation-upload__command-item"
-					value={item.filename}
-					onSelect={() => {
-						addValue(item.relationId);
-						open = false;
-					}}
-				>
-					{@render grid(item)}
-				</Command.Item>
-			{/each}
-		</Command.Group>
+		{#each availableItems as item}
+			<Command.Item
+				class="rz-relation-upload__command-item"
+				value={item.filename}
+				onSelect={() => {
+					addValue(item.relationId);
+					open = false;
+				}}
+			>
+				{@render grid(item)}
+			</Command.Item>
+		{/each}
 	</Command.List>
 </Command.Dialog>
 
