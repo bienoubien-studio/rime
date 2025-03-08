@@ -41,7 +41,7 @@ export const cache: Plugin<CacheArgs> = (options) => {
 				panel: {
 					...(config.panel || {}),
 					components: {
-						...(config.panel.components || {}),
+						...(config.panel.components || { header: [], collectionHeader: [] }),
 						header: [...(config.panel.components?.header || []), HeaderButton]
 					}
 					// routes: {

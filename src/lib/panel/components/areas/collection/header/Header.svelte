@@ -40,6 +40,9 @@
 
 	{#if showFullHeader}
 		<div class="rz-collection-header__right">
+			{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent}
+				<CustomHeaderComponent />
+			{/each}
 			<ButtonCreate />
 			<LanguageSwitcher />
 		</div>

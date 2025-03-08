@@ -162,6 +162,7 @@ export type BuiltConfig = {
 		access: (user?: User) => boolean;
 		components?: {
 			header: ComponentType[];
+			collectionHeader: ComponentType[];
 			// dashboard: ComponentType;
 		};
 		language: 'fr' | 'en';
@@ -172,7 +173,11 @@ export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes'> & 
 	blueprints: Record<FieldsType, FieldsComponents>;
 	panel: {
 		language: 'fr' | 'en';
-		components: { header: ComponentType[]; dashboard?: ComponentType };
+		components: {
+			header: ComponentType[];
+			dashboard?: ComponentType;
+			collectionHeader: ComponentType[];
+		};
 	};
 };
 
