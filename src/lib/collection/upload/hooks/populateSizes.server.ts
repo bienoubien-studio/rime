@@ -1,7 +1,7 @@
-import type { CollectionHookBeforeRead, CompiledCollection } from 'rizom/types';
+import type { CollectionHookBeforeRead, CompiledCollection, GenericDoc } from 'rizom/types';
 import type { WithUpload } from 'rizom/types/utility';
 
-export const populateSizes: CollectionHookBeforeRead = async (args) => {
+export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const doc = args.doc;
 
@@ -13,14 +13,14 @@ export const populateSizes: CollectionHookBeforeRead = async (args) => {
 				const formats = doc[size.name].split('|') as string[];
 
 				if (formats.length > 1) {
-					// Multiple formats case: use object
+					// Multiple formats
 					doc.sizes[size.name] = {};
 					formats.forEach((format) => {
 						const extension = format.split('.').pop()!;
-						doc.sizes[size.name][extension] = `/medias/${format}`;
+						doc.sizes[`${size.name}_${extension}`] = `/medias/${format}`;
 					});
 				} else {
-					// Single format case: use string
+					// Single format
 					doc.sizes[size.name] = `/medias/${formats[0]}`;
 				}
 

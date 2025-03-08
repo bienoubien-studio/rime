@@ -8,7 +8,7 @@
 [v] Richtext in blocks not saved
 [v] Add loader on image upload
 [v] Prevent parent forms saving on nested document creation
-[ ] make file output key sm_jpg, sm_webp, if multilple output format
+[v] make file output key sm_jpg, sm_webp, if multilple output format
 [ ] Change the way panel languages are loaded
 [ ] better-auth + smtp : forgot password
 [ ] Blocks collapse/uncollapse all

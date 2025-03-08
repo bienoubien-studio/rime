@@ -49,8 +49,7 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 	const sizesTypes = sizes
 		.map((size) => {
 			if (size.out && size.out.length > 1) {
-				const formats = size.out.map((format) => `${format}: string`).join(', ');
-				return `${size.name}: {${formats}}`;
+				return size.out.map((format) => `${size.name}_${format}: string`).join(', ');
 			} else {
 				return `${size.name}: string`;
 			}
@@ -58,7 +57,6 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 		.join(', ');
 	return `\n\t\tsizes:{${sizesTypes}}`;
 }
-
 export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];

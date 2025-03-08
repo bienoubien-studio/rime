@@ -25,23 +25,17 @@ import { isUploadConfig } from 'rizom/config/utils';
  *    - Cleans up image variations
  *    - Nullifies related document fields
  */
-export const processFileUpload: CollectionHookBeforeUpsert = async (args) => {
-	const { operation, config, event, api } = args;
-
+export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (args) => {
+	const { operation, config, api } = args;
 	if (!isUploadConfig(config)) throw new Error('Should never throw');
 
 	let data = args.data || {};
-	const id = (event && event.params.id) || '';
-
-	const create = operation === 'create';
 	const hasSizeConfig = 'imageSizes' in config && Array.isArray(config.imageSizes);
 	const sizesConfig = hasSizeConfig ? config.imageSizes : [];
 
 	if (data.file) {
-		if (!create) await cleanupStoredFiles({ config, api, id });
-
+		if (operation === 'update') await cleanupStoredFiles({ config, api, id: args.originalDoc.id });
 		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
-
 		data = {
 			...omit(['file'], data),
 			filename,
@@ -49,8 +43,11 @@ export const processFileUpload: CollectionHookBeforeUpsert = async (args) => {
 		};
 	}
 
+	// If data.file is explicitly set to null : delete file
 	if (data.file === null) {
-		if (!create) await cleanupStoredFiles({ config, api, id });
+		// delete files
+		if (operation === 'update') await cleanupStoredFiles({ config, api, id: args.originalDoc.id });
+		// update data for DB update
 		for (const size of sizesConfig!) {
 			data = {
 				...data,
