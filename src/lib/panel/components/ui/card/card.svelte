@@ -18,8 +18,9 @@
 
 <style type="postcss">
 	.rz-card {
+		--bg: var(--rz-card-color-bg, var(--rz-ground-5));
 		width: var(--rz-card-width, auto);
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--bg));
 		border-radius: var(--rz-radius-lg);
 		border: var(--rz-border);
 	}
