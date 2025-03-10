@@ -122,6 +122,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
 				'findAll',
 				this.config.slug,
+				this.#event.locals.user?.roles.join(',') || 'no-user',
 				sort,
 				depth,
 				limit,
@@ -151,6 +152,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
 				'findById',
 				this.config.slug,
+				this.#event.locals.user?.roles.join(',') || 'no-user',
 				id,
 				depth,
 				locale

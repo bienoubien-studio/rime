@@ -41,15 +41,28 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return createBlankDocument(this.config) as Doc;
 	}
 
-	find(args?: { locale?: string; depth?: number }): Promise<Doc> {
-		return find<Doc>({
-			locale: this.#fallbackLocale(args?.locale),
+	find({ locale, depth = 0 }: FindArgs): Promise<Doc> {
+		const params = {
+			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
 			adapter: this.#adapter,
 			api: this.#api,
-			depth: args?.depth
-		});
+			depth
+		};
+
+		if (this.#event.locals.cacheEnabled) {
+			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+				'find',
+				this.config.slug,
+				this.#event.locals.user?.roles.join(',') || 'no-user',
+				depth,
+				locale
+			);
+			return this.#event.locals.rizom.plugins.cache.get(key, () => find<Doc>(params));
+		}
+
+		return find<Doc>(params);
 	}
 
 	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc | { errors: FormErrors }> {
@@ -65,3 +78,5 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 }
 
 export { AreaInterface };
+
+type FindArgs = { locale?: string; depth?: number };
