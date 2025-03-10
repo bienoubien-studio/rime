@@ -75,78 +75,7 @@ export const defaultSchema = dedent`
 
   export const pages = sqliteTable( 'pages', {
     id: pk(),
-    title: text('title').notNull(),
-    createdAt: integer('created_at', { mode : 'timestamp' }),
-    updatedAt: integer('updated_at', { mode : 'timestamp' }),
-    editedBy: text('edited_by'),
-  })
-
-  export const pagesBlocksParagraph = sqliteTable( 'pages_blocks_paragraph', {
-    id: pk(),
-    text: text('text'),
-    type: text('type'),
-    path: text('path'),
-    position: real('position'),
-    parentId: text("parent_id").references(() => pages.id, { onDelete: 'cascade' }),
-  })
-
-  export const pagesBlocksImage = sqliteTable( 'pages_blocks_image', {
-    id: pk(),
-    type: text('type'),
-    path: text('path'),
-    position: real('position'),
-    parentId: text("parent_id").references(() => pages.id, { onDelete: 'cascade' }),
-  })
-
-  export const pagesRels = sqliteTable('pages_rels', {
-    id: pk(),
-    path: text('path'),
-    position: integer('position'),
-    parentId: text("parent_id").references(() => pages.id, { onDelete: 'cascade' }),
-    mediasId:  text('medias_id').references(() => medias.id, { onDelete: 'cascade' }),
-
-  })
-
-  export const rel_pagesRels = relations(pages, ({ many }) => ({
-    medias: many(medias),
-  }))
-
-  export const rel_pagesBlocksParagraphHasOnePages = relations(pagesBlocksParagraph, ({ one }) => ({
-    pages : one(pages, {
-      fields: [pagesBlocksParagraph.parentId],
-      references: [pages.id],
-    }),
-  }))
-
-  export const rel_pagesBlocksImageHasOnePages = relations(pagesBlocksImage, ({ one }) => ({
-    pages : one(pages, {
-      fields: [pagesBlocksImage.parentId],
-      references: [pages.id],
-    }),
-  }))
-
-  export const rel_pagesRelsHasOnePages = relations(pagesRels, ({ one }) => ({
-    pages : one(pages, {
-      fields: [pagesRels.parentId],
-      references: [pages.id],
-    }),
-  }))
-
-  export const rel_pagesHasMany = relations(pages, ({ many }) => ({
-    pagesBlocksParagraph: many(pagesBlocksParagraph),
-  pagesBlocksImage: many(pagesBlocksImage),
-  pagesRels: many(pagesRels),
-  }))
-
-  /** medias ============================================== **/
-
-  export const medias = sqliteTable( 'medias', {
-    id: pk(),
-    alt: text('alt'),
-    thumbnail: text('thumbnail'),
-    mimeType: text('mime_type'),
-    filename: text('filename'),
-    filesize: text('filesize'),
+    title: text('title'),
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
     editedBy: text('edited_by'),
@@ -162,6 +91,7 @@ export const defaultSchema = dedent`
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
     editedBy: text('edited_by'),
+
     loginAttempts: integer("login_attempts").notNull().default(0),
     locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
     lockedAt: integer("locked_at", { mode: 'timestamp'}),
@@ -242,10 +172,6 @@ export const defaultSchema = dedent`
 
   export const tables: Tables = {
     pages,
-    pagesBlocksParagraph,
-    pagesBlocksImage,
-    pagesRels,
-    medias,
     users,
     authUsers,
     authAccounts,
@@ -253,22 +179,14 @@ export const defaultSchema = dedent`
     authSessions
   }
   export const relationFieldsMap: Record<string, any> = {
-    pages : {"thumbnail":{"to":"medias"},"image":{"to":"medias"}},
-    medias : {},
+    pages : {},
     users : {}
   }
 
      const schema = {
        pages,
-        pagesBlocksParagraph,
-        pagesBlocksImage,
-        pagesRels,
-        medias,
         users,
-       rel_pagesBlocksParagraphHasOnePages,
-        rel_pagesBlocksImageHasOnePages,
-        rel_pagesRelsHasOnePages,
-        rel_pagesHasMany,
+
        authUsers,
        authAccounts,
        authVerifications,
@@ -277,5 +195,4 @@ export const defaultSchema = dedent`
 
    export type Schema = typeof schema
    export default schema
-
 `;
