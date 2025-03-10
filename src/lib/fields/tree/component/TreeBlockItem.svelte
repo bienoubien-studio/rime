@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GripVertical } from 'lucide-svelte';
+	import { GripVertical } from '@lucide/svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import TreeBlockItem from './TreeBlockItem.svelte';
 	import type { TreeBlockProps } from './types';

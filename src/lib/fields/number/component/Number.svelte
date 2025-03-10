@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './number.css';
 	import { Field } from 'rizom/panel';
-	import { ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import type { NumberFieldProps } from './props';
 
 	const { path, config, form }: NumberFieldProps = $props();

@@ -2,7 +2,7 @@
 	import './link-selector.css';
 	import type { Editor } from '@tiptap/core';
 	import IconButton from '../icon-button/icon-button.svelte';
-	import { Check, Trash, Link2 } from 'lucide-svelte';
+	import { Check, Trash, Link2 } from '@lucide/svelte';
 	import validate from '$lib/util/validate';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 

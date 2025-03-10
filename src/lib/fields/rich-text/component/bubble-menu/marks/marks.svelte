@@ -1,11 +1,12 @@
 <script lang="ts">
 	import IconButton from '../icon-button/icon-button.svelte';
-	import BoldIcon from 'lucide-svelte/icons/bold';
-	import ItalicIcon from 'lucide-svelte/icons/italic';
-	import StrikethroughIcon from 'lucide-svelte/icons/strikethrough';
+	import BoldIcon from '@lucide/svelte/icons/bold';
+	import ItalicIcon from '@lucide/svelte/icons/italic';
+	import StrikethroughIcon from '@lucide/svelte/icons/strikethrough';
 	import type { Editor } from '@tiptap/core';
-	import { type ComponentType } from 'svelte';
+	import { type Component } from 'svelte';
 	import type { RichTextFieldMark } from '../../../index.js';
+	import type { IconProps } from '@lucide/svelte';
 
 	type Props = {
 		editor: Editor;
@@ -22,7 +23,7 @@
 	type Mark = {
 		name: RichTextFieldMark;
 		command: () => void;
-		icon: ComponentType;
+		icon: Component<IconProps>;
 	};
 	const availableMarks: Mark[] = [
 		{

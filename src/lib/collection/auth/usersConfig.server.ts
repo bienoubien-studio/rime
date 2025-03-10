@@ -1,4 +1,4 @@
-import { UsersRound } from 'lucide-svelte';
+import { UsersRound } from '@lucide/svelte';
 import { access } from 'rizom/util/access/index.js';
 import { usersFields } from './usersFields.js';
 import type { Collection } from 'rizom';

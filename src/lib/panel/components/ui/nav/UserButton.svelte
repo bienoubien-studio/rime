@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import Button from '../button/button.svelte';
-	import LogOut from 'lucide-svelte/icons/log-out';
+	import { LogOut } from '@lucide/svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 
 	type Props = { navCollapsed: boolean };

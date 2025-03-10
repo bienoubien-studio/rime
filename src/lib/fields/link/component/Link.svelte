@@ -5,7 +5,7 @@
 	import { Field } from 'rizom/panel';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { capitalize } from '$lib/util/string.js';
-	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown, Edit } from 'lucide-svelte';
+	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown, Edit } from '@lucide/svelte';
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';

@@ -1,5 +1,5 @@
 <script>
-	import { GripVertical } from 'lucide-svelte';
+	import { GripVertical } from '@lucide/svelte';
 	import { PaneResizer } from 'paneforge';
 </script>
 

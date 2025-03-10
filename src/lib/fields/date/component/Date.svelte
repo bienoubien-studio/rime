@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './date.css';
-	import { Calendar as CalendarIcon } from 'lucide-svelte';
+	import { Calendar as CalendarIcon } from '@lucide/svelte';
 	import { CalendarDate, getLocalTimeZone, type DateValue } from '@internationalized/date';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Calendar } from '$lib/panel/components/ui/calendar/index.js';

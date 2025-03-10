@@ -1,18 +1,18 @@
 import type { Editor } from '@tiptap/core';
-import Heading2 from 'lucide-svelte/icons/heading-2';
-import Heading3 from 'lucide-svelte/icons/heading-3';
-import TextQuote from 'lucide-svelte/icons/text-quote';
-import TextIcon from 'lucide-svelte/icons/text';
-import ListOrdered from 'lucide-svelte/icons/list-ordered';
-// import { Code } from 'lucide-svelte';
-import Asterisk from 'lucide-svelte/icons/asterisk';
-import type { ComponentType } from 'svelte';
+import Heading2 from '@lucide/svelte/icons/heading-2';
+import Heading3 from '@lucide/svelte/icons/heading-3';
+import TextQuote from '@lucide/svelte/icons/text-quote';
+import TextIcon from '@lucide/svelte/icons/text';
+import ListOrdered from '@lucide/svelte/icons/list-ordered';
+import Asterisk from '@lucide/svelte/icons/asterisk';
+import type { Component } from 'svelte';
 import type { RichTextFieldNode } from 'rizom/fields/types';
+import type { IconProps } from '@lucide/svelte';
 
 type Node = {
 	name: RichTextFieldNode;
 	label: string;
-	icon: ComponentType;
+	icon: Component<IconProps>;
 	command: () => void;
 	isActive: () => boolean;
 };
@@ -98,16 +98,6 @@ export function createNodesState(editor: Editor) {
 			},
 			isActive: () => editor.isActive('blockquote')
 		}
-		// {
-		//   name: 'code',
-		//   label: 'Code',
-		//   icon: Code,
-		//   command: () => {
-		//     editor.chain().focus().toggleCodeBlock().run();
-		//     setActiveItems();
-		//   },
-		//   isActive: () => editor.isActive('codeBlock')
-		// }
 	];
 
 	return {

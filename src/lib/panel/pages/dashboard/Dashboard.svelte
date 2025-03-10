@@ -4,7 +4,7 @@
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import PageHeader from 'rizom/panel/components/ui/page-header/PageHeader.svelte';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
-	import { ArrowRight, Eye } from 'lucide-svelte';
+	import { ArrowRight, Eye } from '@lucide/svelte';
 	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 

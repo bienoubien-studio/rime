@@ -3,7 +3,7 @@
 	import RenderFields from './RenderFields.svelte';
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import { onMount } from 'svelte';
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown } from '@lucide/svelte';
 	import type { WithoutBuilders } from 'rizom/types/util';
 	import { isFormField } from 'rizom/util/field';
 

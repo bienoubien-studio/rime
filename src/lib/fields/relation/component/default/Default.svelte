@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import * as Command from '$lib/panel/components/ui/command/index';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index';
 	import Document from 'rizom/panel/components/sections/document/Document.svelte';

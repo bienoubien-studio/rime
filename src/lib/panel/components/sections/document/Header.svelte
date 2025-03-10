@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import X from 'lucide-svelte/icons/x';
+	import X from '@lucide/svelte/icons/x';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import { Button } from '../../ui/button';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
-	import { PencilRuler, Eye, Command } from 'lucide-svelte';
+	import { PencilRuler, Eye, Command } from '@lucide/svelte';
 	import type { CompiledCollection, CompiledArea } from 'rizom/types/config';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';

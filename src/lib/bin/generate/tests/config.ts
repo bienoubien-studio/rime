@@ -1,6 +1,6 @@
 import { access } from '$lib/util/access/index.js';
-import { Newspaper, ReceiptText } from 'lucide-svelte';
-import { Text } from 'lucide-svelte';
+import { Newspaper, ReceiptText } from '@lucide/svelte';
+import { Text } from '@lucide/svelte';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { Config } from 'rizom/index.js';
 

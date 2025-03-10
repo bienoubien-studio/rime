@@ -4,7 +4,7 @@
 	import UserButton from './UserButton.svelte';
 	import type { Route } from 'rizom/types/panel';
 
-	import { Home, PanelsTopLeft } from 'lucide-svelte';
+	import { Home, PanelsTopLeft } from '@lucide/svelte';
 	import Logo from './logo/Logo.svelte';
 
 	type Props = { isCollapsed: boolean; routes: Record<string, Route[]> };

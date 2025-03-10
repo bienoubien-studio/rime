@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CopyPlus, Trash2 } from 'lucide-svelte';
+	import { CopyPlus, Trash2 } from '@lucide/svelte';
 
 	type Props = {
 		deleteBlock: () => void;

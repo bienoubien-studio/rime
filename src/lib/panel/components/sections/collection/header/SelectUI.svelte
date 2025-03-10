@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { ListChecks, SquareCheck, SquareMinus, Trash } from 'lucide-svelte';
+	import { ListChecks, SquareCheck, SquareMinus, Trash } from '@lucide/svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 

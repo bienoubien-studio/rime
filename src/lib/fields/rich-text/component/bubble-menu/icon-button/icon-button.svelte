@@ -1,9 +1,10 @@
 <script lang="ts">
-	import type { ComponentType } from 'svelte';
+	import type { Component } from 'svelte';
 	import './icon-button.css';
+	import type { IconProps } from '@lucide/svelte';
 
 	type Props = {
-		icon: ComponentType;
+		icon: Component<IconProps>;
 		type?: 'submit' | 'button';
 		active?: boolean;
 		class?: string;

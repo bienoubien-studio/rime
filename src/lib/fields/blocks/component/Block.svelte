@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GripVertical, ToyBrick } from 'lucide-svelte';
+	import { GripVertical, ToyBrick } from '@lucide/svelte';
 	import BlockActions from './BlockActions.svelte';
 	import { capitalize } from '$lib/util/string.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';

@@ -1,5 +1,5 @@
 <script>
-	import Ban from 'lucide-svelte/icons/ban';
+	import Ban from '@lucide/svelte/icons/ban';
 	import { t__ } from 'rizom/panel/i18n';
 </script>
 

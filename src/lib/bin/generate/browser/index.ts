@@ -81,7 +81,7 @@ function createImportStatement(path: string): string {
 	// Handle node_modules imports
 	else if (path.includes('node_modules')) {
 		const modulePath = path.split('node_modules/').pop() ?? '';
-		if (modulePath.startsWith('lucide-svelte')) {
+		if (modulePath.startsWith('@lucide/svelte')) {
 			// Only remove .svelte extension for lucide icons
 			importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
 		} else {

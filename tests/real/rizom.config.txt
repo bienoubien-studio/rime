@@ -14,7 +14,7 @@ import {
 } from 'rizom/fields/index.js';
 import type { Collection, Config, Area } from 'rizom';
 import { access } from '$lib/util/access/index.js';
-import { Contact, Images, Menu, Newspaper, Settings2 } from 'lucide-svelte';
+import { Contact, Images, Menu, Newspaper, Settings2 } from '@lucide/svelte';
 import type { PagesDoc } from '../app.generated';
 import type { RegisterCollection } from 'rizom';
 import { collection, area } from 'rizom/config/builders';

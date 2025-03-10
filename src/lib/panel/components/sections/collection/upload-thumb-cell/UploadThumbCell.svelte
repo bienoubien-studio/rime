@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FileText } from 'lucide-svelte';
+	import { FileText } from '@lucide/svelte';
 
 	type Props = {
 		url: string;

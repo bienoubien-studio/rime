@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core';
-	import { Check, ChevronDown } from 'lucide-svelte';
+	import { Check, ChevronDown } from '@lucide/svelte';
 	import { createNodesState } from './node-selector-state.svelte';
 	import * as Popover from '$lib/panel/components/ui/popover';
 	import './node-selector.css';

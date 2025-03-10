@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LayoutGrid, List } from 'lucide-svelte';
+	import { LayoutGrid, List } from '@lucide/svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';

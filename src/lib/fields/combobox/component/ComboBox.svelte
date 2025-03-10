@@ -3,7 +3,7 @@
 	import * as Command from '$lib/panel/components/ui/command';
 	import * as Popover from '$lib/panel/components/ui/popover';
 	import { Button } from '$lib/panel/components/ui/button';
-	import { Check, ChevronsUpDown } from 'lucide-svelte';
+	import { Check, ChevronsUpDown } from '@lucide/svelte';
 	import './combobox.css';
 	import type { ComboBoxProps } from './props';
 	import type { Option } from 'rizom/types';

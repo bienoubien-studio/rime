@@ -3,10 +3,11 @@ import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';
-import type { ComponentType } from 'svelte';
+import type { Component, ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import type { Field } from 'rizom/types/fields.js';
+import type { IconProps } from '@lucide/svelte';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);
 
@@ -49,12 +50,12 @@ class BlockBuilder {
 		};
 	}
 	/**
-	 * Sets the icon, must be a lucide-svelte component
+	 * Sets the icon, must be a @lucide/svelte component
 	 * @example
-	 * import { Home } from 'lucide-svelte'
+	 * import { Home } from '@lucide/svelte'
 	 * block('home').icon(Home)
 	 */
-	icon(component: ComponentType) {
+	icon(component: Component<IconProps>) {
 		this.#block.icon = component;
 		return this;
 	}
@@ -99,7 +100,7 @@ export type BlocksFieldBlock = {
 	name: string;
 	label?: string;
 	description?: string;
-	icon?: ComponentType;
+	icon?: Component<IconProps>;
 	renderTitle?: BlocksFieldBlockRenderTitle;
 	fields: FieldBuilder<Field>[];
 };

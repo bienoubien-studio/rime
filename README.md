@@ -109,7 +109,7 @@ Navigate to `http://localhost:5173/panel` to create your first admin user.
 // ./src/config/rizom.config.ts
 import type { collection, area } from 'rizom';
 import type { Config } from 'rizom';
-import { Settings2 } from 'lucide-svelte';
+import { Settings2 } from '@lucide/svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/util";
 
@@ -171,7 +171,7 @@ export default config;
 ```
 
 > [!NOTE]
-> Icons must be imported from `lucide-svelte` (other icon packages are not tested)
+> Icons must be imported from `@lucide/svelte` (other icon packages are not tested)
 > Detailed configuration documentation is in development. Feel free to open issues for questions!
 
 ## Retrieve your data

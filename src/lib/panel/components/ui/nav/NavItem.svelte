@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import File from 'lucide-svelte/icons/file';
+	import File from '@lucide/svelte/icons/file';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 	import NavItemButton from './NavItemButton.svelte';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { capitalize } from '$lib/util/string.js';
-	import { ChevronDown, ChevronUp } from 'lucide-svelte';
+	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import type { FormField } from 'rizom/types/fields';

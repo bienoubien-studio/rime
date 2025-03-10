@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Dialog as SheetPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
-	import X from 'lucide-svelte/icons/x';
+	import X from '@lucide/svelte/icons/x';
 	import type { Snippet } from 'svelte';
 	import { SheetOverlay, SheetPortal, type Side } from './index.js';
 
