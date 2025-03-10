@@ -1,10 +1,11 @@
 import { type Handle } from '@sveltejs/kit';
 import rizom from '../rizom.server.js';
 import { requestLogger } from 'rizom/util/logger/index.js';
-import { dev } from '$app/environment';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from 'rizom/types/index.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
+
+const dev = process.env.NODE_ENV === 'development';
 
 type Args = { config: Config; schema: any };
 

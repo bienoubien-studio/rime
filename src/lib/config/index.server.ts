@@ -7,7 +7,8 @@ import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/typ
 import type { AsyncReturnType, Dic } from 'rizom/types/util.js';
 import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
 import type { AreaSlug } from 'rizom/types/doc.js';
-import { dev } from '$app/environment';
+
+const dev = process.env.NODE_ENV === 'development';
 
 export async function createConfigInterface(rawConfig: Config) {
 	const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });

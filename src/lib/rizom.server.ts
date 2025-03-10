@@ -3,12 +3,13 @@ import path from 'path';
 import { randomId } from './util/random.js';
 import { createConfigInterface } from './config/index.server.js';
 import { existsSync } from 'fs';
-import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/util.js';
 import type { Config, GetRegisterType } from 'rizom';
 import { RizomError } from './errors/index.js';
 import { registerTranslation } from './panel/i18n/index.js';
+
+const dev = process.env.NODE_ENV === 'development';
 
 function createRizom() {
 	//

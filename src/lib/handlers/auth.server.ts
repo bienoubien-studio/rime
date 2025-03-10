@@ -1,7 +1,8 @@
-import { dev } from '$app/environment';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { RizomError } from 'rizom/errors/index.js';
 import type { PrototypeSlug } from 'rizom/types';
+
+const dev = process.env.NODE_ENV === 'development';
 
 // Validate the session
 // retrieve user attributes

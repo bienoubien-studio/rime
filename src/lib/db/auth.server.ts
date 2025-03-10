@@ -7,8 +7,9 @@ import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
-import { dev } from '$app/environment';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+
+const dev = process.env.NODE_ENV === 'development';
 
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, trustedOrigins } = args;
