@@ -2,7 +2,6 @@ import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import type { Plugin } from 'rizom';
 import type { SendMailArgs, SMTPConfig } from './types';
-import { json } from '@sveltejs/kit';
 
 export const mailer: Plugin<SMTPConfig> = (smtpConfig: SMTPConfig) => {
 	const { password, ...restAuth } = smtpConfig.auth;
