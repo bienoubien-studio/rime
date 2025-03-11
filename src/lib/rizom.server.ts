@@ -5,9 +5,10 @@ import { createConfigInterface } from './config/index.server.js';
 import { existsSync } from 'fs';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/util.js';
-import type { Config, GetRegisterType } from 'rizom';
+import type { Config, Plugins } from 'rizom';
 import { RizomError } from './errors/index.js';
-import { registerTranslation } from './panel/i18n/index.js';
+import { registerTranslation } from '$lib/panel/i18n/register.server.js';
+import i18n from './panel/i18n/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -44,7 +45,8 @@ function createRizom() {
 		adapter = createAdapter({ schema, configInterface: config });
 
 		// Panel Language
-		await registerTranslation(config.raw.panel.language);
+		const dictionnaries = await registerTranslation(config.raw.panel.language);
+		i18n.init(dictionnaries);
 
 		// Done
 		initialized = true;
@@ -88,7 +90,7 @@ function createRizom() {
 		},
 
 		get plugins() {
-			return config.get('plugins') as GetRegisterType<'Plugins'>;
+			return config.get('plugins') as Plugins;
 		}
 	};
 }

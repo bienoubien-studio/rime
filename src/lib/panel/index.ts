@@ -16,7 +16,6 @@ import Dashboard from './pages/dashboard/Dashboard.svelte';
 import Collection from './components/sections/collection/Collection.svelte';
 import Doc from './components/sections/document/Document.svelte';
 import { Field } from './components/fields/index.js';
-import { registerTranslation } from './i18n/index.js';
 
 export {
 	Area,
@@ -34,8 +33,7 @@ export {
 	Dashboard,
 	Collection,
 	Doc,
-	Field,
-	registerTranslation
+	Field
 };
 
 export type CollectionLayoutProps = {
