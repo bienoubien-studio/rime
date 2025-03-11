@@ -12,18 +12,14 @@ import {
 	email,
 	select
 } from 'rizom/fields/index.js';
-import type { Collection, Config, Area } from 'rizom';
+import type { Config } from 'rizom';
 import { access } from '$lib/util/access/index.js';
 import { Contact, Images, Menu, Newspaper, Settings2 } from '@lucide/svelte';
 import type { PagesDoc } from '../app.generated';
-import type { RegisterCollection } from 'rizom';
 import { collection, area } from 'rizom/config/builders';
-import type {
-	CollectionHookAfterUpsert,
-	CollectionHookBeforeCreate,
-	CollectionHookBeforeUpsert
-} from 'rizom/types/hooks';
+import type { CollectionHookAfterUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';
+import { regenerateImageSizes } from '@rizom/regenerate-images';
 
 const tabAttributes = tab('Attributes').fields(
 	text('title').isTitle().required(),
@@ -150,6 +146,7 @@ const config: Config = {
 	database: 'real.sqlite',
 	collections: [Pages, Medias],
 	areas: [Settings, Navigation, Informations],
+	plugins: [regenerateImageSizes()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

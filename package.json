@@ -98,6 +98,7 @@
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.48.2",
+		"@rizom/regenerate-images": "^0.0.5",
 		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.19.0",
 		"@sveltejs/package": "^2.0.0",
