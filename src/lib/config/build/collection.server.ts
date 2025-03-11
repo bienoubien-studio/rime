@@ -2,7 +2,7 @@ import { panelUsersCollection } from '$lib/collection/auth/usersConfig.server.js
 import { usersFields } from '$lib/collection/auth/usersFields.js';
 import { isRolesField } from '../../util/field.js';
 import { capitalize, toCamelCase } from '$lib/util/string.js';
-import { isUploadConfig } from '../util.js';
+
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import type {
@@ -17,6 +17,7 @@ import { findTitleField } from './fields/findTitle.server.js';
 import { text } from 'rizom/fields/text/index.js';
 import { FieldBuilder, FormFieldBuilder } from 'rizom/fields/builders/index.js';
 import { date } from 'rizom/fields/index.js';
+import { isUploadConfig } from 'rizom/util/config.js';
 
 const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<any>> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
