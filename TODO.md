@@ -9,16 +9,16 @@
 [v] Add loader on image upload
 [v] Prevent parent forms saving on nested document creation
 [v] make file output key sm_jpg, sm_webp, if multilple output format
-[ ] Change the way panel languages are loaded
+[v] Change the way panel languages are loaded
 [ ] better-auth + smtp : forgot password
 [ ] Blocks collapse/uncollapse all
-[ ] Better logs
 [ ] pnpm deps issue
 [ ] remove forgot password route for now
 [ ] init command without prompt
 [ ] Fix the sortable error on file change
 [ ] basic real life config preset
 [ ] Panel relation API call proxy
+[ ] Better logs
 [ ] More tests
 
 # V1
