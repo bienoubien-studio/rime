@@ -13,7 +13,6 @@
 [ ] better-auth + smtp : forgot password
 [ ] Blocks collapse/uncollapse all
 [ ] pnpm deps issue
-[ ] remove forgot password route for now
 [ ] init command without prompt
 [ ] Fix the sortable error on file change
 [ ] basic real life config preset
