@@ -11,6 +11,7 @@ import type { FieldBuilder } from 'rizom/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
 import type { RegisterCollection } from 'rizom';
+import type { SMTPConfig } from 'rizom/plugins/mailer/types.js';
 
 export type DocumentPrototype = 'collection' | 'area';
 
@@ -64,6 +65,7 @@ export interface Config {
 		};
 	};
 	cache?: { isEnabled?: (event: RequestEvent) => boolean };
+	smtp?: SMTPConfig;
 	routes?: Record<string, RouteConfig>;
 	plugins?: ReturnType<Plugin>[];
 	custom?: {
@@ -169,7 +171,7 @@ export type BuiltConfig = {
 	};
 };
 
-export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes'> & {
+export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | 'smtp'> & {
 	blueprints: Record<FieldsType, FieldsComponents>;
 	panel: {
 		language: 'fr' | 'en';

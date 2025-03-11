@@ -3,16 +3,18 @@ import type { Handle } from '@sveltejs/kit';
 import type { Component } from 'svelte';
 import type { GetRegisterType } from 'rizom';
 import type { BuiltConfig, RouteConfig } from 'rizom/types';
-import type { Dic } from 'rizom/types/util';
+import type { MailerActions } from './mailer/types';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 
 export type CorePlugins = {
 	cache: CacheActions;
+	mailer: MailerActions;
 };
 
 export type Plugin<T = void> = (options: T) => {
 	name: string;
+	core: boolean;
 	configure?: (config: BuiltConfig) => BuiltConfig;
 	actions?: Record<string, MaybeAsyncFunction>;
 	routes?: Record<string, RouteConfig>;

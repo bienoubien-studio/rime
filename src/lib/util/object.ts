@@ -32,10 +32,17 @@ export const omitId = <T extends { id?: string; [k: string]: any }>(obj: T): Omi
 	omit(['id'], obj) as Omit<T, 'id'>;
 
 export function hasProps<T extends object, U extends Array<keyof T>>(
-	obj: T,
-	props: U
+	props: U,
+	obj: T
 ): obj is WithRequired<T, U[number]> {
 	return props.every((prop) => obj[prop] !== undefined);
+}
+
+export function hasProp<T extends object, U extends keyof T>(
+	prop: U,
+	obj: T
+): obj is T & Required<Pick<T, U>> {
+	return obj[prop] !== undefined;
 }
 
 export function isBuffer(obj: any) {

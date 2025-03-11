@@ -35,7 +35,7 @@ export const cache: Plugin<CacheOptions> = (options) => {
 
 	return {
 		name: 'cache',
-
+		core: true,
 		configure: (config) => {
 			config = {
 				...config,
