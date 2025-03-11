@@ -19,7 +19,7 @@ import type { PagesDoc } from '../app.generated';
 import { collection, area } from 'rizom/config/builders';
 import type { CollectionHookAfterUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';
-import { regenerateImageSizes } from '@rizom/regenerate-images';
+import { regenerateImages } from '@rizom/regenerate-images';
 
 const tabAttributes = tab('Attributes').fields(
 	text('title').isTitle().required(),
@@ -146,7 +146,16 @@ const config: Config = {
 	database: 'real.sqlite',
 	collections: [Pages, Medias],
 	areas: [Settings, Navigation, Informations],
-	plugins: [regenerateImageSizes()],
+	smtp: {
+		from: process.env.RIZOM_SMTP_USER,
+		host: process.env.RIZOM_SMTP_HOST,
+		port: parseInt(process.env.RIZOM_SMTP_PORT || '465'),
+		auth: {
+			user: process.env.RIZOM_SMTP_USER,
+			password: process.env.RIZOM_SMTP_PASSWORD
+		}
+	},
+	plugins: [regenerateImages()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]
