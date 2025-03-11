@@ -19,7 +19,6 @@ declare global {
 			user: User | undefined;
 			rizom: Rizom;
 			api: LocalAPI;
-			cache?: any;
 			routes: Navigation;
 			locale: string | undefined;
 		}

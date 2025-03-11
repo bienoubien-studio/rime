@@ -1,10 +1,17 @@
+import type { CacheActions } from './cache';
 import type { Handle } from '@sveltejs/kit';
-import type { BuiltConfig, RouteConfig } from './config';
 import type { Component } from 'svelte';
+import type { GetRegisterType } from 'rizom';
+import type { BuiltConfig, RouteConfig } from 'rizom/types';
+import type { Dic } from 'rizom/types/util';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 
-export type Plugin<TArgs extends Dic = Dic> = (options?: TArgs) => {
+export type CorePlugins = {
+	cache: CacheActions;
+};
+
+export type Plugin<T = void> = (options: T) => {
 	name: string;
 	configure?: (config: BuiltConfig) => BuiltConfig;
 	actions?: Record<string, MaybeAsyncFunction>;
@@ -29,3 +36,5 @@ export type MailerPlugin = {
 		html: string;
 	}) => Promise<any>;
 };
+
+export type Plugins = CorePlugins & GetRegisterType<'Plugins'>;

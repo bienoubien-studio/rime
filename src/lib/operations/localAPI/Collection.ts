@@ -77,7 +77,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs) {
+	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs): Promise<Doc[]> {
 		const params = {
 			query,
 			locale: this.#fallbackLocale(locale),
@@ -106,7 +106,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
-	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}) {
+	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}): Promise<Doc[]> {
 		const params = {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -134,7 +134,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findAll<Doc>(params);
 	}
 
-	findById({ id, locale, depth = 0 }: FindByIdArgs) {
+	findById({ id, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
 		if (!id) {
 			throw new RizomError(RizomError.NOT_FOUND);
 		}
@@ -163,7 +163,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, data, locale }: UpdateByIdArgs<Doc>) {
+	updateById({ id, data, locale }: UpdateByIdArgs<Doc>): Promise<Doc> {
 		return updateById<Doc>({
 			id,
 			data,

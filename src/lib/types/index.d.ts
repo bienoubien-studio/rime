@@ -10,13 +10,7 @@ export type {
 } from './adapter.js';
 
 // API types
-export type {
-	LocalAPI,
-	LocalAPICollectionInterface,
-	LocalAPIConstructorArgs,
-	LocalAPIAreaInterface,
-	OperationQuery
-} from './api.js';
+export type { LocalAPI, OperationQuery } from './api.js';
 
 // Auth types
 export type { Access, User } from './auth';

@@ -5,16 +5,17 @@ import { handler } from './handler.server.js';
 import { toHash } from 'rizom/util/string.js';
 import HeaderButton from './HeaderButton.svelte';
 
-type Enabled = (event: RequestEvent) => boolean;
-type CacheArgs = { isEnabled?: Enabled };
-type Actions = {
+export type CacheActions = {
 	get: <T>(name: string, get: () => Promise<T>) => Promise<T>;
 	clear: () => ReturnType<RequestHandler>;
 	isEnabled: Enabled;
 	toHashKey: (...params: unknown[]) => string;
 };
 
-export const cache: Plugin<CacheArgs> = (options) => {
+type Enabled = (event: RequestEvent) => boolean;
+type CacheOptions = { isEnabled?: Enabled };
+
+export const cache: Plugin<CacheOptions> = (options) => {
 	async function getAction<T>(key: string, get: () => Promise<T>): Promise<T> {
 		return await Cache.get<T>(key, get);
 	}
@@ -24,7 +25,7 @@ export const cache: Plugin<CacheArgs> = (options) => {
 		return json({ message: 'Cache cleared' });
 	};
 
-	const actions: Actions = {
+	const actions: CacheActions = {
 		get: getAction,
 		clear: clearCache,
 		toHashKey: (...params) =>
@@ -44,15 +45,6 @@ export const cache: Plugin<CacheArgs> = (options) => {
 						...(config.panel.components || { header: [], collectionHeader: [] }),
 						header: [...(config.panel.components?.header || []), HeaderButton]
 					}
-					// routes: {
-					// 	...(config.panel.routes || {}),
-					// 	cache: {
-					// 		group: 'system',
-					// 		label: 'Cache',
-					// 		icon: DatabaseZapIcon,
-					// 		component: Settings
-					// 	}
-					// }
 				}
 			};
 			return config;
@@ -67,9 +59,3 @@ export const cache: Plugin<CacheArgs> = (options) => {
 		handler
 	};
 };
-
-declare module 'rizom' {
-	interface RegisterPlugins {
-		cache: Actions;
-	}
-}

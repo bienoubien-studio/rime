@@ -65,7 +65,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return find<Doc>(params);
 	}
 
-	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc | { errors: FormErrors }> {
+	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc> {
 		return update<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),

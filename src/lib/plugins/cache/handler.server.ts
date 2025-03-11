@@ -28,3 +28,11 @@ export const handler: Handle = async ({ event, resolve }) => {
 
 	return await resolve(event);
 };
+
+declare global {
+	namespace App {
+		interface Locals {
+			cacheEnabled: boolean;
+		}
+	}
+}
