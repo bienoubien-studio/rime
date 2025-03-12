@@ -3,4 +3,4 @@
   const { data } = $props();
 </script>
 
-<Login form={data.form} />
+<Login {data} />

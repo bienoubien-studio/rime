@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import UploadHeader from './upload-header/UploadHeader.svelte';
-	import AuthHeader from './AuthHeader.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
 	import { setDocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
@@ -15,6 +14,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import AuthFooter from './AuthFooter.svelte';
 
 	type Props = {
 		doc: GenericDoc;
@@ -122,10 +122,10 @@
 			{#if config.type === 'collection' && isUploadConfig(config)}
 				<UploadHeader accept={config.accept} create={operation === 'create'} {form} />
 			{/if}
-			{#if config.type === 'collection' && isAuthConfig(config) && operation === 'create'}
-				<AuthHeader create={operation === 'create'} {form} />
-			{/if}
 			<RenderFields fields={config.fields} {form} />
+			{#if config.type === 'collection' && isAuthConfig(config)}
+				<AuthFooter {operation} {form} />
+			{/if}
 		</div>
 
 		{#if !form.isLive}
@@ -158,13 +158,9 @@
 			@container rz-document (min-width:640px) {
 				--rz-fields-padding: var(--rz-size-12);
 			}
-			/* @container rz-document (min-width:960px) {
-				--rz-fields-padding: var(--rz-size-16);
-			} */
 		}
 	}
 	.rz-document__fields {
-		/* @mixin px var(--rz-size-8); */
 		display: grid;
 		gap: var(--rz-size-4);
 		padding-bottom: var(--rz-size-6);
@@ -172,13 +168,13 @@
 			padding-top: var(--rz-size-8);
 		}
 	}
+
 	.rz-document__infos {
 		border-top: var(--rz-border);
-		@mixin px var(--rz-size-8);
+		@mixin px var(--rz-fields-padding);
 		@mixin py var(--rz-size-6);
 	}
 	.rz-document__metas {
-		@mixin mx var(--rz-size-4);
 		font-size: var(--rz-text-xs);
 	}
 	.rz-document__metas span {

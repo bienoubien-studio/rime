@@ -1,15 +1,15 @@
 <script lang="ts">
-	import * as Card from 'rizom/panel/components/ui/card';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { enhance } from '$app/forms';
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import { toast } from 'svelte-sonner';
-	import { Toaster } from 'rizom/panel/components/ui/sonner';
 	import Email from 'rizom/fields/email/component/Email.svelte';
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import type { FormErrors } from 'rizom/types';
 	import { text } from 'rizom/fields';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
+	import { t__ } from 'rizom/panel/i18n';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
 
 	type Props = { form?: { email?: string; password?: string; errors?: FormErrors } };
 	let { form }: Props = $props();
@@ -23,34 +23,11 @@
 	});
 </script>
 
-<Toaster />
-<div class="rz-init-container">
+<AuthForm title={t__('common.create_first', 'admin')}>
 	<form method="POST" use:enhance={context.enhance}>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Create the first admin user</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<Text config={text('name').required().compile()} form={context} />
-				<Email config={usersFields.email.compile()} form={context} />
-				<Text type="password" config={usersFields.password.compile()} form={context} />
-			</Card.Content>
-			<Card.Footer>
-				<Button type="submit" size="lg">Create</Button>
-			</Card.Footer>
-		</Card.Root>
+		<Text config={text('name').required().compile()} form={context} />
+		<Email config={usersFields.email.compile()} form={context} />
+		<Text type="password" config={usersFields.password.compile()} form={context} />
+		<Button type="submit" size="xl">{t__('common.create')}</Button>
 	</form>
-</div>
-
-<style type="postcs">
-	.rz-init-container {
-		--rz-card-width: var(--rz-size-96);
-		display: grid;
-		place-content: center;
-		height: 100vh;
-		width: 100vw;
-		& :global(.rz-card-footer) {
-			display: grid;
-		}
-	}
-</style>
+</AuthForm>

@@ -23,12 +23,13 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const authHooks = await import('$lib/collection/auth/hooks.server.js');
-		const { beforeUpdate, beforeCreate, beforeDelete } = authHooks;
+		const { beforeUpdate, beforeCreate, afterDelete, afterCreate } = authHooks;
 		hooks = {
 			...hooks,
 			beforeUpdate: [beforeUpdate, ...(hooks?.beforeUpdate || [])],
 			beforeCreate: [beforeCreate, ...(hooks?.beforeCreate || [])],
-			beforeDelete: [beforeDelete, ...(hooks?.beforeDelete || [])]
+			afterCreate: [afterCreate, ...(hooks?.afterCreate || [])],
+			afterDelete: [afterDelete, ...(hooks?.afterDelete || [])]
 		};
 	}
 	if (collection.upload) {

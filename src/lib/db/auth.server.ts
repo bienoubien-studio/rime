@@ -1,13 +1,14 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import validate from '../util/validate.js';
-import { rizom } from '$lib/index.js';
+import { rizom, type Rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -52,7 +53,14 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			}
 		},
 		emailAndPassword: {
-			enabled: true
+			enabled: true,
+			sendResetPassword: async ({ user, url, token }, request) => {
+				await rizom.plugins.mailer.sendMail({
+					to: user.email,
+					subject: 'Reset your password',
+					text: `Click the link to reset your password: ${url}`
+				});
+			}
 		}
 	});
 
@@ -71,10 +79,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			name,
 			email,
 			password,
-			slug: 'users',
-			role: 'admin'
+			slug: 'users'
 		});
 
+		// manually set better-auth user role as it's not working
+		// with signUpEmail
 		await db.update(schema.authUsers).set({
 			role: 'admin'
 		});
@@ -112,66 +121,16 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		return db.query.authUsers.findMany();
 	};
 
-	const createAuthUser = async ({ slug, email, password, name, role }: CreateAuthUserArgs) => {
+	const createAuthUser = async ({ slug, email, password, name }: CreateAuthUserArgs) => {
 		const { user } = await betterAuth.api.signUpEmail({
 			body: {
 				email,
 				password,
 				name,
-				role: role || 'user',
 				table: slug
 			}
 		});
 		return user.id;
-	};
-
-	const createForgotPasswordToken = async (userTableName: PrototypeSlug, id: string | null) => {
-		throw new Error('not implemented');
-		// const table = rizom.adapter.tables[userTableName];
-		// const now = new Date();
-		// const token = crypto.randomBytes(32).toString('hex');
-		// const hashedToken = await hash(token);
-		// if (id) {
-		// 	await db
-		// 		.update(table)
-		// 		.set({
-		// 			resetToken: hashedToken,
-		// 			resetTokenExpireAt: new Date(now.getTime() + 10 * 60000)
-		// 		})
-		// 		.where(eq(table.id, id));
-		// }
-		// return token;
-	};
-
-	const verifyForgotPasswordToken = async ({
-		token,
-		userTableName,
-		id
-	}: VerifyForgotPasswordTokenArgs) => {
-		throw new Error('not implemented');
-		// let user;
-		// const table = rizom.adapter.tables[userTableName];
-		// const now = new Date();
-
-		// const users = await db
-		// 	.select({
-		// 		hashedToken: table.resetToken,
-		// 		resetTokenExpireAt: table.resetTokenExpireAt
-		// 	})
-		// 	.from(table)
-		// 	.where(eq(table.id, id));
-
-		// if (!users.length) {
-		// 	return false;
-		// } else {
-		// 	user = users[0];
-		// }
-
-		// if (!dev && now.getTime() > user.resetTokenExpireAt.getTime()) {
-		// 	return false;
-		// }
-
-		// return await verifyHash({ hash: user.hashedToken, clear: token });
 	};
 
 	type DeleteAuthUserByIdArgs = { id: string; headers?: Request['headers'] };
@@ -183,6 +142,31 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			headers
 		});
 		return id;
+	};
+
+	type SetBetterAuthRoleArgs = {
+		roles: string[];
+		userId: string;
+		slug: CollectionSlug;
+		headers: RequestEvent['request']['headers'];
+	};
+	const setAuthUserRole = async ({ roles, userId, slug, headers }: SetBetterAuthRoleArgs) => {
+		//
+		const authUserId = await getAuthUserId({
+			slug,
+			id: userId
+		});
+
+		if (!authUserId) {
+			throw new RizomError('user not found');
+		}
+
+		const hasAdminRole = roles.includes('admin');
+
+		await betterAuth.api.setRole({
+			body: { userId: authUserId, role: hasAdminRole ? 'admin' : 'user' },
+			headers
+		});
 	};
 
 	// Get auth collection attributes
@@ -343,9 +327,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		createAuthUser,
 		deleteAuthUserById,
 		getUserAttributes,
-		createForgotPasswordToken,
-		verifyForgotPasswordToken,
 		createFirstUser,
+		setAuthUserRole,
 		getPanelUserAttributes,
 		login
 	};
@@ -362,12 +345,6 @@ type LoginArgs = {
 type GetUserAttributesArgs = {
 	authUserId: string;
 	slug: PrototypeSlug;
-};
-
-type VerifyForgotPasswordTokenArgs = {
-	userTableName: string;
-	id: string;
-	token: string;
 };
 
 type AuthDatabaseInterfaceArgs = {
@@ -387,5 +364,4 @@ type CreateAuthUserArgs = {
 	email: string;
 	password: string;
 	name: string;
-	role: 'user' | 'admin';
 };

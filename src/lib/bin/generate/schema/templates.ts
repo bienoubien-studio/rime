@@ -27,7 +27,7 @@ export const templateHasAuth = `
   loginAttempts: integer("login_attempts").notNull().default(0),
   locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
   lockedAt: integer("locked_at", { mode: 'timestamp'}),
-  authUserId: text("auth_user_id").references(() => authUsers.id, { onDelete: 'cascade' }).notNull(),
+  authUserId: text("auth_user_id").references(() => authUsers.id).notNull(),
 `;
 
 export const templateUniqueRequired = (field: { unique?: boolean; required?: boolean }) => {

@@ -8,73 +8,59 @@
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
+	import { t__ } from 'rizom/panel/i18n';
+	import { authClient } from 'rizom/panel/util/auth';
 
 	interface Props {
-		userId: string;
 		token: string;
 		slug: string;
 		form?: { errors?: FormErrors };
 	}
 
-	const { userId, token, slug, form }: Props = $props();
+	const { form }: Props = $props();
+	let success = $state(false);
 
 	const context = setFormContext(form || {}, 'reset-password');
 
-	$effect(() => {
-		if (context.status === 'failure') {
-			toast.warning(context.errors.first || 'An error occured');
+	const passwordField = usersFields.password.placeholder(t__('common.newPassword')).compile();
+	const confirmPasswordField = usersFields.confirmPassword
+		.placeholder(t__('common.confirmPassword'))
+		.compile();
+
+	async function resetPassword() {
+		const token = new URLSearchParams(window.location.search).get('token');
+		if (!token) {
+			return toast.error('An error occured');
 		}
-	});
-
-	const validateConfirm = (value: unknown) => {
-		if (value === context.form.password) return true;
-		return 'Password missmatch';
-	};
-</script>
-
-<Toaster />
-<div class="rz-reset-password-container">
-	<form method="POST" use:enhance={context.enhance}>
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Reset password</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<Text type="password" config={usersFields.password.raw} form={context} />
-				<Text
-					type="password"
-					config={{ ...usersFields.password.raw, validate: validateConfirm }}
-					form={context}
-				/>
-			</Card.Content>
-			<Card.Footer>
-				<Button
-					size="lg"
-					disabled={!(context.canSubmit && context.form.password && context.form.confirmPassword)}
-					type="submit">Submit</Button
-				>
-			</Card.Footer>
-		</Card.Root>
-		<input type="hidden" name="userId" value={userId} />
-		<input type="hidden" name="token" value={token} />
-		<input type="hidden" name="slug" value={slug} />
-	</form>
-</div>
-
-<style type="postcss">
-	.rz-reset-password-container {
-		display: flex;
-		height: 100vh;
-		width: 100vw;
-		align-items: center;
-		justify-content: center;
-
-		:global(.rz-card) {
-			width: var(--rz-size-80);
+		const { data, error } = await authClient.resetPassword({
+			newPassword: context.form.password,
+			token
+		});
+		if (error) {
+			console.error(error);
+			toast.error(error.message || 'An error occured');
 		}
-
-		:global(.rz-card-footer) {
-			display: grid;
+		if (data && data.status) {
+			success = true;
 		}
 	}
-</style>
+</script>
+
+<AuthForm title={t__('common.resetPassword')}>
+	{#if success}
+		<p>{t__('common.resetPasswordSuccess')}</p>
+		<Button size="xl" href="/login">{t__('common.login')}</Button>
+	{:else}
+		<Text type="password" config={passwordField} form={context} />
+		<Text type="password" config={confirmPasswordField} form={context} />
+
+		<Button
+			size="xl"
+			disabled={!(context.canSubmit && context.form.password && context.form.confirmPassword)}
+			onclick={resetPassword}
+		>
+			{t__('common.resetPassword')}
+		</Button>
+	{/if}
+</AuthForm>

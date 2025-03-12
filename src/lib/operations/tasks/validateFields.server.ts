@@ -22,8 +22,8 @@ export const validateFields = async <T extends GenericDoc>(args: {
 }) => {
 	const errors: FormErrors = {};
 	const { api, locale, configMap, original, operation, user } = args;
-	const { adapter } = api.rizom;
-	const isCollection = api.rizom.config.getDocumentPrototype(args.config.slug);
+	const slug = args.config.slug;
+	const isCollection = api.rizom.config.isCollection(slug);
 	let output = { ...args.data };
 
 	for (const [key, config] of Object.entries(configMap)) {
@@ -55,15 +55,25 @@ export const validateFields = async <T extends GenericDoc>(args: {
 		}
 
 		// Unique
-		/** @TODO better unique check like relations, locale,...
-		 *   possible to handle this with a try catch at DB operation
-		 *   and parse the sqlite error ??
-		 */
+		/** @TODO better unique check like relations,... */
 		if ('unique' in config && config.unique && isCollection) {
-			const query = { where: { [key]: { equals: value } } };
-			// const query = `where[${key}][equals]=${field.value}`;
-			const existing = await adapter.collection.query({ slug: args.config.slug, query });
-			if (original?.id && existing.length && existing[0].id !== original?.id) {
+			const query =
+				operation === 'create'
+					? {
+							where: {
+								[key]: { equals: value }
+							}
+						}
+					: {
+							where: {
+								and: {
+									[key]: { equals: value },
+									id: { not_equals: original?.id || '' }
+								}
+							}
+						};
+			const existing = await api.collection(slug).find({ locale, query });
+			if (existing.length) {
 				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}
 		}

@@ -115,14 +115,6 @@ function generateRoutes(config: BuiltConfig) {
 					path.join(collectionAPIAuthLogout, '+server.ts'),
 					collectionAPIAuthLogoutServer()
 				);
-
-				/** Reset Password API */
-				const collectionAPIAuthForgotPassword = path.join(collectionAPIRoute, 'forgot-password');
-				fs.mkdirSync(collectionAPIAuthForgotPassword);
-				fs.writeFileSync(
-					path.join(collectionAPIAuthForgotPassword, '+server.ts'),
-					collectionAPIAuthForgotPasswordServer(collection.slug)
-				);
 			}
 		}
 

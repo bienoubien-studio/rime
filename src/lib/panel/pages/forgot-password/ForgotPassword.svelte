@@ -1,65 +1,52 @@
 <script lang="ts">
-	import * as Card from 'rizom/panel/components/ui/card';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { setFormContext } from 'rizom/panel/context/form.svelte';
-	import { enhance } from '$app/forms';
-	import type { FormErrors } from 'rizom/types';
-
-	type Props = { form?: { email?: string; errors?: FormErrors } };
-	let { form }: Props = $props();
-
-	const context = setFormContext(form || {}, 'forgot-password');
-
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Email from 'rizom/fields/email/component/Email.svelte';
+	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { toast } from 'svelte-sonner';
+	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
+	import { authClient } from 'rizom/panel/util/auth';
+
+	const context = setFormContext({}, 'login');
+
+	let success = $state(false);
+
+	$effect(() => {
+		const formError = context.errors.get('_form');
+		if (typeof formError === 'string') {
+			toast.error(t__(`errors.${formError}`));
+		}
+	});
+
+	async function sendResetPasswordMail() {
+		const { data, error } = await authClient.forgetPassword({
+			email: context.form.email,
+			redirectTo: '/reset-password?slug=users'
+		});
+		if (error && error.message) {
+			toast.error(error.message);
+		}
+		if (data && data.status) {
+			success = data.status;
+		}
+	}
 </script>
 
-<div class="rz-forgot-password-container">
-	{#if context.status === 'success'}
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Email successfully sent</Card.Title>
-			</Card.Header>
-			<Card.Content>
-				<p>
-					An email has been sent to {context.form.email} with instructions to reset your password
-				</p>
-			</Card.Content>
-			<Card.Footer>
-				<Button size="lg" href="/login">Login</Button>
-			</Card.Footer>
-		</Card.Root>
+<AuthForm title={t__('common.forgotPassword')}>
+	{#if success}
+		<p>{t__('common.passwordResetLinkSent', context.form.email)}</p>
 	{:else}
-		<form method="POST" use:enhance={context.enhance}>
-			<!--  -->
-			<Card.Root>
-				<Card.Header>
-					<Card.Title>Request a password reset</Card.Title>
-				</Card.Header>
-				<Card.Content>
-					<Email form={context} config={usersFields.email.raw} />
-				</Card.Content>
-				<Card.Footer>
-					<Button type="submit" size="lg">Request a password reset</Button>
-				</Card.Footer>
-			</Card.Root>
-			<!--  -->
-		</form>
+		<Email config={usersFields.email.compile()} form={context} />
+		<Button size="xl" disabled={!context.canSubmit} onclick={sendResetPasswordMail}>
+			{t__('common.requestPasswordReset')}
+		</Button>
 	{/if}
-</div>
+</AuthForm>
 
-<style>
-	.rz-forgot-password-container {
-		display: grid;
-		place-content: center;
-		height: 100vh;
-		width: 100vw;
-
-		:global(.rz-card) {
-			width: var(--rz-size-96);
-		}
-		:global(.rz-card-footer) {
-			display: grid;
-		}
+<style lang="postcss">
+	p {
+		font-size: var(--rz-text-lg);
+		@mixin font-semibold;
 	}
 </style>

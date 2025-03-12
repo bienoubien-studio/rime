@@ -1,16 +1,7 @@
 import { dev } from '$app/environment';
-import { error, fail, redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server';
-import { RizomError, RizomFormError } from 'rizom/errors/index.js';
-import type { PanelActionFailure } from 'rizom/types/panel';
 import { safe } from 'rizom/util/safe';
-
-type LoginForm = {
-	email?: string;
-	password?: string;
-};
-
-type LoginActionFailure = PanelActionFailure<LoginForm>;
 
 export const loginActions: Actions = {
 	default: async ({ cookies, request, locals }) => {
