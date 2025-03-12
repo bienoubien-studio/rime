@@ -1,4 +1,4 @@
-import { hasProps } from 'rizom/util/object';
+import { hasProp } from 'rizom/util/object';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/util/field.js';
@@ -24,7 +24,7 @@ export const setDefaultValues = async <T extends Dic>(args: {
 			isEmpty = false;
 			console.log(err.message);
 		}
-		if (isEmpty && hasProps(config, ['defaultValue'])) {
+		if (isEmpty && hasProp('defaultValue', config)) {
 			value = await getDefaultValue({ key, config, adapter });
 			output = setValueAtPath(output, key, value);
 		}

@@ -15,11 +15,8 @@ import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
 import genCache from '../../bin/generate/cache/index.js';
 import { cache } from 'rizom/plugins/cache/index.js';
-
-type BuildConfig = <C extends boolean = true>(
-	config: Config,
-	options?: { generateFiles?: boolean; compiled?: C }
-) => C extends true ? Promise<CompiledConfig> : Promise<BuiltConfig>;
+import { mailer } from 'rizom/plugins/mailer/index.server.js';
+import { hasProp } from 'rizom/util/object.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -109,11 +106,15 @@ const buildConfig = async <C extends boolean = true>(
 	//////////////////////////////////////////////
 
 	// IMPORTANT !
-	// Mandatory plugins that includes handlers should be added also here :
+	// Core plugins that includes handlers should be added also here :
 	// src/lib/handlers/plugins.server.ts
 	// because the config is built from inside the first handler
-	// in order to reload/rebuild on refresh if dev mode
-	const plugins = [cache(config.cache || {}), ...(config.plugins || [])];
+	// if a plugin includes a handler, the handler should be register there before
+	const corePlugins = [cache(config.cache || {})];
+	if (hasProp('smtp', config)) {
+		corePlugins.push(mailer(config.smtp));
+	}
+	const plugins = [...corePlugins, ...(config.plugins || [])];
 
 	const { pluginsFieldsComponents, builtConfigWithPlugins } = registerPlugins({
 		plugins,

@@ -3,4 +3,4 @@
   const { data } = $props();
 </script>
 
-<ResetPassword userId={data.userId} slug={data.slug} token={data.token} />
+<ResetPassword slug={data.slug} token={data.token} />

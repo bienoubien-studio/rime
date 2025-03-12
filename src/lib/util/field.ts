@@ -63,12 +63,12 @@ export const hasMaybeTitle = (
 ): field is TextField | DateField | SlugField | EmailField =>
 	['text', 'date', 'slug', 'email'].includes(field.type);
 export const isRelationResolved = <T>(value: any): value is T => {
-	return value && isObjectLiteral(value) && hasProps(value, ['title', '_prototype', '_type']);
+	return value && isObjectLiteral(value) && hasProps(['title', '_prototype', '_type'], value);
 };
 export const isRelationUnresolved = (
 	value: any
 ): value is Omit<Relation, 'path' | 'position' | 'parentId'> => {
-	return value && isObjectLiteral(value) && hasProps(value, ['relationTo', 'relationId']);
+	return value && isObjectLiteral(value) && hasProps(['relationTo', 'relationId'], value);
 };
 export const resolveRelation = async <T>(value: any): Promise<T> => {
 	if (isRelationResolved<T>(value)) {

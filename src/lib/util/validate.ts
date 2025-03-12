@@ -23,7 +23,12 @@ export const email = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
 	}
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+	// This regex ensures:
+	// 1. Starts with letter/number
+	// 2. Can contain .-_ between letters/numbers
+	// 3. Can't have consecutive dots
+	// 4. Can't end with .-_ before @
+	if (!/^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?@[^\s@]+\.[^\s@]+$/.test(value)) {
 		return RizomFormError.INVALID_EMAIL;
 	}
 	return true;

@@ -31,6 +31,11 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 		return this;
 	}
 
+	unique() {
+		this.field.unique = true;
+		return this;
+	}
+
 	isTitle() {
 		this.field.isTitle = true;
 		return this;

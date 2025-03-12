@@ -5,7 +5,7 @@ import { toast } from 'svelte-sonner';
 import commandScore from 'command-score';
 import { isUploadConfig } from 'rizom/util/config.js';
 import { isFormField, isGroupFieldRaw, isNotHidden, isTabsFieldRaw } from '../../util/field.js';
-import { hasProps } from 'rizom/util/object.js';
+import { hasProp } from 'rizom/util/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
@@ -115,7 +115,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 	const buildFieldColumns = (fields: Field[]) => {
 		let columns: WithRequired<FormField, 'table'>[] = [];
 		for (const field of fields) {
-			if (isFormField(field) && isNotHidden(field) && hasProps(field, ['table'])) {
+			if (isFormField(field) && isNotHidden(field) && hasProp('table', field)) {
 				columns.push(field);
 			} else if (isGroupFieldRaw(field)) {
 				columns = [...columns, ...buildFieldColumns(field.fields)];

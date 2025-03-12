@@ -11,6 +11,11 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 		this.field.validate = validate.email;
 	}
 
+	layout(layout: 'compact' | 'default') {
+		this.field.layout = layout;
+		return this;
+	}
+
 	get component() {
 		return EmailComp;
 	}
@@ -47,6 +52,7 @@ export const email = (name: string) => new EmailFieldBuilder(name);
 export type EmailField = FormField & {
 	type: 'email';
 	defaultValue?: string;
+	layout?: 'compact' | 'default';
 	unique?: boolean;
 	isTitle?: true;
 };
