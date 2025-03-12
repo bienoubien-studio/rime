@@ -27,15 +27,11 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 	);
 
 	onMount(() => {
-		console.log('mount');
 		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
 		sortingBy = localSortBy || 'updatedAt';
 		const localSortOrder = localStorage.getItem(`collection.${config.slug}.sortOrder`) as SortMode;
 		sortingOrder = localSortOrder || 'asc';
-		console.log({ localSortBy, localSortOrder });
-		console.log({ sortingBy, sortingOrder });
 		if (localSortBy) {
-			console.log('sort initial');
 			sortBy(sortingBy, false);
 		}
 	});
@@ -67,8 +63,6 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		// Save to local storage
 		localStorage.setItem(`collection.${config.slug}.sortBy`, fieldName);
 		localStorage.setItem(`collection.${config.slug}.sortOrder`, sortingOrder);
-		console.log('setitem sortBy', fieldName);
-		console.log('setitem sortOrder', sortingOrder);
 	};
 
 	const deleteDocs = async (ids: string[]) => {
