@@ -3,4 +3,4 @@
   const { data } = $props();
 </script>
 
-<ForgotPassword form={data.form} />
+<ForgotPassword />
