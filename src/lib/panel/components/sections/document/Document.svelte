@@ -164,6 +164,7 @@
 		display: grid;
 		gap: var(--rz-size-4);
 		padding-bottom: var(--rz-size-6);
+		background-color: hsl(var(--rz-ground-7) / 0.5);
 		&:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
 			padding-top: var(--rz-size-8);
 		}

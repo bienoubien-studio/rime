@@ -71,7 +71,7 @@
 
 .rz-tabs-list {
 	overflow-x: auto;
-	/* background-color: hsl(var(--rz-color-input)); */
+	background-color: hsl(var(--rz-ground-6));
 	@mixin color ground-2;
 	height: var(--rz-size-14);
 	width: 100%;
