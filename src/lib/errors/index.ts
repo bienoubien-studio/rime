@@ -56,6 +56,12 @@ class RizomFormError extends RizomError {
 	constructor(errors: FormErrors) {
 		const message = Object.entries(errors)
 			.map(([field, code]) => t__(`errors.${code}`, field))
+			.reduce((prev, curr) => {
+				if (!prev.includes(curr)) {
+					prev.push(curr);
+				}
+				return prev;
+			}, [] as string[])
 			.join(', ');
 		super(RizomError.FORM_ERROR, message);
 
