@@ -3,7 +3,7 @@ import prefixer from 'loglevel-plugin-prefix';
 import chalk from 'chalk';
 
 const browser = typeof window === 'undefined' ? false : true;
-const envLevel = browser ? 'TRACE' : process.env.LOG_LEVEL || 'TRACE';
+const envLevel = browser ? 'TRACE' : process.env.RIZOM_LOG_LEVEL || 'TRACE';
 
 prefixer.reg(logger);
 prefixer.apply(logger, {
@@ -56,7 +56,6 @@ export const taskLogger = {
 export const requestLogger = logger.getLogger('req');
 
 export const debug = (value: unknown) => {
-	console.log('[ debug ] =====================================');
 	logger.debug(value);
 };
 
