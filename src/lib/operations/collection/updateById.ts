@@ -53,7 +53,7 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 		original,
 		config,
 		configMap,
-		operation: 'create',
+		operation: 'update',
 		user: event.locals.user
 	});
 
