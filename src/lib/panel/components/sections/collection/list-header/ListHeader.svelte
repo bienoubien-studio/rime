@@ -13,10 +13,6 @@
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
 
-	function sortBy(name: string) {
-		collection.sortBy(name);
-	}
-
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
 		gridTemplateColumn = `grid-template-columns: repeat(${compact ? 1 : columnLength}, minmax(0, 1fr));`;
@@ -32,7 +28,7 @@
 {#snippet sortableColumnHeader(column: TableColumn)}
 	<div>
 		<button
-			onclick={() => sortBy(column.name)}
+			onclick={() => collection.sortBy(column.name)}
 			aria-label="sort {column.name}"
 			type="button"
 			class="rz-list-header__sort-button"

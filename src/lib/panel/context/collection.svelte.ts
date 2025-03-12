@@ -27,12 +27,16 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 	);
 
 	onMount(() => {
+		console.log('mount');
 		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
 		sortingBy = localSortBy || 'updatedAt';
-		sortingOrder = (localStorage.getItem(`collection.${config.slug}.sortOrder`) ||
-			'asc') as SortMode;
+		const localSortOrder = localStorage.getItem(`collection.${config.slug}.sortOrder`) as SortMode;
+		sortingOrder = localSortOrder || 'asc';
+		console.log({ localSortBy, localSortOrder });
+		console.log({ sortingBy, sortingOrder });
 		if (localSortBy) {
-			sortBy(sortingBy);
+			console.log('sort initial');
+			sortBy(sortingBy, false);
 		}
 	});
 
@@ -40,13 +44,16 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		if (!selectMode) selected = [];
 	});
 
-	const sortBy = (fieldName: string) => {
-		if (sortingBy !== fieldName) {
-			sortingBy = fieldName;
-			sortingOrder = sortingOrder || 'asc';
+	const sortBy = (fieldName: string, toggle: boolean = true) => {
+		if (sortingBy === fieldName) {
+			if (toggle) {
+				sortingOrder = sortingOrder === 'asc' ? 'dsc' : 'asc';
+			}
 		} else {
-			sortingOrder = sortingOrder === 'asc' ? 'dsc' : 'asc';
+			// Else sort by field asc
+			sortingBy = fieldName;
 		}
+		// Do sorting logic
 		const orderMult = sortingOrder === 'asc' ? 1 : -1;
 		docs = docs.sort((a, b) => {
 			if (a[fieldName] < b[fieldName]) {
@@ -57,8 +64,11 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			}
 			return 0;
 		});
+		// Save to local storage
 		localStorage.setItem(`collection.${config.slug}.sortBy`, fieldName);
 		localStorage.setItem(`collection.${config.slug}.sortOrder`, sortingOrder);
+		console.log('setitem sortBy', fieldName);
+		console.log('setitem sortOrder', sortingOrder);
 	};
 
 	const deleteDocs = async (ids: string[]) => {
