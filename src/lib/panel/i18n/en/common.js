@@ -3,6 +3,7 @@ export default {
 	create_first: 'Create your first $1',
 	create_new: 'Create new $1',
 	created_at: 'Created',
+	create: 'Create',
 	delete: 'Delete $1',
 	doc_created: 'Document created',
 	doc_updated: 'Document updated',

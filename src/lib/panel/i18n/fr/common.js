@@ -3,6 +3,7 @@ export default {
 	create_first: 'Créer votre {premier|première} $1',
 	create_new: 'Créer {un|une} $1',
 	created_at: 'Création',
+	create: 'Créer',
 	delete: 'Supprimer $1',
 	doc_created: 'Document enregistré',
 	doc_updated: 'Document mis à jour',
