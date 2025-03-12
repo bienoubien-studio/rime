@@ -10,7 +10,7 @@
 [v] Prevent parent forms saving on nested document creation
 [v] make file output key sm_jpg, sm_webp, if multilple output format
 [v] Change the way panel languages are loaded
-[ ] better-auth + smtp : forgot password
+[v] better-auth + smtp : forgot password
 [ ] Blocks collapse/uncollapse all
 [ ] pnpm deps issue
 [ ] init command without prompt
@@ -19,6 +19,9 @@
 [ ] Panel relation API call proxy
 [ ] Better logs
 [ ] More tests
+[ ] Group/Tabs as object on document
 
 # V1
 [ ] collection nested
+[ ] page version
+[ ] more better-auth integration
