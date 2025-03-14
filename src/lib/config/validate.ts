@@ -5,7 +5,7 @@ import {
 	isTabsFieldRaw,
 	toFormFields
 } from '../util/field';
-import { isAuthConfig, isUploadConfig } from './util';
+import { isAuthConfig } from 'rizom/util/config';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config';
 import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
