@@ -27,7 +27,8 @@
 		onOrderChange,
 		formNestedLevel,
 		onRelationCreated,
-		onRelationCreation
+		onRelationCreation,
+		onRelationCreationCanceled
 	}: RelationComponentProps = $props();
 
 	const user = getUserContext();
@@ -130,7 +131,10 @@
 	{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {}) && !isFull}
 		<Button
 			class="rz-relation__create-button"
-			onclick={() => (create = true)}
+			onclick={() => {
+				onRelationCreation();
+				create = true;
+			}}
 			variant="secondary"
 			size="sm"
 		>
@@ -140,7 +144,15 @@
 			)}
 		</Button>
 
-		<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
+		<Sheet.Root
+			bind:open={create}
+			onOpenChange={(bool) => {
+				create = bool;
+				if (bool === false) {
+					onRelationCreationCanceled();
+				}
+			}}
+		>
 			<Sheet.Trigger />
 			<Sheet.Content side="right" showCloseButton={false}>
 				<Document

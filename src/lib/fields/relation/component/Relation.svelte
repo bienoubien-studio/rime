@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { moveItem } from '$lib/util/array.js';
-	import { isUploadConfig } from '$lib/config/util.js';
+	import { isUploadConfig } from '$lib/util/config.js';
 	import Upload from './upload/Upload.svelte';
 	import Default from './default/Default.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
@@ -148,6 +148,11 @@
 		form.isDisabled = true;
 	};
 
+	const onRelationCreationCanceled = () => {
+		console.log('cancel');
+		form.isDisabled = false;
+	};
+
 	const onRelationCreated = (doc: GenericDoc) => {
 		form.isDisabled = false;
 		initialItems.push(documentToRelationFieldItem(doc));
@@ -187,6 +192,7 @@
 		readOnly={form.readOnly}
 		{nothingToSelect}
 		{onRelationCreated}
+		{onRelationCreationCanceled}
 		{onRelationCreation}
 		{isFull}
 		{stamp}

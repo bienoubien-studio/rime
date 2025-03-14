@@ -29,6 +29,7 @@ export type RelationComponentProps = {
 	selectedItems: RelationFieldItem[];
 	formNestedLevel: number;
 	onOrderChange: (oldIndex: number, newIndex: number) => void;
-	onRelationCreated: any;
-	onRelationCreation: any;
+	onRelationCreated: (doc: GenericDoc) => void;
+	onRelationCreationCanceled: () => void;
+	onRelationCreation: () => void;
 };

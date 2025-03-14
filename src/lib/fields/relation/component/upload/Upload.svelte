@@ -25,6 +25,7 @@
 		onOrderChange,
 		formNestedLevel,
 		onRelationCreation,
+		onRelationCreationCanceled,
 		onRelationCreated,
 		stamp
 	}: Omit<RelationComponentProps, 'readOnly'> = $props();
@@ -179,7 +180,15 @@
 	</Command.List>
 </Command.Dialog>
 
-<Sheet.Root bind:open={create} onOpenChange={(val) => (create = val)}>
+<Sheet.Root
+	bind:open={create}
+	onOpenChange={(bool) => {
+		create = bool;
+		if (bool === false) {
+			onRelationCreationCanceled();
+		}
+	}}
+>
 	<Sheet.Content showCloseButton={false} class="rz-relation-upload__sheet" side="right">
 		<Doc
 			doc={createBlankDocument(relationConfig)}
