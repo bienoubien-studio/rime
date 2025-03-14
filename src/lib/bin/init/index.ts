@@ -7,8 +7,8 @@ program.version('0.1').description('CMS utilities');
 
 program
 	.description('Initialize CMS')
+	.option('-n, --name <name>', 'Will be the database name')
 	.option('-f, --force', 'Force init with default package name', false)
-	.option('-n, --name <name>', 'Specify the name')
 	.action((args) => {
 		init(args);
 	});

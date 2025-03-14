@@ -14,8 +14,7 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 `;
 
 export const defaultConfig = (name: string) => `
-import type { Config } from '${PACKAGE}';
-import { collection } from '${PACKAGE}';
+import { collection, defineConfig } from '${PACKAGE}';
 import { text } from '${PACKAGE}/fields';
 
 const Pages = collection('pages', {
@@ -23,12 +22,11 @@ const Pages = collection('pages', {
 	fields: [text('title').isTitle()]
 });
 
-const config: Config = {
+export default defineConfig({
   database: '${name}.sqlite',
   collections: [Pages],
   areas: []
-};
-export default config;
+});
 `;
 
 export const drizzleConfig = (name: string) => `

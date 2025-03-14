@@ -1,9 +1,8 @@
 import { access } from '$lib/util/access/index.js';
 import { Newspaper, ReceiptText } from '@lucide/svelte';
 import { Text } from '@lucide/svelte';
-import { collection, area } from 'rizom/config/builders';
+import { collection, area, defineConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import type { Config } from 'rizom';
 import type { PagesDoc } from '../app.generated';
 
 import {
@@ -146,7 +145,7 @@ const Pages = collection('pages', {
 	}
 });
 
-const config: Config = {
+export default defineConfig({
 	//
 	database: 'live.sqlite',
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
@@ -170,6 +169,4 @@ const config: Config = {
 			group: 'administration'
 		}
 	}
-};
-
-export default config;
+});

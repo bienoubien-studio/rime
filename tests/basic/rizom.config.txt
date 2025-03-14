@@ -9,12 +9,11 @@ import {
 	blocks,
 	block
 } from 'rizom/fields/index.js';
-import type { Collection, Config, Area } from 'rizom';
 import { access } from '$lib/util/access/index.js';
 import { Images, Newspaper, Settings2 } from '@lucide/svelte';
 import type { PagesDoc } from '../app.generated';
 import type { RegisterCollection } from 'rizom';
-import { collection, area } from 'rizom/config/builders';
+import { collection, area, defineConfig } from 'rizom';
 import type {
 	CollectionHookAfterUpsert,
 	CollectionHookBeforeCreate,
@@ -75,7 +74,7 @@ const Medias = collection('medias', {
 	}
 });
 
-const config: Config = {
+export default defineConfig({
 	database: 'basic.sqlite',
 	collections: [Pages, Medias],
 	areas: [Settings],
@@ -84,5 +83,4 @@ const config: Config = {
 			roles: [{ value: 'editor' }]
 		}
 	}
-};
-export default config;
+});

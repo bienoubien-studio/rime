@@ -16,10 +16,9 @@ import {
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import type { Config } from 'rizom';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
 import type { PagesDoc } from '../app.generated';
-import { collection, area } from 'rizom/config/builders';
+import { collection, area, defineConfig } from 'rizom';
 
 /////////////////////////////////////////////
 // Settings
@@ -241,7 +240,7 @@ const Medias = collection('medias', {
 	}
 });
 
-const config: Config = {
+export default defineConfig({
 	//
 	database: 'multilang.sqlite',
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
@@ -273,6 +272,4 @@ const config: Config = {
 			}
 		}
 	}
-};
-
-export default config;
+});
