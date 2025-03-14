@@ -6,7 +6,7 @@
 	import Header from './header/Header.svelte';
 	import ScrollArea from '$lib/panel/components/ui/scroll-area/scroll-area.svelte';
 	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { PrototypeSlug } from 'rizom/types/doc';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
@@ -23,7 +23,7 @@
 	const collection = getCollectionContext(slug);
 	setContext('rizom.collectionList', collection);
 
-	let currentDoc = $derived($page.params.id || null);
+	let currentDoc = $derived(page.params.id || null);
 
 	const gridClass = $derived(collection.isGrid() ? 'rz-scroll-area--grid' : '');
 

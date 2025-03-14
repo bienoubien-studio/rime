@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Button } from '../../ui/button';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { GenericDoc, User } from 'rizom/types';
 	type Props = { by: string; user: User; doc: GenericDoc };

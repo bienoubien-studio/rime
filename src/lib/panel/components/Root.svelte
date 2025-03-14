@@ -3,7 +3,7 @@
 	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import { type Snippet } from 'svelte';
 	import createContext from '$lib/panel/context/createContext.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { setConfigContext } from '$lib/panel/context/config.svelte';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
@@ -48,7 +48,7 @@
 <Toaster />
 
 <div class="rz-panel-root">
-	{#key $page.url.pathname + locale.code}
+	{#key page.url.pathname + locale.code}
 		<Nav {routes} {isCollapsed} />
 		<div class="rz-panel-root__right">
 			{@render children()}

@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import File from '@lucide/svelte/icons/file';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 	import NavItemButton from './NavItemButton.svelte';
-	import NavItemButtonCaret from './NavItemButtonCaret.svelte';
 	import type { Route } from 'rizom/types/panel';
 
 	type Props = {
@@ -19,7 +18,7 @@
 	const RouteIcon =
 		typeof route.icon === 'function' ? route.icon : config.raw.icons[route.icon] || File;
 
-	let pathname = $page.url.pathname;
+	let pathname = page.url.pathname;
 
 	let active = $derived.by(() => {
 		if (route.path === '/panel') {
