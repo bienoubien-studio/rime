@@ -7,9 +7,10 @@
 	import type { BlocksFieldRaw } from 'rizom/fields/blocks';
 	import type { GenericBlock } from 'rizom/types/doc';
 	import type { BlocksProps } from './props.js';
-	import './blocks.css';
 	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import { FoldVertical, UnfoldVertical } from '@lucide/svelte';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -21,6 +22,7 @@
 	let sortingInitialized = $state(false);
 	let sorting = $state(false);
 	let sortableInstance = $state<any>(null);
+	let blocksComponents: ReturnType<typeof Block>[] = $state([]);
 
 	const sortableOptions: Sortable.Options = {
 		handle: '.rz-block__grip',
@@ -59,10 +61,16 @@
 	function getConfigByBlockType(type: string, block: any): BlocksFieldRaw['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
-			console.log(block);
 			throw new Error(`Block configuration not found for type: ${type}`);
 		}
 		return blockConfig;
+	}
+
+	function collapseAll() {
+		blocksComponents.forEach((comp) => comp.setCollapse(true));
+	}
+	function expandAll() {
+		blocksComponents.forEach((comp) => comp.setCollapse(false));
 	}
 
 	onDestroy(() => {
@@ -73,14 +81,23 @@
 <Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
 	<Field.Error error={field.error} />
 
-	<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>
-		{config.label ? config.label : capitalize(config.name)}
-	</h3>
+	<header class="rz-blocks__header">
+		<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>
+			{config.label ? config.label : capitalize(config.name)}
+		</h3>
+		{#if hasBlocks}
+			<div>
+				<Button onclick={collapseAll} variant="text">Collapse all</Button>
+				<Button onclick={expandAll} variant="text">Expand all</Button>
+			</div>
+		{/if}
+	</header>
 
 	<div class="rz-blocks__list" data-empty={!hasBlocks ? '' : null} bind:this={blockList}>
 		{#if hasBlocks}
 			{#each blockState.blocks as block, index (block.id)}
 				<Block
+					bind:this={blocksComponents[index]}
 					deleteBlock={() => blockState.deleteBlock(index)}
 					duplicateBlock={() => blockState.duplicateBlock(index)}
 					{form}
@@ -99,3 +116,30 @@
 		{config}
 	/>
 </Field.Root>
+
+<style lang="postcss">
+	.rz-blocks__title {
+		margin-bottom: var(--rz-size-4);
+		font-size: var(--rz-text-xl);
+		@mixin font-medium;
+	}
+
+	.rz-blocks__title--nested {
+		font-size: var(--rz-text-sm);
+	}
+
+	.rz-blocks__list {
+		display: grid;
+		border-left: 1px solid hsl(var(--rz-color-border));
+		border-right: var(--rz-border);
+		&:not([data-empty]) {
+			border-top: var(--rz-border);
+			margin-bottom: var(--rz-size-4);
+		}
+	}
+
+	.rz-blocks__header {
+		display: flex;
+		justify-content: space-between;
+	}
+</style>
