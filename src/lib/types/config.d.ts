@@ -5,13 +5,14 @@ import type { AreaSlug, CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './util.js';
-import type { MaybeAsyncFunction, Plugin } from './plugin.js';
 import type { BaseDoc, GetRegisterType, RegisterArea } from 'rizom';
 import type { FieldBuilder } from 'rizom/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from 'rizom/panel/i18n/index.js';
 import type { RegisterCollection } from 'rizom';
 import type { SMTPConfig } from 'rizom/plugins/mailer/types.js';
+import type { Plugin } from 'rizom/plugins/index.js';
+import type { IconProps } from '@lucide/svelte';
 
 export type DocumentPrototype = 'collection' | 'area';
 
@@ -59,6 +60,7 @@ export interface Config {
 		routes?: Record<string, CustomPanelRoute>;
 		users?: PanelUsersConfig;
 		language?: PanelLanguage;
+		navigation?: NavigationConfig;
 		components?: {
 			header?: ComponentType[];
 			dashboard?: ComponentType;
@@ -158,9 +160,10 @@ export type BuiltConfig = {
 	icons: Record<string, any>;
 	trustedOrigins: string[];
 	routes?: Record<string, RouteConfig>;
-	plugins?: Record<string, Record<string, MaybeAsyncFunction>>;
+	plugins?: Record<string, Plugin['actions']>;
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
+		navigation: NavigationConfig;
 		access: (user?: User) => boolean;
 		components?: {
 			header: ComponentType[];
@@ -175,6 +178,7 @@ export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | '
 	blueprints: Record<FieldsType, FieldsComponents>;
 	panel: {
 		language: 'fr' | 'en';
+		navigation: NavigationConfig;
 		components: {
 			header: ComponentType[];
 			dashboard?: ComponentType;
@@ -182,6 +186,8 @@ export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | '
 		};
 	};
 };
+
+type NavigationConfig = { groups: Array<{ label: string; icon: Component<IconProps> }> };
 
 export type CustomPanelRoute = {
 	group?: string;

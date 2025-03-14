@@ -3,12 +3,23 @@
 	import NavGroup from './NavGroup.svelte';
 	import UserButton from './UserButton.svelte';
 	import type { Route } from 'rizom/types/panel';
-
-	import { Home, PanelsTopLeft } from '@lucide/svelte';
-	import Logo from './logo/Logo.svelte';
+	import { PanelsTopLeft } from '@lucide/svelte';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 
 	type Props = { isCollapsed: boolean; routes: Record<string, Route[]> };
 	const { isCollapsed, routes: routesGroups }: Props = $props();
+
+	const config = getConfigContext();
+	const navigationGroupsConfig = config.raw.panel.navigation?.groups;
+
+	const getGroupIcon = (groupName: string) => {
+		if (!navigationGroupsConfig) return null;
+		const group = navigationGroupsConfig.find((group) => group.label === groupName);
+		if (group) {
+			return group.icon;
+		}
+		return null;
+	};
 
 	const dashBoardRoute: Route = {
 		title: 'Dashboard',
@@ -20,20 +31,15 @@
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
 	<div class="rz-nav__content">
 		<div class="rz-nav__header" class:rz-nav__header--collapsed={isCollapsed}>
-			<!-- {#if isCollapsed} -->
 			<NavItem href="/panel" {isCollapsed} route={dashBoardRoute} />
-			<!-- {:else}
-				<a href="/panel">
-					<Logo />
-				</a>
-			{/if} -->
 		</div>
 
 		<div class="rz-nav__body">
 			<nav class="rz-nav__nav">
 				{#each Object.entries(routesGroups) as [groupName, routes]}
 					{#if groupName !== 'none'}
-						<NavGroup name={groupName} navCollapsed={isCollapsed}>
+						{@const icon = getGroupIcon(groupName)}
+						<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
 							{#each routes as route (route.path)}
 								<NavItem href={route.path} {isCollapsed} {route} />
 							{/each}

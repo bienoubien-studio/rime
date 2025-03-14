@@ -2,63 +2,70 @@ import type { User } from 'rizom/types/auth';
 import type { CompiledConfig } from 'rizom/types/config';
 import type { Dic } from 'rizom/types/util';
 
+interface Route {
+	title: string;
+	icon: string;
+	path: string;
+}
+
+/**
+ * Builds navigation structure based on config and user permissions
+ * @param config - Compiled configuration object
+ * @param user - Current user object (optional)
+ * @returns Dictionary of navigation groups
+ */
 const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
-	//
 	const groups: Dic = {
-		none: []
+		none: [] // Default group for ungrouped items
 	};
 
-	for (const collection of config.collections) {
+	/**
+	 * Adds a route to the appropriate navigation group
+	 */
+	const addRouteToGroup = (route: Route, group?: string) => {
+		if (group) {
+			if (!(group in groups)) {
+				groups[group] = [];
+			}
+			groups[group].push(route);
+		} else {
+			groups.none.push(route);
+		}
+	};
+
+	// Process collections
+	config.collections.forEach((collection) => {
 		if (user && collection.access.read(user, {})) {
-			const route = {
+			const route: Route = {
 				title: collection.label.plural,
 				icon: collection.slug,
 				path: `/panel/${collection.slug}`
 			};
-			if (collection.group) {
-				if (!(collection.group in groups)) {
-					groups[collection.group] = [];
-				}
-				groups[collection.group].push(route);
-			} else {
-				groups.none.push(route);
-			}
+			addRouteToGroup(route, collection.group);
 		}
-	}
+	});
 
-	for (const area of config.areas) {
+	// Process areas
+	config.areas.forEach((area) => {
 		if (user && area.access.read(user, {})) {
-			const route = {
+			const route: Route = {
 				title: area.label,
 				icon: area.slug,
 				path: `/panel/${area.slug}`
 			};
-			if (area.group) {
-				if (!(area.group in groups)) {
-					groups[area.group] = [];
-				}
-				groups[area.group].push(route);
-			} else {
-				groups.none.push(route);
-			}
+			addRouteToGroup(route, area.group);
 		}
-	}
+	});
 
-	for (const [routePath, routeConfig] of Object.entries(config.panel.routes)) {
-		const route = {
+	// Process custom panel routes
+	Object.entries(config.panel.routes).forEach(([routePath, routeConfig]) => {
+		const route: Route = {
 			title: routeConfig.label,
 			icon: `custom-${routePath}`,
 			path: `/panel/${routePath}`
 		};
-		if (routeConfig.group) {
-			if (!(routeConfig.group in groups)) {
-				groups[routeConfig.group] = [];
-			}
-			groups[routeConfig.group].push(route);
-		} else {
-			groups.none.push(route);
-		}
-	}
+		addRouteToGroup(route, routeConfig.group);
+	});
 
 	return groups;
 };

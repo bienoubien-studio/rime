@@ -1,13 +1,14 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { ChevronDown, ChevronUp } from '@lucide/svelte';
+	import type { Component, Snippet } from 'svelte';
+	import { ChevronDown, ChevronUp, type IconProps } from '@lucide/svelte';
 
 	type Props = {
 		children: Snippet;
 		navCollapsed: boolean;
 		name: string;
+		icon: Component<IconProps> | null;
 	};
-	const { children, name, navCollapsed }: Props = $props();
+	const { children, name, navCollapsed, icon }: Props = $props();
 
 	let groupCollapsed = $state(false);
 
@@ -27,7 +28,13 @@
 <div class="rz-nav-group {navCollapsedClassModifier} {groupCollapsedClassModifier}">
 	{#if !navCollapsed}
 		<button onclick={setCollapsed} class="rz-nav-group__trigger">
-			<span>{name}</span>
+			<span>
+				{#if icon}
+					{@const IconComp = icon}
+					<IconComp size="15" />
+				{/if}
+				{name}
+			</span>
 			{#if groupCollapsed}
 				<ChevronDown size="12" />
 			{:else}
@@ -79,5 +86,10 @@
 		justify-content: space-between;
 		text-align: left;
 		border-bottom: var(--rz-border);
+		span {
+			display: flex;
+			align-items: center;
+			gap: var(--rz-size-3);
+		}
 	}
 </style>
