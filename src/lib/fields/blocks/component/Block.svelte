@@ -3,11 +3,11 @@
 	import BlockActions from './BlockActions.svelte';
 	import { capitalize } from '$lib/util/string.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-
 	import { useOnce } from 'rizom/panel/util/once.svelte';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { BlocksFieldRaw } from '../index.ts';
 	import type { GenericBlock } from 'rizom/types';
+	import { watch } from 'runed';
 
 	type Props = {
 		config: BlocksFieldRaw['blocks'][number];
@@ -33,14 +33,15 @@
 		}
 	});
 
-	const toggleBlock = (e: MouseEvent) => {
+	export const setCollapse = (bool: boolean) => {
+		isOpen = !bool;
+	};
+
+	export const toggleBlock = (e: MouseEvent) => {
 		if (e && e.stopPropagation) {
 			e.stopPropagation();
 		}
 		isOpen = !isOpen;
-		if (blockValue) {
-			localStorage.setItem(`${blockValue.id}:open`, isOpen.toString());
-		}
 	};
 
 	const renderBlockTitle = () => {
@@ -59,6 +60,15 @@
 			currentPath = path;
 		}
 	});
+
+	watch(
+		() => isOpen,
+		() => {
+			if (blockValue) {
+				localStorage.setItem(`${blockValue.id}:open`, isOpen.toString());
+			}
+		}
+	);
 
 	const BlockIcon = config.icon || ToyBrick;
 </script>

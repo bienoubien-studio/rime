@@ -22,11 +22,11 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 	let sortingBy = $state<string>('updatedAt');
 	let selectMode = $state(false);
 	let selected = $state<string[]>([]);
-	let displayMode = $state<DisplayMode>(
-		(localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list'
-	);
+	let displayMode = $state<DisplayMode>('list');
 
 	onMount(() => {
+		displayMode =
+			(localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list';
 		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
 		sortingBy = localSortBy || 'updatedAt';
 		const localSortOrder = localStorage.getItem(`collection.${config.slug}.sortOrder`) as SortMode;
@@ -138,6 +138,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 		.sort((a, b) => a.table.position - b.table.position);
 
 	return {
+		config,
 		sortBy,
 		columns: columns as WithRequired<FormField, 'table'>[],
 		canCreate,
@@ -226,13 +227,6 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			} else {
 				docs = [...initialDocs];
 			}
-		},
-
-		/////////////////////////////////////////////
-		// Config
-		//////////////////////////////////////////////
-		get config() {
-			return config;
 		},
 
 		get isUpload() {

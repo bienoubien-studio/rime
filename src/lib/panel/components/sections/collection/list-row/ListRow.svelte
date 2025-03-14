@@ -50,7 +50,7 @@
 				{#if isUploadConfig(collection.config)}
 					<UploadThumbCell url={doc.sizes.thumbnail} />
 				{/if}
-				{#if collection.config.status}
+				{#if collection.config.status && Array.isArray(collection.config.status)}
 					{@const docStatus =
 						collection.config.status.find((status) => doc.status === status.value) ||
 						collection.config.status[0]}
