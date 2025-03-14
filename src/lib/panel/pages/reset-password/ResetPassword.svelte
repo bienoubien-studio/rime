@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { Toaster } from '$lib/panel/components/ui/sonner';
-	import * as Card from '$lib/panel/components/ui/card';
-	import { enhance } from '$app/forms';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { FormErrors } from 'rizom/types';
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
-	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { usersFields } from 'rizom/config/auth/usersFields';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import { authClient } from 'rizom/panel/util/auth';

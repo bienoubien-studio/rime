@@ -7,7 +7,7 @@ import type {
 	CollectionSlug
 } from 'rizom/types';
 import { RizomError } from 'rizom/errors/index.js';
-import { usersFields } from 'rizom/collection/auth/usersFields.js';
+import { usersFields } from 'rizom/config/auth/usersFields.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { setDefaultValues } from '../tasks/setDefaultValues.js';

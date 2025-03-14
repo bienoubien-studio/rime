@@ -2,7 +2,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Email from 'rizom/fields/email/component/Email.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
-	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { usersFields } from 'rizom/config/auth/usersFields';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';

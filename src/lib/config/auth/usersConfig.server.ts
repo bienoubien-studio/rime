@@ -1,8 +1,7 @@
 import { UsersRound } from '@lucide/svelte';
 import { access } from 'rizom/util/access/index.js';
 import { usersFields } from './usersFields.js';
-import type { Collection } from 'rizom';
-import { collection } from 'rizom/config/builders.js';
+import { collection } from 'rizom/config/build/collection/builder.js';
 
 export const panelUsersCollection = collection('users', {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },

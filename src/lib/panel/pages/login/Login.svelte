@@ -5,7 +5,7 @@
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
 	import type { FormErrors } from 'rizom/types';
-	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { usersFields } from 'rizom/config/auth/usersFields';
 	import { text } from 'rizom/fields';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { toast } from 'svelte-sonner';

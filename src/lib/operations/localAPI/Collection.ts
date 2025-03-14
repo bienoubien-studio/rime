@@ -1,4 +1,4 @@
-import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
+import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
 import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
 import { isFormField } from '../../util/field.js';

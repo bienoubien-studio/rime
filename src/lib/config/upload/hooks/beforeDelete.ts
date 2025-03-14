@@ -1,6 +1,6 @@
 import type { CollectionHookBeforeDelete } from 'rizom/types/hooks';
 
-import { cleanupStoredFiles } from '../disk/delete';
+import { cleanupStoredFiles } from 'rizom/upload/disk/delete';
 import type { WithUpload } from 'rizom/types/util';
 import type { CompiledCollection } from 'rizom/types/config';
 

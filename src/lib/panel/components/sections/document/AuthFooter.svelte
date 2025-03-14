@@ -6,9 +6,8 @@
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import { usersFields } from 'rizom/collection/auth/usersFields';
+	import { usersFields } from 'rizom/config/auth/usersFields';
 	import { text } from 'rizom/fields';
-	import RenderFields from '../../fields/RenderFields.svelte';
 	import validate from 'rizom/util/validate';
 
 	type Props = { operation: string; form: DocumentFormContext };

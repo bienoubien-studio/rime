@@ -2,9 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
-import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
-import { privateFieldNames } from 'rizom/collection/auth/privateFields.server';
-
+import type { CompiledConfig } from 'rizom/types/config.js';
+import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
 import type { FieldsComponents } from 'rizom/types/panel';
 import type { FieldsType } from 'rizom/types';
 import { RizomFormError } from 'rizom/errors/index.js';

@@ -8,7 +8,7 @@ import type {
 } from 'rizom/types';
 import cloneDeep from 'clone-deep';
 import { RizomError } from 'rizom/errors/index.js';
-import { usersFields } from 'rizom/collection/auth/usersFields.js';
+import { usersFields } from 'rizom/config/auth/usersFields.js';
 import { mergeWithBlankDocument } from '../tasks/mergeWithBlank.js';
 import { setDefaultValues } from '../tasks/setDefaultValues.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';

@@ -1,4 +1,7 @@
-import { buildCollection, mergePanelUsersCollectionWithDefault } from './collection.server.js';
+import {
+	buildCollection,
+	mergePanelUsersCollectionWithDefault
+} from './collection/index.server.js';
 import { access } from 'rizom/util/access/index.js';
 import type {
 	BuiltCollection,
@@ -9,7 +12,7 @@ import type {
 } from 'rizom/types/config.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { Dic } from 'rizom/types/util.js';
-import { buildArea } from './area.server.js';
+import { buildArea } from './area/index.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
@@ -17,6 +20,7 @@ import genCache from '../../bin/generate/cache/index.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 import { mailer } from 'rizom/plugins/mailer/index.server.js';
 import { hasProp } from 'rizom/util/object.js';
+import { BookType, SlidersVertical } from '@lucide/svelte';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -84,6 +88,12 @@ const buildConfig = async <C extends boolean = true>(
 			access: config.panel?.access ? config.panel.access : (user) => access.isAdmin(user),
 			routes: config.panel?.routes ? config.panel.routes : {},
 			language: config.panel?.language || 'en',
+			navigation: config.panel?.navigation || {
+				groups: [
+					{ label: 'content', icon: BookType },
+					{ label: 'system', icon: SlidersVertical }
+				]
+			},
 			components: {
 				header: config.panel?.components?.header || [],
 				...(config.panel?.components?.dashboard && { dashboard: config.panel.components.dashboard })

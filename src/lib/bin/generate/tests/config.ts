@@ -17,7 +17,8 @@ import {
 	toggle,
 	slug
 } from 'rizom/fields/index.js';
-import { collection, area } from 'rizom/config/builders';
+import { collection } from '$lib/config/build/collection/builder.js';
+import { area } from '$lib/config/build/area/builder.js';
 
 const Informations = area<any>('infos', {
 	icon: ReceiptText,
