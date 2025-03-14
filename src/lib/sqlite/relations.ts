@@ -55,7 +55,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 			try {
 				await db.insert(table).values(values);
 			} catch (err: any) {
-				console.error('error in db/relations create' + err.message);
+				console.error('error in sqlite/relations create' + err.message);
 				return false;
 			}
 		}
@@ -76,7 +76,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 				})
 			);
 		} catch (err: any) {
-			console.error('error in db/relations update' + err.message);
+			console.error('error in sqlite/relations update' + err.message);
 			return false;
 		}
 
@@ -97,7 +97,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		try {
 			await db.delete(table).where(inArray(table.id, relationIds));
 		} catch (err: any) {
-			console.error('error in db/relations delete' + err.message);
+			console.error('error in sqlite/relations delete' + err.message);
 			return false;
 		}
 

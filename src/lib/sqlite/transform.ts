@@ -15,7 +15,7 @@ import type {
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type { Dic } from 'rizom/types/util.js';
 import { extractFieldName } from 'rizom/fields/tree/util.js';
-import { privateFieldNames } from 'rizom/collection/auth/privateFields.server.js';
+import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
 import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
