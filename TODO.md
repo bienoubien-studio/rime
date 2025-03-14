@@ -11,17 +11,17 @@
 [v] make file output key sm_jpg, sm_webp, if multilple output format
 [v] Change the way panel languages are loaded
 [v] better-auth + smtp : forgot password
-[ ] Blocks collapse/uncollapse all
-[ ] pnpm deps issue
-[ ] init command without prompt
-[ ] Fix the sortable error on file change
-[ ] basic real life config preset
-[ ] Panel relation API call proxy
-[ ] Better logs
-[ ] More tests
+[v] Blocks collapse/uncollapse all
+[v] Fix the sortable error on file change
+[v] navigation group icons
 [ ] Group/Tabs as object on document
+[ ] basic real life config preset
+[ ] pnpm deps issue
+[ ] More tests
 
 # V1
+[ ] Panel relation API call proxy
+[ ] Put bin commands in a separate package ex: @rizom/kit
 [ ] collection nested
 [ ] page version
 [ ] more better-auth integration
