@@ -10,6 +10,7 @@
 	const { config, path, form }: Props = $props();
 
 	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;
+	let activeTab = $state(Cookies.get(cookieKey) || slugify(config.tabs[0].label));
 
 	let tabErrors = $state<string[]>([]);
 	const tabIds = $derived(
@@ -36,8 +37,6 @@
 			tabErrors = [];
 		}
 	});
-
-	let activeTab = $state(Cookies.get(cookieKey) || slugify(config.tabs[0].label));
 </script>
 
 <div class="rz-tabs">
@@ -63,7 +62,7 @@
 
 <style type="postcss">
 	.rz-tabs {
-		container: rz-tabs / inline-size;
+		/* container: rz-tabs / inline-size; */
 
 		:global(.rz-tabs-trigger) {
 			min-width: var(--rz-size-28);

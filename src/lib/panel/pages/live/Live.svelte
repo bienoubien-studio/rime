@@ -102,7 +102,7 @@
 
 	.rz-live-container__side-panel {
 		width: 100%;
-		/* width: var(--rz-live-sidebar-width); */
+
 		flex-shrink: 0;
 		flex-grow: 0;
 		border-right: var(--rz-border);

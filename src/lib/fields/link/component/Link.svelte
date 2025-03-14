@@ -179,9 +179,6 @@
 		}
 	}
 
-	.rz-link-field--compact {
-	}
-
 	.rz-link-field__bottom {
 		display: flex;
 		position: relative;
