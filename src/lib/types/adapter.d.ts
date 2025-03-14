@@ -1,7 +1,7 @@
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { GenericDoc, GenericBlock, PrototypeSlug, TreeBlock } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
-import type { BeforeOperationRelation, Relation } from '../db/relations.js';
+import type { BeforeOperationRelation, Relation } from '../sqlite/relations.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/types/api.js';
 import type { WithRequired } from './util.js';
@@ -147,7 +147,7 @@ import type { WithRequired } from './util.js';
 // 	relationFieldsMap: any;
 // }
 
-export type { Adapter } from 'rizom/db/index.server.js';
+export type { Adapter } from 'rizom/sqlite/index.server.js';
 
 export type GenericAdapterInterfaceArgs = {
 	db: BetterSQLite3Database<any>;

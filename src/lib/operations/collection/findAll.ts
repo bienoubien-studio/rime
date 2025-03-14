@@ -3,7 +3,7 @@ import type { CompiledCollection } from 'rizom/types/config.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from 'rizom/types/doc.js';
 import type { RegisterCollection } from 'rizom';
 import { RizomError } from 'rizom/errors';
-import type { Adapter } from 'rizom/db/index.server';
+import type { Adapter } from 'rizom/sqlite/index.server';
 import { transformDocument } from '../tasks/transformDocument.server';
 import type { LocalAPI } from '../localAPI/index.server';
 

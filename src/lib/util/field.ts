@@ -1,5 +1,5 @@
 import type { GenericBlock } from 'rizom/types/doc.js';
-import type { Relation } from '../db/relations.js';
+import type { Relation } from '../sqlite/relations.js';
 import { hasProps, isObjectLiteral } from './object.js';
 import type {
 	BlocksField,

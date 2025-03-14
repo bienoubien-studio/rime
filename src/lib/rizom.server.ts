@@ -1,4 +1,4 @@
-import createAdapter from '$lib/db/index.server.js';
+import createAdapter from '$lib/sqlite/index.server.js';
 import path from 'path';
 import { randomId } from './util/random.js';
 import { createConfigInterface } from './config/index.server.js';

@@ -15,7 +15,7 @@ import type { FormField } from 'rizom/types/fields.js';
 import type { OperationQuery } from 'rizom/types/api';
 import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
-import type { Adapter } from 'rizom/db/index.server.js';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
 import type { LocalAPI } from './index.server.js';
 
 type Args = {

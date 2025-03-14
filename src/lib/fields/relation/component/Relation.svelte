@@ -9,10 +9,9 @@
 	import { snapshot } from '$lib/util/state.js';
 	import type { RelationFieldItem } from './types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import type { Relation } from '$lib/db/relations.js';
+	import type { Relation } from '$lib/sqlite/relations.js';
 	import type { GenericDoc } from 'rizom/types';
 	import type { RelationField } from '../index';
-	import { watch } from 'runed';
 	import { onMount } from 'svelte';
 
 	// Props
