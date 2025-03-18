@@ -6,148 +6,145 @@ import { omit } from 'rizom/util/object';
 import { transformDataToSchema } from '../util/path.js';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
-    //
-    const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, parentId, paths, locale }) => {
-        if (paths.length === 0) return true;
+	//
+	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, parentId, paths, locale }) => {
+		if (paths.length === 0) return true;
 
-        const relationTableName = `${parentSlug}Rels`;
-        const table = tables[relationTableName];
-        if (!table) return true;
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+		if (!table) return true;
 
-        const conditions: SQLWrapper[] = [eq(table.parentId, parentId)];
-        if (locale) {
-            conditions.push(eq(table.locale, locale));
-        }
-        const existingRelations = await db
-            .select({ id: table.id, path: table.path })
-            .from(table)
-            .where(and(...conditions));
+		const conditions: SQLWrapper[] = [eq(table.parentId, parentId)];
+		if (locale) {
+			conditions.push(eq(table.locale, locale));
+		}
+		const existingRelations = await db
+			.select({ id: table.id, path: table.path })
+			.from(table)
+			.where(and(...conditions));
 
-        const toDelete = existingRelations
-            .filter((row) => paths.some((path) => row.path.startsWith(path)))
-            .map((row) => row.id);
+		const toDelete = existingRelations
+			.filter((row) => paths.some((path) => row.path.startsWith(path)))
+			.map((row) => row.id);
 
-        if (!toDelete.length) return true;
+		if (!toDelete.length) return true;
 
-        await db.delete(table).where(inArray(table.id, toDelete));
+		await db.delete(table).where(inArray(table.id, toDelete));
 
-        return true;
-    };
+		return true;
+	};
 
-    const create: Create = async ({ parentSlug, parentId, relations }) => {
-        const relationTableName = `${parentSlug}Rels`;
-        const table = tables[relationTableName];
-        const columns = getTableColumns(table);
+	const create: Create = async ({ parentSlug, parentId, relations }) => {
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+		const columns = getTableColumns(table);
 
-        for (const relation of relations) {
-            if (!relation.relationId) continue;
+		for (const relation of relations) {
+			if (!relation.relationId) continue;
 
-            const relationToIdKey = `${relation.relationTo}Id`;
-            const baseValues: Dic = {
-                path: relation.path,
-                position: relation.position,
-                [relationToIdKey]: relation.relationId,
-                parentId
-            };
+			const relationToIdKey = `${relation.relationTo}Id`;
+			const baseValues: Dic = {
+				path: relation.path,
+				position: relation.position,
+				[relationToIdKey]: relation.relationId,
+				parentId
+			};
 
-            if (relation.locale) {
-                baseValues.locale = relation.locale;
-            }
+			if (relation.locale) {
+				baseValues.locale = relation.locale;
+			}
 
-            const values = transformDataToSchema(baseValues, columns);
+			const values = transformDataToSchema(baseValues, columns);
 
-            try {
-                await db.insert(table).values(values);
-            } catch (err: any) {
-                console.error('error in sqlite/relations create' + err.message);
-                return false;
-            }
-        }
-        return true;
-    };
+			try {
+				await db.insert(table).values(values);
+			} catch (err: any) {
+				console.error('error in sqlite/relations create' + err.message);
+				return false;
+			}
+		}
+		return true;
+	};
 
-    const update: Update = async ({ parentSlug, relations }) => {
-        const relationTableName = `${parentSlug}Rels`;
-        const table = tables[relationTableName];
-        const columns = getTableColumns(table);
+	const update: Update = async ({ parentSlug, relations }) => {
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
+		const columns = getTableColumns(table);
 
-        try {
-            await Promise.all(
-                relations.map((relation) => {
-                    const values = transformDataToSchema(omit(['id'], relation), columns);
-                    return db
-                        .update(table)
-                        .set(values)
-                        .where(eq(table.id, relation.id));
-                })
-            );
-        } catch (err: any) {
-            console.error('error in sqlite/relations update' + err.message);
-            return false;
-        }
+		try {
+			await Promise.all(
+				relations.map((relation) => {
+					const values = transformDataToSchema(omit(['id'], relation), columns);
+					return db.update(table).set(values).where(eq(table.id, relation.id));
+				})
+			);
+		} catch (err: any) {
+			console.error('error in sqlite/relations update' + err.message);
+			return false;
+		}
 
-        return true;
-    };
+		return true;
+	};
 
-    const deleteRelations: Delete = async ({ parentSlug, relations }) => {
-        const relationTableName = `${parentSlug}Rels`;
-        const table = tables[relationTableName];
+	const deleteRelations: Delete = async ({ parentSlug, relations }) => {
+		const relationTableName = `${parentSlug}Rels`;
+		const table = tables[relationTableName];
 
-        if (relations.length === 0) return true;
+		if (relations.length === 0) return true;
 
-        const relationIds = relations
-            .map((rel) => rel.id)
-            .filter((id): id is string => id !== undefined);
-        if (relationIds.length === 0) return true;
+		const relationIds = relations
+			.map((rel) => rel.id)
+			.filter((id): id is string => id !== undefined);
+		if (relationIds.length === 0) return true;
 
-        try {
-            await db.delete(table).where(inArray(table.id, relationIds));
-        } catch (err: any) {
-            console.error('error in sqlite/relations delete' + err.message);
-            return false;
-        }
+		try {
+			await db.delete(table).where(inArray(table.id, relationIds));
+		} catch (err: any) {
+			console.error('error in sqlite/relations delete' + err.message);
+			return false;
+		}
 
-        return true;
-    };
+		return true;
+	};
 
-    const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
-        const relationTableName = `${parentSlug}Rels`;
+	const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
+		const relationTableName = `${parentSlug}Rels`;
 
-        // If the collection doesn't have relation
-        // relationTableName doesn't exist
-        // then there are no relations
-        if (!(relationTableName in tables)) {
-            return [];
-        }
+		// If the collection doesn't have relation
+		// relationTableName doesn't exist
+		// then there are no relations
+		if (!(relationTableName in tables)) {
+			return [];
+		}
 
-        const table = tables[relationTableName];
-        const columns = Object.keys(getTableColumns(table));
+		const table = tables[relationTableName];
+		const columns = Object.keys(getTableColumns(table));
 
-        let conditions;
-        if (locale && columns.includes('locale')) {
-            conditions = [
-                eq(table.parentId, parentId),
-                or(eq(table.locale, locale), isNull(table.locale))
-            ];
-        } else {
-            conditions = [eq(table.parentId, parentId)];
-        }
+		let conditions;
+		if (locale && columns.includes('locale')) {
+			conditions = [
+				eq(table.parentId, parentId),
+				or(eq(table.locale, locale), isNull(table.locale))
+			];
+		} else {
+			conditions = [eq(table.parentId, parentId)];
+		}
 
-        const all = await db
-            .select()
-            .from(table)
-            .where(and(...conditions));
+		const all = await db
+			.select()
+			.from(table)
+			.where(and(...conditions));
 
-        return all as Relation[];
-    };
+		return all as Relation[];
+	};
 
-    return {
-        create,
-        update,
-        delete: deleteRelations,
-        deleteFromPaths,
-        getAll
-    };
+	return {
+		create,
+		update,
+		delete: deleteRelations,
+		deleteFromPaths,
+		getAll
+	};
 };
 
 export default createAdapterRelationsInterface;
@@ -155,35 +152,35 @@ export default createAdapterRelationsInterface;
 export type AdapterRelationsInterface = ReturnType<typeof createAdapterRelationsInterface>;
 
 export type Relation = {
-    id?: string;
-    parentId: string;
-    path: string;
-    position: number;
-    relationTo: string;
-    relationId: string;
-    locale?: string;
-    livePreview?: GenericDoc;
+	id?: string;
+	parentId: string;
+	path: string;
+	position: number;
+	relationTo: string;
+	relationId: string;
+	locale?: string;
+	livePreview?: GenericDoc;
 };
 
 export type BeforeOperationRelation = Omit<Relation, 'parentId'> & { parentId?: string };
 
 type DeleteFromPaths = (args: {
-    parentSlug: PrototypeSlug;
-    parentId: string;
-    paths: string[];
-    locale?: string;
+	parentSlug: PrototypeSlug;
+	parentId: string;
+	paths: string[];
+	locale?: string;
 }) => Promise<boolean>;
 
 type Delete = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
 type Update = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
 type Create = (args: {
-    parentSlug: PrototypeSlug;
-    parentId: string;
-    relations: BeforeOperationRelation[];
+	parentSlug: PrototypeSlug;
+	parentId: string;
+	relations: BeforeOperationRelation[];
 }) => Promise<boolean>;
 
 type GetAllRelations = (args: {
-    parentSlug: PrototypeSlug;
-    parentId: string;
-    locale?: string;
+	parentSlug: PrototypeSlug;
+	parentId: string;
+	locale?: string;
 }) => Promise<Relation[]>;
