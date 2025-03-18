@@ -9,6 +9,9 @@ import type { Dic } from '../types/util';
 import { RizomError } from '../errors/index.js';
 import { isObjectLiteral } from '../util/object';
 import type { OperationQuery } from '../types';
+import { rizom } from 'rizom';
+import logger from 'rizom/util/logger';
+import { isRelationField } from 'rizom/util/field';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;
@@ -55,22 +58,36 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		const fn = operatorFn(operator);
 		const value = formatValue({ operator, value: rawValue });
 
-		if (unlocalizedColumns.includes(column)) {
-			return fn(table[column], value);
+		// Convert dot notation to double underscore
+		const sqlColumn = column.replace(/\./g, '__');
+
+		if (unlocalizedColumns.includes(sqlColumn)) {
+			return fn(table[sqlColumn], value);
 		}
 
-		if (locale && localizedColumns.includes(column)) {
+		if (locale && localizedColumns.includes(sqlColumn)) {
 			return inArray(
 				table.id,
 				db
 					.select({ id: tableLocales.parentId })
 					.from(tableLocales)
-					.where(and(fn(tableLocales[column], value), eq(tableLocales.locale, locale)))
+					.where(and(fn(tableLocales[sqlColumn], value), eq(tableLocales.locale, locale)))
 			);
 		}
 
-		if (column in rizom.adapter.relationFieldsMap[slug]) {
-			const { to, localized } = rizom.adapter.relationFieldsMap[slug][column];
+		// Try if it's a relation field
+		const documentConfig = rizom.config.getBySlug(slug);
+		if (!documentConfig) {
+			throw new Error('should never happen');
+		}
+		const relationConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
+		if (!relationConfig || !isRelationField(relationConfig)) {
+			logger.info(`can't find ${column} in ${documentConfig.slug}.fields`);
+			return false;
+		}
+
+		if (relationConfig) {
+			const [to, localized] = [relationConfig.relationTo, relationConfig.localized];
 			const relationTableName = `${slug}Rels`;
 			const relationTable = rizom.adapter.tables[relationTableName];
 			const conditions = [fn(relationTable[`${to}Id`], value)];

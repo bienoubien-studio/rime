@@ -2,6 +2,7 @@ import type { LocalAPI } from 'rizom/types/api.js';
 import type { Rizom } from 'rizom/rizom.server';
 import type { CompiledArea, CompiledCollection } from './config';
 import type { GenericDoc } from '.';
+import type { DeepPartial } from './util';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
@@ -16,12 +17,12 @@ type HookContext = {
 type CollectionHookBeforeCreate<T extends GenericDoc = GenericDoc> = (
 	args: HookContext & {
 		operation: 'create';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 	}
 ) => Promise<
 	HookContext & {
 		operation: 'create';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 	}
 >;
 
@@ -40,13 +41,13 @@ type CollectionHookAfterCreate<T extends GenericDoc = GenericDoc> = (
 type CollectionHookBeforeUpdate<T extends GenericDoc = GenericDoc> = (
 	args: HookContext & {
 		operation: 'update';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 		originalDoc: T;
 	}
 ) => Promise<
 	HookContext & {
 		operation: 'update';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 		originalDoc: T;
 	}
 >;
@@ -66,14 +67,14 @@ type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = (
 type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = (
 	args: HookContext &
 		(
-			| { operation: 'create'; data: Partial<T> }
-			| { operation: 'update'; data: Partial<T>; originalDoc: T }
+			| { operation: 'create'; data: DeepPartial<T> }
+			| { operation: 'update'; data: DeepPartial<T>; originalDoc: T }
 		)
 ) => Promise<
 	HookContext &
 		(
-			| { operation: 'create'; data: Partial<T> }
-			| { operation: 'update'; data: Partial<T>; originalDoc: T }
+			| { operation: 'create'; data: DeepPartial<T> }
+			| { operation: 'update'; data: DeepPartial<T>; originalDoc: T }
 		)
 >;
 
@@ -147,13 +148,13 @@ type AreaHookBeforeRead<T extends GenericDoc = GenericDoc> = (
 type AreaHookBeforeUpdate<T extends GenericDoc = GenericDoc> = (
 	args: AreaHookContext & {
 		operation: 'update';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 		originalDoc: T;
 	}
 ) => Promise<
 	AreaHookContext & {
 		operation: 'update';
-		data: Partial<T>;
+		data: DeepPartial<T>;
 		originalDoc: T;
 	}
 >;

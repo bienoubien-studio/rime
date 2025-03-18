@@ -104,8 +104,8 @@ export function collection<S extends string>(
 
 export const setTitle = <T extends CollectionWithoutSlug<any>>(config: T) => {
 	const addAsTitle = () => {
-		const fieldTitle = findTitleField(config.fields);
-		if (fieldTitle) return fieldTitle.name;
+		const titleResult = findTitleField(config.fields);
+		if (titleResult) return titleResult.path;
 		if (config.upload) return 'filename';
 		if (config.auth) return 'email';
 		return 'id';

@@ -5,8 +5,9 @@ import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config.js';
 import type { AsyncReturnType, Dic } from 'rizom/types/util.js';
-import type { CollectionSlug, Config, PrototypeSlug } from 'rizom/types/index.js';
+import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from 'rizom/types/index.js';
 import type { AreaSlug } from 'rizom/types/doc.js';
+import { isBlocksFieldRaw, isFormField, isTabsFieldRaw } from 'rizom/util/field.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -64,6 +65,49 @@ export async function createConfigInterface(rawConfig: Config) {
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
 	};
 
+	const getFieldByPath = (path: string, fields: Field[]) => {
+		const parts = path.split('.');
+
+		const findInFields = (currentFields: Field[], remainingParts: string[]): FormField | null => {
+			if (remainingParts.length === 0) return null;
+
+			const currentPart = remainingParts[0];
+
+			for (const field of currentFields) {
+				// Handle tabs
+				if (isTabsFieldRaw(field)) {
+					const tab = field.tabs.find((t) => t.name === currentPart);
+					if (tab) {
+						return findInFields(tab.fields, remainingParts.slice(1));
+					}
+					continue;
+				}
+
+				// Handle regular fields
+				if (isFormField(field)) {
+					if (field.name === currentPart) {
+						if (remainingParts.length === 1) {
+							return field;
+						}
+
+						// Handle blocks
+						if (isBlocksFieldRaw(field)) {
+							const blockType = remainingParts[1];
+							const block = field.blocks.find((b) => b.name === blockType);
+							if (block) {
+								return findInFields(block.fields, remainingParts.slice(2));
+							}
+						}
+					}
+				}
+			}
+
+			return null;
+		};
+
+		return findInFields(fields, parts);
+	};
+
 	return {
 		//
 		get raw() {
@@ -105,6 +149,7 @@ export async function createConfigInterface(rawConfig: Config) {
 			return locales.includes(locale);
 		},
 
+		getFieldByPath,
 		getDocumentPrototype,
 		getArea,
 		getCollection,

@@ -1,6 +1,6 @@
 import type { AnyField } from 'rizom/types';
 import type { Field } from 'rizom/types/fields';
-import { FieldBuilder } from '../builders/index.js';
+import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tabs from './component/Tabs.svelte';
 import type { WithoutBuilders } from 'rizom/types/util.js';
 import { isFormField } from 'rizom/util/field.js';
@@ -18,6 +18,18 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 
 	get component() {
 		return Tabs;
+	}
+
+	toType() {
+		return this.field.tabs
+			.map(tab => {
+				const fieldsTypes = tab.raw.fields
+					.filter(field => field instanceof FormFieldBuilder)
+					.map(field => field.toType())
+					.join(',\n\t\t');
+				return `${tab.raw.name}: {${fieldsTypes}}`;
+			})
+			.join(',\n\t');
 	}
 
 	compile(): WithoutBuilders<TabsField> {
@@ -86,7 +98,7 @@ export type TabsFieldRaw = Field & {
 //////////////////////////////////////////////
 declare module 'rizom' {
 	interface RegisterFieldsType {
-		tabs: any;
+		tabs: Record<string, Record<string, any>>;
 	}
 	interface RegisterFields {
 		TabsField: TabsField;

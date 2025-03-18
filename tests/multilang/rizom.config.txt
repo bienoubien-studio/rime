@@ -175,7 +175,7 @@ const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	toggle('home').table({ position: 2, sort: true }).live(false),
 	slug('slug')
-		.slugify('title')
+		.slugify('attributes.title')
 		.live(false)
 		.table({ position: 3, sort: true })
 		.localized()
@@ -205,7 +205,7 @@ const Pages = collection('pages', {
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
 	status: true,
 	url: (doc) => {
-		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.slug}`;
+		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
 	live: true,
 	access: {

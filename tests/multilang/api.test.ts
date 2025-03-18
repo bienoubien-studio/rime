@@ -73,23 +73,23 @@ test('Should create Home', async ({ request }) => {
 		data: {
 			attributes: {
 				title: 'Accueil',
-				slug: 'accueil'
-			},
-			home: true,
-			author: adminUserId
+				slug: 'accueil',
+				home: true,
+				author: adminUserId
+			}
 		}
 	});
 
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Accueil');
+	expect(doc.attributes.home).toBe(true);
 	expect(doc.id).toBeDefined();
-	expect(doc.home).toBe(true);
 	expect(doc.locale).toBeDefined();
 	expect(doc.locale).toBe('fr');
 	expect(doc.createdAt).toBeDefined();
-	expect(doc.author).toBeDefined();
-	expect(doc.author).toHaveLength(1);
-	expect(doc.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author).toBeDefined();
+	expect(doc.attributes.author).toHaveLength(1);
+	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
 	homeId = doc.id;
 });
 
@@ -100,6 +100,9 @@ test('Should get Home EN with FR data', async ({ request }) => {
 	expect(doc.locale).toBe('en');
 	expect(doc.status).toBe('draft');
 	expect(doc.attributes.slug).toBe('accueil');
+	expect(doc.attributes.author).toBeDefined();
+	expect(doc.attributes.author).toHaveLength(1);
+	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
 });
 
 test('Should set Home title/slug EN to Home/home', async ({ request }) => {
@@ -119,6 +122,9 @@ test('Should set Home title/slug EN to Home/home', async ({ request }) => {
 	expect(doc.attributes.title).toBe('Home');
 	expect(doc.locale).toBe('en');
 	expect(doc.attributes.slug).toBe('home');
+	expect(doc.attributes.author).toBeDefined();
+	expect(doc.attributes.author).toHaveLength(1);
+	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
 });
 
 test('Should get Home FR with still FR data', async ({ request }) => {
@@ -126,6 +132,9 @@ test('Should get Home FR with still FR data', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Accueil');
 	expect(doc.attributes.slug).toBe('accueil');
+	expect(doc.attributes.author).toBeDefined();
+	expect(doc.attributes.author).toHaveLength(1);
+	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
 });
 
 test('Should get Home EN with EN data', async ({ request }) => {
@@ -133,6 +142,9 @@ test('Should get Home EN with EN data', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Home');
 	expect(doc.attributes.slug).toBe('home');
+	expect(doc.attributes.author).toBeDefined();
+	expect(doc.attributes.author).toHaveLength(1);
+	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
 });
 
 test('Should create a page', async ({ request }) => {
@@ -146,16 +158,18 @@ test('Should create a page', async ({ request }) => {
 				slug: 'page'
 			},
 			status: 'published',
-			components: [
-				{
-					text: 'Foo',
-					type: 'paragraph'
-				},
-				{
-					type: 'image',
-					legend: 'legend'
-				}
-			]
+			layout: {
+				components: [
+					{
+						text: 'Foo',
+						type: 'paragraph'
+					},
+					{
+						type: 'image',
+						legend: 'legend'
+					}
+				]
+			}
 		}
 	});
 	const { doc } = await response.json();
@@ -163,9 +177,9 @@ test('Should create a page', async ({ request }) => {
 	expect(doc.locale).toBe('fr');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc.components.length).toBe(2);
-	expect(doc.components.at(0).text).toBe('Foo');
-	expect(doc.components.at(1).legend).toBe('legend');
+	expect(doc.layout.components.length).toBe(2);
+	expect(doc.layout.components.at(0).text).toBe('Foo');
+	expect(doc.layout.components.at(1).legend).toBe('legend');
 	pageId = doc.id;
 });
 
@@ -175,6 +189,9 @@ test('Should return the home page', async ({ request }) => {
 	});
 	expect(response.doc).toBeDefined();
 	expect(response.doc.attributes.title).toBe('Accueil');
+	expect(response.doc.attributes.author).toBeDefined();
+	expect(response.doc.attributes.author).toHaveLength(1);
+	expect(response.doc.attributes.author.at(0).relationId).toBe(adminUserId);
 });
 
 test('Should return 2 pages', async ({ request }) => {
@@ -185,9 +202,9 @@ test('Should return 2 pages', async ({ request }) => {
 	expect(response.docs.length).toBe(2);
 });
 
-//////////////////////////////////////////////
-// Upload Collection
-//////////////////////////////////////////////
+// //////////////////////////////////////////////
+// // Upload Collection
+// //////////////////////////////////////////////
 
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
@@ -209,10 +226,10 @@ test('Should create a Media', async ({ request }) => {
 	expect(doc.mimeType).toBe('image/jpeg');
 });
 
-/** ---------------- QUERIES ---------------- */
+// /** ---------------- QUERIES ---------------- */
 
 test('Should return home EN (query)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[author][in_array]=${adminUserId}&locale=en`;
+	const url = `${API_BASE_URL}/pages?where[attributes.title][equals]=Home&locale=en`;
 	const response = await request.get(url).then((response) => {
 		return response.json();
 	});
@@ -222,7 +239,7 @@ test('Should return home EN (query)', async ({ request }) => {
 });
 
 test('Should return home FR (query)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[author][in_array]=${adminUserId}`;
+	const url = `${API_BASE_URL}/pages?where[attributes.author][like]=${adminUserId}`;
 	const response = await request.get(url).then((response) => {
 		return response.json();
 	});
@@ -231,627 +248,627 @@ test('Should return home FR (query)', async ({ request }) => {
 	expect(response.docs[0].attributes.title).toBe('Accueil');
 });
 
-test('Should return home (draft)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Accueil');
-});
-
-test('Should return the page (published)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Page');
-});
-
-let pageWithAuthorId: string;
-test('Should create an other page with author', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			attributes: {
-				title: 'Page 2',
-				slug: 'page-2'
-			},
-			author: adminUserId
-		}
-	});
-	const { doc } = await response.json();
-	expect(doc.attributes.title).toBe('Page 2');
-	expect(doc.attributes.slug).toBe('page-2');
-	expect(doc.locale).toBe('fr');
-	expect(doc.id).toBeDefined();
-	pageWithAuthorId = doc.id;
-});
-
-test('Should return last created page with author depth', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/pages/${pageWithAuthorId}?depth=1`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	const { doc } = await response.json();
-	expect(doc.attributes.title).toBe('Page 2');
-	expect(doc.attributes.slug).toBe('page-2');
-	expect(doc.author).toBeDefined();
-	expect(doc.author.at(0).name).toBe('Admin');
-});
-
-test('Should return Page 2 (query)', async ({ request }) => {
-	const qs = `where[and][0][author][in_array]=${adminUserId}&where[and][1][slug][equals]=page-2&locale=en`;
-	const url = `${API_BASE_URL}/pages?${qs}`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Page 2');
-	expect(response.docs[0].locale).toBe('en');
-});
-
-test('Should delete page', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/pages/${pageId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	expect(response.status()).toBe(200);
-});
-
-test('Should return 2 page', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/pages`).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(2);
-});
-
-//////////////////////////////////////////////
-// AUTH Collection
-//////////////////////////////////////////////
-
-let editorId: string;
-
-test('Should create a user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			email: 'editor@bienoubien.com',
-			name: 'Chesster',
-			roles: ['editor'],
-			password: 'a&1Aa&1A'
-		}
-	});
-	expect(response.status()).toBe(200);
-	const data = await response.json();
-	expect(data.doc).toBeDefined();
-	expect(data.doc.id).toBeDefined();
-	editorId = data.doc.id;
-});
-
-test('Should logout user', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-		.then((r) => r.json());
-
-	expect(response).toBe('successfully logout');
-});
-
-test('Should not update Home', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			attributes: {
-				title: 'Accueil',
-				slug: 'accueil'
-			}
-		}
-	});
-	expect(response.status()).toBe(403);
-});
-
-test('Should not delete home', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	expect(response.status()).toBe(403);
-});
-
-test('Should not create a page', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			attributes: {
-				title: 'Page 3',
-				slug: 'page-3'
-			}
-		}
-	});
-	expect(response.status()).toBe(403);
-});
-
-//////////////////////////////////////////////
-// Area
-//////////////////////////////////////////////
-
-test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
-		data: {
-			email: 'admin@bienoubien.studio',
-			password: 'a&1Aa&1A'
-		}
-	});
-
-	const headerToken = response.headers()['set-auth-token'];
-	expect(headerToken).toBeDefined();
-	token = headerToken;
-});
-
-test('Should get settings', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/settings`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	expect(response.status()).toBe(200);
-});
-
-test('Should update settings', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			maintenance: true,
-			legalMention: 'mentions légales'
-		}
-	});
-	expect(response.status()).toBe(200);
-	const { doc } = await response.json();
-	expect(doc.legalMention).toBe('mentions légales');
-});
-
-test('Should update settings EN', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			legalMention: 'legals'
-		}
-	});
-	expect(response.status()).toBe(200);
-	const { doc } = await response.json();
-	expect(doc.legalMention).toBe('legals');
-});
-
-test('Should get settings FR with still FR data', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/settings?locale=fr`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	expect(response.status()).toBe(200);
-	const { doc } = await response.json();
-	expect(doc.legalMention).toBe('mentions légales');
-});
-
-test('Should update infos', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			instagram: '@fooo',
-			legals: {
-				label: 'Google',
-				type: 'url',
-				link: 'http://google.fr',
-				target: '_self'
-			}
-		}
-	});
-	expect(response.status()).toBe(200);
-	const { doc } = await response.json();
-	expect(doc.legals).toBeDefined();
-	expect(doc.legals.type).toBe('url');
-	expect(doc.legals.link).toBe('http://google.fr');
-});
-
-test('Should update infos EN', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			legals: {
-				label: 'Google-en',
-				type: 'url',
-				link: 'http://google.com',
-				target: '_blank'
-			}
-		}
-	});
-	expect(response.status()).toBe(200);
-	const { doc } = await response.json();
-	expect(doc.legals).toBeDefined();
-	expect(doc.legals.label).toBe('Google-en');
-	expect(doc.legals.link).toBe('http://google.com');
-});
-
-test('Should get infos FR', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
-	expect(response.doc.legals).toBeDefined();
-	expect(response.doc.legals.link).toBe('http://google.fr');
-	expect(response.doc.legals.label).toBe('Google');
-});
-
-test('Should get infos EN', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/infos?locale=en`).then((r) => r.json());
-	expect(response.doc.legals).toBeDefined();
-	expect(response.doc.legals.link).toBe('http://google.com');
-	expect(response.doc.legals.label).toBe('Google-en');
-});
-
-test('Should not get settings', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/settings`);
-	expect(response.status()).toBe(403);
-});
-
-test('Should get informations', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
-	expect(response.doc.instagram).toBe('@fooo');
-});
-
-/////////////////////////////////////////////
-// Relations
-//////////////////////////////////////////////
-
-let page2Id: string;
-let editor2Id: string;
-
-test('Should create editor user for testing', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			email: 'editor2@bienoubien.com',
-			name: 'Editor2',
-			roles: ['editor'],
-			password: 'a&1Aa&1A'
-		}
-	});
-	const { doc } = await response.json();
-	editor2Id = doc.id;
-	expect(doc.name).toBe('Editor2');
-});
-
-test('Should create page with multiple relations', async ({ request }) => {
-	const payload = {
-		attributes: {
-			title: 'Relations Test',
-			slug: 'relations-test'
-		},
-		author: [adminUserId],
-		contributors: [adminUserId, editor2Id],
-		ambassadors: [editor2Id]
-	};
-
-	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: payload
-	});
-
-	const { doc } = await response.json();
-	page2Id = doc.id;
-
-	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
-	const { doc: verifyDoc } = await verifyResponse.json();
-
-	expect(verifyDoc.attributes.title).toBe('Relations Test');
-	expect(verifyDoc.author).toBeDefined();
-	expect(verifyDoc.contributors).toBeDefined();
-	expect(verifyDoc.ambassadors).toBeDefined();
-	expect(verifyDoc.author).toHaveLength(1);
-	expect(verifyDoc.ambassadors).toHaveLength(1);
-	expect(verifyDoc.contributors).toHaveLength(2);
-});
-
-test('Should empty author relation', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			author: []
-		}
-	});
-
-	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
-	const { doc: verifyDoc } = await verifyResponse.json();
-
-	expect(verifyDoc.author).toHaveLength(0);
-	expect(verifyDoc.contributors).toHaveLength(2);
-	expect(verifyDoc.ambassadors).toHaveLength(1);
-});
-
-test('Should reduce contributors array', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			contributors: [adminUserId]
-		}
-	});
-
-	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
-	const { doc: verifyDoc } = await verifyResponse.json();
-
-	expect(verifyDoc.contributors).toHaveLength(1);
-	expect(verifyDoc.contributors[0].id).toBe(adminUserId);
-});
-
-test('Should handle localized relations', async ({ request }) => {
-	// First set FR locale
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			ambassadors: [adminUserId],
-			locale: 'fr'
-		}
-	});
-
-	// Then set EN locale
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			ambassadors: [editor2Id],
-			locale: 'en'
-		}
-	});
-
-	const responseEN = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
-	const { doc: docEN } = await responseEN.json();
-	const responseFR = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
-	const { doc: docFR } = await responseFR.json();
-
-	expect(docEN.ambassadors).toHaveLength(1);
-	expect(docEN.ambassadors[0].id).toBe(editor2Id);
-	expect(docFR.ambassadors).toHaveLength(1);
-	expect(docFR.ambassadors[0].id).toBe(adminUserId);
-});
-
-test('Should handle multiple locales with different relations', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
-		headers: { Authorization: `Bearer ${token}` },
-		data: {
-			ambassadors: adminUserId,
-			locale: 'fr'
-		}
-	});
-
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: { Authorization: `Bearer ${token}` },
-		data: {
-			ambassadors: [editor2Id],
-			locale: 'en'
-		}
-	});
-
-	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
-	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
-
-	const { doc: frDoc } = await frResponse.json();
-	const { doc: enDoc } = await enResponse.json();
-
-	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
-	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
-});
-
-test('Should handle mixed localized and non-localized updates', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: { Authorization: `Bearer ${token}` },
-		data: {
-			ambassadors: [editor2Id],
-			contributors: [adminUserId],
-			locale: 'en'
-		}
-	});
-
-	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
-	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
-
-	const { doc: enDoc } = await enResponse.json();
-	const { doc: frDoc } = await frResponse.json();
-
-	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
-	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
-	expect(enDoc.contributors[0].id).toBe(adminUserId);
-	expect(frDoc.contributors[0].id).toBe(adminUserId);
-});
-
-test('Should handle emptying relations in specific locale', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: { Authorization: `Bearer ${token}` },
-		data: {
-			ambassadors: [],
-			locale: 'en'
-		}
-	});
-
-	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
-	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
-
-	const { doc: enDoc } = await enResponse.json();
-	const { doc: frDoc } = await frResponse.json();
-
-	expect(enDoc.ambassadors).toHaveLength(0);
-	expect(frDoc.ambassadors).toHaveLength(1);
-	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
-});
-
-test('Should handle updates with missing locale', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: { Authorization: `Bearer ${token}` },
-		data: {
-			contributors: [editor2Id]
-		}
-	});
-
-	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
-	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
-
-	const { doc: enDoc } = await enResponse.json();
-	const { doc: frDoc } = await frResponse.json();
-
-	expect(enDoc.contributors[0].id).toBe(editor2Id);
-	expect(frDoc.contributors[0].id).toBe(editor2Id);
-});
-
-test('Should delete test page', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
-	expect(response.status()).toBe(200);
-});
-
-//////////////////////////////////////////////
-// Editor access
-//////////////////////////////////////////////
-
-test('Should logout admin user', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-		.then((r) => r.json());
-
-	expect(response).toBe('successfully logout');
-});
-
-test('Should login editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
-		data: {
-			email: 'editor@bienoubien.com',
-			password: 'a&1Aa&1A'
-		}
-	});
-
-	const status = response.status();
-	expect(status).toBe(200);
-	const headerToken = response.headers()['set-auth-token'];
-	expect(headerToken).toBeDefined();
-	token = headerToken;
-});
-
-test('Editor should not update admin password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${adminUserId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			password: 'a&1Aa&1A'
-		}
-	});
-	expect(response.status()).toBe(403);
-});
-
-test('Editor should not create a page', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			attributes: {
-				title: 'Page that will not be created',
-				slug: 'page-that-will-not-be-created'
-			}
-		}
-	});
-	expect(response.status()).toBe(403);
-});
-
-test('Editor should update home', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			attributes: {
-				title: 'Home edited by editor'
-			}
-		}
-	});
-	expect(response.status()).toBe(200);
-	const data = await response.json();
-	expect(data.doc.attributes.title).toBe('Home edited by editor');
-});
-
-//////////////////////////////////////////////
-// Auth Lock
-//////////////////////////////////////////////
-
-test('Should logout editor', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-		.then((r) => r.json());
-
-	expect(response).toBe('successfully logout');
-});
-
-test('Should lock user', async ({ request }) => {
-	for (let i = 0; i < 4; i++) {
-		const response = await request.post(`${API_BASE_URL}/users/login`, {
-			data: {
-				email: 'editor@bienoubien.com',
-				password: 'fooooooooooo'
-			}
-		});
-		expect(response.status()).toBe(400);
-	}
-
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
-		data: {
-			email: 'editor@bienoubien.com',
-			password: 'fooooooooooo'
-		}
-	});
-	expect(response.status()).toBe(403);
-});
+// test('Should return home (draft)', async ({ request }) => {
+// 	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
+// 	const response = await request.get(url).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(1);
+// 	expect(response.docs[0].attributes.title).toBe('Accueil');
+// });
+
+// test('Should return the page (published)', async ({ request }) => {
+// 	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
+// 	const response = await request.get(url).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(1);
+// 	expect(response.docs[0].attributes.title).toBe('Page');
+// });
+
+// let pageWithAuthorId: string;
+// test('Should create an other page with author', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/pages`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: {
+// 				title: 'Page 2',
+// 				slug: 'page-2',
+// 				author: adminUserId
+// 			}
+// 		}
+// 	});
+// 	const { doc } = await response.json();
+// 	expect(doc.attributes.title).toBe('Page 2');
+// 	expect(doc.attributes.slug).toBe('page-2');
+// 	expect(doc.locale).toBe('fr');
+// 	expect(doc.id).toBeDefined();
+// 	pageWithAuthorId = doc.id;
+// });
+
+// test('Should return last created page with author depth', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/pages/${pageWithAuthorId}?depth=1`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	const { doc } = await response.json();
+// 	expect(doc.attributes.title).toBe('Page 2');
+// 	expect(doc.attributes.slug).toBe('page-2');
+// 	expect(doc.attributes.author).toBeDefined();
+// 	expect(doc.attributes.author.at(0).name).toBe('Admin');
+// });
+
+// test('Should return Page 2 (query)', async ({ request }) => {
+// 	const qs = `where[and][0][author][in_array]=${adminUserId}&where[and][1][slug][equals]=page-2&locale=en`;
+// 	const url = `${API_BASE_URL}/pages?${qs}`;
+// 	const response = await request.get(url).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(1);
+// 	expect(response.docs[0].attributes.title).toBe('Page 2');
+// 	expect(response.docs[0].locale).toBe('en');
+// });
+
+// test('Should delete page', async ({ request }) => {
+// 	const response = await request.delete(`${API_BASE_URL}/pages/${pageId}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// });
+
+// test('Should return 2 page', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/pages`).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(2);
+// });
+
+// //////////////////////////////////////////////
+// // AUTH Collection
+// //////////////////////////////////////////////
+
+// let editorId: string;
+
+// test('Should create a user editor', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/users`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			email: 'editor@bienoubien.com',
+// 			name: 'Chesster',
+// 			roles: ['editor'],
+// 			password: 'a&1Aa&1A'
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const data = await response.json();
+// 	expect(data.doc).toBeDefined();
+// 	expect(data.doc.id).toBeDefined();
+// 	editorId = data.doc.id;
+// });
+
+// test('Should logout user', async ({ request }) => {
+// 	const response = await request
+// 		.post(`${API_BASE_URL}/users/logout`, {
+// 			headers: {
+// 				Authorization: `Bearer ${token}`
+// 			}
+// 		})
+// 		.then((r) => r.json());
+
+// 	expect(response).toBe('successfully logout');
+// });
+
+// test('Should not update Home', async ({ request }) => {
+// 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: {
+// 				title: 'Accueil',
+// 				slug: 'accueil'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });
+
+// test('Should not delete home', async ({ request }) => {
+// 	const response = await request.delete(`${API_BASE_URL}/pages/${homeId}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });
+
+// test('Should not create a page', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/pages`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: {
+// 				title: 'Page 3',
+// 				slug: 'page-3'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });
+
+// //////////////////////////////////////////////
+// // Area
+// //////////////////////////////////////////////
+
+// test('Login should be successfull (again)', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/users/login`, {
+// 		data: {
+// 			email: 'admin@bienoubien.studio',
+// 			password: 'a&1Aa&1A'
+// 		}
+// 	});
+
+// 	const headerToken = response.headers()['set-auth-token'];
+// 	expect(headerToken).toBeDefined();
+// 	token = headerToken;
+// });
+
+// test('Should get settings', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/settings`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// });
+
+// test('Should update settings', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/settings`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			maintenance: true,
+// 			legalMention: 'mentions légales'
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const { doc } = await response.json();
+// 	expect(doc.legalMention).toBe('mentions légales');
+// });
+
+// test('Should update settings EN', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/settings?locale=en`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			legalMention: 'legals'
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const { doc } = await response.json();
+// 	expect(doc.legalMention).toBe('legals');
+// });
+
+// test('Should get settings FR with still FR data', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/settings?locale=fr`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const { doc } = await response.json();
+// 	expect(doc.legalMention).toBe('mentions légales');
+// });
+
+// test('Should update infos', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/infos`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			instagram: '@fooo',
+// 			legals: {
+// 				label: 'Google',
+// 				type: 'url',
+// 				link: 'http://google.fr',
+// 				target: '_self'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const { doc } = await response.json();
+// 	expect(doc.legals).toBeDefined();
+// 	expect(doc.legals.type).toBe('url');
+// 	expect(doc.legals.link).toBe('http://google.fr');
+// });
+
+// test('Should update infos EN', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/infos?locale=en`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			legals: {
+// 				label: 'Google-en',
+// 				type: 'url',
+// 				link: 'http://google.com',
+// 				target: '_blank'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const { doc } = await response.json();
+// 	expect(doc.legals).toBeDefined();
+// 	expect(doc.legals.label).toBe('Google-en');
+// 	expect(doc.legals.link).toBe('http://google.com');
+// });
+
+// test('Should get infos FR', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
+// 	expect(response.doc.legals).toBeDefined();
+// 	expect(response.doc.legals.link).toBe('http://google.fr');
+// 	expect(response.doc.legals.label).toBe('Google');
+// });
+
+// test('Should get infos EN', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/infos?locale=en`).then((r) => r.json());
+// 	expect(response.doc.legals).toBeDefined();
+// 	expect(response.doc.legals.link).toBe('http://google.com');
+// 	expect(response.doc.legals.label).toBe('Google-en');
+// });
+
+// test('Should not get settings', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/settings`);
+// 	expect(response.status()).toBe(403);
+// });
+
+// test('Should get informations', async ({ request }) => {
+// 	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
+// 	expect(response.doc.instagram).toBe('@fooo');
+// });
+
+// /////////////////////////////////////////////
+// // Relations
+// //////////////////////////////////////////////
+
+// let page2Id: string;
+// let editor2Id: string;
+
+// test('Should create editor user for testing', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/users`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			email: 'editor2@bienoubien.com',
+// 			name: 'Editor2',
+// 			roles: ['editor'],
+// 			password: 'a&1Aa&1A'
+// 		}
+// 	});
+// 	const { doc } = await response.json();
+// 	editor2Id = doc.id;
+// 	expect(doc.name).toBe('Editor2');
+// });
+
+// test('Should create page with multiple relations', async ({ request }) => {
+// 	const payload = {
+// 		attributes: {
+// 			title: 'Relations Test',
+// 			slug: 'relations-test',
+// 			author: [adminUserId],
+// 			contributors: [adminUserId, editor2Id],
+// 			ambassadors: [editor2Id]
+// 		}
+// 	};
+
+// 	const response = await request.post(`${API_BASE_URL}/pages`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: payload
+// 	});
+
+// 	const { doc } = await response.json();
+// 	page2Id = doc.id;
+
+// 	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+// 	const { doc: verifyDoc } = await verifyResponse.json();
+
+// 	expect(verifyDoc.attributes.title).toBe('Relations Test');
+// 	expect(verifyDoc.attributes.author).toBeDefined();
+// 	expect(verifyDoc.attributes.contributors).toBeDefined();
+// 	expect(verifyDoc.attributes.ambassadors).toBeDefined();
+// 	expect(verifyDoc.attributes.author).toHaveLength(1);
+// 	expect(verifyDoc.attributes.ambassadors).toHaveLength(1);
+// 	expect(verifyDoc.attributes.contributors).toHaveLength(2);
+// });
+
+// test('Should empty author relation', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: { author: [] }
+// 		}
+// 	});
+
+// 	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+// 	const { doc: verifyDoc } = await verifyResponse.json();
+
+// 	expect(verifyDoc.attributes.author).toHaveLength(0);
+// 	expect(verifyDoc.attributes.contributors).toHaveLength(2);
+// 	expect(verifyDoc.attributes.ambassadors).toHaveLength(1);
+// });
+
+// test('Should reduce contributors array', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: { contributors: [adminUserId] }
+// 		}
+// 	});
+
+// 	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
+// 	const { doc: verifyDoc } = await verifyResponse.json();
+
+// 	expect(verifyDoc.attributes.contributors).toHaveLength(1);
+// 	expect(verifyDoc.attributes.contributors[0].id).toBe(adminUserId);
+// });
+
+// test('Should handle localized relations', async ({ request }) => {
+// 	// First set FR locale
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: { ambassadors: [adminUserId] },
+// 			locale: 'fr'
+// 		}
+// 	});
+
+// 	// Then set EN locale
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: { ambassadors: [editor2Id] },
+// 			locale: 'en'
+// 		}
+// 	});
+
+// 	const responseEN = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+// 	const { doc: docEN } = await responseEN.json();
+// 	const responseFR = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+// 	const { doc: docFR } = await responseFR.json();
+
+// 	expect(docEN.attributes.ambassadors).toHaveLength(1);
+// 	expect(docEN.attributes.ambassadors[0].id).toBe(editor2Id);
+// 	expect(docFR.attributes.ambassadors).toHaveLength(1);
+// 	expect(docFR.attributes.ambassadors[0].id).toBe(adminUserId);
+// });
+
+// test('Should handle multiple locales with different relations', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		data: {
+// 			ambassadors: adminUserId,
+// 			locale: 'fr'
+// 		}
+// 	});
+
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		data: {
+// 			ambassadors: [editor2Id],
+// 			locale: 'en'
+// 		}
+// 	});
+
+// 	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+// 	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+
+// 	const { doc: frDoc } = await frResponse.json();
+// 	const { doc: enDoc } = await enResponse.json();
+
+// 	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+// 	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
+// });
+
+// test('Should handle mixed localized and non-localized updates', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		data: {
+// 			ambassadors: [editor2Id],
+// 			contributors: [adminUserId],
+// 			locale: 'en'
+// 		}
+// 	});
+
+// 	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+// 	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+// 	const { doc: enDoc } = await enResponse.json();
+// 	const { doc: frDoc } = await frResponse.json();
+
+// 	expect(enDoc.ambassadors[0].id).toBe(editor2Id);
+// 	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+// 	expect(enDoc.contributors[0].id).toBe(adminUserId);
+// 	expect(frDoc.contributors[0].id).toBe(adminUserId);
+// });
+
+// test('Should handle emptying relations in specific locale', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		data: {
+// 			ambassadors: [],
+// 			locale: 'en'
+// 		}
+// 	});
+
+// 	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+// 	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+// 	const { doc: enDoc } = await enResponse.json();
+// 	const { doc: frDoc } = await frResponse.json();
+
+// 	expect(enDoc.ambassadors).toHaveLength(0);
+// 	expect(frDoc.ambassadors).toHaveLength(1);
+// 	expect(frDoc.ambassadors[0].id).toBe(adminUserId);
+// });
+
+// test('Should handle updates with missing locale', async ({ request }) => {
+// 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		data: {
+// 			contributors: [editor2Id]
+// 		}
+// 	});
+
+// 	const enResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=en&depth=1`);
+// 	const frResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?locale=fr&depth=1`);
+
+// 	const { doc: enDoc } = await enResponse.json();
+// 	const { doc: frDoc } = await frResponse.json();
+
+// 	expect(enDoc.contributors[0].id).toBe(editor2Id);
+// 	expect(frDoc.contributors[0].id).toBe(editor2Id);
+// });
+
+// test('Should delete test page', async ({ request }) => {
+// 	const response = await request.delete(`${API_BASE_URL}/pages/${page2Id}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// });
+
+// //////////////////////////////////////////////
+// // Editor access
+// //////////////////////////////////////////////
+
+// test('Should logout admin user', async ({ request }) => {
+// 	const response = await request
+// 		.post(`${API_BASE_URL}/users/logout`, {
+// 			headers: {
+// 				Authorization: `Bearer ${token}`
+// 			}
+// 		})
+// 		.then((r) => r.json());
+
+// 	expect(response).toBe('successfully logout');
+// });
+
+// test('Should login editor', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/users/login`, {
+// 		data: {
+// 			email: 'editor@bienoubien.com',
+// 			password: 'a&1Aa&1A'
+// 		}
+// 	});
+
+// 	const status = response.status();
+// 	expect(status).toBe(200);
+// 	const headerToken = response.headers()['set-auth-token'];
+// 	expect(headerToken).toBeDefined();
+// 	token = headerToken;
+// });
+
+// test('Editor should not update admin password', async ({ request }) => {
+// 	const response = await request.patch(`${API_BASE_URL}/users/${adminUserId}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			password: 'a&1Aa&1A'
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });
+
+// test('Editor should not create a page', async ({ request }) => {
+// 	const response = await request.post(`${API_BASE_URL}/pages`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: {
+// 				title: 'Page that will not be created',
+// 				slug: 'page-that-will-not-be-created'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });
+
+// test('Editor should update home', async ({ request }) => {
+// 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`
+// 		},
+// 		data: {
+// 			attributes: {
+// 				title: 'Home edited by editor'
+// 			}
+// 		}
+// 	});
+// 	expect(response.status()).toBe(200);
+// 	const data = await response.json();
+// 	expect(data.doc.attributes.title).toBe('Home edited by editor');
+// });
+
+// //////////////////////////////////////////////
+// // Auth Lock
+// //////////////////////////////////////////////
+
+// test('Should logout editor', async ({ request }) => {
+// 	const response = await request
+// 		.post(`${API_BASE_URL}/users/logout`, {
+// 			headers: {
+// 				Authorization: `Bearer ${token}`
+// 			}
+// 		})
+// 		.then((r) => r.json());
+
+// 	expect(response).toBe('successfully logout');
+// });
+
+// test('Should lock user', async ({ request }) => {
+// 	for (let i = 0; i < 4; i++) {
+// 		const response = await request.post(`${API_BASE_URL}/users/login`, {
+// 			data: {
+// 				email: 'editor@bienoubien.com',
+// 				password: 'fooooooooooo'
+// 			}
+// 		});
+// 		expect(response.status()).toBe(400);
+// 	}
+
+// 	const response = await request.post(`${API_BASE_URL}/users/login`, {
+// 		data: {
+// 			email: 'editor@bienoubien.com',
+// 			password: 'fooooooooooo'
+// 		}
+// 	});
+// 	expect(response.status()).toBe(403);
+// });

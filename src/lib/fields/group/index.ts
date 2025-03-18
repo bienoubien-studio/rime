@@ -18,10 +18,20 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 		this.field.label = label;
 		return this;
 	}
+
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = fields;
 		return this;
 	}
+
+	toType() {
+		const fieldsTypes = this.field.fields
+			.filter(field => field instanceof FormFieldBuilder)
+			.map(field => field.toType())
+			.join(',\n\t');
+		return `${this.field.name}: {${fieldsTypes}}`;
+	}
+
 	compile() {
 		return { ...this.field, fields: this.field.fields.map((f) => f.compile()) };
 	}
@@ -52,7 +62,7 @@ export type GroupFieldRaw = FormField & {
 //////////////////////////////////////////////
 declare module 'rizom' {
 	interface RegisterFieldsType {
-		group: any;
+		group: Record<string, any>;
 	}
 	interface RegisterFields {
 		GroupField: GroupField;

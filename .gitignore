@@ -30,15 +30,14 @@ vite.config.ts.timestamp-*
 db/*
 static
 src/hooks.server.ts
-src/config
+# src/config
 src/routes
 drizzle.config.ts
 src/app.generated.d.ts
 rizom.config.browser.js
-src/lib/server/schema.ts
+# src/lib/server/schema.ts
 src/routes/(rizom)
 static/medias
-src/config
 test-results
 pnpm-lock.yaml
 

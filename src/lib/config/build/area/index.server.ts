@@ -6,7 +6,7 @@ export const buildArea = (area: Area<any>): BuiltArea => {
 
 	return {
 		...area,
-		asTitle: fieldTitle ? fieldTitle.name : 'id',
+		asTitle: fieldTitle ? fieldTitle.path : 'id',
 		type: 'area'
 	} as BuiltArea;
 };

@@ -18,9 +18,10 @@ import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
 import { clearLog, logToFile } from '../../../log.js';
+import type { DeepPartial } from 'rizom/types/util.js';
 
 type Args<T> = {
-	data: Partial<T>;
+	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
 	api: LocalAPI;
@@ -73,6 +74,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	for (const hook of config.hooks?.beforeCreate || []) {
 		const result = await hook({
+			//@ts-ignore
 			data,
 			config,
 			operation: 'create',
@@ -83,7 +85,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		data = result.data as Partial<T>;
 	}
 
-	const incomingPaths = Object.keys(data);
+	const incomingPaths = Object.keys(configMap);
 
 	const createdId = await adapter.collection.insert({
 		slug: config.slug,
@@ -125,21 +127,25 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	let document = (await api.collection(config.slug).findById({ id: createdId, locale })) as T;
 
-	const locales = event.locals.rizom.config.getLocalesCodes();
-	if (locales.length) {
-		if ('file' in incomingData) {
-			delete incomingData.file;
+	if (locale) {
+		const locales = event.locals.rizom.config.getLocalesCodes();
+		if (locales.length) {
+			if ('file' in incomingData) {
+				delete incomingData.file;
+			}
+			if ('filename' in incomingData) {
+				delete incomingData.filename;
+			}
+			const otherLocales = locales.filter((code) => code !== locale);
+			for (const otherLocale of otherLocales) {
+				api.enforceLocale(otherLocale);
+				await api
+					.collection(config.slug)
+					//@ts-ignore
+					.updateById({ id: createdId, data: incomingData, locale: otherLocale });
+			}
 		}
-		if ('filename' in incomingData) {
-			delete incomingData.filename;
-		}
-		const otherLocales = locales.filter((code) => code !== locale);
-		for (const otherLocale of otherLocales) {
-			api.enforceLocale(otherLocale);
-			await api
-				.collection(config.slug)
-				.updateById({ id: createdId, data: incomingData, locale: otherLocale });
-		}
+		api.enforceLocale(locale);
 	}
 
 	for (const hook of config.hooks?.afterCreate || []) {

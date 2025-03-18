@@ -17,6 +17,7 @@ import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
 import type { Adapter } from 'rizom/sqlite/index.server.js';
 import type { LocalAPI } from './index.server.js';
+import type { DeepPartial } from 'rizom/types/util.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -94,6 +95,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
 				'find',
 				this.config.slug,
+				this.#event.locals.user?.roles.join(',') || 'no-user',
 				sort,
 				depth,
 				limit,
@@ -217,6 +219,6 @@ type FindByIdArgs = {
 
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
-	data: Partial<T>;
+	data: DeepPartial<T>;
 	locale?: string;
 };

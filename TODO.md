@@ -16,6 +16,7 @@
 [v] navigation group icons
 [ ] Group/Tabs as object on document
 [ ] basic real life config preset
+[ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests
 

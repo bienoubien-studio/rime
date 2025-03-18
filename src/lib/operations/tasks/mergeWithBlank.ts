@@ -2,12 +2,13 @@ import type { CompiledCollection, GenericDoc } from 'rizom/types';
 import { isUploadConfig } from 'rizom/util/config.js';
 import deepmerge from 'deepmerge';
 import { createBlankDocument } from 'rizom/util/doc';
+import type { DeepPartial } from 'rizom/types/util';
 
 export const mergeWithBlankDocument = <T extends GenericDoc>({
 	data,
 	config
 }: {
-	data: Partial<T>;
+	data: DeepPartial<T>;
 	config: CompiledCollection;
 }): T => {
 	let file;
@@ -16,24 +17,7 @@ export const mergeWithBlankDocument = <T extends GenericDoc>({
 		delete data.file;
 	}
 
-	// Configure deepmerge to preserve tab structure
-	const options = {
-		clone: true,
-		// Only merge arrays if they are at the root level or in specific fields that should be merged
-		arrayMerge: (target: any[], source: any[], options: any) => {
-			// For fields like blocks, relations, etc. that should be merged
-			if (Array.isArray(source)) {
-				return source;
-			}
-			return target;
-		}
-	};
-
-	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(
-		createBlankDocument(config),
-		data,
-		options
-	);
+	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
 
 	// Add file after merge
 	if (file) {

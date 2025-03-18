@@ -198,8 +198,8 @@ export const databaseTransformInterface = ({
 							relation.relationTo = key.replace('Id', '');
 							relation.relationId = relation[key];
 							delete relation[key];
-			}
-		}
+						}
+					}
 					if (!isPanel) {
 						delete relation.position;
 						delete relation.parentId;

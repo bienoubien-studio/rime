@@ -6,10 +6,10 @@ import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from 'rizom/types/doc.js';
 import type { OperationQuery } from 'rizom/types/api.js';
-import type { Dic } from 'rizom/types/util.js';
+import type { DeepPartial, Dic } from 'rizom/types/util.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { transformKeysToSchema, transformDataToSchema } from '../util/path.js';
+import { transformDataToSchema } from '../util/path.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -23,7 +23,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	const findAll: FindAll = async ({ slug, sort, limit, locale }) => {
 		const withParam = buildWithParam({ slug, locale });
 		const orderBy = buildOrderByParam({ tables, slug, by: sort });
-		// @ts-expect-error suck
+		// @ts-expect-error todo
 		const rawDocs = await db.query[slug].findMany({
 			with: withParam,
 			limit: limit || undefined,
@@ -179,11 +179,13 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 			limit: limit || undefined
 		};
 
-		// Remove undefined properties
+		// Remove undefined properties, why ?
 		Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
 		// @ts-expect-error todo
-		return await db.query[slug].findMany(params);
+		const result = await db.query[slug].findMany(params);
+		console.log(result);
+		return result;
 	};
 
 	return {
@@ -225,7 +227,7 @@ type DeleteById = (args: { slug: PrototypeSlug; id: string }) => Promise<string 
 
 type Insert = (args: {
 	slug: PrototypeSlug;
-	data: Partial<GenericDoc>;
+	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<string>;
 

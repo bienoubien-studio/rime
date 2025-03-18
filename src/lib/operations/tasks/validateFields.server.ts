@@ -9,9 +9,10 @@ import type {
 } from 'rizom/types';
 import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
+import type { DeepPartial } from 'rizom/types/util';
 
 export const validateFields = async <T extends GenericDoc>(args: {
-	data: Partial<T>;
+	data: DeepPartial<T>;
 	api: LocalAPI;
 	locale?: string;
 	config: CompiledArea | CompiledCollection;

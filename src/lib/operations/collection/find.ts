@@ -11,6 +11,8 @@ import { RizomError } from 'rizom/errors';
 import { transformDocument } from '../tasks/transformDocument.server';
 import type { RawDoc } from 'rizom/types/doc';
 import type { LocalAPI } from '../localAPI/index.server';
+import { buildConfigMap } from '../tasks/configMap/index.server';
+import { logToFile } from '../../../log';
 
 type FindArgs = {
 	query: OperationQuery;
@@ -32,6 +34,8 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
+
+	logToFile(config.fields);
 
 	let documentsRaw = await adapter.collection.query({
 		slug: config.slug,

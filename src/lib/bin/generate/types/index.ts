@@ -2,12 +2,13 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
-import { isBlocksField, isGroupField, isTabsField } from 'rizom/util/field.js';
-import type { AnyField, Field } from 'rizom/types/fields.js';
+import { isBlocksField } from 'rizom/util/field.js';
+import type { Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
 import { isUploadConfig } from 'rizom/util/config.js';
+import { TabsBuilder } from 'rizom/fields/tabs/index.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
@@ -90,18 +91,7 @@ export function generateTypesString(config: BuiltConfig) {
 						strFields.push(`${field.raw.name}: Array<${blockNames.join(' | ')}>,`);
 					}
 					break;
-				case isGroupField(field.raw): {
-					const templates = convertFieldsToTypesTemplates(field.raw.fields);
-					strFields = [...strFields, ...templates];
-					break;
-				}
-				case isTabsField(field.raw):
-					for (const tab of field.raw.tabs) {
-						const templates = convertFieldsToTypesTemplates(tab.raw.fields);
-						strFields = [...strFields, ...templates];
-					}
-					break;
-				case field instanceof FormFieldBuilder:
+				case field instanceof FormFieldBuilder || field instanceof TabsBuilder:
 					if (field.type === 'richText') {
 						addImport('RichTextNode');
 					}

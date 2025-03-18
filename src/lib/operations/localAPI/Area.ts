@@ -7,6 +7,7 @@ import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
 import type { FormErrors } from 'rizom/types/panel.js';
 import type { LocalAPI } from './index.server.js';
+import type { DeepPartial } from 'rizom/types/util.js';
 
 type Args = {
 	config: CompiledArea;
@@ -65,7 +66,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return find<Doc>(params);
 	}
 
-	update(args: { data: Partial<Doc>; locale?: string }): Promise<Doc> {
+	update(args: { data: DeepPartial<Doc>; locale?: string }): Promise<Doc> {
 		return update<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),

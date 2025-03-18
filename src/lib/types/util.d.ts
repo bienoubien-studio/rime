@@ -26,6 +26,10 @@ type WithUpload<T extends { upload?: boolean }> = T & {
 	out: 'jpeg' | 'webp';
 };
 
+type DeepPartial<T> = {
+	[P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 type WithRelationPopulated<T> = {
 	[K in keyof T]: NonNullable<T[K]> extends RelationValue<infer U>
 		? T[K] extends undefined
