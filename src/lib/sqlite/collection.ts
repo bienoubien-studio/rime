@@ -9,6 +9,7 @@ import type { OperationQuery } from 'rizom/types/api.js';
 import type { Dic } from 'rizom/types/util.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import { transformKeysToSchema, transformDataToSchema } from '../util/path.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -67,30 +68,36 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	const insert: Insert = async ({ slug, data, locale }) => {
 		const createId = generatePK();
 		const tableLocales = `${slug}Locales` as PrototypeSlug;
-		if (locale && tableLocales in tables) {
-			const unlocalizedColumns = Object.keys(getTableColumns(tables[slug])) as (keyof GenericDoc)[];
 
-			const localizedColumns = Object.keys(
-				getTableColumns(tables[tableLocales])
-			) as (keyof GenericDoc)[];
+		if (locale && tableLocales in tables) {
+			// Transform data based on table columns
+			const unlocalizedColumns = getTableColumns(tables[slug]);
+			const localizedColumns = getTableColumns(tables[tableLocales]);
+
+			const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
+			const localizedData = transformDataToSchema(data, localizedColumns);
 
 			await db.insert(tables[slug]).values({
-				...pick(unlocalizedColumns, data),
+				...unlocalizedData,
 				id: createId,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			});
 
 			await db.insert(tables[tableLocales]).values({
-				...pick(localizedColumns, data),
+				...localizedData,
 				id: generatePK(),
 				parentId: createId,
 				locale
 			});
 		} else {
+			// Transform all data based on main table columns
+			const columns = getTableColumns(tables[slug]);
+			const schemaData = transformDataToSchema(data, columns);
+
 			await db.insert(tables[slug]).values({
 				id: createId,
-				...data,
+				...schemaData,
 				createdAt: new Date(),
 				updatedAt: new Date()
 			});
@@ -102,42 +109,60 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	// Update a document
 	//////////////////////////////////////////////
 	const update: Update = async ({ slug, id, data, locale }) => {
-		const columns = Object.keys(getTableColumns(tables[slug]));
-		const values = pick(columns, data);
-
-		await db
-			.update(tables[slug])
-			.set({
-				...values,
-				updatedAt: new Date()
-			})
-			.where(eq(tables[slug].id, id));
-
 		const keyTableLocales = `${slug}Locales` as PrototypeSlug;
+
 		if (locale && keyTableLocales in tables) {
-			const tableLocales = tables[keyTableLocales];
-			const localizedColumns = Object.keys(getTableColumns(tableLocales));
-			const localizedValues = pick(localizedColumns, data);
+			const unlocalizedColumns = getTableColumns(tables[slug]);
+			const localizedColumns = getTableColumns(tables[keyTableLocales]);
 
-			if (!Object.keys(localizedValues).length) return;
+			const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
+			const localizedData = transformDataToSchema(data, localizedColumns);
 
-			// @ts-expect-error todo
-			const localizedRow = await db.query[keyTableLocales].findFirst({
-				where: and(eq(tableLocales.parentId, id), eq(tableLocales.locale, locale))
-			});
-
-			if (!localizedRow) {
-				await db.insert(tableLocales).values({
-					...localizedValues,
-					id: generatePK(),
-					locale: locale,
-					parentId: id
-				});
-			} else {
+			// Update main table
+			if (Object.keys(unlocalizedData).length) {
 				await db
-					.update(tableLocales)
-					.set(localizedValues)
-					.where(eq(tableLocales.id, localizedRow.id));
+					.update(tables[slug])
+					.set({
+						...unlocalizedData,
+						updatedAt: new Date()
+					})
+					.where(eq(tables[slug].id, id));
+			}
+
+			// Update locales table
+			if (Object.keys(localizedData).length) {
+				const tableLocales = tables[keyTableLocales];
+				// @ts-expect-error todo
+				const localizedRow = await db.query[keyTableLocales].findFirst({
+					where: and(eq(tableLocales.parentId, id), eq(tableLocales.locale, locale))
+				});
+
+				if (!localizedRow) {
+					await db.insert(tableLocales).values({
+						...localizedData,
+						id: generatePK(),
+						locale: locale,
+						parentId: id
+					});
+				} else {
+					await db
+						.update(tableLocales)
+						.set(localizedData)
+						.where(eq(tableLocales.id, localizedRow.id));
+				}
+			}
+		} else {
+			const columns = getTableColumns(tables[slug]);
+			const schemaData = transformDataToSchema(data, columns);
+
+			if (Object.keys(schemaData).length) {
+				await db
+					.update(tables[slug])
+					.set({
+						...schemaData,
+						updatedAt: new Date()
+					})
+					.where(eq(tables[slug].id, id));
 			}
 		}
 		return id;

@@ -10,7 +10,8 @@ import {
 	block,
 	link,
 	email,
-	select
+	select,
+	group
 } from 'rizom/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import {
@@ -34,6 +35,11 @@ const tabAttributes = tab('Attributes').fields(
 	slug('slug').slugify('title'),
 	toggle('isHome').label('Homepage'),
 	relation('thumbnail').to('medias'),
+	group('hero').fields(
+		text('title').isTitle().required(),
+		text('intro'),
+		relation('image').to('medias')
+	),
 	richText('intro'),
 	relation('parent')
 		.to('pages')

@@ -171,7 +171,7 @@ const tabHero = tab('hero').fields(
 	richText('intro').marks('bold').nodes(false)
 );
 
-const tabAttributes = tab('Attributes').fields(
+const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	toggle('home').table({ position: 2, sort: true }).live(false),
 	slug('slug')
@@ -188,16 +188,16 @@ const tabAttributes = tab('Attributes').fields(
 	date('published')
 );
 
-const tabContent = tab('Layout').fields(
+const tabContent = tab('layout').fields(
 	blocks('components', [blockParagraph, blockSlider, blockImage]).table()
 );
 
-const tabSeo = tab('Seo').fields(
+const tabSeo = tab('seo').fields(
 	text('metaTitle').localized(),
 	text('metaDescription').localized()
 );
 
-const tabFooter = tab('Footer').fields(text('slider').localized());
+const tabFooter = tab('footer').fields(text('slider').localized());
 
 const Pages = collection('pages', {
 	icon: Newspaper,

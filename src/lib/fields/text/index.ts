@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
-import { capitalize, toSnakeCase } from 'rizom/util/string.js';
+import { capitalize, toPascalCase, toSnakeCase } from 'rizom/util/string.js';
 import snakeCase from 'to-snake-case';
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
@@ -19,10 +19,10 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		return null;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		return `${this.field.name}: text('${snake_name}')${suffix}`;
+		return `${camel}: text('${snake}')${suffix}`;
 	}
 
 	toType() {

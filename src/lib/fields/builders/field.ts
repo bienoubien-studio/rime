@@ -10,6 +10,8 @@ import type {
 } from 'rizom/types/fields';
 import type { Dic, WithoutBuilders } from 'rizom/types/util';
 import type { Component } from 'svelte';
+import { toPascalCase, toSnakeCase } from 'rizom/util/string.js';
+import { toCamelCase } from 'drizzle-orm/casing';
 
 export class FieldBuilder<T extends Field = Field> {
 	field: T;
@@ -76,7 +78,22 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return '';
 	}
 
-	toSchema() {
+	protected getSchemaName(parentPath?: string) {
+		const name = parentPath ? `${parentPath}__${this.field.name}` : this.field.name;
+
+		return {
+			camel: name
+				.split('__')
+				.map((part) => toCamelCase(part))
+				.join('__'),
+			snake: name
+				.split('__')
+				.map((part) => toSnakeCase(part))
+				.join('__')
+		};
+	}
+
+	toSchema(parentPath?: string): string {
 		console.log(this.field.type + ' missing toSchema not implementated');
 		return '';
 	}

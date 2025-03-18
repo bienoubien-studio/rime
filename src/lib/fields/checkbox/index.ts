@@ -1,15 +1,16 @@
 import type { FormField } from 'rizom/types/fields.js';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Checkbox from './component/Checkbox.svelte';
-import { toSnakeCase } from 'rizom/util/string.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
 	get component() {
 		return Checkbox;
 	}
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
-		return `${this.field.name}: integer('${snake_name}', { mode : 'boolean' })`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: integer('${snake}', { mode: 'boolean' })${suffix}`;
 	}
 	toType() {
 		return `${this.field.name}: boolean`;
@@ -34,6 +35,6 @@ declare module 'rizom' {
 		checkbox: any;
 	}
 	interface RegisterFormFields {
-		CheckboxField: CheckboxField; // register the field type
+		CheckboxField: CheckboxField;
 	}
 }

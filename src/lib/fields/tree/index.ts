@@ -37,6 +37,12 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		return `${this.field.name}: Array<{${fieldsTypes}}>`;
 	}
 
+	toSchema() {
+		const { pascal, snake } = super.getSchemaName();
+		const suffix = templateUniqueRequired(this.field);
+		return `${pascal}: text('${snake}', { mode: 'json' })${suffix}`;
+	}
+
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = [...(this.field.fields || []), ...fields];
 		return this;

@@ -54,7 +54,7 @@ export const saveRelations = async (args: {
 		locale
 	});
 
-	// console.log('incomingRelations', incomingRelations);
+	console.log('incomingRelations', incomingRelations);
 
 	// get existing relations filtered by path
 	// if not present in incoming paths don't keep it.
@@ -81,7 +81,7 @@ export const saveRelations = async (args: {
 		locale: locale
 	});
 
-	// console.log('relationsDiff', relationsDiff);
+	console.log('relationsDiff', relationsDiff);
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({

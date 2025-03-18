@@ -3,7 +3,6 @@ import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
 import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
-import { toSnakeCase } from 'rizom/util/string.js';
 
 export const date = (name: string) => new DateFieldBuilder(name);
 
@@ -34,10 +33,10 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 		return `${this.field.name}${!this.field.required ? '?' : ''}: Date`;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		return `${this.field.name}: integer('${snake_name}', { mode : 'timestamp' })${suffix}`;
+		return `${camel}: integer('${snake}', { mode : 'timestamp' })${suffix}`;
 	}
 
 	defaultValue(value: Date) {

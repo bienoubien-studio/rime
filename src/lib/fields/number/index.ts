@@ -3,6 +3,7 @@ import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
 import type { FieldValidationFunc } from 'rizom/types/fields.js';
 import { toSnakeCase } from 'rizom/util/string.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
 
@@ -33,9 +34,10 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		return `${this.field.name}${this.field.required ? '' : '?'}: number`;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
-		return `${this.field.name}: real('${snake_name}')`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: real('${snake}')${suffix}`;
 	}
 
 	defaultValue(value: number) {
@@ -64,6 +66,7 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
+
 export type NumberField = FormField & {
 	type: 'number';
 	min?: number;

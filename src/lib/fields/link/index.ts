@@ -4,7 +4,7 @@ import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/util/validate.js';
-import { toSnakeCase } from 'rizom/util/string.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale }) => {
 	const hasValue = !!value;
@@ -37,7 +37,6 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	constructor(name: string) {
 		super(name, 'link');
 		this.field.isEmpty = (value: any) => !value || !value.link;
-		this.field.defaultValue = { type: 'url', link: null, target: '_self' };
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.hooks = {
@@ -60,21 +59,22 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		return this;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
-		return `${this.field.name}: text('${snake_name}', { mode: 'json' })`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: text('${snake}')${suffix}`;
 	}
 
-	//
 	unique() {
 		this.field.unique = true;
 		return this;
 	}
+
 	defaultValue(value: string) {
 		this.field.defaultValue = value;
 		return this;
 	}
-
+	
 	types(...values: LinkType[]) {
 		this.field.types = values;
 		return this;

@@ -1,13 +1,22 @@
-import type { Field } from 'rizom/types/fields';
-import { FieldBuilder } from '../builders/index.js';
+import type { Field, FormField } from 'rizom/types/fields';
+import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
+import { isObjectLiteral } from 'rizom/util/object.js';
+import { toPascalCase } from 'rizom/util/string.js';
+import { isFormField } from 'rizom/util/field.js';
 
-export class GroupFieldBuilder extends FieldBuilder<GroupField> {
+const isEmpty = (value: unknown) =>
+	!!value === false || (isObjectLiteral(value) && Object.keys(value).length === 0);
+
+export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 	//
-	constructor(label?: string) {
-		super('group');
-		if (label) {
-			this.field.label = label;
-		}
+	constructor(name: string) {
+		super(name, 'group');
+		this.field.isEmpty = isEmpty;
+	}
+
+	label(label: string) {
+		this.field.label = label;
+		return this;
 	}
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = fields;
@@ -18,21 +27,23 @@ export class GroupFieldBuilder extends FieldBuilder<GroupField> {
 	}
 }
 
-export const group = (label?: string) => new GroupFieldBuilder(label);
+export const group = (name: string) => new GroupFieldBuilder(name);
 
 /////////////////////////////////////////////
 // Types
 //////////////////////////////////////////////
 
-export type GroupField = Field & {
+export type GroupField = FormField & {
 	type: 'group';
-	label: string;
+	name: string;
+	label?: string;
 	fields: FieldBuilder<Field>[];
 };
 
-export type GroupFieldRaw = Field & {
+export type GroupFieldRaw = FormField & {
 	type: 'group';
-	label: string;
+	name: string;
+	label?: string;
 	fields: Field[];
 };
 

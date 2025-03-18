@@ -71,15 +71,17 @@ test('Should create Home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Accueil',
-			slug: 'accueil',
+			attributes: {
+				title: 'Accueil',
+				slug: 'accueil'
+			},
 			home: true,
 			author: adminUserId
 		}
 	});
 
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Accueil');
+	expect(doc.attributes.title).toBe('Accueil');
 	expect(doc.id).toBeDefined();
 	expect(doc.home).toBe(true);
 	expect(doc.locale).toBeDefined();
@@ -94,10 +96,10 @@ test('Should create Home', async ({ request }) => {
 test('Should get Home EN with FR data', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}?locale=en`);
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Accueil');
+	expect(doc.attributes.title).toBe('Accueil');
 	expect(doc.locale).toBe('en');
 	expect(doc.status).toBe('draft');
-	expect(doc.slug).toBe('accueil');
+	expect(doc.attributes.slug).toBe('accueil');
 });
 
 test('Should set Home title/slug EN to Home/home', async ({ request }) => {
@@ -106,29 +108,31 @@ test('Should set Home title/slug EN to Home/home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Home',
-			slug: 'home'
+			attributes: {
+				title: 'Home',
+				slug: 'home'
+			}
 		}
 	});
 
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Home');
+	expect(doc.attributes.title).toBe('Home');
 	expect(doc.locale).toBe('en');
-	expect(doc.slug).toBe('home');
+	expect(doc.attributes.slug).toBe('home');
 });
 
 test('Should get Home FR with still FR data', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}?locale=fr`);
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Accueil');
-	expect(doc.slug).toBe('accueil');
+	expect(doc.attributes.title).toBe('Accueil');
+	expect(doc.attributes.slug).toBe('accueil');
 });
 
 test('Should get Home EN with EN data', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}?locale=en`);
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Home');
-	expect(doc.slug).toBe('home');
+	expect(doc.attributes.title).toBe('Home');
+	expect(doc.attributes.slug).toBe('home');
 });
 
 test('Should create a page', async ({ request }) => {
@@ -137,8 +141,10 @@ test('Should create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page',
-			slug: 'page',
+			attributes: {
+				title: 'Page',
+				slug: 'page'
+			},
 			status: 'published',
 			components: [
 				{
@@ -153,7 +159,7 @@ test('Should create a page', async ({ request }) => {
 		}
 	});
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Page');
+	expect(doc.attributes.title).toBe('Page');
 	expect(doc.locale).toBe('fr');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
@@ -168,7 +174,7 @@ test('Should return the home page', async ({ request }) => {
 		return response.json();
 	});
 	expect(response.doc).toBeDefined();
-	expect(response.doc.title).toBe('Accueil');
+	expect(response.doc.attributes.title).toBe('Accueil');
 });
 
 test('Should return 2 pages', async ({ request }) => {
@@ -212,7 +218,7 @@ test('Should return home EN (query)', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Home');
+	expect(response.docs[0].attributes.title).toBe('Home');
 });
 
 test('Should return home FR (query)', async ({ request }) => {
@@ -222,7 +228,7 @@ test('Should return home FR (query)', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Accueil');
+	expect(response.docs[0].attributes.title).toBe('Accueil');
 });
 
 test('Should return home (draft)', async ({ request }) => {
@@ -232,7 +238,7 @@ test('Should return home (draft)', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Accueil');
+	expect(response.docs[0].attributes.title).toBe('Accueil');
 });
 
 test('Should return the page (published)', async ({ request }) => {
@@ -242,7 +248,7 @@ test('Should return the page (published)', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Page');
+	expect(response.docs[0].attributes.title).toBe('Page');
 });
 
 let pageWithAuthorId: string;
@@ -252,14 +258,16 @@ test('Should create an other page with author', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page 2',
-			slug: 'page-2',
+			attributes: {
+				title: 'Page 2',
+				slug: 'page-2'
+			},
 			author: adminUserId
 		}
 	});
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Page 2');
-	expect(doc.slug).toBe('page-2');
+	expect(doc.attributes.title).toBe('Page 2');
+	expect(doc.attributes.slug).toBe('page-2');
 	expect(doc.locale).toBe('fr');
 	expect(doc.id).toBeDefined();
 	pageWithAuthorId = doc.id;
@@ -272,8 +280,8 @@ test('Should return last created page with author depth', async ({ request }) =>
 		}
 	});
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Page 2');
-	expect(doc.slug).toBe('page-2');
+	expect(doc.attributes.title).toBe('Page 2');
+	expect(doc.attributes.slug).toBe('page-2');
 	expect(doc.author).toBeDefined();
 	expect(doc.author.at(0).name).toBe('Admin');
 });
@@ -286,7 +294,7 @@ test('Should return Page 2 (query)', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Page 2');
+	expect(response.docs[0].attributes.title).toBe('Page 2');
 	expect(response.docs[0].locale).toBe('en');
 });
 
@@ -350,8 +358,10 @@ test('Should not update Home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Accueil',
-			slug: 'accueil'
+			attributes: {
+				title: 'Accueil',
+				slug: 'accueil'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -372,8 +382,10 @@ test('Should not create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page 3',
-			slug: 'page-3'
+			attributes: {
+				title: 'Page 3',
+				slug: 'page-3'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -538,8 +550,10 @@ test('Should create editor user for testing', async ({ request }) => {
 
 test('Should create page with multiple relations', async ({ request }) => {
 	const payload = {
-		title: 'Relations Test',
-		slug: 'relations-test',
+		attributes: {
+			title: 'Relations Test',
+			slug: 'relations-test'
+		},
 		author: [adminUserId],
 		contributors: [adminUserId, editor2Id],
 		ambassadors: [editor2Id]
@@ -558,6 +572,7 @@ test('Should create page with multiple relations', async ({ request }) => {
 	const verifyResponse = await request.get(`${API_BASE_URL}/pages/${page2Id}?depth=1`);
 	const { doc: verifyDoc } = await verifyResponse.json();
 
+	expect(verifyDoc.attributes.title).toBe('Relations Test');
 	expect(verifyDoc.author).toBeDefined();
 	expect(verifyDoc.contributors).toBeDefined();
 	expect(verifyDoc.ambassadors).toBeDefined();
@@ -780,8 +795,10 @@ test('Editor should not create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page that will not be created',
-			slug: 'page-that-will-not-be-created'
+			attributes: {
+				title: 'Page that will not be created',
+				slug: 'page-that-will-not-be-created'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -793,12 +810,14 @@ test('Editor should update home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Home edited by editor'
+			attributes: {
+				title: 'Home edited by editor'
+			}
 		}
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json();
-	expect(data.doc.title).toBe('Home edited by editor');
+	expect(data.doc.attributes.title).toBe('Home edited by editor');
 });
 
 //////////////////////////////////////////////

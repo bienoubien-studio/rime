@@ -2,9 +2,13 @@ import type { FormField } from 'rizom/types';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
-import { toSnakeCase } from 'rizom/util/string.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
-class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
+export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
+	constructor(name: string) {
+		super(name, 'toggle');
+	}
+
 	get component() {
 		return Toggle;
 	}
@@ -12,10 +16,10 @@ class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 		return Cell;
 	}
 
-	toSchema() {
-		const { name } = this.field;
-		const snake_name = toSnakeCase(name);
-		return `${name}: integer('${snake_name}', { mode : 'boolean' })`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: integer('${snake}', { mode: 'boolean' })${suffix}`;
 	}
 
 	toType() {
@@ -37,15 +41,16 @@ class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	}
 }
 
-export const toggle = (name: string) => new ToggleFieldBuilder(name, 'toggle');
+export const toggle = (name: string) => new ToggleFieldBuilder(name);
 
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
-export type ToggleField = FormField & {
+
+export interface ToggleField extends FormField {
 	type: 'toggle';
 	defaultValue?: boolean;
-};
+}
 
 /////////////////////////////////////////////
 // Register

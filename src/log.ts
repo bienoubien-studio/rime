@@ -21,8 +21,16 @@ export function logToFile(...args: any) {
 	}
 
 	try {
-		fs.appendFileSync('log.md', markdownEntry);
+		fs.appendFileSync('debug.md', markdownEntry);
 	} catch (err) {
 		console.error('Error writing to markdown file:', err);
+	}
+}
+
+export function clearLog() {
+	try {
+		fs.writeFileSync('debug.md', '');
+	} catch (err) {
+		console.error('Failed to clear debug.md:', err);
 	}
 }

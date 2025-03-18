@@ -16,7 +16,24 @@ export const mergeWithBlankDocument = <T extends GenericDoc>({
 		delete data.file;
 	}
 
-	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
+	// Configure deepmerge to preserve tab structure
+	const options = {
+		clone: true,
+		// Only merge arrays if they are at the root level or in specific fields that should be merged
+		arrayMerge: (target: any[], source: any[], options: any) => {
+			// For fields like blocks, relations, etc. that should be merged
+			if (Array.isArray(source)) {
+				return source;
+			}
+			return target;
+		}
+	};
+
+	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(
+		createBlankDocument(config),
+		data,
+		options
+	);
 
 	// Add file after merge
 	if (file) {

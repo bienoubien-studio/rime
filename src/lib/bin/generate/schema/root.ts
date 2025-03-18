@@ -1,4 +1,4 @@
-import type { AnyField, Field, FormField } from 'rizom/types/fields.js';
+import type { Field, FormField } from 'rizom/types/fields.js';
 import {
 	isBlocksField,
 	isFormField,
@@ -88,9 +88,9 @@ const buildRootTable = ({
 
 	const generateFieldsTemplates = (
 		fields: FieldBuilder<Field>[],
-		withLocalized?: boolean
+		withLocalized?: boolean,
+		parentPath: string = ''
 	): string[] => {
-		/** All key/pair, rizom field / drizzle schema string  */
 		let templates: string[] = [];
 
 		const checkLocalized = (field: FormFieldBuilder<FormField>) => {
@@ -103,10 +103,12 @@ const buildRootTable = ({
 
 		for (const field of fields) {
 			if (field instanceof GroupFieldBuilder) {
-				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized)];
+				const groupPath = parentPath ? `${parentPath}__${field.name}` : field.name;
+				templates = [...templates, ...generateFieldsTemplates(field.raw.fields, withLocalized, groupPath)];
 			} else if (isTabsField(field.raw)) {
 				for (const tab of field.raw.tabs) {
-					templates = [...templates, ...generateFieldsTemplates(tab.raw.fields, withLocalized)];
+					const tabPath = parentPath ? `${parentPath}__${tab.raw.name}` : tab.raw.name;
+					templates = [...templates, ...generateFieldsTemplates(tab.raw.fields, withLocalized, tabPath)];
 				}
 			} else if (isRelationField(field.raw)) {
 				if (field.raw.localized) {
@@ -178,7 +180,7 @@ const buildRootTable = ({
 				}
 			} else if (field instanceof FormFieldBuilder) {
 				if (checkLocalized(field)) {
-					templates.push(field.toSchema() + ',');
+					templates.push(field.toSchema(parentPath) + ',');
 				}
 			}
 		}

@@ -1,17 +1,17 @@
-import type { Option } from 'rizom/types';
-import type { FormField } from 'rizom/types';
+import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
 import Radio from './component/Radio.svelte';
-import toSnakeCase from 'to-snake-case';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 	get component() {
 		return Radio;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
-		return `${this.field.name}: text('${snake_name}')`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: text('${snake}')${suffix}`;
 	}
 
 	toType() {
@@ -24,6 +24,7 @@ export const radio = (name: string) => new RadioFieldBuilder(name, 'radio');
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
+
 export type RadioField = FormField & {
 	type: 'radio';
 	options: Option[];

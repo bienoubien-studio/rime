@@ -24,10 +24,10 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 		return `${this.field.name}${!this.field.required ? '?' : ''}: string`;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		return `${this.field.name}: text('${snake_name}')${suffix}`;
+		return `${camel}: text('${snake}')${suffix}`;
 	}
 
 	unique() {

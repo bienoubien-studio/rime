@@ -3,14 +3,13 @@ import {
 	isFormField,
 	isGroupFieldRaw,
 	isTabsFieldRaw,
-	toFormFields
+	isTreeFieldRaw
 } from '../util/field';
 import { isAuthConfig } from 'rizom/util/config';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config';
 import type { FormField, PrototypeSlug } from 'rizom/types';
 import cache from 'rizom/bin/generate/cache';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks';
-import { isCamelCase } from 'rizom/util/string';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -87,16 +86,21 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {
-				errors.push(`Duplicate field ${duplicate} in ${config.type} ${config.slug}`);
+				errors.push(`Duplicate schema field ${duplicate} in ${config.type} ${config.slug}`);
 			}
+		}
+
+		function validateFieldName(name: string): boolean {
+			// Regular expression to match
+			// __group_foo__truc, fooBlablaBla, _hello_guys
+			const pattern = /^(__)?[a-zA-Z][a-zA-Z0-9_]*$/;
+			// Check if string matches pattern and doesn't contain spaces or hyphens
+			return pattern.test(name) && !name.includes('-') && !name.includes(' ');
 		}
 
 		for (const field of fields) {
 			// Check for malformed field.name
-			const withoutLeadingUnderscore = field.name.startsWith('_')
-				? field.name.slice(1)
-				: field.name;
-			if (!isCamelCase(withoutLeadingUnderscore)) {
+			if (!validateFieldName(field.name)) {
 				errors.push(`Field ${field.name} of ${config.type} ${config.slug} should be camelCase`);
 			}
 
@@ -115,6 +119,8 @@ const validateDocumentFields = (config: UnknownConfig) => {
 					validateFormFields(block.fields.filter(isFormField));
 					validateBlockField(block.fields.filter(isFormField), block.name);
 				}
+			} else if (isTreeFieldRaw(field)) {
+				validateFormFields(field.fields.filter(isFormField));
 			} else if (isTabsFieldRaw(field)) {
 				for (const tab of field.tabs) {
 					validateFormFields(tab.fields.filter(isFormField));
@@ -125,8 +131,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 	};
 
-	const formFields = config.fields.reduce(toFormFields, []);
-	validateFormFields(formFields);
+	validateFormFields(config.fields.filter(isFormField));
 
 	return errors;
 };

@@ -50,8 +50,9 @@ type FormField = Field & {
 	label?: string;
 	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
-	defaultValue?: unknnown;
+	defaultValue?: unknown;
 	isEmpty: (value: unknown) => boolean;
+	
 };
 
 type BaseSelectField = FormField & {

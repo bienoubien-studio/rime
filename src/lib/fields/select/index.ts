@@ -1,16 +1,16 @@
 import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
 import Select from './component/Select.svelte';
-import { toSnakeCase } from 'rizom/util/string.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 	get component() {
 		return Select;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
-		return `${this.field.name}: text('${snake_name}', { mode: 'json' })`;
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
+		return `${camel}: text('${snake}', { mode: 'json' })`;
 	}
 
 	toType() {
@@ -33,6 +33,7 @@ export const select = (name: string) => new SelectManyFieldBuilder(name, 'select
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
+
 export type SelectField = FormField & {
 	type: 'select';
 	options: Option[];

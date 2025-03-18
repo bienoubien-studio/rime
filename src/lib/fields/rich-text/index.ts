@@ -46,10 +46,10 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return Cell;
 	}
 
-	toSchema() {
-		const snake_name = toSnakeCase(this.field.name);
+	toSchema(parentPath?: string) {
+		const { camel, snake } = this.getSchemaName(parentPath);
 		const suffix = this.field.required ? '.notNull()' : '';
-		return `${this.field.name}: text('${snake_name}')${suffix}`;
+		return `${camel}: text('${snake}')${suffix}`;
 	}
 
 	toType() {

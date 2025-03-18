@@ -74,23 +74,24 @@ export const isUploadDoc = (doc: GenericDoc): doc is UploadDoc => {
 	return 'mimeType' in doc;
 };
 
-// @TODO make each field responsible of its empty value somehow
 export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollection | CompiledArea
 ): T => {
 	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
 		try {
 			if (curr.type === 'tabs') {
-				return curr.tabs.reduce(reduceFieldsToBlankDocument, prev);
+				curr.tabs.forEach((tab: any) => {
+					prev[tab.name] = tab.fields.reduce(reduceFieldsToBlankDocument, {});
+				});
 			} else if (curr.type === 'group') {
-				return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
+				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
 			} else if (curr.type === 'link') {
 				const emptyLink: Link = { link: '', target: '_self', type: 'url' };
 				prev[curr.name] = emptyLink;
 			} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
 				prev[curr.name] = [];
 			} else if ('fields' in curr) {
-				return curr.fields.reduce(reduceFieldsToBlankDocument, prev);
+				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
 			} else {
 				prev[curr.name] = null;
 			}
@@ -119,28 +120,3 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 
 	return empty as T;
 };
-
-// Utility function to convert path to regexp pattern ex:
-// some.0.image --> some\.\d+\.image
-// other.1.blocks.4.author --> other.\d+.blocks.\d+.author
-// export const convertPathToPattern = (path: string) => {
-// 	return path
-// 		.split('.')
-// 		.map((segment) => (/^\d+$/.test(segment) ? '\\d+' : segment))
-// 		.join('.');
-// };
-
-// Utility function to convert list of path to a set of regexp patterns
-// export const buildSetOfPathPatterns = (paths: string[], options?: { endAnchor?: boolean }) => {
-// 	const withEndAnchor = typeof options?.endAnchor === 'boolean' ? options?.endAnchor : true;
-// 	const patterns = new Set(paths.map(convertPathToPattern));
-// 	const suffix = withEndAnchor ? '$' : '';
-// 	return Array.from(patterns).map((pattern) => new RegExp('^' + pattern + suffix));
-// };
-
-// export const extractPaths = (doc: Dic) => {
-// 	const flatDoc: Dic = flatten(doc);
-// 	return Object.entries(flatDoc)
-// 		.map(([key, value]) => (key.endsWith('.path') ? value : null))
-// 		.filter(Boolean);
-// };

@@ -5,6 +5,7 @@ import { FormFieldBuilder } from '../builders/index.js';
 import type { FieldHook } from 'rizom/types/fields';
 import { capitalize } from 'rizom/util/string';
 import type { Relation } from 'rizom/sqlite/relations';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 type RelationValue = string | Array<Relation | string>;
 
@@ -64,6 +65,12 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 
 	toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: RelationValue<${capitalize(this.field.relationTo)}Doc>`;
+	}
+
+	toSchema() {
+		const { pascal, snake } = super.getSchemaName();
+		const suffix = templateUniqueRequired(this.field);
+		return `${pascal}: text('${snake}', { mode: 'json' })${suffix}`;
 	}
 
 	query(query: string | QueryResolver<Doc>) {

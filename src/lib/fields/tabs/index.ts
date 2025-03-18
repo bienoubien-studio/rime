@@ -3,6 +3,9 @@ import type { Field } from 'rizom/types/fields';
 import { FieldBuilder } from '../builders/index.js';
 import Tabs from './component/Tabs.svelte';
 import type { WithoutBuilders } from 'rizom/types/util.js';
+import { isFormField } from 'rizom/util/field.js';
+import { isCamelCase, toPascalCase } from 'rizom/util/string.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
 export const tab = (label: string) => new TabBuilder(label);
@@ -27,17 +30,26 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 
 class TabBuilder {
 	#tab: TabsFieldTab;
-	constructor(label: string) {
-		this.#tab = { label, fields: [] };
+
+	constructor(name: string) {
+		if (!isCamelCase(name)) throw new Error('Tab name should be camelCase');
+		this.#tab = { name, label: name, fields: [] };
+	}
+
+	label(label: string) {
+		this.#tab.label = label;
 		return this;
 	}
+
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.#tab.fields = fields;
 		return this;
 	}
+
 	get raw() {
 		return { ...this.#tab };
 	}
+
 	compile(): WithoutBuilders<TabsFieldTab> {
 		return { ...this.#tab, fields: this.#tab.fields.map((f) => f.compile()) };
 	}
@@ -53,14 +65,18 @@ export type TabsField = Field & {
 };
 
 export type TabsFieldTab = {
-	label: string;
+	name: string;
+	label?: string;
 	fields: FieldBuilder<Field>[];
 };
 
 export type TabsFieldRaw = Field & {
 	type: 'tabs';
+	name: string;
+	label?: string;
 	tabs: {
-		label: string;
+		name: string;
+		label?: string;
 		fields: Field[];
 	}[];
 };

@@ -2,6 +2,7 @@ import { omit } from '../util/object.js';
 import { getTableColumns } from 'drizzle-orm';
 import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../util/string.js';
+import { transformKeysToDoc, transformKeysToSchema } from '../util/path.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
 import type {
@@ -20,6 +21,7 @@ import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import { isGroupFieldRaw, isTabsFieldRaw } from 'rizom/util/field.js';
 
 /////////////////////////////////////////////
 // Types
@@ -91,6 +93,9 @@ export const databaseTransformInterface = ({
 		}
 
 		let flatDoc: Dic = flatten(doc);
+
+		// Transform flattened keys from database schema format to document format
+		flatDoc = transformKeysToDoc(flatDoc);
 
 		/////////////////////////////////////////////
 		// Blocks handling
@@ -193,8 +198,8 @@ export const databaseTransformInterface = ({
 							relation.relationTo = key.replace('Id', '');
 							relation.relationId = relation[key];
 							delete relation[key];
-						}
-					}
+			}
+		}
 					if (!isPanel) {
 						delete relation.position;
 						delete relation.parentId;
