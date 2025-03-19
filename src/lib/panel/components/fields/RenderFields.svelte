@@ -54,36 +54,26 @@
 <div class="rz-render-fields {framedClassModifier}">
 	{#each authorizedFields as field}
 		{#if !form.isLive || (form.isLive && isLiveField(field))}
-			{console.log(field.type || '——')}
 			{#if isComponentField(field)}
-				{console.log(1)}
 				{@const FieldComponent = field.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<FieldComponent {path} config={field} {form} />
 				</div>
 			{:else if isPresentative(field)}
-				{console.log(2)}
 				{@const Separator = config.raw.blueprints.separator.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<Separator />
 				</div>
 			{:else if isTabsField(field)}
-				{console.log(3)}
 				{@const Tabs = config.raw.blueprints.tabs.component}
 				<div data-type="tabs" class="rz-render-fields__field rz-render-fields__field--full">
 					<Tabs config={field} {path} {form} />
 				</div>
 			{:else if isNotHidden(field)}
-				{console.log(4, field.type)}
 				{@const FieldComponent = fieldComponent(field.type)}
 				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
-					{#if isGroupFieldRaw(field)}
-						{console.log(FieldComponent)}
-					{/if}
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
-			{:else}
-				{console.log(5)}
 			{/if}
 		{/if}
 	{/each}
