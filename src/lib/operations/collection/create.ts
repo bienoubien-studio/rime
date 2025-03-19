@@ -17,7 +17,6 @@ import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
-import { clearLog, logToFile } from '../../../log.js';
 import type { DeepPartial } from 'rizom/types/util.js';
 
 type Args<T> = {
@@ -53,11 +52,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		config
 	});
 
-	// clearLog();
 	const configMap = buildConfigMap(data, config.fields);
-	// logToFile('data', data);
-	// logToFile('incomingFields', config.fields);
-	// logToFile('configMap', configMap);
 
 	// throw new Error('thats an error');
 

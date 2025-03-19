@@ -1,8 +1,6 @@
 <script lang="ts">
 	import {
 		isComponentField,
-		isGroupField,
-		isGroupFieldRaw,
 		isLiveField,
 		isNotHidden,
 		isPresentative,
@@ -10,9 +8,8 @@
 	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, AnyFormField, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';
+	import type { Field, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
-	import Group from './Group.svelte';
 
 	type Props = {
 		path?: string;

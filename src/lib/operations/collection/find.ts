@@ -11,8 +11,6 @@ import { RizomError } from 'rizom/errors';
 import { transformDocument } from '../tasks/transformDocument.server';
 import type { RawDoc } from 'rizom/types/doc';
 import type { LocalAPI } from '../localAPI/index.server';
-import { buildConfigMap } from '../tasks/configMap/index.server';
-import { logToFile } from '../../../log';
 
 type FindArgs = {
 	query: OperationQuery;
