@@ -1,15 +1,18 @@
 <script lang="ts">
 	import {
 		isComponentField,
+		isGroupFieldRaw,
 		isLiveField,
 		isNotHidden,
 		isPresentative,
+		isTabsField,
 		isTabsFieldRaw
 	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { Field, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
+	import type { Component } from 'svelte';
 
 	type Props = {
 		path?: string;
@@ -23,7 +26,9 @@
 	const user = getUserContext();
 	const config = getConfigContext();
 
-	const fieldComponent = (type: FieldsType): any => {
+	const fieldComponent = (
+		type: FieldsType
+	): Component<{ path: string; config: Field; form: typeof form }> => {
 		return config.raw.blueprints[type].component || null;
 	};
 
@@ -49,26 +54,36 @@
 <div class="rz-render-fields {framedClassModifier}">
 	{#each authorizedFields as field}
 		{#if !form.isLive || (form.isLive && isLiveField(field))}
+			{console.log(field.type || '——')}
 			{#if isComponentField(field)}
+				{console.log(1)}
 				{@const FieldComponent = field.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<FieldComponent {path} config={field} {form} />
 				</div>
 			{:else if isPresentative(field)}
+				{console.log(2)}
 				{@const Separator = config.raw.blueprints.separator.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<Separator />
 				</div>
-			{:else if isTabsFieldRaw(field)}
+			{:else if isTabsField(field)}
+				{console.log(3)}
 				{@const Tabs = config.raw.blueprints.tabs.component}
 				<div data-type="tabs" class="rz-render-fields__field rz-render-fields__field--full">
 					<Tabs config={field} {path} {form} />
 				</div>
 			{:else if isNotHidden(field)}
+				{console.log(4, field.type)}
 				{@const FieldComponent = fieldComponent(field.type)}
 				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
+					{#if isGroupFieldRaw(field)}
+						{console.log(FieldComponent)}
+					{/if}
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
+			{:else}
+				{console.log(5)}
 			{/if}
 		{/if}
 	{/each}

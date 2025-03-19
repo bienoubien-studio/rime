@@ -34,13 +34,12 @@
 	class="rz-group-field__title"
 >
 	<span><ChevronDown size="14" /></span>
-	{config.label || 'Group'}
+	{config.label || config.name || 'Group'}
 </button>
-{#if groupOpen}
-	<div class="rz-group-field__content">
-		<RenderFields {path} fields={config.fields} framed={true} {form} />
-	</div>
-{/if}
+
+<div class="rz-group-field__content" class:rz-group-field__content--hidden={!groupOpen}>
+	<RenderFields {path} fields={config.fields} framed={true} {form} />
+</div>
 
 <style lang="postcss">
 	.rz-group-field__content {
@@ -50,6 +49,9 @@
 			padding-left: 0;
 			padding-right: 0;
 		}
+	}
+	.rz-group-field__content--hidden {
+		display: none;
 	}
 	.rz-group-field__title {
 		border-bottom: var(--rz-border);
@@ -63,9 +65,9 @@
 		width: 100%;
 		text-align: left;
 		@mixin font-medium;
-		&:not(:first-child) {
-			border-top: var(--rz-border);
-		}
+		/* &:not(:first-child) { */
+		border-top: var(--rz-border);
+		/* } */
 		&.open span {
 			rotate: -180deg;
 		}

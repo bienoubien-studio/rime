@@ -28,7 +28,7 @@ import type { GroupFieldRaw } from 'rizom/fields/group/index.js';
 import type { TabsFieldRaw } from 'rizom/fields/tabs/index.js';
 import type { TreeFieldRaw } from 'rizom/fields/tree/index.js';
 
-export const isPresentative = (field: Field): field is GroupField | SeparatorField | TabsField =>
+export const isPresentative = (field: Field): field is SeparatorField =>
 	['separator'].includes(field.type);
 
 export const isFormField = (field: Field): field is FormField => 'name' in field;
