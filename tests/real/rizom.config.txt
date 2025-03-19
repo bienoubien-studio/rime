@@ -30,7 +30,7 @@ import type { CollectionHookAfterUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';
 import { regenerateImages } from '@rizom/regenerate-images';
 
-const tabAttributes = tab('Attributes').fields(
+const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().required(),
 	slug('slug').slugify('title'),
 	toggle('isHome').label('Homepage'),
@@ -66,7 +66,7 @@ const blockBlack = block('black').fields(
 	text('title'),
 	blocks('text', [blockParagraph, blockImage, blockSlider, blockSubContent])
 );
-const tabLayout = tab('Layout').fields(
+const tabLayout = tab('layout').fields(
 	blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
 );
 
@@ -81,7 +81,9 @@ const Pages = collection('pages', {
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout)],
 	url: (doc) =>
-		doc.isHome ? `${process.env.PUBLIC_RIZOM_URL}/` : `${process.env.PUBLIC_RIZOM_URL}/${doc.slug}`,
+		doc.attributes.isHome
+			? `${process.env.PUBLIC_RIZOM_URL}/`
+			: `${process.env.PUBLIC_RIZOM_URL}/${doc.attributes.slug}`,
 	status: true,
 	access: {
 		read: () => true,
