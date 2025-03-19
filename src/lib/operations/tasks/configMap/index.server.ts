@@ -1,5 +1,11 @@
 import type { Field, FormField } from 'rizom/types/fields.js';
-import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, isTabsFieldRaw } from 'rizom/util/field.js';
+import {
+	isBlocksFieldRaw,
+	isFormField,
+	isTreeFieldRaw,
+	isTabsFieldRaw,
+	isGroupFieldRaw
+} from 'rizom/util/field.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { DeepPartial, Dic } from 'rizom/types/util.js';
 import { buildTreeFieldsMap } from './buildTreeMap.server.js';
@@ -24,7 +30,6 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 			}
 
 			if (!isFormField(field)) continue;
-
 			if (!(field.name in data)) continue;
 
 			const value = data[field.name];
@@ -43,6 +48,8 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 			} else if (isTreeFieldRaw(field) && value && Array.isArray(value)) {
 				const treeMap = buildTreeFieldsMap(field, value, path);
 				map = { ...map, ...treeMap };
+			} else if (isGroupFieldRaw(field)) {
+				traverseData(value, field.fields, path);
 			}
 		}
 	};
