@@ -152,7 +152,7 @@ export type RelationValue<T> =
 	const locals = `declare global {
   namespace App {
     interface Locals {
-      session: import('lucia').Session | undefined;
+      session: Session | undefined;
       user: User | undefined;
       rizom: Rizom;
       api: LocalAPI;
@@ -166,6 +166,7 @@ export type RelationValue<T> =
 
 	const content = [
 		`import '${PACKAGE_NAME}';`,
+		`import type { Session } from 'better-auth';`,
 		typeImports,
 		relationValueType,
 		collectionsTypes,
