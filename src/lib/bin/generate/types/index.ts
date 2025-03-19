@@ -97,8 +97,9 @@ export function generateTypesString(config: BuiltConfig) {
 				case field instanceof FormFieldBuilder:
 					if (field.type === 'richText') {
 						addImport('RichTextNode');
+					} else if (field.type !== 'blocks') {
+						strFields.push(field.toType());
 					}
-					strFields.push(field.toType());
 					break;
 			}
 		}
