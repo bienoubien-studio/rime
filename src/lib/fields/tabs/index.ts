@@ -22,10 +22,12 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 
 	toType() {
 		return this.field.tabs
-			.map(tab => {
+			.map((tab) => {
 				const fieldsTypes = tab.raw.fields
-					.filter(field => field instanceof FormFieldBuilder)
-					.map(field => field.toType())
+					.filter((field) => field instanceof FormFieldBuilder)
+					// do not handle block type as it's done inside the type generator
+					.filter((field) => field.raw.type !== 'blocks')
+					.map((field) => field.toType())
 					.join(',\n\t\t');
 				return `${tab.raw.name}: {${fieldsTypes}}`;
 			})
