@@ -7,7 +7,13 @@ import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/typ
 import type { AsyncReturnType, Dic } from 'rizom/types/util.js';
 import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from 'rizom/types/index.js';
 import type { AreaSlug } from 'rizom/types/doc.js';
-import { isBlocksFieldRaw, isFormField, isTabsFieldRaw } from 'rizom/util/field.js';
+import {
+	isBlocksFieldRaw,
+	isFormField,
+	isGroupFieldRaw,
+	isTabsFieldRaw,
+	isTreeFieldRaw
+} from 'rizom/util/field.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -65,7 +71,11 @@ export async function createConfigInterface(rawConfig: Config) {
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
 	};
 
-	const getFieldByPath = (path: string, fields: Field[]) => {
+	type GetFieldByPathOptions = {
+		inBlockType?: string;
+	};
+
+	const getFieldByPath = (path: string, fields: Field[], options?: GetFieldByPathOptions) => {
 		const parts = path.split('.');
 
 		const findInFields = (currentFields: Field[], remainingParts: string[]): FormField | null => {
@@ -90,13 +100,22 @@ export async function createConfigInterface(rawConfig: Config) {
 							return field;
 						}
 
+						if (isGroupFieldRaw(field)) {
+							return findInFields(field.fields, remainingParts.slice(1));
+						}
+
 						// Handle blocks
 						if (isBlocksFieldRaw(field)) {
-							const blockType = remainingParts[1];
-							const block = field.blocks.find((b) => b.name === blockType);
-							if (block) {
-								return findInFields(block.fields, remainingParts.slice(2));
+							if (options?.inBlockType) {
+								const block = field.blocks.find((b) => b.name === options.inBlockType);
+								if (block) {
+									return findInFields(block.fields, remainingParts.slice(2));
+								}
 							}
+						}
+
+						if (isTreeFieldRaw(field)) {
+							return findInFields(field.fields, remainingParts.slice(2));
 						}
 					}
 				}

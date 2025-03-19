@@ -29,7 +29,7 @@ import type { TabsFieldRaw } from 'rizom/fields/tabs/index.js';
 import type { TreeFieldRaw } from 'rizom/fields/tree/index.js';
 
 export const isPresentative = (field: Field): field is GroupField | SeparatorField | TabsField =>
-	['group', 'separator', 'tabs'].includes(field.type);
+	['separator'].includes(field.type);
 
 export const isFormField = (field: Field): field is FormField => 'name' in field;
 export const isNotHidden = (field: FormField) => !field.hidden;

@@ -46,7 +46,7 @@
 	function documentToRelationFieldItem(doc: GenericDoc) {
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
-			label: doc[relationConfig.asTitle] || '[undefined]',
+			label: doc[relationConfig.asTitle] || '[untitled]',
 			relationId: doc.id,
 			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
 		};

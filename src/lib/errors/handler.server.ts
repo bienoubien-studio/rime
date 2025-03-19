@@ -10,9 +10,8 @@ type ErrorHandlerOptions = {
 	formData?: Record<string, any>; // For actions
 };
 
-export function handleError(err: unknown, options: ErrorHandlerOptions) {
+export function handleError(err: Error, options: ErrorHandlerOptions) {
 	const { context, formData } = options;
-	logger.error(err);
 
 	if (err instanceof RizomFormError) {
 		switch (context) {
@@ -32,6 +31,7 @@ export function handleError(err: unknown, options: ErrorHandlerOptions) {
 		if (err.code === RizomError.USER_BANNED && context === 'action') {
 			throw redirect(302, '/locked');
 		}
+		logger.error(`${err.status} — ${err.message}`);
 		return error(err.status, err.message);
 	}
 
@@ -41,5 +41,6 @@ export function handleError(err: unknown, options: ErrorHandlerOptions) {
 	}
 
 	// Unknown errors
+	logger.error(`500 — ${err.message}`);
 	return error(500, 'Internal Server Error');
 }

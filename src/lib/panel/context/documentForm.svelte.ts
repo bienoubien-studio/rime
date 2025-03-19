@@ -62,8 +62,8 @@ function createDocumentFormState({
 		if (config.type === 'area') {
 			return config.label;
 		} else {
-			$effect(() => (title = doc[config.asTitle] || '[undefined]'));
-			return doc && doc[config.asTitle] ? doc[config.asTitle] : '[undefined]';
+			$effect(() => (title = doc[config.asTitle] || '[untitled]'));
+			return doc && doc[config.asTitle] ? doc[config.asTitle] : '[untitled]';
 		}
 	}
 
@@ -457,6 +457,7 @@ function createDocumentFormState({
 		}
 
 		const flatData: Dic = flatten(data);
+		console.log(flatData);
 		const formData = new FormData();
 
 		for (const key of Object.keys(flatData)) {

@@ -27,6 +27,8 @@ vite.config.ts.timestamp-*
 #Rizom
 .rizom
 .cache
+debug.md
+/logs
 db/*
 static
 src/hooks.server.ts

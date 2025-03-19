@@ -43,9 +43,7 @@ export const augmentDocument = <T extends GenericDoc>(args: {
 		output._live += locale ? `&locale=${locale}` : '';
 	}
 
-	console.time('order doc');
 	output = sortDocumentKeys(output);
-	console.timeEnd('order doc');
 
 	return output as T;
 };

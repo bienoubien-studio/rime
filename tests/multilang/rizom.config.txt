@@ -100,7 +100,7 @@ const Informations = area('infos', {
 const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
-	if (data?.home) {
+	if (data?.attributes?.home) {
 		const query = {
 			where: {
 				home: {
@@ -114,7 +114,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 		for (const page of pagesIsHome) {
 			await api.collection('pages').updateById({
 				id: page.id,
-				data: { home: false }
+				data: { attributes: { home: false } }
 			});
 		}
 	}
@@ -123,10 +123,11 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 };
 
 const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
-	const { data, api, operation, event } = args;
+	const { api, operation, event } = args;
+	let data = args.data;
 
 	const queryPagesWithSlug = async ({ slug }: { slug: string }) => {
-		const query = `where[slug][equals]=${slug}`;
+		const query = `where[attributes.slug][equals]=${slug}`;
 		return api.collection('pages').find({
 			query,
 			locale: event.locals.locale
@@ -134,15 +135,23 @@ const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	};
 
 	if (operation === 'create' || operation === 'update') {
-		if (data.slug) {
-			const baseSlug = data.slug;
+		let slug = data.attributes?.slug;
+		if (slug) {
+			const baseSlug = slug;
 			let suffix = 0;
 			let pagesWithCurrentSlug = await queryPagesWithSlug({ slug: baseSlug });
-			while (pagesWithCurrentSlug.some((page) => page.slug === data.slug)) {
+			while (pagesWithCurrentSlug.some((page) => page.attributes.slug === slug)) {
 				suffix++;
-				data.slug = `${baseSlug}-${suffix}`;
-				pagesWithCurrentSlug = await queryPagesWithSlug({ slug: data.slug });
+				slug = `${baseSlug}-${suffix}`;
+				pagesWithCurrentSlug = await queryPagesWithSlug({ slug });
 			}
+			data = {
+				...data,
+				attributes: {
+					...(data.attributes || {}),
+					slug
+				}
+			};
 		}
 
 		return {

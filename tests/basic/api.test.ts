@@ -79,13 +79,15 @@ test('Should create Home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Home',
-			slug: 'home'
+			attributes: {
+				title: 'Home',
+				slug: 'home'
+			}
 		}
 	});
 
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Home');
+	expect(doc.attributes.title).toBe('Home');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
 	homeId = doc.id;
@@ -97,16 +99,18 @@ test('Should create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page',
-			slug: 'page',
-			parent: homeId
+			attributes: {
+				title: 'Page',
+				slug: 'page',
+				parent: homeId
+			}
 		}
 	});
 	const { doc } = await response.json();
-	expect(doc.title).toBe('Page');
+	expect(doc.attributes.title).toBe('Page');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc.parent.at(0).relationId).toBe(homeId);
+	expect(doc.attributes.parent.at(0).relationId).toBe(homeId);
 	pageId = doc.id;
 });
 
@@ -116,7 +120,7 @@ test('Should return the home page', async ({ request }) => {
 	});
 
 	expect(response.doc).toBeDefined();
-	expect(response.doc.title).toBe('Home');
+	expect(response.doc.attributes.title).toBe('Home');
 });
 
 test('Should return 2 pages', async ({ request }) => {
@@ -130,13 +134,13 @@ test('Should return 2 pages', async ({ request }) => {
 /** ---------------- QUERIES ---------------- */
 
 test('Should return page (query)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[parent][in_array]=${homeId}`;
+	const url = `${API_BASE_URL}/pages?where[attributes.parent][in_array]=${homeId}`;
 	const response = await request.get(url).then((response) => {
 		return response.json();
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].title).toBe('Page');
+	expect(response.docs[0].attributes.title).toBe('Page');
 });
 
 test('Should delete page', async ({ request }) => {
@@ -262,8 +266,10 @@ test('Should not update Home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Accueil',
-			slug: 'accueil'
+			attributes: {
+				title: 'Accueil',
+				slug: 'accueil'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -284,8 +290,10 @@ test('Should not create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page 3',
-			slug: 'page-3'
+			attributes: {
+				title: 'Page 3',
+				slug: 'page-3'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -410,8 +418,10 @@ test('Editor should not create a page', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Page that will not be created',
-			slug: 'page-that-will-not-be-created'
+			attributes: {
+				title: 'Page that will not be created',
+				slug: 'page-that-will-not-be-created'
+			}
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -423,7 +433,9 @@ test('Editor should update home', async ({ request }) => {
 			Authorization: `Bearer ${token}`
 		},
 		data: {
-			title: 'Home edited by editor'
+			attributes: {
+				title: 'Home edited by editor'
+			}
 		}
 	});
 	expect(response.status()).toBe(200);

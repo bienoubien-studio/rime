@@ -1,6 +1,8 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { registerTranslation } from 'rizom/panel/i18n/register.server.js';
 
+export const ssr = false;
+
 export const load = async ({ locals }: ServerLoadEvent) => {
 	const { user, rizom } = locals;
 	const translations = await registerTranslation(rizom.config.raw.panel.language);

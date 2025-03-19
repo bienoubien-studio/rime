@@ -44,7 +44,7 @@
 					<UploadThumbCell url={doc.sizes.thumbnail} />
 				{/key}
 			{/if}
-			<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
+			<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
@@ -56,7 +56,7 @@
 						collection.config.status[0]}
 					<StatusDot --rz-dot-size="0.4rem" color={docStatus.color} />
 				{/if}
-				<span class="rz-list-row__title">{doc.title || '[undefined]'}</span>
+				<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
 			</a>
 		{/if}
 	</div>

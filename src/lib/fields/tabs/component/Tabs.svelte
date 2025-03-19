@@ -7,18 +7,18 @@
 	import type { TabsFieldRaw } from '../index.js';
 
 	type Props = { config: TabsFieldRaw; path: string; form: DocumentFormContext };
-	const { config, path, form }: Props = $props();
+	const { config, path: initialPath, form }: Props = $props();
 
-	const cookieKey = `Tabs:${config.tabs.map((t) => slugify(t.label)).join('-')}`;
-	let activeTab = $state(Cookies.get(cookieKey) || slugify(config.tabs[0].label));
+	const cookieKey = `Tabs:${initialPath}:${config.tabs.map((t) => slugify(t.name)).join('-')}`;
+	let activeTab = $state(Cookies.get(cookieKey) || slugify(config.tabs[0].name));
 
 	let tabErrors = $state<string[]>([]);
 	const tabIds = $derived(
-		config.tabs.map((tab) => `${slugify(tab.label)}-${new Date().getTime().toString()}`)
+		config.tabs.map((tab) => `${slugify(tab.name)}-${new Date().getTime().toString()}`)
 	);
 
 	function onActiveTabChange(value: string | undefined): void {
-		value = value || slugify(config.tabs[0].label);
+		value = value || slugify(config.tabs[0].name);
 		Cookies.set(cookieKey, value);
 		activeTab = value;
 	}
@@ -37,6 +37,8 @@
 			tabErrors = [];
 		}
 	});
+
+	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
 </script>
 
 <div class="rz-tabs">
@@ -45,16 +47,16 @@
 			{#each config.tabs as tab, index}
 				<Tabs.Trigger
 					data-error={tabErrors.includes(tabIds[index]) ? 'true' : null}
-					value={slugify(tab.label)}
+					value={slugify(tab.name)}
 				>
-					{tab.label}
+					{tab.label || tab.name}
 				</Tabs.Trigger>
 			{/each}
 		</Tabs.List>
 
 		{#each config.tabs as tab, index}
-			<Tabs.Content data-tab-id={tabIds[index]} value={slugify(tab.label)}>
-				<RenderFields fields={tab.fields} {path} {form} />
+			<Tabs.Content data-tab-id={tabIds[index]} value={slugify(tab.name)}>
+				<RenderFields fields={tab.fields} path="{path}{tab.name}" {form} />
 			</Tabs.Content>
 		{/each}
 	</Tabs.Root>

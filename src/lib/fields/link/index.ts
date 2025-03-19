@@ -61,8 +61,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 	toSchema(parentPath?: string) {
 		const { camel, snake } = this.getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		return `${camel}: text('${snake}')${suffix}`;
+		return `${camel}: text('${snake}', { mode: 'json'})`;
 	}
 
 	unique() {
@@ -74,7 +73,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.defaultValue = value;
 		return this;
 	}
-	
+
 	types(...values: LinkType[]) {
 		this.field.types = values;
 		return this;

@@ -110,6 +110,9 @@ const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 						parentId: area.id
 					});
 				} else {
+					console.log('localizedData', localizedData);
+					console.log(area.id);
+					console.log(locale);
 					await db
 						.update(tableLocales)
 						.set(localizedData)

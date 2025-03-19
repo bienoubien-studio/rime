@@ -26,7 +26,7 @@ function set(key: string, value: string) {
 function del(key: string) {
 	const keyPath = path.join(cachePath, key + '.txt');
 	if (fs.existsSync(keyPath)) {
-		fs.rmSync(keyPath);
+		fs.rmSync(keyPath, { force: true });
 	}
 }
 

@@ -58,16 +58,14 @@
 					<FieldComponent {path} config={field} {form} />
 				</div>
 			{:else if isPresentative(field)}
+				{@const Separator = config.raw.blueprints.separator.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
-					{#if isGroupFieldRaw(field)}
-						<Group config={field} {path} {form} />
-					{:else if isTabsFieldRaw(field)}
-						{@const Tabs = config.raw.blueprints.tabs.component}
-						<Tabs config={field} {path} {form} />
-					{:else}
-						{@const Separator = config.raw.blueprints.separator.component}
-						<Separator />
-					{/if}
+					<Separator />
+				</div>
+			{:else if isTabsFieldRaw(field)}
+				{@const Tabs = config.raw.blueprints.tabs.component}
+				<div data-type="tabs" class="rz-render-fields__field rz-render-fields__field--full">
+					<Tabs config={field} {path} {form} />
 				</div>
 			{:else if isNotHidden(field)}
 				{@const FieldComponent = fieldComponent(field.type)}

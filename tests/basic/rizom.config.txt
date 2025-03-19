@@ -20,7 +20,7 @@ import type {
 	CollectionHookBeforeUpsert
 } from 'rizom/types/hooks';
 
-const tabAttributes = tab('Attributes').fields(
+const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().required(),
 	toggle('isHome').label('Homepage'),
 	slug('slug').slugify('title'),
@@ -30,7 +30,7 @@ const tabAttributes = tab('Attributes').fields(
 
 const blockParagraph = block('paragraph').fields(richText('text'));
 const blockImage = block('image').fields(relation('image').to('medias'));
-const tabLayout = tab('Layout').fields(blocks('sections', [ blockParagraph, blockImage ]));
+const tabLayout = tab('layout').fields(blocks('sections', [ blockParagraph, blockImage ]));
 
 const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
 	args.rizom.plugins.cache.clear();
@@ -42,7 +42,7 @@ const Pages = collection('pages', {
 	group: 'content',
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout)],
-	url: (doc) => (doc.isHome ? '/' : `${doc.slug}`),
+	url: (doc) => (doc.attributes.isHome ? '/' : `/${doc.attributes.slug}`),
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),

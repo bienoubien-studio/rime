@@ -72,6 +72,9 @@ export function generateTypesString(config: BuiltConfig) {
 
 		for (const field of fields) {
 			switch (true) {
+				case field instanceof TabsBuilder:
+					strFields.push(field.toType());
+					break;
 				case isBlocksField(field.raw):
 					{
 						for (const block of field.raw.blocks) {
@@ -91,7 +94,7 @@ export function generateTypesString(config: BuiltConfig) {
 						strFields.push(`${field.raw.name}: Array<${blockNames.join(' | ')}>,`);
 					}
 					break;
-				case field instanceof FormFieldBuilder || field instanceof TabsBuilder:
+				case field instanceof FormFieldBuilder:
 					if (field.type === 'richText') {
 						addImport('RichTextNode');
 					}

@@ -35,7 +35,7 @@
 
 	setConfigContext(config);
 	setUserContext(user);
-	createContext('title', '[undefined]');
+	createContext('title', '[untitled]');
 	const locale = setLocaleContext(initialeLocale);
 
 	$effect(() => {
