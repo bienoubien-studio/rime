@@ -6,6 +6,7 @@
 	import type { SlugField } from '../index';
 	import { Field } from 'rizom/panel';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { getValueAtPath } from 'rizom/util/object';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -30,7 +31,7 @@
 	const generateFromField = () => {
 		if (config.slugify) {
 			const source = config.slugify in form.changes ? form.changes : form.doc;
-			const fromValue = source[config.slugify];
+			const fromValue = getValueAtPath<string>(source, config.slugify);
 			if (!fromValue) return;
 			const slugifiedValue = slugify(fromValue);
 			if (internalValue !== slugifiedValue) {
