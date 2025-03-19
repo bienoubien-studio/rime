@@ -1,8 +1,7 @@
 import type { Field, FormField } from 'rizom/types/fields';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import { isObjectLiteral } from 'rizom/util/object.js';
-import { toPascalCase } from 'rizom/util/string.js';
-import { isFormField } from 'rizom/util/field.js';
+import Group from './component/Group.svelte';
 
 const isEmpty = (value: unknown) =>
 	!!value === false || (isObjectLiteral(value) && Object.keys(value).length === 0);
@@ -12,6 +11,10 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 	constructor(name: string) {
 		super(name, 'group');
 		this.field.isEmpty = isEmpty;
+	}
+
+	get component() {
+		return Group;
 	}
 
 	label(label: string) {
@@ -26,8 +29,8 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 
 	toType() {
 		const fieldsTypes = this.field.fields
-			.filter(field => field instanceof FormFieldBuilder)
-			.map(field => field.toType())
+			.filter((field) => field instanceof FormFieldBuilder)
+			.map((field) => field.toType())
 			.join(',\n\t');
 		return `${this.field.name}: {${fieldsTypes}}`;
 	}
