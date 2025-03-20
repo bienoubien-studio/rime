@@ -39,21 +39,28 @@
 		}
 	};
 
-	// Wrapper tells the iframe it's live
+	// Wrapper tells the iframe it's live - using requestAnimationFrame for better performance
 	function handshake() {
 		if (sync === false) {
-			if (iframe && iframe.contentWindow) {
-				iframe.contentWindow.postMessage({ handshake: true });
-			}
-			// Continue handshake attempts until synced
-			window.setTimeout(handshake, 1000);
+			// Use requestAnimationFrame to yield to the browser for rendering
+			requestAnimationFrame(() => {
+				if (iframe?.contentWindow) {
+					iframe.contentWindow.postMessage({ handshake: true });
+				}
+				// Continue handshake attempts until synced
+				// Use setTimeout outside to ensure we don't create a tight animation frame loop
+				setTimeout(handshake, 1000);
+			});
 		}
 	}
 
 	const onIframeMessage = async (e: any) => {
-		// Handle handshake response from iframe
+		// Handle handshake response from iframe - process in next microtask
 		if (e.data.handshake) {
-			iframeSrc = e.data.handshake;
+			// Use Promise.resolve().then to defer state update to next microtask
+			Promise.resolve().then(() => {
+				iframeSrc = e.data.handshake;
+			});
 		}
 		// Handle navigation request from iframe
 		if (e.data.location) {
@@ -82,8 +89,8 @@
 </script>
 
 <div class="rz-live-container">
-	<PaneGroup direction="horizontal">
-		<Pane defaultSize={30}>
+	<PaneGroup autoSaveId="rz-live:panel-state" direction="horizontal">
+		<Pane defaultSize={40}>
 			<div class="rz-live-container__side-panel">
 				{#key data.src + data.doc.id + data.locale + data.slug}
 					<LiveSidePanel
@@ -98,7 +105,7 @@
 				{/key}
 			</div>
 		</Pane>
-		<PaneResizer />
+		<PaneResizer onDraggingChange={(e) => console.log(e)} />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
 			{#if !sync}
 				<div out:fade={{ duration: 350 }} class="rz-live-container__iframe-overlay">
