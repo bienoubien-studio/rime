@@ -13,6 +13,7 @@
 	import type { GenericDoc } from 'rizom/types';
 	import type { RelationField } from '../index';
 	import { onMount } from 'svelte';
+	import { getValueAtPath } from 'rizom/util/object';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -46,7 +47,7 @@
 	function documentToRelationFieldItem(doc: GenericDoc) {
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
-			label: doc[relationConfig.asTitle] || '[untitled]',
+			label: getValueAtPath(relationConfig.asTitle, doc) || '[untitled]',
 			relationId: doc.id,
 			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
 		};
