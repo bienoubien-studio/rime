@@ -7,25 +7,24 @@
 	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import { fade } from 'svelte/transition';
-	import { onMount } from 'svelte'
+	import { onMount } from 'svelte';
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
 
 	let iframe: HTMLIFrameElement;
 	let iframeSrc = $state('');
-	let sync = $derived(iframeSrc === data.src);
-	
+
 	// Normalize URLs by removing trailing slashes
 	function normalizeUrl(url: string): string {
 		if (!url) return '';
 		// Remove trailing slash if it exists
 		return url.endsWith('/') ? url.slice(0, -1) : url;
 	}
-	
+
 	// Compare URLs regardless of trailing slash
 	let sync = $derived(normalizeUrl(iframeSrc) === normalizeUrl(data.src));
-	
+
 	const onDataChange = (args: Partial<GenericDoc>) => {
 		/** Send message to iframe */
 		if (iframe?.contentWindow) {
