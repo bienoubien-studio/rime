@@ -7,7 +7,7 @@
 	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import { fade } from 'svelte/transition';
-	import { onMount } from 'svelte'
+	import { onMount } from 'svelte'
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -15,14 +15,18 @@
 	let iframe: HTMLIFrameElement;
 	let iframeSrc = $state('');
 	let sync = $derived(iframeSrc === data.src);
-
-	$inspect(data.src);
-	$inspect(iframeSrc);
-	$inspect(data.src);
-
+	
+	// Normalize URLs by removing trailing slashes
+	function normalizeUrl(url: string): string {
+		if (!url) return '';
+		// Remove trailing slash if it exists
+		return url.endsWith('/') ? url.slice(0, -1) : url;
+	}
+	
+	// Compare URLs regardless of trailing slash
+	let sync = $derived(normalizeUrl(iframeSrc) === normalizeUrl(data.src));
+	
 	const onDataChange = (args: Partial<GenericDoc>) => {
-		console.log('send', args);
-		console.log('iframe?.contentWindow', iframe?.contentWindow);
 		/** Send message to iframe */
 		if (iframe?.contentWindow) {
 			iframe.contentWindow.postMessage(args);
@@ -38,11 +42,8 @@
 
 	// Wrapper tells the iframe it's live
 	function handshake() {
-		console.log("Wrapper tells iframe it's live handshake");
-		console.log('sync is : ' + sync);
 		if (sync === false) {
 			if (iframe && iframe.contentWindow) {
-				console.log('[Live.svelte] postmessage to iframe', { handshake: true });
 				iframe.contentWindow.postMessage({ handshake: true });
 			}
 			window.setTimeout(handshake, 1000);
@@ -50,9 +51,7 @@
 	}
 
 	const onIframeMessage = async (e: any) => {
-		console.log('[Live.svelte] get message from iframe, e.data.handshake', e.data.handshake);
 		if (e.data.handshake) {
-			console.log('set iframeSrc with : ' + e.data.handshake);
 			iframeSrc = e.data.handshake;
 		}
 		if (e.data.location) {
@@ -61,15 +60,13 @@
 	};
 
 	onMount(() => {
-			console.log('[Live.svelte] addevent');
-			window.addEventListener('message', onIframeMessage);
+		window.addEventListener('message', onIframeMessage);
 	});
 
 	$inspect('sync : ' + sync);
 
 	$effect(() => {
 		if (!sync) {
-			console.log('$effect call handshake');
 			handshake();
 		}
 	});

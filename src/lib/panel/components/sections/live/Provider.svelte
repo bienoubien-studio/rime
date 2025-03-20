@@ -10,7 +10,6 @@
 	const { children } = $props();
 
 	onMount(() => {
-		console.log('[Provider] add event');
 		window.addEventListener('message', live.onMessage);
 	});
 </script>
