@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
 	import { GripVertical } from '@lucide/svelte';
+	import type { PaneResizerProps } from 'paneforge';
 	import { PaneResizer } from 'paneforge';
+
+	const props: PaneResizerProps = $props();
 </script>
 
-<PaneResizer>
+<PaneResizer {...props}>
 	<div class="rz-pane-resizer">
 		<GripVertical size="12" />
 	</div>
