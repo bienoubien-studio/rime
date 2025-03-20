@@ -165,10 +165,11 @@
 		gap: var(--rz-size-4);
 		padding-bottom: var(--rz-size-6);
 		background-color: hsl(var(--rz-ground-7) / 0.5);
+		min-height: calc(100vh - var(--rz-size-14));
+		align-content: flex-start;
 		&:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
 			padding-top: var(--rz-size-8);
 		}
-		min-height: calc(100vh - var(--rz-size-14));
 	}
 
 	.rz-document__infos {
