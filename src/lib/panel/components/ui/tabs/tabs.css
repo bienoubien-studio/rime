@@ -23,12 +23,12 @@
 	position: relative;
 	&::after {
 		position: absolute;
-		bottom: 0;
+		top: 0;
 		left: 0;
 		right: 0;
 		content: '';
 		height: 2px;
-		background-color: hsl(var(--rz-color-primary));
+		background-color: hsl(var(--rz-ground-2));
 	}
 }
 .rz-tabs-trigger[data-state='active']:not([data-error='true']) {
