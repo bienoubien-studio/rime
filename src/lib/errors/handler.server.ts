@@ -31,6 +31,11 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 		if (err.code === RizomError.USER_BANNED && context === 'action') {
 			throw redirect(302, '/locked');
 		}
+
+		if (err.code === RizomError.NOT_FOUND && context === 'load') {
+			throw error(404, err.message);
+		}
+
 		logger.error(`${err.status} — ${err.message}`);
 		return error(err.status, err.message);
 	}

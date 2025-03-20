@@ -184,7 +184,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 
 		// @ts-expect-error todo
 		const result = await db.query[slug].findMany(params);
-		console.log(result);
+
 		return result;
 	};
 

@@ -16,7 +16,7 @@ export const extractRelations = ({ parentId, data, configMap, locale }: Args) =>
 
 	for (const [path, config] of Object.entries(configMap)) {
 		if (isRelationField(config)) {
-			const value = getValueAtPath<BeforeOperationRelation[] | string | string[]>(data, path);
+			const value = getValueAtPath<BeforeOperationRelation[] | string | string[]>(path, data);
 
 			const localized = config.localized;
 			const relationRawValue = value;

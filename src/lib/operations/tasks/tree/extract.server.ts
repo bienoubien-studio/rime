@@ -50,7 +50,7 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'tree') {
-			const value = getValueAtPath<TreeBlock[]>(data, path);
+			const value = getValueAtPath<TreeBlock[]>(path, data);
 
 			const isEmptyValue = config.isEmpty(value);
 

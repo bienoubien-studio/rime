@@ -1,11 +1,12 @@
 import rizom from './rizom.server.js';
 import handlers from './handlers/index.js';
 import { buildConfig } from './config/build/index.js';
-import type { Config } from 'rizom/types';
+export { renderRichText } from './fields/rich-text/render.js';
 export { rizom, handlers, buildConfig };
-export { FormFieldBuilder } from 'rizom/fields/builders/field.js';
+export { FormFieldBuilder, FieldBuilder } from 'rizom/fields/builders/field.js';
 export { area } from 'rizom/config/build/area/builder.js';
 export { collection } from '$lib/config/build/collection/builder.js';
+import type { Config } from 'rizom/types';
 export const defineConfig = (config: Config) => config;
 
 /* -------------------------------------------------------------------------- */

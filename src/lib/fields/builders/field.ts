@@ -78,7 +78,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return '';
 	}
 
-	protected getSchemaName(parentPath?: string) {
+	getSchemaName(parentPath?: string) {
 		const name = parentPath ? `${parentPath}__${this.field.name}` : this.field.name;
 
 		return {

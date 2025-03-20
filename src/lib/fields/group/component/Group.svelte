@@ -2,12 +2,17 @@
 	import type { GroupField } from 'rizom/fields/group';
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import { onMount } from 'svelte';
-	import { ChevronDown } from '@lucide/svelte';
+	import { ChevronDown, Folder, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import type { WithoutBuilders } from 'rizom/types/util';
 	import { isFormField } from 'rizom/util/field';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
+	import type { GenericDoc } from 'rizom/types';
 
-	type Props = { path: string; config: WithoutBuilders<GroupField>; form: DocumentFormContext };
+	type Props = {
+		path: string;
+		config: WithoutBuilders<GroupField>;
+		form: DocumentFormContext<GenericDoc>;
+	};
 	const { config, path, form }: Props = $props();
 
 	let groupOpen = $state(true);
@@ -26,24 +31,40 @@
 	});
 </script>
 
-<button
-	onclick={handleClick}
-	type="button"
-	class:open={groupOpen}
-	class:rz-group-field__title--live={form.isLive}
-	class="rz-group-field__title"
->
-	<span><ChevronDown size="14" /></span>
-	{config.label || config.name || 'Group'}
-</button>
+<div class="rz-group-field__wrapper">
+	<button
+		onclick={handleClick}
+		type="button"
+		class:open={groupOpen}
+		class:rz-group-field__title--live={form.isLive}
+		class="rz-group-field__title"
+	>
+		{#if groupOpen}
+			<FolderOpen size="12" />
+		{:else}
+			<FolderClosed size="12" />
+		{/if}
+		{config.label || config.name || 'Group'}
+		<ChevronDown size="14" />
+	</button>
 
-<div class="rz-group-field__content" class:rz-group-field__content--hidden={!groupOpen}>
-	<RenderFields {path} fields={config.fields} framed={true} {form} />
+	<div class="rz-group-field__content" class:rz-group-field__content--hidden={!groupOpen}>
+		<RenderFields {path} fields={config.fields} framed={true} {form} />
+	</div>
 </div>
 
 <style lang="postcss">
+	.rz-group-field__wrapper {
+		border: var(--rz-border);
+		margin: 0 var(--rz-fields-padding);
+		border-radius: var(--rz-radius-md);
+		&:global(:has(.rz-field-error)) {
+			@mixin ring var(--rz-color-error);
+		}
+	}
+
 	.rz-group-field__content {
-		padding-top: var(--rz-size-4);
+		padding-top: minmax(var(--rz-fields-padding), var(--rz-size-4));
 		background-color: hsl(var(--rz-ground-6));
 		> :global(.rz-render-fields) {
 			padding-left: 0;
@@ -54,26 +75,29 @@
 		display: none;
 	}
 	.rz-group-field__title {
-		border-bottom: var(--rz-border);
 		display: flex;
 		align-items: center;
 		justify-content: start;
 		gap: var(--rz-size-2);
 		font-size: var(--rz-text-xl);
-		padding: var(--rz-size-6) var(--rz-fields-padding);
+
+		padding: var(--rz-size-3) var(--rz-size-4);
 		position: relative;
 		width: 100%;
 		text-align: left;
 		@mixin font-medium;
 		/* &:not(:first-child) { */
-		border-top: var(--rz-border);
+		/* border-top: var(--rz-border); */
 		/* } */
-		&.open span {
+		&.open {
+			border-bottom: var(--rz-border);
+		}
+		&.open :global(.lucide-chevron-down) {
 			rotate: -180deg;
 		}
 	}
 	.rz-group-field__title--live {
 		font-size: var(--rz-text-md);
-		padding: var(--rz-size-4) var(--rz-fields-padding);
+		/* padding: var(--rz-size-4) var(--rz-fields-padding); */
 	}
 </style>

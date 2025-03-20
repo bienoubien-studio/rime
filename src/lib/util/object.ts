@@ -110,7 +110,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
 	return output;
 };
 
-export const getValueAtPath = <T extends unknown>(obj: Dic, path: string): T | null | undefined => {
+export const getValueAtPath = <T extends unknown>(path: string, obj: Dic): T | null | undefined => {
 	const parts = path.split('.');
 	let current = obj;
 	for (const part of parts) {

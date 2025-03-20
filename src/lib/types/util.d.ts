@@ -19,6 +19,10 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 
 type AnyFunction = (...args: any[]) => any;
 
+type AsTuple<T> = {
+	[K in keyof T]: T[K];
+}[keyof T][];
+
 type WithUpload<T extends { upload?: boolean }> = T & {
 	upload: true;
 	imageSizes?: ImageSizesConfig[];
@@ -35,7 +39,9 @@ type WithRelationPopulated<T> = {
 		? T[K] extends undefined
 			? undefined
 			: U[]
-		: T[K];
+		: T[K] extends object
+			? WithRelationPopulated<T[K]>
+			: T[K];
 };
 
 type WithoutBuilders<T> =

@@ -5,7 +5,7 @@ import { toast } from 'svelte-sonner';
 import commandScore from 'command-score';
 import { isUploadConfig } from 'rizom/util/config.js';
 import { isFormField, isGroupFieldRaw, isNotHidden, isTabsFieldRaw } from '../../util/field.js';
-import { hasProp } from 'rizom/util/object.js';
+import { getValueAtPath, hasProp } from 'rizom/util/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
@@ -15,7 +15,11 @@ import type { WithRequired } from 'rizom/types/util.js';
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid';
 
-function createCollectionStore({ initial, config, canCreate }: Args) {
+function createCollectionStore<T extends GenericDoc = GenericDoc>({
+	initial,
+	config,
+	canCreate
+}: Args<T>) {
 	let initialDocs = $state.raw(initial);
 	let docs = $state(initial);
 	let sortingOrder = $state<SortMode>('asc');
@@ -125,7 +129,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 	const columns = buildFieldColumns(config.fields)
 		.map((col) => {
 			// Set column position
-			// TODO : do it when building config
+			// @TODO : do it when building config ?
 			let tableConfig: FieldPanelTableConfig = { position: 99 };
 			if (typeof col.table === 'number') {
 				tableConfig.position = col.table;
@@ -207,7 +211,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			if (inputValue !== '') {
 				const scores: any[] = [];
 				for (const doc of initialDocs) {
-					const asTitle = doc[config.asTitle];
+					const asTitle = getValueAtPath(config.asTitle, doc);
 					if (!asTitle) continue;
 					const score = commandScore(asTitle, inputValue);
 					if (score > 0) {
@@ -252,7 +256,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			return docs.length;
 		},
 
-		updateDoc(incomingDoc: GenericDoc) {
+		updateDoc(incomingDoc: T) {
 			for (const [index, doc] of docs.entries()) {
 				if (doc.id === incomingDoc.id) {
 					docs[index] = incomingDoc;
@@ -261,7 +265,7 @@ function createCollectionStore({ initial, config, canCreate }: Args) {
 			}
 		},
 
-		addDoc(doc: GenericDoc) {
+		addDoc(doc: T) {
 			docs.push(doc);
 		},
 
@@ -296,8 +300,8 @@ export function getCollectionContext(key: string = 'root') {
 
 export type CollectionContext = ReturnType<typeof setCollectionContext>;
 
-type Args = {
-	initial: GenericDoc[];
+type Args<T extends GenericDoc = GenericDoc> = {
+	initial: T[];
 	config: CompiledCollection;
 	canCreate: boolean;
 	key?: string;

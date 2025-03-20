@@ -28,7 +28,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 	let output = { ...args.data };
 
 	for (const [key, config] of Object.entries(configMap)) {
-		let value: any = getValueAtPath(output, key);
+		let value: any = getValueAtPath(key, output);
 
 		if (key === 'hashedPassword') {
 			//
@@ -39,7 +39,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			//
 			// [EDIT] Should not be there with better-auth
 			//
-			if (getValueAtPath(output, key)) {
+			if (getValueAtPath(key, output)) {
 				throw new RizomError('hashedPassword should be empty while preprocessing incoming data');
 			}
 			// No need for validation / transform / access

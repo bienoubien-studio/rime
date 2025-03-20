@@ -1,11 +1,8 @@
-import type { AnyField } from 'rizom/types';
 import type { Field } from 'rizom/types/fields';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tabs from './component/Tabs.svelte';
 import type { WithoutBuilders } from 'rizom/types/util.js';
-import { isFormField } from 'rizom/util/field.js';
-import { isCamelCase, toPascalCase } from 'rizom/util/string.js';
-import { RizomError } from 'rizom/errors/index.js';
+import { isCamelCase } from 'rizom/util/string.js';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
 export const tab = (label: string) => new TabBuilder(label);
@@ -25,8 +22,6 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 			.map((tab) => {
 				const fieldsTypes = tab.raw.fields
 					.filter((field) => field instanceof FormFieldBuilder)
-					// do not handle block type as it's done inside the type generator
-					.filter((field) => field.raw.type !== 'blocks')
 					.map((field) => field.toType())
 					.join(',\n\t\t');
 				return `${tab.raw.name}: {${fieldsTypes}}`;
@@ -47,7 +42,7 @@ class TabBuilder {
 
 	constructor(name: string) {
 		if (!isCamelCase(name)) throw new Error('Tab name should be camelCase');
-		this.#tab = { name, label: name, fields: [] };
+		this.#tab = { name, label: name, fields: [], live: true };
 	}
 
 	label(label: string) {
@@ -67,6 +62,11 @@ class TabBuilder {
 	compile(): WithoutBuilders<TabsFieldTab> {
 		return { ...this.#tab, fields: this.#tab.fields.map((f) => f.compile()) };
 	}
+
+	live(bool: boolean) {
+		this.#tab.live = bool;
+		return this;
+	}
 }
 
 /////////////////////////////////////////////
@@ -81,6 +81,7 @@ export type TabsField = Field & {
 export type TabsFieldTab = {
 	name: string;
 	label?: string;
+	live: boolean;
 	fields: FieldBuilder<Field>[];
 };
 
@@ -88,11 +89,7 @@ export type TabsFieldRaw = Field & {
 	type: 'tabs';
 	name: string;
 	label?: string;
-	tabs: {
-		name: string;
-		label?: string;
-		fields: Field[];
-	}[];
+	tabs: Array<TabsFieldTab & { fields: Field[] }>;
 };
 
 /////////////////////////////////////////////

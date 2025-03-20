@@ -24,7 +24,7 @@ export const postprocessFields = async <T extends Dic>(args: {
 		}
 
 		if (config.hooks?.beforeRead) {
-			let value = getValueAtPath(document, key);
+			let value = getValueAtPath(key, document);
 			if (value) {
 				for (const hook of config.hooks.beforeRead) {
 					value = await hook(value, { config, api, locale });

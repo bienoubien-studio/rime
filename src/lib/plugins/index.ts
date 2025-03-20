@@ -14,7 +14,7 @@ export type CorePlugins = {
 
 export type Plugin<T = void> = (options: T) => {
 	name: string;
-	core: boolean;
+	core?: boolean;
 	configure?: (config: BuiltConfig) => BuiltConfig;
 	actions?: Record<string, MaybeAsyncFunction>;
 	routes?: Record<string, RouteConfig>;

@@ -4,7 +4,10 @@
 	import type { GenericDoc } from 'rizom/types/doc';
 	import LiveSidePanel from 'rizom/panel/components/sections/live/SidePanel.svelte';
 	import type { BrowserConfig } from 'rizom/types/config';
-	import { browser } from '$app/environment';
+	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
+	import { t__ } from 'rizom/panel/i18n';
+	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte'
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -13,7 +16,13 @@
 	let iframeSrc = $state('');
 	let sync = $derived(iframeSrc === data.src);
 
+	$inspect(data.src);
+	$inspect(iframeSrc);
+	$inspect(data.src);
+
 	const onDataChange = (args: Partial<GenericDoc>) => {
+		console.log('send', args);
+		console.log('iframe?.contentWindow', iframe?.contentWindow);
 		/** Send message to iframe */
 		if (iframe?.contentWindow) {
 			iframe.contentWindow.postMessage(args);
@@ -27,18 +36,23 @@
 		}
 	};
 
-	// Wrapper tells iframe it's live
+	// Wrapper tells the iframe it's live
 	function handshake() {
+		console.log("Wrapper tells iframe it's live handshake");
+		console.log('sync is : ' + sync);
 		if (sync === false) {
 			if (iframe && iframe.contentWindow) {
+				console.log('[Live.svelte] postmessage to iframe', { handshake: true });
 				iframe.contentWindow.postMessage({ handshake: true });
 			}
-			window.setTimeout(handshake, 200);
+			window.setTimeout(handshake, 1000);
 		}
 	}
 
 	const onIframeMessage = async (e: any) => {
+		console.log('[Live.svelte] get message from iframe, e.data.handshake', e.data.handshake);
 		if (e.data.handshake) {
+			console.log('set iframeSrc with : ' + e.data.handshake);
 			iframeSrc = e.data.handshake;
 		}
 		if (e.data.location) {
@@ -46,14 +60,16 @@
 		}
 	};
 
-	$effect(() => {
-		if (browser) {
+	onMount(() => {
+			console.log('[Live.svelte] addevent');
 			window.addEventListener('message', onIframeMessage);
-		}
 	});
+
+	$inspect('sync : ' + sync);
 
 	$effect(() => {
 		if (!sync) {
+			console.log('$effect call handshake');
 			handshake();
 		}
 	});
@@ -85,7 +101,9 @@
 		<PaneResizer />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
 			{#if !sync}
-				<div class="rz-live-container__iframe-overlay"></div>
+				<div out:fade={{ duration: 350 }} class="rz-live-container__iframe-overlay">
+					<div><SpinLoader /> {t__('common.live_in_sync')}</div>
+				</div>
 			{/if}
 			<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
 		</Pane>
@@ -116,5 +134,14 @@
 		opacity: 0.5;
 		position: absolute;
 		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		> div {
+			display: flex;
+			align-items: center;
+			gap: var(--rz-size-3);
+			justify-content: center;
+		}
 	}
 </style>

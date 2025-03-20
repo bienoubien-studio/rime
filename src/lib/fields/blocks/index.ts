@@ -8,6 +8,7 @@ import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { IconProps } from '@lucide/svelte';
+import { toPascalCase } from 'rizom/util/string.js';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);
 
@@ -21,6 +22,11 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		this.field.isEmpty = (value) => {
 			return !value || (Array.isArray(value) && value.length === 0);
 		};
+	}
+
+	toType() {
+		const blockNames = this.field.blocks.map((block) => `Block${toPascalCase(block.raw.name)}`);
+		return `${this.field.name}: Array<${blockNames.join(' | ')}>,`;
 	}
 
 	get component() {

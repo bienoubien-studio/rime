@@ -86,9 +86,9 @@
 			{config.label ? config.label : capitalize(config.name)}
 		</h3>
 		{#if hasBlocks}
-			<div>
-				<Button onclick={collapseAll} variant="text">Collapse all</Button>
-				<Button onclick={expandAll} variant="text">Expand all</Button>
+			<div class="rz-blocks__actions">
+				<Button onclick={collapseAll} variant="link">Collapse all</Button>
+				<Button onclick={expandAll} variant="link">Expand all</Button>
 			</div>
 		{/if}
 	</header>
@@ -122,6 +122,10 @@
 		margin-bottom: var(--rz-size-4);
 		font-size: var(--rz-text-xl);
 		@mixin font-medium;
+	}
+
+	.rz-blocks__actions {
+		translate: 0 calc(-1 * var(--rz-size-2));
 	}
 
 	.rz-blocks__title--nested {

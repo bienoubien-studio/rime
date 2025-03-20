@@ -3,6 +3,8 @@ import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Slug from './component/Slug.svelte';
 import Cell from './component/Cell.svelte';
+import { validate } from 'rizom/util/index.js';
+import { capitalize, slugify } from 'rizom/util/string.js';
 
 export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
 
@@ -30,6 +32,11 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 		return this;
 	}
 
+	layout(layout: 'compact' | 'default') {
+		this.field.layout = layout;
+		return this;
+	}
+
 	unique() {
 		this.field.unique = true;
 		return this;
@@ -38,6 +45,18 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 	isTitle() {
 		this.field.isTitle = true;
 		return this;
+	}
+
+	compile() {
+		if (!this.field.validate) {
+			this.field.validate = validate.slug;
+		}
+
+		if (!this.field.placeholder) {
+			this.field.placeholder = slugify(this.field.label || this.field.name);
+		}
+
+		return super.compile();
 	}
 }
 
@@ -49,6 +68,8 @@ export type SlugField = FormField & {
 	slugify?: string;
 	unique?: boolean;
 	isTitle?: true;
+	placeholder: string;
+	layout: 'compact' | 'default';
 };
 
 /////////////////////////////////////////////

@@ -1,9 +1,11 @@
-.rz-text-field--compact {
+.rz-text-field.rz-text-field--compact {
 	label {
 		display: none;
 	}
-	fieldset .rz-field-error {
-		top: calc(-1 * var(--rz-size-6));
+	.rz-field-error {
+		position: absolute;
+		top: var(--rz-size-1);
+		right: calc(var(--rz-fields-padding) + var(--rz-size-1));
 	}
 	.rz-input {
 		font-size: var(--rz-text-md);
@@ -12,7 +14,7 @@
 	}
 }
 
-.rz-text-field--title {
+/* .rz-text-field--title {
 	label {
 		display: none;
 	}
@@ -26,7 +28,6 @@
 		padding: 0 var(--rz-size-5);
 		height: var(--rz-size-14);
 		background-color: transparent;
-		/* padding: 0; */
 		border: none;
 		border-left: 4px solid hsl(var(--rz-color-border));
 		&:focus-visible {
@@ -35,4 +36,4 @@
 			border-left: 4px solid hsl(var(--rz-color-primary) / 0.3);
 		}
 	}
-}
+} */

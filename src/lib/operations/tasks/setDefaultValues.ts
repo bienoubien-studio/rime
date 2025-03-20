@@ -16,7 +16,7 @@ export const setDefaultValues = async <T extends Dic>(args: {
 	const { adapter, configMap } = args;
 	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
-		let value = getValueAtPath(output, key);
+		let value = getValueAtPath(key, output);
 		let isEmpty;
 		try {
 			isEmpty = config.isEmpty(value);

@@ -35,12 +35,14 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	};
 
 	const onMessage = async (e: any) => {
+		console.log('[context] onMessage', e);
 		/////////////////////////////////////////////
 		// HandShake
 		//////////////////////////////////////////////
 		if (e.data.handshake) {
 			enabled = true;
 			if (window && window.top) {
+				console.log('[context] postMessage');
 				window.top.postMessage({ handshake: href });
 			}
 			/////////////////////////////////////////////

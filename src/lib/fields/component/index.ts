@@ -2,12 +2,20 @@ import type { Field } from 'rizom/types/fields';
 import { FieldBuilder } from '../builders/index.js';
 import type { FieldAccess } from 'rizom/types/fields';
 import type { Component } from 'svelte';
+import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte.js';
+import type { GenericDoc } from 'rizom/types/index.js';
 
-export const component = (component: Component) => new ComponentFieldBuilder(component);
+type TypedComponent = Component<{
+	path: string;
+	config: ComponentField;
+	form: DocumentFormContext<GenericDoc>;
+}>;
+
+export const component = (component: TypedComponent) => new ComponentFieldBuilder(component);
 
 class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 	//
-	constructor(component: Component) {
+	constructor(component: TypedComponent) {
 		super('component');
 		this.field.component = component;
 	}
@@ -27,7 +35,7 @@ class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 
 export type ComponentField = Field & {
 	type: 'component';
-	component: Component;
+	component: TypedComponent;
 };
 
 /////////////////////////////////////////////

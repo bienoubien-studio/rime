@@ -1,4 +1,4 @@
-import { pagesLoad, pagesActions } from 'rizom/panel/pages';
+import { pagesLoad } from 'rizom/panel/pages';
 
 
 export const load = pagesLoad.forgotPassword;

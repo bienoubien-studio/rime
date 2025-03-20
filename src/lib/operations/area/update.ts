@@ -57,7 +57,6 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 
 	const incomingPaths = Object.keys(configMap);
 
-	console.log(data);
 	await adapter.area.update({
 		slug: config.slug,
 		data,

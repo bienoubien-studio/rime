@@ -4,7 +4,7 @@ import deepmerge from 'deepmerge';
 import { createBlankDocument } from 'rizom/util/doc';
 import type { DeepPartial } from 'rizom/types/util';
 
-export const mergeWithBlankDocument = <T extends GenericDoc>({
+export const mergeWithBlankDocument = <T extends GenericDoc = GenericDoc>({
 	data,
 	config
 }: {
@@ -15,10 +15,11 @@ export const mergeWithBlankDocument = <T extends GenericDoc>({
 	if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {
 		file = data.file;
 		delete data.file;
-	}
+	}	
 
-	const dataMergedWithBlankDocument = deepmerge<GenericDoc>(createBlankDocument(config), data);
-
+	// @ts-ignore
+	let dataMergedWithBlankDocument = deepmerge(createBlankDocument(config), data);
+	
 	// Add file after merge
 	if (file) {
 		dataMergedWithBlankDocument.file = file;

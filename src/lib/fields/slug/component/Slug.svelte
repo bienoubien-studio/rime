@@ -7,6 +7,8 @@
 	import { Field } from 'rizom/panel';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { getValueAtPath } from 'rizom/util/object';
+	import './slug.css';
+	import { Hash } from '@lucide/svelte';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -31,7 +33,7 @@
 	const generateFromField = () => {
 		if (config.slugify) {
 			const source = config.slugify in form.changes ? form.changes : form.doc;
-			const fromValue = getValueAtPath<string>(source, config.slugify);
+			const fromValue = getValueAtPath<string>(config.slugify, source);
 			if (!fromValue) return;
 			const slugifiedValue = slugify(fromValue);
 			if (internalValue !== slugifiedValue) {
@@ -49,13 +51,23 @@
 		}
 		internalValue = inputElement.value;
 	};
+
+	const classNameCompact = config.layout === 'compact' ? 'rz-slug-field--compact' : '';
+	const classNames = `${config.className} ${classNameCompact || ''}`;
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<Field.Root class={classNames} visible={field.visible} disabled={!field.editable}>
 	<Field.Label {config} />
 
 	<div class="rz-slug">
-		<Input data-error={field.error ? '' : null} type="text" value={field.value} oninput={onInput} />
+		<Hash class="rz-slug__icon" size="14" />
+		<Input
+			placeholder={config.placeholder}
+			data-error={field.error ? '' : null}
+			type="text"
+			value={field.value}
+			oninput={onInput}
+		/>
 		{#if config.slugify}
 			<Button onclick={generateFromField} type="button" size="sm" variant="outline">
 				{t__('fields.generate_from', config.slugify)}
@@ -64,20 +76,3 @@
 	</div>
 	<Field.Error error={field.error} />
 </Field.Root>
-
-<style type="postcss">
-	.rz-slug {
-		position: relative;
-
-		:global(.rz-input) {
-			font-family: var(--rz-font-mono);
-			font-size: var(--rz-text-sm);
-		}
-
-		:global(.rz-button) {
-			position: absolute;
-			right: var(--rz-size-1-5);
-			top: var(--rz-size-1-5);
-		}
-	}
-</style>

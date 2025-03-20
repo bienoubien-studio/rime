@@ -44,7 +44,7 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		return this;
 	}
 
-	layout(layout: string) {
+	layout(layout: 'compact') {
 		this.field.layout = layout;
 		return this;
 	}
@@ -75,7 +75,7 @@ export type TextField = FormField & {
 	unique?: boolean;
 	isTitle?: true;
 	placeholder: string;
-	layout: string;
+	layout: 'compact';
 };
 
 /////////////////////////////////////////////

@@ -11,7 +11,8 @@ import {
 	link,
 	email,
 	select,
-	group
+	group,
+	component
 } from 'rizom/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import {
@@ -29,22 +30,31 @@ import { collection, area, defineConfig } from 'rizom';
 import type { CollectionHookAfterUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';
 import { regenerateImages } from '@rizom/regenerate-images';
+import URL from './components/URL.svelte';
 
-const tabAttributes = tab('attributes').fields(
-	text('title').isTitle().required(),
-	slug('slug').slugify('title'),
-	toggle('isHome').label('Homepage'),
-	relation('thumbnail').to('medias'),
-	group('hero').fields(
-		text('title').isTitle().required(),
-		text('intro'),
-		relation('image').to('medias')
-	),
-	richText('intro'),
-	relation('parent')
-		.to('pages')
-		.query((doc) => `where[id][not_equals]=${doc.id}`)
-);
+const tabSEO = tab('metas')
+	.label('SEO')
+	.fields(
+		text('title').label('Meta title').layout('compact'),
+		richText('description').label('Meta description')
+	)
+	.live(false);
+
+const tabAttributes = tab('attributes')
+	.label('Attributes')
+	.fields(
+		text('title').isTitle().required().layout('compact'),
+		component(URL),
+		toggle('isHome').label('Homepage').live(false),
+		slug('slug')
+			.slugify('attributes.title')
+			.condition((_, siblings) => siblings.isHome !== true)
+			.live(false),
+		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
+		relation('parent')
+			.to('pages')
+			.query((doc) => `where[id][not_equals]=${doc.id}`)
+	);
 
 const blockKeyFacts = block('keyFacts').fields(
 	tree('facts')
@@ -66,9 +76,12 @@ const blockBlack = block('black').fields(
 	text('title'),
 	blocks('text', [blockParagraph, blockImage, blockSlider, blockSubContent])
 );
-const tabLayout = tab('layout').fields(
-	blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
-);
+const tabLayout = tab('layout')
+	.label('Layout')
+	.fields(
+		group('hero').fields(text('title').isTitle(), text('intro'), relation('image').to('medias')),
+		blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
+	);
 
 const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
 	args.rizom.plugins.cache.clear();
@@ -79,7 +92,8 @@ const Pages = collection('pages', {
 	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
 	group: 'content',
 	icon: Newspaper,
-	fields: [tabs(tabAttributes, tabLayout)],
+	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
+	live: true,
 	url: (doc) =>
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`

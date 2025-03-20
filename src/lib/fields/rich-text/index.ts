@@ -53,7 +53,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	}
 
 	toType() {
-		return `${this.field.name}${this.field.required ? '' : '?'}: { content: RichTextNode[] }`;
+		return `${this.field.name}${this.field.required ? '' : '?'}: import('@tiptap/core').JSONContent`;
 	}
 
 	marks(...marks: RichTextFieldMark[]) {

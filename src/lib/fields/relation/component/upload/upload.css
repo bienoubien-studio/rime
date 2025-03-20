@@ -1,30 +1,61 @@
+.rz-relation-upload__list {
+	container: relation-upload-list / inline-size;
+
+	.rz-relation-upload__row {
+		width: calc(var(--rz-thumbnail-size) + 2 * var(--rz-size-2));
+		.rz-relation-upload__info {
+			display: none;
+		}
+		.rz-relation-upload__filesize,
+		.rz-relation-upload__mimetype {
+			display: none;
+		}
+	}
+}
 .rz-relation-upload__list[data-many] {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rz-size-4);
-	.rz-relation-upload__row {
-		width: calc(var(--rz-size-40) + 2 * var(--rz-size-2));
-		.rz-relation-upload__info {
-			display: none;
+}
+
+.rz-relation-upload__list:not(.rz-relation-upload__list[data-many]) {
+	@container relation-upload-list (min-width: 285px) {
+		.rz-relation-upload__row {
+			width: min(400px, 100%);
+			.rz-relation-upload__info {
+				display: block;
+			}
+		}
+	}
+	@container relation-upload-list (min-width: 425px) {
+		.rz-relation-upload__filesize,
+		.rz-relation-upload__mimetype {
+			display: block;
 		}
 	}
 }
 
 .rz-relation-upload__row {
+	--rz-thumbnail-size: var(--rz-size-20);
 	background-color: hsl(var(--rz-ground-6));
 	position: relative;
-	margin-bottom: var(--rz-size-3);
 	display: flex;
-	width: min(400px, 100%);
 	gap: var(--rz-size-6);
 	border-radius: var(--rz-radius-md);
 	border: var(--rz-border);
 	padding: var(--rz-size-2);
+
+	@container relation-upload-list (min-width: 425px) {
+		--rz-thumbnail-size: var(--rz-size-28);
+	}
+	@container relation-upload-list (min-width: 768px) {
+		--rz-thumbnail-size: var(--rz-size-40);
+	}
 }
 
 .rz-relation-upload__thumbnail {
-	width: var(--rz-size-40);
-	height: var(--rz-size-40);
+	width: var(--rz-thumbnail-size);
+	height: var(--rz-thumbnail-size);
 	flex-shrink: 0;
 	overflow: hidden;
 	border-radius: var(--rz-radius-md);
@@ -62,11 +93,20 @@
 	position: absolute;
 	right: var(--rz-size-3);
 	top: var(--rz-size-3);
+	border: var(--rz-border);
+	background-color: hsl(var(--rz-ground-6));
+	border-radius: 1rem;
+	height: var(--rz-size-4);
+	width: var(--rz-size-4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .rz-relation-upload__actions {
 	display: flex;
 	gap: var(--rz-size-3);
+	margin-top: var(--rz-size-3);
 }
 
 .rz-relation-upload__search {

@@ -20,7 +20,7 @@ import { t__ } from '../i18n/index.js';
 import type { TreeBlock } from 'rizom/types/doc.js';
 import { isObjectLiteral } from 'rizom/util/object.js';
 
-function createDocumentFormState({
+function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
 	config,
 	readOnly,
@@ -28,13 +28,13 @@ function createDocumentFormState({
 	onDataChange,
 	onFieldFocus,
 	onNestedDocumentCreated
-}: Args) {
+}: Args<T>) {
 	//
 	let intialDoc = $state(initial);
 	let doc = $state(initial);
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
-	const isCreateDoc = (doc: typeof initial): doc is GenericDoc => !doc.id;
+	const isCreateDoc = (doc: T) => !doc.id;
 	let processing = $state(false);
 	let element = $state<HTMLFormElement>();
 	const user = getUserContext();
@@ -62,7 +62,7 @@ function createDocumentFormState({
 		if (config.type === 'area') {
 			return config.label;
 		} else {
-			$effect(() => (title = doc[config.asTitle] || '[untitled]'));
+			$effect(() => (title = getValueAtPath(config.asTitle, doc) || '[untitled]'));
 			return doc && doc[config.asTitle] ? doc[config.asTitle] : '[untitled]';
 		}
 	}
@@ -123,7 +123,7 @@ function createDocumentFormState({
 	 * //value will update if doc.blocks.0.title update
 	 */
 	function useValue<T>(path: string): T | null {
-		return getValueAtPath(doc, path) || null;
+		return getValueAtPath(path, doc) || null;
 	}
 
 	function useTree(path: string) {
@@ -133,7 +133,7 @@ function createDocumentFormState({
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getItems = (): TreeBlock[] => {
-			return getValueAtPath(doc, path) || [];
+			return getValueAtPath(path, doc) || [];
 		};
 
 		const assignItemsToDoc = (items: TreeBlock[]) => {
@@ -167,7 +167,7 @@ function createDocumentFormState({
 
 			// Get target array
 			const targetArray =
-				getValueAtPath<TreeBlock[]>(items, atPath.replace(`${path}.`, '')) || items;
+				getValueAtPath<TreeBlock[]>(atPath.replace(`${path}.`, ''), items) || items;
 
 			// Perform the move operation
 			targetArray.splice(index, 1);
@@ -244,7 +244,7 @@ function createDocumentFormState({
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
-			return cloneDeep(getValueAtPath(doc, path)) || [];
+			return cloneDeep(getValueAtPath(path, doc)) || [];
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
@@ -351,7 +351,7 @@ function createDocumentFormState({
 	 * // value will not update if doc.blocks.0.title update
 	 */
 	function getRawValue(path: string) {
-		return snapshot(getValueAtPath(doc, path)) || null;
+		return snapshot(getValueAtPath(path, doc)) || null;
 	}
 
 	function useField(path: string | undefined, config: AnyFormField) {
@@ -388,7 +388,7 @@ function createDocumentFormState({
 
 		return {
 			get value() {
-				return getValueAtPath(doc, path);
+				return getValueAtPath(path, doc);
 			},
 
 			set value(value: any) {
@@ -419,7 +419,7 @@ function createDocumentFormState({
 						let siblings: Dic = doc;
 						if (parts.length > 1) {
 							const upperPath = path.substring(0, path.lastIndexOf('.'));
-							siblings = getValueAtPath(doc, upperPath) || {};
+							siblings = getValueAtPath(upperPath, doc) || {};
 						}
 						visible = config.condition(doc, siblings);
 					} catch (err: any) {
@@ -434,7 +434,7 @@ function createDocumentFormState({
 			},
 
 			get isEmpty() {
-				return !!config.isEmpty && config.isEmpty(getValueAtPath(doc, path));
+				return !!config.isEmpty && config.isEmpty(getValueAtPath(path, doc));
 			}
 			// get props() {
 			// 	return {
@@ -457,7 +457,7 @@ function createDocumentFormState({
 		}
 
 		const flatData: Dic = flatten(data);
-		console.log(flatData);
+
 		const formData = new FormData();
 
 		for (const key of Object.keys(flatData)) {
@@ -607,22 +607,24 @@ function createDocumentFormState({
 
 const FORM_KEY = 'rizom.form';
 
-export function setDocumentFormContext(args: Args) {
+export function setDocumentFormContext<T extends GenericDoc>(args: Args<T>) {
 	const store = createDocumentFormState(args);
 	return setContext(`${FORM_KEY}.${args.key}`, store);
 }
 
-export function getDocumentFormContext(key: string = 'root') {
-	return getContext<DocumentFormContext>(`${FORM_KEY}.${key}`);
+export function getDocumentFormContext<T extends GenericDoc>(key: string = 'root') {
+	return getContext<DocumentFormContext<T>>(`${FORM_KEY}.${key}`);
 }
 
-export type DocumentFormContext = ReturnType<typeof setDocumentFormContext>;
+export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<
+	typeof setDocumentFormContext<T>
+>;
 
 type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
 type MoveBlock = (from: number, to: number) => void;
 
-type Args = {
-	initial: GenericDoc;
+type Args<T> = {
+	initial: T;
 	config: CompiledArea | CompiledCollection;
 	readOnly: boolean;
 	onNestedDocumentCreated?: any;

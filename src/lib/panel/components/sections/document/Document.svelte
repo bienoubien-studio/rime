@@ -114,8 +114,6 @@
 
 		{#if !liveEditing}
 			<Header {form} {config} {onClose}></Header>
-		{:else}
-			<FloatingUI {form} {onClose} />
 		{/if}
 
 		<div class="rz-document__fields">
@@ -140,6 +138,8 @@
 					{@render meta('id', form.doc.id)}
 				{/if}
 			</div>
+		{:else}
+			<FloatingUI {form} {onClose} />
 		{/if}
 	</ScrollArea>
 </form>
@@ -168,6 +168,7 @@
 		&:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
 			padding-top: var(--rz-size-8);
 		}
+		min-height: calc(100vh - var(--rz-size-14));
 	}
 
 	.rz-document__infos {

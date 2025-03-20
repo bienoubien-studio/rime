@@ -2,7 +2,6 @@
 	import { Input } from '$lib/panel/components/ui/input';
 	import { Field } from '$lib/panel';
 	import type { TextFieldProps } from './props.js';
-	import { capitalize } from 'rizom/util/string.js';
 	import './text.css';
 
 	const { path, config, type = 'text', form }: TextFieldProps = $props();
@@ -14,9 +13,8 @@
 		field.value = (event.target as HTMLInputElement).value;
 	};
 
-	const classNameTitle = config.isTitle ? 'rz-text-field--title' : '';
 	const classNameCompact = config.layout === 'compact' ? 'rz-text-field--compact' : '';
-	const classNames = `${config.className} ${classNameTitle || classNameCompact || ''}`;
+	const classNames = `${config.className} ${classNameCompact || ''}`;
 </script>
 
 <Field.Root class="rz-text-field {classNames}" visible={field.visible} disabled={!field.editable}>

@@ -2,13 +2,15 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
-import { isBlocksField } from 'rizom/util/field.js';
+import { isBlocksField, isGroupField, isTabsField, isTreeFieldRaw } from 'rizom/util/field.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
 import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
 import { isUploadConfig } from 'rizom/util/config.js';
 import { TabsBuilder } from 'rizom/fields/tabs/index.js';
+import { TreeBuilder } from 'rizom/fields/tree/index.js';
+import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
@@ -67,43 +69,44 @@ export function generateTypesString(config: BuiltConfig) {
 		imports = new Set([...imports, string]);
 	};
 
-	const convertFieldsToTypesTemplates = (fields: FieldBuilder<Field>[]): string[] => {
+	const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
 		let strFields: string[] = [];
 
 		for (const field of fields) {
-			switch (true) {
-				case field instanceof TabsBuilder:
-					strFields.push(field.toType());
-					break;
-				case isBlocksField(field.raw):
-					{
-						for (const block of field.raw.blocks) {
-							if (!registeredBlocks.includes(block.raw.name)) {
-								const templates = convertFieldsToTypesTemplates(
-									block.raw.fields
-										.filter((field) => field instanceof FormFieldBuilder)
-										.filter((field) => field.raw.name !== 'type')
-								);
-								blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
-								registeredBlocks.push(block.raw.name);
-							}
-						}
-						const blockNames = field.raw.blocks.map(
-							(block) => `Block${toPascalCase(block.raw.name)}`
-						);
-						strFields.push(`${field.raw.name}: Array<${blockNames.join(' | ')}>,`);
-					}
-					break;
-				case field instanceof FormFieldBuilder:
-					if (field.type === 'richText') {
-						addImport('RichTextNode');
-					} else if (field.type !== 'blocks') {
-						strFields.push(field.toType());
-					}
-					break;
+			if (field instanceof FormFieldBuilder) {
+				strFields.push(field.toType());
+			} else if (field instanceof TabsBuilder) {
+				strFields.push(field.toType());
 			}
 		}
+
 		return strFields;
+	};
+
+	const buildblocksTypes = (fields: FieldBuilder<Field>[]) => {
+		for (const field of fields) {
+			if (isBlocksField(field.raw)) {
+				{
+					for (const block of field.raw.blocks) {
+						if (!registeredBlocks.includes(block.raw.name)) {
+							const templates = buildFieldsTypes(
+								block.raw.fields.filter((field) => field instanceof FormFieldBuilder)
+							);
+							blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
+							registeredBlocks.push(block.raw.name);
+						}
+					}
+				}
+			} else if (field instanceof TabsBuilder) {
+				for (const tab of field.raw.tabs) {
+					buildblocksTypes(tab.raw.fields);
+				}
+			} else if (field instanceof GroupFieldBuilder) {
+				buildblocksTypes(field.raw.fields);
+			} else if (field instanceof TreeBuilder) {
+				buildblocksTypes(field.raw.fields);
+			}
+		}
 	};
 
 	const relationValueType = `
@@ -121,7 +124,8 @@ export type RelationValue<T> =
 					.filter((f) => f instanceof FormFieldBuilder)
 					.filter((field) => !collection.imageSizes!.some((size) => size.name === field.raw.name));
 			}
-			let fieldsContent = convertFieldsToTypesTemplates(fields).join('\n\t');
+			let fieldsContent = buildFieldsTypes(fields).join('\n\t');
+			buildblocksTypes(fields);
 			if (isUploadConfig(collection)) {
 				addImport('UploadDoc');
 				if (collection.imageSizes?.length) {
@@ -133,9 +137,11 @@ export type RelationValue<T> =
 		.join('\n');
 
 	const areasTypes = config.areas
-		.map((area) =>
-			templateDocType(area.slug, convertFieldsToTypesTemplates(area.fields).join('\n\t'))
-		)
+		.map((area) => {
+			const fieldsContent = buildFieldsTypes(area.fields);
+			buildblocksTypes(area.fields);
+			return templateDocType(area.slug, fieldsContent.join('\n\t'));
+		})
 		.join('\n');
 
 	const collectionSlugs = config.collections.map((c) => c.slug);
@@ -185,7 +191,6 @@ function write(content: string) {
 	const cachedTypes = cache.get('types');
 
 	if (cachedTypes && cachedTypes === content) {
-		// taskLogger.info('-  types    :: No change detected');
 		return;
 	} else {
 		cache.set('types', content);

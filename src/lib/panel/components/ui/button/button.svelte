@@ -163,7 +163,7 @@
 	}
 
 	.rz-button--link {
-		color: hsl(var(--rz-color-primary));
+		/* color: hsl(var(--rz-color-primary)); */
 		background: none;
 		text-underline-offset: 4px;
 		&:hover {

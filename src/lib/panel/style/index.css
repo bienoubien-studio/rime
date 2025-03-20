@@ -21,12 +21,13 @@
 
 body:has(.rz-root) {
 	min-height: 100vh;
-	background-color: hsl(var(--rz-color-bg));
-	color: hsl(var(--rz-color-fg));
 }
 
 .rz-root {
+	background-color: hsl(var(--rz-color-bg));
+	color: hsl(var(--rz-color-fg));
 	font-size: var(--rz-text-base);
+	min-height: 100vh;
 	::selection {
 		background-color: hsl(var(--rz-color-primary) / 0.5);
 		color: hsl(var(--rz-color-fg));

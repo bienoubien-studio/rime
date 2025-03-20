@@ -13,7 +13,7 @@ export function extractBlocks({ data, configMap }: ExtractBlocksArgs) {
 
 	Object.entries(configMap).forEach(([path, config]) => {
 		if (config.type === 'blocks') {
-			const value = getValueAtPath<GenericBlock[]>(data, path);
+			const value = getValueAtPath<GenericBlock[]>(path, data);
 
 			const isEmptyValue = config.isEmpty(value);
 

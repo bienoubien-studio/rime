@@ -82,11 +82,11 @@
 <style type="postcss">
 	.rz-render-fields {
 		position: relative;
-		margin-bottom: var(--rz-size-4);
 		gap: var(--rz-size-8) 0;
 		display: grid;
 		container-type: inline-size;
 		grid-template-columns: repeat(12, 1fr);
+		height: fit-content;
 		& > * {
 			position: relative;
 		}
@@ -98,20 +98,14 @@
 
 	.rz-render-fields--framed {
 		position: relative;
-		/* padding: 0 var(--rz-size-4); */
-		padding: var(--rz-size-6) var(--rz-size-6) var(--rz-size-12) var(--rz-size-6);
-		&::after {
-			content: '';
-			border-bottom: var(--rz-border);
-			position: absolute;
-			bottom: 0;
-			left: calc(-1 * var(--rz-size-8));
-			right: calc(-1 * var(--rz-size-8));
-		}
+		padding: var(--rz-size-6) var(--rz-size-6) min(var(--rz-fields-padding), var(--rz-size-12))
+			var(--rz-size-6);
 	}
 
 	/** hide fields that doesn't have any data-visible children */
-	.rz-render-fields__field:not(:has(.rz-field-root[data-visible])) {
+	.rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
+			:has(.rz-field-root[data-visible])
+		) {
 		display: none;
 	}
 

@@ -29,7 +29,7 @@ export const augmentDocument = <T extends GenericDoc>(args: {
 	// populate title
 	if (!('title' in output)) {
 		output = {
-			title: getValueAtPath(output, config.asTitle),
+			title: getValueAtPath(config.asTitle, output),
 			...output
 		};
 	}

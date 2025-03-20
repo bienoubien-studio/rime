@@ -45,7 +45,7 @@
 {/snippet}
 
 <div style={gridTemplateColumn} class="rz-list-header">
-	{@render sortableColumnHeader({ name: collection.config.asTitle })}
+	{@render sortableColumnHeader({ name: collection.config.asTitle.split('.').at(-1) || 'title' })}
 
 	{#if !compact}
 		{#each collection.columns as column}

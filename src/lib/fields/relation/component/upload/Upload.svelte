@@ -3,7 +3,7 @@
 	import * as Sheet from '$lib/panel/components/ui/sheet/index';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import Sortable from 'sortablejs';
-	import { Edit, File, X } from '@lucide/svelte';
+	import { Edit, File, Trash2, X } from '@lucide/svelte';
 	import Doc from 'rizom/panel/components/sections/document/Document.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { createBlankDocument } from '$lib/util/doc.js';
@@ -97,7 +97,7 @@
 			class="rz-relation-upload__remove"
 			onclick={() => removeValue(item.relationId)}
 		>
-			<X size={15} />
+			<X size={11} />
 		</button>
 	</div>
 {/snippet}
@@ -139,7 +139,7 @@
 		</Button>
 	{/if}
 
-	{#if (selectedItems.length === 0 && availableItems.length === 0) || !isFull}
+	{#if !isFull}
 		{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {})}
 			<Button
 				onclick={() => {

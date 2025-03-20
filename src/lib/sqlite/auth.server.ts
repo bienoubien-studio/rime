@@ -200,7 +200,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 	const login = async ({ email, password, slug }: LoginArgs) => {
 		//
-		console.log({ email, password });
+
 		if (!email) {
 			throw new RizomFormError({ email: RizomFormError.REQUIRED_FIELD });
 		}

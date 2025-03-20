@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.0.59",
+	"version": "0.0.60",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/bin/reset/index.ts --force && vite build && npm run package && pnpm build:css",
@@ -143,6 +143,7 @@
 		"@tiptap/extension-bubble-menu": "^2.8.0",
 		"@tiptap/extension-link": "^2.8.0",
 		"@tiptap/extension-placeholder": "^2.8.0",
+		"@tiptap/html": "^2.11.5",
 		"@tiptap/starter-kit": "^2.8.0",
 		"autoprefixer": "^10.4.20",
 		"better-auth": "^1.1.14",

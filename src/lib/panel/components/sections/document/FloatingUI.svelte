@@ -1,9 +1,7 @@
 <script lang="ts">
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import Button from '../../ui/button/button.svelte';
-	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
-	import { ChevronLeft, Command } from '@lucide/svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { ChevronLeft } from '@lucide/svelte';
 	import ButtonSave from './ButtonSave.svelte';
 
 	type Props = { form: DocumentFormContext; onClose: any };
@@ -21,12 +19,14 @@
 
 <style>
 	.rz-floating-ui {
-		position: absolute;
-		bottom: var(--rz-size-4);
-		left: var(--rz-size-4);
+		position: sticky;
+		width: calc(100% - var(--rz-size-4));
+		bottom: var(--rz-size-2);
+		margin-left: var(--rz-size-2);
+		margin-right: var(--rz-size-2);
+		height: var(--rz-size-14);
 		background-color: hsl(var(--rz-ground-5));
 		padding: var(--rz-size-2);
-		right: var(--rz-size-4);
 		border-radius: var(--rz-radius-md);
 		z-index: 1000;
 		display: flex;
