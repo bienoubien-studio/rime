@@ -45,32 +45,36 @@
 			if (iframe && iframe.contentWindow) {
 				iframe.contentWindow.postMessage({ handshake: true });
 			}
+			// Continue handshake attempts until synced
 			window.setTimeout(handshake, 1000);
 		}
 	}
 
 	const onIframeMessage = async (e: any) => {
+		// Handle handshake response from iframe
 		if (e.data.handshake) {
 			iframeSrc = e.data.handshake;
 		}
+		// Handle navigation request from iframe
 		if (e.data.location) {
 			goto(e.data.location);
 		}
 	};
 
 	onMount(() => {
+		// Set up message listener when component mounts
 		window.addEventListener('message', onIframeMessage);
 	});
 
-	$inspect('sync : ' + sync);
-
 	$effect(() => {
+		// Start handshake process when not synced
 		if (!sync) {
 			handshake();
 		}
 	});
 
 	$effect(() => {
+		// Log when sync is established
 		if (sync) {
 			console.log('live:synced');
 		}

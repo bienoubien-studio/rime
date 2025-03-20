@@ -1,117 +1,139 @@
 import { getContext, setContext } from 'svelte';
 import type { BeforeNavigate } from '@sveltejs/kit';
 import { flatten, unflatten } from 'flat';
-import { isObjectLiteral } from '../../util/object.js';
+import { isObjectLiteral, setValueAtPath } from '../../util/object.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/util.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
 /**
-  - 1. Live.svelte send a handshake message
-  - 2. live context in iframe receive it, enable itself
-  - 3. live context send handshake with its href as prop
-  - 4. Live.svelte receive the handshake
-  - 5. Live.svelte compare this href to the expected iframeSrc
-  - 6. If equals then live edit is synced : USER CAN EDIT
-  - 7. onBeforeNavigate iframe live context send message to Live.svelte with a prop : location which is actually the link href + ?live=1
-  - 8. Live.svelte goto(location) and as it has ?live=1 it should redirect to the doc.__live url (or not)
-  - 9. --> step 1
-*/
+ * Live Editing Flow:
+ * 1. Live.svelte sends handshake message to iframe
+ * 2. Live context in iframe receives it, enables itself
+ * 3. Live context sends handshake response with its href
+ * 4. Live.svelte receives the handshake response
+ * 5. Live.svelte compares iframe href to expected iframeSrc
+ * 6. If they match, sync is established and user can edit
+ * 7. When navigating, iframe context sends message to parent with new location + ?live=1
+ * 8. Live.svelte navigates to new location, maintaining live edit mode
+ */
+
+// Type definitions for better clarity
+type OnDataCallback = (args: { path: string; value: any }) => void;
+type MergeDataArgs = { path: string; value: any };
+type LiveStore<T extends GenericDoc = GenericDoc> = ReturnType<typeof createStore<T>>;
 
 function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	let enabled = $state(false);
 	let doc = $state<T>();
-	const callbacks: any[] = [];
+	const callbacks: OnDataCallback[] = [];
 	let currentFocusedElement = $state<HTMLElement>();
 
+	/**
+	 * Handles navigation within iframe to maintain live editing mode
+	 */
 	const beforeNavigate = (params: BeforeNavigate) => {
-		if (window && window.top) {
-			if (params.to?.url.href && enabled) {
-				window.top.postMessage({ location: params.to.url.href + '?live=1' });
-				params.cancel();
-			}
+		if (window && window.top && params.to?.url.href && enabled) {
+			// Send navigation message to parent with live=1 param
+			window.top.postMessage({ location: params.to.url.href + '?live=1' });
+			params.cancel();
 		}
 	};
 
+	/**
+	 * Processes messages from parent window
+	 */
 	const onMessage = async (e: any) => {
-		/////////////////////////////////////////////
-		// HandShake
-		//////////////////////////////////////////////
+		// Handle handshake request
 		if (e.data.handshake) {
 			enabled = true;
 			if (window && window.top) {
+				// Send handshake response with current URL
 				window.top.postMessage({ handshake: href });
 			}
-			/////////////////////////////////////////////
-			// Set field value
-			//////////////////////////////////////////////
-		} else if (e.data.path && e.data.value) {
-			const value = e.data.value;
-
-			const isArray = Array.isArray(value) && value.length;
-
-			const isArrayOfRelation =
-				isArray &&
-				isObjectLiteral(value[0]) &&
-				'relationId' in value[0] &&
-				'relationTo' in value[0];
-
-			if (isArrayOfRelation) {
-				for (const [index, relation] of value.entries()) {
-					if ('livePreview' in relation) {
-						value[index] = relation.livePreview;
-					} else {
-						const response = await fetch(
-							`/api/${relation.relationTo}/${relation.relationId}?depth=1`
-						).then((r) => r.json());
-						if (response && response.doc) {
-							value[index] = response.doc;
-						}
-					}
-				}
-			}
-			doc = mergeData({ path: e.data.path, value }) as T;
-		} else if (
-			e.data.focus &&
-			typeof e.data.focus === 'string' &&
-			typeof document !== 'undefined'
-		) {
-			const element = document.querySelector<HTMLElement>(`[data-field="${e.data.focus}"]`);
-			if (element) {
-				const ringStyle = '0px 0px 0px 1px red';
-
-				element.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-
-				element.style.boxShadow = ringStyle;
-				if (currentFocusedElement) {
-					currentFocusedElement.style.boxShadow = '';
-				}
-				currentFocusedElement = element;
-			}
+		} 
+		// Handle field updates
+		else if (e.data.path && e.data.value !== undefined) {
+			await handleFieldUpdate(e.data);
+		} 
+		// Handle focus requests
+		else if (e.data.focus && typeof e.data.focus === 'string' && typeof document !== 'undefined') {
+			handleFocusField(e.data.focus);
 		}
 	};
 
-	const onData = (func: OnDataCallback) => {
-		callbacks.push(func);
+	/**
+	 * Handles field value updates, including special handling for relation fields
+	 */
+	const handleFieldUpdate = async (data: { path: string; value: any }) => {
+		let value = data.value;
+		
+		const isArray = Array.isArray(value) && value.length;
+		const isArrayOfRelation =
+			isArray &&
+			isObjectLiteral(value[0]) &&
+			'relationId' in value[0] &&
+			'relationTo' in value[0];
+
+		// Special handling for relation arrays
+		if (isArrayOfRelation) {
+			for (const [index, relation] of value.entries()) {
+				if ('livePreview' in relation) {
+					value[index] = relation.livePreview;
+				} else {
+					try {
+						const response = await fetch(
+							`/api/${relation.relationTo}/${relation.relationId}?depth=1`
+						).then((r) => r.json());
+						
+						if (response && response.doc) {
+							value[index] = response.doc;
+						}
+					} catch (err) {
+						// Silently handle fetch errors
+					}
+				}
+			}
+		}
+		
+		// Update the document with the new value
+		doc = setValueAtPath(doc, data.path, value) as T;
 	};
 
-	const mergeData: MergeData = (args) => {
-		const { path, value } = args;
-		const parts = path.split('.');
+	/**
+	 * Handles focusing a specific field in the UI
+	 */
+	const handleFocusField = (focusPath: string) => {
+		const element = document.querySelector<HTMLElement>(`[data-field="${focusPath}"]`);
+		if (element) {
+			const ringStyle = '0px 0px 0px 1px red';
 
-		const flatDoc: Dic = flatten(doc, {
-			maxDepth: parts.length
-		});
-		flatDoc[path] = value;
-		return unflatten(flatDoc);
+			// Scroll to the element
+			element.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+
+			// Add highlight style
+			element.style.boxShadow = ringStyle;
+			if (currentFocusedElement) {
+				currentFocusedElement.style.boxShadow = '';
+			}
+			currentFocusedElement = element;
+		}
 	};
 
+	/**
+	 * Registers a callback for data changes
+	 */
+	const onData = (callback: OnDataCallback) => {
+		callbacks.push(callback);
+	};
+
+	// Return public interface
 	return {
 		beforeNavigate,
 		onMessage,
 		onData,
-		mergeData,
+		
 		get data() {
 			return { doc };
 		},
@@ -127,15 +149,18 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	};
 }
 
+/**
+ * Creates and sets the live context for the current component
+ */
 export function setLiveContext<T extends GenericDoc = GenericDoc>(href: string) {
 	const store = createStore<T>(href);
-	return setContext(LIVE_KEY, store);
+	setContext(LIVE_KEY, store);
+	return store;
 }
 
+/**
+ * Gets the live context from the current component
+ */
 export function getLiveContext<T extends GenericDoc = GenericDoc>() {
-	type ContextType = ReturnType<typeof setLiveContext<T>>;
-	return getContext<ContextType>(LIVE_KEY);
+	return getContext<LiveStore<T>>(LIVE_KEY);
 }
-
-type OnDataCallback = (args: { path: string; value: any }) => void;
-type MergeData = (args: { path: string; value: any }) => GenericDoc;
