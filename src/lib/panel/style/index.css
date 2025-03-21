@@ -1,4 +1,4 @@
-@import './reset.css';
+@import '@bien-bien/css-reset';
 @import './font.css';
 @import './size.css';
 @import './palette.css';
@@ -38,6 +38,17 @@ body:has(.rz-root) {
 		margin-top: var(--rz-size-4);
 		margin-bottom: var(--rz-size-4);
 	}
+}
+
+.rz-sheet-content, .rz-dialog-content, [data-bits-floating-content-wrapper]{
+	hr {
+		border-color: hsl(var(--rz-color-border));
+		margin-top: var(--rz-size-4);
+		margin-bottom: var(--rz-size-4);
+	}
+	background-color: hsl(var(--rz-color-bg));
+	color: hsl(var(--rz-color-fg));
+	font-size: var(--rz-text-base);
 }
 
 .rz-sr-only {

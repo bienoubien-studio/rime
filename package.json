@@ -136,6 +136,7 @@
 		"vitest": "^3.0.0"
 	},
 	"dependencies": {
+		"@bien-bien/css-reset": "^0.1.0",
 		"@clack/prompts": "^0.7.0",
 		"@internationalized/date": "^3.5.6",
 		"@lucide/svelte": "^0.479.0",

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { LiveProvider } from 'rizom/panel';
-	import 'rizom/panel/style/reset.css';
+	import '@bien-bien/css-reset';
 
 	const { children } = $props();
 </script>
