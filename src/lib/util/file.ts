@@ -1,4 +1,5 @@
 import { slugify } from '$lib/util/string.js';
+import { FileArchive, FileAudio, FileText, FileVideo } from '@lucide/svelte';
 
 export const fileSizeToString = (size: number) => {
 	if (size < 1_000_000) {
@@ -27,4 +28,17 @@ export const fileNameAndExt = (filename: string) => {
 		name: filename.substring(0, filename.lastIndexOf('.')),
 		extension: filename.substring(filename.lastIndexOf('.') + 1, filename.length).toLowerCase()
 	};
+};
+
+export const mimeTypeToIcon = (type: string) => {
+	if (type === 'application/zip') {
+		return FileArchive;
+	}
+	if (type.includes('audio/')) {
+		return FileAudio;
+	}
+	if (type.includes('video/')) {
+		return FileVideo;
+	}
+	return FileText;
 };

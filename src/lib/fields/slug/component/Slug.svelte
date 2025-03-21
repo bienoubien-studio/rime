@@ -60,7 +60,7 @@
 	<Field.Label {config} />
 
 	<div class="rz-slug">
-		<Hash class="rz-slug__icon" size="14" />
+		<Hash class="rz-slug__icon" size="12" />
 		<Input
 			placeholder={config.placeholder}
 			data-error={field.error ? '' : null}

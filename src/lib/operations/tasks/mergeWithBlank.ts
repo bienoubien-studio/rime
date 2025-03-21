@@ -22,7 +22,7 @@ export const mergeWithBlankDocument = <T extends GenericDoc = GenericDoc>({
 	
 	// Add file after merge
 	if (file) {
-		dataMergedWithBlankDocument.file = file;
+		(dataMergedWithBlankDocument as any).file = file;
 	}
 
 	return dataMergedWithBlankDocument as T;

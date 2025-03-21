@@ -10,26 +10,17 @@
 	white-space: nowrap;
 	font-size: var(--rz-text-sm);
 	transition: all 0.2s ease;
-	background-color: hsl(var(--rz-ground-7));
+	background-color: hsl(var(--rz-ground-6) / 0.3);
 	--rz-ring-opacity: 0;
 	@mixin ring var(--rz-color-ring);
 	@mixin px var(--rz-size-3);
 	@mixin font-semibold;
 	border-right: 1px solid hsl(var(--rz-color-border));
+	
 }
 .rz-tabs-trigger[data-state='active'] {
-	background-color: hsl(var(--rz-ground-7));
-	box-shadow: var(--rz-shadow-sm);
+	background-color: hsl(var(--rz-ground-7) / 0.5);
 	position: relative;
-	&::after {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		content: '';
-		height: 2px;
-		background-color: hsl(var(--rz-ground-2));
-	}
 }
 .rz-tabs-trigger[data-state='active']:not([data-error='true']) {
 	color: hsl(var(--rz-color-fg));
@@ -71,12 +62,13 @@
 
 .rz-tabs-list {
 	overflow-x: auto;
-	background-color: hsl(var(--rz-ground-6));
+	overflow-y: visible;
+	background-color: hsl(var(--rz-ground-5) / 0.3);
 	@mixin color ground-2;
 	height: var(--rz-size-14);
 	width: 100%;
 	display: inline-flex;
 	align-items: center;
 	justify-content: flex-start;
-	border-bottom: var(--rz-border);
+	border-bottom: 1px solid hsl(var(--rz-color-border));
 }

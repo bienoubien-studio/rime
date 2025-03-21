@@ -67,7 +67,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return !!this.config.auth;
 	}
 
-	create(args: { data: Partial<Doc>; locale?: string }) {
+	create(args: { data: DeepPartial<Doc>; locale?: string }) {
 		return create<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),

@@ -15,6 +15,7 @@ export function collection<S extends string>(
 
 	// Augment Upload fields
 	if (isUploadConfig(config)) {
+		// Add panel thumbnail size if not already present
 		const isPanelThumbnailInSizes =
 			config.imageSizes &&
 			config.imageSizes.some((size: ImageSizesConfig) => size.name === 'thumbnail');
@@ -22,6 +23,36 @@ export function collection<S extends string>(
 			const thumbnailSize = { name: 'thumbnail', width: 400, compression: 60 };
 			config.imageSizes = [thumbnailSize, ...(config.imageSizes || [])];
 		}
+
+		// Add image size fields
+		if ('imageSizes' in config && config.imageSizes?.length) {
+			const sizesFields = config.imageSizes.map((size: ImageSizesConfig) =>
+				text(toCamelCase(size.name)).hidden()
+			);
+			fields = [...fields, ...sizesFields];
+		}
+		
+		// Add mimeType field
+		const mimeType = text('mimeType').table({ sort: true, position: 99 }).hidden();
+
+		// Add validation if accept is defined
+		if ('accept' in config) {
+			const allowedExtensions = config.accept;
+			mimeType.raw.validate = (value) => {
+				return (
+					(typeof value === 'string' && allowedExtensions.includes(value)) ||
+					`File should be the type of ${allowedExtensions.toString()}`
+				);
+			};
+		}
+
+		// Add hidden fields
+		fields.push(
+			//
+			mimeType,
+			text('filename').hidden(),
+			text('filesize').hidden()
+		);
 	}
 
 	// Augment Status
@@ -45,34 +76,6 @@ export function collection<S extends string>(
 				fields.push(usersFields.roles);
 			}
 		}
-	}
-
-	// Augment Upload fields
-	if (isUploadConfig(config)) {
-		if ('imageSizes' in config && config.imageSizes?.length) {
-			const sizesFields = config.imageSizes.map((size: ImageSizesConfig) =>
-				text(toCamelCase(size.name)).hidden()
-			);
-			fields = [...fields, ...sizesFields];
-		}
-
-		const mimeType = text('mimeType').hidden();
-
-		if ('accept' in config) {
-			const allowedExtensions = config.accept;
-			mimeType.raw.validate = (value) => {
-				return (
-					(typeof value === 'string' && allowedExtensions.includes(value)) ||
-					`File should be the type of ${allowedExtensions.toString()}`
-				);
-			};
-		}
-		fields.push(
-			//
-			mimeType,
-			text('filename').hidden(),
-			text('filesize').hidden()
-		);
 	}
 
 	// Misc augment

@@ -4,13 +4,13 @@
 	import { Label } from '../ui/label/index.js';
 	import type { AnyFormField } from 'rizom/types/fields.js';
 
-	type Props = { config: AnyFormField };
-	const { config }: Props = $props();
+	type Props = { config: AnyFormField; for: string };
+	const { config, for: labelFor }: Props = $props();
 
 	const locale = getLocaleContext();
 </script>
 
-<Label class="rz-field-label-for" for={slugify(config.name)}>
+<Label class="rz-field-label-for" for={labelFor}>
 	{config.label || capitalize(config.name)}
 	{#if config.localized}
 		<sup>{locale.code}</sup>

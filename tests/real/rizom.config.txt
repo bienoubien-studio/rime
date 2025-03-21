@@ -12,7 +12,9 @@ import {
 	email,
 	select,
 	group,
-	component
+	component,
+	separator,
+	textarea
 } from 'rizom/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import {
@@ -27,16 +29,17 @@ import {
 } from '@lucide/svelte';
 import type { PagesDoc } from '../app.generated';
 import { collection, area, defineConfig } from 'rizom';
-import type { CollectionHookAfterUpsert } from 'rizom/types/hooks';
+import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
+import { fill } from './fill/index.js'
 
 const tabSEO = tab('metas')
 	.label('SEO')
 	.fields(
 		text('title').label('Meta title').layout('compact'),
-		richText('description').label('Meta description')
+		textarea('description').label('Meta description')
 	)
 	.live(false);
 
@@ -45,12 +48,14 @@ const tabAttributes = tab('attributes')
 	.fields(
 		text('title').isTitle().required().layout('compact'),
 		component(URL),
-		toggle('isHome').label('Homepage').live(false),
+		toggle('isHome').label('Homepage').live(false).table(2),
 		slug('slug')
 			.slugify('attributes.title')
 			.condition((_, siblings) => siblings.isHome !== true)
 			.live(false),
+		separator(),
 		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
+		separator(),
 		relation('parent')
 			.to('pages')
 			.query((doc) => `where[id][not_equals]=${doc.id}`)
@@ -69,7 +74,7 @@ const blockKeyFacts = block('keyFacts').fields(
 );
 
 const blockParagraph = block('paragraph').fields(richText('text'));
-const blockImage = block('image').fields(relation('image').to('medias'));
+const blockImage = block('image').fields(relation('image').to('medias').query(`where[mimeType][like]=image`));
 const blockSlider = block('slider').fields(relation('images').to('medias').many());
 const blockSubContent = block('content').fields(text('title'), richText('text'));
 const blockBlack = block('black').fields(
@@ -80,11 +85,37 @@ const tabLayout = tab('layout')
 	.label('Layout')
 	.fields(
 		group('hero').fields(text('title').isTitle(), text('intro'), relation('image').to('medias')),
+		separator(),
 		blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
 	);
 
 const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
 	args.rizom.plugins.cache.clear();
+	return args;
+};
+
+const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
+	const { data, api } = args;
+
+	if (data?.attributes?.isHome) {
+		const query = {
+			where: {
+				isHome: {
+					equals: true
+				}
+			}
+		};
+
+		const pagesIsHome = await api.collection('pages').find({ query });
+
+		for (const page of pagesIsHome) {
+			await api.collection('pages').updateById({
+				id: page.id,
+				data: { attributes: { isHome: false } }
+			});
+		}
+	}
+
 	return args;
 };
 
@@ -106,14 +137,15 @@ const Pages = collection('pages', {
 	},
 	hooks: {
 		afterUpdate: [clearCacheHook],
-		afterCreate: [clearCacheHook]
+		afterCreate: [clearCacheHook],
+		beforeCreate: [setHome],
+		beforeUpdate: [setHome]
 	}
 });
 
 const Link = [
 	text('label').layout('compact'),
-	link('link').types('pages', 'url').layout('compact'),
-	relation('image').to('medias')
+	link('link').types('pages', 'url').layout('compact')
 ];
 
 const Navigation = area('navigation', {
@@ -149,7 +181,7 @@ const Settings = area('settings', {
 const Informations = area('infos', {
 	icon: Contact,
 	group: 'global',
-	fields: [email('email')],
+	fields: [email('email'), slug('instagram').placeholder('nom-du-compte'), textarea('address').label('Adresse')],
 	access: {
 		read: () => true
 	}
@@ -185,7 +217,7 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
-	plugins: [regenerateImages()],
+	plugins: [regenerateImages(), fill()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

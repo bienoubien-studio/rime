@@ -11,3 +11,24 @@
 		height: var(--rz-size-14);
 	}
 }
+
+.rz-email-field-wrapper{
+	position: relative;
+	display: flex;
+	align-items: center;
+	.rz-input {
+		padding: 0 0 0 2rem;
+	}
+	.rz-button {
+		position: absolute;
+		right: var(--rz-size-1-5);
+		top: var(--rz-size-1-5);
+	}
+
+	.rz-email-field__icon {
+		opacity: 0.37;
+		position: absolute;
+		left: 0.75rem;
+		top: 0.75rem;
+	}
+}

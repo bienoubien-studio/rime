@@ -8,6 +8,7 @@
 	import type { GenericDoc, FieldsType } from 'rizom/types';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import StatusDot from '../StatusDot.svelte';
+	import { getValueAtPath } from 'rizom/util/object';
 
 	type Props = {
 		checked: boolean;
@@ -25,11 +26,11 @@
 		return config.raw.blueprints[fieldType].cell || null;
 	};
 
-	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
+	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
-		gridTemplateColumn = `grid-template-columns: repeat(${compact ? 1 : columnLength}, minmax(0, 1fr));`;
+		gridTemplateColumn = `grid-template-columns: 2fr repeat(${compact ? 1 : columnLength - 1}, minmax(0, 1fr));`;
 	});
 
 	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, true) : '');
@@ -40,15 +41,15 @@
 		{#if collection.selectMode}
 			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
-				{#key doc.title}
-					<UploadThumbCell url={doc.sizes.thumbnail} />
+				{#key doc.filename}
+					<UploadThumbCell url={doc.sizes.thumbnail} mimeType={doc.mimeType} />
 				{/key}
 			{/if}
 			<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
-					<UploadThumbCell url={doc.sizes.thumbnail} />
+					<UploadThumbCell url={doc.sizes.thumbnail} mimeType={doc.mimeType} />
 				{/if}
 				{#if collection.config.status && Array.isArray(collection.config.status)}
 					{@const docStatus =
@@ -63,15 +64,16 @@
 
 	{#if !compact}
 		{#each collection.columns as column}
+			{console.log(column.path, getValueAtPath(column.path, doc))}
 			<div class="rz-list-row__cell">
 				{#if column.table?.cell}
 					{@const ColumnTableCell = column.table.cell}
-					<ColumnTableCell value={doc[column.name]} />
+					<ColumnTableCell value={getValueAtPath(column.path, doc)} />
 				{:else if getCellComponent(column.type)}
 					{@const Cell = getCellComponent(column.type)}
-					<Cell value={doc[column.name]} />
+					<Cell value={getValueAtPath(column.path, doc)} />
 				{:else}
-					{doc[column.name]}
+					{getValueAtPath(column.path, doc)}
 				{/if}
 			</div>
 		{/each}

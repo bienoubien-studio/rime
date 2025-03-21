@@ -4,7 +4,7 @@ import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Slug from './component/Slug.svelte';
 import Cell from './component/Cell.svelte';
 import { validate } from 'rizom/util/index.js';
-import { capitalize, slugify } from 'rizom/util/string.js';
+import { slugify } from 'rizom/util/string.js';
 
 export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
 
@@ -15,6 +15,11 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 
 	get cell() {
 		return Cell;
+	}
+
+	placeholder(placeholder: string) {
+		this.field.placeholder = placeholder;
+		return this;
 	}
 
 	toSchema(parentPath?: string) {
@@ -54,6 +59,9 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 
 		if (!this.field.placeholder) {
 			this.field.placeholder = slugify(this.field.label || this.field.name);
+		}
+		if (!this.field.isEmpty) {
+			this.field.isEmpty = (value) => !value;
 		}
 
 		return super.compile();

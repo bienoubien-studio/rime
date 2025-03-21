@@ -5,12 +5,11 @@
 	import { Field } from 'rizom/panel';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { capitalize } from '$lib/util/string.js';
-	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown, Edit } from '@lucide/svelte';
+	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown } from '@lucide/svelte';
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { dataError } from 'rizom/panel/util/dataError';
 
 	const { path, config, form }: LinkFieldProps = $props();
 
@@ -178,6 +177,9 @@
 			z-index: 10;
 		}
 	}
+	.rz-link-field--compact + :global(.rz-field-error) {
+		top: -1.3rem;
+	}
 
 	.rz-link-field__bottom {
 		display: flex;
@@ -234,5 +236,11 @@
 		gap: var(--rz-size-4);
 		min-width: 140px;
 		padding: 0 var(--rz-size-4);
+		@container rz-field-root (max-width:420px) {
+			min-width: auto;
+			:global(.rz-label) {
+				display: none;
+			}
+		}
 	}
 </style>

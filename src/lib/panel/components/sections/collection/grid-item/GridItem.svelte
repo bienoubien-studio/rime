@@ -25,7 +25,7 @@
 	<Card.Root class="rz-grid-item__card">
 		<Card.Content>
 			{#if isUploadCollection}
-				<UploadThumbCell class="rz-grid-item__preview" url={thumbnailUrl} />
+				<UploadThumbCell mimeType={doc.mimeType} class="rz-grid-item__preview" url={thumbnailUrl} />
 			{/if}
 		</Card.Content>
 		<Card.Footer>

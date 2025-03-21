@@ -4,6 +4,7 @@
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
 	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import Document from 'rizom/panel/components/sections/document/Document.svelte';
+	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
 
 	type Props = {
 		slug: PrototypeSlug;
@@ -20,25 +21,30 @@
 </script>
 
 {#if data.status === 200}
-	<div class="rz-collection-container">
-		<div class="rz-collection-container__list">
-			<Collection compact={true} {slug} />
-		</div>
-
-		<Document
-			class="rz-collection-container__doc"
-			doc={data.doc}
-			onClose={() => goto(`/panel/${slug}`)}
-			operation={data.operation}
-			readOnly={data.readOnly}
-		/>
-	</div>
+	<PaneGroup class="rz-collection-container" autoSaveId="rz-collection-document:panel-state" direction="horizontal">
+		<Pane defaultSize={40}>
+			<div class="rz-collection-container__list">
+				<Collection compact={true} {slug} />
+			</div>
+			
+		</Pane>
+		<PaneResizer />
+		<Pane>
+			<Document
+				class="rz-collection-container__doc"
+				doc={data.doc}
+				onClose={() => goto(`/panel/${slug}`)}
+				operation={data.operation}
+				readOnly={data.readOnly}
+			/>
+		</Pane>
+	</PaneGroup>
 {:else}
 	<Unauthorized />
 {/if}
 
-<style type="postss">
-	.rz-collection-container {
+<style lang="postcss">
+	:global(.rz-collection-container) {
 		container-name: rz-collection-container;
 		container-type: inline-size;
 		display: grid;
@@ -51,30 +57,17 @@
 
 	.rz-collection-container__list {
 		top: var(--rz-size-4);
-		display: none;
 	}
 
-	@container rz-collection-container (min-width: 62rem) {
-		.rz-collection-container__list {
-			display: block;
-			grid-column: span 4 / span 4;
-		}
-
-		.rz-collection-container :global(.rz-document) {
-			border-left: var(--rz-border);
-			grid-column: span 8 / span 8;
-		}
+	:global(.rz-collection-container) :global(.rz-document) {
+		border-left: var(--rz-border);
+		grid-column: span 9 / span 9;
 	}
-
+	
 	@container rz-collection-container (min-width: 72rem) {
 		.rz-collection-container__list {
-			display: block;
 			grid-column: span 3 / span 3;
 		}
 
-		.rz-collection-container :global(.rz-document) {
-			border-left: var(--rz-border);
-			grid-column: span 9 / span 9;
-		}
 	}
 </style>

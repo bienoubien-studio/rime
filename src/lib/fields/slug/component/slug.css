@@ -3,10 +3,9 @@
 
 	.rz-input {
 		font-family: var(--rz-font-mono);
-		font-size: var(--rz-text-sm);
-		padding: 0 0 0 var(--rz-size-8);
+		padding: 0 0 0 1.66rem;
 	}
-
+	
 	.rz-button {
 		position: absolute;
 		right: var(--rz-size-1-5);
@@ -16,8 +15,8 @@
 	.rz-slug__icon {
 		opacity: 0.37;
 		position: absolute;
-		left: var(--rz-size-3);
-		top: var(--rz-size-3);
+		left: 0.75rem;
+		top: 0.75rem;
 	}
 }
 

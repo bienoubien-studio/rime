@@ -1,30 +1,38 @@
 <script lang="ts">
 	import { FileText } from '@lucide/svelte';
+	import { mimeTypeToIcon } from 'rizom/util/file';
 
 	type Props = {
-		url: string;
+		url?: string;
+		mimeType?: string;
 		class?: string;
 	};
-	const { url, class: className }: Props = $props();
+	const { url, class: className, mimeType }: Props = $props();
 </script>
 
 <div class="rz-upload-preview-cell {className}">
 	<div>
-		{#if url}
+		{#if url && mimeType && mimeType.includes('image')}
 			<img class="rz-upload-preview-cell__image" src={url} alt="preview" />
 		{:else}
-			<div class="rz-upload-preview-cell__placeholder">
+		<div class="rz-upload-preview-cell__placeholder">
+			{#if mimeType}
+				{@const FileIcon = mimeTypeToIcon(mimeType)}
+				<FileIcon size={14} />
+			{:else}
 				<FileText size={14} />
-			</div>
+			{/if}
+		</div>
 		{/if}
 	</div>
 </div>
 
 <style type="postcss">
 	.rz-upload-preview-cell {
+		--size: var(--rz-upload-preview-cell-size, var(--rz-size-9));
 		display: flex;
-		width: var(--rz-size-9);
-		height: var(--rz-size-9);
+		width: var(--size);
+		height: var(--size);
 		flex-shrink: 0;
 		align-items: center;
 		justify-content: center;

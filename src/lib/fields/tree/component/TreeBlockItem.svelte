@@ -116,7 +116,6 @@
 <style type="postcss">
 	.rz-tree-item {
 		position: relative;
-		/* border: var(--rz-border); */
 	}
 
 	.rz-tree-item__grip {
@@ -171,9 +170,9 @@
 		border: var(--rz-border);
 		border-top: none;
 		border-radius: 0 0 var(--rz-radius-md) (--rz-radius-md);
-		padding: var(--rz-size-6) 0 var(--rz-size-4) 0;
+		padding-top: max(var(--rz-fields-padding), var(--rz-size-4));
+		padding-bottom: max(var(--rz-fields-padding), var(--rz-size-4));
 		flex: 1;
-		/* padding: var(--rz-size-6) 0; */
 	}
 
 	.rz-tree-item__fields--hidden {

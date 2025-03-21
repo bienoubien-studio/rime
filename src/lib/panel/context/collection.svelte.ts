@@ -110,16 +110,24 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		await invalidateAll();
 	};
 
-	const buildFieldColumns = (fields: Field[]) => {
-		let columns: WithRequired<FormField, 'table'>[] = [];
+	const buildFieldColumns = (fields: Field[], parentPath: string = '') => {
+		let columns: Array<{ path: string } & WithRequired<FormField, 'table'>> = [];
 		for (const field of fields) {
-			if (isFormField(field) && isNotHidden(field) && hasProp('table', field)) {
-				columns.push(field);
-			} else if (isGroupFieldRaw(field)) {
-				columns = [...columns, ...buildFieldColumns(field.fields)];
+			if (isGroupFieldRaw(field)) {
+				// For group fields, pass the current group name as parent path for nested fields
+				const groupPath = parentPath ? `${parentPath}.${field.name}` : field.name;
+				columns = [...columns, ...buildFieldColumns(field.fields, groupPath)];
+			}
+			if (isFormField(field) && hasProp('table', field)) {
+				// Create current field path
+				const path = parentPath ? `${parentPath}.${field.name}` : field.name;
+				// Add path property to the field for accessing nested values
+				columns.push({ ...field, path });
 			} else if (isTabsFieldRaw(field)) {
 				for (const tab of field.tabs) {
-					columns = [...columns, ...buildFieldColumns(tab.fields)];
+					// For tab fields, create a path with the tab name
+					const path = parentPath ? `${parentPath}.${tab.name}` : tab.name;
+					columns = [...columns, ...buildFieldColumns(tab.fields, path)];
 				}
 			}
 		}
@@ -144,7 +152,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	return {
 		config,
 		sortBy,
-		columns: columns as WithRequired<FormField, 'table'>[],
+		columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
 		canCreate,
 
 		/////////////////////////////////////////////

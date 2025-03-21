@@ -10,7 +10,7 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 
 	toSchema(parentPath?: string) {
 		const { camel, snake } = this.getSchemaName(parentPath);
-		return `${camel}: text('${snake}', { mode: 'json' })`;
+		return `${camel}: text('${snake}', { mode: 'json' })${templateUniqueRequired(this.field)}`;
 	}
 
 	toType() {

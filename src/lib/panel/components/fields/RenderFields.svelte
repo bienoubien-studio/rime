@@ -104,8 +104,8 @@
 
 	/** hide fields that doesn't have any data-visible children */
 	.rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
-			:has(.rz-field-root[data-visible])
-		) {
+			.rz-render-fields__field[data-type='separator']
+		):not(:has(.rz-field-root[data-visible])) {
 		display: none;
 	}
 

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import './toggle.css';
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { slugify } from '$lib/util/string.js';
 	import { Field } from 'rizom/panel';
 	import type { ToggleProps } from './props';
+	import { slugify } from 'rizom/util/string';
 
 	const { path, config, form }: ToggleProps = $props();
 
@@ -13,6 +13,8 @@
 	const onCheckedChange = (bool: boolean) => {
 		field.value = bool;
 	};
+
+	const inputId = `${form.key}-${slugify(path)}`;
 </script>
 
 <Field.Root
@@ -24,7 +26,7 @@
 		data-error={field.error ? '' : null}
 		checked={field.value}
 		{onCheckedChange}
-		id={slugify(config.name)}
+		id={inputId}
 	/>
-	<Field.LabelFor {config} />
+	<Field.LabelFor {config} for={inputId} />
 </Field.Root>

@@ -39,12 +39,14 @@
 		class:rz-group-field__title--live={form.isLive}
 		class="rz-group-field__title"
 	>
-		{#if groupOpen}
-			<FolderOpen size="12" />
-		{:else}
-			<FolderClosed size="12" />
-		{/if}
-		{config.label || config.name || 'Group'}
+		<span>
+			{#if groupOpen}
+				<FolderOpen size="12" />
+			{:else}
+				<FolderClosed size="12" />
+			{/if}
+			{config.label || config.name || 'Group'}
+		</span>
 		<ChevronDown size="14" />
 	</button>
 
@@ -77,7 +79,7 @@
 	.rz-group-field__title {
 		display: flex;
 		align-items: center;
-		justify-content: start;
+		justify-content: space-between;
 		gap: var(--rz-size-2);
 		font-size: var(--rz-text-xl);
 
@@ -86,9 +88,11 @@
 		width: 100%;
 		text-align: left;
 		@mixin font-medium;
-		/* &:not(:first-child) { */
-		/* border-top: var(--rz-border); */
-		/* } */
+		> span {
+			gap: var(--rz-size-2);
+			display: flex;
+			align-items: center;
+		}
 		&.open {
 			border-bottom: var(--rz-border);
 		}

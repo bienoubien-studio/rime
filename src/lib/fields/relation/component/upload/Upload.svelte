@@ -12,6 +12,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { onDestroy } from 'svelte';
 	import './upload.css';
+	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 
 	const {
 		isFull,
@@ -104,12 +105,8 @@
 
 {#snippet grid(item: RelationFieldItem)}
 	<div class="rz-relation-upload__grid-item">
-		<div class="rz-relation-upload__grid-thumbnail">
-			{#if item.isImage}
-				<img class="rz-relation-upload__grid-image" src={item.imageURL} alt={item.filename} />
-			{:else}
-				<File size={18} />
-			{/if}
+		<div class="rz-relation-upload__grid-thumbnail" style="--rz-upload-preview-cell-size: 100%">
+			<UploadThumbCell url={item.imageURL} mimeType={item.mimeType} />
 		</div>
 		<div class="rz-relation-upload__grid-info">
 			<p class="rz-relation-upload__grid-filename">{item.filename}</p>

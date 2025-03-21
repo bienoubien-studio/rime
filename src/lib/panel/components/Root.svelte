@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Nav from '$lib/panel/components/ui/nav/Nav.svelte';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
-	import { type Snippet } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import createContext from '$lib/panel/context/createContext.svelte';
 	import { page } from '$app/state';
 	import { setConfigContext } from '$lib/panel/context/config.svelte';
@@ -19,7 +19,8 @@
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();
 
 	let isCollapsed = $state(false);
-
+	let localeCollapsed = $state<string | null>(null);
+	
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');
@@ -31,15 +32,31 @@
 	});
 
 	function onResize() {
-		if (window.innerWidth < 1024) {
+		if (window.innerWidth < 1024 ) {
 			isCollapsed = true;
 		} else {
-			isCollapsed = false;
+			if (!localeCollapsed || localeCollapsed === 'false') {
+				isCollapsed = false;
+				localeCollapsed === 'false'
+			}
 		}
 	}
-
+	
 	$effect(() => {
 		onResize();
+	});
+
+	const setCollapsed = (bool: boolean) => {
+		isCollapsed = bool;
+		localeCollapsed = bool.toString();
+		localStorage.setItem('rz-panel-collapsed', bool.toString());
+	};
+
+	onMount(() => {
+		localeCollapsed = localStorage.getItem('rz-panel-collapsed')
+		if(localeCollapsed) {
+			setCollapsed(localeCollapsed === 'true');
+		}
 	});
 </script>
 
@@ -47,10 +64,11 @@
 
 <Toaster />
 
+
 <div class="rz-panel-root">
 	{#key page.url.pathname + locale.code}
-		<Nav {routes} {isCollapsed} />
-		<div class="rz-panel-root__right">
+		<Nav setCollapsed={setCollapsed} {routes} {isCollapsed} />
+		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}
 		</div>
 	{/key}
@@ -66,11 +84,10 @@
 	}
 
 	.rz-panel-root__right {
-		margin-left: var(--rz-size-20);
+		margin-left: var(--rz-size-72);
 	}
-	@container rz-panel (min-width:1024px) {
-		.rz-panel-root__right {
-			margin-left: var(--rz-size-72);
-		}
+	
+	.rz-panel-root__right--navCollapsed {
+		margin-left: var(--rz-size-20);
 	}
 </style>

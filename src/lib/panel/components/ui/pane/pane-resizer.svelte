@@ -8,19 +8,19 @@
 
 <PaneResizer {...props}>
 	<div class="rz-pane-resizer">
-		<GripVertical size="12" />
+		
 	</div>
 </PaneResizer>
 
 <style>
-	:global(.rz-pane-resizer) {
+	.rz-pane-resizer {
 		position: absolute;
-		z-index: 10;
-		translate: -50% 0;
-		padding: var(--rz-size-2) var(--rz-size-1);
-		border: var(--rz-border);
-		border-radius: var(--rz-radius-sm);
-		top: calc(50vh - var(--rz-size-12));
-		background-color: hsl(var(--rz-ground-6));
+		z-index: 40;
+		
+		top: 0;
+		width: var(--rz-size-2);
+		translate: calc(-1 * var(--rz-size-1)) 0;
+		height: 100vh;
+		
 	}
 </style>

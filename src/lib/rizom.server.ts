@@ -9,6 +9,7 @@ import type { Config, Plugins } from 'rizom';
 import { RizomError } from './errors/index.js';
 import { registerTranslation } from '$lib/panel/i18n/register.server.js';
 import i18n from './panel/i18n/index.js';
+import { hasRunInitCommand } from './bin/util.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -22,16 +23,6 @@ function createRizom() {
 	//////////////////////////////////////////////
 	// Init
 	//////////////////////////////////////////////
-	const hasRunInitCommand = () => {
-		const projectRoot = process.cwd();
-		return (
-			existsSync(path.resolve(projectRoot, './.env')) &&
-			existsSync(path.resolve(projectRoot, './drizzle.config.ts')) &&
-			existsSync(path.resolve(projectRoot, './src/lib/server/schema.ts')) &&
-			existsSync(path.resolve(projectRoot, './db')) &&
-			existsSync(path.resolve(projectRoot, './src/config'))
-		);
-	};
 
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
 		initialized = false;

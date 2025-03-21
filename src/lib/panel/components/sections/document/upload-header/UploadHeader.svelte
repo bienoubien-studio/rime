@@ -1,12 +1,11 @@
 <script lang="ts">
 	import DropZone from './drop-zone/DropZone.svelte';
-	import FileText from '@lucide/svelte/icons/file-text';
 	import { capitalize } from '$lib/util/string.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { toast } from 'svelte-sonner';
-	import { FileArchive, FileAudio, FileVideo } from '@lucide/svelte';
 	import * as util from 'rizom/util/file.js';
+	import { mimeTypeToIcon } from 'rizom/util/file.js';
 	import type { WithUpload } from 'rizom/types/util';
 	import type { CompiledCollection } from 'rizom/types/config';
 
@@ -69,19 +68,6 @@
 			form.setValue(`sizes.thumbnail`, preview);
 		}
 	});
-
-	const mimeTypeToIcon = (type: string) => {
-		if (type === 'application/zip') {
-			return FileArchive;
-		}
-		if (type.includes('audio/')) {
-			return FileAudio;
-		}
-		if (type.includes('video/')) {
-			return FileVideo;
-		}
-		return FileText;
-	};
 </script>
 
 <div class="rz-doc-upload-header">

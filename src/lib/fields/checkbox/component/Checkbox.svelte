@@ -14,6 +14,7 @@
 	};
 
 	const checkboxErrorClass = $derived(field.error ? 'rz-checkbox--error' : '');
+	const inputId = `${form.key}-${slugify(path)}`;
 </script>
 
 <Field.Root
@@ -25,7 +26,7 @@
 		class="rz-checkbox-field__input {checkboxErrorClass}"
 		checked={field.value}
 		{onCheckedChange}
-		id={slugify(config.name)}
+		id={inputId}
 	/>
-	<Field.LabelFor {config} />
+	<Field.LabelFor {config} for={inputId} />
 </Field.Root>

@@ -147,11 +147,11 @@
 	border-radius: var(--rz-radius-lg);
 }
 
-.rz-relation-upload__grid-image {
+/* .rz-relation-upload__grid-image {
 	height: 100%;
 	width: 100%;
 	object-fit: cover;
-}
+} */
 
 .rz-relation-upload__grid-filename {
 	margin-top: var(--rz-size-2);

@@ -18,6 +18,7 @@ export default {
 	passwordResetLinkSent: 'An email has been sent to $1 with instructions to reset the password',
 	generatingPreview: 'Generating preview',
 	last_update: 'Last update',
+	live_in_sync: 'Establishing connection with container',
 	no_document: 'No $1 yet',
 	or: 'or',
 	save: 'Save',

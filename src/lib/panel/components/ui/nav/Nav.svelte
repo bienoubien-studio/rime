@@ -5,9 +5,9 @@
 	import type { Route } from 'rizom/types/panel';
 	import { PanelsTopLeft } from '@lucide/svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-
-	type Props = { isCollapsed: boolean; routes: Record<string, Route[]> };
-	const { isCollapsed, routes: routesGroups }: Props = $props();
+	
+	type Props = { isCollapsed: boolean; setCollapsed: (value: boolean) => void; routes: Record<string, Route[]> };
+	const { isCollapsed, setCollapsed, routes: routesGroups }: Props = $props();
 
 	const config = getConfigContext();
 	const navigationGroupsConfig = config.raw.panel.navigation?.groups;
@@ -58,21 +58,47 @@
 			</div>
 		</div>
 	</div>
+
+	<button class="rz-nav__toggle" onclick={() => setCollapsed(!isCollapsed)} aria-label="Toggle navigation">
+	</button>
 </div>
 
 <style type="postcss">
 	.rz-nav {
 		position: fixed;
+		z-index: 100;
 		bottom: 0;
 		left: 0;
 		top: 0;
 		border-right: var(--rz-border);
 		width: var(--rz-size-72);
+		
+		.rz-nav__toggle {
+			position: absolute;
+			display:none;
+			align-items: center;
+			justify-content: center;
+			width: var(--rz-size-6);
+			height: 100vh;
+			right: 0;
+			translate: var(--rz-size-3) 0;
+			z-index: 10;
+			top: 0;
+			display: none;
+			cursor: w-resize;
+			@media (min-width: 1024px) {
+				display: flex;
+			}
+		}
+
 	}
 	.rz-nav--collapsed {
 		width: var(--rz-size-20);
 		:global(.rz-button-nav) {
 			justify-content: start;
+		}
+		.rz-nav__toggle{
+			cursor:e-resize;
 		}
 	}
 	.rz-nav__content {
@@ -110,9 +136,6 @@
 		display: flex;
 		flex-direction: column;
 		background-color: hsl(var(--rz-ground-6));
-		/* @media (prefers-color-scheme: light) {
-			background-color: hsl(var(--rz-ground-7));
-		} */
 	}
 	.rz-nav--collapsed .rz-nav__nav {
 		align-items: center;

@@ -8,9 +8,7 @@ class SeparatorFieldBuilder extends FieldBuilder<SeparatorField> {
 	}
 }
 
-type PublicSeparatorFieldBuilder = Omit<SeparatorFieldBuilder, 'component'>;
-export const separator = () =>
-	new SeparatorFieldBuilder('separator') as PublicSeparatorFieldBuilder;
+export const separator = () => new SeparatorFieldBuilder('separator');
 
 /////////////////////////////////////////////
 // Type

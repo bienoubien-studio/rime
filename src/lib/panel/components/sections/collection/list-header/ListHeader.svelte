@@ -11,11 +11,11 @@
 	const { compact }: Props = $props();
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
-	let gridTemplateColumn = $state('grid-template-columns: repeat(1, minmax(0, 1fr));');
+	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
-		gridTemplateColumn = `grid-template-columns: repeat(${compact ? 1 : columnLength}, minmax(0, 1fr));`;
+		gridTemplateColumn = `grid-template-columns: 2fr repeat(${compact ? 1 : columnLength - 1}, minmax(0, 1fr));`;
 	});
 </script>
 

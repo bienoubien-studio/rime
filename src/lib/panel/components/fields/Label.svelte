@@ -27,9 +27,9 @@
 			margin-bottom: var(--rz-size-3);
 			display: block;
 			font-size: var(--rz-text-sm);
-			/* color: hsl(var(--rz-ground-1)); */
-			/* @mixin font-semibold; */
-			letter-spacing: 0.04em;
+			color: hsl(var(--rz-ground-1));
+			@mixin font-semibold;
+			letter-spacing: 0.03em;
 		}
 		.rz-field-label sup {
 			font-size: var(--rz-text-2xs);
