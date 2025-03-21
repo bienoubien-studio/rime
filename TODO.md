@@ -21,8 +21,9 @@
 [ ] More tests
 
 # V1
-[ ] Panel relation API call proxy
 [ ] Put bin commands in a separate package ex: @rizom/kit
 [ ] collection nested
 [ ] page version
+[ ] more tiptap integration
 [ ] more better-auth integration
+[ ] Panel relation API call proxy
