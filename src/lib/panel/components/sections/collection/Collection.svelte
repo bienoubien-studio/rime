@@ -10,7 +10,7 @@
 	import type { PrototypeSlug } from 'rizom/types/doc';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
-
+	
 	interface Props {
 		compact?: boolean;
 		slug: PrototypeSlug;

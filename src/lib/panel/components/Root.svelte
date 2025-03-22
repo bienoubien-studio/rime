@@ -22,12 +22,12 @@
 
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
-	
-		setConfigContext(config);
-		setUserContext(user);
-		createContext('title', '[untitled]');
-		setAPIProxyContext('root');
-	
+
+	setConfigContext(config);
+	setUserContext(user);
+	createContext('title', '[untitled]');
+	setAPIProxyContext('root');
+
 	const locale = setLocaleContext(initialeLocale);
 
 	$effect(() => {
@@ -35,16 +35,16 @@
 	});
 
 	function onResize() {
-		if (window.innerWidth < 1024 ) {
+		if (window.innerWidth < 1024) {
 			isCollapsed = true;
 		} else {
 			if (!localeCollapsed || localeCollapsed === 'false') {
 				isCollapsed = false;
-				localeCollapsed === 'false'
+				localeCollapsed === 'false';
 			}
 		}
 	}
-	
+
 	$effect(() => {
 		onResize();
 	});
@@ -56,8 +56,8 @@
 	};
 
 	onMount(() => {
-		localeCollapsed = localStorage.getItem('rz-panel-collapsed')
-		if(localeCollapsed) {
+		localeCollapsed = localStorage.getItem('rz-panel-collapsed');
+		if (localeCollapsed) {
 			setCollapsed(localeCollapsed === 'true');
 		}
 	});
@@ -67,10 +67,9 @@
 
 <Toaster />
 
-
 <div class="rz-panel-root">
 	{#key page.url.pathname + locale.code}
-		<Nav setCollapsed={setCollapsed} {routes} {isCollapsed} />
+		<Nav {setCollapsed} {routes} {isCollapsed} />
 		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}
 		</div>
@@ -89,7 +88,7 @@
 	.rz-panel-root__right {
 		margin-left: var(--rz-size-72);
 	}
-	
+
 	.rz-panel-root__right--navCollapsed {
 		margin-left: var(--rz-size-20);
 	}
