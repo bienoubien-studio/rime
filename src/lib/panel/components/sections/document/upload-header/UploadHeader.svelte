@@ -5,7 +5,7 @@
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { toast } from 'svelte-sonner';
 	import * as util from 'rizom/util/file.js';
-	import { mimeTypeToIcon } from 'rizom/util/file.js';
+	import { mimeTypeToIcon } from 'rizom/panel/util/upload.js';
 	import type { WithUpload } from 'rizom/types/util';
 	import type { CompiledCollection } from 'rizom/types/config';
 
