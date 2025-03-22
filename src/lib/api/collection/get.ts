@@ -27,7 +27,7 @@ export default function (slug: CollectionSlug) {
 			apiParams = { locale };
 			apiMethod = 'findAll';
 		}
-
+		
 		// @ts-expect-error params match the apiMethod signature
 		const [error, docs] = await safe(api.collection(slug)[apiMethod](apiParams));
 		if (error) {

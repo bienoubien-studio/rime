@@ -64,7 +64,7 @@
 
 	{#if !compact}
 		{#each collection.columns as column}
-			{console.log(column.path, getValueAtPath(column.path, doc))}
+			
 			<div class="rz-list-row__cell">
 				{#if column.table?.cell}
 					{@const ColumnTableCell = column.table.cell}

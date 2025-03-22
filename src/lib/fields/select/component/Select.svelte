@@ -6,6 +6,7 @@
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: SelectFieldProps = $props();
 
@@ -71,7 +72,7 @@
 	};
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-field-select {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 
@@ -117,7 +118,7 @@
 			</div>
 		</Command.Root>
 	</div>
-</Field.Root>
+</fieldset>
 
 <style type="postcss">
 	.rz-select {

@@ -10,13 +10,12 @@
 	white-space: nowrap;
 	font-size: var(--rz-text-sm);
 	transition: all 0.2s ease;
-	background-color: hsl(var(--rz-ground-6) / 0.3);
+	background-color: hsl(var(--rz-ground-5));
 	--rz-ring-opacity: 0;
 	@mixin ring var(--rz-color-ring);
 	@mixin px var(--rz-size-3);
 	@mixin font-semibold;
 	border-right: 1px solid hsl(var(--rz-color-border));
-	
 }
 .rz-tabs-trigger[data-state='active'] {
 	background-color: hsl(var(--rz-ground-7) / 0.5);
@@ -63,7 +62,7 @@
 .rz-tabs-list {
 	overflow-x: auto;
 	overflow-y: visible;
-	background-color: hsl(var(--rz-ground-5) / 0.3);
+	background-color: hsl(var(--rz-ground-5));
 	@mixin color ground-2;
 	height: var(--rz-size-14);
 	width: 100%;

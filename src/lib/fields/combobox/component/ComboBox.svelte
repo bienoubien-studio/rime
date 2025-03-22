@@ -4,10 +4,10 @@
 	import * as Popover from '$lib/panel/components/ui/popover';
 	import { Button } from '$lib/panel/components/ui/button';
 	import { Check, ChevronsUpDown } from '@lucide/svelte';
-	import './combobox.css';
 	import type { ComboBoxProps } from './props';
 	import type { Option } from 'rizom/types';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: ComboBoxProps = $props();
 
@@ -26,7 +26,7 @@
 	});
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 	<Popover.Root bind:open>
 		<Popover.Trigger>
@@ -78,4 +78,50 @@
 		</Popover.Portal>
 	</Popover.Root>
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>
+
+<style lang="postcss">
+	
+	.rz-combobox-field :global {
+		.rz-combobox__trigger.rz-button {
+			min-width: 200px;
+			height: var(--rz-size-11);
+			justify-content: space-between;
+		}
+
+		.rz-combobox__chevron {
+			margin-left: var(--rz-size-2);
+			height: var(--rz-size-4);
+			width: var(--rz-size-4);
+			flex-shrink: 0;
+			opacity: 0.5;
+		}
+
+		.rz-combobox__content {
+			width: 200px;
+			padding: 0;
+		}
+
+		.rz-combobox__search {
+			height: var(--rz-size-9);
+		}
+
+		.rz-combobox__item {
+			justify-content: space-between;
+		}
+
+		.rz-combobox__item:hover {
+			background-color: hsl(var(--rz-ground-7) / 0.5);
+		}
+
+		.rz-combobox__check {
+			margin-right: var(--rz-size-2);
+			height: var(--rz-size-4);
+			width: var(--rz-size-4);
+		}
+
+		.rz-combobox__check--hidden {
+			visibility: hidden;
+		}
+	}
+</style>

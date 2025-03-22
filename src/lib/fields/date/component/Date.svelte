@@ -1,5 +1,4 @@
 <script lang="ts">
-	import './date.css';
 	import { Calendar as CalendarIcon } from '@lucide/svelte';
 	import { CalendarDate, getLocalTimeZone, type DateValue } from '@internationalized/date';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
@@ -9,6 +8,7 @@
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import type { DateField } from '../index.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	type Props = { path: string; config: DateField; form: DocumentFormContext };
 
@@ -40,7 +40,7 @@
 	const dateLabel = $derived(date ? locale.dateFormat(date) : 'Select a date');
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-date-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 	<Popover.Root>
 		<Popover.Trigger>
@@ -65,4 +65,38 @@
 		</Popover.Portal>
 	</Popover.Root>
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>
+
+<style lang="postcss">
+	.rz-date-field :global {
+		.rz-date__button.rz-button {
+			background-color: hsl(var(--rz-color-input));
+			height: var(--rz-size-11);
+			width: 200px;
+			justify-content: flex-start;
+			border: var(--rz-border);
+			padding-left: var(--rz-size-3);
+			padding-right: var(--rz-size-3);
+			text-align: left;
+			font-weight: normal;
+		}
+
+		.rz-date__button[data-empty] {
+			color: hsl(var(--rz-color-fg) / 0.7);
+		}
+
+		.rz-date__button[data-error] {
+			border-color: var(--rz-color-error);
+		}
+
+		.rz-date__icon {
+			margin-right: var(--rz-size-2);
+			height: var(--rz-size-4);
+			width: var(--rz-size-4);
+		}
+
+		.rz-date__popover-content {
+			padding: 0;
+		}
+	}
+</style>

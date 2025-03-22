@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { Field } from '$lib/panel';
-	import type { TextFieldProps } from './props.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { dataError } from 'rizom/panel/util/dataError.js';
+	import type { TextAreaFieldProps } from './props.js';
 
-	const { path, config, form }: TextFieldProps = $props();
+	const { path, config, form }: TextAreaFieldProps = $props();
 
 	const field = $derived(form.useField(path, config));
 
@@ -11,26 +13,23 @@
 		field.value = (event.target as HTMLTextAreaElement).value;
 	};
 
-	const classNameCompact = config.layout === 'compact' ? 'rz-text-field--compact' : '';
-	const classNames = `${config.className} ${classNameCompact || ''}`;
 </script>
 
-<Field.Root class={classNames} visible={field.visible} disabled={!field.editable}>
+<fieldset use:root={field} class="rz-textarea-field {config.className || ''}">
 	<Field.Label {config} />
 	<textarea
+		use:dataError={!!field.error}
 		id={path || config.name}
 		name={path || config.name}
 		placeholder={config.placeholder}
-		data-error={field.error ? '' : null}
 		value={field.value}
 		oninput={onInput}
 	></textarea>
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>
 
 <style type="postcss">
 
-	
 	textarea {
 		field-sizing: content;
 		border: var(--rz-border);
@@ -38,11 +37,15 @@
 		display: flex;
 		width: 100%;
 		border-radius: var(--rz-radius-md);
-		/* font-size: var(--rz-text-sm); */
 		line-height: 1.5em;
 		min-height: var(--rz-size-20);
 		@mixin px var(--rz-size-3);
 		@mixin py var(--rz-size-2);
+		
+		&:global([data-error]) {
+			outline: none;
+			@mixin ring var(--rz-color-error);
+		}
 	}
 
 	textarea:disabled {
@@ -58,13 +61,5 @@
 		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-ring);
 	}
-
-	textarea[data-error] {
-		outline: none;
-		@mixin ring var(--rz-color-error);
-	}
-
-	/* .rz-input:-internal-autofill-selected {
-		background-color: hsl(var(--rz-color-input) / 100) !important;
-	} */
+	
 </style>

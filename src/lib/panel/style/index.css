@@ -46,7 +46,7 @@ body:has(.rz-root) {
 		margin-top: var(--rz-size-4);
 		margin-bottom: var(--rz-size-4);
 	}
-	background-color: hsl(var(--rz-color-bg));
+	/* background-color: hsl(var(--rz-color-bg)); */
 	color: hsl(var(--rz-color-fg));
 	font-size: var(--rz-text-base);
 }

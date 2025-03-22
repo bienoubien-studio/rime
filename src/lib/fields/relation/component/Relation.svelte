@@ -14,6 +14,7 @@
 	import type { RelationField } from '../index';
 	import { onMount } from 'svelte';
 	import { getValueAtPath } from 'rizom/util/object';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -22,22 +23,19 @@
 	// Context
 	const { getCollection } = getConfigContext();
 	const locale = getLocaleContext();
+	
 	let initialItems: RelationFieldItem[] = $state([]);
-
-	// State
 	const field = $derived(form.useField(path, config));
-
 	let initialValue = form.getRawValue(path) || [];
-
 	let stamp = $state(new Date().getTime().toString());
 
 	const relationConfig = getCollection(config.relationTo);
-	let isRelationToUpload = isUploadConfig(relationConfig);
+	
 	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);
 	let selectedItems = $state<RelationFieldItem[]>([]);
-	const RelationComponent = isRelationToUpload ? Upload : Default;
-
+	
+	
 	let isFull = $derived(
 		(!config.many && selectedItems.length === 1) ||
 			(config.many && selectedItems.length === availableItems.length) ||
@@ -72,14 +70,33 @@
 
 	// Fetch
 	const getItems = async () => {
-		let requestURL = `/api/${relationConfig.slug}${form.isLive ? '?depth=1' : ''}`;
-
-		if (config.query && typeof config.query === 'string') {
-			requestURL += `?${config.query}`;
-		} else if (typeof config.query === 'function') {
-			requestURL += `?${config.query(form.doc)}`;
+		// Create a URL object with the base path
+		const url = new URL(`/api/${relationConfig.slug}`, window.location.origin);
+		
+		// Add depth parameter if in live context
+		if (form.isLive) {
+			url.searchParams.append('depth', '1');
 		}
-		const res = await fetch(requestURL, {
+		
+		// Add custom query parameters if provided
+		if (config.query) {
+			if (typeof config.query === 'string') {
+				// Parse the query string and add each parameter
+				const queryParams = new URLSearchParams(config.query);
+				queryParams.forEach((value, key) => {
+					url.searchParams.append(key, value);
+				});
+			} else if (typeof config.query === 'function') {
+				// Parse the function result and add each parameter
+				const queryString = config.query(form.doc);
+				const queryParams = new URLSearchParams(queryString);
+				queryParams.forEach((value, key) => {
+					url.searchParams.append(key, value);
+				});
+			}
+		}
+		
+		const res = await fetch(url.pathname + url.search, {
 			method: 'GET',
 			headers: {
 				'content-type': 'application/json'
@@ -95,6 +112,12 @@
 		}
 	};
 
+	$inspect(selectedItems).with((type, value) => {
+		if(path === 'attributes.parent') {
+			console.log('--- selected items', type, value);
+		}
+	});
+	
 	onMount(() => {
 		getItems();
 	});
@@ -150,7 +173,6 @@
 	};
 
 	const onRelationCreationCanceled = () => {
-		console.log('cancel');
 		form.isDisabled = false;
 	};
 
@@ -180,9 +202,12 @@
 		selectedItems = selectedItems.filter((item) => item.relationId !== incomingId);
 		field.value = buildRelationFieldValue();
 	};
+
+	const isRelationToUpload = isUploadConfig(relationConfig);
+	const RelationComponent = isRelationToUpload ? Upload : Default;
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-field-relation {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 
 	<RelationComponent
@@ -206,4 +231,4 @@
 	/>
 
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>

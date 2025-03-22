@@ -10,6 +10,7 @@
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import { KeyRound } from '@lucide/svelte';
 
 	type Props = { form?: { email?: string; password?: string; errors?: FormErrors } };
 	let { form }: Props = $props();
@@ -21,13 +22,17 @@
 			toast.warning('Invalid credential');
 		}
 	});
+	const nameField = text('name').layout('compact').required().compile();
+	const emailField = usersFields.email.layout('compact').compile()
+	const passwordField = usersFields.password.layout('compact').compile()
+
 </script>
 
 <AuthForm title={t__('common.create_first', 'admin')}>
 	<form method="POST" use:enhance={context.enhance}>
-		<Text config={text('name').required().compile()} form={context} />
-		<Email config={usersFields.email.compile()} form={context} />
-		<Text type="password" config={usersFields.password.compile()} form={context} />
+		<Text config={nameField} form={context} />
+		<Email config={emailField} form={context} />
+		<Text icon={KeyRound} type="password" config={passwordField} form={context} />
 		<Button type="submit" size="xl">{t__('common.create')}</Button>
 	</form>
 </AuthForm>

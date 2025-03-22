@@ -103,7 +103,7 @@
 		</header>
 
 		<div class="rz-block__fields" class:rz-block__fields--hidden={!isOpen}>
-			<RenderFields fields={config.fields} {path} {form} />
+			<RenderFields framed={true} fields={config.fields} {path} {form} />
 		</div>
 	</div>
 </div>

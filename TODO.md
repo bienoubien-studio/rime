@@ -15,7 +15,7 @@
 [v] Fix the sortable error on file change
 [v] navigation group icons
 [v] Group/Tabs as object on document
-[ ] basic real life config apreset
+[ ] basic real life config preset
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests

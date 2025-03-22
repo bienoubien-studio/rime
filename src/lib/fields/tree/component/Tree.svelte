@@ -9,6 +9,7 @@
 	import { onDestroy } from 'svelte';
 	import { watch } from 'runed';
 	import './tree.css';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -90,7 +91,7 @@
 	});
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-field-tree {config.className}" use:root={field}>
 	<Field.Error error={field.error} />
 
 	<h3 class="rz-tree__title" class:rz-blocks__title--nested={nested || form.isLive}>
@@ -127,4 +128,4 @@
 	>
 		{config.addItemLabel}
 	</AddItemButton>
-</Field.Root>
+</fieldset>

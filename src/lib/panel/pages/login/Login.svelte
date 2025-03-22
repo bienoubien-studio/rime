@@ -10,6 +10,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
+	import { KeyRound } from '@lucide/svelte';
 
 	type Props = {
 		data: {
@@ -27,17 +28,22 @@
 			toast.error(t__(`errors.${formError}`));
 		}
 	});
+
+	const passwordField = text('password')
+		.layout('compact')
+		.label(t__('fields.password'))
+		.required()
+		.compile();
+	
+	const emailField = usersFields.email.layout('compact').compile();
+
 </script>
 
 <AuthForm title={t__('common.signin')}>
 	<form method="POST" action="/login" use:enhance={context.enhance}>
-		<Email config={usersFields.email.compile()} form={context} />
-		<Text
-			type="password"
-			config={text('password').label(t__('fields.password')).required().compile()}
-			form={context}
-		/>
-
+		<Email config={emailField} form={context} />
+		<Text type="password" icon={KeyRound} config={passwordField} form={context} />
+		
 		<Button size="xl" disabled={!context.canSubmit} type="submit">Login</Button>
 
 		{#if data.forgotPasswordEnabled}

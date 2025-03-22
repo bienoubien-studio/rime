@@ -51,17 +51,17 @@
 				width: 100%;
 				gap: var(--rz-size-4);
 			}
-			:global(fieldset label) {
+			/* :global(fieldset label) {
 				display: none;
-			}
-			:global(fieldset .rz-field-error) {
+			} */
+			/* :global(fieldset .rz-field-error) {
 				top: calc(-1 * var(--rz-size-6));
-			}
-			:global(fieldset input) {
+			} */
+			/* :global(fieldset input) {
 				font-size: var(--rz-text-md);
 				padding: 0 var(--rz-size-5);
 				height: var(--rz-size-14);
-			}
+			} */
 		}
 	}
 

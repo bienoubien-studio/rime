@@ -1,6 +1,6 @@
 import type { Plugin, UserConfig } from 'vite';
 import dotenv from 'dotenv';
-import { RizomError } from '../errors';
+import { RizomError } from '../errors/index.js';
 import { hasRunInitCommand } from '../bin/util.server.js';
 
 dotenv.config({ override: true });

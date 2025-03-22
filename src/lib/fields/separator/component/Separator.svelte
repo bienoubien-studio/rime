@@ -5,7 +5,7 @@
 
 <hr class="rz-separator {className}" />
 
-<style type="postcss">
+<style>
 	.rz-separator {
 		margin-left: calc(-1 * var(--rz-size-6));
 		margin-right: calc(-1 * var(--rz-size-6));

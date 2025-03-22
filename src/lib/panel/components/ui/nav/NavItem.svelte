@@ -31,7 +31,7 @@
 
 {#if isCollapsed}
 	<Tooltip.Provider>
-		<Tooltip.Root delayDuration={40}>
+		<Tooltip.Root delayDuration={100}>
 			<Tooltip.Trigger>
 				{#snippet child({ props })}
 					<NavItemButton icon={RouteIcon} {active} {...rest} {...props} />

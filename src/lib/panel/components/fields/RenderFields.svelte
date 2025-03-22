@@ -71,7 +71,10 @@
 				</div>
 			{:else if isNotHidden(field)}
 				{@const FieldComponent = fieldComponent(field.type)}
-				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
+				<div
+					class="rz-render-fields__field {widthClassModifier(field)}"
+					data-type={field.type}
+				>
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
 			{/if}
@@ -90,13 +93,14 @@
 		& > * {
 			position: relative;
 		}
-		&:not(.rz-render-fields--framed) :global(.rz-field-root) {
+		:global(.rz-field-root) {
 			padding-left: var(--rz-fields-padding);
 			padding-right: var(--rz-fields-padding);
 		}
 	}
-
+	
 	.rz-render-fields--framed {
+		--rz-fields-padding: var(--rz-size-8);
 		position: relative;
 		padding: var(--rz-size-6) var(--rz-size-6) min(var(--rz-fields-padding), var(--rz-size-12))
 			var(--rz-size-6);

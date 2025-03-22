@@ -1,12 +1,12 @@
 <script lang="ts">
-	import './radio.css';
 	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
 	import { Label } from '$lib/panel/components/ui/label/index.js';
 	import { Field } from 'rizom/panel';
 	import { capitalize } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
-	const { path, config, form }: RadioFieldProps = $props();
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
+	const { path, config, form }: RadioFieldProps = $props();
 	const field = $derived(form.useField(path, config));
 
 	let initialValue = form.getRawValue(path) ?? config.defaultValue;
@@ -19,7 +19,7 @@
 	});
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-field-radio {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 	<RadioGroup.Root bind:value class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index}
@@ -32,4 +32,25 @@
 		{/each}
 	</RadioGroup.Root>
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>
+
+<style lang="postcss">
+	.rz-field-radio {
+		display: flex;
+		flex-direction: column;
+		gap: var(--rz-size-2);
+
+		:global {
+			.rz-radio__input {
+				margin-right: var(--rz-size-2);
+			}
+			.rz-radio__label {
+				cursor: pointer;
+			}
+		}
+		.rz-radio__option {
+			display: flex;
+			align-items: center;
+		}
+	}
+</style>

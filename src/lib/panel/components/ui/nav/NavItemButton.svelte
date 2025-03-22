@@ -38,6 +38,7 @@
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color,
 			fill, stroke;
 		transition-duration: 0.25s;
+		
 		gap: var(--rz-size-3);
 		&:not(:last-child) {
 			border-bottom: 1px solid hsl(var(--rz-color-border) / 0.5);

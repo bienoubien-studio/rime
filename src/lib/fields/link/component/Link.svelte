@@ -10,6 +10,7 @@
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
 	import type { LinkFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: LinkFieldProps = $props();
 
@@ -22,7 +23,7 @@
 
 	const placeholders: Record<string, string> = {
 		url: 'https://',
-		email: 'emile@zola.fr',
+		email: 'email@zola.fr',
 		tel: '+330700000000',
 		anchor: 'my-anchor'
 	};
@@ -32,7 +33,6 @@
 	const linkTypes = config.types || ['url', 'email', 'tel', 'anchor'];
 	const initial = path ? form.getRawValue(path) : null;
 
-	let editing = $state(false);
 	let initialLinkType = initial?.type || linkTypes[0];
 	let initialLinkValue = initial?.link || '';
 	let initialTargetBlank = (initial?.target && initial.target === '_blank') || false;
@@ -92,7 +92,7 @@
 	});
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class={config.className} use:root={field}>
 	{#if config.layout !== 'compact'}
 		<Field.Label {config} />
 	{/if}
@@ -162,7 +162,7 @@
 	</div>
 
 	<Field.Error error={field.error} />
-</Field.Root>
+</fieldset>
 
 <style type="postcss">
 	.rz-link-field {

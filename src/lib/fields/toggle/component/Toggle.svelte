@@ -1,27 +1,22 @@
 <script lang="ts">
-	import './toggle.css';
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
 	import { Field } from 'rizom/panel';
 	import type { ToggleProps } from './props';
 	import { slugify } from 'rizom/util/string';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: ToggleProps = $props();
 
 	const field = $derived(form.useField(path, config));
+	const inputId = `${form.key}-${slugify(path)}`;
 
-	// Actions
 	const onCheckedChange = (bool: boolean) => {
 		field.value = bool;
 	};
 
-	const inputId = `${form.key}-${slugify(path)}`;
 </script>
 
-<Field.Root
-	class="rz-toggle-field {config.className || ''}"
-	visible={field.visible}
-	disabled={!field.editable}
->
+<fieldset class="rz-toggle-field {config.className || ''}" use:root={field}>
 	<Switch
 		data-error={field.error ? '' : null}
 		checked={field.value}
@@ -29,4 +24,15 @@
 		id={inputId}
 	/>
 	<Field.LabelFor {config} for={inputId} />
-</Field.Root>
+</fieldset>
+
+<style lang="postcss">
+	.rz-toggle-field {
+		@mixin my var(--rz-size-3);
+		display: flex;
+		align-items: center;
+	}
+	.rz-toggle-field > :global(* + *) {
+		margin-left: var(--rz-size-2);
+	}
+</style>
