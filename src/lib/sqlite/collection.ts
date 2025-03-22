@@ -234,6 +234,6 @@ type Insert = (args: {
 type Update = (args: {
 	slug: PrototypeSlug;
 	id: string;
-	data: Partial<GenericDoc>;
+	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<string | undefined>;

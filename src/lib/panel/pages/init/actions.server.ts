@@ -11,7 +11,7 @@ export const initActions = {
 			const { email, name, password } = data;
 			await api.createFirstPanelUser({ email, name, password });
 			throw redirect(302, '/panel/login');
-		} catch (err) {
+		} catch (err: any) {
 			return handleError(err, {
 				context: 'action',
 				formData: { email: data.email }

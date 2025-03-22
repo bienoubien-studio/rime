@@ -19,12 +19,12 @@ import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
 const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 
 const templateDocType = (slug: string, content: string, upload?: boolean): string => `
-export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
+interface ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
   ${content}
 }`;
 
 const makeBlockType = (slug: string, content: string): string => `
-export type Block${toPascalCase(slug)} = {
+interface Block${toPascalCase(slug)} = {
   id: string
   type: '${slug}'
   ${content}
@@ -33,17 +33,17 @@ export type Block${toPascalCase(slug)} = {
 const templateRegister = (collectionSlugs: string[], areaSlugs: string[]): string => {
 	const registerCollections = collectionSlugs.length
 		? [
-				'\tinterface RegisterCollection {',
-				`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-				'\t}'
-			]
+			'\tinterface RegisterCollection {',
+			`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+			'\t}'
+		]
 		: [];
 	const registerAreas = areaSlugs.length
 		? [
-				'\tinterface RegisterArea {',
-				`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-				'\t}'
-			]
+			'\tinterface RegisterArea {',
+			`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+			'\t}'
+		]
 		: [];
 	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
@@ -151,8 +151,8 @@ export type RelationValue<T> =
 	const register = templateRegister(collectionSlugs, areaSlugs);
 
 	const hasBlocks = !!registeredBlocks.length;
-	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
-	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
+	const blocksTypeNames = `interface BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
+	const anyBlock = `interface AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
 	const typeImports = `import type { ${Array.from(imports).join(', ')} } from '${PACKAGE_NAME}'`;
 
 	const locals = `declare global {
@@ -175,11 +175,13 @@ export type RelationValue<T> =
 		`import type { Session } from 'better-auth';`,
 		typeImports,
 		relationValueType,
+		`declare global {`,
 		collectionsTypes,
 		areasTypes,
 		blocksTypes.join('\n'),
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',
+		`}`,
 		locals,
 		register
 	].join('\n');

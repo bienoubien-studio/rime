@@ -16,6 +16,8 @@ import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from 'rizom/types/util.js';
+import { config } from 'process';
+import type { data } from 'autoprefixer';
 
 type Args<T> = {
 	id: string;
@@ -27,7 +29,7 @@ type Args<T> = {
 	adapter: Adapter;
 };
 
-export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
+export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
 	const { config, event, adapter, locale, api, id } = args;
 	let data = args.data;
 
@@ -60,7 +62,12 @@ export const updateById = async <T extends GenericDoc>(args: Args<T>) => {
 
 	for (const hook of config.hooks?.beforeUpdate || []) {
 		const result = await hook({
-			data,
+			/**
+			 * TS is expecting a more specific types, 
+			 * it's defined as RegisterCollection[Slug] in types so devs get their 
+			 * types in the hook args
+			 */
+			data : data as DeepPartial<RegisterCollection[CollectionSlug]>,
 			config,
 			originalDoc: original as RegisterCollection[CollectionSlug],
 			operation: 'update',

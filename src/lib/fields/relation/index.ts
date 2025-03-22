@@ -68,9 +68,9 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 	}
 
 	toSchema() {
-		const { pascal, snake } = super.getSchemaName();
+		const { camel, snake } = super.getSchemaName();
 		const suffix = templateUniqueRequired(this.field);
-		return `${pascal}: text('${snake}', { mode: 'json' })${suffix}`;
+		return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
 	}
 
 	query(query: string | QueryResolver<Doc>) {

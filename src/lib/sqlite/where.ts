@@ -4,12 +4,12 @@ import qs, { type ParsedQs } from 'qs';
 import { rizom } from '$lib/index.js';
 import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { Dic } from '../types/util';
+import type { Dic } from '../types/util.js';
 import { RizomError } from '../errors/index.js';
-import { isObjectLiteral } from '../util/object';
-import type { OperationQuery } from '../types';
-import logger from 'rizom/util/logger';
-import { isRelationField } from 'rizom/util/field';
+import { isObjectLiteral } from '../util/object.js';
+import type { OperationQuery } from '../types/index.js';
+import { logger } from 'rizom/util/logger/index.js';
+import { isRelationField } from 'rizom/util/field.js';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;
