@@ -1,10 +1,5 @@
 import type { Editor } from '@tiptap/core';
-import Heading2 from '@lucide/svelte/icons/heading-2';
-import Heading3 from '@lucide/svelte/icons/heading-3';
-import TextQuote from '@lucide/svelte/icons/text-quote';
-import TextIcon from '@lucide/svelte/icons/text';
-import ListOrdered from '@lucide/svelte/icons/list-ordered';
-import Asterisk from '@lucide/svelte/icons/asterisk';
+import { Heading2, Heading3, TextQuote, TextIcon, ListOrdered, Asterisk } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import type { RichTextFieldNode } from 'rizom/fields/types';
 import type { IconProps } from '@lucide/svelte';

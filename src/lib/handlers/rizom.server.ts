@@ -17,7 +17,7 @@ export function createCMSHandler({ config, schema }: Args) {
 	// Return the better-auth handler
 	const handleCMS: Handle = async ({ event, resolve }) => {
 		logger.info(`${event.request.method} ${event.url.pathname}`);
-
+		
 		if (dev || !rizom.initialized) {
 			await rizom.init({ config, schema });
 		}

@@ -1,8 +1,6 @@
 <script lang="ts">
 	import IconButton from '../icon-button/icon-button.svelte';
-	import BoldIcon from '@lucide/svelte/icons/bold';
-	import ItalicIcon from '@lucide/svelte/icons/italic';
-	import StrikethroughIcon from '@lucide/svelte/icons/strikethrough';
+	import {BoldIcon, ItalicIcon, StrikethroughIcon } from '@lucide/svelte';
 	import type { Editor } from '@tiptap/core';
 	import { type Component } from 'svelte';
 	import type { RichTextFieldMark } from '../../../index.js';
