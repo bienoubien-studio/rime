@@ -220,8 +220,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			where: eq(userTable.email, email)
 		});
 
+
+		/**
+		 * Fake check when email not found
+		 */
 		if (!user) {
-			// fake check
 			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
 			throw new RizomFormError({
 				_form: RizomFormError.INVALID_CREDENTIALS,
@@ -230,6 +233,10 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			});
 		}
 
+		/**
+		 * Handle banned user
+		 * trying to connect 
+		 */
 		if (user.locked) {
 			const timeLocked = parseInt(process.env.RIZOM_BANNED_TIME_MN || '60'); // min
 			const now = new Date();
@@ -250,19 +257,26 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			}
 		}
 
-		let signin;
-		try {
-			signin = await betterAuth.api.signInEmail({
-				body: {
-					email,
-					password
-				},
-				asResponse: true
-			});
-		} catch (err: any) {
+		/**
+		 * Handle SignIn
+		 */
+		const signin = await betterAuth.api.signInEmail({
+			body: {
+				email,
+				password
+			},
+			asResponse: true
+		});
+
+		const authenticated = signin && signin.status === 200
+
+		if (!authenticated) {
+			// Check for number of tries
 			const maxLoginAttempts = 5;
 			const maxLoginAttemptsReached = user.loginAttempts + 1 >= maxLoginAttempts;
+			// If too many tries
 			if (maxLoginAttemptsReached) {
+				// Ban user
 				await db
 					.update(userTable)
 					.set({
@@ -274,6 +288,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 				throw new RizomError(RizomError.USER_BANNED);
 			} else {
+				// update login attempts 
 				await db
 					.update(userTable)
 					.set({
@@ -281,22 +296,14 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 					})
 					.where(eq(userTable.id, user.id));
 			}
+
 			throw new RizomFormError({
 				_form: RizomFormError.INVALID_CREDENTIALS,
 				email: RizomFormError.INVALID_CREDENTIALS,
 				password: RizomFormError.INVALID_CREDENTIALS
 			});
-		}
-
-		if (!signin || signin.status !== 200) {
-			throw new RizomFormError({
-				_form: RizomFormError.INVALID_CREDENTIALS,
-				email: RizomFormError.INVALID_CREDENTIALS,
-				password: RizomFormError.INVALID_CREDENTIALS
-			});
-		}
-
-		try {
+		} else {
+			// Reset login attempts
 			await db
 				.update(userTable)
 				.set({
@@ -304,9 +311,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 					loginAttempts: 0
 				})
 				.where(eq(userTable.id, user.id));
-		} catch (err) {
-			console.log(err);
-			throw new RizomError(RizomError.DATA_BASE_ERROR);
 		}
 
 		return {
