@@ -134,10 +134,9 @@
 
 	.rz-blocks__list {
 		display: grid;
-		border-left: 1px solid hsl(var(--rz-color-border));
-		border-right: var(--rz-border);
+		gap: var(--rz-size-4);	
+		
 		&:not([data-empty]) {
-			border-top: var(--rz-border);
 			margin-bottom: var(--rz-size-4);
 		}
 	}

@@ -112,6 +112,8 @@
 	.rz-block {
 		--rz-fields-padding: var(--rz-size-5);
 		position: relative;
+		border: var(--rz-border);
+		border-radius: var(--rz-radius-sm);
 	}
 
 	.rz-block__grip {
@@ -125,7 +127,6 @@
 
 	.rz-block__content {
 		background-color: hsl(var(--rz-ground-6));
-		border-bottom: var(--rz-border);
 		display: flex;
 		flex-direction: row-reverse;
 	}
