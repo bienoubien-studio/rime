@@ -36,16 +36,13 @@ const formatMessage = (args: unknown[]): string => {
 };
 
 // Write to log file
-const writeToFile = async (level: string, args: unknown[]) => {
+const writeToFile = async (level: string, timestamp: string, args: unknown[]) => {
   if (!LOG_TO_FILE) return;
 
   try {
-    const timestamp = new Date().toISOString();
     const message = formatMessage(args);
-    
     // Strip ANSI color codes
     const cleanMessage = message.replace(/\u001b\[\d+m/g, '');
-    
     const logEntry = `[${timestamp}] [${level}] ${cleanMessage}\n`;
     
     await fs.mkdir(LOG_DIR, { recursive: true });
@@ -79,37 +76,42 @@ const logger = {
   // Log methods
   trace: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.TRACE)) {
-      console.trace(chalk.magenta('[trace]'), ...args);
-      writeToFile('TRACE', args);
+      const timestamp = new Date().toISOString();
+      console.trace(...args);
+      writeToFile('TRACE', timestamp, args);
     }
   },
   debug: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.DEBUG)) {
-      console.debug(chalk.redBright('[debug]'), ...args);
-      writeToFile('DEBUG', args);
+      const timestamp = new Date().toISOString();
+      console.debug(chalk.redBright('DEBUG'), ...args);
+      writeToFile('DEBUG', timestamp, args);
     }
   },
   info: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.INFO)) {
-      console.info(chalk.blue('[info]'), ...args);
-      writeToFile('INFO', args);
+      const timestamp = new Date().toISOString();
+      console.info(timestamp, chalk.blue(' INFO'),'[Rizom]', ...args);
+      writeToFile('INFO', timestamp, args);
     }
   },
   warn: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.WARN)) {
-      console.warn(chalk.yellow('[warn]'), ...args);
-      writeToFile('WARN', args);
+      const timestamp = new Date().toISOString();
+      console.warn(timestamp,chalk.yellow(' WARN'),'[Rizom]', ...args);
+      writeToFile('WARN', timestamp, args);
     }
   },
   error: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.ERROR)) {
-      console.error(chalk.red('[error]'), ...args);
-      writeToFile('ERROR', args);
+      const timestamp = new Date().toISOString();
+      console.error(timestamp, chalk.red('ERROR'),'[Rizom]', ...args);
+      writeToFile('ERROR', timestamp, args);
     }
   }
 };
 
-// Task logger with colored prefixes
+// Task logger for generator
 export const taskLogger = {
   info: (...args: unknown[]) => {
       console.info(chalk.yellow('[rizom]'), ...args);
@@ -122,5 +124,4 @@ export const taskLogger = {
   }
 };
 
-// Export the main logger
 export { logger };

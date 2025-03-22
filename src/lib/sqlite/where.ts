@@ -35,6 +35,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 	}
 
 	if (!query.where) {
+		logger.warn(`The query should have a root "where" property`);
 		return false;
 	}
 
@@ -51,7 +52,10 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		const [column, operatorObj] = Object.entries(conditionObject)[0];
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
 
-		if (!isOperator(operator)) return false;
+		if (!isOperator(operator)) {
+			logger.warn(`The operator "${operator}" is not supported`);
+			return false;
+		}
 
 		const fn = operatorFn(operator);
 		const value = formatValue({ operator, value: rawValue });
@@ -79,30 +83,27 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			throw new Error('should never happen');
 		}
 		const relationConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
-		if (!relationConfig || !isRelationField(relationConfig)) {
-			logger.info(`can't find ${column} in ${documentConfig.slug}.fields`);
+		const isRelationColumn = relationConfig && isRelationField(relationConfig);
+		if (!isRelationColumn) {
+			logger.warn(`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`);
 			return false;
 		}
 
-		if (relationConfig) {
-			const [to, localized] = [relationConfig.relationTo, relationConfig.localized];
-			const relationTableName = `${slug}Rels`;
-			const relationTable = rizom.adapter.tables[relationTableName];
-			const conditions = [fn(relationTable[`${to}Id`], value)];
+		const [to, localized] = [relationConfig.relationTo, relationConfig.localized];
+		const relationTableName = `${slug}Rels`;
+		const relationTable = rizom.adapter.tables[relationTableName];
+		const conditions = [fn(relationTable[`${to}Id`], value)];
 
-			if (localized) {
-				conditions.push(eq(relationTable.locale, locale));
-			}
-			return inArray(
-				table.id,
-				db
-					.select({ id: relationTable.parentId })
-					.from(relationTable)
-					.where(and(...conditions))
-			);
+		if (localized) {
+			conditions.push(eq(relationTable.locale, locale));
 		}
-
-		return false;
+		return inArray(
+			table.id,
+			db
+				.select({ id: relationTable.parentId })
+				.from(relationTable)
+				.where(and(...conditions))
+		);
 	};
 
 	const conditions = Object.entries(query.where)
