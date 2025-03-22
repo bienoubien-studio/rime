@@ -5,6 +5,7 @@
 	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import Document from 'rizom/panel/components/sections/document/Document.svelte';
 	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
+	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
 
 	type Props = {
 		slug: PrototypeSlug;
@@ -18,6 +19,9 @@
 	};
 
 	const { data, slug }: Props = $props();
+	
+	setAPIProxyContext('document');
+
 </script>
 
 {#if data.status === 200}

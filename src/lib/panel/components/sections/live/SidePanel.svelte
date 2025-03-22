@@ -9,6 +9,7 @@
 	import type { PrototypeSlug } from 'rizom/types/doc';
 	import type { BrowserConfig } from 'rizom/types/config';
 	import { goto } from '$app/navigation';
+	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte.js';
 
 	type Props = {
 		doc: any;
@@ -33,6 +34,7 @@
 		return panelUri;
 	}
 
+	setAPIProxyContext('document');
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');

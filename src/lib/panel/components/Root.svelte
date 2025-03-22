@@ -8,6 +8,8 @@
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import type { User, Route, BrowserConfig } from 'rizom/types';
+	import { setAPIProxyContext } from '../context/api-proxy.svelte.js';
+	import { afterNavigate } from '$app/navigation';
 
 	type Props = {
 		routes: Record<string, Route[]>;
@@ -21,10 +23,11 @@
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
 	
-	setConfigContext(config);
-	setUserContext(user);
-	createContext('title', '[untitled]');
-
+		setConfigContext(config);
+		setUserContext(user);
+		createContext('title', '[untitled]');
+		setAPIProxyContext('root');
+	
 	const locale = setLocaleContext(initialeLocale);
 
 	$effect(() => {

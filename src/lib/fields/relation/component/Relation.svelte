@@ -12,9 +12,11 @@
 	import type { Relation } from '$lib/sqlite/relations.js';
 	import type { GenericDoc } from 'rizom/types';
 	import type { RelationField } from '../index';
-	import { onMount } from 'svelte';
 	import { getValueAtPath } from 'rizom/util/object';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte';
+	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
+	
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -23,25 +25,31 @@
 	// Context
 	const { getCollection } = getConfigContext();
 	const locale = getLocaleContext();
-	
-	let initialItems: RelationFieldItem[] = $state([]);
+	const APIProxy = getAPIProxyContext('document');
 	const field = $derived(form.useField(path, config));
+	const relationConfig = getCollection(config.relationTo);
+	const relationCollectionCtx = getCollectionContext(relationConfig.slug)
+	
+	let initialized = $state(false);
+	// the fetched items
+	let initialItems: RelationFieldItem[] = $state([]);
+	// value from the form
 	let initialValue = form.getRawValue(path) || [];
+	// timestamp to force re-render
 	let stamp = $state(new Date().getTime().toString());
 
-	const relationConfig = getCollection(config.relationTo);
-	
+	let selectedItems = $state<RelationFieldItem[]>([]);
+	// fetched items minus selected items
 	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);
-	let selectedItems = $state<RelationFieldItem[]>([]);
-	
-	
+
 	let isFull = $derived(
 		(!config.many && selectedItems.length === 1) ||
 			(config.many && selectedItems.length === availableItems.length) ||
 			false
 	);
 
+	// Convert a document to a relation field item value
 	function documentToRelationFieldItem(doc: GenericDoc) {
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
@@ -68,16 +76,15 @@
 		return item;
 	}
 
-	// Fetch
-	const getItems = async () => {
-		// Create a URL object with the base path
+	// Build the API URL for fetching the collection
+	function makeRessourceURL() {
 		const url = new URL(`/api/${relationConfig.slug}`, window.location.origin);
-		
+
 		// Add depth parameter if in live context
 		if (form.isLive) {
 			url.searchParams.append('depth', '1');
 		}
-		
+
 		// Add custom query parameters if provided
 		if (config.query) {
 			if (typeof config.query === 'string') {
@@ -95,32 +102,33 @@
 				});
 			}
 		}
-		
-		const res = await fetch(url.pathname + url.search, {
-			method: 'GET',
-			headers: {
-				'content-type': 'application/json'
+
+		return url.pathname + url.search;
+	}
+
+	const ressourceURL = makeRessourceURL();
+	
+	// Fetch the collection data
+	const ressource = APIProxy.getRessource(ressourceURL);
+
+	// Initialize the initial items and selected items
+	$effect(() => {
+		if (ressource.data) {
+			initialItems = ressource.data.docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
+			if(!initialized){
+				selectedItems = initialValue.map((relation: Relation) => {
+					return initialItems.find((item) => item.relationId === relation.relationId);
+				});
+				initialized = true;
 			}
-		});
-
-		if (res.ok) {
-			const { docs } = await res.json();
-			initialItems = docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
-			selectedItems = initialValue.map((relation: Relation) => {
-				return initialItems.find((item) => item.relationId === relation.relationId);
-			});
-		}
-	};
-
-	$inspect(selectedItems).with((type, value) => {
-		if(path === 'attributes.parent') {
-			console.log('--- selected items', type, value);
 		}
 	});
 	
-	onMount(() => {
-		getItems();
-	});
+	// $inspect(selectedItems).with((type, value) => {
+	// 	if (path === 'attributes.parent') {
+	// 		console.log('--- selected items', type, value);
+	// 	}
+	// });
 
 	const retreiveRelation = (relationId: string) => {
 		if (initialValue && Array.isArray(initialValue) && initialValue.length) {
@@ -178,8 +186,9 @@
 
 	const onRelationCreated = (doc: GenericDoc) => {
 		form.isDisabled = false;
-		initialItems.push(documentToRelationFieldItem(doc));
-		availableItems.push(documentToRelationFieldItem(doc));
+		selectedItems.push(documentToRelationFieldItem(doc));
+		ressource.isValid = false;
+		relationCollectionCtx.docs.push(doc);
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
