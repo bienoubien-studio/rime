@@ -130,8 +130,8 @@
 {/key}
 
 <div class="rz-relation-upload__actions">
-	{#if !isFull}
-		<Button onclick={() => (open = true)} variant="outline" disabled={availableItems.length === 0}>
+	{#if !isFull && availableItems.length > 0}
+		<Button onclick={() => (open = true)} variant="outline">
 			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
 	{/if}
