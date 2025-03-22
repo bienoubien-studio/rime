@@ -1,9 +1,10 @@
 import { type Handle } from '@sveltejs/kit';
 import rizom from '../rizom.server.js';
-import { requestLogger } from 'rizom/util/logger/index.js';
+import { logger } from 'rizom/util/logger/index.js';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from 'rizom/types/index.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
+import { request } from 'http';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -15,7 +16,7 @@ export function createCMSHandler({ config, schema }: Args) {
 	// Define current locale and add it to event.locals
 	// Return the better-auth handler
 	const handleCMS: Handle = async ({ event, resolve }) => {
-		requestLogger.info(event.request.method + ' ' + event.url.pathname);
+		logger.info(`${event.request.method} ${event.url.pathname}`);
 
 		if (dev || !rizom.initialized) {
 			await rizom.init({ config, schema });

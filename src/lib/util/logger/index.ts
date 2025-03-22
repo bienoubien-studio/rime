@@ -1,110 +1,126 @@
-import logger, { type LogLevelDesc } from 'loglevel';
-import prefixer from 'loglevel-plugin-prefix';
 import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 
-const browser = typeof window === 'undefined' ? false : true;
-const envLevel = browser ? 'TRACE' : process.env.RIZOM_LOG_LEVEL || 'TRACE';
-const LOG_TO_FILE = process.env.RIZOM_LOG_TO_FILE === 'true';
+// Environment and configuration
 const LOG_DIR = process.env.RIZOM_LOG_DIR || 'logs';
 const LOG_FILE = 'rizom.log';
+const LOG_TO_FILE = process.env.RIZOM_LOG_TO_FILE === 'true';
 
-// File logging function
-const writeToLog = async (level: string, message: unknown, category?: string) => {
-	if (!LOG_TO_FILE || browser) return;
+// Log levels with numeric values for comparison
+enum LogLevel {
+  TRACE = 0,
+  DEBUG = 1,
+  INFO = 2,
+  WARN = 3,
+  ERROR = 4,
+  SILENT = 5
+}
 
-	try {
-		const timestamp = new Date().toISOString();
-		const categoryPrefix = category ? `[${category}] ` : '';
-		const logEntry = `[${timestamp}] ${categoryPrefix}[${level}] ${
-			typeof message === 'string' ? message : JSON.stringify(message)
-		}\n`;
-
-		await fs.mkdir(LOG_DIR, { recursive: true });
-		await fs.appendFile(path.join(LOG_DIR, LOG_FILE), logEntry);
-	} catch (error) {
-		console.error('Failed to write to log file:', error);
-	}
+// Get log level from environment variable
+const getLogLevelFromEnv = (): LogLevel => {
+  const envLevel = (process.env.RIZOM_LOG_LEVEL || 'INFO').toUpperCase();
+  return LogLevel[envLevel as keyof typeof LogLevel] ?? LogLevel.INFO;
 };
 
-// Create a proxy factory for loggers
-const createLoggerProxy = (originalLogger: any, category?: string) => {
-	return new Proxy(originalLogger, {
-		get(target, property) {
-			const original = target[property];
-			if (
-				typeof original === 'function' &&
-				['trace', 'debug', 'info', 'warn', 'error'].includes(property as string)
-			) {
-				return function (...args: unknown[]) {
-					original.apply(target, args);
-					writeToLog(property.toString().toUpperCase(), args[0], category);
-				};
-			}
-			return original;
-		}
-	});
+// Current log level
+let currentLogLevel = getLogLevelFromEnv();
+
+// Format message for logging
+const formatMessage = (args: unknown[]): string => {
+  return args.map(arg => 
+    typeof arg === 'string' ? arg : 
+    typeof arg === 'object' ? JSON.stringify(arg) : 
+    String(arg)
+  ).join(' ');
 };
 
-// Create proxied loggers
-const originalLogger = logger.getLogger('main');
-const originalRequestLogger = logger.getLogger('req');
+// Write to log file
+const writeToFile = async (level: string, args: unknown[]) => {
+  if (!LOG_TO_FILE) return;
 
+  try {
+    const timestamp = new Date().toISOString();
+    const message = formatMessage(args);
+    
+    // Strip ANSI color codes
+    const cleanMessage = message.replace(/\u001b\[\d+m/g, '');
+    
+    const logEntry = `[${timestamp}] [${level}] ${cleanMessage}\n`;
+    
+    await fs.mkdir(LOG_DIR, { recursive: true });
+    await fs.appendFile(path.join(LOG_DIR, LOG_FILE), logEntry);
+  } catch (error) {
+    console.error('Failed to write to log file:', error);
+  }
+};
 
-const loggerProxy = createLoggerProxy(originalLogger);
-const requestLoggerProxy = createLoggerProxy(originalRequestLogger, 'REQUEST');
+// Check if a log level is enabled
+const isLevelEnabled = (level: LogLevel): boolean => {
+  return level >= currentLogLevel;
+};
 
-prefixer.reg(logger);
-prefixer.apply(logger, {
-	format(level) {
-		if (level === 'WARN') {
-			return `${chalk.yellow(`[warn]`)}`;
-		}
-		if (level === 'ERROR') {
-			return `${chalk.red(`[error]`)}`;
-		}
-		if (level === 'INFO ') {
-			return `${chalk.yellow(`[info]`)}`;
-		}
-		return level;
-	}
-});
+// Base logger implementation
+const logger = {
+  // Set the log level
+  setLevel: (level: keyof typeof LogLevel | LogLevel) => {
+    if (typeof level === 'string') {
+      currentLogLevel = LogLevel[level] ?? LogLevel.INFO;
+    } else {
+      currentLogLevel = level;
+    }
+  },
+  
+  // Get the current log level
+  getLevel: (): string => {
+    return LogLevel[currentLogLevel] as string;
+  },
+  
+  // Log methods
+  trace: (...args: unknown[]) => {
+    if (isLevelEnabled(LogLevel.TRACE)) {
+      console.trace(chalk.magenta('[trace]'), ...args);
+      writeToFile('TRACE', args);
+    }
+  },
+  debug: (...args: unknown[]) => {
+    if (isLevelEnabled(LogLevel.DEBUG)) {
+      console.debug(chalk.redBright('[debug]'), ...args);
+      writeToFile('DEBUG', args);
+    }
+  },
+  info: (...args: unknown[]) => {
+    if (isLevelEnabled(LogLevel.INFO)) {
+      console.info(chalk.blue('[info]'), ...args);
+      writeToFile('INFO', args);
+    }
+  },
+  warn: (...args: unknown[]) => {
+    if (isLevelEnabled(LogLevel.WARN)) {
+      console.warn(chalk.yellow('[warn]'), ...args);
+      writeToFile('WARN', args);
+    }
+  },
+  error: (...args: unknown[]) => {
+    if (isLevelEnabled(LogLevel.ERROR)) {
+      console.error(chalk.red('[error]'), ...args);
+      writeToFile('ERROR', args);
+    }
+  }
+};
 
-logger.setLevel(envLevel as LogLevelDesc);
-
-prefixer.apply(logger.getLogger('taskDone'), {
-	format() {
-		return `${chalk.green(`[rizom] ✓ `)}`;
-	}
-});
-
-prefixer.apply(logger.getLogger('taskError'), {
-	format() {
-		return `${chalk.red(`[rizom] ✗ `)}`;
-	}
-});
-
-prefixer.apply(logger.getLogger('taskInfo'), {
-	format() {
-		return `${chalk.yellow(`[rizom]`)}`;
-	}
-});
-
-prefixer.apply(logger.getLogger('req'), {
-	format() {
-		return `${chalk.yellow(`[request]`)}`;
-	}
-});
-
+// Task logger with colored prefixes
 export const taskLogger = {
-	info: logger.getLogger('taskInfo').info,
-	done: logger.getLogger('taskDone').info,
-	error: logger.getLogger('taskError').info
+  info: (...args: unknown[]) => {
+      console.info(chalk.yellow('[rizom]'), ...args);
+  },
+  done: (...args: unknown[]) => {
+      console.info(chalk.green('[rizom] ✓'), ...args);
+  },
+  error: (...args: unknown[]) => {
+      console.error(chalk.red('[rizom] ✗'), ...args);
+  }
 };
 
-export const requestLogger = requestLoggerProxy;
-
-export const debug = loggerProxy.debug.bind(loggerProxy);
-
-export default loggerProxy;
+// Export the main logger
+export { logger };
