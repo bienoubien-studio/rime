@@ -17,11 +17,10 @@
 	type Props = {
 		path?: string;
 		fields: Field[];
-		framed?: boolean;
 		form: DocumentFormContext;
 	};
 
-	const { form, fields, path: initialPath = '', framed = false }: Props = $props();
+	const { form, fields, path: initialPath = '' }: Props = $props();
 
 	const user = getUserContext();
 	const config = getConfigContext();
@@ -43,7 +42,7 @@
 	);
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
-	const framedClassModifier = $derived(framed ? 'rz-render-fields--framed' : '');
+	
 
 	const widthClassModifier = (field: FormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
@@ -51,7 +50,7 @@
 	//
 </script>
 
-<div class="rz-render-fields {framedClassModifier}">
+<div class="rz-render-fields">
 	{#each authorizedFields as field}
 		{#if !form.isLive || (form.isLive && isLiveField(field))}
 			{#if isComponentField(field)}
@@ -99,13 +98,6 @@
 		}
 	}
 	
-	.rz-render-fields--framed {
-		--rz-fields-padding: var(--rz-size-8);
-		position: relative;
-		padding: var(--rz-size-6) var(--rz-size-6) min(var(--rz-fields-padding), var(--rz-size-12))
-			var(--rz-size-6);
-	}
-
 	/** hide fields that doesn't have any data-visible children */
 	.rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
 			.rz-render-fields__field[data-type='separator']

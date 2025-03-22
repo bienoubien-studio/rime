@@ -2,7 +2,7 @@
 	import type { GroupField } from 'rizom/fields/group';
 	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
 	import { onMount } from 'svelte';
-	import { ChevronDown, Folder, FolderClosed, FolderOpen } from '@lucide/svelte';
+	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import type { WithoutBuilders } from 'rizom/types/util';
 	import { isFormField } from 'rizom/util/field';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
@@ -51,7 +51,7 @@
 	</button>
 
 	<div class="rz-group-field__content" class:rz-group-field__content--hidden={!groupOpen}>
-		<RenderFields {path} fields={config.fields} framed={true} {form} />
+		<RenderFields {path} fields={config.fields} {form} />
 	</div>
 </div>
 
@@ -66,7 +66,9 @@
 	}
 
 	.rz-group-field__content {
-		padding-top: minmax(var(--rz-fields-padding), var(--rz-size-4));
+		--rz-fields-padding: var(--rz-size-5);
+		padding-top: var(--rz-fields-padding);
+		padding-bottom: var(--rz-fields-padding);
 		background-color: hsl(var(--rz-ground-6));
 		> :global(.rz-render-fields) {
 			padding-left: 0;

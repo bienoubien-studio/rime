@@ -103,13 +103,14 @@
 		</header>
 
 		<div class="rz-block__fields" class:rz-block__fields--hidden={!isOpen}>
-			<RenderFields framed={true} fields={config.fields} {path} {form} />
+			<RenderFields  fields={config.fields} {path} {form} />
 		</div>
 	</div>
 </div>
 
 <style type="postcss">
 	.rz-block {
+		--rz-fields-padding: var(--rz-size-5);
 		position: relative;
 	}
 
