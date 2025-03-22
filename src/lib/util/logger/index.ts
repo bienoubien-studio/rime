@@ -51,6 +51,7 @@ const createLoggerProxy = (originalLogger: any, category?: string) => {
 const originalLogger = logger.getLogger('main');
 const originalRequestLogger = logger.getLogger('req');
 
+
 const loggerProxy = createLoggerProxy(originalLogger);
 const requestLoggerProxy = createLoggerProxy(originalRequestLogger, 'REQUEST');
 

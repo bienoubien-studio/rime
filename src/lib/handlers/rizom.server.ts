@@ -20,7 +20,7 @@ export function createCMSHandler({ config, schema }: Args) {
 		if (dev || !rizom.initialized) {
 			await rizom.init({ config, schema });
 		}
-
+		
 		event.locals.api = new LocalAPI({ rizom, event });
 		event.locals.rizom = rizom;
 		event.locals.locale = rizom.defineLocale({ event });

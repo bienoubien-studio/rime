@@ -7,7 +7,7 @@
 		visible: boolean;
 		children: Snippet;
 	} & HTMLFieldsetAttributes;
-
+	
 	let { class: className, children, visible, ...HTMLFieldsetProps }: Props = $props();
 </script>
 
