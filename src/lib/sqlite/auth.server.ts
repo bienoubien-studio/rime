@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import validate from '../util/validate.js';
-import { rizom, type Rizom } from '$lib/index.js';
+import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
