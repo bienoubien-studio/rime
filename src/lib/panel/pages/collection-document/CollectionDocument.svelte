@@ -26,14 +26,14 @@
 
 {#if data.status === 200}
 	<PaneGroup class="rz-collection-container" autoSaveId="rz-collection-document:panel-state" direction="horizontal">
-		<Pane defaultSize={40}>
+		<Pane minSize={15} defaultSize={40}>
 			<div class="rz-collection-container__list">
 				<Collection compact={true} {slug} />
 			</div>
 			
 		</Pane>
 		<PaneResizer />
-		<Pane>
+		<Pane minSize={30}>
 			<Document
 				class="rz-collection-container__doc"
 				doc={data.doc}

@@ -1,13 +1,13 @@
 import { getContext, setContext } from 'svelte';
+import { readable, writable } from 'svelte/store';
 
 const PROXY_KEY = Symbol('rizom.APIProxy');
 
 type Ressource = ReturnType<typeof createRessource>
 
 function createRessource(url: string) {
-  
+
   const getData = async (url: string): Promise<any> => {
-    console.log('fetch : ' + url);
     return fetch(url, {
       method: 'GET',
       headers: {
@@ -17,29 +17,22 @@ function createRessource(url: string) {
   };
 
   let data = $state<any>(null);
-  let isValid = $state(false);
-  
+
   $effect(() => {
-    if (!isValid) {
+    if(data === null){
       getData(url).then(r => r.json()).then((result) => {
         data = result;
-        isValid = true;
       });
     }
   });
-
-  $inspect(data)
 
   return {
     url,
     get data() {
       return data;
     },
-    get isValid() {
-      return isValid;
-    },
-    set isValid(v: boolean) {
-      isValid = v;
+    set data(value){
+      data = value
     }
   }
 }
@@ -53,7 +46,7 @@ function createStore() {
 
   const getRessource = (url: string) => {
     const localeRessource = getLocaleRessource(url);
-    if (!localeRessource) { 
+    if (!localeRessource) {
       const ressource = createRessource(url);
       ressources.push(ressource);
       return ressource;
@@ -62,20 +55,12 @@ function createStore() {
     }
   };
 
-  const invalidate = (url: string) => {
-    const ressource = getLocaleRessource(url);
-    if (ressource) {
-      ressource.isValid = false;
-    }
-  };
-
   const invalidateAll = () => {
-    ressources.forEach(r => r.isValid = false);
+    ressources.forEach(r => r.data = null);
   };
 
   return {
     getRessource,
-    invalidate,
     invalidateAll
   };
 }

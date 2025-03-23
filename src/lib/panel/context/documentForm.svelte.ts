@@ -9,7 +9,7 @@ import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
 import { getUserContext } from './user.svelte.js';
-import { getValueAtPath } from '../../util/object.js';
+import { getValueAtPath, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
@@ -27,16 +27,16 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	key,
 	onDataChange,
 	onFieldFocus,
-	onNestedDocumentCreated
+	// onNestedDocumentCreated
 }: Args<T>) {
 	//
 	let intialDoc = $state(initial);
 	let doc = $state(initial);
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
-	const isCreateDoc = (doc: T) => !doc.id;
 	let processing = $state(false);
 	let element = $state<HTMLFormElement>();
+	const operation = $derived(doc.id ? 'update' : 'create')
 	const user = getUserContext();
 	const errors = setErrorsContext(key);
 	const isCollection = config.type === 'collection';
@@ -53,7 +53,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 	
 	function initLevel() {
-		const last = key.split('.').pop() as string;
+		const last = key.split('_').pop() as string;
 		const isDigit = /[\d]+/.test(last);
 		return isDigit ? parseInt(last) : 0;
 	}
@@ -62,9 +62,12 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		if (config.type === 'area') {
 			return config.label;
 		} else {
-			$effect(() => (title = getValueAtPath(config.asTitle, doc) || '[untitled]'));
-			return doc && doc[config.asTitle] ? doc[config.asTitle] : '[untitled]';
-		}
+			$effect(() => {
+				title = getValueAtPath(config.asTitle, doc) || '[untitled]'
+			})
+			const initialTitle = getValueAtPath(config.asTitle, doc)
+			return doc && initialTitle ? initialTitle : '[untitled]';
+		};
 	}
 
 	const rebuildPaths = (items: any[], basePath: string, parentPath: string = basePath) => {
@@ -98,15 +101,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 
 	function setValue(path: string, value: any) {
-		const parts = path.split('.');
-		const flatDoc: Dic = flatten(doc, {
-			maxDepth: parts.length
-		});
-
-		flatDoc[path] = value;
-		doc = unflatten(flatDoc);
-
-		if (collection && !isCreateDoc(doc)) collection.updateDoc(doc);
+		doc = setValueAtPath(doc, path, value)
+		if (collection && operation === 'update') collection.updateDoc(doc);
 		if (onDataChange) onDataChange({ path, value });
 	}
 
@@ -143,8 +139,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			flatDoc[path] = items;
 			doc = unflatten(flatDoc);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
-			// const repr = toNestedRepresentation(items);
-			// console.log(repr.toString());
+
 			/** update stamp to rerender */
 			stamp = new Date().getTime().toString();
 		};
@@ -393,7 +388,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 			set value(value: any) {
 				const valid = validate(value);
-				if (!isCreateDoc(doc) && !config.access.update(user.attributes)) {
+				if (operation === 'update' && !config.access.update(user.attributes)) {
 					return;
 				}
 				if (valid) {
@@ -402,7 +397,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			},
 
 			get editable() {
-				if (isCreateDoc(doc)) {
+				if (operation === 'create') {
 					return config.access.create(user.attributes);
 				} else {
 					return config.access.update(user.attributes);
@@ -423,11 +418,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 						}
 						visible = config.condition(doc, siblings);
 					} catch (err: any) {
-						console.log(err.message);
+						console.error(err.message);
 					}
 				}
 				return visible;
 			},
+
+			path,
 
 			get error() {
 				return errors.value[path] || false;
@@ -436,12 +433,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			get isEmpty() {
 				return !!config.isEmpty && config.isEmpty(getValueAtPath(path, doc));
 			}
-			// get props() {
-			// 	return {
-			//        get disabled() { return isDisabled },
-			//        get visible() { return visible },
-			// 	};
-			// }
 		};
 	}
 
@@ -471,22 +462,30 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 		const result: ActionResult = deserialize(await response.text());
 
-		// return async ({ result, update }) => {
+
 		if (result.type === 'success') {
+			console.log('success', result);
+			console.log('nestedLevel', nestedLevel)
+			console.log('operation', operation)
 			doc = result.data?.doc || (doc as GenericDoc);
 			if (nestedLevel === 0) {
+				console.log('--> set doc')
 				toast.success(t__('common.doc_updated'));
 				await invalidateAll();
 				intialDoc = doc;
 			} else {
+				// Do not redirect on creation if it's a nested form
+				// the form will auto close and we are back to the parent
+				// Form so no need to assign the returned doc 
 				toast.success(t__('common.doc_created'));
-				if (onNestedDocumentCreated) onNestedDocumentCreated(doc);
 			}
 		} else if (result.type === 'redirect') {
+			// handle redirect after document creation
 			toast.success(t__('common.doc_created'));
 			if (collection) collection.addDoc(doc as GenericDoc);
 			applyAction(result);
 		} else if (result.type === 'failure') {
+			// Handle error
 			if (result.data?.errors) {
 				errors.value = result.data.errors;
 				for (const [key, error] of Object.entries(errors.value)) {
@@ -497,7 +496,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			}
 		}
 		processing = false;
-		// }
 	};
 
 	const enhance = (formElement: HTMLFormElement) => {
@@ -515,7 +513,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 
 	const buildPanelActionUrl = () => {
-		const operation = doc.id ? 'update' : 'create';
 		// Start with the base URI for the panel
 		let panelUri = `/panel/${config.slug}`;
 		// Add the item ID to the URI if we're updating a collection doc
@@ -627,7 +624,6 @@ type Args<T> = {
 	initial: T;
 	config: CompiledArea | CompiledCollection;
 	readOnly: boolean;
-	onNestedDocumentCreated?: any;
 	onDataChange?: any;
 	onFieldFocus?: any;
 	key: string;

@@ -70,29 +70,30 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	};
 
 	const deleteDocs = async (ids: string[]) => {
+		let errorsCount = 0;
+
+		const toDelete = [ ...docs ].filter(doc => ids.includes(doc.id))
+		docs = docs.filter((doc) => !ids.includes(doc.id));
+		initialDocs = docs;
+
 		// Build the promise for each doc
-		const promises = ids.map((id) =>
-			fetch(`/api/${config.slug}/${id}`, {
+		const promises = ids.map(async (id) => {
+			return fetch(`/api/${config.slug}/${id}`, {
 				method: 'DELETE',
 				headers: {
 					'content-type': 'application/json'
 				}
+			}).then(response => {
+				if (response.status !== 200) {
+					const docError = toDelete.find(doc => doc.id === id)
+					docs.push(docError!)
+					initialDocs = docs
+				}
+				return response;
 			})
-		);
+		});
 
-		const responses = await Promise.all(promises);
-
-		// Parse result and check for errors
-		let errorsCount = 0;
-		for (const response of responses) {
-			if (response.status !== 200) {
-				errorsCount++;
-			} else {
-				const result = await response.json();
-				docs = docs.filter((doc) => doc.id !== result.id);
-				initialDocs = docs;
-			}
-		}
+		await Promise.all(promises);
 
 		// Inform user if all delete succeed
 		let message = `Successfully deleted ${ids.length} docs`;
@@ -275,7 +276,10 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 		addDoc(doc: T) {
 			docs.push(doc);
+			sortBy(sortingBy, false)
 		},
+
+		deleteDocs,
 
 		async deleteDoc(id: string) {
 			const res = await fetch(`/api/${config.slug}/${id}`, {
@@ -287,11 +291,10 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			if (res.status === 200) {
 				docs = [...docs].filter((doc) => doc.id !== id);
 			} else if (res.status === 404) {
-				console.log('not found');
+				console.error('not found');
 			}
 		},
 
-		deleteDocs
 	};
 }
 

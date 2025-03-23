@@ -1,9 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import type { BeforeNavigate } from '@sveltejs/kit';
-import { flatten, unflatten } from 'flat';
 import { isObjectLiteral, setValueAtPath } from '../../util/object.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/util.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
@@ -19,9 +17,7 @@ const LIVE_KEY = Symbol('rizom.live');
  * 8. Live.svelte navigates to new location, maintaining live edit mode
  */
 
-// Type definitions for better clarity
 type OnDataCallback = (args: { path: string; value: any }) => void;
-type MergeDataArgs = { path: string; value: any };
 type LiveStore<T extends GenericDoc = GenericDoc> = ReturnType<typeof createStore<T>>;
 
 function createStore<T extends GenericDoc = GenericDoc>(href: string) {
@@ -29,7 +25,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	let doc = $state<T>();
 	const callbacks: OnDataCallback[] = [];
 	let currentFocusedElement = $state<HTMLElement>();
-
+	
 	/**
 	 * Handles navigation within iframe to maintain live editing mode
 	 */
@@ -97,8 +93,11 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 			}
 		}
 		
+		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate')
+		
 		// Update the document with the new value
 		doc = setValueAtPath(doc, data.path, value) as T;
+
 	};
 
 	/**

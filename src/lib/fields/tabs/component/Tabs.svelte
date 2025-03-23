@@ -79,18 +79,17 @@
 </div>
 
 <style type="postcss">
-	.rz-tabs {
-		/* container: rz-tabs / inline-size; */
+	.rz-tabs :global {
 
-		:global(.rz-tabs-trigger) {
+		.rz-tabs-trigger {
 			min-width: var(--rz-size-28);
 		}
 
-		:global(.rz-tabs-content) {
+		.rz-tabs-content {
 			margin-top: var(--rz-size-8);
 		}
 
-		:global(.rz-tabs-list) {
+		.rz-tabs-list {
 			position: sticky;
 			top: 0;
 			margin-bottom: 0;

@@ -37,7 +37,7 @@ function createFormStore(initial: Dic, key: string) {
 			try {
 				isEmpty = config.isEmpty(value);
 			} catch (err: any) {
-				console.log(err.message);
+				console.error(err.message);
 				throw new Error(config.type + ' ' + err.message);
 			}
 			if (config.required && isEmpty) {
@@ -68,6 +68,8 @@ function createFormStore(initial: Dic, key: string) {
 		};
 
 		return {
+			path, 
+			
 			get value() {
 				return form[path];
 			},

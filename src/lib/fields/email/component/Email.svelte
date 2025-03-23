@@ -48,7 +48,8 @@
 			display: none;
 		}
 		.rz-field-error {
-			top: calc(-1 * var(--rz-size-6));
+			top: var(--rz-size-1);
+			right: var(--rz-size-1);
 		}
 		.rz-input {
 			font-size: var(--rz-text-md);

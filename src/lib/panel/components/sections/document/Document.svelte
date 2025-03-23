@@ -55,7 +55,7 @@
 		// 	form.doc.editedBy.length &&
 		// 	form.doc.editedBy[0].id === user.attributes.id
 		// ) {
-		// 	// console.log('untake control');
+		
 		// 	await fetch(`/api/${config.slug}/${initial.id}`, {
 		// 		method: 'PATCH',
 		// 		body: JSON.stringify({
@@ -69,10 +69,10 @@
 		initial,
 		config,
 		readOnly,
-		onNestedDocumentCreated,
+		// onNestedDocumentCreated,
 		onDataChange,
 		onFieldFocus,
-		key: `${initial._type}.${nestedLevel}`
+		key: `${initial._type}_${nestedLevel}`
 	});
 
 	const locale = getLocaleContext();

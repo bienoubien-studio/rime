@@ -67,6 +67,7 @@
 			data-error={field.error ? '' : null}
 			type="text"
 			value={field.value}
+			name={path}
 			oninput={onInput}
 		/>
 

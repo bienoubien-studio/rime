@@ -1,3 +1,5 @@
+import { snapshot } from './state.js'
+
 import type { Dic, WithRequired } from 'rizom/types/util';
 
 export const pick = <T extends object, K extends keyof T>(keys: K[], obj: T): Pick<T, K> => {
@@ -126,36 +128,54 @@ export const getValueAtPath = <T extends unknown>(path: string, obj: Dic): T | n
 	return current as T;
 };
 
-export const setValueAtPath = <T extends any>(obj: T, path: string, value: unknown): T => {
-	const parts = path.split('.');
-
-	let current: any = obj;
-	// We iterate until the second-to-last part
-	for (let i = 0; i < parts.length - 1; i++) {
-		const part = parts[i];
-		if (/^\d+$/.test(part) && Array.isArray(current)) {
-			current = current[parseInt(part)];
-		} else if (isObjectLiteral(current) && part in current) {
-			current = current[part];
-		} else {
-			throw new Error(`Can't find ${path}`);
-		}
-		if (!current) {
-			throw new Error(`Can't find ${path}`);
-		}
-	}
-
-	// Handle the last part separately for assignment
-	const lastPart = parts[parts.length - 1];
-	if (/^\d+$/.test(lastPart) && Array.isArray(current)) {
-		current[parseInt(lastPart)] = value;
-	} else if (isObjectLiteral(current)) {
-		current[lastPart] = value;
-	} else {
-		throw new Error(`Can't set value at ${path}`);
-	}
-
-	return obj;
+export const setValueAtPath = <T extends object>(obj: T, path: string, value: unknown): T => {
+  const parts = path.split('.');
+  
+  // Create a shallow copy of the root object
+  const result = { ...obj };
+  
+  let current:any = result;
+  let previous = null;
+  let previousKey: string | number = '';
+  
+  // Navigate to the parent of the target property
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    const index = /^\d+$/.test(part) ? parseInt(part) : part;
+    
+    previous = current;
+    previousKey = index;
+    
+    if (!current[index]) {
+      throw new Error(`Path ${path} does not exist at part ${part}`);
+    }
+    
+    // Create a shallow copy of the current level before moving deeper
+    if (Array.isArray(current[index])) {
+      current[index] = [...current[index]];
+    } else if (typeof current[index] === 'object' && current[index] !== null) {
+      current[index] = { ...current[index] };
+    }
+    
+    current = current[index];
+  }
+  
+  // Set the value at the final path segment
+  const lastPart = parts[parts.length - 1];
+  const lastIndex = /^\d+$/.test(lastPart) ? parseInt(lastPart) : lastPart;
+  
+  if (previous !== null) {
+    if (Array.isArray(previous[previousKey])) {
+      previous[previousKey][lastIndex] = value;
+    } else if (typeof previous[previousKey] === 'object' && previous[previousKey] !== null) {
+      previous[previousKey][lastIndex] = value;
+    }
+  } else {
+    // We're setting a property directly on the root object
+    result[lastIndex] = value;
+  }
+  
+  return result;
 };
 
 export function deleteValueAtPath<T>(obj: T, path: string): T {

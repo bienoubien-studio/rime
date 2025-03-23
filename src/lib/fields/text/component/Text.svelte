@@ -43,9 +43,8 @@
 			display: none;
 		}
 		.rz-field-error {
-			position: absolute;
 			top: var(--rz-size-1);
-			right: calc(var(--rz-fields-padding) + var(--rz-size-1));
+			right: var(--rz-size-1);
 		}
 		.rz-input {
 			font-size: var(--rz-text-md);

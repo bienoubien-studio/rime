@@ -2,7 +2,7 @@
 	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
 	import { Label } from '$lib/panel/components/ui/label/index.js';
 	import { Field } from 'rizom/panel';
-	import { capitalize } from '$lib/util/string.js';
+	import { capitalize, slugify } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
@@ -17,6 +17,8 @@
 			field.value = value;
 		}
 	});
+	
+	const fieldId = $derived(slugify(`${form.key}-${path}`));
 </script>
 
 <fieldset class="rz-field-radio {config.className || ''}" use:root={field}>
@@ -24,8 +26,8 @@
 	<RadioGroup.Root bind:value class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index}
 			<div class="rz-radio__option">
-				<RadioGroup.Item value={option.value} id="r{index}" class="rz-radio__input" />
-				<Label class="rz-radio__label" for="r{index}">
+				<RadioGroup.Item value={option.value} id="{fieldId}-{index}" class="rz-radio__input" />
+				<Label class="rz-radio__label" for="{fieldId}-{index}">
 					{option.label || capitalize(option.value)}
 				</Label>
 			</div>

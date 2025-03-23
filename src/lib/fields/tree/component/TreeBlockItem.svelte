@@ -32,13 +32,15 @@
 				.join('.') + '.'
 		);
 	});
-	let isOpen = $state(false);
+	let isOpen = $state(true);
 
 	const { once } = useOnce();
 
 	once(() => {
-		if (itemValue) {
-			isOpen = (localStorage.getItem(`${itemValue.id}:open`) || 'true') === 'true';
+		if (!itemValue || itemValue && itemValue.id.startsWith('temp-')) {
+			isOpen = true
+		}else if (itemValue) {
+			isOpen = (localStorage.getItem(`${itemValue.id}:open`) || 'false') === 'true';
 		}
 	});
 

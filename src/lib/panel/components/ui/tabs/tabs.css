@@ -18,7 +18,7 @@
 	border-right: 1px solid hsl(var(--rz-color-border));
 }
 .rz-tabs-trigger[data-state='active'] {
-	background-color: hsl(var(--rz-ground-7) / 0.5);
+	background-color: hsl(var(--rz-ground-7));
 	position: relative;
 }
 .rz-tabs-trigger[data-state='active']:not([data-error='true']) {

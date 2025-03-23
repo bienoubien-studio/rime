@@ -52,9 +52,8 @@
 	const onNestedDocumentCreated = (doc: GenericDoc) => {
 		create = false;
 		onRelationCreated(doc);
-		addValue(doc.id);
 	};
-
+	
 	$effect(() => {
 		if (many) {
 			const list = document.querySelector(

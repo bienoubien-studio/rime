@@ -1,6 +1,7 @@
 
 type Field = {
   value: any;
+  path: string;
   readonly editable: boolean;
   readonly visible: boolean;
   readonly error: string | false;
@@ -8,7 +9,9 @@ type Field = {
 
 export function root(node: HTMLElement, field: Field) {
   node.classList.add('rz-field-root');
-
+  node.setAttribute('style', 'position: relative;');
+  node.setAttribute('data-path', field.path);
+  
   $effect(() => {
     if (field.visible) {
       node.setAttribute('data-visible', '');

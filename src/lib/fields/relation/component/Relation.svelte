@@ -16,7 +16,7 @@
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte';
 	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
-	
+	import { doc } from 'rizom/util';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -28,8 +28,8 @@
 	const APIProxy = getAPIProxyContext('document');
 	const field = $derived(form.useField(path, config));
 	const relationConfig = getCollection(config.relationTo);
-	const relationCollectionCtx = getCollectionContext(relationConfig.slug)
-	
+	const relationCollectionCtx = getCollectionContext(relationConfig.slug);
+
 	let initialized = $state(false);
 	// the fetched items
 	let initialItems: RelationFieldItem[] = $state([]);
@@ -45,7 +45,9 @@
 
 	let isFull = $derived(
 		(!config.many && selectedItems.length === 1) ||
-			(config.many && selectedItems.length === availableItems.length) ||
+			(config.many &&
+				selectedItems.length === availableItems.length &&
+				availableItems.length > 0) ||
 			false
 	);
 
@@ -107,15 +109,15 @@
 	}
 
 	const ressourceURL = makeRessourceURL();
-	
+
 	// Fetch the collection data
 	const ressource = APIProxy.getRessource(ressourceURL);
 
 	// Initialize the initial items and selected items
 	$effect(() => {
-		if (ressource.data) {
+		if (ressource.data ) {
 			initialItems = ressource.data.docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
-			if(!initialized){
+			if (!initialized) {
 				selectedItems = initialValue.map((relation: Relation) => {
 					return initialItems.find((item) => item.relationId === relation.relationId);
 				});
@@ -123,12 +125,6 @@
 			}
 		}
 	});
-	
-	// $inspect(selectedItems).with((type, value) => {
-	// 	if (path === 'attributes.parent') {
-	// 		console.log('--- selected items', type, value);
-	// 	}
-	// });
 
 	const retreiveRelation = (relationId: string) => {
 		if (initialValue && Array.isArray(initialValue) && initialValue.length) {
@@ -176,19 +172,33 @@
 		return relations;
 	};
 
+
+	// Disabled the parent form (this one)
+	// So when user save the nested doc 
+	// it doesn't save this one
 	const onRelationCreation = () => {
 		form.isDisabled = true;
 	};
 
+	// Enable the form on cancel
 	const onRelationCreationCanceled = () => {
 		form.isDisabled = false;
 	};
 
-	const onRelationCreated = (doc: GenericDoc) => {
+	const onRelationCreated = async (doc: GenericDoc) => {
+		// Enabled the form 
 		form.isDisabled = false;
-		selectedItems.push(documentToRelationFieldItem(doc));
-		ressource.isValid = false;
-		relationCollectionCtx.docs.push(doc);
+		// update resssource
+		ressource.data.docs.push(doc)
+		// update collection if present
+		if (relationCollectionCtx) {
+			relationCollectionCtx.addDoc(doc);
+		}
+		// Set value if not full
+		if (isFull) return;
+		selectedItems = [...selectedItems, documentToRelationFieldItem(doc)];
+		field.value = buildRelationFieldValue();
+
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
@@ -218,7 +228,7 @@
 
 <fieldset class="rz-field-relation {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
-
+	
 	<RelationComponent
 		{path}
 		many={!!config.many}
@@ -237,7 +247,7 @@
 		{removeValue}
 		{relationConfig}
 		{onOrderChange}
-	/>
-
+		/>
+		
 	<Field.Error error={field.error} />
 </fieldset>

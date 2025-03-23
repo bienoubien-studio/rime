@@ -105,7 +105,7 @@
 				{/key}
 			</div>
 		</Pane>
-		<PaneResizer onDraggingChange={(e) => console.log(e)} />
+		<PaneResizer />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
 			{#if !sync}
 				<div out:fade={{ duration: 350 }} class="rz-live-container__iframe-overlay">
