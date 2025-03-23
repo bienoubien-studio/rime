@@ -19,12 +19,12 @@ import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
 const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 
 const templateDocType = (slug: string, content: string, upload?: boolean): string => `
-interface ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
+export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
   ${content}
 }`;
 
 const makeBlockType = (slug: string, content: string): string => `
-interface Block${toPascalCase(slug)} = {
+export type Block${toPascalCase(slug)} = {
   id: string
   type: '${slug}'
   ${content}
@@ -151,8 +151,8 @@ export type RelationValue<T> =
 	const register = templateRegister(collectionSlugs, areaSlugs);
 
 	const hasBlocks = !!registeredBlocks.length;
-	const blocksTypeNames = `interface BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
-	const anyBlock = `interface AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
+	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
+	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
 	const typeImports = `import type { ${Array.from(imports).join(', ')} } from '${PACKAGE_NAME}'`;
 
 	const locals = `declare global {
