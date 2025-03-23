@@ -2,6 +2,7 @@ import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
+import type { EditorOptions } from '@tiptap/core';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -63,6 +64,12 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return this;
 	}
 
+	extensions(...extensions: EditorOptions["extensions"]) {
+		console.log('set extensions', extensions);
+		this.field.extensions = extensions;
+		return this;
+	}
+
 	nodes(...nodes: RichTextFieldNode[]) {
 		if (nodes && nodes[0]) {
 			this.field.nodes = nodes;
@@ -106,6 +113,7 @@ export type RichTextField = FormField & {
 	type: 'richText';
 	marks: RichTextFieldMark[];
 	nodes: RichTextFieldNode[];
+	extensions?: EditorOptions["extensions"];
 	defaultValue?: { type: 'doc'; content: any[] };
 };
 export type RichTextFieldMark = 'bold' | 'italic' | 'underline' | 'strike' | false;

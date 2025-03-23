@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { taskLogger } from 'rizom/util/logger/index.js';
+import { logger, taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
 import type { CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
@@ -71,7 +71,6 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 // Handles import paths for components and modules
 function createImportStatement(path: string): string {
 	let importPath;
-
 	// Handle Svelte components from src
 	if (path.endsWith('.svelte') && !path.includes('node_modules')) {
 		const componentPath = path.split('src/').pop() ?? '';
@@ -159,8 +158,10 @@ function registerFunction(func: Function, key: string = ''): string {
 function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
 	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
 
+	// logger.debug('Parsing value', { key, parentKey });
 	// Handle different value types
 	switch (typeof value) {
+		
 		case 'function': {
 			const filename = (value as any).filename || getSymbolFilename(value);
 			if (filename) return createImportStatement(filename);
@@ -170,6 +171,9 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 		case 'object': {
 			if (value === null) return 'null';
 			if (Array.isArray(value)) {
+				if(key === 'extensions'){
+					logger.debug(typeof value)
+				}
 				return `[${value
 					.map((item) => parseValue('', item, key))
 					.filter(Boolean)

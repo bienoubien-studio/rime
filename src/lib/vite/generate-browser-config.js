@@ -1,0 +1,174 @@
+/**
+ * This script generates a browser-safe config from the main config file
+ * It's designed to be run during the build process, not at runtime
+ * @typedef {import('rizom/types/config.js').BrowserConfig} BrowserConfig
+ * @typedef {import('rizom/types/panel.js').ComponentType} ComponentType
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.resolve(__dirname, '../../..');
+
+// Patterns to exclude from browser config
+const EXCLUDE_PATTERNS = [
+  // Root level exclusions
+  '^trustedOrigins$',
+  '^database$',
+  '^smtp$',
+  '^routes$',
+  '^plugins$',
+  '^cache',
+  
+  // Exclude panel properties except components
+  '^panel\\.access',
+  '^panel\\.routes',
+  '^panel\\.users',
+  
+  // Exclude area and collection access
+  'collections\\.\\.hooks',
+  
+  // Exclude area and collection hooks
+  'areas\\.\\.hooks',
+  
+  // Generic patterns
+  '.*\\.server', // Exclude any path ending with server
+  '.*\\.beforeValidate',
+  '.*\\.beforeCreate',
+  '.*\\.beforeUpdate',
+  '.*\\.beforeDelete',
+  '.*\\.beforeRead',
+  '.*\\.beforeSave'
+];
+
+/**
+ * Determines if a key-value pair should be included in the browser config
+ * @param {string} key - The key to check
+ * @param {any} value - The value to check
+ * @param {string} parentKey - The parent key path
+ * @returns {boolean} - Whether the key-value pair should be included
+ */
+function shouldIncludeInBrowser(key, value, parentKey = '') {
+  const fullPath = parentKey ? `${parentKey}.${key}` : key;
+  
+  // Check if path matches any exclude pattern
+  if (EXCLUDE_PATTERNS.some((pattern) => new RegExp(pattern).test(fullPath))) {
+    return false;
+  }
+  
+  // Additional checks for objects
+  if (typeof value === 'object' && value !== null) {
+    if ('name' in value && 'type' in value) {
+      // This is likely a field definition
+      // Add logic here to exclude private fields if needed
+      /** @type {string[]} */
+      const privateFieldNames = []; // Add your private field names here
+      if (privateFieldNames.includes(value.name)) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+/**
+ * Process nested fields to ensure proper path generation
+ * This is important for group and tabs fields
+ * @param {Record<string, any>} fields - The fields to process
+ * @param {string} parentPath - The parent path
+ * @returns {Record<string, any>} - The processed fields
+ */
+function processNestedFields(fields, parentPath = '') {
+  if (!fields || typeof fields !== 'object') return fields;
+  
+  return Object.entries(fields).reduce((acc, [key, value]) => {
+    const path = parentPath ? `${parentPath}.${key}` : key;
+    
+    if (value && typeof value === 'object') {
+      if (value.type === 'group' && value.fields) {
+        // Handle group fields
+        value.fields = processNestedFields(value.fields, path);
+        value.path = path;
+      } else if (value.type === 'tabs' && value.tabs) {
+        // Handle tabs fields
+        value.tabs = value.tabs.map((/** @type {any} */ tab) => {
+          const tabPath = `${path}.${tab.name}`;
+          tab.fields = processNestedFields(tab.fields, tabPath);
+          tab.path = tabPath;
+          return tab;
+        });
+        value.path = path;
+      }
+    }
+    
+    /** @type {Record<string, any>} */
+    const result = acc;
+    result[key] = value;
+    return result;
+  }, /** @type {Record<string, any>} */ ({}));
+}
+
+/**
+ * Generate the browser config
+ * @returns {Promise<BrowserConfig>} - The generated browser config
+ */
+export async function generateBrowserConfig() {
+  try {
+    // This would normally import and process the config
+    // Since we can't do that directly, we'll create a placeholder
+    /** @type {BrowserConfig} */
+    const browserConfig = {
+      collections: [],
+      areas: {},
+      icons: {},
+      trustedOrigins: [],
+      database: { adapter: 'memory' },
+      panel: {
+        components: {
+          header: [],
+          collectionHeader: []
+        }
+      }
+    };
+    
+    return browserConfig;
+  } catch (error) {
+    console.error('Failed to generate browser config:', error);
+    /** @type {BrowserConfig} */
+    const emptyConfig = {
+      collections: [],
+      areas: {},
+      icons: {},
+      trustedOrigins: [],
+      database: { adapter: 'memory' },
+      panel: {
+        components: {
+          header: [],
+          collectionHeader: []
+        }
+      }
+    };
+    return emptyConfig;
+  }
+}
+
+// If this script is run directly, generate the config and write it to a file
+if (import.meta.url === fileURLToPath(import.meta.url)) {
+  const browserConfig = await generateBrowserConfig();
+  const outputPath = path.resolve(projectRoot, 'src/lib/browser-config.js');
+  
+  // Write the config to a file
+  fs.writeFileSync(
+    outputPath,
+    `// Generated browser-safe config
+// DO NOT EDIT - This file is automatically generated
+
+export default ${JSON.stringify(browserConfig, null, 2)};
+`
+  );
+  
+  console.log(`Browser config written to ${outputPath}`);
+}
