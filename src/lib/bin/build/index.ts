@@ -38,6 +38,7 @@ program
 		taskLogger.info('create a /app/.env file with ORIGIN HOST and PORT variables');
 		taskLogger.info('cd ./app');
 		taskLogger.info('pnpm install --prod');
+		taskLogger.info('pnpm install polka sharp serve-static');
 		taskLogger.info('node --env-file=.env index.js');
 	});
 

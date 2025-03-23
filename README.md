@@ -1,12 +1,13 @@
 # Rizom
 
 Headless CMS powered by SvelteKit.
+
 > [!NOTE]
-> Currently in Alpha - Not recommended for production use
+> Currently in Alpha
 
 ![alt backend capture](https://github.com/bienoubien-studio/rizom/blob/main/rizom.png?raw=true)
 
-## Key Features
+## Features
 
 - Easy configuration
 - TypeScript
@@ -14,30 +15,33 @@ Headless CMS powered by SvelteKit.
 - SQLite database (drizzle)
 - Auto-generated:
   - API endpoints
-  - TypeScript types
+  - Types
   - Database schema
   - Admin panel
+- Live Edit system
 - Media management
-- Document and fields access control
+- Fine grained access control
 - i18n support
-- Fields custom validation
-- CRUD hooks on documents
-- Configuration Hot reload in dev mode
+- Document Hooks
 - Optional SMTP integration
 
 ### Content Management
 
 Fields types:
 - Blocks
+- Tree (nested array)
+- Tabs
 - Rich Text (TipTap)
-- Relations
-- Links
-- Slugs
+- Relation
+- Link
+- Slug
 - Email
+- Group
 - Select/Radio/Checkbox
+- Number
 - And more...
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Create a SvelteKit Project
 
@@ -46,7 +50,7 @@ npx sv create my-app
 cd my-app
 ```
 > [!NOTE]
-> Make sure to select TypeScript when prompted
+> Select TypeScript when prompted
 
 ### 2. Install Rizom
 
@@ -94,14 +98,24 @@ export const handle = sequence(...handlers({ config, schema }));
 #.env
 BETTER_AUTH_SECRET=super_secret
 PUBLIC_RIZOM_URL=http://localhost:5173
+
+RIZOM_LOG_TO_FILE=true
+RIZOM_LOG_LEVEL=DEBUG
+RIZOM_ENV=development
+
+# RIZOM_CACHE_ENABLED=false
+# RIZOM_SMTP_USER=user@mail.com
+# RIZOM_SMTP_PASSWORD=supersecret
+# RIZOM_SMTP_HOST=smtphost.com
+# RIZOM_SMTP_PORT=465
 ```
 
-### 3. Create your first admin user
+### 3. Create the first admin user
 
 ```bash
 npm run dev
 ```
-Navigate to `http://localhost:5173/panel` to create your first admin user.
+Navigate to `http://localhost:5173/panel` to create the first admin user.
 
 ## Configuration Example
 
@@ -205,18 +219,38 @@ const { docs } = await fetch('http://localhost:5173/api/pages?sort=title&limit=1
 const { docs } = await fetch('http://localhost:5173/api/pages?where[author][like]=some-id&locale=en`;').then(r => r.json())
 ```
 
+## DEPLOYING
+
+For now I am using it with @svelte/adapter-node, other adapter not tested and probably not working.
+
+With the node adapter :
+```sh
+npx rizom-build
+npx rizom-build -d # to copy the database directory
+```
+It's doing bascically `vite build` under the hood and create the polka server file inside an app directory, plus giving some info on how to run it.
+
 ## ROADMAP
 
 - [v] switch from lucia to better-auth
 - [v] Document locked while being edited by another user
 - [v] Panel i18n
 - [v] Document status
+- [v] Tree field
+- [ ] Live Edit system in practice
 - [ ] Documentation
-- [ ] Document version
-- [ ] Working Live Edit system (in developpment)
-- [ ] Tree field
 
-## 🙏 Acknowledgments
+### TO v1
+
+- [ ] Document version
+- [ ] Put bin commands in a separate package ex: @rizom/kit
+- [ ] collection nested
+- [ ] page version and auto-saved draft
+- [ ] more tiptap integration
+- [ ] more better-auth integration
+- [ ] configurable medias/config path
+
+## Acknowledgments
 
 - Built with components from @huntabyte's bits-ui
 - Inspired by Kirby CMS and Payload CMS architectures
