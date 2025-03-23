@@ -1,14 +1,14 @@
-import type { FormField } from 'rizom/types/index.js';
-import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';
-import type { Component, ComponentType } from 'svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
+import { toPascalCase } from 'rizom/util/string.js';
+import type { Component } from 'svelte';
+import type { FormField } from 'rizom/types/index.js';
+import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { IconProps } from '@lucide/svelte';
-import { toPascalCase } from 'rizom/util/string.js';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);
 

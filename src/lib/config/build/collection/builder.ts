@@ -1,11 +1,13 @@
-import { date, text } from 'rizom/fields';
-import type { Collection, ImageSizesConfig, User } from 'rizom/types';
-import { isUploadConfig } from 'rizom/util/config';
-import { capitalize, toCamelCase } from 'rizom/util/string';
-import { isRolesField } from 'rizom/util/field';
-import { findTitleField } from '../fields/findTitle';
-import type { CollectionWithoutSlug } from './types';
+import { text } from 'rizom/fields/text/index.js';
+import { date } from 'rizom/fields/date/index.js';
+import { isUploadConfig } from 'rizom/util/config.js';
+import { capitalize, toCamelCase } from 'rizom/util/string.js';
+import { isRolesField } from 'rizom/util/field.js';
+import { findTitleField } from '../fields/findTitle.js';
 import { usersFields } from '../../auth/usersFields.js';
+import type { Collection, ImageSizesConfig } from 'rizom/types/config.js';
+import type { User } from 'rizom/types/auth.js';
+import type { CollectionWithoutSlug } from './types';
 
 export function collection<S extends string>(
 	slug: S,
@@ -31,7 +33,7 @@ export function collection<S extends string>(
 			);
 			fields = [...fields, ...sizesFields];
 		}
-		
+
 		// Add mimeType field
 		const mimeType = text('mimeType').table({ sort: true, position: 99 }).hidden();
 

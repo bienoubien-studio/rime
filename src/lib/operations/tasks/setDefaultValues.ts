@@ -1,13 +1,12 @@
-import { hasProp } from 'rizom/util/object';
 import { eq, inArray } from 'drizzle-orm';
 import type { Adapter } from 'rizom/types/adapter.js';
 import { isRelationField, isSelectField } from '$lib/util/field.js';
-import { rizom, type FormField } from '$lib/index.js';
-import type { RelationField, SelectField } from 'rizom/fields/types';
-import type { Dic } from 'rizom/types/util';
-import type { ConfigMap } from './configMap/types';
-import { getValueAtPath, setValueAtPath } from 'rizom/util/object';
-import { logger } from 'rizom/util/logger';
+import type { FormField } from 'rizom/types/fields.js';
+import type { RelationField, SelectField } from 'rizom/fields/types.js';
+import type { Dic } from 'rizom/types/util.js';
+import type { ConfigMap } from './configMap/types.js';
+import { hasProp, getValueAtPath, setValueAtPath } from 'rizom/util/object.js';
+import { logger } from 'rizom/util/logger/index.js';
 
 export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;
@@ -46,7 +45,7 @@ const defaultSelectValue = (config: SelectField) =>
 const defaultRelationValue = async (config: RelationField, key: string, adapter: Adapter) => {
 	const buildRelation = async (defaultValue: any) => {
 		let condition;
-		const relationTable = rizom.adapter.tables[config.relationTo];
+		const relationTable = adapter.tables[config.relationTo];
 		if (typeof defaultValue === 'string') {
 			condition = eq(relationTable.id, defaultValue);
 		} else if (Array.isArray(defaultValue)) {

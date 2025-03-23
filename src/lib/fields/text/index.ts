@@ -2,8 +2,8 @@ import type { FormField } from 'rizom/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
-import { capitalize, toPascalCase, toSnakeCase } from 'rizom/util/string.js';
-import snakeCase from 'to-snake-case';
+import { capitalize } from 'rizom/util/string.js';
+
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	unique() {

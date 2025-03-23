@@ -1,6 +1,6 @@
 <script lang="ts">
 	import './number.css';
-	import { Field } from 'rizom/panel';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import type { NumberFieldProps } from './props';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
@@ -135,7 +135,7 @@
 		-webkit-appearance: none;
 		margin: 0;
 	}
-	
+
 	/* Firefox */
 	.rz-number-field__input[type='number'] {
 		appearance: textfield;

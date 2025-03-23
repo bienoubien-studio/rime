@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { setLiveContext } from '$lib/panel/context/live.svelte';
+	import { setLiveContext } from '$lib/panel/context/live.svelte.js';
 	import { beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 

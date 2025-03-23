@@ -15,7 +15,7 @@
 [v] Fix the sortable error on file change
 [v] navigation group icons
 [v] Group/Tabs as object on document
-[v] API proxy 
+[v] Relation proxy 
 [v] Better logs
 [v] 404 on image src quick after upload deletion
 [ ] Make first user super admin, can't delete it 
@@ -28,7 +28,7 @@
 [ ] Put bin commands in a separate package ex: @rizom/kit
 [ ] collection nested
 [ ] page version
-[ ] page modification not saved message + changes to localStorage
+[ ] page modification not saved message + changes saved to localStorage
 [ ] more tiptap integration
 [ ] more better-auth integration
 [ ] configurable medias/config path

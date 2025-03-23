@@ -1,12 +1,10 @@
 <script lang="ts">
 	import {
 		isComponentField,
-		isGroupFieldRaw,
 		isLiveField,
 		isNotHidden,
 		isPresentative,
-		isTabsField,
-		isTabsFieldRaw
+		isTabsField
 	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
@@ -42,7 +40,6 @@
 	);
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
-	
 
 	const widthClassModifier = (field: FormField) =>
 		`rz-render-fields__field--${field.width || 'full'}`;
@@ -70,10 +67,7 @@
 				</div>
 			{:else if isNotHidden(field)}
 				{@const FieldComponent = fieldComponent(field.type)}
-				<div
-					class="rz-render-fields__field {widthClassModifier(field)}"
-					data-type={field.type}
-				>
+				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
 			{/if}
@@ -97,7 +91,7 @@
 			padding-right: var(--rz-fields-padding);
 		}
 	}
-	
+
 	/** hide fields that doesn't have any data-visible children */
 	.rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
 			.rz-render-fields__field[data-type='separator']

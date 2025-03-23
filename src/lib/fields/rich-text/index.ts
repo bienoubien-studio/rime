@@ -1,9 +1,7 @@
-import type { FormField } from 'rizom/types';
+import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
-
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import { toSnakeCase } from 'rizom/util/string.js';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {

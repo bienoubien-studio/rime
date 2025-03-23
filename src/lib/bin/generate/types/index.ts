@@ -2,7 +2,7 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
-import { isBlocksField, isGroupField, isTabsField, isTreeFieldRaw } from 'rizom/util/field.js';
+import { isBlocksField } from 'rizom/util/field.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
 import { PACKAGE_NAME } from 'rizom/constant.js';
@@ -33,17 +33,17 @@ export type Block${toPascalCase(slug)} = {
 const templateRegister = (collectionSlugs: string[], areaSlugs: string[]): string => {
 	const registerCollections = collectionSlugs.length
 		? [
-			'\tinterface RegisterCollection {',
-			`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-			'\t}'
-		]
+				'\tinterface RegisterCollection {',
+				`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\t}'
+			]
 		: [];
 	const registerAreas = areaSlugs.length
 		? [
-			'\tinterface RegisterArea {',
-			`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
-			'\t}'
-		]
+				'\tinterface RegisterArea {',
+				`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\t}'
+			]
 		: [];
 	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };

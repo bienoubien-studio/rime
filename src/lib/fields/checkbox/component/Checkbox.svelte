@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/panel/components/ui/checkbox/index.js';
 	import { slugify } from '$lib/util/string.js';
-	import { Field } from 'rizom/panel';
-	import type { CheckboxProps } from './props';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import type { CheckboxProps } from './props';
 
 	const { path, config, form }: CheckboxProps = $props();
 

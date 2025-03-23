@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Field } from '$lib/panel';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 	import { dataError } from 'rizom/panel/util/dataError.js';
 	import type { TextAreaFieldProps } from './props.js';
@@ -12,7 +12,6 @@
 	const onInput = (event: Event) => {
 		field.value = (event.target as HTMLTextAreaElement).value;
 	};
-
 </script>
 
 <fieldset use:root={field} class="rz-textarea-field {config.className || ''}">
@@ -29,7 +28,6 @@
 </fieldset>
 
 <style type="postcss">
-
 	textarea {
 		field-sizing: content;
 		border: var(--rz-border);
@@ -41,7 +39,7 @@
 		min-height: var(--rz-size-20);
 		@mixin px var(--rz-size-3);
 		@mixin py var(--rz-size-2);
-		
+
 		&:global([data-error]) {
 			outline: none;
 			@mixin ring var(--rz-color-error);
@@ -61,5 +59,4 @@
 		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-ring);
 	}
-	
 </style>

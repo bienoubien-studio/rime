@@ -1,6 +1,8 @@
 import { validate } from 'rizom/util/index.js';
 import { access } from 'rizom/util/access/index.js';
-import { email, select, text } from 'rizom/fields';
+import { email } from 'rizom/fields/email/index.js';
+import { select } from 'rizom/fields/select/index.js';
+import { text } from 'rizom/fields/text/index.js';
 
 const emailField = email('email')
 	.access({
@@ -55,3 +57,5 @@ export const usersFields = {
 	password,
 	confirmPassword
 };
+
+export { name, roles, password, confirmPassword, emailField as email };

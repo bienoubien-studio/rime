@@ -1,6 +1,6 @@
-import type { FieldsType, FieldValidationFunc, FormField } from 'rizom/types/fields';
-import { FormFieldBuilder } from './field';
-import type { WithoutBuilders } from 'rizom/types/util';
+import type { FieldsType, FieldValidationFunc, FormField } from 'rizom/types/fields.js';
+import { FormFieldBuilder } from './field.js';
+import type { WithoutBuilders } from 'rizom/types/util.js';
 
 type BooleanField = FormField & {
 	type: any;

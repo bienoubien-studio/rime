@@ -1,5 +1,5 @@
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
-import { handleError } from 'rizom/errors/handler.server';
+import { handleError } from 'rizom/errors/handler.server.js';
 import { extractData } from 'rizom/operations/data.server.js';
 
 const apiInit: RequestHandler = async (event: RequestEvent) => {

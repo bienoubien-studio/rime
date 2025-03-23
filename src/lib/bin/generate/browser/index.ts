@@ -4,8 +4,8 @@ import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
 import type { CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
-import type { FieldsComponents } from 'rizom/types/panel';
-import type { FieldsType } from 'rizom/types';
+import type { FieldsComponents } from 'rizom/types/panel.js';
+import type { FieldsType } from 'rizom/types/fields.js';
 import { RizomFormError } from 'rizom/errors/index.js';
 
 let functionRegistry = new Map<string, string>();

@@ -7,7 +7,7 @@
 	import { getUserContext } from 'rizom/panel/context/user.svelte';
 	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import { usersFields } from 'rizom/config/auth/usersFields';
-	import { text } from 'rizom/fields';
+	import { text } from 'rizom/fields/text/index.js';
 	import validate from 'rizom/util/validate';
 
 	type Props = { operation: string; form: DocumentFormContext };

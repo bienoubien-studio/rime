@@ -1,5 +1,4 @@
-import type { GenericDoc } from 'rizom/types';
-import type { AreaSlug } from 'rizom/types/doc';
+import type { AreaSlug, GenericDoc } from 'rizom/types/doc';
 
 export type AreaProps = {
 	data: AreaData;

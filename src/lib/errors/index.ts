@@ -1,5 +1,5 @@
 import { t__ } from 'rizom/panel/i18n/index.js';
-import type { FormErrors } from 'rizom/types';
+import type { FormErrors } from 'rizom/types/panel.js';
 
 class RizomError extends Error {
 	static UNKWONW = 'unknown';

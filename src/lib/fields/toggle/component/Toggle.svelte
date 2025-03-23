@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { Field } from 'rizom/panel';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import type { ToggleProps } from './props';
-	import { slugify } from 'rizom/util/string';
+	import { slugify } from 'rizom/util/string.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: ToggleProps = $props();
@@ -13,7 +13,6 @@
 	const onCheckedChange = (bool: boolean) => {
 		field.value = bool;
 	};
-
 </script>
 
 <fieldset class="rz-toggle-field {config.className || ''}" use:root={field}>

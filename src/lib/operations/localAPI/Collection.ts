@@ -12,7 +12,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection } from 'rizom/types/config.js';
 import type { FormField } from 'rizom/types/fields.js';
-import type { OperationQuery } from 'rizom/types/api';
+import type { OperationQuery } from 'rizom/types/api.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
 import type { Adapter } from 'rizom/sqlite/index.server.js';

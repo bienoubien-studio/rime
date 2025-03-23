@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core';
 	import { Check, ChevronDown } from '@lucide/svelte';
-	import { createNodesState } from './node-selector-state.svelte';
-	import * as Popover from '$lib/panel/components/ui/popover';
+	import { createNodesState } from './node-selector-state.svelte.js';
+	import * as Popover from '$lib/panel/components/ui/popover/index.js';
 	import './node-selector.css';
 
 	type Props = { editor: Editor; isOpen: boolean };

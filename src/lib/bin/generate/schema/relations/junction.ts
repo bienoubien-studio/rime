@@ -1,5 +1,5 @@
-import { templateRelationFieldsTable, templateRelationMany } from '../templates';
-import type { RelationFieldsMap } from './definition';
+import { templateRelationFieldsTable, templateRelationMany } from '../templates.js';
+import type { RelationFieldsMap } from './definition.js';
 
 /**
  * Generates a junction table definition for many-to-many relationships

@@ -1,4 +1,4 @@
-import { flatten, unflatten } from 'flat';
+import { flatten } from 'flat';
 import cloneDeep from 'clone-deep';
 import { diff } from 'deep-object-diff';
 import { applyAction, deserialize } from '$app/forms';
@@ -26,7 +26,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	readOnly,
 	key,
 	onDataChange,
-	onFieldFocus,
+	onFieldFocus
 	// onNestedDocumentCreated
 }: Args<T>) {
 	//
@@ -36,7 +36,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	let isDisabled = $state(readOnly);
 	let processing = $state(false);
 	let element = $state<HTMLFormElement>();
-	const operation = $derived(doc.id ? 'update' : 'create')
+	const operation = $derived(doc.id ? 'update' : 'create');
 	const user = getUserContext();
 	const errors = setErrorsContext(key);
 	const isCollection = config.type === 'collection';
@@ -51,7 +51,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	
 	function initLevel() {
 		const last = key.split('_').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -63,11 +62,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			return config.label;
 		} else {
 			$effect(() => {
-				title = getValueAtPath(config.asTitle, doc) || '[untitled]'
-			})
-			const initialTitle = getValueAtPath(config.asTitle, doc)
+				title = getValueAtPath(config.asTitle, doc) || '[untitled]';
+			});
+			const initialTitle = getValueAtPath(config.asTitle, doc);
 			return doc && initialTitle ? initialTitle : '[untitled]';
-		};
+		}
 	}
 
 	const rebuildPaths = (items: any[], basePath: string, parentPath: string = basePath) => {
@@ -101,7 +100,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 
 	function setValue(path: string, value: any) {
-		doc = setValueAtPath(doc, path, value)
+		doc = setValueAtPath(doc, path, value);
 		if (collection && operation === 'update') collection.updateDoc(doc);
 		if (onDataChange) onDataChange({ path, value });
 	}
@@ -133,11 +132,12 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignItemsToDoc = (items: TreeBlock[]) => {
-			const flatDoc: Dic = flatten(doc, {
-				maxDepth: parts.length
-			});
-			flatDoc[path] = items;
-			doc = unflatten(flatDoc);
+			// const flatDoc: Dic = flatten(doc, {
+			// 	maxDepth: parts.length
+			// });
+			// flatDoc[path] = items;
+			// doc = unflatten(flatDoc);
+			doc = setValueAtPath(doc, path, items);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
 
 			/** update stamp to rerender */
@@ -243,12 +243,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
-			const flatDoc: Dic = flatten(doc, {
-				maxDepth: parts.length
-			});
-			blocks = rebuildPaths(blocks, path);
-			flatDoc[path] = blocks;
-			doc = unflatten(flatDoc);
+			// const flatDoc: Dic = flatten(doc, {
+			// 	maxDepth: parts.length
+			// });
+			// blocks = rebuildPaths(blocks, path);
+			// flatDoc[path] = blocks;
+			// doc = unflatten(flatDoc);
+			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
 		};
 
@@ -462,21 +463,20 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 		const result: ActionResult = deserialize(await response.text());
 
-
 		if (result.type === 'success') {
 			console.log('success', result);
-			console.log('nestedLevel', nestedLevel)
-			console.log('operation', operation)
+			console.log('nestedLevel', nestedLevel);
+			console.log('operation', operation);
 			doc = result.data?.doc || (doc as GenericDoc);
 			if (nestedLevel === 0) {
-				console.log('--> set doc')
+				console.log('--> set doc');
 				toast.success(t__('common.doc_updated'));
 				await invalidateAll();
 				intialDoc = doc;
 			} else {
 				// Do not redirect on creation if it's a nested form
 				// the form will auto close and we are back to the parent
-				// Form so no need to assign the returned doc 
+				// Form so no need to assign the returned doc
 				toast.success(t__('common.doc_created'));
 			}
 		} else if (result.type === 'redirect') {

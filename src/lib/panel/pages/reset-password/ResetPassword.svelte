@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { FormErrors } from 'rizom/types';
+	import type { FormErrors } from 'rizom/types/panel.js';
 	import { setFormContext } from 'rizom/panel/context/form.svelte';
 	import Text from 'rizom/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
-	import { usersFields } from 'rizom/config/auth/usersFields';
+	import { password, confirmPassword } from 'rizom/config/auth/usersFields';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
 	import { t__ } from 'rizom/panel/i18n';
 	import { authClient } from 'rizom/panel/util/auth';
@@ -20,10 +20,8 @@
 
 	const context = setFormContext(form || {}, 'reset-password');
 
-	const passwordField = usersFields.password.placeholder(t__('common.newPassword')).compile();
-	const confirmPasswordField = usersFields.confirmPassword
-		.placeholder(t__('common.confirmPassword'))
-		.compile();
+	const passwordField = password.placeholder(t__('common.newPassword')).compile();
+	const confirmPasswordField = confirmPassword.placeholder(t__('common.confirmPassword')).compile();
 
 	async function resetPassword() {
 		const token = new URLSearchParams(window.location.search).get('token');

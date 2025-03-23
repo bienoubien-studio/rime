@@ -1,16 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import * as templates from './templates.js';
-import { intro, outro, select, text, log, spinner, isCancel } from '@clack/prompts';
+import { intro, outro, text, log, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
 import { randomId } from 'rizom/util/random.js';
-
-import {
-	getInstallCommand,
-	getPackageManager,
-	type PackageManagerName
-} from './packageManagerUtil.js';
-import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 import { cp, mkdir } from 'fs/promises';
 

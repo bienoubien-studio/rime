@@ -3,7 +3,7 @@
 	import type { Editor } from '@tiptap/core';
 	import IconButton from '../icon-button/icon-button.svelte';
 	import { Check, Trash, Link2 } from '@lucide/svelte';
-	import validate from '$lib/util/validate';
+	import { url as validateURL } from '$lib/util/validate.js';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 
 	type Props = { editor: Editor; isOpen: boolean; active: boolean };
@@ -26,7 +26,7 @@
 		}
 		return {
 			url: transformedUrl,
-			isValid: validate.url(transformedUrl) === true
+			isValid: validateURL(transformedUrl) === true
 		};
 	});
 

@@ -1,7 +1,8 @@
-import { date, text } from 'rizom/fields';
-import type { Area } from 'rizom/types';
-import type { OmitPreservingDiscrimination } from 'rizom/types/util';
-import { capitalize } from 'rizom/util/string';
+import { text } from 'rizom/fields/text/index.js';
+import { date } from 'rizom/fields/date/index.js';
+import type { Area } from 'rizom/types/config.js';
+import type { OmitPreservingDiscrimination } from 'rizom/types/util.js';
+import { capitalize } from 'rizom/util/string.js';
 
 type AreaWithoutSlug<S> = OmitPreservingDiscrimination<Area<S>, 'slug'>;
 

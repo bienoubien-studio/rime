@@ -1,5 +1,3 @@
-import { snapshot } from './state.js'
-
 import type { Dic, WithRequired } from 'rizom/types/util';
 
 export const pick = <T extends object, K extends keyof T>(keys: K[], obj: T): Pick<T, K> => {
@@ -128,54 +126,56 @@ export const getValueAtPath = <T extends unknown>(path: string, obj: Dic): T | n
 	return current as T;
 };
 
-export const setValueAtPath = <T extends object>(obj: T, path: string, value: unknown): T => {
-  const parts = path.split('.');
-  
-  // Create a shallow copy of the root object
-  const result = { ...obj };
-  
-  let current:any = result;
-  let previous = null;
-  let previousKey: string | number = '';
-  
-  // Navigate to the parent of the target property
-  for (let i = 0; i < parts.length - 1; i++) {
-    const part = parts[i];
-    const index = /^\d+$/.test(part) ? parseInt(part) : part;
-    
-    previous = current;
-    previousKey = index;
-    
-    if (!current[index]) {
-      throw new Error(`Path ${path} does not exist at part ${part}`);
-    }
-    
-    // Create a shallow copy of the current level before moving deeper
-    if (Array.isArray(current[index])) {
-      current[index] = [...current[index]];
-    } else if (typeof current[index] === 'object' && current[index] !== null) {
-      current[index] = { ...current[index] };
-    }
-    
-    current = current[index];
-  }
-  
-  // Set the value at the final path segment
-  const lastPart = parts[parts.length - 1];
-  const lastIndex = /^\d+$/.test(lastPart) ? parseInt(lastPart) : lastPart;
-  
-  if (previous !== null) {
-    if (Array.isArray(previous[previousKey])) {
-      previous[previousKey][lastIndex] = value;
-    } else if (typeof previous[previousKey] === 'object' && previous[previousKey] !== null) {
-      previous[previousKey][lastIndex] = value;
-    }
-  } else {
-    // We're setting a property directly on the root object
-    result[lastIndex] = value;
-  }
-  
-  return result;
+export const setValueAtPath = <T extends Dic>(obj: T, path: string, value: unknown): T => {
+	const parts = path.split('.');
+
+	// Create a shallow copy of the root object
+	const result = { ...obj };
+
+	let current: any = result;
+	let previous = null;
+	let previousKey: string | number = '';
+
+	// Navigate to the parent of the target property
+	for (let i = 0; i < parts.length - 1; i++) {
+		const part = parts[i];
+		const index = /^\d+$/.test(part) ? parseInt(part) : part;
+
+		previous = current;
+		previousKey = index;
+
+		if (!current[index]) {
+			throw new Error(`Path ${path} does not exist at part ${part}`);
+		}
+
+		// Create a shallow copy of the current level before moving deeper
+		if (Array.isArray(current[index])) {
+			current[index] = [...current[index]];
+		} else if (typeof current[index] === 'object' && current[index] !== null) {
+			current[index] = { ...current[index] };
+		}
+
+		current = current[index];
+	}
+
+	// Set the value at the final path segment
+	const lastPart = parts[parts.length - 1];
+	const lastIndex = /^\d+$/.test(lastPart) ? parseInt(lastPart) : lastPart;
+
+	if (previous !== null) {
+		if (Array.isArray(previous[previousKey])) {
+			previous[previousKey][lastIndex] = value;
+		} else if (typeof previous[previousKey] === 'object' && previous[previousKey] !== null) {
+			previous[previousKey][lastIndex] = value;
+		}
+	} else {
+		// We're setting a property directly on the root object
+		//@ts-ignore just now I don't care that T is generic and can only be indexed
+		// for reading... and actually TS I just set it like that :
+		result[lastIndex] = value;
+	}
+
+	return result;
 };
 
 export function deleteValueAtPath<T>(obj: T, path: string): T {

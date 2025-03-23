@@ -5,8 +5,8 @@
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
 	import type { FormErrors } from 'rizom/types';
-	import { usersFields } from 'rizom/config/auth/usersFields';
-	import { text } from 'rizom/fields';
+	import { email } from 'rizom/config/auth/usersFields.js';
+	import { text } from 'rizom/fields/text/index.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
@@ -34,16 +34,15 @@
 		.label(t__('fields.password'))
 		.required()
 		.compile();
-	
-	const emailField = usersFields.email.layout('compact').compile();
 
+	const emailField = email.layout('compact').compile();
 </script>
 
 <AuthForm title={t__('common.signin')}>
 	<form method="POST" action="/login" use:enhance={context.enhance}>
 		<Email config={emailField} form={context} />
 		<Text type="password" icon={KeyRound} config={passwordField} form={context} />
-		
+
 		<Button size="xl" disabled={!context.canSubmit} type="submit">Login</Button>
 
 		{#if data.forgotPasswordEnabled}

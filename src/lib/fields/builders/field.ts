@@ -1,4 +1,5 @@
-import type { FieldPanelTableConfig, FieldsType } from 'rizom/types';
+import type { FieldsType } from 'rizom/types/fields.js';
+import type { FieldPanelTableConfig } from 'rizom/types/panel';
 import type {
 	AnyFormField,
 	Field,
@@ -8,10 +9,10 @@ import type {
 	FieldWidth,
 	FormField
 } from 'rizom/types/fields';
+import { toSnakeCase } from 'rizom/util/string.js';
+import { toCamelCase } from 'drizzle-orm/casing';
 import type { Dic, WithoutBuilders } from 'rizom/types/util';
 import type { Component } from 'svelte';
-import { toPascalCase, toSnakeCase } from 'rizom/util/string.js';
-import { toCamelCase } from 'drizzle-orm/casing';
 
 export class FieldBuilder<T extends Field = Field> {
 	field: T;

@@ -1,6 +1,6 @@
 import { RizomFormError } from '$lib/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc } from 'rizom/types/doc';
+import type { GenericDoc } from 'rizom/types/doc.js';
 import { flatten, unflatten } from 'flat';
 import type { Dic } from 'rizom/types/util';
 

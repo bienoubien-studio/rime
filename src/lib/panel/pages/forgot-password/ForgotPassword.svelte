@@ -2,7 +2,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Email from 'rizom/fields/email/component/Email.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
-	import { usersFields } from 'rizom/config/auth/usersFields';
+	import { email } from 'rizom/config/auth/usersFields.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
@@ -37,7 +37,7 @@
 	{#if success}
 		<p>{t__('common.passwordResetLinkSent', context.form.email)}</p>
 	{:else}
-		<Email config={usersFields.email.compile()} form={context} />
+		<Email config={email.layout('compact').compile()} form={context} />
 		<Button size="xl" disabled={!context.canSubmit} onclick={sendResetPasswordMail}>
 			{t__('common.requestPasswordReset')}
 		</Button>

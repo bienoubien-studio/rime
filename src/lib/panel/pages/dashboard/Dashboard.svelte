@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import type { DashboardEntry } from './load.server.js';
+	import { Eye } from '@lucide/svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import PageHeader from 'rizom/panel/components/ui/page-header/PageHeader.svelte';
+	import { getConfigContext } from 'rizom/panel/context/config.svelte';
 	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
-	import { ArrowRight, Eye } from '@lucide/svelte';
 	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
+	import type { DashboardEntry } from './types.js';
 
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();

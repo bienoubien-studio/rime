@@ -1,12 +1,10 @@
 import { RizomError, RizomFormError } from 'rizom/errors';
-import type {
-	CompiledArea,
-	CompiledCollection,
-	FormErrors,
-	GenericDoc,
-	LocalAPI,
-	User
-} from 'rizom/types';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
+import type { GenericDoc } from 'rizom/types/doc.js';
+import type { FormErrors } from 'rizom/types/panel.js';
+import type { User } from 'rizom/types/auth.js';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
 import type { DeepPartial } from 'rizom/types/util';

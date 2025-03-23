@@ -1,5 +1,5 @@
 import { PACKAGE_NAME } from 'rizom/constant';
-import { namespaces, type Dictionaries, type PanelLanguage } from '.';
+import { namespaces, type Dictionaries, type PanelLanguage } from './index.js';
 
 export async function registerTranslation(locale: PanelLanguage) {
 	const dictionaries: Partial<Dictionaries> = {};

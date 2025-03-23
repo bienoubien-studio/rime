@@ -1,8 +1,8 @@
-import { json, type RequestEvent } from '@sveltejs/kit';
 import qs from 'qs';
-import { handleError } from 'rizom/errors/handler.server';
-import type { CollectionSlug } from 'rizom/types/doc';
-import { safe } from 'rizom/util/safe';
+import { json, type RequestEvent } from '@sveltejs/kit';
+import { handleError } from 'rizom/errors/handler.server.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
+import { safe } from 'rizom/util/safe.js';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -27,7 +27,7 @@ export default function (slug: CollectionSlug) {
 			apiParams = { locale };
 			apiMethod = 'findAll';
 		}
-		
+
 		// @ts-expect-error params match the apiMethod signature
 		const [error, docs] = await safe(api.collection(slug)[apiMethod](apiParams));
 		if (error) {

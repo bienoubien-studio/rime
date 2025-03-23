@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Document from '../document/Document.svelte';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
-	import createContext from '$lib/panel/context/createContext.svelte';
-	import { setConfigContext } from '$lib/panel/context/config.svelte';
-	import { setLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { setUserContext } from '$lib/panel/context/user.svelte';
-	import type { User } from 'rizom/types/auth';
-	import type { PrototypeSlug } from 'rizom/types/doc';
-	import type { BrowserConfig } from 'rizom/types/config';
-	import { goto } from '$app/navigation';
+	import createContext from '$lib/panel/context/createContext.svelte.js';
+	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
+	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
+	import { setUserContext } from '$lib/panel/context/user.svelte.js';
+	import type { User } from 'rizom/types/auth.js';
+	import type { PrototypeSlug } from 'rizom/types/doc.js';
+	import type { BrowserConfig } from 'rizom/types/config.js';
 	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte.js';
+	import { goto } from '$app/navigation';
 
 	type Props = {
 		doc: any;

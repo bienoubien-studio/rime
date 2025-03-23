@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core';
 import { Heading2, Heading3, TextQuote, TextIcon, ListOrdered, Asterisk } from '@lucide/svelte';
 import type { Component } from 'svelte';
-import type { RichTextFieldNode } from 'rizom/fields/types';
+import type { RichTextFieldNode } from 'rizom/fields/types.js';
 import type { IconProps } from '@lucide/svelte';
 
 type Node = {

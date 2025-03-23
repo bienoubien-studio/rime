@@ -1,25 +1,6 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import { capitalize } from 'rizom/util/string.js';
-import type { CollectionSlug, GenericDoc, AreaSlug } from 'rizom/types/doc.js';
-
-export type DashboardEntry =
-	| {
-			slug: CollectionSlug;
-			title: string;
-			gender: 'm' | 'f';
-			titleSingular: string;
-			link: string;
-			canCreate?: boolean;
-			prototype: 'collection';
-			lastEdited?: GenericDoc[];
-	  }
-	| {
-			slug: AreaSlug;
-			title: string;
-			link: string;
-			prototype: 'area';
-			lastEdited?: GenericDoc[];
-	  };
+import type { DashboardEntry } from './types';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
 	const { rizom, locale, user, api } = event.locals;

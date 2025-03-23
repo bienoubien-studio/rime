@@ -2,14 +2,15 @@
 	import Nav from '$lib/panel/components/ui/nav/Nav.svelte';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import { onMount, type Snippet } from 'svelte';
-	import createContext from '$lib/panel/context/createContext.svelte';
-	import { page } from '$app/state';
-	import { setConfigContext } from '$lib/panel/context/config.svelte';
+	import createContext from '$lib/panel/context/createContext.svelte.js';
+	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import type { User, Route, BrowserConfig } from 'rizom/types';
 	import { setAPIProxyContext } from '../context/api-proxy.svelte.js';
-	import { afterNavigate } from '$app/navigation';
+	import { page } from '$app/state';
+	import type { User } from 'rizom/types/auth.js';
+	import type { Route } from 'rizom/types/panel.js';
+	import type { BrowserConfig } from 'rizom/types/config.js';
 
 	type Props = {
 		routes: Record<string, Route[]>;

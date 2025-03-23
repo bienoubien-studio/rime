@@ -4,7 +4,6 @@ import { logger } from 'rizom/util/logger/index.js';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from 'rizom/types/index.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { request } from 'http';
 
 const dev = process.env.NODE_ENV === 'development';
 

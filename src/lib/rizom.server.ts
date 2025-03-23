@@ -1,8 +1,6 @@
 import createAdapter from '$lib/sqlite/index.server.js';
-import path from 'path';
 import { randomId } from './util/random.js';
 import { createConfigInterface } from './config/index.server.js';
-import { existsSync } from 'fs';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/util.js';
 import type { Config, Plugins } from 'rizom';

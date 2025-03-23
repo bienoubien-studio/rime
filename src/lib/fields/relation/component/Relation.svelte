@@ -5,18 +5,17 @@
 	import Default from './default/Default.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { Field } from 'rizom/panel';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { snapshot } from '$lib/util/state.js';
-	import type { RelationFieldItem } from './types.js';
-	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import type { Relation } from '$lib/sqlite/relations.js';
-	import type { GenericDoc } from 'rizom/types';
-	import type { RelationField } from '../index';
-	import { getValueAtPath } from 'rizom/util/object';
+	import { getValueAtPath } from 'rizom/util/object.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte';
-	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { doc } from 'rizom/util';
+	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
+	import { getCollectionContext } from 'rizom/panel/context/collection.svelte.js';
+	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import type { Relation } from '$lib/sqlite/relations.js';
+	import type { GenericDoc } from 'rizom/types/doc.js';
+	import type { RelationField } from '../index';
+	import type { RelationFieldItem } from './types.js';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -115,7 +114,7 @@
 
 	// Initialize the initial items and selected items
 	$effect(() => {
-		if (ressource.data ) {
+		if (ressource.data) {
 			initialItems = ressource.data.docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
 			if (!initialized) {
 				selectedItems = initialValue.map((relation: Relation) => {
@@ -172,9 +171,8 @@
 		return relations;
 	};
 
-
 	// Disabled the parent form (this one)
-	// So when user save the nested doc 
+	// So when user save the nested doc
 	// it doesn't save this one
 	const onRelationCreation = () => {
 		form.isDisabled = true;
@@ -186,10 +184,10 @@
 	};
 
 	const onRelationCreated = async (doc: GenericDoc) => {
-		// Enabled the form 
+		// Enabled the form
 		form.isDisabled = false;
 		// update resssource
-		ressource.data.docs.push(doc)
+		ressource.data.docs.push(doc);
 		// update collection if present
 		if (relationCollectionCtx) {
 			relationCollectionCtx.addDoc(doc);
@@ -198,7 +196,6 @@
 		if (isFull) return;
 		selectedItems = [...selectedItems, documentToRelationFieldItem(doc)];
 		field.value = buildRelationFieldValue();
-
 	};
 
 	const onOrderChange = async (oldIndex: number, newIndex: number) => {
@@ -228,7 +225,7 @@
 
 <fieldset class="rz-field-relation {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
-	
+
 	<RelationComponent
 		{path}
 		many={!!config.many}
@@ -247,7 +244,7 @@
 		{removeValue}
 		{relationConfig}
 		{onOrderChange}
-		/>
-		
+	/>
+
 	<Field.Error error={field.error} />
 </fieldset>

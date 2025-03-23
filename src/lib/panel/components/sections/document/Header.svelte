@@ -2,14 +2,13 @@
 	import { getContext } from 'svelte';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import { Button } from '../../ui/button';
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
-	import { X, PencilRuler, Eye, Command } from '@lucide/svelte';
-	import type { CompiledCollection, CompiledArea } from 'rizom/types/config';
+	import { X, PencilRuler, Eye } from '@lucide/svelte';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
 	import ButtonStatus from './ButtonStatus.svelte';
+	import type { CompiledCollection, CompiledArea } from 'rizom/types/config';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 
 	// Props
 	type Props = {

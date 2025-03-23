@@ -1,7 +1,6 @@
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
-import type { Dic } from 'rizom/types/util';
 
-export const loginLoad = async ({ locals, url }: ServerLoadEvent) => {
+export const loginLoad = async ({ locals }: ServerLoadEvent) => {
 	const { session, rizom } = locals;
 	if (session) {
 		throw redirect(302, '/panel');

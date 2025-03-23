@@ -1,8 +1,9 @@
-import { extractRelations } from './extract.server';
-import { defineRelationsDiff } from './diff.server';
-import type { ConfigMap } from '../configMap/types';
-import type { Adapter, CompiledArea, CompiledCollection, GenericBlock } from 'rizom/types';
-
+import { extractRelations } from './extract.server.js';
+import { defineRelationsDiff } from './diff.server.js';
+import type { ConfigMap } from '../configMap/types.js';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
+import type { GenericBlock } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/util';
 import type { TreeBlocksDiff } from '../tree/diff.server';
 

@@ -1,7 +1,6 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import validate from '../util/validate.js';
-import { rizom } from '$lib/index.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
@@ -9,6 +8,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import rizom from 'rizom/rizom.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -220,7 +220,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			where: eq(userTable.email, email)
 		});
 
-
 		/**
 		 * Fake check when email not found
 		 */
@@ -235,7 +234,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 		/**
 		 * Handle banned user
-		 * trying to connect 
+		 * trying to connect
 		 */
 		if (user.locked) {
 			const timeLocked = parseInt(process.env.RIZOM_BANNED_TIME_MN || '60'); // min
@@ -268,7 +267,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			asResponse: true
 		});
 
-		const authenticated = signin && signin.status === 200
+		const authenticated = signin && signin.status === 200;
 
 		if (!authenticated) {
 			// Check for number of tries
@@ -288,7 +287,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 				throw new RizomError(RizomError.USER_BANNED);
 			} else {
-				// update login attempts 
+				// update login attempts
 				await db
 					.update(userTable)
 					.set({

@@ -1,6 +1,6 @@
-import type { FormField } from 'rizom/types';
+import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
 

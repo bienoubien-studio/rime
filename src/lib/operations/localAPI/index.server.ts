@@ -3,10 +3,9 @@ import { CollectionInterface } from './Collection.js';
 import { AreaInterface } from './Area.js';
 import type { Rizom } from '../../rizom.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { RegisterCollection } from 'rizom';
-import type { RegisterArea } from 'rizom';
+import type { RegisterArea, RegisterCollection } from 'rizom';
 import type { FormErrors } from 'rizom/types/panel.js';
-import validate from 'rizom/util/validate.js';
+import { email as validateEmail, password as validatePassword } from 'rizom/util/validate.js';
 
 export type LocalAPIConstructorArgs = {
 	rizom: Rizom;
@@ -69,7 +68,7 @@ export class LocalAPI {
 			errors.password = RizomFormError.REQUIRED_FIELD;
 		}
 
-		const emailValidation = validate.email(email);
+		const emailValidation = validateEmail(email);
 		if (typeof emailValidation === 'string') {
 			errors.email = RizomFormError.INVALID_FIELD;
 		}
@@ -78,7 +77,7 @@ export class LocalAPI {
 			errors.name = RizomFormError.INVALID_FIELD;
 		}
 
-		const passwordValidation = validate.password(password);
+		const passwordValidation = validatePassword(password);
 		if (typeof passwordValidation === 'string') {
 			errors.name = RizomFormError.INVALID_FIELD;
 		}

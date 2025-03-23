@@ -1,6 +1,6 @@
 <script lang="ts" generics="T">
-	import { getLiveContext } from '$lib/panel/context/live.svelte';
-	import type { WithRelationPopulated } from 'rizom/types/util';
+	import { getLiveContext } from '$lib/panel/context/live.svelte.js';
+	import type { WithRelationPopulated } from 'rizom/types/util.js';
 
 	let { child, data } = $props<{
 		child: (doc: WithRelationPopulated<T>) => any;

@@ -1,5 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter, CompiledArea, GenericDoc, LocalAPI } from 'rizom/types';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { CompiledArea } from 'rizom/types/config.js';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import type { GenericDoc } from 'rizom/types/doc.js';
 import { RizomError } from 'rizom/errors/index.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';

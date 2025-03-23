@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Button } from '../../ui/button';
 	import { onMount } from 'svelte';
-	import type { GenericDoc, User } from 'rizom/types';
+	import type { GenericDoc } from 'rizom/types/doc.js';
+	import type { User } from 'rizom/types/auth.js';
+
 	type Props = { by: string; user: User; doc: GenericDoc };
 	const { by, user, doc }: Props = $props();
 

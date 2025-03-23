@@ -1,10 +1,10 @@
-import { hasProps, omit } from 'rizom/util/object';
-import { toCamelCase } from 'rizom/util/string';
-import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import type { GenericDoc } from 'rizom/types/doc';
-import { cleanupStoredFiles } from 'rizom/upload/disk/delete';
-import { saveFile } from 'rizom/upload/disk/save';
-import { isUploadConfig } from 'rizom/util/config';
+import { omit } from 'rizom/util/object.js';
+import { toCamelCase } from 'rizom/util/string.js';
+import { cleanupStoredFiles } from 'rizom/upload/disk/delete.js';
+import { saveFile } from 'rizom/upload/disk/save.js';
+import { isUploadConfig } from 'rizom/util/config.js';
+import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks.js';
+import type { GenericDoc } from 'rizom/types/doc.js';
 
 /**
  * Hook that handles file upload processing and image resizing operations.

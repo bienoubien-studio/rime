@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import type { Plugin } from 'rizom';
+import type { Plugin } from 'rizom/plugins/index.js';
 import type { SendMailArgs, SMTPConfig } from './types';
 import { RizomError } from 'rizom/errors';
 

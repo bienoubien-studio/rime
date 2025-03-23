@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
 	import { Label } from '$lib/panel/components/ui/label/index.js';
-	import { Field } from 'rizom/panel';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { capitalize, slugify } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
@@ -17,7 +17,7 @@
 			field.value = value;
 		}
 	});
-	
+
 	const fieldId = $derived(slugify(`${form.key}-${path}`));
 </script>
 

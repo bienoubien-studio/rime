@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Trash2 } from '@lucide/svelte';
-	import { Button } from 'rizom/panel/components/ui/button';
+	import { Button } from 'rizom/panel/components/ui/button/index.js';
 
 	type Props = {
 		deleteItem: () => void;

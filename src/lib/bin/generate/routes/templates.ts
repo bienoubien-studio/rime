@@ -75,11 +75,6 @@ export const collectionAPIAuthLogoutServer = () =>
 export const POST = api.collection.logout
 `;
 
-export const collectionAPIAuthForgotPasswordServer = (slug: string) =>
-	`import * as api from '${PACKAGE_NAME}/api';
-export const POST = api.collection.forgotPassword('${slug}')
-`;
-
 /** Area */
 
 export const areaPageServer = (slug: string) =>

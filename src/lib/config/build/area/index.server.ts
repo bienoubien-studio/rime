@@ -1,4 +1,4 @@
-import type { BuiltArea, Area } from 'rizom/types';
+import type { BuiltArea, Area } from 'rizom/types/config.js';
 import { findTitleField } from '../fields/findTitle.js';
 
 export const buildArea = (area: Area<any>): BuiltArea => {

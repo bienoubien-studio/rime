@@ -1,16 +1,16 @@
 <script lang="ts">
+	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown } from '@lucide/svelte';
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { Input } from '$lib/panel/components/ui/input';
-	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu';
-	import { Field } from 'rizom/panel';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import { capitalize } from '$lib/util/string.js';
-	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown } from '@lucide/svelte';
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from 'rizom/panel/components/ui/label/label.svelte';
-	import type { LinkFieldProps } from './props';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import type { LinkFieldProps } from './props';
 
 	const { path, config, form }: LinkFieldProps = $props();
 

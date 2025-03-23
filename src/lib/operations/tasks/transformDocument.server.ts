@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter, CompiledArea } from 'rizom/types';
-import type { CompiledCollection } from 'rizom/types/config';
-import type { RawDoc } from 'rizom/types/doc';
+import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
+import type { RawDoc } from 'rizom/types/doc.js';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
 import { buildConfigMap } from './configMap/index.server';
 import { augmentDocument } from './augmentDocument.server';
 import { postprocessFields } from './postProcessFields.server';

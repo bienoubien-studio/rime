@@ -1,9 +1,9 @@
 import { extractData } from 'rizom/operations/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { handleError } from 'rizom/errors/handler.server';
-import type { CollectionSlug } from 'rizom/types/doc';
-import { safe } from 'rizom/util/safe';
-import { RizomError } from 'rizom/errors';
+import { handleError } from 'rizom/errors/handler.server.js';
+import type { CollectionSlug } from 'rizom/types/doc.js';
+import { safe } from 'rizom/util/safe.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 export default function (slug: CollectionSlug) {
 	//

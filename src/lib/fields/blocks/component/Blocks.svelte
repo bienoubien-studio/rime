@@ -2,15 +2,15 @@
 	import { capitalize } from '$lib/util/string.js';
 	import AddBlockButton from './AddBlockButton.svelte';
 	import Block from './Block.svelte';
-	import { Field } from 'rizom/panel';
-	import { useSortable } from '$lib/panel/util/Sortable';
-	import type { BlocksFieldRaw } from 'rizom/fields/blocks';
-	import type { GenericBlock } from 'rizom/types/doc';
-	import type { BlocksProps } from './props.js';
+	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import { FoldVertical, UnfoldVertical } from '@lucide/svelte';
+	import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
+	import type { GenericBlock } from 'rizom/types/doc.js';
+	import type { BlocksProps } from './props.js';
+	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -78,7 +78,7 @@
 	});
 </script>
 
-<Field.Root class={config.className} visible={field.visible} disabled={!field.editable}>
+<fieldset class="rz-field-blocks {config.className || ''}" use:root={field}>
 	<Field.Error error={field.error} />
 
 	<header class="rz-blocks__header">
@@ -115,7 +115,7 @@
 		size={nested ? 'sm' : 'default'}
 		{config}
 	/>
-</Field.Root>
+</fieldset>
 
 <style lang="postcss">
 	.rz-blocks__title {
@@ -134,8 +134,8 @@
 
 	.rz-blocks__list {
 		display: grid;
-		gap: var(--rz-size-4);	
-		
+		gap: var(--rz-size-4);
+
 		&:not([data-empty]) {
 			margin-bottom: var(--rz-size-4);
 		}

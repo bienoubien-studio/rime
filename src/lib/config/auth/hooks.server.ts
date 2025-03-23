@@ -1,4 +1,4 @@
-import type { GenericDoc } from 'rizom/types/index.js';
+import type { GenericDoc } from 'rizom/types/doc.js';
 import type {
 	CollectionHookAfterCreate,
 	CollectionHookBeforeCreate,

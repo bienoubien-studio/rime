@@ -1,4 +1,3 @@
-import type { Link } from 'rizom';
 import { RizomFormError } from 'rizom/errors/index.js';
 
 export const password = (value: unknown) => {

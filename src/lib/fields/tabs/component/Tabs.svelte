@@ -1,7 +1,7 @@
 <script lang="ts">
-	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Cookies from 'js-cookie';
+	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { TabsFieldRaw } from '../index.js';
 
@@ -80,7 +80,6 @@
 
 <style type="postcss">
 	.rz-tabs :global {
-
 		.rz-tabs-trigger {
 			min-width: var(--rz-size-28);
 		}

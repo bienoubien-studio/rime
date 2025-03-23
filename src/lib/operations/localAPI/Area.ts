@@ -1,11 +1,10 @@
+import type { RequestEvent } from '@sveltejs/kit';
 import { createBlankDocument } from '../../util/doc.js';
 import { find } from '../area/find.js';
 import { update } from '../area/update.js';
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/types/adapter.js';
-import type { FormErrors } from 'rizom/types/panel.js';
 import type { LocalAPI } from './index.server.js';
 import type { DeepPartial } from 'rizom/types/util.js';
 

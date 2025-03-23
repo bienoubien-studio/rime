@@ -1,7 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CompiledArea, CompiledCollection, GenericDoc } from 'rizom/types';
+import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
+import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/util';
-import { getValueAtPath, isObjectLiteral } from 'rizom/util/object';
+import { getValueAtPath, isObjectLiteral } from 'rizom/util/object.js';
 
 /**
  * Augment document with locale, _type, _prototype

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Input } from '$lib/panel/components/ui/input';
-	import { Field } from '$lib/panel';
-	import type { TextFieldProps } from './props.js';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import { Field } from 'rizom/panel/components/fields/index.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import type { TextFieldProps } from './props.js';
 
 	const { path, config, type = 'text', form, icon: Icon }: TextFieldProps = $props();
 	const field = $derived(form.useField(path, config));
@@ -37,7 +37,6 @@
 </fieldset>
 
 <style lang="postcss">
-
 	.rz-text-field.rz-text-field--compact :global {
 		.rz-label {
 			display: none;

@@ -1,7 +1,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { handleError } from 'rizom/errors/handler.server';
-import type { AreaSlug } from 'rizom/types/doc';
-import { safe } from 'rizom/util/safe';
+import { handleError } from 'rizom/errors/handler.server.js';
+import type { AreaSlug } from 'rizom/types/doc.js';
+import { safe } from 'rizom/util/safe.js';
 
 export default function (slug: AreaSlug) {
 	//

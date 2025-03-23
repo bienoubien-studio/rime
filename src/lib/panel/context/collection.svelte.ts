@@ -4,7 +4,7 @@ import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
 import { isUploadConfig } from 'rizom/util/config.js';
-import { isFormField, isGroupFieldRaw, isNotHidden, isTabsFieldRaw } from '../../util/field.js';
+import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
 import { getValueAtPath, hasProp } from 'rizom/util/object.js';
 import type { Field, FormField } from 'rizom/types/fields.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
@@ -72,7 +72,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	const deleteDocs = async (ids: string[]) => {
 		let errorsCount = 0;
 
-		const toDelete = [ ...docs ].filter(doc => ids.includes(doc.id))
+		const toDelete = [...docs].filter((doc) => ids.includes(doc.id));
 		docs = docs.filter((doc) => !ids.includes(doc.id));
 		initialDocs = docs;
 
@@ -83,14 +83,14 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 				headers: {
 					'content-type': 'application/json'
 				}
-			}).then(response => {
+			}).then((response) => {
 				if (response.status !== 200) {
-					const docError = toDelete.find(doc => doc.id === id)
-					docs.push(docError!)
-					initialDocs = docs
+					const docError = toDelete.find((doc) => doc.id === id);
+					docs.push(docError!);
+					initialDocs = docs;
 				}
 				return response;
-			})
+			});
 		});
 
 		await Promise.all(promises);
@@ -276,7 +276,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 		addDoc(doc: T) {
 			docs.push(doc);
-			sortBy(sortingBy, false)
+			sortBy(sortingBy, false);
 		},
 
 		deleteDocs,
@@ -293,8 +293,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			} else if (res.status === 404) {
 				console.error('not found');
 			}
-		},
-
+		}
 	};
 }
 

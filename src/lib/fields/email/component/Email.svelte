@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Input } from '$lib/panel/components/ui/input';
-	import { Field } from 'rizom/panel';
-	import type { EmailFieldProps } from './props';
-	import { capitalize } from 'rizom/util/string';
 	import { Mail } from '@lucide/svelte';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import { Field } from 'rizom/panel/components/fields/index.js';
+	import type { EmailFieldProps } from './props';
+	import { capitalize } from 'rizom/util/string.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: EmailFieldProps = $props();

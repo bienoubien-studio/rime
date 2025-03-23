@@ -3,9 +3,9 @@
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { buildEditorConfig } from './editor.config';
-	import { Field } from 'rizom/panel';
-	import type { RichTextFieldProps } from './props';
+	import { buildEditorConfig } from './editor.config.js';
+	import { Field } from 'rizom/panel/components/fields/index.js';
+	import type { RichTextFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 
 	const { path, config, form, class: className }: RichTextFieldProps = $props();

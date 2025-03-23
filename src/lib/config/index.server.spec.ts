@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { createConfigInterface } from './index.server';
+import { createConfigInterface } from './index.server.js';
 
 const config = await createConfigInterface({
 	database: '',

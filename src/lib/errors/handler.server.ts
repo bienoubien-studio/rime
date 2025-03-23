@@ -1,6 +1,6 @@
 import { error, fail, isRedirect, redirect } from '@sveltejs/kit';
-import { RizomError, RizomFormError } from './index';
-import {logger} from 'rizom/util/logger';
+import { RizomError, RizomFormError } from './index.js';
+import { logger } from 'rizom/util/logger/index.js';
 
 export type ErrorContext = 'action' | 'api' | 'load';
 

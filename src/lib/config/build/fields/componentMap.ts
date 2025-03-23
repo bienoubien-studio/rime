@@ -1,12 +1,12 @@
-import type { FieldBuilder } from 'rizom/fields/builders';
 import { BlocksBuilder } from 'rizom/fields/blocks/index.js';
-import type { Field } from 'rizom/types';
-import { isGroupField, isTabsField } from 'rizom/util/field.js';
-import type { FieldsComponents } from 'rizom/types/panel';
+import { isTabsField } from 'rizom/util/field.js';
 import Email from 'rizom/fields/email/component/Email.svelte';
-import Text from 'rizom/fields/email/component/Email.svelte';
-import { GroupFieldBuilder } from 'rizom/fields/group';
-import { TreeBuilder } from 'rizom/fields/tree';
+import Text from 'rizom/fields/text/component/Text.svelte';
+import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
+import { TreeBuilder } from 'rizom/fields/tree/index.js';
+import type { FieldBuilder } from 'rizom/fields/builders/field.js';
+import type { FieldsComponents } from 'rizom/types/panel';
+import type { Field } from 'rizom/types/fields.js';
 
 export function buildComponentsMap(
 	fields: FieldBuilder<Field>[]

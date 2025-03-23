@@ -1,15 +1,15 @@
-import type { FormField } from 'rizom/types/index.js';
-import type { Dic } from 'rizom/types/util.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tree from './component/Tree.svelte';
 import Cell from './component/Cell.svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
-import type { Field } from 'rizom/types/fields.js';
-import type { TreeBlock } from 'rizom/types/doc.js';
 import cloneDeep from 'clone-deep';
 import { snapshot } from 'rizom/util/state.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import type { FormField } from 'rizom/types/index.js';
+import type { Dic } from 'rizom/types/util.js';
+import type { Field } from 'rizom/types/fields.js';
+import type { TreeBlock } from 'rizom/types/doc.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 

@@ -1,4 +1,4 @@
-import type { FormField } from 'rizom/types';
+import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 import TextArea from './component/TextArea.svelte';

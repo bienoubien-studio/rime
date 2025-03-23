@@ -1,8 +1,8 @@
 import { isRelationField } from '$lib/util/field.js';
 import type { BeforeOperationRelation } from '$lib/sqlite/relations.js';
-import type { Dic } from 'rizom/types/util';
-import type { ConfigMap } from '../configMap/types';
-import { getValueAtPath } from 'rizom/util/object';
+import type { Dic } from 'rizom/types/util.js';
+import type { ConfigMap } from '../configMap/types.js';
+import { getValueAtPath } from 'rizom/util/object.js';
 
 type Args = {
 	parentId?: string;

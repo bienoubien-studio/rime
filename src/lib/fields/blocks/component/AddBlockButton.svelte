@@ -5,7 +5,7 @@
 	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
 	import { isFormField } from '$lib/util/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import type { GenericBlock } from 'rizom/types/doc';
+	import type { GenericBlock } from 'rizom/types/doc.js';
 	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import type { WithoutBuilders } from 'rizom/types/util.js';

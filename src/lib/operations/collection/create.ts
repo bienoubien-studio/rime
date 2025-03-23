@@ -1,11 +1,3 @@
-import type { RequestEvent } from '@sveltejs/kit';
-import type {
-	LocalAPI,
-	Adapter,
-	GenericDoc,
-	CompiledCollection,
-	CollectionSlug
-} from 'rizom/types';
 import cloneDeep from 'clone-deep';
 import { RizomError } from 'rizom/errors/index.js';
 import { usersFields } from 'rizom/config/auth/usersFields.js';
@@ -16,6 +8,11 @@ import { validateFields } from '../tasks/validateFields.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { CompiledCollection } from 'rizom/types/config.js';
+import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import type { GenericDoc, CollectionSlug } from 'rizom/types/doc.js';
 import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from 'rizom/types/util.js';
 

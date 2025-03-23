@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import * as Sheet from '$lib/panel/components/ui/sheet/index';
+	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import Sortable from 'sortablejs';
-	import { Edit, File, Trash2, X } from '@lucide/svelte';
+	import { Edit, File, X } from '@lucide/svelte';
 	import Doc from 'rizom/panel/components/sections/document/Document.svelte';
-	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { createBlankDocument } from '$lib/util/doc.js';
-	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
-	import type { GenericDoc } from 'rizom/types';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { onDestroy } from 'svelte';
-	import './upload.css';
 	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
+	import { getUserContext } from '$lib/panel/context/user.svelte.js';
+	import { createBlankDocument } from '$lib/util/doc.js';
+	import { t__ } from 'rizom/panel/i18n/index.js';
+	import type { GenericDoc } from 'rizom/types/doc.js';
+	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
+	import './upload.css';
 
 	const {
 		isFull,
@@ -53,7 +53,7 @@
 		create = false;
 		onRelationCreated(doc);
 	};
-	
+
 	$effect(() => {
 		if (many) {
 			const list = document.querySelector(
@@ -134,7 +134,7 @@
 			Select a {relationConfig.label.singular || relationConfig.slug}
 		</Button>
 	{/if}
-	
+
 	{#if !isFull}
 		{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {})}
 			<Button

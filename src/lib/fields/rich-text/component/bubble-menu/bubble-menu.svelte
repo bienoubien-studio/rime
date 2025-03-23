@@ -5,7 +5,7 @@
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
 	import Marks from './marks/marks.svelte';
-	import type { RichTextFieldMark, RichTextFieldNode } from 'rizom/fields/rich-text';
+	import type { RichTextFieldMark, RichTextFieldNode } from 'rizom/fields/rich-text/index.js';
 	import './bubble-menu.css';
 
 	type Props = {

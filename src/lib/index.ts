@@ -6,7 +6,7 @@ export { rizom, handlers, buildConfig };
 export { FormFieldBuilder, FieldBuilder } from 'rizom/fields/builders/field.js';
 export { area } from 'rizom/config/build/area/builder.js';
 export { collection } from '$lib/config/build/collection/builder.js';
-import type { Config } from 'rizom/types';
+import type { Config } from 'rizom/types/config.js';
 export const defineConfig = (config: Config) => config;
 
 /* -------------------------------------------------------------------------- */
