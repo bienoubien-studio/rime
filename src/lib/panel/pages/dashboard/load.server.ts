@@ -48,7 +48,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 						})
 					)
 					.catch((err: any) => {
-						console.log(collection.slug);
+						console.error(collection.slug);
 						console.error(err);
 					})
 			: false
@@ -57,7 +57,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 	try {
 		await Promise.all(requests.filter(Boolean));
 	} catch (err: any) {
-		console.log(requests.filter(Boolean));
+		console.error(requests.filter(Boolean));
 		console.error(err);
 	}
 

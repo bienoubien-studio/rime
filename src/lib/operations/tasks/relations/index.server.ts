@@ -30,8 +30,6 @@ export const saveRelations = async (args: {
 		data
 	} = args;
 
-	// console.log('RELATIONS ===========================================');
-
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
@@ -54,9 +52,6 @@ export const saveRelations = async (args: {
 		locale
 	});
 
-	// console.log('incomingPaths', incomingPaths);
-	// console.log('incomingRelations', incomingRelations);
-
 	// get existing relations filtered by path
 	// if not present in incoming paths don't keep it.
 	const existingRelations = await adapter.relations
@@ -66,14 +61,11 @@ export const saveRelations = async (args: {
 			locale: locale
 		})
 		.then((relations) => {
-			// console.log('existingRelations before filter', relations);
 			// Filter existing relations
 			return relations.filter((relation) => {
 				return incomingPaths.some((path) => relation.path?.startsWith(path));
 			});
 		});
-
-	// console.log('existingRelations', existingRelations);
 
 	/** get difference between them */
 	const relationsDiff = defineRelationsDiff({
@@ -81,8 +73,6 @@ export const saveRelations = async (args: {
 		incomingRelations,
 		locale: locale
 	});
-
-	// console.log('relationsDiff', relationsDiff);
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({
@@ -97,8 +87,6 @@ export const saveRelations = async (args: {
 			relations: relationsDiff.toUpdate
 		});
 	}
-
-	// throw new Error('error');
 
 	if (relationsDiff.toAdd.length) {
 		await adapter.relations.create({

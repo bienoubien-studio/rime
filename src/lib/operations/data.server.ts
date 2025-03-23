@@ -20,7 +20,6 @@ export const extractData = async (request: RequestEvent['request']) => {
 			data = jsonDataToData(jsonData);
 		}
 	} catch (err: any) {
-		console.log(err.message);
 		throw new RizomFormError({ _form: RizomFormError.CONTENT_LENGTH_LIMIT });
 	}
 

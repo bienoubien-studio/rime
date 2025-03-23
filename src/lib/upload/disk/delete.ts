@@ -5,6 +5,7 @@ import type { GenericDoc } from 'rizom/types/doc';
 import type { CompiledCollection } from 'rizom/types/config';
 import type { WithUpload } from 'rizom/types/util';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server';
+import { logger } from 'rizom/util/logger';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;
@@ -34,7 +35,7 @@ export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<Gen
 			}
 		}
 	} catch (err: any) {
-		console.log('Error while deleting files ' + err.message);
+		logger.error(err)
 	}
 	return doc;
 };

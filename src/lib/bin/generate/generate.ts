@@ -1,4 +1,3 @@
-import cache from './cache/index.js';
 import path from 'path';
 import { existsSync, mkdirSync, rmSync } from 'fs';
 import { buildConfig } from 'rizom/config/build/index.js';
@@ -14,12 +13,12 @@ export const generate = async (force?: boolean) => {
 			rmSync(path.join(process.cwd(), '.rizom'), { recursive: true });
 			mkdirSync(path.join(process.cwd(), '.rizom'));
 		} catch (err: any) {
-			console.log(err.message);
+			console.error(err.message);
 		}
 		try {
 			rmSync(path.join(process.cwd(), 'src', 'routes', '(rizom)'), { recursive: true });
 		} catch (err: any) {
-			console.log(err.message);
+			console.error(err.message);
 		}
 	}
 

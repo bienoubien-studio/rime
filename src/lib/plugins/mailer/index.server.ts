@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import type { Plugin } from 'rizom';
 import type { SendMailArgs, SMTPConfig } from './types';
+import { RizomError } from 'rizom/errors';
 
 export const mailer: Plugin<SMTPConfig> = (smtpConfig: SMTPConfig) => {
 	const { password, ...restAuth } = smtpConfig.auth;
@@ -18,11 +19,10 @@ export const mailer: Plugin<SMTPConfig> = (smtpConfig: SMTPConfig) => {
 
 	const sendMail = async (args: SendMailArgs) => {
 		try {
-			await mailer.sendMail({ from: smtpConfig.from, ...args });
+			return await mailer.sendMail({ from: smtpConfig.from, ...args });
 		} catch (err: any) {
-			console.log(err);
+			throw new RizomError(RizomError.MAIL_ERROR, 'Error while sending mail');
 		}
-		return 'ok';
 	};
 
 	return {

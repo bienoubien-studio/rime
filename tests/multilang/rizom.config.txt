@@ -17,7 +17,7 @@ import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
-import type { PagesDoc } from '../app.generated';
+
 import { collection, area, defineConfig } from 'rizom';
 
 /////////////////////////////////////////////

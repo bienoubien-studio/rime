@@ -1,6 +1,7 @@
 import { error, type Handle } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { RizomError } from 'rizom/errors';
+import { logger } from 'rizom/util/logger';
 
 export const handleCORS: Handle = async ({ event, resolve }) => {
 	const { rizom } = event.locals;
@@ -16,12 +17,10 @@ export const handleCORS: Handle = async ({ event, resolve }) => {
 				cors = origin;
 			}
 		} catch (err: any) {
-			console.log(err);
-			console.log(err.message);
-			console.log('Invalid origin');
+			logger.error('Invalid origin ' + origin);
 		}
 	}
-
+	
 	if (event.url.pathname.startsWith('/api')) {
 		if (event.request.method === 'OPTIONS' && cors) {
 			return new Response(null, {

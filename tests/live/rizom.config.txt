@@ -3,7 +3,7 @@ import { Newspaper, ReceiptText } from '@lucide/svelte';
 import { Text } from '@lucide/svelte';
 import { collection, area, defineConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import type { PagesDoc } from '../app.generated';
+
 
 import {
 	block,

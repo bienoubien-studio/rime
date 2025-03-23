@@ -74,7 +74,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	}
 
 	toType() {
-		console.log(this.field.type + ' missing toType not implementated');
+		console.warn(this.field.type + ' missing toType not implementated');
 		return '';
 	}
 
@@ -94,7 +94,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	}
 
 	toSchema(parentPath?: string): string {
-		console.log(this.field.type + ' missing toSchema not implementated');
+		console.warn(this.field.type + ' missing toSchema not implementated');
 		return '';
 	}
 

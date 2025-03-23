@@ -18,17 +18,6 @@ export const toSchemaPath = (path: string): string => path.replace(/\./g, '__');
 export const toDocPath = (path: string): string => path.replace(/__/g, '.');
 
 /**
- * Transform an object's keys from document paths to schema paths
- */
-export const transformKeysToSchema = (obj: Record<string, any>): Record<string, any> => {
-	const result: Record<string, any> = {};
-	for (const [key, value] of Object.entries(obj)) {
-		result[toSchemaPath(key)] = value;
-	}
-	return result;
-};
-
-/**
  * Transform an object's keys from schema paths to document paths
  */
 export const transformKeysToDoc = (obj: Record<string, any>): Record<string, any> => {

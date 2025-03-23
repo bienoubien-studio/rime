@@ -10,6 +10,7 @@ import { RizomError } from './errors/index.js';
 import { registerTranslation } from '$lib/panel/i18n/register.server.js';
 import i18n from './panel/i18n/index.js';
 import { hasRunInitCommand } from './bin/util.server.js';
+import { logger } from './util/logger/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -94,9 +95,10 @@ let instance: Rizom;
 
 const getInstance = () => {
 	if (instance) {
-		console.log('#### import rizom instance ' + instance.key);
+		logger.info('import rizom instance ' + instance.key);
 		return instance;
 	}
+	logger.info('create rizom instance');
 	instance = createRizom();
 	return instance;
 };

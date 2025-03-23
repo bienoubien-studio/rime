@@ -29,7 +29,6 @@ export const castBase64ToFile: CollectionHookBeforeUpsert<UploadDoc> = async (ar
 				mimeType: data.mimeType || mimeType
 			};
 		} catch (err: any) {
-			console.log(err);
 			throw new RizomError(RizomError.UPLOAD, 'Unable to process file');
 		}
 	}

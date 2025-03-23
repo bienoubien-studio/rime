@@ -33,17 +33,15 @@ export const saveBlocks = async (args: {
 		data,
 		configMap
 	});
-
-	// console.log('incomingBlocks', incomingBlocks);
-
+	
 	let existingBlocks: GenericBlock[] = [];
 	if (original) {
-		if (!originalConfigMap) throw new RizomError(RizomError.PIPE_ERROR, 'missing original');
+		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
 		const blocks = extractBlocks({
 			data: original,
 			configMap: originalConfigMap
 		});
-		// console.log('existingBlocks before filter', blocks);
+	
 		// filter path that are not present in incoming data
 		// in order to not delete unmodified blocks fields
 		existingBlocks = blocks.filter((block) => {
@@ -51,14 +49,14 @@ export const saveBlocks = async (args: {
 		});
 	}
 
-	// console.log('existingBlocks', existingBlocks);
+	
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
 		incomingBlocks
 	});
 
-	// console.log('blocksDiff', blocksDiff);
+	
 
 	if (blocksDiff.toDelete.length) {
 		await Promise.all(

@@ -70,7 +70,7 @@
 			processingFile = false;
 			onGeneratingPreviewEnd();
 			toast.error('There was an issue reading the file.');
-			console.log(err);
+			console.error(err);
 		};
 
 		reader.readAsDataURL(value);

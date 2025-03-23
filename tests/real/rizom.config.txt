@@ -27,7 +27,7 @@ import {
 	Settings2,
 	SlidersVertical
 } from '@lucide/svelte';
-import type { PagesDoc } from '../app.generated';
+
 import { collection, area, defineConfig } from 'rizom';
 import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 import { tree } from 'rizom/fields/tree';

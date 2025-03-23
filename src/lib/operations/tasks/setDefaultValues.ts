@@ -7,6 +7,7 @@ import type { RelationField, SelectField } from 'rizom/fields/types';
 import type { Dic } from 'rizom/types/util';
 import type { ConfigMap } from './configMap/types';
 import { getValueAtPath, setValueAtPath } from 'rizom/util/object';
+import { logger } from 'rizom/util/logger';
 
 export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;
@@ -22,7 +23,7 @@ export const setDefaultValues = async <T extends Dic>(args: {
 			isEmpty = config.isEmpty(value);
 		} catch (err: any) {
 			isEmpty = false;
-			console.log(err.message);
+			logger.warn(`Error while checking if field ${key} is empty`);
 		}
 		if (isEmpty && hasProp('defaultValue', config)) {
 			value = await getDefaultValue({ key, config, adapter });

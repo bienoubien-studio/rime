@@ -30,42 +30,34 @@ export const saveTreeBlocks = async (args: {
 		locale
 	} = args;
 
-	// console.log(' TREE BLOCKS ===========================================');
-
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({
 		data,
 		configMap
 	});
 
-	// console.log('incomingTreeBlocks', incomingTreeBlocks);
-	//
-
 	// Get existings
 	let existingTreeBlocks: WithRequired<TreeBlock, 'path'>[] = [];
 	if (original) {
-		if (!originalConfigMap) throw new RizomError(RizomError.PIPE_ERROR, 'missing original');
+		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
 		const blocks = extractTreeBlocks({
 			data: original,
 			configMap: originalConfigMap
 		});
-		// console.log('existingTreeBlocks before filter', blocks);
+
 		existingTreeBlocks = blocks.filter((block) => {
 			// filter path that are not present in incoming data
 			// in order to not delete unmodified blocks fields
 			return incomingPaths.some((path) => block.path?.startsWith(path));
 		});
-		// existingTreeBlocks = blocks;
-	}
 
-	// console.log('existingTreeBlocks', existingTreeBlocks);
+	}
 
 	const treeDiff = defineTreeBlocksDiff({
 		existingBlocks: existingTreeBlocks,
 		incomingBlocks: incomingTreeBlocks
 	});
 
-	// console.log('treeDiff', treeDiff);
 
 	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {

@@ -19,7 +19,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 		try {
 			return await api.collection(config.relationTo).findById({ id });
 		} catch (err: any) {
-			console.log('Error in relation beforValidate hook : ' + err.message);
+			console.error('Error in relation beforValidate hook : ' + err.message);
 		}
 		return null;
 	};

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { logger } from 'rizom/util/logger';
 
 const cachePath = path.resolve(process.cwd(), '.cache');
 if (!fs.existsSync(cachePath)) {
@@ -23,7 +24,7 @@ export class Cache {
 			try {
 				return JSON.parse(data);
 			} catch (err: any) {
-				console.log(err.message);
+				logger.error(err)
 				return setAndReturn();
 			}
 		}

@@ -91,7 +91,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		try {
 			value = JSON.stringify(value);
 		} catch (err: any) {
-			console.log(err.message);
+			console.error(err.message);
 		}
 		return value;
 	};

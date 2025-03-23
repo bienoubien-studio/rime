@@ -35,7 +35,7 @@ program
 		rmSync(path.join('drizzle.config.ts'), { force: true });
 
 		if (args.force) {
-			return console.log('rizom cleaned');
+			return console.info('rizom cleaned');
 		} else {
 			return outro('rizom cleaned');
 		}

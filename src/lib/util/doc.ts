@@ -96,7 +96,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 				prev[curr.name] = null;
 			}
 		} catch (err) {
-			console.log(curr);
+			console.error(curr);
 			throw err;
 		}
 		return prev;

@@ -2,7 +2,7 @@ import { omit } from '../util/object.js';
 import { getTableColumns } from 'drizzle-orm';
 import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../util/string.js';
-import { transformKeysToDoc, transformKeysToSchema } from '../util/path.js';
+import { transformKeysToDoc } from '../util/path.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
 import type {
@@ -21,7 +21,7 @@ import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import { isGroupFieldRaw, isTabsFieldRaw } from 'rizom/util/field.js';
+import { logger } from 'rizom/util/logger/index.js';
 
 /////////////////////////////////////////////
 // Types
@@ -166,7 +166,7 @@ export const databaseTransformInterface = ({
 
 				flatDoc[`${path}.${position}`] = block;
 			} catch (err) {
-				console.log(block.path);
+				logger.error('error in ', block.path);
 			}
 		}
 
