@@ -4,7 +4,6 @@ import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/util/validate.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale }) => {
 	const hasValue = !!value;
@@ -26,7 +25,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 
 			if (doc.url) value.url = doc.url;
 		} catch (err) {
-			console.log(err);
+			console.error(err);
 		}
 	}
 
