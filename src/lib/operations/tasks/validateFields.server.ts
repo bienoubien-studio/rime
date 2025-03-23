@@ -10,6 +10,7 @@ import type {
 import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
 import type { DeepPartial } from 'rizom/types/util';
+import { logger } from 'rizom/util/logger';
 
 export const validateFields = async <T extends GenericDoc>(args: {
 	data: DeepPartial<T>;
@@ -102,7 +103,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 					errors[key] = valid;
 				}
 			} catch (err: any) {
-				console.log(err);
+				logger.warn(`Error while validating field ${key}`);
 				errors[key] = RizomFormError.VALIDATION_ERROR;
 			}
 		}
@@ -144,7 +145,6 @@ export const validateFields = async <T extends GenericDoc>(args: {
 	}
 
 	if (Object.keys(errors).length) {
-		console.log(errors);
 		throw new RizomFormError(errors);
 	}
 
