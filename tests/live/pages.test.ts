@@ -35,9 +35,12 @@ test.describe('Live Edit', () => {
 
 		const tabAttribute = page.locator('.rz-tabs-trigger[data-value="attributes"]');
 		await tabAttribute.click();
-		const inputTitle = page.locator(`input.rz-input[name="title"]`);
+		const inputTitle = page.locator(`input.rz-input[name="attributes.title"]`);
 		await inputTitle.pressSequentially('Live test', { delay: 100 });
-
+		
+		const inputSlug = page.locator(`input.rz-input[name="attributes.slug"]`);
+		await inputSlug.pressSequentially('live-test', { delay: 100 });
+		
 		await expect(saveButton).toBeEnabled();
 		await saveButton.click();
 		await page.waitForLoadState('networkidle');
@@ -47,6 +50,7 @@ test.describe('Live Edit', () => {
 		await page.waitForLoadState('networkidle');
 
 		const liveContainer = page.locator('.rz-live-container');
+		await expect(liveContainer).toBeVisible({ timeout: 1000 });
 		expect(liveContainer).toHaveCount(1);
 	});
 });

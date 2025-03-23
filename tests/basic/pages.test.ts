@@ -57,7 +57,7 @@ test.describe('Login form', () => {
 
 		// Check for error message
 		const errorMessage = page.locator(
-			'.rz-login form .rz-field-root:first-of-type .rz-field-error'
+			'.rz-auth form .rz-field-root:first-of-type .rz-field-error'
 		);
 		await expect(errorMessage).toBeVisible();
 	});
@@ -130,7 +130,7 @@ test.describe('Admin panel', () => {
 			await expect(saveButton).toBeDisabled();
 
 			if (slug === 'pages') {
-				const inputTitle = page.locator(`input.rz-input[name="title"]`);
+				const inputTitle = page.locator(`input.rz-input[name="attributes.title"]`);
 				await inputTitle.pressSequentially('Home', { delay: 100 });
 				await expect(saveButton).toBeEnabled();
 				await saveButton.click();
@@ -186,8 +186,8 @@ test.describe('Admin panel', () => {
 			const saveButton = page.locator('.rz-page-header button[type="submit"]');
 			await expect(saveButton).toBeDisabled();
 
-			const footerToggle = page.locator('.rz-field-label-for[for="maintenance"]');
-			await footerToggle.click();
+			const maintenanceToggle = page.locator('.rz-field-label-for[for="settings_0-maintenance"]');
+			await maintenanceToggle.click();
 
 			await expect(saveButton).toBeEnabled();
 			await saveButton.click();

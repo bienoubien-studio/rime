@@ -14,8 +14,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:multilang": "playwright test -c ./playwright.config.multilang.ts",
-		"test:basic": "playwright test --ui -c ./playwright.config.basic.ts",
-		"test:live": "playwright test --ui -c ./playwright.config.live.ts",
+		"test:basic": "playwright test -c ./playwright.config.basic.ts",
+		"test:live": "playwright test -c ./playwright.config.live.ts",
 		"test": "pnpm test:multilang && pnpm test:basic && pnpm test:live",
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/",
 		"local-pack": "npm run build && npm pack && echo \"Package created at: $(pwd)/$(npm pack | tail -1)\""

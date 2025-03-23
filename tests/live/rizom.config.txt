@@ -107,7 +107,7 @@ const blockParagraph = block('paragraph')
 	.description('Simple paragraph')
 	.fields(richText('text').localized());
 
-const tabAttributes = tab('Attributes').fields(
+const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	toggle('home').table({ position: 2, sort: true }).live(false),
 	slug('slug')
@@ -121,7 +121,7 @@ const tabAttributes = tab('Attributes').fields(
 	date('published')
 );
 
-const tabContent = tab('Layout').fields(blocks('components', [blockParagraph]).table());
+const tabContent = tab('layout').fields(blocks('components', [blockParagraph]).table());
 
 const Pages = collection('pages', {
 	icon: Newspaper,
