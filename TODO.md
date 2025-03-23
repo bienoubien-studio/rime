@@ -17,6 +17,8 @@
 [v] Group/Tabs as object on document
 [v] API proxy 
 [v] Better logs
+[v] 404 on image src quick after upload deletion
+[ ] Make first user super admin, can't delete it 
 [ ] basic real life config preset
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
@@ -26,6 +28,8 @@
 [ ] Put bin commands in a separate package ex: @rizom/kit
 [ ] collection nested
 [ ] page version
+[ ] page modification not saved message + changes to localStorage
 [ ] more tiptap integration
 [ ] more better-auth integration
+[ ] configurable medias/config path
 
