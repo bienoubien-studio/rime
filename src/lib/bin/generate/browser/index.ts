@@ -72,23 +72,23 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 function createImportStatement(path: string): string {
 	let importPath;
 	// Handle Svelte components from src
-	if (path.endsWith('.svelte') && !path.includes('node_modules')) {
-		const componentPath = path.split('src/').pop() ?? '';
-		importPath = `'../${componentPath}'`;
-	}
-	// Handle node_modules imports
-	else if (path.includes('node_modules')) {
-		const modulePath = path.split('node_modules/').pop() ?? '';
-		if (modulePath.startsWith('@lucide/svelte')) {
-			// Only remove .svelte extension for lucide icons
-			importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
-		} else {
-			// Keep .svelte extension
-			importPath = `'${modulePath.replace('dist/', '')}'`;
-		}
-	} else {
-		importPath = path;
-	}
+	// if (path.endsWith('.svelte') && !path.includes('node_modules')) {
+	// 	const componentPath = path.split('src/').pop() ?? '';
+	// 	importPath = `'../${componentPath}'`;
+	// }
+	// // Handle node_modules imports
+	// else if (path.includes('node_modules')) {
+	// 	const modulePath = path.split('node_modules/').pop() ?? '';
+	// 	if (modulePath.startsWith('@lucide/svelte')) {
+	// 		// Only remove .svelte extension for lucide icons
+	// 		importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
+	// 	} else {
+	// 		// Keep .svelte extension
+	// 		importPath = `'${modulePath.replace('dist/', '')}'`;
+	// 	}
+	// } else {
+	importPath = path;
+	// }
 
 	return registerImport(importPath);
 }
@@ -122,12 +122,13 @@ function registerImport(importPath: string): string {
 		}
 	}
 
-	const importName = `import_${importCounter++}`;
-	importRegistry.set(importName, importPath);
+	const importName = `__extenal__${importCounter++}`;
+	importRegistry.set(importName, `'./${importPath}'`);
 	return importName;
 }
 
 function registerFunction(func: Function, key: string = ''): string {
+	
 	let funcString = func.toString();
 
 	// Handle environment variables
@@ -138,7 +139,7 @@ function registerFunction(func: Function, key: string = ''): string {
 	}
 
 	// Clean vite imports
-	funcString = cleanViteImports(funcString);
+	// funcString = cleanViteImports(funcString);
 
 	// Check if we already have this function
 	for (const [existingKey, value] of functionRegistry.entries()) {
@@ -171,9 +172,6 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 		case 'object': {
 			if (value === null) return 'null';
 			if (Array.isArray(value)) {
-				if(key === 'extensions'){
-					logger.debug(typeof value)
-				}
 				return `[${value
 					.map((item) => parseValue('', item, key))
 					.filter(Boolean)
