@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import type { EditorOptions } from '@tiptap/core';
+import type { RichTextEditorConfig } from './core/types.js';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -28,8 +28,6 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	constructor(name: string) {
 		super(name, 'richText');
 		this.field.isEmpty = isEmpty;
-		this.field.marks = ['bold', 'italic', 'strike', 'underline'];
-		this.field.nodes = ['p', 'h2', 'h3', 'ol', 'ul', 'blockquote', 'a'];
 		this.field.hooks = {
 			beforeRead: [RichTextFieldBuilder.jsonParse],
 			beforeSave: [RichTextFieldBuilder.stringify],
@@ -54,31 +52,27 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: import('@tiptap/core').JSONContent`;
 	}
-
-	marks(...marks: RichTextFieldMark[]) {
-		if (marks && marks[0]) {
-			this.field.marks = marks;
-		} else {
-			this.field.marks = [];
-		}
-		return this;
+	
+	/**
+	 * Sets a custom TipTap editor configuration for the rich text field.
+	 * 
+	 * @param param - a shortcut config string or an async import of the function that return the tiptap configuration.
+	 * 
+	 * The async import is needed as the browser config is rebuilt, and as TipTap config includes
+	 * core imports, we can't keep track of all the possible import of all posibble extensions to rebuild the config.
+	 * 
+	 * @example
+	 * richText('intro').tiptap((await import('./rich-text-config.js')).basic)
+	 * // This will work also :
+	 * const basicConfig = (await import('./rich-text-config.js')).basic
+	 * //...
+	 * richText('intro').tiptap(basicConfig)
+	 */
+	tiptap(param: any | string){
+		this.field.tiptap = param
+		return this
 	}
-
-	extensions(...extensions: EditorOptions["extensions"]) {
-		console.log('set extensions', extensions);
-		this.field.extensions = extensions;
-		return this;
-	}
-
-	nodes(...nodes: RichTextFieldNode[]) {
-		if (nodes && nodes[0]) {
-			this.field.nodes = nodes;
-		} else {
-			this.field.nodes = [];
-		}
-		return this;
-	}
-
+	
 	static readonly jsonParse = (value: string) => {
 		try {
 			value = JSON.parse(value);
@@ -109,24 +103,12 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 
 export const richText = (name: string) => new RichTextFieldBuilder(name);
 
+
 export type RichTextField = FormField & {
 	type: 'richText';
-	marks: RichTextFieldMark[];
-	nodes: RichTextFieldNode[];
-	extensions?: EditorOptions["extensions"];
+	tiptap?: (args: { config: RichTextField, element: HTMLElement }) => RichTextEditorConfig;
 	defaultValue?: { type: 'doc'; content: any[] };
 };
-export type RichTextFieldMark = 'bold' | 'italic' | 'underline' | 'strike' | false;
-export type RichTextFieldNode = 'p' | 'h2' | 'h3' | 'ul' | 'ol' | 'blockquote' | 'a' | false;
-
-export type RichTextMark = { type: string; attrs?: Record<string, any> };
-export type RichTextNode<T extends string = string> = {
-	type: T;
-	content?: RichTextNode;
-	text?: string;
-	marks?: RichTextMark[];
-} & (T extends 'heading' ? { attrs: Record<string, any> } : { attrs?: Record<string, any> }) &
-	(T extends 'link' ? { url: string } : Record<never, never>);
 
 /////////////////////////////////////////////
 // Register

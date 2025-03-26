@@ -1,21 +1,17 @@
 .rz-rich-text__editor {
-	/* background-color: hsl(var(--rz-color-input)); */
+	background-color: hsl(var(--rz-ground-6));
 	min-height: var(--rz-size-11);
 	width: 100%;
-	border-left: var(--rz-border);
+	/* border: var(--rz-border); */
+	/* border-radius: var(--rz-radius-md); */
 	padding: var(--rz-size-1) var(--rz-size-3);
 }
 
-.rz-rich-text__editor [contenteditable='true'] {
-	line-height: 1.5;
-	max-width: 100%;
-	min-height: var(--rz-size-24);
-	@mixin py var(--rz-size-1);
-}
 .rz-rich-text__editor {
+	max-width: 100%;
 	line-height: 1.5;
 	min-height: var(--rz-size-24);
-	@mixin py var(--rz-size-1);
+	@mixin py var(--rz-size-3);
 }
 
 .rz-rich-text__editor [contenteditable='false'] {
@@ -28,7 +24,8 @@
 }
 
 .rz-rich-text__editor:has(.ProseMirror-focused) {
-	border-left: 1px solid hsl(var(--rz-color-fg));
+	@mixin ring var(--rz-color-border)
+	/* border: 1px solid hsl(var(--rz-color-fg)); */
 }
 
 .rz-rich-text__editor[data-error]:has(.ProseMirror-focused) {
@@ -50,6 +47,9 @@
 	float: left;
 	pointer-events: none;
 	height: 0;
+}
+.rz-rich-text__editor .ProseMirror ul.is-empty::before{
+	margin-left: var(--rz-size-6);
 }
 
 .rz-rich-text__editor .ProseMirror {

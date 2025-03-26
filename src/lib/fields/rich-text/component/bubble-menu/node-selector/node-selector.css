@@ -32,7 +32,7 @@
 	box-shadow: var(--rz-shadow-xl);
 }
 
-.rz-node-selector__item {
+.rz-node-selector__node {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -41,17 +41,17 @@
 	font-size: var(--rz-text-sm);
 }
 
-.rz-node-selector__item:hover {
+.rz-node-selector__node:hover {
 	background-color: hsl(var(--rz-ground-3));
 }
 
-.rz-node-selector__item-content {
+.rz-node-selector__node-content {
 	display: flex;
 	align-items: center;
 	gap: var(--rz-size-2);
 }
 
-.rz-node-selector__item-icon {
+.rz-node-selector__node-icon {
 	border-radius: var(--rz-radius-sm);
 	border: var(--rz-border);
 	padding: var(--rz-size-1);

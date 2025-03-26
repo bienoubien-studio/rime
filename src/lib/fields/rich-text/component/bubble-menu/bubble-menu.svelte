@@ -1,58 +1,49 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core';
-	import LinkSelector from './link-selector/link-selector.svelte';
 	import NodeSelector from './node-selector/node-selector.svelte';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
 	import Marks from './marks/marks.svelte';
-	import type { RichTextFieldMark, RichTextFieldNode } from 'rizom/fields/rich-text/index.js';
 	import './bubble-menu.css';
-
+	import type { RichTextEditorConfig, RichTextModifier } from '../../core/types';
+	
 	type Props = {
 		editor: Editor;
-		marks: RichTextFieldMark[];
-		nodes: RichTextFieldNode[];
+		marks?: RichTextModifier[];
+		nodes?: RichTextModifier[];
+		extras?: RichTextEditorConfig['bubbleMenu']
 	};
-	const { editor, marks, nodes }: Props = $props();
+	
+	const { editor, marks, nodes, extras }: Props = $props();
 
-	let isNodeSelectorOpen = $state(false);
-	let isLinkSelectorOpen = $state(false);
 	let element: HTMLElement;
-	let marksComponent: any = $state();
-	let isLinkActive = $state(editor && editor.isActive('link'));
+	let isOpen = $state(false)
 
-	const pluginKey = new Date().getTime().toString();
+	const pluginKey = new Date().getTime().toString()
 	const updateDelay = 250;
+
+
+	const onShow = () => {
+		isOpen = true
+	}
+
+	const onHidden = () => {
+		isOpen = false
+	}
+
 	const tippyOptions = {
 		moveTransition: 'transform 0.15s ease-out',
 		zIndex: 50,
 		hideOnClick: true,
-		onShow: () => {
-			marksComponent?.updateActiveMarks();
-			isLinkActive = editor.isActive('link');
-		},
-		onHidden: () => {
-			isNodeSelectorOpen = false;
-			isLinkSelectorOpen = false;
-		}
+		onHidden,
+		onShow,
 	};
+
 
 	const shouldShow = ({ editor }: { editor: Editor }) => {
 		return editor.view.state.selection.content().size > 0;
 	};
-
-	$effect(() => {
-		if (isNodeSelectorOpen) {
-			isLinkSelectorOpen = false;
-		}
-	});
-
-	$effect(() => {
-		if (isLinkSelectorOpen) {
-			isNodeSelectorOpen = false;
-		}
-	});
-
+	
 	onMount(() => {
 		const plugin = BubbleMenuPlugin({
 			pluginKey,
@@ -72,15 +63,19 @@
 </script>
 
 <div id={pluginKey} bind:this={element} class="rz-bubble-menu">
-	{#if nodes.length}
-		<NodeSelector {editor} bind:isOpen={isNodeSelectorOpen} />
+	
+	{#if nodes && nodes.length}
+		<NodeSelector {editor} {nodes} isMenuOpen={isOpen} />
 	{/if}
 
-	{#if marks.length}
-		<Marks {editor} {marks} bind:this={marksComponent} />
+	{#if marks && marks.length}
+		<Marks {editor} {marks} />
 	{/if}
 
-	{#if nodes.includes('a')}
-		<LinkSelector active={isLinkActive} {editor} bind:isOpen={isLinkSelectorOpen} />
+	{#if extras && extras.components?.length}
+		{#each extras.components as Extra}
+			<Extra {editor} isMenuOpen={isOpen} />
+		{/each}
 	{/if}
+
 </div>

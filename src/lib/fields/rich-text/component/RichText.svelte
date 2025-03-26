@@ -1,12 +1,13 @@
 <script lang="ts">
-	import './rich-text.css';
+	import './styles/rich-text.css';
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { buildEditorConfig } from './editor.config.js';
+	import { buildConfig } from '../core/index.js';
 	import { Field } from 'rizom/panel/components/fields/index.js';
 	import type { RichTextFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import type { RichTextEditorConfig, RichTextModifier } from '../core/types';
 
 	const { path, config, form, class: className }: RichTextFieldProps = $props();
 
@@ -14,10 +15,14 @@
 	const key = `richtext-${new Date().getTime().toString()}`;
 
 	let editor = $state<Editor>();
+	let marks = $state<RichTextModifier[]>()
+	let nodes = $state<RichTextModifier[]>()
+	let bubbleMenuExtras = $state<RichTextEditorConfig['bubbleMenu']>()
+	
 	const field = $derived(form.useField(path, config));
-
+	
 	onMount(() => {
-		const editorConfig = buildEditorConfig({
+		const richTextEditorConfig = buildConfig({
 			element,
 			config,
 			editable: !form.readOnly,
@@ -25,7 +30,10 @@
 			setValue: (val: any) => (field.value = val)
 		});
 
-		editor = new Editor(editorConfig);
+		marks = richTextEditorConfig.marks
+		nodes = richTextEditorConfig.nodes
+		bubbleMenuExtras = richTextEditorConfig.bubbleMenu
+		editor = new Editor(richTextEditorConfig.tiptapConfig);
 
 		if (field.value?.content) {
 			editor.commands.setContent(field.value.content);
@@ -43,7 +51,7 @@
 	></div>
 	{#if editor && editor.isEditable}
 		{#key key}
-			<EditorBubbleMenu nodes={config.nodes} marks={config.marks} {editor} />
+			<EditorBubbleMenu extras={bubbleMenuExtras} nodes={nodes} marks={marks} {editor} />
 		{/key}
 	{/if}
 </fieldset>

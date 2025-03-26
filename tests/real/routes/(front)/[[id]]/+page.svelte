@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { renderRichText } from 'rizom/fields/rich-text/render.js';
+	import { renderRichText } from 'rizom/fields/rich-text/utils/render.js';
 	import LiveConsumer from 'rizom/panel/components/sections/live/Consumer.svelte';
 	
 	let { data }: { data: { doc: PagesDoc } } = $props();

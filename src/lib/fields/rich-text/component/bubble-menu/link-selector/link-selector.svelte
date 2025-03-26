@@ -6,17 +6,26 @@
 	import { url as validateURL } from '$lib/util/validate.js';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 
-	type Props = { editor: Editor; isOpen: boolean; active: boolean };
-	let { editor, active = $bindable(), isOpen = $bindable() }: Props = $props();
+	type Props = { editor: Editor; isMenuOpen: boolean; };
+	let { editor, isMenuOpen }: Props = $props();
 
 	let value = $state((editor && editor.getAttributes('link').href) || '');
 	let error = $state(false);
 
+	let open = $state(false)
+	let active = $state(false)
+	
 	$effect(() => {
-		if (isOpen) {
+		if (open) {
 			value = (editor && editor.getAttributes('link').href) || '';
 		}
 	});
+
+	$effect(() => {
+		if(!isMenuOpen){
+			open = false
+		}
+	})
 
 	let urlState = $derived.by(() => {
 		let transformedUrl = value;
@@ -34,28 +43,29 @@
 		event.preventDefault();
 		if (!urlState.isValid) return (error = true);
 		editor.chain().focus().setLink({ href: urlState.url }).run();
-		isOpen = false;
+		open = false;
 		active = true;
 	}
 
 	function onDelete() {
 		editor.chain().focus().unsetLink().run();
 		value = '';
-		isOpen = false;
+		open = false;
 		active = false;
 	}
 </script>
 
 <div class="rz-link-selector">
+
 	<IconButton
 		icon={Link2}
 		{active}
 		onclick={() => {
-			isOpen = !isOpen;
+			open = !open;
 		}}
 	/>
 
-	{#if isOpen}
+	{#if open}
 		<form onsubmit={onSubmit} class="rz-link-selector__form">
 			<Input
 				oninput={() => {
