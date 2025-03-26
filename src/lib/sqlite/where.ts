@@ -25,11 +25,11 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		try {
 			query = qs.parse(incomingQuery);
 		} catch (err: any) {
-			throw new RizomError('1 Unable to parse given query ' + err.message);
+			throw new RizomError('Unable to parse given string query ' + err.message);
 		}
 	} else {
 		if (!isObjectLiteral(incomingQuery)) {
-			throw new RizomError('2 Unable to parse given query');
+			throw new RizomError('Unable to parse given object query');
 		}
 		query = incomingQuery;
 	}

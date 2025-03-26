@@ -3,14 +3,14 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from 'rizom/errors/handler.server.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import { safe } from 'rizom/util/safe.js';
-import { logger } from 'rizom/util/logger';
+
 
 export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
 		const { api, locale } = event.locals;
 		const params = event.url.searchParams;
-		
+
 		const hasQueryParams = !!params.keys().filter(key => key.startsWith('where')).toArray().length;
 
 		let apiParams;

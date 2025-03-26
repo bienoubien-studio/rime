@@ -464,12 +464,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const result: ActionResult = deserialize(await response.text());
 
 		if (result.type === 'success') {
-			console.log('success', result);
-			console.log('nestedLevel', nestedLevel);
-			console.log('operation', operation);
 			doc = result.data?.doc || (doc as GenericDoc);
 			if (nestedLevel === 0) {
-				console.log('--> set doc');
 				toast.success(t__('common.doc_updated'));
 				await invalidateAll();
 				intialDoc = doc;
