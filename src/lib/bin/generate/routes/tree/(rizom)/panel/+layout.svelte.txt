@@ -1,12 +1,11 @@
 <script>
-  import { Panel } from 'rizom/panel';
-  import config from '$lib/rizom.config.browser.js'
+	import { Panel } from 'rizom/panel';
+	//@ts-ignore
+	import config from 'virtual:browser-config'; 
+	const { children, data } = $props();
 
-  const { children, data } = $props();
-
-  const user = data.user;
-  if (!user) throw new Error('unauthorized');
-
+	const user = data.user;
+	if (!user) throw new Error('unauthorized');
 </script>
 
 <Panel {config} {user} routes={data.routes} locale={data.locale}>

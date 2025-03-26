@@ -12,7 +12,7 @@ import Select from './select/component/Select.svelte';
 import Separator from './separator/component/Separator.svelte';
 import Slug from './slug/component/Slug.svelte';
 import Tabs from './tabs/component/Tabs.svelte';
-import TextArea from './text/component/TextArea.svelte';
+import TextArea from './textarea/component/TextArea.svelte';
 import Text from './text/component/Text.svelte';
 import Toggle from './toggle/component/Toggle.svelte';
 export {

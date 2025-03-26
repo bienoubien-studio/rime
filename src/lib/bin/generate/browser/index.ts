@@ -71,25 +71,24 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 // Handles import paths for components and modules
 function createImportStatement(path: string): string {
 	let importPath;
-
 	// Handle Svelte components from src
-	if (path.endsWith('.svelte') && !path.includes('node_modules')) {
-		const componentPath = path.split('src/').pop() ?? '';
-		importPath = `'../${componentPath}'`;
-	}
-	// Handle node_modules imports
-	else if (path.includes('node_modules')) {
-		const modulePath = path.split('node_modules/').pop() ?? '';
-		if (modulePath.startsWith('@lucide/svelte')) {
-			// Only remove .svelte extension for lucide icons
-			importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
-		} else {
-			// Keep .svelte extension
-			importPath = `'${modulePath.replace('dist/', '')}'`;
-		}
-	} else {
-		importPath = path;
-	}
+	// if (path.endsWith('.svelte') && !path.includes('node_modules')) {
+	// 	const componentPath = path.split('src/').pop() ?? '';
+	// 	importPath = `'../${componentPath}'`;
+	// }
+	// // Handle node_modules imports
+	// else if (path.includes('node_modules')) {
+	// 	const modulePath = path.split('node_modules/').pop() ?? '';
+	// 	if (modulePath.startsWith('@lucide/svelte')) {
+	// 		// Only remove .svelte extension for lucide icons
+	// 		importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
+	// 	} else {
+	// 		// Keep .svelte extension
+	// 		importPath = `'${modulePath.replace('dist/', '')}'`;
+	// 	}
+	// } else {
+	importPath = path;
+	// }
 
 	return registerImport(importPath);
 }
@@ -123,12 +122,13 @@ function registerImport(importPath: string): string {
 		}
 	}
 
-	const importName = `import_${importCounter++}`;
-	importRegistry.set(importName, importPath);
+	const importName = `__extenal__${importCounter++}`;
+	importRegistry.set(importName, `'./${importPath}'`);
 	return importName;
 }
 
 function registerFunction(func: Function, key: string = ''): string {
+	
 	let funcString = func.toString();
 
 	// Handle environment variables
@@ -158,9 +158,10 @@ function registerFunction(func: Function, key: string = ''): string {
 // Parse different value types
 function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
 	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
-
+	
 	// Handle different value types
 	switch (typeof value) {
+		
 		case 'function': {
 			const filename = (value as any).filename || getSymbolFilename(value);
 			if (filename) return createImportStatement(filename);
@@ -180,6 +181,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 			const entries = Object.entries(value)
 				.filter(([k, v]) => shouldIncludeInBrowser(k, v, fullPath))
 				.map(([k, v]) => `'${k}': ${parseValue(k, v, fullPath)}`);
+
 			return `{${entries.join(',')}}`;
 		}
 

@@ -4,17 +4,19 @@ import { handleError } from 'rizom/errors/handler.server.js';
 import type { CollectionSlug } from 'rizom/types/doc.js';
 import { safe } from 'rizom/util/safe.js';
 
+
 export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
 		const { api, locale } = event.locals;
 		const params = event.url.searchParams;
-		const hasParams = params.toString();
+
+		const hasQueryParams = !!params.keys().filter(key => key.startsWith('where')).toArray().length;
 
 		let apiParams;
 		let apiMethod: 'find' | 'findAll';
 
-		if (hasParams) {
+		if (hasQueryParams) {
 			apiParams = {
 				locale: params.get('locale') || locale,
 				sort: params.get('sort') || '-createdAt',
@@ -24,11 +26,16 @@ export default function (slug: CollectionSlug) {
 			};
 			apiMethod = 'find';
 		} else {
-			apiParams = { locale };
+			apiParams = {
+				locale: params.get('locale') || locale,
+				sort: params.get('sort') || '-createdAt',
+				depth: params.get('depth') ? parseInt(params.get('depth')!) : 0,
+				limit: params.get('limit') ? parseInt(params.get('limit')!) : undefined,
+			};
 			apiMethod = 'findAll';
 		}
 
-		// @ts-expect-error params match the apiMethod signature
+		// @ts-ignore params match function signature
 		const [error, docs] = await safe(api.collection(slug)[apiMethod](apiParams));
 		if (error) {
 			return handleError(error, { context: 'api' });

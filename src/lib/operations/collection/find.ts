@@ -51,14 +51,14 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 
 		for (const hook of config.hooks?.beforeRead || []) {
 			const result = await hook({
-				doc: document as RegisterCollection[CollectionSlug],
+				doc: document as unknown as RegisterCollection[CollectionSlug],
 				config,
 				operation: 'read',
 				api,
 				rizom: event.locals.rizom,
 				event
 			});
-			document = result.doc as T;
+			document = result.doc as unknown as T;
 		}
 
 		return document;

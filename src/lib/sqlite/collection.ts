@@ -1,7 +1,6 @@
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import { generatePK } from './util.js';
-import { pick } from '../util/object.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from 'rizom/types/doc.js';
