@@ -7,6 +7,6 @@
 <LiveConsumer {data}>
 	{#snippet child(doc)}
 		{/* @ts-ignore */ null}
-		{doc.title}
+		{doc.attributes.title}
 	{/snippet}
 </LiveConsumer>

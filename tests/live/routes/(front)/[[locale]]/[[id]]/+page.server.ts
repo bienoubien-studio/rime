@@ -10,7 +10,7 @@ export const load = async (event: ServerLoadEvent) => {
 		id = event.params.locale;
 	}
 
-	const query = id ? `where[slug][equals]=${id}` : `where[home][equals]=true`;
+	const query = id ? `where[attributes.slug][equals]=${id}` : `where[attributes.home][equals]=true`;
 	const docs = await api.collection('pages').find({ query, locale, depth: 2 });
 	if (!docs.length) {
 		throw error(404, 'Not found');
