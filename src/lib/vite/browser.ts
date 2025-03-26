@@ -1,18 +1,18 @@
 import type { Plugin } from 'vite';
 import fs from 'fs';
 import path from 'path';
+import { logger } from '../util/logger';
+import { clearLog, logToFile } from '../../log';
 
 // Virtual module ID
 const VIRTUAL_MODULE_ID = 'virtual:browser-config';
 const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID;
 const GENERATED_CONFIG_PATH = path.join(process.cwd(), '.rizom', 'config.browser.txt');
-const CONFIG_PATH = path.join(process.cwd(), 'src', 'config');
+
 
 export function rizomClient(): Plugin {
   return {
     name: 'rizom:browser-config',
-
-    // enforce: 'pre',
 
     resolveId(id) {
       if (id === VIRTUAL_MODULE_ID) {
@@ -20,10 +20,10 @@ export function rizomClient(): Plugin {
       }
     },
 
+    /**
+     * Load the virtual browser config file
+     */
     async load(id) {
-      // if (id.includes('node_modules/.pnpm/@lucide+svelte')) {
-      //   console.log(this.getModuleInfo(id))
-      // }
       if (id === RESOLVED_VIRTUAL_MODULE_ID) {
         try {
           // Check if the config file exists
@@ -38,79 +38,119 @@ export function rizomClient(): Plugin {
           // Return the content for further processing in transform
           return content;
         } catch (error) {
-          console.error('[rizom] Error loading browser config:', error);
+          logger.error('Error loading browser config:', error);
           return 'export default {}';
         }
       }
     },
 
+    /**
+     * Invalidate virtual browser config 
+     * when the generated one changes
+     */
     configureServer(server) {
-      server.watcher.add('src/config/**/*.ts');
+      server.watcher.add('src/lib/rizom.config.browser.js');
       server.watcher.on('change', async (path) => {
-        const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MODULE_ID);
+        if (path.includes('rizom.config.browser')) {
+          const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MODULE_ID);
           if (module) {
             server.moduleGraph.invalidateModule(module);
-            console.log('[rizom] Browser config invalidated');
+            logger.info('Browser config invalidated');
           }
+        }
       })
-        
+    },
+
+    /**
+     * Transform the config to replace await imports with string notation
+     * transform back on browser config to classic imports and replace with variables
+     */
+    transform(code, id) {
+      // Transform the config to replace await imports with string notation
+      if (id.includes('src/config/rizom.config')) {
+        // Regular expression to find only the await import pattern
+        const importRegex = /\(await\s+import\(['"](.+?)['"]\)\)\.(\w+)/g;
+
+        // Process the code and replace import expressions
+        let processedCode = code;
+        let match;
+
+        while ((match = importRegex.exec(code)) !== null) {
+          const [fullMatch, modulePath, propertyName] = match;
+
+          // Resolve the module path relative to the project root
+          const resolvedPath = modulePath.startsWith('./') || modulePath.startsWith('../')
+            ? './' + path.join('src', 'config', modulePath)
+            : modulePath;
+
+          // Replace with string notation: path@property
+          processedCode = processedCode.replace(fullMatch, `'__from_await__:${resolvedPath}@${propertyName}'`);
+        }
+
+        return processedCode;
+      }
+
+      // Transform back on virtual browser config to classic imports and replace with variables
+      if (id === RESOLVED_VIRTUAL_MODULE_ID) {
+        clearLog()
+        logToFile('input', code)
+        // Regular expression to find the specific string notation pattern with our prefix
+        const stringNotationRegex = /['|"]__from_await__:([^']+?)@(\w+)['|"]/g;
+
+        // Store all imports and variable mappings
+        const imports = new Map();
+        const replacements = new Map();
+
+        // First pass: collect all imports and create variable mappings
+        let match;
+        while ((match = stringNotationRegex.exec(code)) !== null) {
+          const [fullMatch, modulePath, propertyName] = match;
+
+          // Convert module name to a valid variable name (kebab-case to camelCase)
+          const moduleBaseName = path.basename(modulePath, path.extname(modulePath));
+          let baseVarName = propertyName === 'default'
+            ? moduleBaseName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
+            : propertyName;
+
+          // Format with the special prefix/suffix to prevent conflicts
+          const variableName = `__from_await_${baseVarName}__`;
+
+          // Create import statement based on property name
+          let importStatement;
+          if (propertyName === 'default') {
+            importStatement = `import ${variableName} from '${modulePath}';`;
+          } else {
+            importStatement = `import { ${propertyName} as ${variableName} } from '${modulePath}';`;
+          }
+
+          // Add to imports map if not already present
+          if (!imports.has(importStatement)) {
+            imports.set(importStatement, variableName);
+          }
+
+          // Store the replacement mapping
+          replacements.set(fullMatch, variableName);
+        }
+
+        // Second pass: replace all occurrences in the code
+        let processedCode = code;
+        for (const [pattern, replacement] of replacements.entries()) {
+          // Escape special regex characters in the pattern
+          const escapedPattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          // Create a global regex for replacement
+          const regex = new RegExp(escapedPattern, 'g');
+          // Replace all occurrences
+          processedCode = processedCode.replace(regex, replacement);
+        }
+
+        // Combine all imports with the processed code
+        const importStatements = Array.from(imports.keys()).join('\n');
+        processedCode = importStatements ? `${importStatements}\n\n${processedCode}` : processedCode;
+        logToFile('output', processedCode)
+        return processedCode
+      }
+
+      return code;
     }
-
-    // async transform(code, id) {
-    //   if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-    //     let processedCode = code;
-
-    //     // Find all import statements for external modules
-    //     const importRegex = /import\s+(__extenal__\d+)\s+from\s+'([^']+)';/g;
-    //     let importMatch;
-
-    //     // Create a map to store replacements
-    //     const replacements = [];
-
-    //     // First pass: collect all external imports and resolve their paths
-    //     while ((importMatch = importRegex.exec(code)) !== null) {
-    //       const importVar = importMatch[1];
-    //       const importPath = importMatch[2];
-    //       const importId = importVar.split('__extenal__')[1];
-
-    //       // Resolve the import path
-    //       const resolved = await this.resolve(importPath);
-
-    //       if (resolved && resolved.id) {
-    //         // Store the replacement info
-    //         replacements.push({
-    //           importVar,
-    //           importPath,
-    //           importId,
-    //           resolvedPath: resolved.id
-    //         });
-    //       } else {
-    //         console.warn(`[rizom] Failed to resolve import: ${importPath}`);
-    //       }
-    //     }
-
-    //     // Second pass: perform the replacements
-    //     for (const { importVar, importPath, importId, resolvedPath } of replacements) {
-    //       // Create a clean import variable name
-    //       const cleanImportVar = `import_${importId}`;
-
-    //       // Replace the import statement with the resolved path
-    //       processedCode = processedCode.replace(
-    //         new RegExp(`import\\s+${importVar}\\s+from\\s+'${importPath}';`, 'g'),
-    //         `import ${cleanImportVar} from '${resolvedPath}';`
-    //       );
-
-    //       // Replace all occurrences of the placeholder in the code
-    //       processedCode = processedCode.replace(
-    //         new RegExp(importVar, 'g'),
-    //         cleanImportVar
-    //       );
-    //     }
-
-
-
-    //     return prefix + processedCode;
-    //   }
-    // }
   };
 }

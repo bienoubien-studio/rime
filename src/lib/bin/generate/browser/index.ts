@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { logger, taskLogger } from 'rizom/util/logger/index.js';
+import { taskLogger } from 'rizom/util/logger/index.js';
 import cache from '../cache/index.js';
 import type { CompiledConfig } from 'rizom/types/config.js';
 import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
@@ -139,7 +139,7 @@ function registerFunction(func: Function, key: string = ''): string {
 	}
 
 	// Clean vite imports
-	// funcString = cleanViteImports(funcString);
+	funcString = cleanViteImports(funcString);
 
 	// Check if we already have this function
 	for (const [existingKey, value] of functionRegistry.entries()) {
@@ -158,8 +158,7 @@ function registerFunction(func: Function, key: string = ''): string {
 // Parse different value types
 function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
 	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
-
-	// logger.debug('Parsing value', { key, parentKey });
+	
 	// Handle different value types
 	switch (typeof value) {
 		
@@ -182,6 +181,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 			const entries = Object.entries(value)
 				.filter(([k, v]) => shouldIncludeInBrowser(k, v, fullPath))
 				.map(([k, v]) => `'${k}': ${parseValue(k, v, fullPath)}`);
+
 			return `{${entries.join(',')}}`;
 		}
 
