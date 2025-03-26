@@ -4,7 +4,6 @@ import { Text } from '@lucide/svelte';
 import { collection, area, defineConfig } from 'rizom';
 import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
 
-
 import {
 	block,
 	blocks,
@@ -51,7 +50,7 @@ const Informations = area('infos', {
 const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
-	if (data?.home) {
+	if (data?.attributes?.home) {
 		const query = 'where[home][equals]=true';
 
 		const pagesIsHome = await api.collection('pages').find({ query });
@@ -59,7 +58,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 		for (const page of pagesIsHome) {
 			await api.collection('pages').updateById({
 				id: page.id,
-				data: { home: false }
+				data: { attributes: { home: false } }
 			});
 		}
 	}
@@ -71,12 +70,12 @@ const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api, operation, event } = args;
 
 	if (operation === 'create' || operation === 'update') {
-		if (data.slug) {
-			const baseSlug = data.slug;
+		if (data.attributes?.slug) {
+			const baseSlug = data.attributes.slug;
 			const query = {
 				where: {
 					slug: {
-						equals: data.slug
+						equals: data.attributes.slug
 					}
 				}
 			};
@@ -88,9 +87,9 @@ const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 				locale: event.locals.locale
 			});
 
-			while (pagesWithCurrentSlug.some((page) => page.slug === data.slug)) {
+			while (pagesWithCurrentSlug.some((page) => page.attributes?.slug === data.attributes?.slug)) {
 				index++;
-				data.slug = `${baseSlug}-${index}`;
+				data.attributes.slug = `${baseSlug}-${index}`;
 			}
 		}
 
@@ -129,9 +128,9 @@ const Pages = collection('pages', {
 	fields: [tabs(tabContent, tabAttributes)],
 	url: (doc) => {
 		if (doc.locale === 'fr') {
-			return `${process.env.PUBLIC_RIZOM_URL}/${doc.slug}`;
+			return `${process.env.PUBLIC_RIZOM_URL}/${doc.attributes.slug}`;
 		}
-		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.slug}`;
+		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
 	live: true,
 	access: {
