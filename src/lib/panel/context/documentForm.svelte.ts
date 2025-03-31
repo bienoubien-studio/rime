@@ -27,7 +27,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	key,
 	onDataChange,
 	onFieldFocus
-	// onNestedDocumentCreated
 }: Args<T>) {
 	//
 	let intialDoc = $state(initial);
@@ -56,7 +55,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const isDigit = /[\d]+/.test(last);
 		return isDigit ? parseInt(last) : 0;
 	}
-
+	
 	function initTitle() {
 		if (config.type === 'area') {
 			return config.label;
@@ -211,10 +210,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			target.array.splice(target.index, 0, itemToMove);
 
 			// Rebuild paths and positions
-			// console.time('rebuild_paths');
 			items = rebuildPaths(items, path);
-			// console.timeEnd('rebuild_paths');
-
 			assignItemsToDoc(items);
 		};
 
@@ -233,9 +229,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 
 	function useBlocks(path: string) {
-		// let stamp = $state(new Date().getTime().toString());
 		const parts = path.split('.');
-
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
@@ -243,12 +237,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
-			// const flatDoc: Dic = flatten(doc, {
-			// 	maxDepth: parts.length
-			// });
-			// blocks = rebuildPaths(blocks, path);
-			// flatDoc[path] = blocks;
-			// doc = unflatten(flatDoc);
 			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
 		};
@@ -398,6 +386,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			},
 
 			get editable() {
+				if (readOnly) return false
 				if (operation === 'create') {
 					return config.access.create(user.attributes);
 				} else {
@@ -442,8 +431,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		processing = true;
 
 		const data: Dic = {};
-		// const isUpload = config.type === 'collection' && isUploadConfig(config);
-
+		
 		for (const key of Object.keys(changes)) {
 			data[key] = doc[key];
 		}

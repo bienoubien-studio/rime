@@ -4,6 +4,8 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
 	import type { TabsFieldRaw } from '../index.js';
+	import RichText from 'rizom/fields/rich-text/component/RichText.svelte';
+	import type { RichTextField } from 'rizom/fields/types.js';
 
 	type Tab = TabsFieldRaw['tabs'][number];
 	type Props = { config: TabsFieldRaw; path: string; form: DocumentFormContext };
@@ -13,8 +15,8 @@
 	const cookieKey = `Tabs:${initialPath}:${config.tabs.map((t) => t.name).join('-')}`;
 	let activeTabName = $state(Cookies.get(cookieKey) || config.tabs[0].name);
 
-	// Prevent empty tab on live open
-	// if localstorage tab.live is false
+	// Prevent localStorage opened tab to open
+	// if tab.live is false
 	$effect(() => {
 		if (form.isLive) {
 			const currentActiveTab = config.tabs.find((tab) => tab.name === activeTabName);
@@ -35,6 +37,7 @@
 		activeTabName = value;
 	}
 
+	// Emphasize tabs that includes errors
 	$effect(() => {
 		if (form.errors.length) {
 			const errorsTabs = document.querySelectorAll<HTMLElement>(
@@ -72,7 +75,14 @@
 
 		{#each config.tabs.filter(isTabVisible) as tab, index}
 			<Tabs.Content data-tab-id={tabIds[index]} value={tab.name}>
-				<RenderFields fields={tab.fields} path="{path}{tab.name}" {form} />
+				<!-- If the first field is a rich text field, render it directly -->
+				{#if tab.fields.length === 1 && tab.fields[0].type === 'richText'}
+					{@const firstField = tab.fields[0] as RichTextField}
+					<RichText standAlone={true} path="{path}{tab.name}.{firstField.name}" config={firstField} {form} />
+				{:else}
+					<!-- Otherwise, render the fields -->
+					<RenderFields fields={tab.fields} path="{path}{tab.name}" {form} />
+				{/if}
 			</Tabs.Content>
 		{/each}
 	</Tabs.Root>

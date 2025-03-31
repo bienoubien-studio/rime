@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import type { RichTextEditorConfig } from './core/types.js';
+import type { MediaFeatureDefinition, PredefinedFeatureName, RichTextFeature } from './core/types.js';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -56,21 +56,21 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	/**
 	 * Sets a custom TipTap editor configuration for the rich text field.
 	 * 
-	 * @param param - a shortcut config string or an async import of the function that return the tiptap configuration.
-	 * 
-	 * The async import is needed as the browser config is rebuilt, and as TipTap config includes
-	 * core imports, we can't keep track of all the possible import of all posibble extensions to rebuild the config.
+	 * @param param - a feature name, a RichTextFeature object, or a shortcut config string
 	 * 
 	 * @example
-	 * richText('intro').tiptap((await import('./rich-text-config.js')).basic)
-	 * // This will work also :
-	 * const basicConfig = (await import('./rich-text-config.js')).basic
-	 * //...
-	 * richText('intro').tiptap(basicConfig)
+	 * // Using predefined features
+	 * richText('intro').features('bold', 'heading', 'link')
+	 * 
+	 * // Using custom features
+	 * richText('intro').features(myCustomFeature)
+	 * 
+	 * // Using shortcut config string (legacy)
+	 * richText('intro').features('[h1|h2] bold|italic|link')
 	 */
-	tiptap(param: any | string){
-		this.field.tiptap = param
-		return this
+	features(...features: Array<MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>) {
+		this.field.features = features
+		return this;
 	}
 	
 	static readonly jsonParse = (value: string) => {
@@ -103,10 +103,9 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 
 export const richText = (name: string) => new RichTextFieldBuilder(name);
 
-
 export type RichTextField = FormField & {
 	type: 'richText';
-	tiptap?: (args: { config: RichTextField, element: HTMLElement }) => RichTextEditorConfig;
+	features?: Array<MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
 	defaultValue?: { type: 'doc'; content: any[] };
 };
 
@@ -119,6 +118,6 @@ declare module 'rizom' {
 		richText: any;
 	}
 	interface RegisterFormFields {
-		RichTextField: RichTextField; // register the field type
+		RichTextField: RichTextField;
 	}
 }

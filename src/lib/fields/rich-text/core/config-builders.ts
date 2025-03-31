@@ -1,134 +1,125 @@
 import type { EditorOptions } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
-import StarterKit, { type StarterKitOptions } from "@tiptap/starter-kit";
 import type { RichTextField } from "rizom/fields/rich-text";
 import { t__ } from "rizom/panel/i18n";
-import Highlight from '@tiptap/extension-highlight'
-import Typography from '@tiptap/extension-typography'
-import Link from "@tiptap/extension-link";
-import type { RichTextEditorConfig } from "rizom/fields/rich-text/core/types";
-import LinkSelector from "rizom/fields/rich-text/component/bubble-menu/link-selector/link-selector.svelte";
-import { defaultMarks } from "./marks";
-import { defaultNodes } from "./nodes";
-import { parseShortcutConfig } from "./parser";
+import Typography from '@tiptap/extension-typography';
+import type { RichTextEditorConfig, RichTextFeature } from "rizom/fields/rich-text/core/types";
+import { defaultFeatures, predefinedFeatures } from "./features";
+import ListItem from '@tiptap/extension-list-item'
+import Dropcursor from '@tiptap/extension-dropcursor'
+import Document from "@tiptap/extension-document";
+import Gapcursor from '@tiptap/extension-gapcursor'
+import Text from "@tiptap/extension-text";
+import History from "@tiptap/extension-history";
+import Paragraph from "@tiptap/extension-paragraph";
+import { ParagraphFeature } from "./features/paragraph";
+import { MediaFeature } from "./features/media";
+import type { Level } from "@tiptap/extension-heading";
 
-// Idea on a shortcut config string :
-// '[ p | h1 | h2 | quote ] b | s | u | a' 
-
-type SetEditorConfig = (args: {
-	config: RichTextField;
-	element: HTMLElement;
+export type BuildRichTextEditorConfig = (args: {
+  config: RichTextField;
+  element: HTMLElement;
 }) => RichTextEditorConfig;
 
-
-export const buildDefaultConfig: SetEditorConfig = () => 
-  buildConfigFromString('[ p | h2 | h3 | h4 ] b | h | a')
-
-
-type SetEditorConfigFromString = (shortcut:string) => RichTextEditorConfig
-
-export const buildConfigFromString: SetEditorConfigFromString = (shortcut:string) => {
+/**
+ * Builds a rich text editor configuration based on the provided features
+ */
+export function buildEditorConfig(incommingFeatures: (RichTextFeature | string)[] = []): RichTextEditorConfig {
+  let features: RichTextFeature[] = []
   
-  const { marks: stringMarks,  nodes: stringNodes, hasAnchor } = parseShortcutConfig(shortcut)
-
-  const shortcutMarks = defaultMarks.filter(mark => stringMarks.includes(mark.name))
-  const shortcutNodes = defaultNodes.filter(node => stringNodes.includes(node.name))
-  // marks
-  const hasBold = shortcutMarks.find(mark => mark.name === 'b')
-  const hasCode = shortcutMarks.find(mark => mark.name === 'code')
-  const hasItalic = shortcutMarks.find(mark => mark.name === 'i')
-  const hasStrike = shortcutMarks.find(mark => mark.name === 's')
-  // nodes
-  const hasQuote = shortcutNodes.find(node => node.name === 'quote')
-  const hasCodeBlock = shortcutNodes.find(node => node.name === 'codeBlock')
-  const hasHR = shortcutNodes.find(node => node.name === 'hr')
-  const hasBullet = shortcutNodes.find(node => node.name === 'li')
-  const hasOrdered = shortcutNodes.find(node => node.name === 'ol')
-  
-  const headingNodes = shortcutNodes.filter(node => {
-    const isHeading = /^h[1-6]$/.test(node.name);
-    return isHeading;
-  });
-  const hasHeading = headingNodes.length > 0;
-    
-  const starterKitConfig:Partial<StarterKitOptions> = {
-    hardBreak: {
-      //@ts-expect-error Idunowhy
-      addKeyboardShortcuts() {
-        return {
-          //@ts-expect-error Idunowhy
-          Enter: () => this.editor.commands.setHardBreak()
-        };
-      }
-    }
-  }
-
-  if(!hasBold) starterKitConfig.bold = false
-  if(!hasItalic) starterKitConfig.italic = false
-  if(!hasCode) starterKitConfig.code = false
-  if(!hasStrike) starterKitConfig.strike = false
-  if(!hasQuote) starterKitConfig.blockquote = false
-  if(!hasCodeBlock) starterKitConfig.codeBlock = false
-  if(!hasHR) starterKitConfig.horizontalRule = false
-  if(!hasBullet) starterKitConfig.bulletList = false
-  if(!hasOrdered) starterKitConfig.orderedList = false
-  if(!hasBullet && !hasOrdered) starterKitConfig.listItem = false
-  
-  if(!hasHeading) {
-    starterKitConfig.heading = false
-  } else {
-    // Extract levels and ensure they are valid (1-6)
-    const levels = headingNodes
-      .map(node => parseInt(node.name.replace('h', ''), 10))
-      .filter(level => !isNaN(level) && level >= 1 && level <= 6) as (1|2|3|4|5|6)[];
-    
-    if (levels.length > 0) {
-      starterKitConfig.heading = {
-        levels
-      };
-    }
-  }
-
-  const baseEditorConfig: Partial<EditorOptions> = {
-		extensions: [
-			StarterKit.configure({
-        ...starterKitConfig,
-        hardBreak: {
-          //@ts-expect-error Idunowhy
-          addKeyboardShortcuts() {
-            return {
-              //@ts-expect-error Idunowhy
-              Enter: () => this.editor.commands.setHardBreak()
-            };
+  // If no features are provided, use default features
+  if (incommingFeatures.length === 0) {
+    features = defaultFeatures;
+  }else{
+    // Build feature list
+    incommingFeatures.forEach(config => {
+      // Convert predefined feature name to feature
+			if (typeof config === 'string') {
+          // Look up predefined feature by name
+          if( config in predefinedFeatures ){
+            const featureName = config as keyof typeof predefinedFeatures;
+            const feature = predefinedFeatures[featureName]
+            // handle heading defaults
+            if( featureName === 'heading' && typeof feature === 'function'){
+              features.push(feature(2,3,4))
+            }else if ('extension' in feature) {
+              features.push(feature)
+            }
+          } else if(config.includes(':')){
+            const parts = config.split(':')
+            const featureName = parts[0]
+            if( featureName === 'heading'){
+              const levelsString = parts[1]
+              if(levelsString){
+                const levels = levelsString.split(',').map( s => parseInt(s)) as Level[]
+                features.push(predefinedFeatures.heading(...levels))
+              } 
+            } else if( featureName === 'media' ){
+              const query = parts[1]
+              const mediaFeature = MediaFeature({ query })
+              features.push(mediaFeature)
+            } else {
+              throw new Error(`Unrecognized ${featureName} feature, only 'media' and 'heading' support the {name}:{config} notation`)
+            }
           }
-        }
-      }),
-			Placeholder.configure({
-				emptyEditorClass: 'empty-editor',
-				placeholder: t__('fields.write_something')
-			}),
-			Highlight,
-			Typography,
-		],
-	};
+			} else {
+				// Add feature
+				features.push(config);
+			}
+		});
+  }
+
+  // Add mandatory paragraph feature if not provided
+  const hasParagraph = features.some(feature => feature.extension.name === 'paragraph')
+  if(!hasParagraph){
+    features.push(ParagraphFeature);
+  }
+
+  // Create base editor configuration with essential extensions
+  const baseEditorConfig: Partial<EditorOptions> = {
+    extensions: [
+      Document,
+      Text,
+      History,
+      Dropcursor,
+      Gapcursor,
+      Placeholder.configure({
+        emptyEditorClass: 'empty-editor',
+        placeholder: t__('fields.write_something') + ' / press ⌘ + K'
+      })
+    ],
+  };
   
-  const output: RichTextEditorConfig = {
+  // Add list item extension if bulletList or orderedList provided
+  const hasList = features.some(feature => ['orderedList', 'bulletList'].includes(feature.extension.name))
+  if(hasList){
+    baseEditorConfig.extensions?.push(ListItem);
+  }
+
+  // Add all feature extensions to the editor
+  // We need to track which extensions we've already added to avoid duplicates
+  const addedExtensions = new Set();
+  
+  features.forEach(feature => {
+    if (feature.extension && !addedExtensions.has(feature.extension)) {
+      baseEditorConfig.extensions?.push(feature.extension);
+      addedExtensions.add(feature.extension);
+    }
+  });
+  
+  if(baseEditorConfig.extensions?.find(ext => ext.name === 'typography')){
+    baseEditorConfig.extensions.push(Typography)
+  }
+  
+  return {
     tiptap: baseEditorConfig,
-		marks: shortcutMarks,
-		nodes: shortcutNodes
-  }
+    features: features
+  };
+}
 
-  if(hasAnchor){
-    output.tiptap.extensions?.push(
-      Link.extend({ inclusive: false }).configure({
-				openOnClick: false,
-				HTMLAttributes: {
-					class: 'rz-rich-text-link'
-				}
-			})
-    )
-    output.bubbleMenu = { components : [ LinkSelector ] }
-  }
-
-	return output
+/**
+ * Default configuration builder that provides a basic set of features
+ */
+export function buildDefaultConfig(): RichTextEditorConfig {
+  return buildEditorConfig(defaultFeatures);
 }
