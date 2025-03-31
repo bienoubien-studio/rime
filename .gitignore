@@ -44,3 +44,4 @@ test-results
 pnpm-lock.yaml
 
 .auto
+src/params
