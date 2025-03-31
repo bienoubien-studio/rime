@@ -33,6 +33,8 @@ export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) 
 			}
 		}
 	}
+	
+	doc.url = `/medias/${doc.filename}`
 
 	return { ...args, doc };
 };
