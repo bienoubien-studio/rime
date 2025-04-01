@@ -1,8 +1,7 @@
 import type { Plugin } from 'vite';
 import fs from 'fs';
 import path from 'path';
-import { logger } from '../util/logger';
-import { clearLog, logToFile } from '../../log';
+import { logger } from '../util/logger/index.js';
 
 // Virtual module ID
 const VIRTUAL_MODULE_ID = 'virtual:browser-config';
@@ -92,8 +91,6 @@ export function rizomClient(): Plugin {
 
       // Transform back on virtual browser config to classic imports and replace with variables
       if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-        clearLog()
-        logToFile('input', code)
         // Regular expression to find the specific string notation pattern with our prefix
         const stringNotationRegex = /['|"]__from_await__:([^']+?)@(\w+)['|"]/g;
 
@@ -146,7 +143,6 @@ export function rizomClient(): Plugin {
         // Combine all imports with the processed code
         const importStatements = Array.from(imports.keys()).join('\n');
         processedCode = importStatements ? `${importStatements}\n\n${processedCode}` : processedCode;
-        logToFile('output', processedCode)
         return processedCode
       }
 
