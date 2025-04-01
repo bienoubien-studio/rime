@@ -1,9 +1,8 @@
 import type { EditorOptions } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
-import type { RichTextField } from "rizom/fields/rich-text";
 import { t__ } from "rizom/panel/i18n";
 import Typography from '@tiptap/extension-typography';
-import type { RichTextEditorConfig, RichTextFeature } from "rizom/fields/rich-text/core/types";
+import type { MediaFeatureDefinition, PredefinedFeatureName, ResourceFeatureDefinition, RichTextEditorConfig, RichTextFeature } from "rizom/fields/rich-text/core/types";
 import { defaultFeatures, predefinedFeatures } from "./features";
 import ListItem from '@tiptap/extension-list-item'
 import Dropcursor from '@tiptap/extension-dropcursor'
@@ -11,20 +10,24 @@ import Document from "@tiptap/extension-document";
 import Gapcursor from '@tiptap/extension-gapcursor'
 import Text from "@tiptap/extension-text";
 import History from "@tiptap/extension-history";
-import Paragraph from "@tiptap/extension-paragraph";
 import { ParagraphFeature } from "./features/paragraph";
 import { MediaFeature } from "./features/media";
 import type { Level } from "@tiptap/extension-heading";
+import { ResourceFeature } from "./features/resource";
 
-export type BuildRichTextEditorConfig = (args: {
-  config: RichTextField;
-  element: HTMLElement;
-}) => RichTextEditorConfig;
+type BuildEditorConfigArgs = {
+  features?: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>,
+  standAlone?: boolean
+}
 
 /**
  * Builds a rich text editor configuration based on the provided features
  */
-export function buildEditorConfig(incommingFeatures: (RichTextFeature | string)[] = []): RichTextEditorConfig {
+export function buildEditorConfig(
+  args : BuildEditorConfigArgs
+): RichTextEditorConfig {
+  const { features : incommingFeatures = [], standAlone  } = args
+
   let features: RichTextFeature[] = []
   
   // If no features are provided, use default features
@@ -58,19 +61,23 @@ export function buildEditorConfig(incommingFeatures: (RichTextFeature | string)[
               const query = parts[1]
               const mediaFeature = MediaFeature({ query })
               features.push(mediaFeature)
+            } else if( featureName === 'resource' ){
+              const query = parts[1]
+              const collectionSlug = parts[1].split('?')[0]
+              const resourceFeature = ResourceFeature({ query, slug: collectionSlug })
+              features.push(resourceFeature)
             } else {
-              throw new Error(`Unrecognized ${featureName} feature, only 'media' and 'heading' support the {name}:{config} notation`)
+              throw new Error(`Unrecognized ${featureName} feature, only 'media', 'resource' and 'heading' support the {name}:{config} notation`)
             }
           }
 			} else {
-				// Add feature
 				features.push(config);
 			}
 		});
   }
 
   // Add mandatory paragraph feature if not provided
-  const hasParagraph = features.some(feature => feature.extension.name === 'paragraph')
+  const hasParagraph = features.filter(feature => !!feature.extension).some(feature => feature.extension!.name === 'paragraph')
   if(!hasParagraph){
     features.push(ParagraphFeature);
   }
@@ -85,13 +92,13 @@ export function buildEditorConfig(incommingFeatures: (RichTextFeature | string)[
       Gapcursor,
       Placeholder.configure({
         emptyEditorClass: 'empty-editor',
-        placeholder: t__('fields.write_something') + ' / press ⌘ + K'
+        placeholder: t__('fields.write_something') + (standAlone ? ' / ⌘ + K' : '')
       })
     ],
   };
   
   // Add list item extension if bulletList or orderedList provided
-  const hasList = features.some(feature => ['orderedList', 'bulletList'].includes(feature.extension.name))
+  const hasList = features.filter(feature => !!feature.extension ).some(feature => ['orderedList', 'bulletList'].includes(feature.extension!.name))
   if(hasList){
     baseEditorConfig.extensions?.push(ListItem);
   }
@@ -115,11 +122,4 @@ export function buildEditorConfig(incommingFeatures: (RichTextFeature | string)[
     tiptap: baseEditorConfig,
     features: features
   };
-}
-
-/**
- * Default configuration builder that provides a basic set of features
- */
-export function buildDefaultConfig(): RichTextEditorConfig {
-  return buildEditorConfig(defaultFeatures);
 }

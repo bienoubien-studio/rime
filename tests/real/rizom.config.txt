@@ -11,6 +11,7 @@ import {
 	link,
 	email,
 	select,
+	date,
 	group,
 	component,
 	separator,
@@ -25,7 +26,8 @@ import {
 	Menu,
 	Newspaper,
 	Settings2,
-	SlidersVertical
+	SlidersVertical,
+	NotebookText
 } from '@lucide/svelte';
 
 import { collection, area, defineConfig } from 'rizom';
@@ -187,6 +189,35 @@ const Informations = area('infos', {
 	}
 });
 
+const tabWriter = tab('writer').fields(
+	richText('text').features('bold', 'italic', 'resource:pages', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
+)
+
+const tabNewsAttributes = tab('attributes').fields(
+	text('title').isTitle().localized().required(),
+	slug('slug')
+		.slugify('attributes.title')
+		.live(false)
+		.table({ position: 3, sort: true })
+		.localized()
+		.required(),
+	richText('intro').features('bold', 'link'),
+	date('published')
+);
+
+const News = collection('news', {
+	icon: NotebookText,
+	group: 'content',
+	fields: [tabs(tabNewsAttributes, tabWriter)],
+	live: true,
+	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	access: {
+		read: () => true,
+		create: (user) => access.isAdmin(user),
+		update: (user) => access.hasRoles(user, 'admin', 'editor')
+	}
+})
+
 const Medias = collection('medias', {
 	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
 	upload: true,
@@ -206,7 +237,7 @@ const Medias = collection('medias', {
 
 export default defineConfig({
 	database: 'real.sqlite',
-	collections: [Pages, Medias],
+	collections: [Pages, Medias, News],
 	areas: [Settings, Navigation, Informations],
 	smtp: {
 		from: process.env.RIZOM_SMTP_USER,

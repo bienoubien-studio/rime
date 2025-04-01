@@ -2,7 +2,7 @@ import type { FormField } from 'rizom/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import type { MediaFeatureDefinition, PredefinedFeatureName, RichTextFeature } from './core/types.js';
+import type { MediaFeatureDefinition, ResourceFeatureDefinition, PredefinedFeatureName, RichTextFeature } from './core/types.js';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -68,7 +68,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	 * // Using shortcut config string (legacy)
 	 * richText('intro').features('[h1|h2] bold|italic|link')
 	 */
-	features(...features: Array<MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>) {
+	features(...features: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>) {
 		this.field.features = features
 		return this;
 	}
@@ -105,7 +105,7 @@ export const richText = (name: string) => new RichTextFieldBuilder(name);
 
 export type RichTextField = FormField & {
 	type: 'richText';
-	features?: Array<MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
+	features?: Array<MediaFeatureDefinition | ResourceFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
 	defaultValue?: { type: 'doc'; content: any[] };
 };
 

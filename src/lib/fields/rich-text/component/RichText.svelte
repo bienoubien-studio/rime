@@ -7,10 +7,10 @@
 	import { Field } from 'rizom/panel/components/fields/index.js';
 	import type { RichTextFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import type { RichTextEditorConfig, RichTextFeature } from '../core/types';
+	import type { RichTextFeature } from '../core/types';
 	import DragHandler from './drag-handle/drag-handle.svelte';
 	import Suggestion from './suggestion/suggestion.svelte';
-	// import { setRichTextContext } from './context.svelte';
+	import { setRichTextContext } from './context.svelte';
 	
 	const { path, config, form, standAlone, class: className }: RichTextFieldProps = $props();
 
@@ -22,9 +22,11 @@
 
 	const field = $derived(form.useField(path, config));
 
+	setRichTextContext(path)
+
 	onMount(() => {
-		// Build editor configuration based on features
-		const richTextEditorConfig = buildEditorConfig(config.features);
+		// Build editor configuration
+		const richTextEditorConfig = buildEditorConfig({ features: config.features, standAlone });
 
 		features = richTextEditorConfig.features;
 		editor = new Editor({
@@ -87,6 +89,9 @@
 		max-width: 720px;
 	}
 
+	.rz-field-rich-text--standalone {
+		margin-bottom: var(--rz-size-20);
+	}
 	.rz-field-rich-text--standalone :global {
 		.rz-field-label {
 			display: none;

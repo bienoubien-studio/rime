@@ -4,6 +4,7 @@ import type { Component } from "svelte";
 import type { RichTextField } from "../index.js";
 import type { Snippet } from 'svelte';
 import type { CollectionSlug } from "rizom/types/index.js";
+import type { RichTextContext } from "../component/context.svelte.js";
 
 export type SetEditorConfig = (args: {
 	config: RichTextField;
@@ -18,7 +19,7 @@ export type RichTextFeatureSuggestion = {
 
 export type RichTextFeature = {
 	name: string,
-	extension: Extension | Node | Mark ;
+	extension?: Extension | Node | Mark ;
 	marks?: RichTextFeatureMark[],
 	nodes?: RichTextFeatureNode[]
 };
@@ -34,7 +35,7 @@ export type RichTextFeatureNode = {
 	},
 	bubbleMenu?: {
 		command?: (args: { editor: Editor, range?: Range }) => void;
-		component?: Component<{ editor: Editor, path: string }>;
+		component?: Component<{ editor: Editor, path: string, active:boolean, context: RichTextContext }>;
 	}
 	suggestion?: {
 		command: (args: { editor: Editor, range?: Range }) => void;
@@ -52,6 +53,7 @@ export type HeadingFeatureName =
   `heading:${N},${N},${N},${N},${N},${N}`
 
 export type MediaFeatureDefinition = `media:${CollectionSlug}${ string | '' }`
+export type ResourceFeatureDefinition = `resource:${CollectionSlug}${ string | '' }`
 export type PredefinedFeatureName = 'blockquote' | 'bold' | 'italic' | 'ul' | HeadingFeatureName | 'hr' | 'ol' | 'link'
 
 export type RichTextEditorConfig = {
@@ -68,3 +70,5 @@ export type ComponentInputProps<T> = Partial<T> & {
 	class?: string;
 	children?: Snippet;
 };
+
+export type { RichTextContext }

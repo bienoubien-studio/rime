@@ -30,7 +30,7 @@
 			return { name: 'paragraph', label: 'Paragraph', icon: Asterisk };
 		}
 	}
-	
+
 	function setActiveItems() {
 		// Update active states for all items
 		activeItems = items.reduce((acc, item) => {
@@ -40,11 +40,13 @@
 	}
 
 	onMount(() => {
+		editor.on('update', setActiveItems);
 		editor.on('selectionUpdate', setActiveItems);
 		setActiveItems();
 	})
 	
 	onDestroy(() => {
+		editor.off('update', setActiveItems);
 		editor.off('selectionUpdate', setActiveItems);
 	})
 

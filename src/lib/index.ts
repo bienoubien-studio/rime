@@ -36,7 +36,6 @@ export type { Rizom } from 'rizom/rizom.server.js';
 export type { LocalAPI } from 'rizom/types/api.js';
 export type { Navigation } from './panel/navigation.js';
 export type { FormField, AnyField } from 'rizom/types';
-export type { BuildRichTextEditorConfig } from './fields/rich-text/core/config-builders.js';
 
 declare module 'rizom' {
 	export interface RegisterFieldsType {}

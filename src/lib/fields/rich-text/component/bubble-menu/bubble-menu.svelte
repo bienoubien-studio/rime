@@ -6,6 +6,7 @@
 	import type { RichTextFeature } from '../../core/types';
 	import IconButton from './icon-button/icon-button.svelte';
 	import './bubble-menu.css';
+	import { getRichTextContext } from '../context.svelte';
 
 	type Props = {
 		editor: Editor;
@@ -31,12 +32,15 @@
 
 	const pluginKey = path;
 	const updateDelay = 250;
+	const richTextContext = getRichTextContext(path)
 
 	const onShow = () => {
+		richTextContext.bubbleOpen = true
 		isOpen = true;
 	};
 
 	const onHidden = () => {
+		richTextContext.bubbleOpen = false
 		isOpen = false;
 	};
 
@@ -76,10 +80,13 @@
 
 		editor.registerPlugin(plugin);
 		editor.on('selectionUpdate', setActiveItems);
+		// editor.on('update', setActiveItems);
 		setActiveItems()
 	});
 
 	onDestroy(() => {
+		editor.off('selectionUpdate', setActiveItems);
+		// editor.off('update', setActiveItems);
 		editor.unregisterPlugin(pluginKey);
 	});
 
@@ -96,7 +103,7 @@
 		{#each bubbleMenuItems as item}
 			{#if item.bubbleMenu && item.bubbleMenu.component}
 				{@const FeatureComponent = item.bubbleMenu.component}
-				<FeatureComponent {editor} {path} />
+				<FeatureComponent active={activeItems[item.name]} {editor} {path} context={richTextContext} />
 			{:else if item.bubbleMenu?.command}
 				<IconButton
 					active={activeItems[item.name]}

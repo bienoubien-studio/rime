@@ -4,30 +4,28 @@
 	import { Check, Trash, Link2 } from '@lucide/svelte';
 	import { url as validateURL } from '$lib/util/validate.js';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
-	import { getRichTextContext } from 'rizom/fields/rich-text/component/context.svelte';
+	import type { RichTextContext } from '../../../types';
 
-	type Props = { editor: Editor, path: string };
-	let { editor, path }: Props = $props();
+	type Props = { editor: Editor; context: RichTextContext; active: boolean };
+	let { editor, context, active }: Props = $props();
 
-	const richTextState = getRichTextContext(path)
-	
 	let value = $state((editor && editor.getAttributes('link').href) || '');
 	let error = $state(false);
 
 	let open = $state(false);
-	let active = $state(false);
-	
+	// let active = $state(false);
+
 	$effect(() => {
 		if (open) {
 			value = (editor && editor.getAttributes('link').href) || '';
 		}
 	});
 
-	// $effect(() => {
-	// 	if (!richTextState.bubbleOpen) {
-	// 		open = false;
-	// 	}
-	// });
+	$effect(() => {
+		if (!context.bubbleOpen) {
+			open = false;
+		}
+	});
 
 	let urlState = $derived.by(() => {
 		let transformedUrl = value;
@@ -46,22 +44,17 @@
 		if (!urlState.isValid) return (error = true);
 		editor.chain().focus().setLink({ href: urlState.url }).run();
 		open = false;
-		active = true;
 	}
 
 	function onDelete() {
 		editor.chain().focus().unsetLink().run();
 		value = '';
 		open = false;
-		active = false;
 	}
 </script>
 
 <div class="rz-link-selector">
-	<IconButton
-		icon={Link2}
-		onclick={() => open = !open}
-	/>
+	<IconButton icon={Link2} {active} onclick={() => (open = !open)} />
 
 	{#if open}
 		<form onsubmit={onSubmit} class="rz-link-selector__form">

@@ -39,3 +39,4 @@ export function getRichTextContext(key:string) {
 	return getContext<ReturnType<typeof setRichTextContext>>(key);
 }
 
+export type RichTextContext = ReturnType<typeof getRichTextContext>

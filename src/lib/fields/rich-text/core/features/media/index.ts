@@ -1,13 +1,12 @@
-import { FileText } from "@lucide/svelte";
+import { Images } from "@lucide/svelte";
 import type { RichTextFeature, RichTextFeatureNode } from "../../types";
 import { Media } from "./media-extension.js";
-import type { CollectionSlug } from "rizom/types";
 
-const resourceFeatureNode: RichTextFeatureNode = {
-  name: 'resource',
+const mediaFeatureNode: RichTextFeatureNode = {
+  name: 'media',
   label: 'Media',
-  icon: FileText,
-  isActive: ({ editor }) => editor.isActive('richt-text-resource'),
+  icon: Images,
+  isActive: ({ editor }) => editor.isActive('richt-text-media'),
   suggestion: {
     //@ts-ignore
     command: ({ editor }) => editor.chain().focus().insertMedia().run()
@@ -17,5 +16,5 @@ const resourceFeatureNode: RichTextFeatureNode = {
 export const MediaFeature = (args: {query: string}): RichTextFeature => ({
   name: 'media',
   extension: Media.configure(args),
-  nodes: [resourceFeatureNode]
+  nodes: [mediaFeatureNode]
 });
