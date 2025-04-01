@@ -55,8 +55,11 @@
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
 			label: getValueAtPath(relationConfig.asTitle, doc) || '[untitled]',
-			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
 			documentId: doc.id,
+			title: doc.title,
+			editUrl: `/panel/${relationConfig.slug}/${doc.id}`,
+			_type: doc._type,
+			_prototype: doc._prototype,
 		};
 		if (itemInFieldValue) {
 			item.id = itemInFieldValue.id;
@@ -68,7 +71,7 @@
 			item.filesize = doc.filesize;
 			item.mimeType = doc.mimeType;
 			if (isRelationToImage) {
-				item.imageURL = doc.sizes.thumbnail;
+				item.url = doc.sizes.thumbnail;
 			}
 		}
 		if (form.isLive) {

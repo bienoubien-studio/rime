@@ -13,6 +13,7 @@
 	import type { GenericDoc } from 'rizom/types/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import './upload.css';
+	import CardResource from 'rizom/panel/components/ui/card-resource/card-resource.svelte'
 
 	const {
 		isFull,
@@ -74,38 +75,15 @@
 	});
 </script>
 
-{#snippet row(item: RelationFieldItem)}
-	<div class="rz-relation-upload__row">
-		<div class="rz-relation-upload__thumbnail">
-			{#if item.isImage}
-				<img class="rz-relation-upload__image" src={item.imageURL} alt={item.filename} />
-			{:else}
-				<File size={18} />
-			{/if}
-		</div>
-
-		<div class="rz-relation-upload__info">
-			<p class="rz-relation-upload__filename">
-				{item.filename} <a href={item.editUrl}><Edit size="12" /></a>
-			</p>
-			<p class="rz-relation-upload__filesize">{item.filesize}</p>
-			<p class="rz-relation-upload__mimetype">{item.mimeType}</p>
-		</div>
-
-		<button
-			type="button"
-			class="rz-relation-upload__remove"
-			onclick={() => removeValue(item.relationId)}
-		>
-			<X size={11} />
-		</button>
-	</div>
+{#snippet card(item: RelationFieldItem)}
+	{@const resource = { ...item, id: item.documentId }}
+	<CardResource resource={resource} onCloseClick={() => removeValue(item.documentId)} />
 {/snippet}
 
-{#snippet grid(item: RelationFieldItem)}
+{#snippet commandItem(item: RelationFieldItem)}
 	<div class="rz-relation-upload__grid-item">
 		<div class="rz-relation-upload__grid-thumbnail" style="--rz-upload-preview-cell-size: 100%">
-			<UploadThumbCell url={item.imageURL} mimeType={item.mimeType} />
+			<UploadThumbCell url={item.url} mimeType={item.mimeType} />
 		</div>
 		<div class="rz-relation-upload__grid-info">
 			<p class="rz-relation-upload__grid-filename">{item.filename}</p>
@@ -170,7 +148,7 @@
 					open = false;
 				}}
 			>
-				{@render grid(item)}
+				{@render commandItem(item)}
 			</Command.Item>
 		{/each}
 	</Command.List>

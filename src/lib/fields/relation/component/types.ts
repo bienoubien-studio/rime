@@ -5,13 +5,16 @@ export type RelationFieldItem = {
 	id?: string;
 	documentId: string;
 	label: string;
+	title: string;
 	filename?: string;
 	filesize?: string;
 	mimeType?: string;
 	isImage?: boolean;
-	imageURL?: string;
+	url?: string;
 	livePreview?: GenericDoc;
 	editUrl: string;
+	_type: string,
+	_prototype: string,
 };
 
 export type RelationComponentProps = {

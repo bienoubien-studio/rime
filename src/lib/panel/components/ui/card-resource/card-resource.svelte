@@ -1,14 +1,23 @@
 <script lang="ts">
-	import type { GenericDoc } from 'rizom/types';
 	import { mimeTypeToIcon } from 'rizom/panel/util/upload.js';
 	import { X, Edit, FileIcon } from '@lucide/svelte';
 
-	type Props = { resource: GenericDoc; onCloseClick: () => void };
+	type Resource = {
+		id: string;
+		title: string;
+		_type: string;
+		mimeType?: string;
+		filename?: string;
+		filesize?: string;
+		url?: string;
+	};
+
+	type Props = { resource: Resource; onCloseClick: () => void };
 	const { resource, onCloseClick }: Props = $props();
 
 	const isUpload = $derived('mimeType' in resource);
-	const isImage = $derived(isUpload && resource.mimeType.includes('image'));
-	const Icon = $derived(isUpload ? mimeTypeToIcon(resource.mimeType) : FileIcon);
+	const isImage = $derived(isUpload && resource.mimeType!.includes('image'));
+	const Icon = $derived(isUpload ? mimeTypeToIcon(resource.mimeType!) : FileIcon);
 </script>
 
 <div class="rz-card-resource">
@@ -16,17 +25,17 @@
 		{#if isImage}
 			<img class="rz-card-resource__image" src={resource.url} alt={resource.filename} />
 		{:else}
-			<Icon size={18} />
+			<Icon class="rz-card-resource__icon" size={18} />
 		{/if}
 	</div>
 
 	<div class="rz-card-resource__info">
-		{#if isUpload}
-			<p class="rz-card-resource__filename">
-				{resource.filename} <a href="/panel/{resource._type}/{resource.id}"><Edit size="12" /></a>
-			</p>
-			<p class="rz-card-resource__filesize">{resource.filesize}</p>
-			<p class="rz-card-resource__mimetype">{resource.mimeType}</p>
+    <p class="rz-card-resource__title">
+      {resource.title} <a href="/panel/{resource._type}/{resource.id}"><Edit size="12" /></a>
+    </p>
+    {#if isUpload}
+			<p class="rz-card-resource__info-text">{resource.filesize}</p>
+			<p class="rz-card-resource__info-text">{resource.mimeType}</p>
 		{/if}
 	</div>
 
@@ -36,30 +45,28 @@
 </div>
 
 <style lang="postcss">
-	
 	.rz-card-resource {
-		--rz-thumbnail-size: var(--rz-size-20);
+		--rz-internal-padding: var(--rz-card-padding, var(--rz-size-2));
+		--rz-internal-thumbnail-size: var(--rz-thumbnail-size, var(--rz-size-20));
 		background-color: hsl(var(--rz-ground-6));
 		position: relative;
 		display: flex;
 		gap: var(--rz-size-6);
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
-		padding: var(--rz-size-2);
-
-		@container relation-upload-list (min-width: 425px) {
-			--rz-thumbnail-size: var(--rz-size-28);
-		}
-		@container relation-upload-list (min-width: 768px) {
-			--rz-thumbnail-size: var(--rz-size-40);
-		}
+		padding: var(--rz-internal-padding);
+    max-width: 400px;
 	}
-
+  
 	.rz-card-resource__thumbnail {
-		width: var(--rz-thumbnail-size);
-		height: var(--rz-thumbnail-size);
+		width: var(--rz-internal-thumbnail-size);
+		height: var(--rz-internal-thumbnail-size);
 		flex-shrink: 0;
 		overflow: hidden;
+    background-color: hsl(var(--rz-ground-5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
 		border-radius: var(--rz-radius-md);
 	}
 
@@ -74,7 +81,7 @@
 		padding-right: 2rem;
 	}
 
-	.rz-card-resource__filename {
+	.rz-card-resource__title {
 		font-size: var(--rz-text-sm);
 		@mixin font-semibold;
 		a {
@@ -86,8 +93,7 @@
 		}
 	}
 
-	.rz-card-resource__filesize,
-	.rz-card-resource__mimetype {
+	.rz-card-resource__info-text{
 		font-size: var(--rz-text-sm);
 	}
 
@@ -104,5 +110,4 @@
 		align-items: center;
 		justify-content: center;
 	}
-  
 </style>
