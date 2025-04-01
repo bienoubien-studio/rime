@@ -1,17 +1,37 @@
 import camelCase from 'camelcase';
-import snakeCase from 'to-snake-case';
 
 export const capitalize = (str: string): string => str.charAt(0).toUpperCase() + str.slice(1);
 export const toCamelCase = (str: string): string => camelCase(str);
 export const toPascalCase = (str: string): string => camelCase(str, { pascalCase: true });
 
-export const toSnakeCase = (str: string) => {
-	const hasLeadingUnderscore = str.startsWith('_');
-	if (hasLeadingUnderscore) {
-		str = str.slice(1);
-	}
-	const out = snakeCase(str);
-	return hasLeadingUnderscore ? `_${out}` : out;
+/**
+ * Converts a string to snake_case
+ * This is a custom implementation that replaces the to-snake-case dependency
+ * and maintains the same functionality of the original package
+ */
+export const toSnakeCase = (str: string): string => {
+  // Preserve leading underscore if present
+  const hasLeadingUnderscore = str.startsWith('_');
+  if (hasLeadingUnderscore) {
+    str = str.slice(1);
+  }
+  
+  // First convert to space case (similar to to-space-case)
+  // Handle special characters and replace with spaces
+  let result = str
+    // Handle camel case
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    // Handle special characters
+    .replace(/[^A-Za-z0-9]+/g, ' ')
+    // Remove leading and trailing spaces
+    .trim()
+    .toLowerCase();
+  
+  // Convert spaces to underscores (snake_case)
+  result = result.replace(/ /g, '_');
+  
+  // Restore leading underscore if it was present
+  return hasLeadingUnderscore ? `_${result}` : result;
 };
 
 export const slugify = (text: string): string => {
