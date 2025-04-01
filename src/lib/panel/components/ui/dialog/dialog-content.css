@@ -10,7 +10,7 @@
 	transform: translate(-50%, -50%);
 	gap: var(--rz-size-4);
 	border: var(--rz-border);
-	padding: var(--rz-size-6);
+	padding: var(--rz-size-3);
 	box-shadow: var(--rz-shadow-lg);
 }
 

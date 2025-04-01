@@ -3,55 +3,104 @@
 	import { onMount } from 'svelte';
 	import { Editor } from '@tiptap/core';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { buildConfig } from '../core/index.js';
+	import { buildEditorConfig } from '../core/config-builders.js';
 	import { Field } from 'rizom/panel/components/fields/index.js';
 	import type { RichTextFieldProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import type { RichTextEditorConfig, RichTextModifier } from '../core/types';
-
-	const { path, config, form, class: className }: RichTextFieldProps = $props();
+	import type { RichTextFeature } from '../core/types';
+	import DragHandler from './drag-handle/drag-handle.svelte';
+	import Suggestion from './suggestion/suggestion.svelte';
+	import { setRichTextContext } from './context.svelte';
+	
+	const { path, config, form, standAlone, class: className }: RichTextFieldProps = $props();
 
 	let element: HTMLElement;
-	const key = `richtext-${new Date().getTime().toString()}`;
+	const key = `richtext-${path}`;
 
 	let editor = $state<Editor>();
-	let marks = $state<RichTextModifier[]>()
-	let nodes = $state<RichTextModifier[]>()
-	let bubbleMenuExtras = $state<RichTextEditorConfig['bubbleMenu']>()
-	
+	let features = $state<RichTextFeature[]>([]);
+
 	const field = $derived(form.useField(path, config));
-	
+
+	setRichTextContext(path)
+
 	onMount(() => {
-		const richTextEditorConfig = buildConfig({
+		// Build editor configuration
+		const richTextEditorConfig = buildEditorConfig({ features: config.features, standAlone });
+
+		features = richTextEditorConfig.features;
+		editor = new Editor({
+			...richTextEditorConfig.tiptap,
 			element,
-			config,
-			editable: !form.readOnly,
-			onFocus: () => form.setFocusedField(path),
-			setValue: (val: any) => (field.value = val)
+			editable: field.editable
 		});
 
-		marks = richTextEditorConfig.marks
-		nodes = richTextEditorConfig.nodes
-		bubbleMenuExtras = richTextEditorConfig.bubbleMenu
-		editor = new Editor(richTextEditorConfig.tiptapConfig);
-
 		if (field.value?.content) {
-			editor.commands.setContent(field.value.content);
+			try {
+				editor.commands.setContent(field.value.content);
+			} catch (err) {
+				editor.commands.setContent('');
+				console.log(err);
+			}
 		}
+
+		// Update field value when editor content changes
+		editor.on('update', ({ editor }) => {
+			field.value = {
+				...field.value,
+				content: editor.getJSON()
+			};
+		});
 	});
 </script>
 
-<fieldset class="rz-field-rich-text {config.className || ''}" use:root={field}>
+<fieldset
+	class:rz-field-rich-text--standalone={standAlone}
+	class="rz-field-rich-text {config.className || ''}"
+	use:root={field}
+>
+
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
-	<div
-		bind:this={element}
-		data-error={field.error ? 'true' : null}
-		class="rz-rich-text__editor {className}"
-	></div>
-	{#if editor && editor.isEditable}
-		{#key key}
-			<EditorBubbleMenu extras={bubbleMenuExtras} nodes={nodes} marks={marks} {editor} />
-		{/key}
-	{/if}
+
+	<div class="rz-rich-text__editor-wrapper">
+		<div
+			bind:this={element}
+			data-error={field.error ? 'true' : null}
+			class="rz-rich-text__editor {className}"
+		></div>
+
+		{#if editor && editor.isEditable}
+			{#if standAlone}
+				<DragHandler {editor} />
+				<Suggestion {editor} {features} {path} />
+			{/if}
+
+			{#key key}
+				<EditorBubbleMenu {features} {editor} {path} />
+			{/key}
+		{/if}
+	</div>
 </fieldset>
+
+<style type="postcss">
+	.rz-rich-text__editor-wrapper {
+		position: relative;
+		max-width: 720px;
+	}
+
+	.rz-field-rich-text--standalone {
+		margin-bottom: var(--rz-size-20);
+	}
+	.rz-field-rich-text--standalone :global {
+		.rz-field-label {
+			display: none;
+		}
+		.rz-rich-text__editor {
+			background-color: transparent;
+		}
+		.rz-rich-text__editor:has(.ProseMirror-focused) {
+			box-shadow: none;
+		}
+	}
+</style>

@@ -26,7 +26,7 @@ export const extractRelations = ({ parentId, data, configMap, locale }: Args) =>
 				const result: BeforeOperationRelation = {
 					position,
 					relationTo: config.relationTo,
-					relationId: value,
+					documentId: value,
 					parentId,
 					path
 				};

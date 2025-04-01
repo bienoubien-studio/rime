@@ -65,13 +65,13 @@ export const isRelationResolved = <T>(value: any): value is T => {
 export const isRelationUnresolved = (
 	value: any
 ): value is Omit<Relation, 'path' | 'position' | 'parentId'> => {
-	return value && isObjectLiteral(value) && hasProps(['relationTo', 'relationId'], value);
+	return value && isObjectLiteral(value) && hasProps(['relationTo', 'documentId'], value);
 };
 export const resolveRelation = async <T>(value: any): Promise<T> => {
 	if (isRelationResolved<T>(value)) {
 		return value;
 	}
-	return (await fetch(`api/${value.relationTo}/${value.relationId}`)
+	return (await fetch(`api/${value.relationTo}/${value.documentId}`)
 		.then((r) => r.json())
 		.then((r) => r.doc)) as T;
 };

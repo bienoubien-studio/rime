@@ -14,12 +14,12 @@
 	--rz-color-error: 4deg 100% 69%;
 	--rz-color-input: var(--rz-ground-7);
 
-	--rz-color-primary: 241deg 3% 0%;
+	--rz-color-primary: 238deg 94% 64%;
 	--rz-color-primary-fg: 200 4% 100%;
 
 	--rz-color-secondary: 155% 59% 94%;
 	--rz-color-secondary-fg: var(--rz-ground-1);
-
+	
 	--rz-color-accent: var(--rz-ground-3);
 	--rz-color-accent-fg: var(--rz-ground-6);
 
@@ -27,9 +27,10 @@
 	--rz-color-ring: var(--rz-color-primary);
 
 	@media (prefers-color-scheme: dark) {
+		
 		--rz-color-primary: 138deg 94% 74%;
 		--rz-color-primary-fg: 200 4% 2%;
-
+		
 		--rz-ground-0: 240 0% 98%;
 		--rz-ground-1: 240 10% 74%;
 		--rz-ground-2: 240 10% 58.3%;

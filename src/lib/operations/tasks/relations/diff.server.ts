@@ -28,7 +28,7 @@ export const defineRelationsDiff = ({
 			(existing) =>
 				(incoming.id && existing.id === incoming.id) ||
 				(!incoming.id &&
-					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.relationId &&
+					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
 					(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 		);
 
@@ -60,7 +60,7 @@ export const defineRelationsDiff = ({
 				(incoming) =>
 					(incoming.id && existing.id === incoming.id) ||
 					(!incoming.id &&
-						existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.relationId &&
+						existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
 						(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 			);
 		})

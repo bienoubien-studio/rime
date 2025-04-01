@@ -89,7 +89,7 @@ export type TabsFieldRaw = Field & {
 	type: 'tabs';
 	name: string;
 	label?: string;
-	tabs: Array<TabsFieldTab & { fields: Field[] }>;
+	tabs: Array<Omit<TabsFieldTab, 'fields'> & { fields: Field[] }>;
 };
 
 /////////////////////////////////////////////

@@ -52,16 +52,16 @@ const defaultRelationValue = async (config: RelationField, key: string, adapter:
 			condition = inArray(relationTable.id, defaultValue);
 		}
 		const existing = await adapter.db
-			.select({ relationId: relationTable.id })
+			.select({ documentId: relationTable.id })
 			.from(relationTable)
 			.where(condition);
 
-		return existing.map(({ relationId }, index) => ({
+		return existing.map(({ documentId }, index) => ({
 			id: null,
 			relationTo: config.relationTo,
 			path: key,
 			position: index,
-			relationId: relationId
+			documentId: documentId
 		}));
 	};
 

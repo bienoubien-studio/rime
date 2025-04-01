@@ -40,13 +40,13 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		const columns = getTableColumns(table);
 
 		for (const relation of relations) {
-			if (!relation.relationId) continue;
+			if (!relation.documentId) continue;
 
 			const relationToIdKey = `${relation.relationTo}Id`;
 			const baseValues: Dic = {
 				path: relation.path,
 				position: relation.position,
-				[relationToIdKey]: relation.relationId,
+				[relationToIdKey]: relation.documentId,
 				parentId
 			};
 
@@ -92,13 +92,13 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 		if (relations.length === 0) return true;
 
-		const relationIds = relations
+		const documentIds = relations
 			.map((rel) => rel.id)
 			.filter((id): id is string => id !== undefined);
-		if (relationIds.length === 0) return true;
+		if (documentIds.length === 0) return true;
 
 		try {
-			await db.delete(table).where(inArray(table.id, relationIds));
+			await db.delete(table).where(inArray(table.id, documentIds));
 		} catch (err: any) {
 			console.error('error in sqlite/relations delete' + err.message);
 			return false;
@@ -157,7 +157,7 @@ export type Relation = {
 	path: string;
 	position: number;
 	relationTo: string;
-	relationId: string;
+	documentId: string;
 	locale?: string;
 	livePreview?: GenericDoc;
 };

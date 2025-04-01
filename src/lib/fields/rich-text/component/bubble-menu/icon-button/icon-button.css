@@ -11,7 +11,7 @@
 
 .rz-icon-button:hover,
 .rz-icon-button--active {
-	background-color: hsl(var(--rz-ground-3));
+	background-color: hsl(var(--rz-ground-5));
 }
 
 .rz-icon-button__icon {

@@ -76,8 +76,7 @@
 	.rz-button:disabled,
 	.rz-button[disabled='true'] {
 		opacity: 0.7;
-		pointer-events: none;
-		cursor: not-allowed !important;
+		cursor: no-drop !important;
 	}
 
 	/**************************************/

@@ -63,7 +63,7 @@
 	});
 
 	const onSelect = (item: RelationFieldItem) => {
-		addValue(item.relationId);
+		addValue(item.documentId);
 		search = '';
 	};
 
@@ -81,14 +81,14 @@
 			bind:this={relationList}
 			class:rz-relation__list--readonly={readOnly}
 		>
-			{#each selectedItems as item (item.relationId)}
+			{#each selectedItems as item (item.documentId)}
 				<div class="rz-relation__item" class:rz-relation__item--readonly={readOnly}>
 					<span>{item.label}</span>
 					<button
 						class="rz-relation__remove-button"
 						class:rz-relation__remove-button--readonly={readOnly}
 						type="button"
-						onclick={() => removeValue(item.relationId)}
+						onclick={() => removeValue(item.documentId)}
 					>
 						<X size={13} />
 					</button>
@@ -116,7 +116,7 @@
 
 				{#if inputFocused}
 					<Command.List>
-						{#each availableItems as item (item.relationId)}
+						{#each availableItems as item (item.documentId)}
 							<Command.Item value={item.label} onSelect={() => onSelect(item)}>
 								<span>{item.label}</span>
 							</Command.Item>

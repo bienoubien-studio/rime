@@ -1,15 +1,28 @@
 .rz-relation-upload__list {
 	container: relation-upload-list / inline-size;
 
-	.rz-relation-upload__row {
-		width: calc(var(--rz-thumbnail-size) + 2 * var(--rz-size-2));
-		.rz-relation-upload__info {
+	.rz-card-resource {
+		
+		--rz-thumbnail-size: var(--rz-size-20);
+		--rz-card-padding: var(--rz-size-1);
+		width: calc(var(--rz-thumbnail-size) + 2.5 * var(--rz-card-padding));
+		
+		@container relation-upload-list (min-width: 425px) {
+			--rz-card-padding: var(--rz-size-2);
+			--rz-thumbnail-size: var(--rz-size-28);
+		}
+		@container relation-upload-list (min-width: 768px) {
+			--rz-thumbnail-size: var(--rz-size-40);
+		}
+		
+		.rz-card-resource__info {
 			display: none;
 		}
-		.rz-relation-upload__filesize,
-		.rz-relation-upload__mimetype {
+		.rz-card-resource__filesize,
+		.rz-card-resource__mimetype {
 			display: none;
 		}
+
 	}
 }
 .rz-relation-upload__list[data-many] {
@@ -20,88 +33,21 @@
 
 .rz-relation-upload__list:not(.rz-relation-upload__list[data-many]) {
 	@container relation-upload-list (min-width: 285px) {
-		.rz-relation-upload__row {
+		.rz-card-resource {
 			width: min(400px, 100%);
-			.rz-relation-upload__info {
+			.rz-card-resource__info {
 				display: block;
 			}
 		}
 	}
 	@container relation-upload-list (min-width: 425px) {
-		.rz-relation-upload__filesize,
-		.rz-relation-upload__mimetype {
+		.rz-card-resource__filesize,
+		.rz-card-resource__mimetype {
 			display: block;
 		}
 	}
 }
 
-.rz-relation-upload__row {
-	--rz-thumbnail-size: var(--rz-size-20);
-	background-color: hsl(var(--rz-ground-6));
-	position: relative;
-	display: flex;
-	gap: var(--rz-size-6);
-	border-radius: var(--rz-radius-md);
-	border: var(--rz-border);
-	padding: var(--rz-size-2);
-
-	@container relation-upload-list (min-width: 425px) {
-		--rz-thumbnail-size: var(--rz-size-28);
-	}
-	@container relation-upload-list (min-width: 768px) {
-		--rz-thumbnail-size: var(--rz-size-40);
-	}
-}
-
-.rz-relation-upload__thumbnail {
-	width: var(--rz-thumbnail-size);
-	height: var(--rz-thumbnail-size);
-	flex-shrink: 0;
-	overflow: hidden;
-	border-radius: var(--rz-radius-md);
-}
-
-.rz-relation-upload__image {
-	height: 100%;
-	width: 100%;
-	object-fit: cover;
-}
-
-.rz-relation-upload__info {
-	margin-top: var(--rz-size-3);
-	padding-right: 2rem;
-}
-
-.rz-relation-upload__filename {
-	font-size: var(--rz-text-sm);
-	@mixin font-semibold;
-	a {
-		display: inline-block;
-		padding: 0 0.3rem;
-		svg {
-			translate: 0 0.25rem;
-		}
-	}
-}
-
-.rz-relation-upload__filesize,
-.rz-relation-upload__mimetype {
-	font-size: var(--rz-text-sm);
-}
-
-.rz-relation-upload__remove {
-	position: absolute;
-	right: var(--rz-size-3);
-	top: var(--rz-size-3);
-	border: var(--rz-border);
-	background-color: hsl(var(--rz-ground-6));
-	border-radius: 1rem;
-	height: var(--rz-size-4);
-	width: var(--rz-size-4);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
 
 .rz-relation-upload__actions {
 	display: flex;

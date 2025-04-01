@@ -26,16 +26,16 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 
 	if (value && Array.isArray(value)) {
 		for (const relation of value) {
-			let relationId;
+			let documentId;
 			if (typeof relation === 'string') {
-				relationId = relation;
+				documentId = relation;
 			} else {
-				relationId = relation.relationId;
+				documentId = relation.documentId;
 			}
-			if (!relationId) {
+			if (!documentId) {
 				continue;
 			}
-			const doc = await retrieveRelation(relationId);
+			const doc = await retrieveRelation(documentId);
 			if (doc) {
 				output.push(relation);
 			}

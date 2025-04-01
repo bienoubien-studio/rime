@@ -110,7 +110,7 @@ test('Should create a page', async ({ request }) => {
 	expect(doc.attributes.title).toBe('Page');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc.attributes.parent.at(0).relationId).toBe(homeId);
+	expect(doc.attributes.parent.at(0).documentId).toBe(homeId);
 	pageId = doc.id;
 });
 

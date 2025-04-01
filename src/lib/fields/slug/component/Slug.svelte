@@ -72,7 +72,7 @@
 		/>
 
 		{#if config.slugify}
-			<Button onclick={generateFromField} type="button" size="sm" variant="outline">
+			<Button disabled={!field.editable} onclick={generateFromField} type="button" size="sm" variant="outline">
 				{t__('fields.generate_from', config.slugify)}
 			</Button>
 		{/if}

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
+	import { type Component } from 'svelte';
 	import './icon-button.css';
 	import type { IconProps } from '@lucide/svelte';
-
+	
 	type Props = {
 		icon: Component<IconProps>;
 		type?: 'submit' | 'button';
@@ -11,7 +11,13 @@
 		[x: string]: any;
 	};
 
-	const { class: className, icon: Icon, active, type = 'button', ...restProps }: Props = $props();
+	const {
+		class: className,
+		icon: Icon,
+		active,
+		type = 'button',
+		...restProps
+	}: Props = $props();
 
 	const buttonActiveClass = $derived(active ? 'rz-icon-button--active' : '');
 	const iconActiveClass = $derived(active ? 'rz-icon-button__icon--active' : '');
