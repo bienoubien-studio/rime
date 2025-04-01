@@ -55,8 +55,8 @@
 		const itemInFieldValue = retreiveRelation(doc.id);
 		const item: RelationFieldItem = {
 			label: getValueAtPath(relationConfig.asTitle, doc) || '[untitled]',
-			relationId: doc.id,
 			editUrl: `/panel/${relationConfig.slug}/${doc.id}`
+			documentId: doc.id,
 		};
 		if (itemInFieldValue) {
 			item.id = itemInFieldValue.id;
@@ -118,17 +118,17 @@
 			initialItems = ressource.data.docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
 			if (!initialized) {
 				selectedItems = initialValue.map((relation: Relation) => {
-					return initialItems.find((item) => item.relationId === relation.relationId);
+					return initialItems.find((item) => item.documentId === relation.documentId);
 				});
 				initialized = true;
 			}
 		}
 	});
 
-	const retreiveRelation = (relationId: string) => {
+	const retreiveRelation = (documentId: string) => {
 		if (initialValue && Array.isArray(initialValue) && initialValue.length) {
 			for (const relation of initialValue) {
-				if (relation.relationId === relationId) {
+				if (relation.documentId === documentId) {
 					return relation;
 				}
 			}
@@ -139,7 +139,7 @@
 	const getAvailableItems = () => {
 		return initialItems.filter(
 			(initialItem) =>
-				!selectedItems.some((selectedItem) => selectedItem.relationId === initialItem.relationId)
+				!selectedItems.some((selectedItem) => selectedItem.documentId === initialItem.documentId)
 		);
 	};
 
@@ -155,7 +155,7 @@
 				relationTo: config.relationTo,
 				path,
 				position: index,
-				relationId: item.relationId
+				documentId: item.documentId
 			};
 			if (config.localized) {
 				relation.locale = locale.code;
@@ -204,9 +204,9 @@
 		stamp = new Date().getTime().toString();
 	};
 
-	const addValue = async (relationId: string) => {
+	const addValue = async (documentId: string) => {
 		if (isFull) return;
-		const itemToAdd = availableItems.find((item) => item.relationId === relationId);
+		const itemToAdd = availableItems.find((item) => item.documentId === documentId);
 		if (!itemToAdd) {
 			throw new Error(`Can't find relation at ${path}`);
 		}
@@ -215,7 +215,7 @@
 	};
 
 	const removeValue = async (incomingId: string) => {
-		selectedItems = selectedItems.filter((item) => item.relationId !== incomingId);
+		selectedItems = selectedItems.filter((item) => item.documentId !== incomingId);
 		field.value = buildRelationFieldValue();
 	};
 

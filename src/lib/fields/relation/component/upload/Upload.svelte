@@ -122,8 +122,8 @@
 		data-list={stamp}
 		data-error={hasError ? '' : null}
 	>
-		{#each selectedItems as item (item.relationId)}
-			{@render row(item)}
+		{#each selectedItems as item (item.documentId)}
+			{@render card(item)}
 		{/each}
 	</div>
 {/key}
@@ -166,7 +166,7 @@
 				class="rz-relation-upload__command-item"
 				value={item.filename}
 				onSelect={() => {
-					addValue(item.relationId);
+					addValue(item.documentId);
 					open = false;
 				}}
 			>

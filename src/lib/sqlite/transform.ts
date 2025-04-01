@@ -196,7 +196,7 @@ export const databaseTransformInterface = ({
 							delete relation[key];
 						} else if (key.endsWith('Id') && key !== 'parentId') {
 							relation.relationTo = key.replace('Id', '');
-							relation.relationId = relation[key];
+							relation.documentId = relation[key];
 							delete relation[key];
 						}
 					}

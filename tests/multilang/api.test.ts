@@ -89,7 +89,7 @@ test('Should create Home', async ({ request }) => {
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
-	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author.at(0).documentId).toBe(adminUserId);
 	homeId = doc.id;
 });
 
@@ -102,7 +102,7 @@ test('Should get Home EN with FR data', async ({ request }) => {
 	expect(doc.attributes.slug).toBe('accueil');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
-	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author.at(0).documentId).toBe(adminUserId);
 });
 
 test('Should set Home title/slug EN to Home/home', async ({ request }) => {
@@ -124,7 +124,7 @@ test('Should set Home title/slug EN to Home/home', async ({ request }) => {
 	expect(doc.attributes.slug).toBe('home');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
-	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author.at(0).documentId).toBe(adminUserId);
 });
 
 test('Should get Home FR with still FR data', async ({ request }) => {
@@ -134,7 +134,7 @@ test('Should get Home FR with still FR data', async ({ request }) => {
 	expect(doc.attributes.slug).toBe('accueil');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
-	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author.at(0).documentId).toBe(adminUserId);
 });
 
 test('Should get Home EN with EN data', async ({ request }) => {
@@ -144,7 +144,7 @@ test('Should get Home EN with EN data', async ({ request }) => {
 	expect(doc.attributes.slug).toBe('home');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
-	expect(doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(doc.attributes.author.at(0).documentId).toBe(adminUserId);
 });
 
 test('Should create a page', async ({ request }) => {
@@ -191,7 +191,7 @@ test('Should return the home page', async ({ request }) => {
 	expect(response.doc.attributes.title).toBe('Accueil');
 	expect(response.doc.attributes.author).toBeDefined();
 	expect(response.doc.attributes.author).toHaveLength(1);
-	expect(response.doc.attributes.author.at(0).relationId).toBe(adminUserId);
+	expect(response.doc.attributes.author.at(0).documentId).toBe(adminUserId);
 });
 
 test('Should return 2 pages', async ({ request }) => {

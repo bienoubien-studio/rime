@@ -112,7 +112,7 @@ export function generateTypesString(config: BuiltConfig) {
 	const relationValueType = `
 export type RelationValue<T> =
 	| T[] // When depth > 0, fully populated docs
-	| { id?: string; relationTo: string; relationId: string }[] // When depth = 0, relation objects
+	| { id?: string; relationTo: string; documentId: string }[] // When depth = 0, relation objects
 	| string[]
 	| string; // When sending data to updateById`;
 

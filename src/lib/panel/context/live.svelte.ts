@@ -69,7 +69,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		const isArrayOfRelation =
 			isArray &&
 			isObjectLiteral(value[0]) &&
-			'relationId' in value[0] &&
+			'documentId' in value[0] &&
 			'relationTo' in value[0];
 
 		// Special handling for relation arrays
@@ -80,7 +80,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 				} else {
 					try {
 						const response = await fetch(
-							`/api/${relation.relationTo}/${relation.relationId}?depth=1`
+							`/api/${relation.relationTo}/${relation.documentId}?depth=1`
 						).then((r) => r.json());
 						
 						if (response && response.doc) {

@@ -79,7 +79,7 @@ export type Option = {
 
 export type RelationValue<T> =
 	| T[]
-	| { id?: string; relationTo: string; relationId: string }[]
+	| { id?: string; relationTo: string; documentId: string }[]
 	| string[]
 	| string;
 

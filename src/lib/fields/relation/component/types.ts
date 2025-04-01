@@ -3,7 +3,7 @@ import type { GenericDoc } from 'rizom/types/doc';
 
 export type RelationFieldItem = {
 	id?: string;
-	relationId: string;
+	documentId: string;
 	label: string;
 	filename?: string;
 	filesize?: string;
