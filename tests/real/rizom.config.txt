@@ -100,13 +100,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
 	if (data?.attributes?.isHome) {
-		const query = {
-			where: {
-				isHome: {
-					equals: true
-				}
-			}
-		};
+		const query = `where[attributes.isHome][equals]=true`
 
 		const pagesIsHome = await api.collection('pages').find({ query });
 
