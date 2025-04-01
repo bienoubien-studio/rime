@@ -1,19 +1,23 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core';
-	import type { UploadDoc } from 'rizom/types/doc.js';
+	import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { onMount } from 'svelte';
 	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
-	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import Input from 'rizom/panel/components/ui/input/input.svelte';
+	import CardResource from 'rizom/panel/components/ui/card-resource/card-resource.svelte';
 
 	type NodeAttributes = {
 		id: string | null;
 		title: string | null;
-		slug: string | null
+		_type: string | null
+	};
+
+	type RequiredNodeAttributes = {
+		id: string;
+		title: string;
+		_type: string
 	};
 
 	let { node, updateAttributes, extension }: NodeViewProps = $props();
@@ -29,7 +33,7 @@
 			selected = {
 				id: node.attrs.id,
 				title: node.attrs.title,
-				slug: node.attrs.slug
+				_type: node.attrs._type
 			};
 		} else {
 			selected = null;
@@ -42,27 +46,31 @@
 	// TODO try to pass it as a prop in a near future
 	const APIProxy = setAPIProxyContext('titap');
 	const ressource = APIProxy.getRessource(`/api/${extension.options.query}`);
-	let docs = $state<UploadDoc[]>([]);
+	let docs = $state<GenericDoc[]>([]);
 
 	$effect(() => {
 		if (ressource.data) {
 			docs = ressource.data.docs;
+			// Update atttributes if document title has changed
+			if( node.attrs.id){
+				selected = docs.find(doc => doc.id === node.attrs.id)
+			}
 		}
 	});
 
 	// Handle dialog selection
-	function handleResourceSelection(doc: UploadDoc) {
+	function handleResourceSelection(doc: GenericDoc) {
 		// Close the dialog
 		isDialogOpen = false;
 
-		// Update the selected media
+		// Update the selected resource
 		selected = doc;
 		
 		// Update node attributes
 		updateNodeAttributes();
 	}
 
-	// Handle removing media
+	// Handle removing resource
 	function removeResource() {
 		selected = null;
 		
@@ -81,7 +89,7 @@
 		updateAttributes({
 			id: selected.id,
 			title: selected.title,
-			slug : extension.options.slug
+			_type: extension.options.slug
 		} as NodeAttributes);
 	}
 	
@@ -92,8 +100,7 @@
 		{#if !selected}
 			<Button variant="outline" onclick={handleClick}>Add a resource</Button>
 		{:else}
-			{selected.id}
-			<!-- {@render media(selected)} -->
+			<CardResource resource={selected as RequiredNodeAttributes} onCloseClick={removeResource} />
 		{/if}
 	</div>
 </NodeViewWrapper>
@@ -116,8 +123,6 @@
 	</Command.List>
 </Command.Dialog>
 
-
-
 <style lang="postcss">
 	:global(.ProseMirror-selectednode .rz-richtext-media) {
 		
@@ -129,40 +134,9 @@
 			background-color: hsl(var(--rz-color-primary) / 0.6);
 			pointer-events: none;
 		}
-
-		.rz-richtext-media__actions {
-			display: flex;
-		}
 	}
 	.rz-richtext-media {
 		position: relative;
 	}
 	
-	.rz-richtext-media__actions {
-		position: absolute;
-		font-size: var(--rz-text-sm);
-		right: var(--rz-size-3);
-		top: var(--rz-size-3);
-		display: none;
-		gap: var(--rz-size-2);
-	}
-	.rz-richtext-media__button.rz-richtext-media__button-remove {
-		width: var(--rz-size-5);
-		padding: 0;
-	}
-	.rz-richtext-media__button {
-		padding: 0 var(--rz-size-2);
-		border: var(--rz-border);
-		background-color: hsl(var(--rz-ground-6));
-		border-radius: 1rem;
-		height: var(--rz-size-5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.rz-richtext-media__legend{
-		font-style: italic;
-		font-size: var(--rz-text-sm);
-		opacity: 0.5;
-	}
 </style>

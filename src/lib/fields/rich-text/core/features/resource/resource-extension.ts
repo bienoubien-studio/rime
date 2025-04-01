@@ -13,12 +13,12 @@ export const Resource = Node.create({
   addOptions() {
       return {
         query: null,
-        slug: null,
+        _type: null,
     }
   },
   
   addAttributes() {
-    return ['id', 'title', 'slug'].reduce((acc: Dic, key) => {
+    return ['id', 'title', '_type'].reduce((acc: Dic, key) => {
       acc[key] = { default: null };
       return acc;
     }, {});
