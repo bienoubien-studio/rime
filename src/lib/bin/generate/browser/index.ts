@@ -68,31 +68,6 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 	return true;
 }
 
-// Handles import paths for components and modules
-function createImportStatement(path: string): string {
-	let importPath;
-	// Handle Svelte components from src
-	// if (path.endsWith('.svelte') && !path.includes('node_modules')) {
-	// 	const componentPath = path.split('src/').pop() ?? '';
-	// 	importPath = `'../${componentPath}'`;
-	// }
-	// // Handle node_modules imports
-	// else if (path.includes('node_modules')) {
-	// 	const modulePath = path.split('node_modules/').pop() ?? '';
-	// 	if (modulePath.startsWith('@lucide/svelte')) {
-	// 		// Only remove .svelte extension for lucide icons
-	// 		importPath = `'${modulePath.replace('dist/', '').replace('.svelte', '')}'`;
-	// 	} else {
-	// 		// Keep .svelte extension
-	// 		importPath = `'${modulePath.replace('dist/', '')}'`;
-	// 	}
-	// } else {
-	importPath = path;
-	// }
-
-	return registerImport(importPath);
-}
-
 function cleanViteImports(str: string) {
 	// Replace RizomFormError.CONSTANT with it's value
 	str = str.replace(/__vite_ssr_import_\d+__\.RizomFormError\.([A-Z_]+)/g, (_, key) =>
@@ -115,15 +90,18 @@ function cleanViteImports(str: string) {
 }
 
 function registerImport(importPath: string): string {
+	// Normalize the path first
+	const normalizedPath = normalizePath(importPath);
+  
 	// Check if already registered
 	for (const [key, value] of importRegistry.entries()) {
-		if (value === importPath) {
+		if (value === `'./${normalizedPath}'`) {
 			return key;
 		}
 	}
 
-	const importName = `__extenal__${importCounter++}`;
-	importRegistry.set(importName, `'./${importPath}'`);
+	const importName = `__external__${importCounter++}`;
+	importRegistry.set(importName, `'./${normalizedPath}'`);
 	return importName;
 }
 
@@ -164,7 +142,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 		
 		case 'function': {
 			const filename = (value as any).filename || getSymbolFilename(value);
-			if (filename) return createImportStatement(filename);
+			if (filename) return registerImport(filename);
 			return registerFunction(value, key);
 		}
 
@@ -187,7 +165,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 
 		case 'string': {
 			if (value.includes('node_modules') || value.endsWith('.svelte')) {
-				return createImportStatement(value);
+				return registerImport(value);
 			}
 			return JSON.stringify(value);
 		}
@@ -274,6 +252,27 @@ function getSymbolFilename(value: object): string | null {
 		return descriptor?.value ?? null;
 	}
 	return null;
+}
+
+/**
+ * Normalizes pnpm paths to simpler paths that work better with module resolution
+ */
+function normalizePath(importPath: string): string {
+  // Check if this is a pnpm path
+  if (importPath.includes('node_modules/.pnpm/')) {
+    // Extract the package name and the rest of the path
+    const pnpmPattern = /node_modules\/\.pnpm\/([^/]+).*?\/node_modules\/([^/]+)(.*)/;
+    const match = importPath.match(pnpmPattern);
+    
+    if (match) {
+      // match[2] is the package name
+      // match[3] is the rest of the path after the package name
+      return `node_modules/${match[2]}${match[3]}`;
+    }
+  }
+  
+  // Return the original path if it's not a pnpm path or if we couldn't normalize it
+  return importPath;
 }
 
 export default generateBrowserConfig;
