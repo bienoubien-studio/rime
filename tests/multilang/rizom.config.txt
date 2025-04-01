@@ -177,7 +177,7 @@ const tabHero = tab('hero').fields(
 		.condition((doc) => {
 			return doc.heroType === 'banner';
 		}),
-	richText('intro').tiptap('[] b')
+	richText('intro').features('bold')
 );
 
 const tabAttributes = tab('attributes').fields(
