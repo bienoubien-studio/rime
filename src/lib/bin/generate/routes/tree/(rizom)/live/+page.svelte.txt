@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Live } from 'rizom/panel';
   //@ts-ignore
-  import config from 'virtual:browser-config';
+  import config from '$lib/rizom.config.browser.js';
 
   const { data } = $props();
 </script>

@@ -37,7 +37,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 
 		// Exclude area and collection access
 		'collections\.\.hooks',
-
+		
 		// Exclude area and collection hooks
 		'areas\.\.hooks',
 
@@ -68,12 +68,71 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 	return true;
 }
 
+// Handles import paths for components and modules
+function createImportStatement(path: string): string {
+
+	let importPath = path;
+	
+	// First, normalize PNPM paths to regular node_modules paths
+	if (path.includes('node_modules/.pnpm/')) {
+		// Extract the real path after the last node_modules/ in PNPM paths
+		importPath = importPath.replace(/.*node_modules\/(.+\/)?node_modules\/(.+)$/, 'node_modules/$2');
+	}
+	
+	// Now apply the specific module patterns
+	if (importPath.includes('node_modules')) {
+		// Node modules aliases as [pattern, replacement] pairs
+		const nodeModulePatterns = [
+			// @lucide/svelte specific rule - removes .svelte extension and dist/
+			[/node_modules\/@lucide\/svelte\/dist\/(?:icons\/)?(.+?)\.svelte$/, '@lucide/svelte/icons/$1'],
+			
+			// General rule for scoped packages - removes dist/
+			[/node_modules\/@([^/]+)\/([^/]+)\/dist\/(.+?)$/, '@$1/$2/$3'],
+			
+			// General rule for non-scoped packages - removes dist/
+			[/node_modules\/([^@][^/]+)\/dist\/(.+?)$/, '$1/$2'],
+			
+			// Default fallback rule for all other node_modules
+			[/node_modules\/(.+)$/, '$1']
+		];
+		
+		// Apply first matching pattern
+		for (const [pattern, replacement] of nodeModulePatterns) {
+			if (pattern.test(importPath)) {
+				importPath = importPath.replace(pattern, replacement);
+				break;
+			}
+		}
+	} else {
+		// Non-node modules aliases as [pattern, replacement] pairs
+		const regularPatterns = [
+			// Svelte components from src
+			[/^src\/(.+)\.svelte$/, '../$1.svelte']
+		];
+		
+		// Apply first matching pattern
+		for (const [pattern, replacement] of regularPatterns) {
+			if (pattern.test(importPath)) {
+				importPath = importPath.replace(pattern, replacement);
+				break;
+			}
+		}
+	}
+	
+	// Ensure proper quoting
+	if (!importPath.startsWith("'") && !importPath.startsWith('"')) {
+		importPath = `'${importPath}'`;
+	}
+	
+	return registerImport(importPath);
+}
+
 function cleanViteImports(str: string) {
 	// Replace RizomFormError.CONSTANT with it's value
 	str = str.replace(/__vite_ssr_import_\d+__\.RizomFormError\.([A-Z_]+)/g, (_, key) =>
 		JSON.stringify(RizomFormError[key as keyof typeof RizomFormError])
 	);
-
+	// replace with access and validate built-in modules
 	str.match(/__vite_ssr_import_\d+__\.(access|validate)/g)?.forEach((match) => {
 		if (match.endsWith('.access')) needsAccess = true;
 		if (match.endsWith('.validate')) needsValidate = true;
@@ -85,28 +144,24 @@ function cleanViteImports(str: string) {
 
 	// Replace __vite_ssr_import_0__.(validate|access)
 	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
-
+		
 	return str;
 }
 
 function registerImport(importPath: string): string {
-	// Normalize the path first
-	const normalizedPath = normalizePath(importPath);
-  
 	// Check if already registered
 	for (const [key, value] of importRegistry.entries()) {
-		if (value === `'./${normalizedPath}'`) {
+		if (value === importPath) {
 			return key;
 		}
 	}
 
-	const importName = `__external__${importCounter++}`;
-	importRegistry.set(importName, `'./${normalizedPath}'`);
+	const importName = `import_${importCounter++}`;
+	importRegistry.set(importName, importPath);
 	return importName;
 }
 
 function registerFunction(func: Function, key: string = ''): string {
-	
 	let funcString = func.toString();
 
 	// Handle environment variables
@@ -136,13 +191,12 @@ function registerFunction(func: Function, key: string = ''): string {
 // Parse different value types
 function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
 	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
-	
+
 	// Handle different value types
 	switch (typeof value) {
-		
 		case 'function': {
 			const filename = (value as any).filename || getSymbolFilename(value);
-			if (filename) return registerImport(filename);
+			if (filename) return createImportStatement(filename);
 			return registerFunction(value, key);
 		}
 
@@ -159,13 +213,12 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 			const entries = Object.entries(value)
 				.filter(([k, v]) => shouldIncludeInBrowser(k, v, fullPath))
 				.map(([k, v]) => `'${k}': ${parseValue(k, v, fullPath)}`);
-
 			return `{${entries.join(',')}}`;
 		}
 
 		case 'string': {
 			if (value.includes('node_modules') || value.endsWith('.svelte')) {
-				return registerImport(value);
+				return createImportStatement(value);
 			}
 			return JSON.stringify(value);
 		}
@@ -252,27 +305,6 @@ function getSymbolFilename(value: object): string | null {
 		return descriptor?.value ?? null;
 	}
 	return null;
-}
-
-/**
- * Normalizes pnpm paths to simpler paths that work better with module resolution
- */
-function normalizePath(importPath: string): string {
-  // Check if this is a pnpm path
-  if (importPath.includes('node_modules/.pnpm/')) {
-    // Extract the package name and the rest of the path
-    const pnpmPattern = /node_modules\/\.pnpm\/([^/]+).*?\/node_modules\/([^/]+)(.*)/;
-    const match = importPath.match(pnpmPattern);
-    
-    if (match) {
-      // match[2] is the package name
-      // match[3] is the rest of the path after the package name
-      return `node_modules/${match[2]}${match[3]}`;
-    }
-  }
-  
-  // Return the original path if it's not a pnpm path or if we couldn't normalize it
-  return importPath;
 }
 
 export default generateBrowserConfig;
