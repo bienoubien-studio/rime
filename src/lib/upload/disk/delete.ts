@@ -5,7 +5,7 @@ import type { GenericDoc } from 'rizom/types/doc';
 import type { CompiledCollection } from 'rizom/types/config';
 import type { WithUpload } from 'rizom/types/util';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server';
-import { logger } from 'rizom/util/logger';
+import { logger } from 'rizom/util/logger/index.server';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;

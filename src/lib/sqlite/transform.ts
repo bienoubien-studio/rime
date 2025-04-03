@@ -21,7 +21,7 @@ import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import { logger } from 'rizom/util/logger/index.js';
+import { logger } from 'rizom/util/logger/index.server.js';
 
 /////////////////////////////////////////////
 // Types

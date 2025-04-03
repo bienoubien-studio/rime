@@ -8,7 +8,7 @@ import { RizomError } from './errors/index.js';
 import { registerTranslation } from '$lib/panel/i18n/register.server.js';
 import i18n from './panel/i18n/index.js';
 import { hasRunInitCommand } from './bin/util.server.js';
-import { logger } from './util/logger/index.js';
+import { logger } from './util/logger/index.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 

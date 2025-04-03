@@ -6,7 +6,7 @@ import type { RelationField, SelectField } from 'rizom/fields/types.js';
 import type { Dic } from 'rizom/types/util.js';
 import type { ConfigMap } from './configMap/types.js';
 import { hasProp, getValueAtPath, setValueAtPath } from 'rizom/util/object.js';
-import { logger } from 'rizom/util/logger/index.js';
+import { logger } from 'rizom/util/logger/index.server.js';
 
 export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;

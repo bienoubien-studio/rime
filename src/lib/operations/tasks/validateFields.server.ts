@@ -8,7 +8,7 @@ import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
 import type { DeepPartial } from 'rizom/types/util';
-import { logger } from 'rizom/util/logger';
+import { logger } from 'rizom/util/logger/index.server';
 
 export const validateFields = async <T extends GenericDoc>(args: {
 	data: DeepPartial<T>;

@@ -8,7 +8,7 @@ import type { Dic } from '../types/util.js';
 import { RizomError } from '../errors/index.js';
 import { isObjectLiteral } from '../util/object.js';
 import type { OperationQuery } from '../types/index.js';
-import { logger } from 'rizom/util/logger/index.js';
+import { logger } from 'rizom/util/logger/index.server.js';
 import { isRelationField } from 'rizom/util/field.js';
 
 type BuildWhereArgs = {

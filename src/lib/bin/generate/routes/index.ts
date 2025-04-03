@@ -17,7 +17,7 @@ import {
 	rootLayoutServer
 } from './templates.js';
 import cache from '../cache/index.js';
-import { taskLogger } from 'rizom/util/logger/index.js';
+import { taskLogger } from 'rizom/util/logger/index.server.js';
 import { slugify } from '$lib/util/string.js';
 
 import { fileURLToPath } from 'url';
