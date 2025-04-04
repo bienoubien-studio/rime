@@ -37,7 +37,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 
 		// Exclude area and collection access
 		'collections\.\.hooks',
-		
+
 		// Exclude area and collection hooks
 		'areas\.\.hooks',
 
@@ -69,33 +69,48 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 }
 
 // Handles import paths for components and modules
-function createImportStatement(path: string): string {
+function createImportStatement(pathInfo: string | { path: string; exportName: string }): string {
+	type PatternPair = [RegExp, string];
+	let importPath: string;
+	let exportName: string | undefined;
 
-	let importPath = path;
-	
-	// First, normalize PNPM paths to regular node_modules paths
-	if (path.includes('node_modules/.pnpm/')) {
-		// Extract the real path after the last node_modules/ in PNPM paths
-		importPath = importPath.replace(/.*node_modules\/(.+\/)?node_modules\/(.+)$/, 'node_modules/$2');
+	// Handle external module object format
+	if (typeof pathInfo === 'object') {
+		importPath = pathInfo.path;
+		exportName = pathInfo.exportName;
+	} else {
+		importPath = pathInfo;
 	}
-	
+
+	// First, normalize PNPM paths to regular node_modules paths
+	if (importPath.includes('node_modules/.pnpm/')) {
+		// Extract the real path after the last node_modules/ in PNPM paths
+		importPath = importPath.replace(
+			/.*node_modules\/(.+\/)?node_modules\/(.+)$/,
+			'node_modules/$2'
+		);
+	}
+
 	// Now apply the specific module patterns
 	if (importPath.includes('node_modules')) {
 		// Node modules aliases as [pattern, replacement] pairs
-		const nodeModulePatterns = [
+		const nodeModulePatterns: PatternPair[] = [
 			// @lucide/svelte specific rule - removes .svelte extension and dist/
-			[/node_modules\/@lucide\/svelte\/dist\/(?:icons\/)?(.+?)\.svelte$/, '@lucide/svelte/icons/$1'],
-			
+			[
+				/node_modules\/@lucide\/svelte\/dist\/(?:icons\/)?(.+?)\.svelte$/,
+				'@lucide/svelte/icons/$1'
+			],
+
 			// General rule for scoped packages - removes dist/
 			[/node_modules\/@([^/]+)\/([^/]+)\/dist\/(.+?)$/, '@$1/$2/$3'],
-			
+
 			// General rule for non-scoped packages - removes dist/
 			[/node_modules\/([^@][^/]+)\/dist\/(.+?)$/, '$1/$2'],
-			
+
 			// Default fallback rule for all other node_modules
 			[/node_modules\/(.+)$/, '$1']
 		];
-		
+
 		// Apply first matching pattern
 		for (const [pattern, replacement] of nodeModulePatterns) {
 			if (pattern.test(importPath)) {
@@ -105,11 +120,11 @@ function createImportStatement(path: string): string {
 		}
 	} else {
 		// Non-node modules aliases as [pattern, replacement] pairs
-		const regularPatterns = [
+		const regularPatterns: PatternPair[] = [
 			// Svelte components from src
 			[/^src\/(.+)\.svelte$/, '../$1.svelte']
 		];
-		
+
 		// Apply first matching pattern
 		for (const [pattern, replacement] of regularPatterns) {
 			if (pattern.test(importPath)) {
@@ -118,13 +133,41 @@ function createImportStatement(path: string): string {
 			}
 		}
 	}
-	
+
+	if (importPath.startsWith('file://')) {
+		// Remove 'file://' prefix
+		importPath = importPath.replace('file://', '');
+
+		// Convert absolute file path to relative path from src/lib
+		const libPath = path.resolve(process.cwd(), './src/lib');
+		let relativePath = path.relative(libPath, importPath);
+
+		// Ensure path starts with ../
+		if (!relativePath.startsWith('..')) {
+			relativePath = '../' + relativePath;
+		}
+
+		// Replace .ts extension with .js
+		relativePath = relativePath.replace(/\.ts$/, '.js');
+
+		importPath = relativePath;
+	}
+
 	// Ensure proper quoting
 	if (!importPath.startsWith("'") && !importPath.startsWith('"')) {
 		importPath = `'${importPath}'`;
 	}
-	
-	return registerImport(importPath);
+
+	const importName = `import_${importCounter++}`;
+
+	// Register the import with appropriate format based on exportName
+	if (exportName && exportName !== 'default') {
+		importRegistry.set(importName, `import { ${exportName} as ${importName} } from ${importPath}`);
+	} else {
+		importRegistry.set(importName, `import ${importName} from ${importPath}`);
+	}
+
+	return importName;
 }
 
 function cleanViteImports(str: string) {
@@ -144,7 +187,7 @@ function cleanViteImports(str: string) {
 
 	// Replace __vite_ssr_import_0__.(validate|access)
 	str = str.replace(/__vite_ssr_import_\d+__\.(access|validate)/g, '$1');
-		
+
 	return str;
 }
 
@@ -188,9 +231,25 @@ function registerFunction(func: Function, key: string = ''): string {
 	return functionName;
 }
 
+function isExternalModule(value: any): { path: string; exportName: string } | null {
+	if (typeof value === 'object' && value !== null) {
+		const externalSymbol = Symbol.for('external');
+		if (externalSymbol in value) {
+			return value[externalSymbol];
+		}
+	}
+	return null;
+}
+
 // Parse different value types
 function parseValue(key: string, value: any, parentKey: string = ''): string | boolean | number {
 	if (!shouldIncludeInBrowser(key, value, parentKey)) return '';
+
+	// Check for external module first
+	const externalPath = isExternalModule(value);
+	if (externalPath) {
+		return createImportStatement(externalPath);
+	}
 
 	// Handle different value types
 	switch (typeof value) {
@@ -270,7 +329,7 @@ export function buildConfigString(config: CompiledConfigWithBluePrints) {
 		.join('\n');
 
 	const importDefinitions = Array.from(importRegistry.entries())
-		.map(([name, path]) => `import ${name} from ${path};`)
+		.map(([name, importStatement]) => importStatement)
 		.join('\n');
 
 	const packageName = 'rizom';
@@ -290,7 +349,7 @@ ${importDefinitions}
 ${functionDefinitions}
 
 /**
- * @type {import('${packageName}').BrowserConfig}
+ * @type {import('${packageName}/types').BrowserConfig}
  */
 const config = {${configString}};
 export default config`.trim();

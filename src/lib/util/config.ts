@@ -7,3 +7,11 @@ export function isUploadConfig(config: { upload?: boolean }): config is WithUplo
 
 export const isAuthConfig = (config: Collection<any> | BuiltCollection | CompiledCollection) =>
 	config.auth === true;
+
+export function external<T>(module: T, path: string, exportName: string = 'default'): T {
+	Object.defineProperty(module, Symbol.for('external'), {
+		value: { path, exportName },
+		enumerable: false
+	});
+	return module;
+}
