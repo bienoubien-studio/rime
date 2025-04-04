@@ -36,6 +36,8 @@ export {
 	Field
 };
 
+export type { DocumentFormContext } from './context/documentForm.svelte.js'
+
 export type CollectionLayoutProps = {
 	slug: CollectionSlug;
 	data: {
