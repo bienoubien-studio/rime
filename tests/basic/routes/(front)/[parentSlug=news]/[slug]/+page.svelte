@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { LiveConsumer } from 'rizom/panel';
+	import { LiveConsumer } from 'rizom/panel';
 
-	let { data } = $props();
+	let { data }: { data: { doc: NewsDoc } } = $props();
 </script>
 
 <LiveConsumer data={data}>

@@ -74,7 +74,7 @@ test('Should create Home', async ({ request }) => {
 			attributes: {
 				title: 'Accueil',
 				slug: 'accueil',
-				home: true,
+				isHome: true,
 				author: adminUserId
 			}
 		}
@@ -82,7 +82,7 @@ test('Should create Home', async ({ request }) => {
 
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Accueil');
-	expect(doc.attributes.home).toBe(true);
+	expect(doc.attributes.isHome).toBe(true);
 	expect(doc.id).toBeDefined();
 	expect(doc.locale).toBeDefined();
 	expect(doc.locale).toBe('fr');

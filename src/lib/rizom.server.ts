@@ -3,7 +3,7 @@ import { randomId } from './util/random.js';
 import { createConfigInterface } from './config/index.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { AsyncReturnType } from './types/util.js';
-import type { Config, Plugins } from 'rizom';
+import type { Config, Plugins } from 'rizom/types';
 import { RizomError } from './errors/index.js';
 import { registerTranslation } from '$lib/panel/i18n/register.server.js';
 import i18n from './panel/i18n/index.js';

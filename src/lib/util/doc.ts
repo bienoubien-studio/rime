@@ -1,6 +1,6 @@
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
-import type { Link } from 'rizom';
+import type { Link } from '../fields/link/index.js';
 import type { Dic } from 'rizom/types/util.js';
 import { isUploadConfig } from 'rizom/util/config.js';
 

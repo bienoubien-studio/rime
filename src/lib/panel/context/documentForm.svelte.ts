@@ -63,7 +63,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			$effect(() => {
 				title = getValueAtPath(config.asTitle, doc) || '[untitled]';
 			});
-			const initialTitle = getValueAtPath(config.asTitle, doc);
+			const initialTitle = getValueAtPath<string>(config.asTitle, doc);
 			return doc && initialTitle ? initialTitle : '[untitled]';
 		}
 	}

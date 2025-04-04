@@ -9,7 +9,7 @@ export type { LinkField } from './link/index.js';
 export type { NumberField } from './number/index.js';
 export type { RadioField } from './radio/index.js';
 export type { RelationField } from './relation/index.js';
-export type { RichTextField, RichTextFieldNode, RichTextFieldMark } from './rich-text/index.js';
+export type { RichTextField } from './rich-text/index.js';
 export type { SelectField } from './select/index.js';
 export type { SeparatorField } from './separator/index.js';
 export type { SlugField } from './slug/index.js';

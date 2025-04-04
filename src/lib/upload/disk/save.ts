@@ -1,5 +1,5 @@
 import type { ImageSizesConfig } from 'rizom/types/config';
-import type { UploadDoc } from 'rizom';
+import type { UploadDoc } from 'rizom/types';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
 import { RizomError } from 'rizom/errors/index.js';

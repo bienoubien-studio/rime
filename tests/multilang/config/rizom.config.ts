@@ -99,10 +99,10 @@ const Informations = area('infos', {
 const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	const { data, api } = args;
 
-	if (data?.attributes?.home) {
+	if (data?.attributes?.isHome) {
 		const query = {
 			where: {
-				home: {
+				isHome: {
 					equals: true
 				}
 			}
@@ -113,7 +113,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 		for (const page of pagesIsHome) {
 			await api.collection('pages').updateById({
 				id: page.id,
-				data: { attributes: { home: false } }
+				data: { attributes: { isHome: false } }
 			});
 		}
 	}
@@ -181,7 +181,7 @@ const tabHero = tab('hero').fields(
 
 const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
-	toggle('home').table({ position: 2, sort: true }).live(false),
+	toggle('isHome').table({ position: 2, sort: true }).live(false),
 	slug('slug')
 		.slugify('attributes.title')
 		.live(false)
