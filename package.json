@@ -83,6 +83,9 @@
 			"types": "./dist/api/index.d.ts",
 			"import": "./dist/api/index.js"
 		},
+		"./types": {
+			"types": "./dist/types/index.d.ts"
+		},
 		"./vite": {
 			"types": "./dist/vite/index.d.ts",
 			"import": "./dist/vite/index.js"
