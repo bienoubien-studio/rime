@@ -18,6 +18,7 @@
 [v] Relation proxy 
 [v] Better logs
 [v] 404 on image src quick after upload deletion
+[v] more tiptap integration
 [ ] Make first user super admin, can't delete it 
 [ ] basic real life config preset
 [ ] core plugins as direct props of rizom, ex rizom.cache
@@ -29,7 +30,5 @@
 [ ] collection nested
 [ ] page version
 [ ] page modification not saved message + changes saved to localStorage
-[ ] more tiptap integration
 [ ] more better-auth integration
 [ ] configurable medias/config path
-
