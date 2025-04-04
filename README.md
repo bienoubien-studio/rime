@@ -121,8 +121,7 @@ Navigate to `http://localhost:5173/panel` to create the first admin user.
 
 ```typescript
 // ./src/config/rizom.config.ts
-import type { collection, area } from 'rizom';
-import type { Config } from 'rizom';
+import { defineConfig, collection, area } from 'rizom';
 import { Settings2 } from '@lucide/svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/util";
@@ -166,7 +165,7 @@ const Medias = collection('medias', {
   ]
 };
 
-const config: Config = {
+export default defineConfig({
   database: 'my-db.sqlite'
   collections: [Pages, Medias],
   areas: [Settings],
@@ -180,8 +179,8 @@ const config: Config = {
       group: 'settings'
     }
   }
-};
-export default config;
+});
+
 ```
 
 > [!NOTE]
