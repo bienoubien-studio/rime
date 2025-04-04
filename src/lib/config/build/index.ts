@@ -190,4 +190,4 @@ const buildConfig = async <C extends boolean = true>(
 
 export { buildConfig };
 
-const foo = buildConfig({ collections: [], areas: [], database: 'foo' }, { compiled: true });
+

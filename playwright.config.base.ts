@@ -12,7 +12,6 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 			stdout: 'ignore',
 			stderr: 'ignore'
 		},
-		// retries: 3,
 		expect: {
 			timeout: 30000
 		},
