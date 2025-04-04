@@ -1,6 +1,0 @@
-const config = {
-    database: 'empty.sqlite',
-	collections: [],
-	areas: []
-};
-export default config;

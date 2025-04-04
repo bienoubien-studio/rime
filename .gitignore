@@ -35,7 +35,7 @@ src/hooks.server.ts
 src/config
 src/routes
 drizzle.config.ts
-src/app.generated.d.ts
+# src/app.generated.d.ts
 rizom.config.browser.js
 src/lib/server/schema.ts
 src/routes/(rizom)

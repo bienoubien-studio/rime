@@ -15,8 +15,9 @@ import {
 	group,
 	component,
 	separator,
+	tree,
 	textarea
-} from 'rizom/fields/index.js';
+} from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import {
 	AppWindowMac,
@@ -30,12 +31,12 @@ import {
 	NotebookText
 } from '@lucide/svelte';
 
-import { collection, area, defineConfig } from 'rizom';
+import { collection, area, defineConfig } from '$lib/index.js';
 import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import { tree } from 'rizom/fields/tree';
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
-import { fill } from './fill/index.js'
+import LoremFeature from './lorem-fill.js';
+
 
 const tabSEO = tab('metas')
 	.label('SEO')
@@ -184,7 +185,7 @@ const Informations = area('infos', {
 });
 
 const tabWriter = tab('writer').fields(
-	richText('text').features('bold', 'italic', 'resource:pages', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
+	richText('text').features('bold', 'italic', LoremFeature, 'resource:pages', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
 )
 
 const tabNewsAttributes = tab('attributes').fields(
@@ -230,7 +231,7 @@ const Medias = collection('medias', {
 });
 
 export default defineConfig({
-	database: 'real.sqlite',
+	database: 'basic.sqlite',
 	collections: [Pages, Medias, News],
 	areas: [Settings, Navigation, Informations],
 	smtp: {
@@ -242,7 +243,7 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
-	plugins: [regenerateImages(), fill()],
+	plugins: [regenerateImages()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

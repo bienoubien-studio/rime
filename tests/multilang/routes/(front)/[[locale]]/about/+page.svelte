@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LiveConsumer from 'rizom/panel/components/sections/live/Consumer.svelte';
+	import { LiveConsumer } from 'rizom/panel';
 
 	let { data } = $props();
 </script>

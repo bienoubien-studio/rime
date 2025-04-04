@@ -12,11 +12,10 @@ import {
 	tabs,
 	text,
 	toggle
-} from 'rizom/fields/index.js';
+} from '$lib/fields/index.js';
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
-import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks';
-import type { BlocksFieldBlockRenderTitle } from 'rizom/fields/blocks';
+import type { CollectionHookBeforeUpsert, BlocksFieldBlockRenderTitle } from '$lib/types';
 
 import { collection, area, defineConfig } from 'rizom';
 

@@ -12,7 +12,7 @@ program
 	.argument('<name>', 'Specify the name')
 	.action((name) => {
 		try {
-			const configPath = path.join(projectRoot, 'src', 'config', 'rizom.config.ts');
+			const configDirPath = path.join(projectRoot, 'src', 'config');
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous
@@ -22,11 +22,18 @@ program
 			// Init files and DB
 			execSync(`bun ./src/lib/bin/init/index.ts --name ${name}`);
 
-			// Copy config
-			const testConfigPath = path.join(projectRoot, 'tests', name, 'rizom.config.txt');
+			// Copy entire config directory
+			const testConfigDirPath = path.join(projectRoot, 'tests', name, 'config');
 
-			execSync(`cp -f ${testConfigPath} ${configPath}`);
-
+			if (existsSync(testConfigDirPath)) {
+				// Remove existing config directory content
+				execSync(`rm -fr ${configDirPath}/*`);
+				// Copy the entire config directory
+				execSync(`cp -rf ${testConfigDirPath}/* ${configDirPath}/`);
+			} else {
+				console.warn(`Warning: Config directory not found for ${name}`);
+			}
+			
 			// Copy routes
 			const testFrontRoutesPath = path.join(projectRoot, 'tests', name, 'routes', '\\(front\\)');
 
