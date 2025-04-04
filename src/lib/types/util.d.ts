@@ -35,13 +35,24 @@ type DeepPartial<T> = {
 };
 
 type WithRelationPopulated<T> = {
-	[K in keyof T]: NonNullable<T[K]> extends RelationValue<infer U>
-		? T[K] extends undefined
-			? undefined
-			: U[]
-		: T[K] extends object
-			? WithRelationPopulated<T[K]>
-			: T[K];
+	[K in keyof T]: 
+		// Check for primitive types first
+		T[K] extends string ? string :
+		T[K] extends number ? number :
+		T[K] extends boolean ? boolean :
+		T[K] extends null ? null :
+		T[K] extends undefined ? undefined :
+		
+		// Then check for relation values
+		NonNullable<T[K]> extends RelationValue<infer U>
+			? T[K] extends undefined
+				? undefined
+				: U[]
+			: T[K] extends Array<infer E>
+				? Array<WithRelationPopulated<E>>
+				: T[K] extends object
+					? WithRelationPopulated<T[K]>
+					: T[K];
 };
 
 type WithoutBuilders<T> =

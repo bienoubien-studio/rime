@@ -91,3 +91,4 @@ export type { Plugin, Plugins } from '../plugins/index.js';
 export type { Rizom } from '../rizom.server.js';
 export type { Navigation } from './panel/navigation.js';
 export type { RichTextFeatureNode, RichTextFeatureMark } from '../fields/rich-text/core/types.js'
+export type { BlocksFieldBlockRenderTitle } from '../fields/blocks/index.js'
