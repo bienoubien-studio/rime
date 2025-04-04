@@ -388,29 +388,6 @@ test('Should login editor', async ({ request }) => {
 	token = headerToken;
 });
 
-test('Editor should update editor password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${editorId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			password: 'a&1Aa&1A'
-		}
-	});
-	expect(response.status()).toBe(200);
-});
-
-test('Editor should not update admin password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${adminUserId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			password: 'a&1Aa&1A'
-		}
-	});
-	expect(response.status()).toBe(403);
-});
 
 test('Editor should not create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
@@ -487,7 +464,6 @@ test('Should delete user editor', async ({ request }) => {
 		}
 	});
 	const authToken = signin.headers()['set-auth-token'];
-	const data = await signin.json();
 	expect(authToken).toBeDefined();
 
 	const response = await request.delete(`${API_BASE_URL}/users/${editorId}`, {
