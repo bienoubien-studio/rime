@@ -69,7 +69,7 @@
 		initial,
 		config,
 		readOnly,
-		// onNestedDocumentCreated,
+		onNestedDocumentCreated,
 		onDataChange,
 		onFieldFocus,
 		key: `${initial._type}_${nestedLevel}`

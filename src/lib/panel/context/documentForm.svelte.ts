@@ -25,6 +25,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	config,
 	readOnly,
 	key,
+	onNestedDocumentCreated,
 	onDataChange,
 	onFieldFocus
 }: Args<T>) {
@@ -462,6 +463,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				// the form will auto close and we are back to the parent
 				// Form so no need to assign the returned doc
 				toast.success(t__('common.doc_created'));
+				if (onNestedDocumentCreated) onNestedDocumentCreated(doc);
 			}
 		} else if (result.type === 'redirect') {
 			// handle redirect after document creation
@@ -609,6 +611,7 @@ type Args<T> = {
 	config: CompiledArea | CompiledCollection;
 	readOnly: boolean;
 	onDataChange?: any;
+	onNestedDocumentCreated?: any;
 	onFieldFocus?: any;
 	key: string;
 };
