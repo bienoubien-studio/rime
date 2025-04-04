@@ -123,7 +123,6 @@ export type BaseCollection<S> = {
 	slug: S;
 	label?: CollectionLabel;
 	auth?: true;
-	// upload?: boolean;
 	hooks?: CollectionHooks<RegisterCollection[S]>;
 	url?: (doc: RegisterCollection[S]) => string;
 	status?: boolean | DocumentStatus[];

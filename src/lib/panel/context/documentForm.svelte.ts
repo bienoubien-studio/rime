@@ -17,7 +17,7 @@ import type { GenericBlock, GenericDoc, AnyFormField } from 'rizom/types';
 import type { Dic } from 'rizom/types/util';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
-import type { TreeBlock } from 'rizom/types/doc.js';
+import type { AreaSlug, TreeBlock } from 'rizom/types/doc.js';
 import { isObjectLiteral } from 'rizom/util/object.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
@@ -31,7 +31,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 }: Args<T>) {
 	//
 	let intialDoc = $state(initial);
-	let doc = $state(initial);
+	let doc = $state<T>(initial);
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
 	let processing = $state(false);
@@ -132,14 +132,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignItemsToDoc = (items: TreeBlock[]) => {
-			// const flatDoc: Dic = flatten(doc, {
-			// 	maxDepth: parts.length
-			// });
-			// flatDoc[path] = items;
-			// doc = unflatten(flatDoc);
 			doc = setValueAtPath(doc, path, items);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
-
 			/** update stamp to rerender */
 			stamp = new Date().getTime().toString();
 		};
@@ -230,13 +224,12 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 
 	function useBlocks(path: string) {
-		const parts = path.split('.');
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
 
 		const getBlocks = (): GenericBlock[] => {
 			return cloneDeep(getValueAtPath(path, doc)) || [];
 		};
-
+		
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
 			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
@@ -608,7 +601,7 @@ type MoveBlock = (from: number, to: number) => void;
 
 type Args<T> = {
 	initial: T;
-	config: CompiledArea | CompiledCollection;
+	config: (AreaSlug extends never ? never : CompiledArea) | CompiledCollection;
 	readOnly: boolean;
 	onDataChange?: any;
 	onNestedDocumentCreated?: any;
