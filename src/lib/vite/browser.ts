@@ -4,6 +4,9 @@ import path from 'path';
 
 /**
  * Vite plugin that serves the browser config as a virtual module
+ * This way file imports works without package.json export error
+ * Caveats : Vite will not optimize imported modules, so if an error
+ * occured, the module should be added to vite config optimizeDeps.include
  */
 export function browserConfig(): Plugin {
   const virtualModuleId = 'virtual:browser-config';
