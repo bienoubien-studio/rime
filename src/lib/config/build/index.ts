@@ -16,7 +16,6 @@ import { buildArea } from './area/index.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
-import genCache from '../../bin/generate/cache/index.js';
 import { cache } from 'rizom/plugins/cache/index.js';
 import { mailer } from 'rizom/plugins/mailer/index.server.js';
 import { hasProp } from 'rizom/util/object.js';
@@ -140,7 +139,11 @@ const buildConfig = async <C extends boolean = true>(
 	// Generate files
 	//////////////////////////////////////////////
 
-	genCache.set('.gen', '');
+	let genCache;
+	if(dev){
+		genCache = await import( '../../bin/generate/cache/index.js').then(m => m.default)
+		genCache.set('.gen', '');
+	}
 
 	const compiledConfig = compileConfig(builtConfig);
 
@@ -179,7 +182,9 @@ const buildConfig = async <C extends boolean = true>(
 		}
 	}
 
-	genCache.delete('.gen');
+	if(genCache){
+		genCache.delete('.gen');
+	}
 
 	if (!compiled) {
 		return builtConfig as C extends true ? CompiledConfig : BuiltConfig;
