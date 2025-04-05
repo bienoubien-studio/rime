@@ -1,7 +1,7 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import fs from 'fs';
 import path from 'path';
-import { logger } from '../util/logger/index.server';
+import { logger } from '../util/logger/index.server.js';
 
 /**
  * Vite plugin that serves the browser config as a virtual module
