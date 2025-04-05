@@ -2,6 +2,8 @@ import type { Plugin, UserConfig } from 'vite';
 import dotenv from 'dotenv';
 import { RizomError } from '../errors/index.js';
 import { hasRunInitCommand } from '../bin/util.server.js';
+import { existsSync, rmSync } from 'fs';
+import path from 'path';
 
 dotenv.config({ override: true });
 const dev = process.env.NODE_ENV === 'development';
@@ -14,6 +16,11 @@ export function rizom(): Plugin {
 			server.httpServer?.once('listening', () => {
 				if (dev && !hasRunInitCommand()) {
 					throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom-init`');
+				}
+				// remove .rizom folder if present at start
+				const rizomDevCacheDir = path.resolve(process.cwd(), '.rizom')
+				if( existsSync(rizomDevCacheDir)){
+					rmSync(rizomDevCacheDir, { recursive: true, force: true })
 				}
 			});
 
