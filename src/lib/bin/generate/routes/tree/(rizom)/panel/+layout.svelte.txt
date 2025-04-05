@@ -1,7 +1,7 @@
 <script>
 	import { Panel } from 'rizom/panel';
 	//@ts-ignore
-	import config from '$lib/rizom.config.browser.js';
+	import config from 'virtual:browser-config';
 	const { children, data } = $props();
 
 	const user = data.user;

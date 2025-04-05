@@ -7,6 +7,7 @@ import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
 import type { FieldsComponents } from 'rizom/types/panel.js';
 import type { FieldsType } from 'rizom/types/fields.js';
 import { RizomFormError } from 'rizom/errors/index.js';
+import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.js';
 
 
 let functionRegistry = new Map<string, string>();
@@ -73,6 +74,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 function createImportStatement(pathInfo: string | { path: string; exportName: string }): string {
 	type PatternPair = [RegExp, string];
 	let importPath: string;
+
 	let exportName: string | undefined;
 
 	// Handle external module object format
@@ -83,91 +85,17 @@ function createImportStatement(pathInfo: string | { path: string; exportName: st
 		importPath = pathInfo;
 	}
 	
-	// First, normalize PNPM paths to regular node_modules paths
-	if (importPath.includes('node_modules/.pnpm/')) {
-		// Extract the real path after the last node_modules/ in PNPM paths
-		importPath = importPath.replace(
-			/.*node_modules\/(.+\/)?node_modules\/(.+)$/,
-			'node_modules/$2'
-		);
+	importPath = normalizePnpmPath(importPath)
+	importPath = normalizeFilePath(importPath)
+	importPath = removeLeadingSlash(importPath)
+	importPath = normalizeRizomImport(importPath)
+	if( !importPath.startsWith('rizom') ){
+		importPath = `./${importPath}`
 	}
 
-	// Now apply the specific module patterns
-	if (importPath.includes('node_modules')) {
-		// Node modules aliases as [pattern, replacement] pairs
-		const nodeModulePatterns: PatternPair[] = [
-			// @lucide/svelte specific rule - removes .svelte extension and dist/
-			[
-				/node_modules\/@lucide\/svelte\/dist\/(?:icons\/)?(.+?)\.svelte$/,
-				'@lucide/svelte/icons/$1'
-			],
-
-			// Special rule for scoped packages with dist/index.js
-			[/node_modules\/@([^/]+)\/([^/]+)\/dist\/index\.js$/, '@$1/$2'],
-
-			// General rule for scoped packages - removes dist/
-			[/node_modules\/@([^/]+)\/([^/]+)\/dist\/(.+?)$/, '@$1/$2/$3'],
-
-			// Special rule for non-scoped packages with dist/index.js
-			[/node_modules\/([^@][^/]+)\/dist\/index\.js$/, '$1'],
-
-			// General rule for non-scoped packages - removes dist/
-			[/node_modules\/([^@][^/]+)\/dist\/(.+?)$/, '$1/$2'],
-
-			// Remove index.js from node module paths
-			[/node_modules\/(.+)\/index\.js$/, '$1'],
-
-			// Default fallback rule for all other node_modules
-			[/node_modules\/(.+)$/, '$1']
-		];
-
-		// Apply first matching pattern
-		for (const [pattern, replacement] of nodeModulePatterns) {
-			if (pattern.test(importPath)) {
-				importPath = importPath.replace(pattern, replacement);
-				break;
-			}
-		}
-	} else {
-		// Non-node modules aliases as [pattern, replacement] pairs
-		const regularPatterns: PatternPair[] = [
-			// Svelte components from src
-			[/^src\/(.+)\.svelte$/, '../$1.svelte']
-		];
-
-		// Apply first matching pattern
-		for (const [pattern, replacement] of regularPatterns) {
-			if (pattern.test(importPath)) {
-				importPath = importPath.replace(pattern, replacement);
-				break;
-			}
-		}
-	}
-
-	if (importPath.startsWith('file://')) {
-		// Remove 'file://' prefix
-		importPath = importPath.replace('file://', '');
-
-		// Convert absolute file path to relative path from src/lib
-		const libPath = path.resolve(process.cwd(), './src/lib');
-		let relativePath = path.relative(libPath, importPath);
-
-		// Ensure path starts with ../
-		if (!relativePath.startsWith('..')) {
-			relativePath = '../' + relativePath;
-		}
-
-		// Replace .ts extension with .js
-		relativePath = relativePath.replace(/\.ts$/, '.js');
-
-		importPath = relativePath;
-	}
-
-	// Ensure proper quoting
-	if (!importPath.startsWith("'") && !importPath.startsWith('"')) {
-		importPath = `'${importPath}'`;
-	}
-
+	// Quoting
+	importPath = `'${importPath}'`;
+	
 	const importName = `import_${importCounter++}`;
 
 	// Register the import with appropriate format based on exportName

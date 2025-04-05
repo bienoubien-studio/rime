@@ -1,4 +1,5 @@
 import type { Plugin, UserConfig } from 'vite';
+import { browserConfig } from './browser.js';
 import dotenv from 'dotenv';
 import { RizomError } from '../errors/index.js';
 import { hasRunInitCommand } from '../bin/util.server.js';
@@ -8,8 +9,8 @@ import path from 'path';
 dotenv.config({ override: true });
 const dev = process.env.NODE_ENV === 'development';
 
-export function rizom(): Plugin {
-	return {
+export function rizom(): Plugin[] {
+	return [{
 		name: 'rizom',
 		configureServer(server) {
 			// Add a listener for when the server starts
@@ -54,5 +55,5 @@ export function rizom(): Plugin {
 				}
 			};
 		}
-	};
+	}, browserConfig()];
 }
