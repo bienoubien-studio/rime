@@ -1,6 +1,7 @@
-import type { Plugin } from 'vite';
+import type { Plugin, ViteDevServer } from 'vite';
 import fs from 'fs';
 import path from 'path';
+import { logger } from '../util/logger/index.server';
 
 /**
  * Vite plugin that serves the browser config as a virtual module
@@ -11,9 +12,39 @@ import path from 'path';
 export function browserConfig(): Plugin {
   const virtualModuleId = 'virtual:browser-config';
   const resolvedVirtualModuleId = '\0' + virtualModuleId;
-
+  let server: ViteDevServer;
+  
   return {
     name: 'rizom:browser-config',
+    
+    configureServer(_server) {
+      server = _server;
+      
+      // Watch the .rizom directory for changes
+      const rizomDir = path.resolve(process.cwd(), '.rizom');
+      // if (fs.existsSync(rizomDir)) {
+        server.watcher.add(path.join(rizomDir, '**'));
+        
+        // When any file in .rizom changes, invalidate the module and force reload
+        server.watcher.on('change', (changedPath) => {
+          if (changedPath.includes('.rizom')) {
+            // Force module reload by invalidating the module in the module graph
+            const module = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
+            if (module) {
+              server.moduleGraph.invalidateModule(module);
+              logger.info('Browser config changed, forcing full reload');
+              
+              // Force a full page reload
+              server.ws.send({
+                type: 'full-reload',
+                path: '*'
+              });
+            }
+          }
+        });
+
+      // }
+    },
     
     resolveId(id) {
       if (id === virtualModuleId) {
