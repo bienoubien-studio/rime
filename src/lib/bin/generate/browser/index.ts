@@ -162,9 +162,7 @@ function isExternalModule(value: any): { path: string; exportName: string } | nu
   // Check if value is an object (including functions)
   if (value !== null && (typeof value === 'object' || typeof value === 'function')) {
 		if (externalSymbol in value) {
-			console.log('- - - -')
-			console.log(value)
-      return value[externalSymbol];
+			return value[externalSymbol];
     }
   }
   return null;
