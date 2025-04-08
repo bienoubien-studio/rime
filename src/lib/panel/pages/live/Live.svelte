@@ -8,6 +8,7 @@
 	import { t__ } from 'rizom/panel/i18n';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -86,9 +87,22 @@
 			console.log('live:synced');
 		}
 	});
+
+	const ZOOMS = [ 0.5, 0.66, 1 ] as const
+	
+	let currentZoom = $state(1)
+	
+	const iframeScale = $derived(ZOOMS[currentZoom])
+	const iframeSizePercent = $derived((1 / iframeScale) * 100)
+
 </script>
 
 <div class="rz-live-container">
+	{#if !sync}
+		<div out:fade={{ duration: 350 }} class="rz-live-container__overlay">
+			<div><SpinLoader /> {t__('common.live_in_sync')}</div>
+		</div>
+	{/if}
 	<PaneGroup autoSaveId="rz-live:panel-state" direction="horizontal">
 		<Pane defaultSize={40}>
 			<div class="rz-live-container__side-panel">
@@ -107,17 +121,13 @@
 		</Pane>
 		<PaneResizer />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
-			{#if !sync}
-				<div out:fade={{ duration: 350 }} class="rz-live-container__iframe-overlay">
-					<div><SpinLoader /> {t__('common.live_in_sync')}</div>
-				</div>
-			{/if}
-			<iframe bind:this={iframe} title="edit" src={data.src}></iframe>
+			<iframe style="height:{iframeSizePercent}%;width:{iframeSizePercent}%;scale:{iframeScale}" bind:this={iframe} title="edit" src={data.src}></iframe>
 		</Pane>
 	</PaneGroup>
 </div>
 
 <style>
+	
 	:global(.rz-scroll-area__viewport) {
 		position: relative;
 	}
@@ -133,17 +143,20 @@
 		border-right: var(--rz-border);
 	}
 	.rz-live-container iframe {
-		width: 100%;
-		height: 100%;
+		width: 133%;
+		height: 133%;
+		scale: 0.75;
+		transform-origin: 0 0;
 	}
-	.rz-live-container__iframe-overlay {
+	.rz-live-container__overlay {
 		background-color: hsl(var(--rz-ground-6));
-		opacity: 0.5;
+		opacity: 0.8;
 		position: absolute;
 		inset: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		z-index: 50;
 		> div {
 			display: flex;
 			align-items: center;
