@@ -14,8 +14,8 @@
 
 	const isUploadCollection = $derived(isUploadConfig(collection.config));
 	const thumbnailUrl = $derived.by(() => {
-		if (isUploadConfig(collection.config)) {
-			return doc.sizes.thumbnail;
+		if (isUploadConfig(collection.config) && doc.mimeType.includes('image')) {
+			return doc._thumbnail;
 		}
 		return null;
 	});

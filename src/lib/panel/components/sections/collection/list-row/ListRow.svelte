@@ -42,14 +42,14 @@
 			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
 				{#key doc.filename}
-					<UploadThumbCell url={doc.sizes.thumbnail} mimeType={doc.mimeType} />
+					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 				{/key}
 			{/if}
 			<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
-					<UploadThumbCell url={doc.sizes.thumbnail} mimeType={doc.mimeType} />
+					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 				{/if}
 				{#if collection.config.status && Array.isArray(collection.config.status)}
 					{@const docStatus =

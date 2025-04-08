@@ -77,7 +77,7 @@
 				{#if form.doc.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
 						{#key form.doc.title}
-							<img src={form.doc.sizes.thumbnail} alt="preview" />
+							<img src={form.doc.url} alt="preview" />
 						{/key}
 					</div>
 				{:else}

@@ -4,7 +4,6 @@
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
 	import Button from 'rizom/panel/components/ui/button/button.svelte';
 	import Sortable from 'sortablejs';
-	import { Edit, File, X } from '@lucide/svelte';
 	import Doc from 'rizom/panel/components/sections/document/Document.svelte';
 	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';

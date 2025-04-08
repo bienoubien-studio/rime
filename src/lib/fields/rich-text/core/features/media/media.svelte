@@ -14,7 +14,7 @@
 	type NodeAttributes = {
 		id: string | null;
 		title: string | null;
-		sizes?: Record<string, string> | null;
+		sizes?: Record<string, any> | null;
 		mimeType: string | null;
 		url: string | null;
 		filename: string | null;
@@ -143,7 +143,7 @@
 {#snippet dialogItem(item: UploadDoc)}
 	<div class="rz-relation-upload__grid-item">
 		<div class="rz-relation-upload__grid-thumbnail" style="--rz-upload-preview-cell-size: 100%">
-			<UploadThumbCell url={item.sizes.thumbnail} mimeType={item.mimeType} />
+			<UploadThumbCell url={item._thumbnail} mimeType={item.mimeType} />
 		</div>
 		<div class="rz-relation-upload__grid-info">
 			<p class="rz-relation-upload__grid-filename">{item.filename}</p>

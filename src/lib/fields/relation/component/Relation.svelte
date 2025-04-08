@@ -71,7 +71,7 @@
 			item.filesize = doc.filesize;
 			item.mimeType = doc.mimeType;
 			if (isRelationToImage) {
-				item.url = doc.sizes.thumbnail;
+				item.url = doc._thumbnail;
 			}
 		}
 		if (form.isLive) {

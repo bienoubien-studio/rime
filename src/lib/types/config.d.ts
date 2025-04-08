@@ -133,9 +133,29 @@ export type Collection<S> = BaseCollection<S> &
 		| { upload?: false | undefined }
 		| {
 				upload: true;
+				/**
+				 * Define image sizes that will be generated when an image is uploaded.
+				 * A 'thumbnail' size will be added, if none provided with this name.
+				 * @example
+				 * ```typescript
+				 * imageSizes: [
+				 *   {
+				 *     name: 'thumbnail',
+				 *     width: 200,
+				 *     height: 200,
+				 *     out: ['jpg', 'webp'],
+				 *     compression: 80
+				 *   },
+				 *   {
+				 *     name: 'medium',
+				 *     width: 800,
+				 *     compression: 85
+				 *   }
+				 * ]
+				 * ```
+				 */
 				imageSizes?: ImageSizesConfig[];
 				accept?: string[];
-				out?: 'jpeg' | 'webp';
 		  }
 	);
 
@@ -215,11 +235,13 @@ export type BuiltArea = Area<AreaSlug> & {
 
 export type ImageSizesConfig = {
 	name: string;
+	/** If none provide will fallback to original file extesion */
 	out?: Array<'jpg' | 'webp'>;
+	/** Default compression: 60 */
 	compression?: number;
 } & AtLeastOne<{
 	width: number;
-	height: number;
+	height: number; 
 }>;
 
 type CompiledCollection = WithoutBuilders<BuiltCollection>;
