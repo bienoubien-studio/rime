@@ -3,7 +3,7 @@
 Headless CMS powered by SvelteKit.
 
 > [!NOTE]
-> Currently in Alpha
+> Not ready for production
 
 ![alt backend capture](https://github.com/bienoubien-studio/rizom/blob/main/rizom.png?raw=true)
 
@@ -12,12 +12,12 @@ Headless CMS powered by SvelteKit.
 - Easy configuration
 - TypeScript
 - Built-in authentication (better-auth)
-- SQLite database (drizzle)
 - Auto-generated:
   - API endpoints
   - Types
   - Database schema
   - Admin panel
+- SQLite database (drizzle)
 - Live Edit system
 - Media management
 - Fine grained access control
@@ -57,10 +57,10 @@ cd my-app
 ```bash
 npm install rizom sharp better-sqlite3
 npm install -D drizzle-kit
-npx rizom-init
+npx rizom init
 ```
 
-The `rizom-init` command will automatically:
+The `rizom init` command will automatically:
 
 - Create/populate `.env` file
 - Create `src/config/rizom.config.ts` config file
@@ -184,7 +184,7 @@ export default defineConfig({
 ```
 
 > [!NOTE]
-> Icons must be imported from `@lucide/svelte` (other icon packages are not tested)
+> Icons must be imported from `@lucide/svelte` (other icon packages are not tested, but should work if a size prop is available on icon component)
 > Detailed configuration documentation is in development. Feel free to open issues for questions!
 
 ## Retrieve your data
@@ -224,8 +224,8 @@ For now I am using it with @svelte/adapter-node, other adapter not tested and pr
 
 With the node adapter :
 ```sh
-npx rizom-build
-npx rizom-build -d # to copy the database directory
+npx rizom build
+npx rizom build -d # to copy the database directory
 ```
 It's doing bascically `vite build` under the hood and create the polka server file inside an app directory, plus giving some info on how to run it.
 
@@ -236,6 +236,7 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 - [v] Panel i18n
 - [v] Document status
 - [v] Tree field
+- [v] more tiptap integration
 - [ ] Live Edit system in practice
 - [ ] Documentation
 
@@ -245,7 +246,6 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 - [ ] Put bin commands in a separate package ex: @rizom/kit
 - [ ] collection nested
 - [ ] page version and auto-saved draft
-- [ ] more tiptap integration
 - [ ] more better-auth integration
 - [ ] configurable medias/config path
 
