@@ -37,10 +37,10 @@ type DeepPartial<T> = {
 type WithRelationPopulated<T> = {
 	[K in keyof T]: 
 		// Check for primitive types first
-		Required<T>[K] extends string ? string :
-		Required<T>[K] extends number ? number :
-		Required<T>[K] extends boolean ? boolean :
-		Required<T>[K] extends null ? null :
+		Required<T>[K] extends string ? T[K] :
+		Required<T>[K] extends number ? T[K] :
+		Required<T>[K] extends boolean ? T[K] :
+		Required<T>[K] extends null ? T[K] :
 		T[K] extends undefined ? undefined :
 		
 		// Then check for relation values
