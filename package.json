@@ -3,7 +3,7 @@
 	"version": "0.2.7",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "bun ./src/lib/bin/reset/index.ts --force && vite build && npm run package && pnpm build:css",
+		"build": "bun ./src/lib/bin/index.ts clear --force && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
 		"rizom:use": "bun ./src/scripts/useConfig.js",
 		"preview": "vite preview",
@@ -23,10 +23,7 @@
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"rizom-generate": "./dist/bin/generate/index.js",
-		"rizom-build": "./dist/bin/build/index.js",
-		"rizom-init": "./dist/bin/init/index.js",
-		"rizom-reset": "./dist/bin/reset/index.js"
+		"rizom": "./dist/bin/index.js"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -82,6 +79,10 @@
 		"./api": {
 			"types": "./dist/api/index.d.ts",
 			"import": "./dist/api/index.js"
+		},
+		"./config/build/index.js": {
+			"types": "./dist/config/build/index.d.ts",
+			"import": "./dist/config/build/index.js"
 		},
 		"./types": {
 			"types": "./dist/types/index.d.ts"

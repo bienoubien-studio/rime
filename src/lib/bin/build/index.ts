@@ -1,16 +1,10 @@
 #!/usr/bin/env node
 import { spawnSync } from 'child_process';
-import { program } from 'commander';
 import { copyFileSync, cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { polkaServer } from './templates.js';
 import { taskLogger } from 'rizom/util/logger/index.server.js';
 
-program.version('0.1').description('CMS utilities');
-
-program
-	.description('Build CMS')
-	.option('-d, --with-database', 'Include database', false)
-	.action((args) => {
+export const build = (args: { withDatabase?: boolean }) => {
 		// Delete app folder if it exists
 		if (existsSync('./app')) {
 			rmSync('./app', { recursive: true, force: true });
@@ -40,6 +34,4 @@ program
 		taskLogger.info('pnpm install --prod');
 		taskLogger.info('pnpm install polka sharp serve-static');
 		taskLogger.info('node --env-file=.env index.js');
-	});
-
-program.parse(process.argv);
+}
