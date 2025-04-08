@@ -15,7 +15,8 @@ class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 	}
 
 	toType() {
-		return `${this.field.name}${this.field.required ? '' : '?'}: string`;
+		const optionsString = this.field.options.map(option => `'${option.value}'` ).join(' | ')
+		return `${this.field.name}${this.field.required ? '' : '?'}: ${optionsString}`;
 	}
 }
 
