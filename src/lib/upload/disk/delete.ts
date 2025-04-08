@@ -18,21 +18,23 @@ export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<Gen
 
 	try {
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);
+		
+		// Delete original
 		unlinkSync(filePath);
-		for (const size of config.imageSizes || []) {
-			const unlinkPath = (sizePath: string) => {
-				if (existsSync(sizePath)) {
-					unlink(sizePath, () => {});
-				}
-			};
-			const sizeKey = toCamelCase(size.name);
-			if (typeof doc.sizes[sizeKey] === 'string') {
-				unlinkPath(`static/${doc.sizes[sizeKey]}`);
-			} else {
-				for (const sizeFormatPath of Object.values(doc.sizes[sizeKey])) {
-					unlinkPath(`static/${sizeFormatPath}`);
-				}
+		
+		const unlinkPath = (sizePath: string) => {
+			if (existsSync(sizePath)) {
+				unlink(sizePath, () => {});
 			}
+		};
+		
+		// Process all entries in doc.sizes
+		if (doc.sizes) {
+			Object.values(doc.sizes).forEach(path => {
+				if (typeof path === 'string') {
+					unlinkPath(`static/${path}`);
+				}
+			});
 		}
 	} catch (err: any) {
 		logger.error(err)
