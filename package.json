@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/bin/index.ts clear --force && vite build && npm run package && pnpm build:css",
