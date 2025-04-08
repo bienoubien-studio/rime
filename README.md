@@ -60,6 +60,10 @@ npm install -D drizzle-kit
 npx rizom init
 ```
 
+> [!NOTE]
+> pnpm missed installation of needed dependencies @lucide/svelte and drizzle-orm
+> so you will need to install them manually
+
 The `rizom init` command will automatically:
 
 - Create/populate `.env` file
