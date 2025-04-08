@@ -63,7 +63,6 @@ export type {
 // Hooks types
 export type {
 	CollectionHooks,
-	CollectionHook,
 	CollectionHookBeforeUpdate,
 	CollectionHookAfterUpdate,
 	CollectionHookBeforeCreate,
@@ -85,10 +84,12 @@ export type { CollectionLayoutProps, FieldPanelTableConfig, FormErrors, Route } 
 // Upload types
 export type { JsonFile } from './upload.js';
 
-
 export type { Link } from '../fields/link/index.js';
+
+// Util
+export { WithRelationPopulated } from './util.js'
+
 export type { Plugin, Plugins } from '../plugins/index.js';
 export type { Rizom } from '../rizom.server.js';
-export type { Navigation } from './panel/navigation.js';
 export type { RichTextFeatureNode, RichTextFeatureMark } from '../fields/rich-text/core/types.js'
 export type { BlocksFieldBlockRenderTitle } from '../fields/blocks/index.js'
