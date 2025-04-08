@@ -56,14 +56,14 @@ export const generateSizes = async ({ sizes, buffer, name, extension }: Generate
 		// If no output formats specified, keep original format
 		if (!size.out?.length) {
 			let resizedBuffer: Buffer;
-			const shouldApplyCompression =
-				size.compression && (extension === 'jpg' || extension === 'webp');
-
+			const shouldApplyCompression = extension === 'jpg' || extension === 'webp';
+			
 			if (shouldApplyCompression) {
+				const compression = size.compression || 60;
 				if (extension === 'jpg') {
-					resizedBuffer = await resizedImage.jpeg({ quality: size.compression }).toBuffer();
+					resizedBuffer = await resizedImage.jpeg({ quality: compression }).toBuffer();
 				} else {
-					resizedBuffer = await resizedImage.webp({ quality: size.compression }).toBuffer();
+					resizedBuffer = await resizedImage.webp({ quality: compression }).toBuffer();
 				}
 			} else {
 				resizedBuffer = await resizedImage.toBuffer();
@@ -79,7 +79,7 @@ export const generateSizes = async ({ sizes, buffer, name, extension }: Generate
 		// Handle format conversions
 		const convertedFiles = await Promise.all(
 			size.out.map(async (format) => {
-				const compression = size.compression || 70;
+				const compression = size.compression || 60;
 				let convertedImage;
 
 				if (format === 'jpg') {
