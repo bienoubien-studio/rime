@@ -26,9 +26,8 @@ export function rizom(): Plugin[] {
 			});
 
 			// Add a watcher for config changes
-			server.watcher.add('src/config/**/*.ts');
 			server.watcher.on('change', async (path) => {
-				if (path.includes('src/config/rizom.config')) {
+				if (path.includes('src/config')) {
 					// Make a dummy request to trigger handler
 					try {
 						const { host, port, https } = server.config.server;
