@@ -16,7 +16,7 @@ program
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous
-			execSync('bun ./src/lib/bin/reset/index.ts --force');
+			execSync('bun ./src/lib/bin/index.ts clear --force');
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
