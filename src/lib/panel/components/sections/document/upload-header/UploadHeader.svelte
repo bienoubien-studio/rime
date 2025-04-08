@@ -31,7 +31,7 @@
 		form.setValue('mimeType', null);
 		form.setValue('filesize', null);
 		form.errors.delete('mimeType');
-		form.setValue(`size.thumbnail`, null);
+		form.setValue(`_thumbnail`, null);
 	};
 
 	const onGeneratingPreviewStart = () => (form.isDisabled = true);
@@ -64,8 +64,8 @@
 	});
 
 	$effect(() => {
-		if (preview && form.doc.sizes.thumbnail !== preview) {
-			form.setValue(`sizes.thumbnail`, preview);
+		if (preview && form.doc._thumbnail !== preview) {
+			form.setValue(`_thumbnail`, preview);
 		}
 	});
 </script>
@@ -77,7 +77,7 @@
 				{#if form.doc.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
 						{#key form.doc.title}
-							<img src={form.doc.url} alt="preview" />
+							<img src={form.doc.url || form.doc._thumbnail} alt="preview" />
 						{/key}
 					</div>
 				{:else}
