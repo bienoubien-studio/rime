@@ -115,10 +115,21 @@ export const init = async ({ force, name: incomingName }: Args) => {
 				`$1import { rizom } from '${PACKAGE}/vite';\n`
 			);
 
-			// Add plugin to the list
+			// Add plugin to the list - ensure it's after sveltekit()
 			const updatedContent = newContent.replace(
 				/plugins:\s*\[([\s\S]*?)\]/,
-				(match, plugins) => `plugins: [rizom(), ${plugins}]`
+				(match, plugins) => {
+					// Check if sveltekit() is in the plugins list
+					if (plugins.includes('sveltekit()')) {
+						// Add rizom() after sveltekit()
+						return plugins.includes('sveltekit()')
+							? match.replace('sveltekit()', 'sveltekit(), rizom()')
+							: `plugins: [${plugins}, rizom()]`;
+					} else {
+						// If sveltekit() isn't found, add rizom() at the end
+						return `plugins: [${plugins}, rizom()]`;
+					}
+				}
 			);
 			writeFileSync(configPath, updatedContent);
 		}
