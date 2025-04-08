@@ -85,6 +85,10 @@
 			"types": "./dist/config/build/index.d.ts",
 			"import": "./dist/config/build/index.js"
 		},
+		"./client": {
+			"types": "./dist/client.d.ts",
+			"import": "./dist/client.js"
+		},
 		"./types": {
 			"types": "./dist/types/index.d.ts"
 		},

@@ -1,6 +1,6 @@
 import rizom from './rizom.server.js';
 import handlers from './handlers/index.js';
-export { buildGenerateHTML } from './fields/rich-text/core/generate-html.js';
+
 export { rizom, handlers };
 export { FormFieldBuilder, FieldBuilder } from 'rizom/fields/builders/field.js';
 export { area } from 'rizom/config/build/area/builder.js';
