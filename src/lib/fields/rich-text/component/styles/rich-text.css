@@ -59,8 +59,15 @@
 }
 
 .rz-rich-text__editor .ProseMirror {
-	font-size: var(--rz-text-xl);
-
+	
+	
+	@container rz-document (min-width:620px) {
+		font-size: var(--rz-text-lg);
+	}
+	@container rz-document (min-width:960px) {
+		font-size: var(--rz-text-xl);
+	}
+	
 	& > * + * {
 		margin-top: var(--rz-size-4);
 	}
