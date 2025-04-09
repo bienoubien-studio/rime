@@ -8,7 +8,10 @@ export default defineConfig({
 	server: {
 		host: 'rizom.test'
 	},
-	optimizeDeps: { exclude: ['sharp', 'better-sqlite3'] },
+	optimizeDeps: { 
+		exclude: ['sharp', 'better-sqlite3'],
+		include: ['@lucide/svelte']
+	},
 	ssr: {
 		external: ['sharp']
 	},

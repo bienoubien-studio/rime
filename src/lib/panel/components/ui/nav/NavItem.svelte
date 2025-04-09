@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import File from '@lucide/svelte/icons/file';
+	import { File } from '@lucide/svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 	import NavItemButton from './NavItemButton.svelte';
 	import type { Route } from 'rizom/types/panel';
-
+	
 	type Props = {
 		isCollapsed: boolean;
 		route: Route;
