@@ -20,7 +20,7 @@ program
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
-			execSync(`bun ./src/lib/bin/init/index.ts --name ${name}`);
+			execSync(`bun ./src/lib/bin/index.ts init --name ${name}`);
 
 			// Copy entire config directory
 			const testConfigDirPath = path.join(projectRoot, 'tests', name, 'config');
