@@ -82,14 +82,18 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		if (!documentConfig) {
 			throw new Error('should never happen');
 		}
-		const relationConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
-		const isRelationColumn = relationConfig && isRelationField(relationConfig);
+		const fieldConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
+		if (!fieldConfig) {
+			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
+			return false;
+		}
+		const isRelationColumn = fieldConfig && isRelationField(fieldConfig);
 		if (!isRelationColumn) {
 			logger.warn(`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`);
 			return false;
 		}
-
-		const [to, localized] = [relationConfig.relationTo, relationConfig.localized];
+		
+		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
 		const relationTableName = `${slug}Rels`;
 		const relationTable = rizom.adapter.tables[relationTableName];
 		const conditions = [fn(relationTable[`${to}Id`], value)];
