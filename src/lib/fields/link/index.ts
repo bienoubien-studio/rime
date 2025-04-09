@@ -5,30 +5,34 @@ import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/util/validate.js';
 
-const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale }) => {
+const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale, documentId }) => {
 	const hasValue = !!value;
 	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
 		!['url', 'email', 'tel', 'anchor'].includes(type);
-
+	
 	if (hasValue && isResourceLinkType(value.type)) {
-		try {
-			let doc;
-			if (api.rizom.config.isCollection(value.type)) {
-				doc = await api.collection(value.type).findById({ id: value.link || '', locale });
-			} else {
-				doc = await api.area(value.type).find({ locale });
+		// Compare with the current document beign processed to prevent infinite loop
+		if( value.link !== documentId ){
+			try {
+				let doc;
+				if (api.rizom.config.isCollection(value.type)) {
+					doc = await api.collection(value.type).findById({ id: value.link || '', locale });
+				} else {
+					doc = await api.area(value.type).find({ locale });
+				}
+				if (!doc) {
+					value.link = null;
+					return value;
+				}
+				
+				if (doc.url) value.url = doc.url;
+			} catch (err) {
+				// catch 404
+				console.error(err);
 			}
-			if (!doc) {
-				value.link = null;
-				return value;
-			}
-
-			if (doc.url) value.url = doc.url;
-		} catch (err) {
-			console.error(err);
 		}
 	}
-
+	
 	return value;
 };
 

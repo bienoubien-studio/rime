@@ -60,12 +60,15 @@ type BaseSelectField = FormField & {
 	options: Option[];
 };
 
-type FieldHookMeta<T extends AnyFormField = AnyFormField> = {
+type FieldHookContext<T extends AnyFormField = AnyFormField> = {
 	api: LocalAPI;
 	locale?: string;
+	/** The document Id being processed */
+	documentId?: string,
+	/** The field config */
 	config: T;
 };
-type FieldHook<T extends FormField = any> = (value: any, metas: FieldHookMeta<T>) => any;
+type FieldHook<T extends FormField = any> = (value: any, context: FieldHookContext<T>) => any;
 type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeValidate?: FieldHook[];
