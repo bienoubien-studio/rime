@@ -67,9 +67,11 @@
 	};
 
 	$effect(() => {
-		if (!isPrimitiveType && field.value && ressourceId !== field.value.link) {
-			linkValue = ressourceId;
-			setValue();
+		if (!isPrimitiveType) {
+			if( (field.value && ressourceId !== field.value.link) || !field.value && ressourceId ){
+				linkValue = ressourceId;
+				setValue();
+			}
 		}
 	});
 
