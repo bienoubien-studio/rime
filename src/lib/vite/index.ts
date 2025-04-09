@@ -44,7 +44,11 @@ export function rizom(): Plugin[] {
 		config(): UserConfig {
 			return {
 				ssr: {
-					external: ['sharp']
+					external: ['sharp', 'better-sqlite3']
+				},
+				optimizeDeps: { 
+					exclude: ['sharp', 'better-sqlite3'],
+					include: ['@lucide/svelte']
 				},
 				build: {
 					rollupOptions: {
