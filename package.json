@@ -50,6 +50,10 @@
 			"types": "./dist/panel/index.server.d.ts",
 			"import": "./dist/panel/index.server.js"
 		},
+		"./live": {
+			"types": "./dist/live.d.ts",
+			"import": "./dist/live.js"
+		},
 		"./panel/style/index.css": {
 			"import": "./dist/panel/style/index.css"
 		},

@@ -6,8 +6,6 @@ import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte'
 import ForgotPassword from './pages/forgot-password/ForgotPassword.svelte';
 import Init from './pages/init/Init.svelte';
 import Live from './pages/live/Live.svelte';
-import LiveProvider from './components/sections/live/Provider.svelte';
-import LiveConsumer from './components/sections/live/Consumer.svelte';
 import Locked from './pages/locked/Locked.svelte';
 import Login from './pages/login/Login.svelte';
 import Panel from './components/Root.svelte';
@@ -24,8 +22,6 @@ export {
 	ForgotPassword,
 	Init,
 	Live,
-	LiveProvider,
-	LiveConsumer,
 	Locked,
 	Login,
 	Panel,
