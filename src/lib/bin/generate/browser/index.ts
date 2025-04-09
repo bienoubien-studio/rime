@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import { taskLogger } from 'rizom/util/logger/index.server.js';
 import cache from '../cache/index.js';
 import type { CompiledConfig } from 'rizom/types/config.js';
