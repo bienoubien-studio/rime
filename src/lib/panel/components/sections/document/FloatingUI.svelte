@@ -3,6 +3,7 @@
 	import Button from '../../ui/button/button.svelte';
 	import { ChevronLeft } from '@lucide/svelte';
 	import ButtonSave from './ButtonSave.svelte';
+	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
@@ -15,6 +16,16 @@
 		disabled={!form.canSubmit}
 		processing={form.processing}
 	/>
+
+	{#if form.config.url}
+		<LanguageSwitcher onLocalClick={(code) => {
+			const makeUrl = form.config.url!
+			//@ts-ignore
+			const url = makeUrl({ ...form.doc, locale: code})
+			window.location.href = url + '?live=1'
+		}}  />
+	{/if}
+
 </div>
 
 <style>

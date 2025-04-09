@@ -1,19 +1,15 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { invalidateAll } from '$app/navigation';
-	import Cookies from 'js-cookie';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
+
+	type Props = { onLocalClick : (code:string) => void }
+	const { onLocalClick }: Props = $props()
 
 	const locale = getLocaleContext();
 	const config = getConfigContext();
 	const locales = $state(config.raw.localization?.locales || []);
-
-	function setLocale(code: string) {
-		locale.code = code;
-		Cookies.set('Locale', code);
-		invalidateAll();
-	}
+	
 </script>
 
 {#if locales.length}
@@ -22,7 +18,7 @@
 			<Button
 				disabled={item.code === locale.code}
 				data-active={item.code === locale.code ? '' : null}
-				onclick={() => setLocale(item.code)}
+				onclick={() => onLocalClick(item.code)}
 				variant="outline"
 				size="icon"
 			>

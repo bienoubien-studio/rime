@@ -9,6 +9,9 @@
 	import ButtonStatus from './ButtonStatus.svelte';
 	import type { CompiledCollection, CompiledArea } from 'rizom/types/config';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
+	import { invalidateAll } from '$app/navigation';
+	import Cookies from 'js-cookie';
 
 	// Props
 	type Props = {
@@ -20,6 +23,7 @@
 	};
 	const { form, onClose, config }: Props = $props();
 
+	const locale = getLocaleContext();
 	const onCloseIsDefined = !!onClose;
 	const title = getContext<{ value: string }>('title');
 </script>
@@ -60,7 +64,13 @@
 
 		<ButtonSave disabled={!form.canSubmit} processing={form.processing} />
 
-		<LanguageSwitcher />
+		<LanguageSwitcher
+			onLocalClick={(code) => {
+				Cookies.set('Locale', code);
+				invalidateAll();
+			}}
+		/>
+		
 	</div>
 </PageHeader>
 
