@@ -53,7 +53,7 @@
 				ressources = result;
 			})
 			.then(() => {
-				if (ressources[0]._prototype === 'area') {
+				if (ressources.length && ressources[0]._prototype === 'area') {
 					selected = ressources[0];
 				}
 			});
