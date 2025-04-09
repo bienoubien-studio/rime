@@ -60,44 +60,74 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	};
 
 	/**
+	 * Recursively processes relation objects in any data structure
+	 */
+	const processRelations = async (value: any): Promise<any> => {
+		// Base case: null or undefined
+		if (value === null || value === undefined) {
+			return value;
+		}
+		
+		// Check if it's a relation object
+		if (
+			isObjectLiteral(value) && 
+			'documentId' in value && 
+			'relationTo' in value
+		) {
+			// Process single relation object
+			if ('livePreview' in value) {
+				return value.livePreview;
+			} else {
+				try {
+					const response = await fetch(
+						`/api/${value.relationTo}/${value.documentId}?depth=1`
+					).then((r) => r.json());
+					
+					if (response && response.doc) {
+						return response.doc;
+					}
+				} catch (err) {
+					// Silently handle fetch errors
+				}
+			}
+			return value;
+		}
+		
+		// Process arrays
+		if (Array.isArray(value)) {
+			const result = [...value];
+			for (let i = 0; i < result.length; i++) {
+				result[i] = await processRelations(result[i]);
+			}
+			return result;
+		}
+		
+		// Process objects (recursively)
+		if (isObjectLiteral(value)) {
+			const result = {...value};
+			for (const key of Object.keys(result)) {
+				result[key] = await processRelations(result[key]);
+			}
+			return result;
+		}
+		
+		// Return primitives as is
+		return value;
+	};
+
+	/**
 	 * Handles field value updates, including special handling for relation fields
 	 */
 	const handleFieldUpdate = async (data: { path: string; value: any }) => {
-		let value = data.value;
+		console.log('handleFieldUpdate', data);
 		
-		const isArray = Array.isArray(value) && value.length;
-		const isArrayOfRelation =
-			isArray &&
-			isObjectLiteral(value[0]) &&
-			'documentId' in value[0] &&
-			'relationTo' in value[0];
-
-		// Special handling for relation arrays
-		if (isArrayOfRelation) {
-			for (const [index, relation] of value.entries()) {
-				if ('livePreview' in relation) {
-					value[index] = relation.livePreview;
-				} else {
-					try {
-						const response = await fetch(
-							`/api/${relation.relationTo}/${relation.documentId}?depth=1`
-						).then((r) => r.json());
-						
-						if (response && response.doc) {
-							value[index] = response.doc;
-						}
-					} catch (err) {
-						// Silently handle fetch errors
-					}
-				}
-			}
-		}
+		// Process relations recursively
+		const processedValue = await processRelations(data.value);
 		
-		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate')
+		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate');
 		
-		// Update the document with the new value
-		doc = setValueAtPath(doc, data.path, value) as T;
-
+		// Update the document with the processed value
+		doc = setValueAtPath(doc, data.path, processedValue) as T;
 	};
 
 	/**
