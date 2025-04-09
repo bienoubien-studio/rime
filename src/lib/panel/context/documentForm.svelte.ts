@@ -122,7 +122,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 
 	function useTree(path: string) {
-		const parts = path.split('.');
+		// Stamp used for re-render
 		let stamp = $state(new Date().getTime().toString());
 
 		const generateTempId = () => 'temp-' + new Date().getTime().toString();
@@ -231,10 +231,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 		
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
+			blocks = rebuildPaths(blocks, path)
 			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
 		};
-
+		
 		const addBlock: AddBlock = (block) => {
 			const blockWithPath: GenericBlock = {
 				...block,
