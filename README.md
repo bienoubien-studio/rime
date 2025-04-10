@@ -105,7 +105,6 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 
 RIZOM_LOG_TO_FILE=true
 RIZOM_LOG_LEVEL=DEBUG
-RIZOM_ENV=development
 
 # RIZOM_CACHE_ENABLED=false
 # RIZOM_SMTP_USER=user@mail.com

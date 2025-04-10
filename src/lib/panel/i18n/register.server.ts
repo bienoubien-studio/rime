@@ -1,15 +1,40 @@
-import { PACKAGE_NAME } from 'rizom/constant';
 import { namespaces, type Dictionaries, type PanelLanguage } from './index.js';
+
+// Static mapping of all available translations
+// This makes imports statically analyzable by the bundler
+const translationModules = {
+	en: {
+		common: () => import('./en/common.js'),
+		errors: () => import('./en/errors.js'),
+		fields: () => import('./en/fields.js')
+	},
+	fr: {
+		common: () => import('./fr/common.js'),
+		errors: () => import('./fr/errors.js'),
+		fields: () => import('./fr/fields.js')
+	}
+};
 
 export async function registerTranslation(locale: PanelLanguage) {
 	const dictionaries: Partial<Dictionaries> = {};
 	try {
 		for (const namespace of namespaces) {
-			const isPackageDev = process.env.RIZOM_ENV === 'package';
-			const pathToTranslation = isPackageDev
-				? `../i18n/${locale}/${namespace}.js`
-				: `${PACKAGE_NAME}/panel/i18n/${locale}/${namespace}.js`;
-			dictionaries[namespace] = (await import(/* @vite-ignore */ pathToTranslation)).default;
+			// Check if we have this language/namespace combination
+			if (translationModules[locale]?.[namespace]) {
+				// Load the translation module
+				const module = await translationModules[locale][namespace]();
+				dictionaries[namespace] = module.default;
+			} else {
+				// Fallback to English if translation not found
+				const fallbackLocale = 'en';
+				if (translationModules[fallbackLocale]?.[namespace]) {
+					console.warn(`Translation not found for ${locale}/${namespace}, falling back to ${fallbackLocale}`);
+					const fallbackModule = await translationModules[fallbackLocale][namespace]();
+					dictionaries[namespace] = fallbackModule.default;
+				} else {
+					console.error(`Translation not found for ${namespace} in any language`);
+				}
+			}
 		}
 	} catch (error) {
 		console.error(`Failed to load translations:`, error);
