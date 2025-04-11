@@ -11,13 +11,14 @@ import {
 	tab,
 	tabs,
 	text,
-	toggle
+	toggle,
+	tree
 } from '$lib/fields/index.js';
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
-import type { CollectionHookBeforeUpsert, BlocksFieldBlockRenderTitle } from '$lib/types';
-
+import type { CollectionHookBeforeUpsert } from '$lib/types';
 import { collection, area, defineConfig } from 'rizom';
+
 
 /////////////////////////////////////////////
 // Settings
@@ -44,22 +45,9 @@ const Settings = area('settings', {
 
 const linkField = link('link').types('pages', 'infos', 'url').required();
 
-const renderTitle: BlocksFieldBlockRenderTitle = ({ values, position }) => {
-	const hasLink = 'link' in values;
-	const hasLabel = hasLink && 'label' in values.link && typeof values.link.label === 'string';
-	if (!hasLabel) {
-		return 'Link ' + position;
-	}
-	return `${values.link.label}`;
-};
 
-const subnav = blocks('subnav', [
-	block('subNavItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField)
-]).label('Sub Nav');
-
-const nav = blocks('nav', [
-	block('navItem').label('Link').renderTitle(renderTitle).icon(ListTree).fields(linkField, subnav)
-]);
+const nav = tree('nav').fields(linkField);
+const mainNav = tree('mainNav').fields(linkField).localized();
 
 const Menu = area('menu', {
 	group: 'Content',
@@ -67,7 +55,7 @@ const Menu = area('menu', {
 	access: {
 		read: () => true
 	},
-	fields: [nav]
+	fields: [nav, mainNav]
 });
 
 /////////////////////////////////////////////
@@ -102,7 +90,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	if (data?.attributes?.isHome) {
 		const query = {
 			where: {
-				isHome: {
+				'attributes.isHome': {
 					equals: true
 				}
 			}
@@ -197,7 +185,7 @@ const tabAttributes = tab('attributes').fields(
 );
 
 const tabContent = tab('layout').fields(
-	blocks('components', [blockParagraph, blockSlider, blockImage]).table()
+	blocks('components', [blockParagraph, blockSlider, blockImage]).table().localized()
 );
 
 const tabSeo = tab('seo').fields(
