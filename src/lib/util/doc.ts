@@ -1,6 +1,6 @@
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
-import type { Link } from '../fields/link/index.js';
+import type { Link } from '../fields/link/types.js';
 import type { Dic } from 'rizom/types/util.js';
 import { isUploadConfig } from 'rizom/util/config.js';
 
@@ -16,7 +16,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 			} else if (curr.type === 'group') {
 				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
 			} else if (curr.type === 'link') {
-				const emptyLink: Link = { link: '', target: '_self', type: 'url' };
+				const emptyLink: Link = { value: '', target: '_self', type: 'url' };
 				prev[curr.name] = emptyLink;
 			} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
 				prev[curr.name] = [];

@@ -6,6 +6,8 @@ const API_BASE_URL = 'http://rizom.test:5173/api';
 
 let token: string;
 
+
+
 //////////////////////////////////////////////
 // Init
 //////////////////////////////////////////////
@@ -206,6 +208,7 @@ test('Should return 2 pages', async ({ request }) => {
 // // Upload Collection
 // //////////////////////////////////////////////
 
+let imageID: string
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
@@ -224,6 +227,7 @@ test('Should create a Media', async ({ request }) => {
 	expect(doc.alt).toBe('alt');
 	expect(doc.filename).toBe('landscape-3.jpg');
 	expect(doc.mimeType).toBe('image/jpeg');
+	imageID = doc.id
 });
 
 // /** ---------------- QUERIES ---------------- */
@@ -331,6 +335,208 @@ test('Should return 2 page', async ({ request }) => {
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(2);
 });
+
+
+//////////////////////////////////////////////
+// BLOCKS Localized
+//////////////////////////////////////////////
+let pageWithBlockID: string
+test('Should create a page with blocks', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/pages`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			attributes: {
+				title: 'Page with blocks',
+				slug: 'page-with-blocks',
+			},
+			layout: {
+				components: [
+					{ type: 'paragraph', text: 'paragraph text' },
+					{ type: 'slider', image: 'image value' },
+					{ type: 'image', image: [imageID], legend: 'légende' },
+				]
+			}
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.attributes.title).toBe('Page with blocks');
+	expect(doc.attributes.slug).toBe('page-with-blocks');
+	expect(doc.layout.components).toHaveLength(3);
+	expect(doc.locale).toBe('fr');
+	expect(doc.id).toBeDefined();
+	pageWithBlockID = doc.id;
+});
+
+test('Should get the FR content of page with blocks (fallback)', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages/${pageWithBlockID}?locale=en`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.attributes.title).toBe('Page with blocks');
+	expect(doc.attributes.slug).toBe('page-with-blocks');
+	expect(doc.layout.components).toHaveLength(3);
+	expect(doc.layout.components[0].type).toBe('paragraph');
+	expect(doc.layout.components[0].text).toBe('paragraph text');
+	expect(doc.layout.components[1].type).toBe('slider');
+	expect(doc.layout.components[1].image).toBe('image value');
+	expect(doc.layout.components[2].type).toBe('image');
+	expect(doc.layout.components[2].legend).toBe('légende');
+	expect(doc.layout.components[2].image).toBeDefined();
+	expect(doc.locale).toBe('en');
+})
+
+test('Should update EN content of page with blocks', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/pages/${pageWithBlockID}?locale=en`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			attributes: {
+				title: "Page with blocks but EN",
+				slug: 'page-with-blocks-en',
+			},
+			layout: {
+				components: [
+					{ type: 'slider', image: 'image value en' },
+					{ type: 'paragraph', text: 'paragraph text' },
+					{ type: 'image', image: [imageID], legend: 'legend EN' },
+					{ type: 'slider', image: 'image value but en' },
+				]
+			}
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.attributes.title).toBe('Page with blocks but EN');
+	expect(doc.attributes.slug).toBe('page-with-blocks-en');
+	expect(doc.layout.components).toHaveLength(4);
+	expect(doc.layout.components[0].type).toBe('slider');
+	expect(doc.layout.components[0].image).toBe('image value en');
+	expect(doc.layout.components[1].type).toBe('paragraph');
+	expect(doc.layout.components[1].text).toBe('paragraph text');
+	expect(doc.layout.components[2].type).toBe('image');
+	expect(doc.layout.components[2].legend).toBe('legend EN');
+	expect(doc.layout.components[2].image).toBeDefined();
+	expect(doc.layout.components[3].type).toBe('slider');
+	expect(doc.layout.components[3].image).toBe('image value but en');
+	expect(doc.locale).toBe('en');
+	expect(doc.id).toBeDefined();
+});
+
+test('Should still get the FR content of page with blocks', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages/${pageWithBlockID}`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.attributes.title).toBe('Page with blocks');
+	expect(doc.attributes.slug).toBe('page-with-blocks');
+	expect(doc.layout.components).toHaveLength(3);
+	expect(doc.layout.components[0].type).toBe('paragraph');
+	expect(doc.layout.components[0].text).toBe('paragraph text');
+	expect(doc.layout.components[1].type).toBe('slider');
+	expect(doc.layout.components[1].image).toBe('image value');
+	expect(doc.layout.components[2].type).toBe('image');
+	expect(doc.layout.components[2].legend).toBe('légende');
+	expect(doc.layout.components[2].image).toBeDefined();
+	expect(doc.locale).toBe('fr');
+})
+
+//////////////////////////////////////////////
+// TREE Localized
+//////////////////////////////////////////////
+test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/menu?locale=en`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			nav: [
+				{
+					link: {
+						type: 'pages',
+						value: homeId,
+						target: '_self'
+					}
+				}
+			],
+			mainNav: [
+				{
+					link: {
+						type: 'url',
+						value: 'http://fooo.baz',
+						target: '_self'
+					}
+				},
+				{
+					link: {
+						type: 'url',
+						value: 'http://fooo-2.baz',
+						target: '_blank'
+					}
+				}
+			]
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.nav).toHaveLength(1);
+	expect(doc.nav[0].link).toBeDefined();
+	expect(doc.mainNav).toHaveLength(2);
+	expect(doc.mainNav[0].link).toBeDefined();
+	expect(doc.mainNav[0].link.type).toBe('url');
+	expect(doc.mainNav[0].link.value).toBe('http://fooo.baz');
+	expect(doc.mainNav[0].link.target).toBe('_self');
+	expect(doc.mainNav[1].link).toBeDefined();
+	expect(doc.mainNav[1].link.type).toBe('url');
+	expect(doc.mainNav[1].link.value).toBe('http://fooo-2.baz');
+	expect(doc.mainNav[1].link.target).toBe('_blank');
+	expect(doc.locale).toBe('en');
+})
+
+test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/menu`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.nav).toHaveLength(1);
+	expect(doc.nav[0].link).toBeDefined();
+	expect(doc.mainNav).toHaveLength(0);
+	expect(doc.locale).toBe('fr');
+})
+
+test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/menu`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			mainNav: [
+				{
+					link: {
+						type: 'url',
+						value: 'http://fooo-fr.baz',
+						target: '_self'
+					}
+				}
+			]
+		}
+	});
+	const { doc } = await response.json();
+	expect(doc.nav).toHaveLength(1);
+	expect(doc.nav[0].link).toBeDefined();
+	expect(doc.mainNav).toHaveLength(1);
+	expect(doc.mainNav[0].link).toBeDefined();
+	expect(doc.mainNav[0].link.type).toBe('url');
+	expect(doc.mainNav[0].link.value).toBe('http://fooo-fr.baz');
+	expect(doc.mainNav[0].link.target).toBe('_self');
+	expect(doc.locale).toBe('fr');
+})
 
 //////////////////////////////////////////////
 // AUTH Collection
@@ -484,7 +690,7 @@ test('Should update infos', async ({ request }) => {
 			legals: {
 				label: 'Google',
 				type: 'url',
-				link: 'http://google.fr',
+				value: 'http://google.fr',
 				target: '_self'
 			}
 		}
@@ -493,7 +699,7 @@ test('Should update infos', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.legals).toBeDefined();
 	expect(doc.legals.type).toBe('url');
-	expect(doc.legals.link).toBe('http://google.fr');
+	expect(doc.legals.value).toBe('http://google.fr');
 });
 
 test('Should update infos EN', async ({ request }) => {
@@ -505,7 +711,7 @@ test('Should update infos EN', async ({ request }) => {
 			legals: {
 				label: 'Google-en',
 				type: 'url',
-				link: 'http://google.com',
+				value: 'http://google.com',
 				target: '_blank'
 			}
 		}
@@ -514,20 +720,20 @@ test('Should update infos EN', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.legals).toBeDefined();
 	expect(doc.legals.label).toBe('Google-en');
-	expect(doc.legals.link).toBe('http://google.com');
+	expect(doc.legals.value).toBe('http://google.com');
 });
 
 test('Should get infos FR', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos`).then((r) => r.json());
 	expect(response.doc.legals).toBeDefined();
-	expect(response.doc.legals.link).toBe('http://google.fr');
+	expect(response.doc.legals.value).toBe('http://google.fr');
 	expect(response.doc.legals.label).toBe('Google');
 });
 
 test('Should get infos EN', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos?locale=en`).then((r) => r.json());
 	expect(response.doc.legals).toBeDefined();
-	expect(response.doc.legals.link).toBe('http://google.com');
+	expect(response.doc.legals.value).toBe('http://google.com');
 	expect(response.doc.legals.label).toBe('Google-en');
 });
 
