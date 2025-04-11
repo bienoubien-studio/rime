@@ -18,9 +18,10 @@ export function rizom(): Plugin[] {
 				if (dev && !hasRunInitCommand()) {
 					throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom-init`');
 				}
-				// remove .rizom folder if present at start
+				// Check if we need to rebuild
+				const shouldRebuild = process.argv.includes('rebuild');
 				const rizomDevCacheDir = path.resolve(process.cwd(), '.rizom')
-				if( existsSync(rizomDevCacheDir)){
+				if (shouldRebuild && existsSync(rizomDevCacheDir)) {
 					rmSync(rizomDevCacheDir, { recursive: true, force: true })
 				}
 			});
