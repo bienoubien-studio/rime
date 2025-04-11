@@ -72,7 +72,7 @@ export const databaseTransformInterface = ({
 		} else {
 			docLocalAPI = api.area(slug);
 		}
-		const config = docLocalAPI.config;
+		
 		const blankDocument = docLocalAPI.blank();
 
 		/** Add localized fields */
@@ -103,7 +103,7 @@ export const databaseTransformInterface = ({
 
 		/** Extract all blocks  */
 		const blocksTables = blocksInterface.getBlocksTableNames(slug);
-		const blocks: Dic[] = [].concat(...blocksTables.map((blockTable) => doc[blockTable]));
+		const blocks: Dic[] = blocksTables.flatMap(blockTable => doc[blockTable] || []);
 
 		/** Place each block in its path */
 		for (let block of blocks) {
@@ -131,10 +131,10 @@ export const databaseTransformInterface = ({
 		/////////////////////////////////////////////
 		// Tree handling
 		//////////////////////////////////////////////
-
+		
 		/** Extract all blocks  */
 		const treeTables = treeInterface.getBlocksTableNames(slug);
-		let treeBlocks: Dic[] = [].concat(...treeTables.map((treeTable) => doc[treeTable]));
+		let treeBlocks: Dic[] = treeTables.flatMap(treeTable => doc[treeTable] || []);
 
 		treeBlocks = treeBlocks.sort((a, b) => a.path.localeCompare(b.path));
 

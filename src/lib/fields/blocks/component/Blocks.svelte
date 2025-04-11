@@ -11,6 +11,7 @@
 	import type { GenericBlock } from 'rizom/types/doc.js';
 	import type { BlocksProps } from './props.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -23,6 +24,8 @@
 	let sorting = $state(false);
 	let sortableInstance = $state<any>(null);
 	let blocksComponents: ReturnType<typeof Block>[] = $state([]);
+
+	const locale = getLocaleContext();
 
 	const sortableOptions: Sortable.Options = {
 		handle: '.rz-block__grip',
@@ -84,6 +87,9 @@
 	<header class="rz-blocks__header">
 		<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>
 			{config.label ? config.label : capitalize(config.name)}
+			{#if config.localized}
+			<sup>{locale.code}</sup>
+		{/if}
 		</h3>
 		{#if hasBlocks}
 			<div class="rz-blocks__actions">
@@ -122,6 +128,11 @@
 		margin-bottom: var(--rz-size-4);
 		font-size: var(--rz-text-xl);
 		@mixin font-medium;
+	}
+	
+	sup {
+		font-size: var(--rz-text-2xs);
+		text-transform: uppercase;
 	}
 
 	.rz-blocks__actions {

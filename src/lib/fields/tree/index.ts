@@ -64,6 +64,32 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		return this;
 	}
 
+	localized() {
+		if(this.field.fields.length === 0){
+			throw new Error('localized() must be called after fields assignment')
+		}
+		this.field.localized = true
+		// Add a locale prop in its fields
+		this.field.fields.push(text('locale').hidden())
+		// Set all descendant fields localized
+		this.field.fields = this.field.fields.map(field => {
+				// If it's a "position" or "path" field do not set as localized
+				// as it's a treeBlock property
+				if(field instanceof FormFieldBuilder && ['position', 'path', 'locale'].includes(field.raw.name)){
+					return field
+				}
+				// For all others fields set as localized
+				if('localized' in field && field instanceof FormFieldBuilder){
+					// Clone to prevent localizing a field used elsewhere
+					const fieldClone = field.clone()
+					fieldClone.localized()
+					return fieldClone
+				}
+				return field
+			});
+		return this
+	}
+
 	compile() {
 		return {
 			...this.field,

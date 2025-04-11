@@ -9,6 +9,7 @@ import type { FormField } from 'rizom/types/index.js';
 import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { IconProps } from '@lucide/svelte';
+import cloneDeep from 'clone-deep';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);
 
@@ -36,6 +37,39 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		return Cell;
 	}
 
+	localized() {
+		if(this.field.blocks.length === 0){
+			throw new Error('localized() must be called after blocks assignment')
+		}
+		this.field.localized = true
+
+		// Set all descendant fields localized
+		this.field.blocks = this.field.blocks.map((blockBuilder) => {
+			// Add a locale prop in each block
+			blockBuilder.block.fields.push(text('locale').hidden())
+			// In each block process fields
+			blockBuilder.block.fields = blockBuilder.block.fields.map(field => {
+				// If type / position / path field do not set as localized
+				// as it's a block property
+				if(field instanceof FormFieldBuilder && ['position','type','path', 'locale'].includes(field.raw.name)){
+					return field
+				}
+				// For all others fields set as localized
+				if('localized' in field && field instanceof FormFieldBuilder){
+					// Clone to prevent localizing a field used elsewhere
+					const fieldClone = field.clone()
+					fieldClone.localized()
+					return fieldClone
+				}
+				return field
+			});
+			
+			return blockBuilder
+		})
+
+		return this
+	}
+
 	compile(): WithoutBuilders<BlocksField> {
 		return {
 			...this.field,
@@ -47,10 +81,10 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 }
 
 class BlockBuilder {
-	#block: BlocksFieldBlock;
+	block: BlocksFieldBlock;
 
 	constructor(name: string) {
-		this.#block = {
+		this.block = {
 			name,
 			fields: [text('type').hidden(), text('path').hidden(), number('position').hidden()]
 		};
@@ -62,32 +96,32 @@ class BlockBuilder {
 	 * block('home').icon(Home)
 	 */
 	icon(component: Component<IconProps>) {
-		this.#block.icon = component;
+		this.block.icon = component;
 		return this;
 	}
 	renderTitle(render: BlocksFieldBlockRenderTitle) {
-		this.#block.renderTitle = render;
+		this.block.renderTitle = render;
 		return this;
 	}
 	description(description: string) {
-		this.#block.description = description;
+		this.block.description = description;
 		return this;
 	}
 	label(label: string) {
-		this.#block.label = label;
+		this.block.label = label;
 		return this;
 	}
 	fields(...fields: FieldBuilder<Field>[]) {
-		this.#block.fields = [...fields, ...this.#block.fields];
+		this.block.fields = [...fields, ...this.block.fields];
 		return this;
 	}
 
 	get raw() {
-		return { ...this.#block };
+		return { ...this.block };
 	}
 
 	compile(): WithoutBuilders<BlocksFieldBlock> {
-		return { ...this.#block, fields: this.#block.fields.map((f) => f.compile()) };
+		return { ...this.block, fields: this.block.fields.map((f) => f.compile()) };
 	}
 }
 
