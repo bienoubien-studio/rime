@@ -1,6 +1,8 @@
+import { RizomError } from 'rizom/errors';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type {
 	CollectionHookAfterCreate,
+	CollectionHookAfterDelete,
 	CollectionHookBeforeCreate,
 	CollectionHookBeforeDelete,
 	CollectionHookBeforeUpdate
@@ -11,6 +13,11 @@ import type {
 //////////////////////////////////////////////
 export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 	const { rizom } = args;
+
+	// Prevent superAdmin value to be set on creation
+	if('isSuperAdmin' in args.data){
+		throw new RizomError(RizomError.UNAUTHORIZED)
+	}
 
 	const authUserId = await rizom.auth.createAuthUser({
 		email: args.data.email,
@@ -33,6 +40,7 @@ export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 //////////////////////////////////////////////
 // After creation set proper better-auth role
 // as it's not working with signupEmail
+// Only admin can change roles
 //////////////////////////////////////////////
 export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) => {
 	const { rizom, event, doc } = args;
@@ -49,11 +57,25 @@ export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) =
 };
 
 //////////////////////////////////////////////
-// After update set proper better-auth role
+// Before update : 
+// - set proper better-auth role
+// - prevent superadmin to be changed by someone else
 //////////////////////////////////////////////
 export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args) => {
-	const { rizom, event } = args;
+	const { rizom, event, originalDoc } = args;
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
+
+	const isSuperAdminMutation = await rizom.auth.isSuperAdmin(originalDoc.id)
+	
+	// Prevent super admin user to be changed by someone
+	if( isSuperAdminMutation && !event.locals.user?.isSuperAdmin){
+		throw new RizomError(RizomError.UNAUTHORIZED)
+	}
+
+	// Prevent superAdmin value to be changed
+	if('isSuperAdmin' in args.data){
+		throw new RizomError(RizomError.UNAUTHORIZED)
+	}
 
 	if (rolesChanged) {
 		await rizom.auth.setAuthUserRole({
@@ -68,9 +90,22 @@ export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args)
 };
 
 //////////////////////////////////////////////
-// After delete delete better-auth user
+// Prevent superadmin to be deleted
 //////////////////////////////////////////////
-export const afterDelete: CollectionHookBeforeDelete = async (args) => {
+export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
+	const { doc, rizom } = args;
+	const isSuperAdminDeletion = await rizom.auth.isSuperAdmin(doc.id)
+	if(isSuperAdminDeletion){
+		throw new RizomError(RizomError.UNAUTHORIZED, "This user can't be deleted")
+	}
+	return args;
+};
+
+
+//////////////////////////////////////////////
+// After delete, delete better-auth user
+//////////////////////////////////////////////
+export const afterDelete: CollectionHookAfterDelete = async (args) => {
 	const { doc, rizom } = args;
 	await rizom.auth.deleteAuthUserById({
 		id: doc.authUserId,

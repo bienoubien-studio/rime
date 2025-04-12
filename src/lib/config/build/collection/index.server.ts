@@ -8,12 +8,13 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const authHooks = await import('$lib/config/auth/hooks.server.js');
-		const { beforeUpdate, beforeCreate, afterDelete, afterCreate } = authHooks;
+		const { beforeUpdate, beforeCreate,beforeDelete, afterDelete, afterCreate } = authHooks;
 		hooks = {
 			...hooks,
 			beforeUpdate: [beforeUpdate, ...(hooks?.beforeUpdate || [])],
 			beforeCreate: [beforeCreate, ...(hooks?.beforeCreate || [])],
 			afterCreate: [afterCreate, ...(hooks?.afterCreate || [])],
+			beforeDelete: [beforeDelete, ...(hooks?.beforeDelete || [])],
 			afterDelete: [afterDelete, ...(hooks?.afterDelete || [])]
 		};
 	}

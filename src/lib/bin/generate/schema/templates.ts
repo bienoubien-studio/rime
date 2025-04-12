@@ -23,12 +23,14 @@ export const templateParent = (parent: string) => {
 	return `parentId: text("parent_id").references(() => ${parent}.id, { onDelete: 'cascade' }),`;
 };
 
-export const templateHasAuth = `
-  loginAttempts: integer("login_attempts").notNull().default(0),
-  locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
-  lockedAt: integer("locked_at", { mode: 'timestamp'}),
-  authUserId: text("auth_user_id").references(() => authUsers.id).notNull(),
-`;
+export const templateHasAuth = (slug:string) => {
+	return `loginAttempts: integer("login_attempts").notNull().default(0),
+locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
+lockedAt: integer("locked_at", { mode: 'timestamp'}),
+authUserId: text("auth_user_id").references(() => authUsers.id).notNull(),
+${slug === 'users' ? `isSuperAdmin: integer('is_super_admin', { mode: 'boolean' }),` : ''}
+`
+}
 
 export const templateUniqueRequired = (field: { unique?: boolean; required?: boolean }) => {
 	const { unique, required } = field;

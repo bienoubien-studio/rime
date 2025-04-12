@@ -161,7 +161,7 @@ const buildRootTable = ({
 			strUnlocalizedFields.push(templateParent(rootName));
 		}
 		if (hasAuth) {
-			strUnlocalizedFields.push(templateHasAuth);
+			strUnlocalizedFields.push(templateHasAuth(rootName));
 		}
 		table = templateTable(tableName, strUnlocalizedFields.join('\n  '));
 		table += templateTable(
@@ -174,7 +174,7 @@ const buildRootTable = ({
 			strFields.push(templateParent(rootName));
 		}
 		if (hasAuth) {
-			strFields.push(templateHasAuth);
+			strFields.push(templateHasAuth(rootName));
 		}
 		table = templateTable(tableName, strFields.join('\n  '));
 	}

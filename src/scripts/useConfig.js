@@ -41,7 +41,11 @@ program
 				execSync(`cp -rf ${testFrontRoutesPath} ${frontRoutesPath}`);
 			}
 			// Generate
-			execSync(`bun ./src/lib/bin/generate/index.ts --force`);
+			const stdout = execSync(`bun ./src/lib/bin/index.ts generate --force`);
+			if(stdout.toString().includes('Generation completed successfully')){
+				console.log('Successfull files generation and database pushed')
+			}
+			
 		} catch (error) {
 			console.error('Error setting configuration:', error);
 		}

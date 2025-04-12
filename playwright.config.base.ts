@@ -6,11 +6,12 @@ type Args = {
 
 export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 	return defineConfig({
+		workers: 1,
 		webServer: {
-			command: `pnpm rizom:use ${name} && pnpm vite dev -- --rebuild`,
+			command: `pnpm rizom:use ${name} && pnpm vite dev`,
 			port: 5173,
-			stdout: 'pipe',
-			stderr: 'pipe'
+			stdout: 'ignore',
+			stderr: 'ignore'
 		},
 		expect: {
 			timeout: 30000

@@ -21,7 +21,7 @@
 [v] more tiptap integration
 [v] basic real life config preset
 [v] Fix - translation not loaded on production
-[ ] Blocks/Tree - global i18n
+[v] Blocks/Tree - global i18n
 [ ] Make first user super admin, can't delete it 
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue

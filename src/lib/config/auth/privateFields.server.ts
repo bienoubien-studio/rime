@@ -1,8 +1,8 @@
 export const privateFieldNames = [
 	'password',
-	'hashedPassword',
 	'token',
 	'loginAttempts',
+	'isSuperAdmin',
 	'locked',
 	'lockedAt'
 ];

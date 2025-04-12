@@ -1,11 +1,20 @@
 import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/upload/util/converter.js';
+import { clearLog } from '../../src/log';
+import { password } from '@clack/prompts';
 
 const BASE_URL = 'http://rizom.test:5173';
 const API_BASE_URL = `${BASE_URL}/api`;
 
-let token: string;
+let editorId: string;
+let editorToken: string;
+let editor2Id: string;
+let editor2Token: string;
+let adminId: string;
+let adminToken: string;
+let superAdminId: string;
+let superAdminToken: string;
 
 //////////////////////////////////////////////
 // Init
@@ -26,8 +35,6 @@ test('Second init should return 404', async ({ request }) => {
 // Login
 //////////////////////////////////////////////
 
-let adminUserId: string;
-
 test('Login should not be successfull', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/users/login`, {
 		data: {
@@ -38,7 +45,7 @@ test('Login should not be successfull', async ({ request }) => {
 	expect(response.status()).toBe(400);
 });
 
-test('Login should be successfull', async ({ request }) => {
+test('Superadmin login should be successfull', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/users/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
@@ -52,8 +59,8 @@ test('Login should be successfull', async ({ request }) => {
 	expect(json.user.id).toBeDefined();
 	expect(json.user.roles).toBeDefined();
 	expect(json.user.roles[0]).toBe('admin');
-	token = headerToken;
-	adminUserId = json.user.id;
+	superAdminToken = headerToken;
+	superAdminId = json.user.id;
 });
 
 ///////////////////////////////////////////////
@@ -66,7 +73,7 @@ let pageId: string;
 test('Should not create Page with missing required title', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {}
 	});
@@ -76,7 +83,7 @@ test('Should not create Page with missing required title', async ({ request }) =
 test('Should create Home', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			attributes: {
@@ -96,7 +103,7 @@ test('Should create Home', async ({ request }) => {
 test('Should create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			attributes: {
@@ -146,7 +153,7 @@ test('Should return page (query)', async ({ request }) => {
 test('Should delete page', async ({ request }) => {
 	const response = await request.delete(`${API_BASE_URL}/pages/${pageId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		}
 	});
 	expect(response.status()).toBe(200);
@@ -168,7 +175,7 @@ test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			file: { base64, filename: 'Land$scape -3.JPG' },
@@ -188,31 +195,54 @@ test('Should create a Media', async ({ request }) => {
 // AUTH Collection
 //////////////////////////////////////////////
 
-let editorId: string;
+test('Should not get users', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/users`);
+	expect(response.status()).toBe(403);
+});
 
-test('Should get admin user', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/users/${adminUserId}`, {
+test('SuperAdmin sould not delete himself', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('SuperAdmin sould not change isSuperAdmin', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
+		},
+		data: {
+			isSuperAdmin: false
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Should get super admin user', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
 		}
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json();
 	expect(data.doc).toBeDefined();
-	expect(data.doc.id).toBe(adminUserId);
+	expect(data.doc.id).toBe(superAdminId);
 	expect(data.doc.roles).toContain('admin');
 	expect(data.doc.name).toBe('Admin');
-
+	expect(data.doc.isSuperAdmin).toBeUndefined();
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();
-	// expect(data.doc.hashedPassword).toBeUndefined();
 });
 
 test('Should create a user editor', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/users`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			email: 'editor@bienoubien.com',
@@ -228,10 +258,48 @@ test('Should create a user editor', async ({ request }) => {
 	editorId = data.doc.id;
 });
 
+test('Should create a 2nd user editor', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
+		},
+		data: {
+			email: 'editor2@bienoubien.com',
+			name: 'Chesster',
+			roles: ['editor'],
+			password: 'a&1Aa&1A'
+		}
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json();
+	expect(data.doc).toBeDefined();
+	expect(data.doc.id).toBeDefined();
+	editor2Id = data.doc.id;
+});
+
+test('Should create another admin', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
+		},
+		data: {
+			email: 'admin2@bienoubien.com',
+			name: 'Admin2',
+			roles: ['admin'],
+			password: 'a&1Aa&1A'
+		}
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json();
+	expect(data.doc).toBeDefined();
+	expect(data.doc.id).toBeDefined();
+	adminId = data.doc.id;
+});
+
 test('Should get editor user', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/users/${editorId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		}
 	});
 	expect(response.status()).toBe(200);
@@ -241,18 +309,16 @@ test('Should get editor user', async ({ request }) => {
 	expect(data.doc.roles).toContain('editor');
 	expect(data.doc.roles).not.toContain('admin');
 	expect(data.doc.name).toBe('Chesster');
-
 	expect(data.doc.locked).toBeUndefined();
 	expect(data.doc.lockedAt).toBeUndefined();
 	expect(data.doc.loginAttempts).toBeUndefined();
-	// expect(data.doc.hashedPassword).toBeUndefined();
 });
 
-test('Should logout user', async ({ request }) => {
+test('Should logout super admin', async ({ request }) => {
 	const response = await request
 		.post(`${API_BASE_URL}/users/logout`, {
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${superAdminToken}`
 			}
 		})
 		.then((r) => r.json());
@@ -263,7 +329,7 @@ test('Should logout user', async ({ request }) => {
 test('Should not update Home', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			attributes: {
@@ -278,7 +344,7 @@ test('Should not update Home', async ({ request }) => {
 test('Should not delete home', async ({ request }) => {
 	const response = await request.delete(`${API_BASE_URL}/pages/${homeId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		}
 	});
 	expect(response.status()).toBe(403);
@@ -287,7 +353,7 @@ test('Should not delete home', async ({ request }) => {
 test('Should not create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			attributes: {
@@ -299,11 +365,119 @@ test('Should not create a page', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
+test('Should not update area', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/settings`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
+		},
+		data: {
+			maintenance: true
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Admin login should be successfull', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users/login`, {
+		data: {
+			email: 'admin2@bienoubien.com',
+			password: 'a&1Aa&1A'
+		}
+	});
+	expect(response.status()).toBe(200)
+	const headerToken = response.headers()['set-auth-token'];
+	const json = await response.json();
+	expect(headerToken).toBeDefined();
+	expect(json.user).toBeDefined();
+	expect(json.user.id).toBeDefined();
+	adminToken = headerToken;
+	adminId = json.user.id;
+});
+
+test('Admin should not delete superAdmin', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		},
+	});
+	expect(response.status()).toBe(403);
+});
+
+let editor3Id: string
+test('Admin should create a user', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		},
+		data: {
+			email: 'editor3@foo.com',
+			name: 'editor3',
+			password: 'a&1Aa&1A'
+		}
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json()
+	editor3Id = data.doc.id
+});
+
+test('Default role should be editor', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/users/${editor3Id}`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		}
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json()
+	expect(data.doc.roles.includes('admin')).toBe(false)
+	expect(data.doc.roles.includes('editor')).toBe(true)
+});
+
+test('Admin should not create an admin with isSuperAdmin', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		},
+		data: {
+			email: 'admin2@foo.com',
+			name: 'admin2',
+			roles: ['admin'],
+			password: 'a&1Aa&1A',
+			isSuperAdmin: true,
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Admin should not update isSuperAdmin', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		},
+		data: {
+			isSuperAdmin: false
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Admin should not change superAdmin roles', async ({ request }) => {
+	clearLog()
+	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${adminToken}`
+		},
+		data: {
+			roles: ['editor']
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
 //////////////////////////////////////////////
 // Area
 //////////////////////////////////////////////
 
-test('Login should be successfull (again)', async ({ request }) => {
+test('SuperAdmin login should be successfull (again)', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/users/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
@@ -315,14 +489,13 @@ test('Login should be successfull (again)', async ({ request }) => {
 	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	token = headerToken;
-	adminUserId = json.user.id;
+	superAdminToken = headerToken;
 });
 
 test('Should get settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		}
 	});
 	expect(response.status()).toBe(200);
@@ -331,7 +504,7 @@ test('Should get settings', async ({ request }) => {
 test('Should update settings', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/settings`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${superAdminToken}`
 		},
 		data: {
 			maintenance: true
@@ -344,7 +517,7 @@ test('Should get the updated settings', async ({ request }) => {
 	const response = await request
 		.get(`${API_BASE_URL}/settings`, {
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${superAdminToken}`
 			}
 		})
 		.then((r) => r.json());
@@ -360,11 +533,17 @@ test('Should not get settings', async ({ request }) => {
 // Editor access
 //////////////////////////////////////////////
 
+test('Should not logout admin user', async ({ request }) => {
+	const response = await request
+		.post(`${API_BASE_URL}/users/logout`)
+	expect(response.status()).toBe(401);
+});
+
 test('Should logout admin user', async ({ request }) => {
 	const response = await request
 		.post(`${API_BASE_URL}/users/logout`, {
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${superAdminToken}`
 			}
 		})
 		.then((r) => r.json());
@@ -385,14 +564,40 @@ test('Should login editor', async ({ request }) => {
 
 	const headerToken = response.headers()['set-auth-token'];
 	expect(headerToken).toBeDefined();
-	token = headerToken;
+	editorToken = headerToken;
 });
 
+test('Editor should not change its roles', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${editorId}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		},
+		data: {
+			roles: ['admin'],
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not create a user', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/users`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		},
+		data: {
+			email: 'admin-by-editor@bienoubien.com',
+			name: 'Admin',
+			roles: ['admin'],
+			password: 'a&1Aa&1A'
+		}
+	});
+	expect(response.status()).toBe(403);
+});
 
 test('Editor should not create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${editorToken}`
 		},
 		data: {
 			attributes: {
@@ -407,7 +612,7 @@ test('Editor should not create a page', async ({ request }) => {
 test('Editor should update home', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
 		headers: {
-			Authorization: `Bearer ${token}`
+			Authorization: `Bearer ${editorToken}`
 		},
 		data: {
 			attributes: {
@@ -420,15 +625,84 @@ test('Editor should update home', async ({ request }) => {
 	expect(data.doc.title).toBe('Home edited by editor');
 });
 
+test('Editor should not delete superadmin', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not delete admin', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/users/${adminId}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not delete other editors', async ({ request }) => {
+	const response = await request.delete(`${API_BASE_URL}/users/${editor2Id}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not update admin', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${adminId}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		},
+		data: {
+			roles: ['editor']
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not update superadmin', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		},
+		data: {
+			roles: ['editor']
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
+test('Editor should not update other editors', async ({ request }) => {
+	const response = await request.patch(`${API_BASE_URL}/users/${editor2Id}`, {
+		headers: {
+			Authorization: `Bearer ${editorToken}`
+		},
+		data: {
+			roles: ['editor']
+		}
+	});
+	expect(response.status()).toBe(403);
+});
+
 //////////////////////////////////////////////
 // Auth Lock
 //////////////////////////////////////////////
+
+test('Should not logout editor', async ({ request }) => {
+	const response = await request
+		.post(`${API_BASE_URL}/users/logout`)
+	expect(response.status()).toBe(401);
+});
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request
 		.post(`${API_BASE_URL}/users/logout`, {
 			headers: {
-				Authorization: `Bearer ${token}`
+				Authorization: `Bearer ${editorToken}`
 			}
 		})
 		.then((r) => r.json());
@@ -456,7 +730,7 @@ test('Should lock user', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-test('Should delete user editor', async ({ request }) => {
+test('Admin should delete user editor', async ({ request }) => {
 	const signin = await request.post(`${API_BASE_URL}/users/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',

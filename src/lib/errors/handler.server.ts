@@ -45,6 +45,8 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	}
 
 	// Unknown errors
-	logger.error(`500 — ${err.message}`);
+	console.error(err)
+	logger.error(`500 - ${err.message}`);
+
 	return error(500, 'Internal Server Error');
 }

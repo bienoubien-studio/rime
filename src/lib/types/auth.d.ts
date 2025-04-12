@@ -3,6 +3,7 @@ export type User = {
 	name: string;
 	email: string;
 	roles: string[];
+	isSuperAdmin?: boolean;
 };
 
 type AccessOptions = { id?: string };

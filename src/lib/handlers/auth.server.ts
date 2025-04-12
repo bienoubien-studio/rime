@@ -31,15 +31,15 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	// Handle /init route, if no authUsers allow
-	// or throw a 404 if there is at least one
+	// Handle /init route, throw a 404 if 
+	// there is at least one authUsers
 	if (event.url.pathname.startsWith('/init')) {
 		const users = await rizom.auth.getAuthUsers();
-		if (users.length > 0) {
+		if (users.length > 0 || !dev) {
 			throw error(404);
 		}
 	}
-
+	
 	// If not authenticated resolve
 	// before getting user attributes
 	if (!authenticated) {
@@ -63,7 +63,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	if (user.roles.includes('admin') && authUser.role !== 'admin') {
 		throw error(401, RizomError.UNAUTHORIZED);
 	}
-
+	
 	// Populate locals
 	event.locals.user = user;
 	event.locals.session = session || undefined;

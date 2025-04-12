@@ -9,9 +9,16 @@ import { admin, bearer } from 'better-auth/plugins';
 import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import rizom from 'rizom/rizom.server.js';
+import type { Dic } from 'rizom/types/util.js';
+
 
 const dev = process.env.NODE_ENV === 'development';
 
+/**
+ * Creates and configures the authentication interface for the SQLite adapter
+ * @param args Configuration parameters for the auth interface
+ * @returns Object containing all auth-related functions
+ */
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, trustedOrigins } = args;
 
@@ -64,10 +71,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		}
 	});
 
-	// Create the first user at init
-	// Should run only once as /api/init or /init
-	// return a 404 if a user exists
-
+	/**
+	 * Creates the first user (superadmin) during initialization
+	 * Only runs once on /api/init or /init and returns 404 if users already exist
+	 * @returns ID of the created user
+	 */
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
 
@@ -92,7 +100,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		const values = {
 			name,
 			email,
-			roles: ['admin'],
+			roles: [ 'admin'],
+			isSuperAdmin: true,
 			authUserId,
 			createdAt: now,
 			updatedAt: now
@@ -102,11 +111,24 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			.insert(rizom.adapter.tables.users)
 			.values(values)
 			.returning()) as User[];
+
 		return user.id;
 	};
 
-	type GetAuthUserIdArgs = { slug: string; id: string };
-	const getAuthUserId = async ({ slug, id }: GetAuthUserIdArgs) => {
+	const isSuperAdmin = async ( userId: string ) => {
+		const [user] = await db
+			.select({ isSuperAdmin: schema.users.isSuperAdmin })
+			.from(schema.users)
+			.where(eq(schema.users.id, userId));
+		if(!user) return false
+		return user.isSuperAdmin === true
+	}
+
+	/**
+	 * Retrieves the BetterAuth user ID from a collection row
+	 * @returns BetterAuth user ID or null if not found
+	 */
+	const getAuthUserId = async ({ slug, id }: { slug: string; id: string }) => {
 		const userTable = rizom.adapter.tables[slug];
 		//@ts-expect-error slug is key of query
 		const user = await db.query[slug].findFirst({ where: eq(userTable.id, id) });
@@ -116,11 +138,19 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		return null;
 	};
 
+	/**
+	 * Retrieves all BetterAuth users from the database
+	 * @returns Array of all auth users
+	 */
 	const getAuthUsers = () => {
 		//@ts-expect-error will fix it
 		return db.query.authUsers.findMany();
 	};
 
+	/**
+	 * Creates a new BetterAuth user
+	 * @returns ID of the created auth user
+	 */
 	const createAuthUser = async ({ slug, email, password, name }: CreateAuthUserArgs) => {
 		const { user } = await betterAuth.api.signUpEmail({
 			body: {
@@ -132,9 +162,13 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		});
 		return user.id;
 	};
+	
 
-	type DeleteAuthUserByIdArgs = { id: string; headers?: Request['headers'] };
-	const deleteAuthUserById = async ({ id, headers }: DeleteAuthUserByIdArgs) => {
+	/**
+	 * Deletes a BetterAuth user by ID
+	 * @returns ID of the deleted user
+	 */
+	const deleteAuthUserById = async ({ id, headers }: { id: string; headers?: Request['headers'] }) => {
 		await betterAuth.api.removeUser({
 			body: {
 				userId: id
@@ -150,6 +184,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		slug: CollectionSlug;
 		headers: RequestEvent['request']['headers'];
 	};
+	
+	/**
+	 * Updates a user's role in BetterAuth
+	 * @returns void
+	 */
 	const setAuthUserRole = async ({ roles, userId, slug, headers }: SetBetterAuthRoleArgs) => {
 		//
 		const authUserId = await getAuthUserId({
@@ -169,28 +208,41 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		});
 	};
 
-	// Get auth collection attributes
-	// based on an authUserId and the slug
-	// of the collection
+	/**
+	 * Retrieves user attributes from an auth collection
+	 * @returns User object or undefined if not found
+	 */
 	const getUserAttributes = async ({
 		authUserId,
 		slug
 	}: GetUserAttributesArgs): Promise<User | undefined> => {
 		const table = rizom.adapter.tables[slug];
+		
+		const columns: Dic = {
+			id: table.id,
+			name: table.name,
+			roles: table.roles,
+			email: table.email
+		}
+		
+		if(slug === 'users'){
+			columns.isSuperAdmin = table.isSuperAdmin
+		}
+
 		const [user] = await db
-			.select({
-				id: table.id,
-				name: table.name,
-				roles: table.roles,
-				email: table.email
-			})
+			.select(columns)
 			.from(table)
 			.where(eq(table.authUserId, authUserId));
+		
 		if (!user) return undefined;
+
 		return user as User;
 	};
 
-	// Shortcut to get panel user attributes
+	/**
+	 * Shortcut to get user attributes from the panel users collection
+	 * @returns User object or undefined if not found
+	 */
 	const getPanelUserAttributes = async (authUserId: string) => {
 		return getUserAttributes({
 			slug: 'users',
@@ -198,8 +250,16 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		});
 	};
 
+	/**
+	 * Handles user login with security features
+	 * - Validates credentials
+	 * - Manages login attempts and user locking
+	 * - Handles authentication via BetterAuth
+	 * 
+	 * @param params Login credentials and related auth collection slug
+	 * @returns Authentication token and user information
+	 */
 	const login = async ({ email, password, slug }: LoginArgs) => {
-		//
 
 		if (!email) {
 			throw new RizomFormError({ email: RizomFormError.REQUIRED_FIELD });
@@ -220,9 +280,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			where: eq(userTable.email, email)
 		});
 
-		/**
-		 * Fake check when email not found
-		 */
+				// Security: Fake delay when email not found to prevent timing attacks
 		if (!user) {
 			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
 			throw new RizomFormError({
@@ -231,11 +289,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				password: RizomFormError.INVALID_CREDENTIALS
 			});
 		}
-
-		/**
-		 * Handle banned user
-		 * trying to connect
-		 */
+		
+		// Security: Handle locked/banned user attempting to connect
 		if (user.locked) {
 			const timeLocked = parseInt(process.env.RIZOM_BANNED_TIME_MN || '60'); // min
 			const now = new Date();
@@ -256,9 +311,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			}
 		}
 
-		/**
-		 * Handle SignIn
-		 */
+		// Process authentication with BetterAuth
 		const signin = await betterAuth.api.signInEmail({
 			body: {
 				email,
@@ -334,6 +387,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		createFirstUser,
 		setAuthUserRole,
 		getPanelUserAttributes,
+		isSuperAdmin,
 		login
 	};
 };
