@@ -19,13 +19,16 @@
 [v] Better logs
 [v] 404 on image src quick after upload deletion
 [v] more tiptap integration
+[v] basic real life config preset
+[v] Fix - translation not loaded on production
+[ ] Blocks/Tree - global i18n
 [ ] Make first user super admin, can't delete it 
-[ ] basic real life config preset
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests
 
 # V1
+[ ] Add fields hint/description
 [ ] Put bin commands in a separate package ex: @rizom/kit
 [ ] collection nested
 [ ] page version
