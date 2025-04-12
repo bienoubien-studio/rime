@@ -1,8 +1,7 @@
 import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/upload/util/converter.js';
-import { clearLog } from '../../src/log';
-import { password } from '@clack/prompts';
+import { PANEL_USERS } from 'rizom/constant';
 
 const BASE_URL = 'http://rizom.test:5173';
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -36,7 +35,7 @@ test('Second init should return 404', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('Login should not be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: '12345678'
@@ -46,7 +45,7 @@ test('Login should not be successfull', async ({ request }) => {
 });
 
 test('Superadmin login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -196,12 +195,12 @@ test('Should create a Media', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('Should not get users', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/users`);
+	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}`);
 	expect(response.status()).toBe(403);
 });
 
 test('SuperAdmin sould not delete himself', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		}
@@ -210,7 +209,7 @@ test('SuperAdmin sould not delete himself', async ({ request }) => {
 });
 
 test('SuperAdmin sould not change isSuperAdmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},
@@ -222,7 +221,7 @@ test('SuperAdmin sould not change isSuperAdmin', async ({ request }) => {
 });
 
 test('Should get super admin user', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		}
@@ -240,7 +239,7 @@ test('Should get super admin user', async ({ request }) => {
 });
 
 test('Should create a user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},
@@ -259,7 +258,7 @@ test('Should create a user editor', async ({ request }) => {
 });
 
 test('Should create a 2nd user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},
@@ -278,7 +277,7 @@ test('Should create a 2nd user editor', async ({ request }) => {
 });
 
 test('Should create another admin', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},
@@ -297,7 +296,7 @@ test('Should create another admin', async ({ request }) => {
 });
 
 test('Should get editor user', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/users/${editorId}`, {
+	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		}
@@ -316,7 +315,7 @@ test('Should get editor user', async ({ request }) => {
 
 test('Should logout super admin', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
 			headers: {
 				Authorization: `Bearer ${superAdminToken}`
 			}
@@ -378,7 +377,7 @@ test('Should not update area', async ({ request }) => {
 });
 
 test('Admin login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin2@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -395,7 +394,7 @@ test('Admin login should be successfull', async ({ request }) => {
 });
 
 test('Admin should not delete superAdmin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		},
@@ -405,7 +404,7 @@ test('Admin should not delete superAdmin', async ({ request }) => {
 
 let editor3Id: string
 test('Admin should create a user', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		},
@@ -421,7 +420,7 @@ test('Admin should create a user', async ({ request }) => {
 });
 
 test('Default role should be editor', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/users/${editor3Id}`, {
+	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editor3Id}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		}
@@ -433,7 +432,7 @@ test('Default role should be editor', async ({ request }) => {
 });
 
 test('Admin should not create an admin with isSuperAdmin', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		},
@@ -449,7 +448,7 @@ test('Admin should not create an admin with isSuperAdmin', async ({ request }) =
 });
 
 test('Admin should not update isSuperAdmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		},
@@ -461,8 +460,7 @@ test('Admin should not update isSuperAdmin', async ({ request }) => {
 });
 
 test('Admin should not change superAdmin roles', async ({ request }) => {
-	clearLog()
-	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${adminToken}`
 		},
@@ -478,7 +476,7 @@ test('Admin should not change superAdmin roles', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('SuperAdmin login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -535,24 +533,12 @@ test('Should not get settings', async ({ request }) => {
 
 test('Should not logout admin user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`)
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`)
 	expect(response.status()).toBe(401);
 });
 
-test('Should logout admin user', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
-			headers: {
-				Authorization: `Bearer ${superAdminToken}`
-			}
-		})
-		.then((r) => r.json());
-
-	expect(response).toBe('successfully logout');
-});
-
 test('Should login editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -568,7 +554,7 @@ test('Should login editor', async ({ request }) => {
 });
 
 test('Editor should not change its roles', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${editorId}`, {
+	await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		},
@@ -576,11 +562,20 @@ test('Editor should not change its roles', async ({ request }) => {
 			roles: ['admin'],
 		}
 	});
-	expect(response.status()).toBe(403);
+
+	const verification = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
+		headers: {
+			Authorization: `Bearer ${superAdminToken}`
+		}
+	})
+
+	const data = await verification.json()
+	expect(data.doc.roles.includes('admin')).toBe(false)
+	expect(data.doc.roles.includes('editor')).toBe(true)
 });
 
 test('Editor should not create a user', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		},
@@ -626,7 +621,7 @@ test('Editor should update home', async ({ request }) => {
 });
 
 test('Editor should not delete superadmin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		}
@@ -635,7 +630,7 @@ test('Editor should not delete superadmin', async ({ request }) => {
 });
 
 test('Editor should not delete admin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/users/${adminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${adminId}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		}
@@ -644,7 +639,7 @@ test('Editor should not delete admin', async ({ request }) => {
 });
 
 test('Editor should not delete other editors', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/users/${editor2Id}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${editor2Id}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		}
@@ -653,7 +648,7 @@ test('Editor should not delete other editors', async ({ request }) => {
 });
 
 test('Editor should not update admin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${adminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${adminId}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		},
@@ -665,7 +660,7 @@ test('Editor should not update admin', async ({ request }) => {
 });
 
 test('Editor should not update superadmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		},
@@ -677,7 +672,7 @@ test('Editor should not update superadmin', async ({ request }) => {
 });
 
 test('Editor should not update other editors', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${editor2Id}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${editor2Id}`, {
 		headers: {
 			Authorization: `Bearer ${editorToken}`
 		},
@@ -694,13 +689,13 @@ test('Editor should not update other editors', async ({ request }) => {
 
 test('Should not logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`)
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`)
 	expect(response.status()).toBe(401);
 });
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
 			headers: {
 				Authorization: `Bearer ${editorToken}`
 			}
@@ -712,7 +707,7 @@ test('Should logout editor', async ({ request }) => {
 
 test('Should lock user', async ({ request }) => {
 	for (let i = 0; i < 4; i++) {
-		const response = await request.post(`${API_BASE_URL}/users/login`, {
+		const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 			data: {
 				email: 'editor@bienoubien.com',
 				password: 'fooooooooooo'
@@ -721,7 +716,7 @@ test('Should lock user', async ({ request }) => {
 		expect(response.status()).toBe(400);
 	}
 
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'fooooooooooo'
@@ -731,7 +726,7 @@ test('Should lock user', async ({ request }) => {
 });
 
 test('Admin should delete user editor', async ({ request }) => {
-	const signin = await request.post(`${API_BASE_URL}/users/login`, {
+	const signin = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -740,7 +735,7 @@ test('Admin should delete user editor', async ({ request }) => {
 	const authToken = signin.headers()['set-auth-token'];
 	expect(authToken).toBeDefined();
 
-	const response = await request.delete(`${API_BASE_URL}/users/${editorId}`, {
+	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
 		headers: {
 			Authorization: `Bearer ${authToken}`
 		}

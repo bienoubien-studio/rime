@@ -178,9 +178,9 @@ const tabAttributes = tab('attributes').fields(
 		.required(),
 
 	relation('related').to('pages').many(),
-	relation('author').to('users'),
-	relation('contributors').to('users').many(),
-	relation('ambassadors').to('users').many().localized(),
+	relation('author').to('staff'),
+	relation('contributors').to('staff').many(),
+	relation('ambassadors').to('staff').many().localized(),
 	date('published')
 );
 

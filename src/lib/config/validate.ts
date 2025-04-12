@@ -11,6 +11,7 @@ import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/typ
 import type { PrototypeSlug } from 'rizom/types/doc.js';
 import type { FormField } from 'rizom/types/fields.js';
 import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
+import { PANEL_USERS } from 'rizom/constant.js';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -33,9 +34,9 @@ function hasDuplicateSlug(config: CompiledConfig) {
 }
 
 function hasUsersSlug(config: CompiledConfig) {
-	const invalid = config.collections.filter((collection) => collection.slug === 'users').length > 1;
+	const invalid = config.collections.filter((collection) => collection.slug === PANEL_USERS).length > 1;
 	if (invalid) {
-		return ['"users" is a reserved slug for panel users'];
+		return [`${PANEL_USERS} is a reserved slug for panel users`];
 	}
 	return [];
 }

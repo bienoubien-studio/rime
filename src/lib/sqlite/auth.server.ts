@@ -10,6 +10,7 @@ import { RizomError, RizomFormError } from 'rizom/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import rizom from 'rizom/rizom.server.js';
 import type { Dic } from 'rizom/types/util.js';
+import { PANEL_USERS } from 'rizom/constant.js';
 
 
 const dev = process.env.NODE_ENV === 'development';
@@ -78,6 +79,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 */
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
+		const panelUsersTable = rizom.adapter.tables[PANEL_USERS]
 
 		if (users.length || !dev) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -87,7 +89,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			name,
 			email,
 			password,
-			slug: 'users'
+			slug: PANEL_USERS
 		});
 
 		// manually set better-auth user role as it's not working
@@ -100,7 +102,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		const values = {
 			name,
 			email,
-			roles: [ 'admin'],
+			roles: ['admin'],
 			isSuperAdmin: true,
 			authUserId,
 			createdAt: now,
@@ -108,19 +110,20 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		};
 
 		const [user] = (await db
-			.insert(rizom.adapter.tables.users)
+			.insert(panelUsersTable)
 			.values(values)
 			.returning()) as User[];
 
 		return user.id;
 	};
 
-	const isSuperAdmin = async ( userId: string ) => {
+	const isSuperAdmin = async (userId: string) => {
+		const panelUsersTable = schema[PANEL_USERS]
 		const [user] = await db
-			.select({ isSuperAdmin: schema.users.isSuperAdmin })
-			.from(schema.users)
-			.where(eq(schema.users.id, userId));
-		if(!user) return false
+			.select({ isSuperAdmin: panelUsersTable.isSuperAdmin })
+			.from(panelUsersTable)
+			.where(eq(panelUsersTable.id, userId));
+		if (!user) return false
 		return user.isSuperAdmin === true
 	}
 
@@ -162,7 +165,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		});
 		return user.id;
 	};
-	
+
 
 	/**
 	 * Deletes a BetterAuth user by ID
@@ -184,7 +187,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		slug: CollectionSlug;
 		headers: RequestEvent['request']['headers'];
 	};
-	
+
 	/**
 	 * Updates a user's role in BetterAuth
 	 * @returns void
@@ -217,15 +220,15 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		slug
 	}: GetUserAttributesArgs): Promise<User | undefined> => {
 		const table = rizom.adapter.tables[slug];
-		
+
 		const columns: Dic = {
 			id: table.id,
 			name: table.name,
 			roles: table.roles,
 			email: table.email
 		}
-		
-		if(slug === 'users'){
+
+		if (slug === PANEL_USERS) {
 			columns.isSuperAdmin = table.isSuperAdmin
 		}
 
@@ -233,7 +236,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			.select(columns)
 			.from(table)
 			.where(eq(table.authUserId, authUserId));
-		
+
 		if (!user) return undefined;
 
 		return user as User;
@@ -245,7 +248,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 */
 	const getPanelUserAttributes = async (authUserId: string) => {
 		return getUserAttributes({
-			slug: 'users',
+			slug: PANEL_USERS,
 			authUserId
 		});
 	};
@@ -280,7 +283,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			where: eq(userTable.email, email)
 		});
 
-				// Security: Fake delay when email not found to prevent timing attacks
+		// Security: Fake delay when email not found to prevent timing attacks
 		if (!user) {
 			await new Promise((resolve) => setTimeout(resolve, 30 + 20 * Math.random()));
 			throw new RizomFormError({
@@ -289,7 +292,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				password: RizomFormError.INVALID_CREDENTIALS
 			});
 		}
-		
+
 		// Security: Handle locked/banned user attempting to connect
 		if (user.locked) {
 			const timeLocked = parseInt(process.env.RIZOM_BANNED_TIME_MN || '60'); // min

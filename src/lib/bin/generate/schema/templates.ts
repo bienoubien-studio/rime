@@ -1,4 +1,5 @@
 import dedent from 'dedent';
+import { PANEL_USERS } from 'rizom/constant';
 import { toSnakeCase } from 'rizom/util/string.js';
 const s = toSnakeCase;
 
@@ -28,7 +29,7 @@ export const templateHasAuth = (slug:string) => {
 locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
 lockedAt: integer("locked_at", { mode: 'timestamp'}),
 authUserId: text("auth_user_id").references(() => authUsers.id).notNull(),
-${slug === 'users' ? `isSuperAdmin: integer('is_super_admin', { mode: 'boolean' }),` : ''}
+${slug === PANEL_USERS ? `isSuperAdmin: integer('is_super_admin', { mode: 'boolean' }),` : ''}
 `
 }
 

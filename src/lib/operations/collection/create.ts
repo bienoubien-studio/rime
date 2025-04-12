@@ -121,13 +121,22 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	if (locale) {
 		const locales = event.locals.rizom.config.getLocalesCodes();
+		
 		if (locales.length) {
+			// Remove unwanted values on fallback
 			if ('file' in incomingData) {
 				delete incomingData.file;
 			}
 			if ('filename' in incomingData) {
 				delete incomingData.filename;
 			}
+			if ('password' in incomingData) {
+				delete incomingData.password;
+			}
+			if ('confirmPassword' in incomingData) {
+				delete incomingData.confirmPassword;
+			}
+			// Get locales
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
 				api.enforceLocale(otherLocale);

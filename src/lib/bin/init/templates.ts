@@ -79,9 +79,9 @@ export const defaultSchema = dedent`
     editedBy: text('edited_by'),
   })
 
-  /** users ============================================== **/
+  /** panelUsers ============================================== **/
 
-  export const users = sqliteTable( 'users', {
+  export const staff = sqliteTable( 'staff', {
     id: pk(),
     name: text('name').notNull(),
     email: text('email').unique().notNull(),
@@ -89,7 +89,7 @@ export const defaultSchema = dedent`
     createdAt: integer('created_at', { mode : 'timestamp' }),
     updatedAt: integer('updated_at', { mode : 'timestamp' }),
     editedBy: text('edited_by'),
-
+    isSuperAdmin: integer('is_super_admin', { mode : 'boolean' }),
     loginAttempts: integer("login_attempts").notNull().default(0),
     locked: integer("locked", { mode: 'boolean'}).notNull().default(false),
     lockedAt: integer("locked_at", { mode: 'timestamp'}),
@@ -170,7 +170,7 @@ export const defaultSchema = dedent`
 
   export const tables: Tables = {
     pages,
-    users,
+    staff,
     authUsers,
     authAccounts,
     authVerifications,
@@ -178,17 +178,16 @@ export const defaultSchema = dedent`
   }
   export const relationFieldsMap: Record<string, any> = {
     pages : {},
-    users : {}
+    staff : {}
   }
 
-     const schema = {
-       pages,
-        users,
-
-       authUsers,
-       authAccounts,
-       authVerifications,
-       authSessions
+    const schema = {
+      pages,
+      staff,
+      authUsers,
+      authAccounts,
+      authVerifications,
+      authSessions
    }
 
    export type Schema = typeof schema

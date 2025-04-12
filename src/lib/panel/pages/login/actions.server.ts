@@ -1,5 +1,6 @@
 import { dev } from '$app/environment';
 import { redirect, type Actions } from '@sveltejs/kit';
+import { PANEL_USERS } from 'rizom/constant';
 import { handleError } from 'rizom/errors/handler.server';
 import { safe } from 'rizom/util/safe';
 
@@ -11,7 +12,7 @@ export const loginActions: Actions = {
 		const email = data.get('email')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 
-		const [error, success] = await safe(rizom.auth.login({ email, password, slug: 'users' }));
+		const [error, success] = await safe(rizom.auth.login({ email, password, slug: PANEL_USERS }));
 
 		if (error) {
 			return handleError(error, { context: 'action', formData: { email } });

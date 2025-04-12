@@ -112,7 +112,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 				id: original?.id
 			});
 			if (!authorizedFieldUpdate) {
-				throw new RizomError(RizomError.UNAUTHORIZED, 'you are not allowed to update ${key}')
+				output = deleteValueAtPath(output, key);
 			}
 		}
 
@@ -121,7 +121,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 				id: undefined
 			});
 			if (!authorizedFieldCreate) {
-				throw new RizomError(RizomError.UNAUTHORIZED, `you are not allowed to create ${key}`)
+				output = deleteValueAtPath(output, key);
 			}
 		}
 	}

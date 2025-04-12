@@ -9,6 +9,7 @@
 	import { usersFields } from 'rizom/config/auth/usersFields';
 	import { text } from 'rizom/fields/text/index.js';
 	import validate from 'rizom/util/validate';
+	import { PANEL_USERS } from 'rizom/constant';
 
 	type Props = { operation: string; form: DocumentFormContext };
 	const { operation, form }: Props = $props();
@@ -27,7 +28,7 @@
 	async function sendPasswordResetLink() {
 		const { data, error } = await authClient.forgetPassword({
 			email: form.doc.email,
-			redirectTo: '/reset-password?slug=users'
+			redirectTo: `/reset-password?slug=${PANEL_USERS}`
 		});
 		if (error && error.message) {
 			toast.error(error.message);

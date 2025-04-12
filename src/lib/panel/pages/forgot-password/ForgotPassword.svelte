@@ -7,6 +7,7 @@
 	import { toast } from 'svelte-sonner';
 	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
 	import { authClient } from 'rizom/panel/util/auth';
+	import { PANEL_USERS } from 'rizom/constant';
 
 	const context = setFormContext({}, 'login');
 
@@ -22,7 +23,7 @@
 	async function sendResetPasswordMail() {
 		const { data, error } = await authClient.forgetPassword({
 			email: context.form.email,
-			redirectTo: '/reset-password?slug=users'
+			redirectTo: `/reset-password?slug=${PANEL_USERS}`
 		});
 		if (error && error.message) {
 			toast.error(error.message);

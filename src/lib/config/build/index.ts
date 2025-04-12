@@ -20,6 +20,7 @@ import { cache } from 'rizom/plugins/cache/index.js';
 import { mailer } from 'rizom/plugins/mailer/index.server.js';
 import { hasProp } from 'rizom/util/object.js';
 import { BookType, SlidersVertical } from '@lucide/svelte';
+import { PANEL_USERS } from 'rizom/constant.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -43,7 +44,7 @@ const buildConfig = async <C extends boolean = true>(
 	//////////////////////////////////////////////
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
 	config.collections = [
-		...config.collections.filter((c) => c.slug !== 'users'),
+		...config.collections.filter((c) => c.slug !== PANEL_USERS),
 		panelUsersCollection
 	];
 

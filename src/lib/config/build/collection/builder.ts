@@ -8,6 +8,7 @@ import { usersFields } from '../../auth/usersFields.js';
 import type { Collection, ImageSizesConfig } from 'rizom/types/config.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionWithoutSlug } from './types';
+import { PANEL_USERS } from 'rizom/constant.js';
 
 export function collection<S extends string>(
 	slug: S,
@@ -70,7 +71,7 @@ export function collection<S extends string>(
 
 	// Augment Auth fields
 	if (config.auth) {
-		const isNotPanelUsersCollection = slug !== 'users';
+		const isNotPanelUsersCollection = slug !== PANEL_USERS;
 		if (isNotPanelUsersCollection) {
 			fields.push(usersFields.email);
 			const rolesField = fields.find((field) => isRolesField(field.raw));

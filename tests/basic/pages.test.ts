@@ -1,4 +1,5 @@
 import test, { expect } from '@playwright/test';
+import { PANEL_USERS } from 'rizom/constant';
 
 const BASE_URL = 'http://rizom.test:5173';
 
@@ -64,29 +65,9 @@ test.describe('Login form', () => {
 
 	test('should not display forgot password link', async ({ page }) => {
 		await page.goto('/login');
-		await expect(page.locator('a[href="/forgot-password?slug=users"]')).toHaveCount(0);
+		await expect(page.locator(`a[href="/forgot-password?slug=${PANEL_USERS}"]`)).toHaveCount(0);
 	});
 
-	// test('forgot password link works', async ({ page }) => {
-	// 	await page.goto('/login');
-	// 	// Click forgot password link
-	// 	await page.click('a[href="/forgot-password?slug=users"]');
-	// 	await page.waitForLoadState('networkidle');
-	// 	// Verify navigation to forgot password page
-	// 	expect(page.url()).toContain('/forgot-password');
-	// });
-
-	// test('forgot password form works', async ({ page }) => {
-	// 	await page.goto('/login');
-	// 	// Click forgot password link
-	// 	await page.click('a[href="/forgot-password?slug=users"]');
-	// 	await page.fill('input[name="email"]', 'admin@bienoubien.studio');
-	// 	await page.click('button[type="submit"]');
-	// 	await page.waitForLoadState('networkidle');
-
-	// 	const message = page.locator('.rz-card-title');
-	// 	expect(message).toHaveText('Email successfully sent');
-	// });
 });
 
 test.describe('Admin panel', () => {
@@ -108,7 +89,7 @@ test.describe('Admin panel', () => {
 		const collections = [
 			{ slug: 'pages', singular: 'Page', plural: 'Pages' },
 			{ slug: 'medias', singular: 'Media', plural: 'Medias' },
-			{ slug: 'users', singular: 'User', plural: 'Users' }
+			{ slug: PANEL_USERS, singular: 'User', plural: 'Users' }
 		];
 
 		for (const { slug, singular, plural } of collections) {
@@ -140,7 +121,7 @@ test.describe('Admin panel', () => {
 				expect(await h1.innerText()).toBe('Home');
 			}
 
-			if (slug === 'users') {
+			if (slug === PANEL_USERS) {
 				const inputTitle = page.locator(`input.rz-input[name="email"]`);
 				const inputPassword = page.locator(`input.rz-input[name="password"]`);
 				const inputConfirmPassword = page.locator(`input.rz-input[name="confirmPassword"]`);

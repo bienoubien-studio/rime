@@ -1,7 +1,5 @@
 import buildRootTable from './root.js';
 import write from './write.js';
-import { toSnakeCase } from '$lib/util/string.js';
-
 import {
 	templateAuth,
 	templateExportRelationsFieldsToTable,
@@ -14,6 +12,8 @@ import type { BuiltConfig } from 'rizom/types/config.js';
 import type { Dic } from 'rizom/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
+import { toCamelCase } from 'rizom/util/string.js';
+
 
 export function generateSchemaString(config: BuiltConfig): string {
 	const schema: string[] = [templateImports];
@@ -23,7 +23,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 	let blocksRegister: string[] = [];
 
 	for (const collection of config.collections) {
-		const collectionSlug = toSnakeCase(collection.slug);
+		const collectionSlug = toCamelCase(collection.slug);
 
 		const {
 			schema: collectionSchema,
@@ -75,7 +75,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 	 * Areas
 	 */
 	for (const area of config.areas) {
-		const areaSlug = toSnakeCase(area.slug);
+		const areaSlug = toCamelCase(area.slug);
 
 		const {
 			schema: areaSchema,

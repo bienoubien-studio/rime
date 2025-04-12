@@ -1,6 +1,8 @@
 import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/upload/util/converter.js';
 import path from 'path';
+import { PANEL_USERS } from 'rizom/constant';
+import { clearLog, logToFile } from '../../src/log';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
 
@@ -29,7 +31,7 @@ test('Second init should return 404', async ({ request }) => {
 let adminUserId: string;
 
 test('Login should not be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: '12345678'
@@ -39,7 +41,7 @@ test('Login should not be successfull', async ({ request }) => {
 });
 
 test('Login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -545,7 +547,7 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 let editorId: string;
 
 test('Should create a user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -556,8 +558,10 @@ test('Should create a user editor', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	expect(response.status()).toBe(200);
 	const data = await response.json();
+	clearLog()
+	logToFile(data)
+	expect(response.status()).toBe(200);
 	expect(data.doc).toBeDefined();
 	expect(data.doc.id).toBeDefined();
 	editorId = data.doc.id;
@@ -565,7 +569,7 @@ test('Should create a user editor', async ({ request }) => {
 
 test('Should logout user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -619,7 +623,7 @@ test('Should not create a page', async ({ request }) => {
 //////////////////////////////////////////////
 
 test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -755,7 +759,7 @@ let page2Id: string;
 let editor2Id: string;
 
 test('Should create editor user for testing', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -985,7 +989,7 @@ test('Should delete test page', async ({ request }) => {
 
 test('Should logout admin user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -996,7 +1000,7 @@ test('Should logout admin user', async ({ request }) => {
 });
 
 test('Should login editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -1011,7 +1015,7 @@ test('Should login editor', async ({ request }) => {
 });
 
 test('Editor should not update admin password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/users/${adminUserId}`, {
+	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${adminUserId}`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -1059,7 +1063,7 @@ test('Editor should update home', async ({ request }) => {
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/users/logout`, {
+		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
@@ -1071,7 +1075,7 @@ test('Should logout editor', async ({ request }) => {
 
 test('Should lock user', async ({ request }) => {
 	for (let i = 0; i < 4; i++) {
-		const response = await request.post(`${API_BASE_URL}/users/login`, {
+		const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 			data: {
 				email: 'editor@bienoubien.com',
 				password: 'fooooooooooo'
@@ -1080,7 +1084,7 @@ test('Should lock user', async ({ request }) => {
 		expect(response.status()).toBe(400);
 	}
 
-	const response = await request.post(`${API_BASE_URL}/users/login`, {
+	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'fooooooooooo'

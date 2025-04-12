@@ -3,6 +3,7 @@
 	import Button from '../button/button.svelte';
 	import { LogOut } from '@lucide/svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
+	import { PANEL_USERS } from 'rizom/constant';
 
 	type Props = { navCollapsed: boolean };
 	const { navCollapsed }: Props = $props();
@@ -15,7 +16,7 @@
 	{#if !navCollapsed}
 		<div class="rz-user-button">
 			<div class="rz-user-button__left">
-				<a href="/panel/users/{user.attributes.id}">
+				<a href="/panel/{PANEL_USERS}/{user.attributes.id}">
 					{user.attributes.name?.charAt(0) || ''}
 				</a>
 				<div class="rz-user-button__name">{user.attributes.name}</div>
