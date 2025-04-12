@@ -9,7 +9,6 @@ import type { FormField } from 'rizom/types/index.js';
 import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
 import type { Field } from 'rizom/types/fields.js';
 import type { IconProps } from '@lucide/svelte';
-import cloneDeep from 'clone-deep';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);
 
