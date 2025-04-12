@@ -28,23 +28,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 
 	for (const [key, config] of Object.entries(configMap)) {
 		let value: any = getValueAtPath(key, output);
-
-		if (key === 'hashedPassword') {
-			//
-			// hashedPassword is a mandatory field added while building config
-			// so it's present in configMap.
-			// Value should be empty and populated in hookBefore[Create/Update]
-			// defined in rizom/auth/hooks.server.ts
-			//
-			// [EDIT] Should not be there with better-auth
-			//
-			if (getValueAtPath(key, output)) {
-				throw new RizomError('hashedPassword should be empty while preprocessing incoming data');
-			}
-			// No need for validation / transform / access
-			continue;
-		}
-
+		
 		/////////////////////////////////////////////
 		// Validation
 		//////////////////////////////////////////////
@@ -71,7 +55,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 		}
 
 		/////////////////////////////////////////////
-		// Transform before validate
+		// Field hook before validate
 		//////////////////////////////////////////////
 
 		if (config.hooks?.beforeValidate) {
@@ -107,7 +91,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 		}
 
 		/////////////////////////////////////////////
-		// Transform to DB compliency
+		// Field hook before Save
 		//////////////////////////////////////////////
 
 		if (config.hooks?.beforeSave) {

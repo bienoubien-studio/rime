@@ -4,7 +4,8 @@ import {
 	isFormField,
 	isGroupField,
 	isRelationField,
-	isTabsField
+	isTabsField,
+	isTreeFieldRaw
 } from 'rizom/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
@@ -33,44 +34,6 @@ type Return = {
 	relationsDic: Record<string, string[]>;
 	relationFieldsHasLocale: boolean;
 };
-
-function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
-	// Iterate through each field in the array
-	for (const field of fields) {
-		// Case 1: If it's a group field, check all fields within the group
-		if (isGroupField(field.raw)) {
-			if (hasLocalizedField(field.raw.fields)) {
-				return true;
-			}
-		}
-
-		// Case 2: If it's a tabs field, check all fields within each tab
-		else if (isTabsField(field.raw)) {
-			for (const tab of field.raw.tabs) {
-				if (hasLocalizedField(tab.raw.fields)) {
-					return true;
-				}
-			}
-		}
-
-		// Case 3: If it's a blocks field, check all fields within each block
-		else if (isBlocksField(field.raw)) {
-			for (const block of field.raw.blocks) {
-				if (hasLocalizedField(block.raw.fields)) {
-					return true;
-				}
-			}
-		}
-
-		// Case 4: For regular form fields, check if it's marked as localized
-		else if (isFormField(field.raw) && field.raw.localized) {
-			return true;
-		}
-	}
-
-	// If no localized fields were found, return false
-	return false;
-}
 
 const buildRootTable = ({
 	fields: incomingFields,
@@ -223,5 +186,54 @@ const buildRootTable = ({
 		relationsDic
 	};
 };
+
+
+function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
+	// Iterate through each field in the array
+	for (const field of fields) {
+		// Case 1: If it's a group field, check all fields within the group
+		if (isGroupField(field.raw)) {
+			if (hasLocalizedField(field.raw.fields)) {
+				return true;
+			}
+		}
+
+		// Case 2: If it's a tabs field, check all fields within each tab
+		else if (isTabsField(field.raw)) {
+			for (const tab of field.raw.tabs) {
+				if (hasLocalizedField(tab.raw.fields)) {
+					return true;
+				}
+			}
+		}
+
+		// Case 3: If it's a blocks field, check all fields within each block
+		else if (isBlocksField(field.raw)) {
+			if (field.raw.localized) return true
+			for (const block of field.raw.blocks) {
+				if (hasLocalizedField(block.raw.fields)) {
+					return true;
+				}
+			}
+		}
+
+		// Case 3: If it's a tree field, check all fields
+		else if (field instanceof TreeBuilder) {
+			if (field.raw.localized) return true
+			if (hasLocalizedField(field.raw.fields)) {
+				return true;
+			}
+		}
+		
+		// Case 4: For regular form fields, check if it's marked as localized
+		else if (isFormField(field.raw) && field.raw.localized) {
+			return true;
+		}
+	}
+
+	// If no localized fields were found, return false
+	return false;
+}
+
 
 export default buildRootTable;

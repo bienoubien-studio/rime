@@ -4,6 +4,7 @@ import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
 import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/util/validate.js';
+import type { Link, LinkType } from './types.js';
 
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale, documentId }) => {
 	const hasValue = !!value;
@@ -11,22 +12,27 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 		!['url', 'email', 'tel', 'anchor'].includes(type);
 	
 	if (hasValue && isResourceLinkType(value.type)) {
+		const link = value
 		// Compare with the current document beign processed to prevent infinite loop
-		if( value.link !== documentId ){
+		if( link.value !== documentId ){
 			try {
 				let doc;
-				if (api.rizom.config.isCollection(value.type)) {
-					doc = await api.collection(value.type).findById({ id: value.link || '', locale });
-				} else {
-					doc = await api.area(value.type).find({ locale });
+				if (api.rizom.config.isCollection(link.type)) {
+					doc = await api.collection(link.type).findById({ id: link.value || '', locale });
+				} else if( api.rizom.config.isArea(link.type) ) {
+					doc = await api.area(link.type).find({ locale });
 				}
 				if (!doc) {
-					value.link = null;
+					link.value = null;
 					return value;
 				}
 				
 				if (doc.url) value.url = doc.url;
-			} catch (err) {
+			} catch (err:any) {
+				if(err.code === 'not_found'){
+					console.warn(`Link field : ${link.type} ${documentId} not found`)
+					return null
+				}
 				// catch 404
 				console.error(err);
 			}
@@ -39,7 +45,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	constructor(name: string) {
 		super(name, 'link');
-		this.field.isEmpty = (value: any) => !value || !value.link;
+		this.field.isEmpty = (link: unknown) => !link || typeof link === 'object' && 'value' in link && !link.value;
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.hooks = {
@@ -88,20 +94,13 @@ export const link = (name: string) => new LinkFieldBuilder(name);
 /////////////////////////////////////////////
 // Type
 //////////////////////////////////////////////
-export type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'PrototypeSlug'>;
+
 export type LinkField = FormField & {
 	type: 'link';
 	defaultValue?: string;
 	layout: 'compact' | 'default';
 	unique?: boolean;
 	types?: LinkType[];
-};
-
-export type Link = {
-	type: LinkType;
-	link: string | null;
-	target: string;
-	url?: string;
 };
 
 /////////////////////////////////////////////
@@ -112,6 +111,6 @@ declare module 'rizom' {
 		link: any;
 	}
 	interface RegisterFormFields {
-		LinkField: LinkField; // register the field type
+		LinkField: LinkField;
 	}
 }

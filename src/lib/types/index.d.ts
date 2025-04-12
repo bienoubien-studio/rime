@@ -84,7 +84,7 @@ export type { CollectionLayoutProps, FieldPanelTableConfig, FormErrors, Route } 
 // Upload types
 export type { JsonFile } from './upload.js';
 
-export type { Link } from '../fields/link/index.js';
+export type { Link } from '../fields/link/types.js';
 
 // Util
 export { WithRelationPopulated } from './util.js'

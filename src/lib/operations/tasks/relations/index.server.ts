@@ -35,14 +35,16 @@ export const saveRelations = async (args: {
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId,
-		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`),
+		locale
 	});
 
 	/** Delete relations from deletedTreeItems */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
 		parentId,
-		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`)
+		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`),
+		locale
 	});
 
 	/** Get relations in data */

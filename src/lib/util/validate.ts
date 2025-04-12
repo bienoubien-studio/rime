@@ -67,23 +67,23 @@ export const slug = (value: unknown) => {
 	return true;
 };
 
-export const link = (value: any) => {
-	const { type, link } = value;
-
+export const link = (link: any) => {
+	const { type, value } = link;
+	
 	if (type === 'tel') {
-		const valid = validate.tel(link);
+		const valid = validate.tel(value);
 		return typeof valid === 'string' ? `tel::${valid}` : true;
 	}
 	if (type === 'email') {
-		const valid = validate.email(link);
+		const valid = validate.email(value);
 		return typeof valid === 'string' ? `email::${valid}` : true;
 	}
 	if (type === 'url') {
-		const valid = validate.url(link);
+		const valid = validate.url(value);
 		return typeof valid === 'string' ? `url::${valid}` : true;
 	}
 	if (type === 'anchor') {
-		const valid = validate.slug(link);
+		const valid = validate.slug(value);
 		return typeof valid === 'string' ? `anchor::${valid}` : true;
 	}
 	return true;

@@ -77,7 +77,8 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
             await db.insert(tables[table]).values({
                 ...unlocalizedData,
                 id: blockId,
-                parentId: parentId
+                parentId: parentId,
+                locale
             });
 
             await db.insert(tables[tableLocales]).values({

@@ -11,6 +11,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
 	import type { LinkFieldProps } from './props';
+	import type { Link } from '../types';
 
 	const { path, config, form }: LinkFieldProps = $props();
 
@@ -81,11 +82,12 @@
 	};
 
 	const setValue = () => {
-		field.value = {
+		const value: Link = {
 			type: linkType,
-			link: linkValue,
+			value: linkValue,
 			target: targetBlank ? '_blank' : '_self'
 		};
+		field.value = value
 	};
 
 	$effect(() => {

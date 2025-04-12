@@ -9,9 +9,12 @@
 	import type { TreeProps } from './props.js';
 	import type { Dic } from 'rizom/types/util.js';
 	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import './tree.css';
+	
+	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
 
 	const { path, config, form }: TreeProps = $props();
+
+	const locale = getLocaleContext();
 
 	const treeState = $derived(form.useTree(path));
 	const field = $derived(form.useField(path, config));
@@ -96,6 +99,9 @@
 
 	<h3 class="rz-tree__title" class:rz-blocks__title--nested={nested || form.isLive}>
 		{config.label ? config.label : capitalize(config.name)}
+		{#if config.localized}
+			<sup>{locale.code}</sup>
+		{/if}
 	</h3>
 
 	{#key treeState.stamp}
@@ -129,3 +135,34 @@
 		{config.addItemLabel}
 	</AddItemButton>
 </fieldset>
+
+<style lang="postcss">
+
+	.rz-tree__title {
+		margin-bottom: var(--rz-size-4);
+		font-size: var(--rz-text-xl);
+		@mixin font-medium;
+	}
+
+	.rz-tree__title--nested {
+		font-size: var(--rz-text-sm);
+	}
+
+	.rz-tree__list .rz-tree__list {
+		margin-left: 2rem;
+	}
+
+	.rz-tree__list {
+		display: grid;
+		margin-left: 1rem;
+	}
+	
+	:global(.rz-tree__add-button) {
+		margin-top: var(--rz-size-4);
+	}
+
+	sup {
+		font-size: var(--rz-text-2xs);
+		text-transform: uppercase;
+	}
+</style>

@@ -1,4 +1,4 @@
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 import { rizom } from '$lib/index.js';
 import type { Dic } from 'rizom/types/util';
 
@@ -8,14 +8,24 @@ type BuildWithParamArgs = {
 };
 
 export const buildWithParam = ({ slug, locale }: BuildWithParamArgs): Dic => {
+
 	const blocksTables = rizom.adapter.blocks.getBlocksTableNames(slug);
 	const treeTables = rizom.adapter.tree.getBlocksTableNames(slug);
+
 	const withParam: Dic = Object.fromEntries(
-		[...blocksTables, ...treeTables].map((k) => [
-			k,
-			{ orderBy: [asc(rizom.adapter.tables[k].position)] }
-		])
+		[...blocksTables, ...treeTables].map((key) => {
+			const blockOrTreeTable = rizom.adapter.tables[key]
+			type Params = { orderBy: SQL[], where?: SQL }
+			let params: Params = { orderBy: [asc(blockOrTreeTable.position)] }
+			const columns = getTableColumns(blockOrTreeTable)
+			const hasLocale = Object.keys(columns).includes('locale')
+			if( locale && hasLocale){
+				params = { ...params, where : eq(blockOrTreeTable.locale, locale)}
+			}
+			return [ key, params ]
+		})
 	);
+	
 
 	if (locale) {
 		const localesTableName = `${slug}Locales`;

@@ -13,6 +13,7 @@ import { toSnakeCase } from 'rizom/util/string.js';
 import { toCamelCase } from 'drizzle-orm/casing';
 import type { Dic, WithoutBuilders } from 'rizom/types/util';
 import type { Component } from 'svelte';
+import cloneDeep from 'clone-deep';
 
 export class FieldBuilder<T extends Field = Field> {
 	field: T;
@@ -163,5 +164,21 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	beforeValidate(hook: FieldHook) {
 		this.field.hooks!.beforeValidate ??= [];
 		this.field.hooks!.beforeValidate.push(hook);
+	}
+
+	clone<B extends FormFieldBuilder<T>>(): B {
+		// Create a new instance of the same class
+		const Constructor = this.constructor as new (...args: any[]) => B;
+		// Get constructor parameters from the current instance
+		const name = this.field.name;
+		const type = this.field.type;
+		
+		// Create a new instance
+		const clone = new Constructor(name, type);
+		
+		// Deep clone the field object to avoid reference issues
+		clone.field = cloneDeep(this.field);
+		
+		return clone;
 	}
 }

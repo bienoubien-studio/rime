@@ -59,34 +59,35 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
     };
 
     const create: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
-        const table = buildBlockTableName(parentSlug, block.type);
+        const tableName = buildBlockTableName(parentSlug, block.type);
         const blockId = generatePK();
-        const tableLocales = `${table}Locales`;
+        const tableNameLocales = `${tableName}Locales`;
 
-        if (locale && tableLocales in tables) {
-            const unlocalizedColumns = getTableColumns(tables[table]);
-            const localizedColumns = getTableColumns(tables[tableLocales]);
+        if (locale && tableNameLocales in tables) {
+            const unlocalizedColumns = getTableColumns(tables[tableName]);
+            const localizedColumns = getTableColumns(tables[tableNameLocales]);
 
             const unlocalizedData = transformDataToSchema(block, unlocalizedColumns);
             const localizedData = transformDataToSchema(block, localizedColumns);
 
-            await db.insert(tables[table]).values({
+            await db.insert(tables[tableName]).values({
                 ...unlocalizedData,
                 id: blockId,
-                parentId: parentId
+                parentId: parentId,
+                locale
             });
 
-            await db.insert(tables[tableLocales]).values({
+            await db.insert(tables[tableNameLocales]).values({
                 ...localizedData,
                 id: generatePK(),
                 parentId: blockId,
                 locale
             });
         } else {
-            const columns = getTableColumns(tables[table]);
+            const columns = getTableColumns(tables[tableName]);
             const schemaData = transformDataToSchema(block, columns);
 
-            await db.insert(tables[table]).values({
+            await db.insert(tables[tableName]).values({
                 ...schemaData,
                 parentId,
                 id: generatePK()
