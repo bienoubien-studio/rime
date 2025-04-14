@@ -21,7 +21,7 @@ export const ${table} = sqliteTable( '${s(table)}', {
 export const templateLocale = () => 'locale: text("locale"),';
 
 export const templateParent = (parent: string) => {
-	return `parentId: text("parent_id").references(() => ${parent}.id, { onDelete: 'cascade' }),`;
+	return `ownerId: text("owner_id").references(() => ${parent}.id, { onDelete: 'cascade' }),`;
 };
 
 export const templateHasAuth = (slug:string) => {
@@ -43,7 +43,7 @@ export const templateUniqueRequired = (field: { unique?: boolean; required?: boo
 export const templateRelationOne = ({ name, table, parent }: RelationOneArgs): string => `
 export const ${name} = relations(${table}, ({ one }) => ({
   ${parent} : one(${parent}, {
-    fields: [${table}.parentId],
+    fields: [${table}.ownerId],
     references: [${parent}.id],
   }),
 }))

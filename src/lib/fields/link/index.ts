@@ -6,6 +6,7 @@ import type { FieldHook } from 'rizom/types/fields';
 import validate from 'rizom/util/validate.js';
 import type { Link, LinkType } from './types.js';
 
+// Before save populate ressource URL
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale, documentId }) => {
 	const hasValue = !!value;
 	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
@@ -13,6 +14,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 	
 	if (hasValue && isResourceLinkType(value.type)) {
 		const link = value
+		
 		// Compare with the current document beign processed to prevent infinite loop
 		if( link.value !== documentId ){
 			try {
@@ -26,7 +28,6 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 					link.value = null;
 					return value;
 				}
-				
 				if (doc.url) value.url = doc.url;
 			} catch (err:any) {
 				if(err.code === 'not_found'){
@@ -49,8 +50,8 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.hooks = {
-			beforeRead: [populateRessourceURL],
-			beforeSave: [],
+			beforeRead: [],
+			beforeSave: [populateRessourceURL],
 			beforeValidate: []
 		};
 	}

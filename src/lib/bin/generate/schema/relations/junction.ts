@@ -13,7 +13,7 @@ import type { RelationFieldsMap } from './definition.js';
  *       id: pk(),
  *       path: text('path'),
  *       position: integer('position'),
- *       parentId: text('parent_id').references(() => pages.id, { onDelete: 'cascade' }),
+ *       ownerId: text('owner_id').references(() => pages.id, { onDelete: 'cascade' }),
  *       mediasId: text('media_id').references(() => medias.id, { onDelete: 'cascade' }),
  *       locale: text('locale')
  *     })`,
@@ -50,7 +50,7 @@ type Return = {
 	 *   id: pk(),
 	 *   path: text('path'),
 	 *   position: integer('position'),
-	 *   parentId: text('parent_id').references(() => pages.id, { onDelete: 'cascade' }),
+	 *   ownerId: text('owner_id').references(() => pages.id, { onDelete: 'cascade' }),
 	 *   mediasId: text('media_id').references(() => medias.id, { onDelete: 'cascade' }),
 	 *   locale: text('locale')
 	 * })

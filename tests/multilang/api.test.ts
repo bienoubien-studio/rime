@@ -2,7 +2,6 @@ import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/upload/util/converter.js';
 import path from 'path';
 import { PANEL_USERS } from 'rizom/constant';
-import { clearLog, logToFile } from '../../src/log';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
 
@@ -559,8 +558,7 @@ test('Should create a user editor', async ({ request }) => {
 		}
 	});
 	const data = await response.json();
-	clearLog()
-	logToFile(data)
+	
 	expect(response.status()).toBe(200);
 	expect(data.doc).toBeDefined();
 	expect(data.doc.id).toBeDefined();

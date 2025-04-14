@@ -58,10 +58,7 @@ const tabAttributes = tab('attributes')
 			.live(false),
 		separator(),
 		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
-		separator(),
-		relation('parent')
-			.to('pages')
-			.query((doc) => `where[id][not_equals]=${doc.id}`)
+		separator()
 	);
 
 const blockKeyFacts = block('keyFacts').fields(
@@ -122,6 +119,7 @@ const Pages = collection('pages', {
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
 	live: true,
+	nested: true,
 	url: (doc) =>
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
@@ -231,6 +229,7 @@ const Medias = collection('medias', {
 });
 
 export default defineConfig({
+	siteUrl: process.env.PUBLIC_RIZOM_URL,
 	database: 'basic.sqlite',
 	collections: [Pages, Medias, News],
 	areas: [Settings, Navigation, Informations],

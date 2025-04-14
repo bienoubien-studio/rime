@@ -71,7 +71,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			return inArray(
 				table.id,
 				db
-					.select({ id: tableLocales.parentId })
+					.select({ id: tableLocales.ownerId })
 					.from(tableLocales)
 					.where(and(fn(tableLocales[sqlColumn], value), eq(tableLocales.locale, locale)))
 			);
@@ -104,7 +104,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		return inArray(
 			table.id,
 			db
-				.select({ id: relationTable.parentId })
+				.select({ id: relationTable.ownerId })
 				.from(relationTable)
 				.where(and(...conditions))
 		);

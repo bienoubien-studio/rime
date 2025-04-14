@@ -75,7 +75,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	}
 
 	const validateBlockField = (fields: FormField[], blockType: string) => {
-		const reserved = ['path', 'type', 'parentId', 'position'];
+		const reserved = ['path', 'type', 'ownerId', 'position'];
 		for (const key of reserved) {
 			if (fields.map((f) => f.name).filter((name) => name === key).length > 1) {
 				errors.push(`${key} is a reserved field in blocks (block ${blockType})`);

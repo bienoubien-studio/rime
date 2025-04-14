@@ -26,13 +26,13 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
         if (locale && keyTableLocales in tables) {
             const tableLocales = tables[keyTableLocales];
             const localizedColumns = getTableColumns(tableLocales);
-            const localizedValues = transformDataToSchema(omit(['parentId', 'id'], block), localizedColumns);
+            const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
 
             if (!Object.keys(localizedValues).length) return true;
 
             //@ts-expect-error keyTableLocales is key of db.query
             const localizedRow = await db.query[keyTableLocales].findFirst({
-                where: and(eq(tableLocales.parentId, block.id), eq(tableLocales.locale, locale))
+                where: and(eq(tableLocales.ownerId, block.id), eq(tableLocales.locale, locale))
             });
 
             if (!localizedRow) {
@@ -40,13 +40,13 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
                     ...localizedValues,
                     id: generatePK(),
                     locale: locale,
-                    parentId: block.id
+                    ownerId: block.id
                 });
             } else {
                 await db
                     .update(tableLocales)
                     .set(localizedValues)
-                    .where(and(eq(tableLocales.parentId, block.id), eq(tableLocales.locale, locale)));
+                    .where(and(eq(tableLocales.ownerId, block.id), eq(tableLocales.locale, locale)));
             }
         }
         return true;
@@ -58,7 +58,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
         return true;
     };
 
-    const create: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
+    const create: CreateBlock = async ({ parentSlug, block, ownerId, locale }) => {
         const tableName = buildBlockTableName(parentSlug, block.type);
         const blockId = generatePK();
         const tableNameLocales = `${tableName}Locales`;
@@ -73,14 +73,14 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
             await db.insert(tables[tableName]).values({
                 ...unlocalizedData,
                 id: blockId,
-                parentId: parentId,
+                ownerId: ownerId,
                 locale
             });
 
             await db.insert(tables[tableNameLocales]).values({
                 ...localizedData,
                 id: generatePK(),
-                parentId: blockId,
+                ownerId: blockId,
                 locale
             });
         } else {
@@ -89,7 +89,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 
             await db.insert(tables[tableName]).values({
                 ...schemaData,
-                parentId,
+                ownerId,
                 id: generatePK()
             });
         }
@@ -126,7 +126,7 @@ type UpdateBlock = (args: {
 type CreateBlock = (args: {
     parentSlug: PrototypeSlug;
     block: GenericBlock;
-    parentId: string;
+    ownerId: string;
     locale?: string;
 }) => Promise<boolean>;
 

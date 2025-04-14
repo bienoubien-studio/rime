@@ -57,7 +57,7 @@ const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 			await db.insert(tables[tableLocales]).values({
 				...localizedData,
 				id: generatePK(),
-				parentId: createId,
+				ownerId: createId,
 				locale
 			});
 		} else {
@@ -99,7 +99,7 @@ const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 				const tableLocales = tables[keyTableLocales as PrototypeSlug];
 				// @ts-expect-error todo...
 				const localizedRow = await db.query[keyTableLocales as PrototypeSlug].findFirst({
-					where: and(eq(tableLocales.parentId, area.id), eq(tableLocales.locale, locale))
+					where: and(eq(tableLocales.ownerId, area.id), eq(tableLocales.locale, locale))
 				});
 
 				if (!localizedRow) {
@@ -107,13 +107,13 @@ const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
 						...localizedData,
 						id: generatePK(),
 						locale: locale,
-						parentId: area.id
+						ownerId: area.id
 					});
 				} else {
 					await db
 						.update(tableLocales)
 						.set(localizedData)
-						.where(and(eq(tableLocales.parentId, area.id), eq(tableLocales.locale, locale)));
+						.where(and(eq(tableLocales.ownerId, area.id), eq(tableLocales.locale, locale)));
 				}
 			}
 		} else {

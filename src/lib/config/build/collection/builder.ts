@@ -9,6 +9,9 @@ import type { Collection, ImageSizesConfig } from 'rizom/types/config.js';
 import type { User } from 'rizom/types/auth.js';
 import type { CollectionWithoutSlug } from './types';
 import { PANEL_USERS } from 'rizom/constant.js';
+import { relation } from 'rizom/fields/relation/index.js';
+import { number } from 'rizom/fields/number/index.js';
+import type { CollectionSlug } from 'rizom/types/index.js';
 
 export function collection<S extends string>(
 	slug: S,
@@ -40,11 +43,11 @@ export function collection<S extends string>(
 
 		// Add validation if accept is defined
 		if ('accept' in config) {
-			const allowedExtensions = config.accept;
+			const allowedMimeTypes = config.accept;
 			mimeType.raw.validate = (value) => {
 				return (
-					(typeof value === 'string' && allowedExtensions.includes(value)) ||
-					`File should be the type of ${allowedExtensions.toString()}`
+					(typeof value === 'string' && allowedMimeTypes.includes(value)) ||
+					`File should be the type of ${allowedMimeTypes.toString()}`
 				);
 			};
 		}
@@ -69,6 +72,15 @@ export function collection<S extends string>(
 		fields.push(text('status').defaultValue(config.status[0].value).hidden());
 	}
 
+	if(config.nested){
+		fields.push(number('nestedPosition').defaultValue(0).hidden());
+		fields.push(relation('parent').to(slug as CollectionSlug).hidden());
+	}
+	
+	// if(config.url){
+	// 	fields.push(text('url').hidden());
+	// }
+	
 	// Augment Auth fields
 	if (config.auth) {
 		const isNotPanelUsersCollection = slug !== PANEL_USERS;

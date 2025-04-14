@@ -30,13 +30,13 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
         if (locale && keyTableLocales in tables) {
             const tableLocales = tables[keyTableLocales];
             const localizedColumns = getTableColumns(tableLocales);
-            const localizedValues = transformDataToSchema(omit(['parentId', 'id'], block), localizedColumns);
+            const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
 
             if (!Object.keys(localizedValues).length) return true;
 
             //@ts-expect-error keyTableLocales is key of db.query
             const localizedRow = await db.query[keyTableLocales].findFirst({
-                where: and(eq(tableLocales.parentId, block.id), eq(tableLocales.locale, locale))
+                where: and(eq(tableLocales.ownerId, block.id), eq(tableLocales.locale, locale))
             });
 
             if (!localizedRow) {
@@ -44,13 +44,13 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
                     ...localizedValues,
                     id: generatePK(),
                     locale: locale,
-                    parentId: block.id
+                    ownerId: block.id
                 });
             } else {
                 await db
                     .update(tableLocales)
                     .set(localizedValues)
-                    .where(and(eq(tableLocales.parentId, block.id), eq(tableLocales.locale, locale)));
+                    .where(and(eq(tableLocales.ownerId, block.id), eq(tableLocales.locale, locale)));
             }
         }
         return true;
@@ -62,7 +62,7 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
         return true;
     };
 
-    const create: CreateBlock = async ({ parentSlug, block, parentId, locale }) => {
+    const create: CreateBlock = async ({ parentSlug, block, ownerId, locale }) => {
         const table = buildBlockTableName(parentSlug, block.path);
         const blockId = generatePK();
         const tableLocales = `${table}Locales`;
@@ -77,14 +77,14 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
             await db.insert(tables[table]).values({
                 ...unlocalizedData,
                 id: blockId,
-                parentId: parentId,
+                ownerId: ownerId,
                 locale
             });
 
             await db.insert(tables[tableLocales]).values({
                 ...localizedData,
                 id: generatePK(),
-                parentId: blockId,
+                ownerId: blockId,
                 locale
             });
         } else {
@@ -93,7 +93,7 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 
             await db.insert(tables[table]).values({
                 ...schemaData,
-                parentId,
+                ownerId,
                 id: generatePK()
             });
         }
@@ -128,7 +128,7 @@ type UpdateBlock = (args: {
 type CreateBlock = (args: {
     parentSlug: PrototypeSlug;
     block: WithRequired<TreeBlock, 'path'>;
-    parentId: string;
+    ownerId: string;
     locale?: string;
 }) => Promise<boolean>;
 

@@ -16,7 +16,7 @@ const p = toPascalCase;
  *   relationsDefinitions: `
  *     export const rel_usersHasOnePages = relations(users, ({ one }) => ({
  *       pages: one(pages, {
- *         fields: [users.parentId],
+ *         fields: [users.ownerId],
  *         references: [pages.id],
  *       })
  *     }))
@@ -61,7 +61,7 @@ type Return = {
 	 * @example
 	 * export const rel_usersHasOnePages = relations(users, ({ one }) => ({
 	 *   pages : one(pages, {
-	 *     fields: [users.parentId],
+	 *     fields: [users.ownerId],
 	 *     references: [pages.id],
 	 *   }),
 	 * }))

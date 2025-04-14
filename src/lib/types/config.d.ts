@@ -126,6 +126,7 @@ export type BaseCollection<S> = {
 	hooks?: CollectionHooks<RegisterCollection[S]>;
 	url?: (doc: RegisterCollection[S]) => string;
 	status?: boolean | DocumentStatus[];
+	nested?: boolean;
 } & BaseDocConfig;
 
 export type Collection<S> = BaseCollection<S> &
@@ -155,6 +156,13 @@ export type Collection<S> = BaseCollection<S> &
 				 * ```
 				 */
 				imageSizes?: ImageSizesConfig[];
+				/**
+				 * Allowed mimeTypes
+				 * @example
+				 * ```typescript
+				 * accept: ['image/jpeg', 'image/svg']
+				 * ```
+				 */
 				accept?: string[];
 		  }
 	);

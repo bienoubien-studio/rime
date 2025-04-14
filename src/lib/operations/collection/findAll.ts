@@ -56,11 +56,10 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 			});
 			document = result.doc as T;
 		}
-
 		return document;
 	};
-
+	
 	const documents = await Promise.all(documentsRaw.map((raw) => processDocument(raw)));
-
+	
 	return documents;
 };

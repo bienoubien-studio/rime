@@ -22,8 +22,7 @@
 		collectionUrl?: string;
 	};
 	const { form, onClose, config }: Props = $props();
-
-	const locale = getLocaleContext();
+	
 	const onCloseIsDefined = !!onClose;
 	const title = getContext<{ value: string }>('title');
 </script>

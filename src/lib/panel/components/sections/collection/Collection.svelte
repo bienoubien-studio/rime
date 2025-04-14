@@ -10,7 +10,8 @@
 	import type { PrototypeSlug } from 'rizom/types/doc';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
-	
+	import CollectionTree from './tree/CollectionTree.svelte';
+
 	interface Props {
 		compact?: boolean;
 		slug: PrototypeSlug;
@@ -25,7 +26,15 @@
 
 	let currentDoc = $derived(page.params.id || null);
 
-	const gridClass = $derived(collection.isGrid() ? 'rz-scroll-area--grid' : '');
+	const className = $derived.by(() => {
+		if(collection.isGrid()){
+			return 'rz-scroll-area--grid'
+		}else if( collection.isNested() ){
+			return 'rz-scroll-area--nested'
+		}else{
+			return null
+		}
+	});
 
 	title.value = collection.title;
 
@@ -41,7 +50,7 @@
 		{/if}
 	</div>
 
-	<ScrollArea class={gridClass}>
+	<ScrollArea class={className}>
 		{#if !collection.docs.length}
 			{#if !compact}
 				<div class="rz-collection-area__empty">
@@ -62,6 +71,8 @@
 					</div>
 				</div>
 			{/if}
+		{:else if collection.isNested() && !compact}
+			<CollectionTree {collection} />
 		{:else}
 			<div
 				class:rz-collection-area__list={!collection.isGrid()}
@@ -70,9 +81,9 @@
 				{#each collection.docs as doc}
 					{@const checked = collection.selected.includes(doc.id)}
 					{@const active = currentDoc === doc.id}
-					{#if collection.isList()}
+					{#if collection.isList() || (compact && collection.isNested())}
 						<ListRow {doc} {checked} {compact} {active} />
-					{:else}
+					{:else if collection.isGrid()}
 						<GridItem {doc} {checked} />
 					{/if}
 				{/each}
@@ -93,7 +104,11 @@
 			width: 100%;
 		}
 		& :global(.rz-scroll-area--grid) {
-			height: calc(100vh - 4rem);
+			height: calc(100vh - 3.5rem);
+			background-color: hsl(var(--rz-ground-6));
+		}
+		& :global(.rz-scroll-area--nested) {
+			height: calc(100vh - 3.5rem);
 			background-color: hsl(var(--rz-ground-6));
 		}
 

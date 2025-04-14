@@ -1,9 +1,18 @@
+.rz-toaster__toast{
+	background: hsl(var(--rz-ground-6));
+	border: var(--rz-border);
+	color: var(--rz-ground-2);
+	
+	&.rz-toaster__success svg{
+		fill: hsl(var(--rz-color-primary));
+	}
+	&.rz-toaster__error svg{
+		fill: hsl(var(--rz-color-error));
+	}
+
+}
 .rz-toaster__description {
 	@mixin color color-fg, 0.7;
-}
-.rz-toaster__action {
-	background-color: hsl(var(--rz-color-primary));
-	color: hsl(var(--rz-color-primary-fg));
 }
 .rz-toaster__cancel {
 	@mixin bg color-fg, 0.1;

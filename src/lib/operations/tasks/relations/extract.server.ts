@@ -5,13 +5,13 @@ import type { ConfigMap } from '../configMap/types.js';
 import { getValueAtPath } from 'rizom/util/object.js';
 
 type Args = {
-	parentId?: string;
+	ownerId?: string;
 	data: Dic;
 	configMap: ConfigMap;
 	locale: string | undefined;
 };
 
-export const extractRelations = ({ parentId, data, configMap, locale }: Args) => {
+export const extractRelations = ({ ownerId, data, configMap, locale }: Args) => {
 	const relations: BeforeOperationRelation[] = [];
 
 	for (const [path, config] of Object.entries(configMap)) {
@@ -27,7 +27,7 @@ export const extractRelations = ({ parentId, data, configMap, locale }: Args) =>
 					position,
 					relationTo: config.relationTo,
 					documentId: value,
-					parentId,
+					ownerId,
 					path
 				};
 				if (localized) {

@@ -34,7 +34,7 @@ export function defineBlocksDiff({
 		if (!existing) return false;
 
 		const normalizeForComparison = (block: GenericBlock) => {
-			const { id, parentId, ...rest } = block;
+			const { id, ownerId, ...rest } = block;
 			return Object.entries(rest).reduce((acc, [key, value]) => {
 				if (Array.isArray(value) && value[0]?.type) {
 					return acc;

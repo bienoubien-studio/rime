@@ -51,13 +51,14 @@
 				{#if isUploadConfig(collection.config)}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 				{/if}
-				{#if collection.config.status && Array.isArray(collection.config.status)}
-					{@const docStatus =
-						collection.config.status.find((status) => doc.status === status.value) ||
-						collection.config.status[0]}
-					<StatusDot --rz-dot-size="0.4rem" color={docStatus.color} />
-				{/if}
+				
 				<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
+				{#if collection.statusList }
+					{@const docStatus =
+						collection.statusList.find((status) => doc.status === status.value) ||
+						collection.statusList[0]}
+					<StatusDot --rz-dot-size="0.28rem" color={docStatus.color} />
+				{/if}
 			</a>
 		{/if}
 	</div>

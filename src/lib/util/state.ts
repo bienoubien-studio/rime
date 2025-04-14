@@ -1,11 +1,11 @@
 import type { Dic } from 'rizom/types/util';
 
-export const snapshot = (state: any) => {
+export const snapshot = <T>(state: T) => {
 	function unProxy(object: any) {
 		if (object && object.constructor === Proxy) {
 			return object.target;
 		}
-		return object;
+		return object as T;
 	}
 
 	function parseArray(array: any[]) {

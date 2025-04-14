@@ -28,7 +28,7 @@ export const transformDocument = async <T>(args: {
 	});
 
 	const configMap = buildConfigMap(document, config.fields);
-	document = augmentDocument({ document, config, event, locale });
+	document = await augmentDocument({ document, config, event, locale });
 
 	document = await postprocessFields({
 		document,

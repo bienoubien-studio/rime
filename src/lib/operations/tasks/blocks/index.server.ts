@@ -15,7 +15,7 @@ export const saveBlocks = async (args: {
 	originalConfigMap?: ConfigMap;
 	adapter: Adapter;
 	config: CompiledArea | CompiledCollection;
-	parentId: string;
+	ownerId: string;
 	locale?: string;
 }) => {
 	const {
@@ -26,7 +26,7 @@ export const saveBlocks = async (args: {
 		originalConfigMap,
 		adapter,
 		config,
-		parentId,
+		ownerId,
 		locale
 	} = args;
 
@@ -66,7 +66,7 @@ export const saveBlocks = async (args: {
 			blocksDiff.toAdd.map((block) =>
 				adapter.blocks.create({
 					parentSlug: config.slug,
-					parentId,
+					ownerId,
 					block,
 					locale
 				})

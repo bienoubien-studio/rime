@@ -86,7 +86,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	const blocksDiff = await saveBlocks({
-		parentId: createdId,
+		ownerId: createdId,
 		configMap,
 		data,
 		incomingPaths,
@@ -96,7 +96,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		parentId: createdId,
+		ownerId: createdId,
 		configMap,
 		data,
 		incomingPaths,
@@ -106,7 +106,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	await saveRelations({
-		parentId: createdId,
+		ownerId: createdId,
 		configMap,
 		data,
 		incomingPaths,
