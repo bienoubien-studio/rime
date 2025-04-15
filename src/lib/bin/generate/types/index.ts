@@ -132,6 +132,9 @@ export type RelationValue<T> =
 					fieldsContent += generateImageSizesType(collection.imageSizes);
 				}
 			}
+			if(collection.nested){
+				fieldsContent += `\n\t_children: RelationValue<${makeDocTypeName(collection.slug)}>[]`
+			}
 			return templateDocType(collection.slug, fieldsContent, collection.upload);
 		})
 		.join('\n');

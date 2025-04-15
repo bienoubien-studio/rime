@@ -22,7 +22,10 @@ const write = (schema: string) => {
 			console.error(err);
 		} else {
 			taskLogger.done('Schema: generated at src/lib/server/schema.ts');
+			console.log('============================================================')
+			console.log('\n ⚡︎ npx drizzle-kit push \n')
 			spawnSync('npx', ['drizzle-kit', 'push'], { stdio: 'inherit' });
+			console.log('\n============================================================')
 		}
 	});
 };

@@ -59,9 +59,11 @@ const tabAttributes = tab('attributes')
 		separator(),
 		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
 		separator(),
-		relation('parent')
-			.to('pages')
-			.query((doc) => `where[id][not_equals]=${doc.id}`)
+		select('template').options('basic', 'large').access({
+			create: (user) => access.isAdmin(user),
+			update: (user) => access.isAdmin(user),
+			read: () => true
+		})
 	);
 
 const blockKeyFacts = block('keyFacts').fields(
@@ -122,10 +124,11 @@ const Pages = collection('pages', {
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
 	live: true,
+	nested: true,
 	url: (doc) =>
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
-			: `${process.env.PUBLIC_RIZOM_URL}/${doc.attributes.slug}`,
+			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
 	status: true,
 	access: {
 		read: () => true,

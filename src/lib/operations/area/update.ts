@@ -67,7 +67,7 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	});
 
 	const blocksDiff = await saveBlocks({
-		parentId: original.id,
+		ownerId: original.id,
 		configMap,
 		data,
 		incomingPaths,
@@ -79,7 +79,7 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		parentId: original.id,
+		ownerId: original.id,
 		configMap,
 		data,
 		incomingPaths,
@@ -91,7 +91,7 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 	});
 
 	await saveRelations({
-		parentId: original.id,
+		ownerId: original.id,
 		configMap,
 		data,
 		incomingPaths,

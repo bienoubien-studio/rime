@@ -13,6 +13,8 @@
 		classes: {
 			toast: 'rz-toaster__toast',
 			description: 'rz-toaster__description',
+			success: 'rz-toaster__success',
+			error: 'rz-toaster__error',
 			actionButton: 'rz-toaster__action',
 			cancelButton: 'rz-toaster__cancel'
 		}

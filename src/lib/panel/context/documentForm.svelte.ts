@@ -50,7 +50,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
-
+	
 	function initLevel() {
 		const last = key.split('_').pop() as string;
 		const isDigit = /[\d]+/.test(last);

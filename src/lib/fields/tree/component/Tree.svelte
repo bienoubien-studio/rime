@@ -148,7 +148,7 @@
 		font-size: var(--rz-text-sm);
 	}
 
-	.rz-tree__list .rz-tree__list {
+	.rz-tree__list :global(.rz-tree__list) {
 		margin-left: 2rem;
 	}
 

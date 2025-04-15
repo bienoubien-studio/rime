@@ -63,3 +63,8 @@ body:has(.rz-root) {
 	white-space: nowrap;
 	border-width: 0;
 }
+
+.rz-field-root[disabled]{
+	opacity: 0.5;
+	cursor: not-allowed;
+}

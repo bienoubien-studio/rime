@@ -23,7 +23,7 @@ export type GenericDoc = BaseDoc & Dic;
 
 export type TreeBlock = {
 	id: string;
-	parentId?: string;
+	ownerId?: string;
 	path?: string;
 	position?: number;
 	_children: TreeBlock[];
@@ -32,7 +32,7 @@ export type TreeBlock = {
 export type GenericBlock<T extends string = string> = {
 	id: string;
 	type: T;
-	parentId?: string;
+	ownerId?: string;
 	position?: number;
 	path?: string;
 } & Dic;

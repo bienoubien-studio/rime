@@ -64,7 +64,7 @@ export const isRelationResolved = <T>(value: any): value is T => {
 };
 export const isRelationUnresolved = (
 	value: any
-): value is Omit<Relation, 'path' | 'position' | 'parentId'> => {
+): value is Omit<Relation, 'path' | 'position' | 'ownerId'> => {
 	return value && isObjectLiteral(value) && hasProps(['relationTo', 'documentId'], value);
 };
 export const resolveRelation = async <T>(value: any): Promise<T> => {

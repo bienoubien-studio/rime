@@ -42,13 +42,16 @@
 	let availableItems = $state<RelationFieldItem[]>([]);
 	const nothingToSelect = $derived(initialItems.length === 0);
 
-	let isFull = $derived(
-		(!config.many && selectedItems.length === 1) ||
-			(config.many &&
-				selectedItems.length === availableItems.length &&
-				availableItems.length > 0) ||
-			false
-	);
+	let isFull = $derived.by(() => {
+		if(config.many){
+			if(selectedItems.length === 1) return true
+		}else{
+			if(availableItems.length === 0 && selectedItems.length > 0){
+				return true
+			}
+		}
+		return false
+	});
 
 	// Convert a document to a relation field item value
 	function documentToRelationFieldItem(doc: GenericDoc) {
@@ -153,7 +156,7 @@
 	// Actions
 	const buildRelationFieldValue = () => {
 		const relations = selectedItems.map((item, index) => {
-			let relation: Omit<Relation, 'parentId'> = {
+			let relation: Omit<Relation, 'ownerId'> = {
 				id: item.id,
 				relationTo: config.relationTo,
 				path,

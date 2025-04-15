@@ -1,4 +1,4 @@
-import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
+import { privateFieldNames } from '../../config/auth/privateFields.server.js';
 import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
 import { isFormField } from '../../util/field.js';
@@ -9,15 +9,15 @@ import { findAll } from '../collection/findAll.js';
 import { findById } from '../collection/findById.js';
 import { updateById } from '../collection/updateById.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { FormField } from 'rizom/types/fields.js';
+import type { CollectionSlug, GenericDoc } from '../../types/doc.js';
+import type { CompiledCollection } from '../../types/config.js';
+import type { FormField } from '../../types/fields.js';
 import type { OperationQuery } from 'rizom/types/api.js';
 import { RizomError } from 'rizom/errors/index.js';
 import type { RegisterCollection } from 'rizom';
 import type { Adapter } from 'rizom/sqlite/index.server.js';
 import type { LocalAPI } from './index.server.js';
-import type { DeepPartial } from 'rizom/types/util.js';
+import type { DeepPartial } from '../../types/util.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -28,6 +28,7 @@ type Args = {
 };
 
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
+	
 	#event: RequestEvent;
 	#adapter: Adapter;
 	#api: LocalAPI;
@@ -79,6 +80,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs): Promise<Doc[]> {
+		
+		this.#api.preventOperationLoop()
+
 		const params = {
 			query,
 			locale: this.#fallbackLocale(locale),
@@ -109,6 +113,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}): Promise<Doc[]> {
+		
+		this.#api.preventOperationLoop()
+
 		const params = {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -137,6 +144,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	findById({ id, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
+		
+		this.#api.preventOperationLoop()
+
 		if (!id) {
 			throw new RizomError(RizomError.NOT_FOUND);
 		}
@@ -166,6 +176,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	updateById({ id, data, locale }: UpdateByIdArgs<Doc>): Promise<Doc> {
+		
+		this.#api.preventOperationLoop()
+
 		return updateById<Doc>({
 			id,
 			data,
@@ -178,6 +191,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	deleteById = ({ id }: DeleteByIdArgs) => {
+		
+		this.#api.preventOperationLoop()
+
 		return deleteById({
 			id,
 			config: this.config,

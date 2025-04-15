@@ -32,7 +32,7 @@ export const buildOrderByParam = ({ tables, slug, by }: Args) => {
 		return [
 			orderFunc(
 				sql.raw(
-					`(SELECT DISTINCT ${sqlLocaleTableName}."${localizedColumns[columnStr].name}" FROM ${sqlLocaleTableName} WHERE ${sqlLocaleTableName}."parent_id" = ${sqlTableName}."id")`
+					`(SELECT DISTINCT ${sqlLocaleTableName}."${localizedColumns[columnStr].name}" FROM ${sqlLocaleTableName} WHERE ${sqlLocaleTableName}."owner_id" = ${sqlTableName}."id")`
 				)
 			)
 		];

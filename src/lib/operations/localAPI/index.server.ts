@@ -14,6 +14,7 @@ export type LocalAPIConstructorArgs = {
 
 export class LocalAPI {
 	//
+	#operationsCount = 0
 	#requestEvent: RequestEvent;
 	rizom: Rizom;
 
@@ -22,6 +23,13 @@ export class LocalAPI {
 		this.#requestEvent = event;
 	}
 
+	preventOperationLoop(){
+		this.#operationsCount++
+		if(this.#operationsCount++ > 1000){
+			throw new RizomError(RizomError.OPERATION_ERROR, 'infinite loop')
+		}
+	}
+	
 	enforceLocale(locale: string) {
 		this.#requestEvent.locals.locale = locale;
 	}

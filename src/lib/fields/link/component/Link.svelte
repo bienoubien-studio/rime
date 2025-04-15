@@ -35,7 +35,7 @@
 	const initial = path ? form.getRawValue(path) : null;
 
 	let initialLinkType = initial?.type || linkTypes[0];
-	let initialLinkValue = initial?.link || '';
+	let initialLinkValue = initial?.value || '';
 	let initialTargetBlank = (initial?.target && initial.target === '_blank') || false;
 
 	let inputValue = $state(initialLinkValue);
@@ -69,7 +69,7 @@
 
 	$effect(() => {
 		if (!isPrimitiveType) {
-			if( (field.value && ressourceId !== field.value.link) || !field.value && ressourceId ){
+			if( (field.value && ressourceId !== field.value.value) || !field.value && ressourceId ){
 				linkValue = ressourceId;
 				setValue();
 			}

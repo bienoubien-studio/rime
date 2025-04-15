@@ -40,8 +40,11 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	blank(): Doc {
 		return createBlankDocument(this.config) as Doc;
 	}
-
+	
 	find({ locale, depth = 0 }: FindArgs): Promise<Doc> {
+
+		this.#api.preventOperationLoop()
+
 		const params = {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -66,6 +69,9 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	}
 
 	update(args: { data: DeepPartial<Doc>; locale?: string }): Promise<Doc> {
+
+		this.#api.preventOperationLoop()
+
 		return update<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),

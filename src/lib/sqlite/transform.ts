@@ -78,7 +78,7 @@ export const databaseTransformInterface = ({
 		/** Add localized fields */
 		if (locale && tableNameLocales in tables) {
 			const localizedColumns = Object.keys(
-				omit(['parentId', 'locale'], getTableColumns(tables[tableNameLocales as PrototypeSlug]))
+				omit(['ownerId', 'locale'], getTableColumns(tables[tableNameLocales as PrototypeSlug]))
 			);
 
 			const defaultLocalizedValues: Dic = {};
@@ -89,7 +89,7 @@ export const databaseTransformInterface = ({
 			doc = { ...defaultLocalizedValues, ...doc[tableNameLocales][0], ...doc };
 
 			delete doc[tableNameLocales];
-			delete doc.parentId;
+			delete doc.ownerId;
 		}
 
 		let flatDoc: Dic = flatten(doc);
@@ -119,7 +119,7 @@ export const databaseTransformInterface = ({
 			if (!isPanel) {
 				delete block.position;
 				delete block.path;
-				delete block.parentId;
+				delete block.ownerId;
 				delete block.locale;
 			}
 			delete block[blockLocaleTableName];
@@ -157,7 +157,7 @@ export const databaseTransformInterface = ({
 				if (!isPanel) {
 					delete block.position;
 					delete block.path;
-					delete block.parentId;
+					delete block.ownerId;
 					delete block.locale;
 				}
 
@@ -175,7 +175,7 @@ export const databaseTransformInterface = ({
 			for (const relation of doc[tableNameRelationFields]) {
 				/** Relation collection key ex: usersId */
 				const relationToIdKey = Object.keys(relation).filter(
-					(key) => key.endsWith('Id') && key !== 'parentId' && relation[key] !== null
+					(key) => key.endsWith('Id') && key !== 'ownerId' && relation[key] !== null
 				)[0] as PrototypeSlug;
 
 				const relationToId = relation[relationToIdKey];
@@ -194,7 +194,7 @@ export const databaseTransformInterface = ({
 						/** Delete empty [table]Id */
 						if (relation[key] === null) {
 							delete relation[key];
-						} else if (key.endsWith('Id') && key !== 'parentId') {
+						} else if (key.endsWith('Id') && key !== 'ownerId') {
 							relation.relationTo = key.replace('Id', '');
 							relation.documentId = relation[key];
 							delete relation[key];
@@ -202,7 +202,7 @@ export const databaseTransformInterface = ({
 					}
 					if (!isPanel) {
 						delete relation.position;
-						delete relation.parentId;
+						delete relation.ownerId;
 						delete relation.path;
 					}
 					relationOutput = relation;
@@ -230,7 +230,7 @@ export const databaseTransformInterface = ({
 
 		keysToDelete.push(...privateFieldNames);
 		output = omit(keysToDelete, deepmerge(blankDocument, output));
-
+		
 		return output as T;
 	};
 

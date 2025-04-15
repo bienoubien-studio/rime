@@ -3,9 +3,10 @@ import fs from 'fs/promises';
 import path from 'path';
 
 // Environment and configuration
-const LOG_DIR = process.env.RIZOM_LOG_DIR || 'logs';
-const LOG_FILE = 'rizom.log';
+const LOG_LEVEL = (process.env.RIZOM_LOG_LEVEL || 'info').toLowerCase() as keyof typeof LogLevel;
 const LOG_TO_FILE = process.env.RIZOM_LOG_TO_FILE === 'true';
+const LOG_DIR = path.join(process.cwd(), 'logs');
+const LOG_FILE = 'rizom.log';
 
 // Log levels with numeric values for comparison
 enum LogLevel {
@@ -35,7 +36,16 @@ const formatMessage = (args: unknown[]): string => {
   ).join(' ');
 };
 
-// Write to log file
+/**
+ * Get the current date formatted as YYYY-MM-DD for log file naming
+ */
+const getFormattedDate = (date: Date): string => {
+  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+};
+
+/**
+ * Write log entry to a date-prefixed file
+ */
 const writeToFile = async (level: string, timestamp: string, args: unknown[]) => {
   if (!LOG_TO_FILE) return;
 
@@ -45,8 +55,15 @@ const writeToFile = async (level: string, timestamp: string, args: unknown[]) =>
     const cleanMessage = message.replace(/\u001b\[\d+m/g, '');
     const logEntry = `[${timestamp}] [${level}] ${cleanMessage}\n`;
     
+    // Create logs directory if it doesn't exist
     await fs.mkdir(LOG_DIR, { recursive: true });
-    await fs.appendFile(path.join(LOG_DIR, LOG_FILE), logEntry);
+    
+    // Get current date for log file name
+    const dateStr = getFormattedDate(new Date());
+    const logFileName = `${dateStr}.log`;
+    
+    // Append to date-specific log file
+    await fs.appendFile(path.join(LOG_DIR, logFileName), logEntry);
   } catch (error) {
     console.error('Failed to write to log file:', error);
   }
@@ -57,6 +74,16 @@ const isLevelEnabled = (level: LogLevel): boolean => {
   return level >= currentLogLevel;
 };
 
+function getFormattedLocalTime(date: Date) {
+  return date.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+}
+
+const rizomFormatted = chalk.bold(chalk.gray('[rizom]'))
 // Base logger implementation
 const logger = {
   // Set the log level
@@ -76,36 +103,36 @@ const logger = {
   // Log methods
   trace: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.TRACE)) {
-      const timestamp = new Date().toISOString();
+      const timestamp = getFormattedLocalTime(new Date());
       console.trace(...args);
       writeToFile('TRACE', timestamp, args);
     }
   },
   debug: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.DEBUG)) {
-      const timestamp = new Date().toISOString();
+      const timestamp = getFormattedLocalTime(new Date());
       console.debug(chalk.redBright('DEBUG'), ...args);
       writeToFile('DEBUG', timestamp, args);
     }
   },
   info: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.INFO)) {
-      const timestamp = new Date().toISOString();
-      console.info(timestamp, chalk.blue(' INFO'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.info( chalk.dim(timestamp), rizomFormatted, chalk.blue(' INFO'), ...args);
       writeToFile('INFO', timestamp, args);
     }
   },
   warn: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.WARN)) {
-      const timestamp = new Date().toISOString();
-      console.warn(timestamp,chalk.yellow(' WARN'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.warn( chalk.dim(timestamp),rizomFormatted, chalk.yellow(' WARN'), ...args);
       writeToFile('WARN', timestamp, args);
     }
   },
   error: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.ERROR)) {
-      const timestamp = new Date().toISOString();
-      console.error(timestamp, chalk.red('ERROR'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.error( chalk.dim(timestamp), rizomFormatted, chalk.red('ERROR'), ...args);
       writeToFile('ERROR', timestamp, args);
     }
   }

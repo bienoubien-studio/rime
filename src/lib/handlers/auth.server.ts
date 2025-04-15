@@ -9,7 +9,7 @@ const dev = process.env.NODE_ENV === 'development';
 // check for panel access
 export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rizom = event.locals.rizom;
-
+	
 	// Authenticate
 	let authenticated = await rizom.auth.betterAuth.api.getSession({
 		headers: event.request.headers

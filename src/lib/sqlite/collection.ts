@@ -86,7 +86,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 			await db.insert(tables[tableLocales]).values({
 				...localizedData,
 				id: generatePK(),
-				parentId: createId,
+				ownerId: createId,
 				locale
 			});
 		} else {
@@ -133,7 +133,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 				const tableLocales = tables[keyTableLocales];
 				// @ts-expect-error todo
 				const localizedRow = await db.query[keyTableLocales].findFirst({
-					where: and(eq(tableLocales.parentId, id), eq(tableLocales.locale, locale))
+					where: and(eq(tableLocales.ownerId, id), eq(tableLocales.locale, locale))
 				});
 
 				if (!localizedRow) {
@@ -141,7 +141,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 						...localizedData,
 						id: generatePK(),
 						locale: locale,
-						parentId: id
+						ownerId: id
 					});
 				} else {
 					await db

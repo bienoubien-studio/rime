@@ -16,7 +16,7 @@ export function rizom(): Plugin[] {
 			// Add a listener for when the server starts
 			server.httpServer?.once('listening', () => {
 				if (dev && !hasRunInitCommand()) {
-					throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom-init`');
+					throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
 				}
 				// Check if we need to rebuild
 				const shouldRebuild = process.argv.includes('rebuild');
@@ -27,6 +27,8 @@ export function rizom(): Plugin[] {
 			});
 
 			// Add a watcher for config changes
+			// Whenever any change in src/config trigger 
+			// a dummy request to retrigger the configuration build
 			server.watcher.on('change', async (path) => {
 				if (path.includes('src/config')) {
 					// Make a dummy request to trigger handler

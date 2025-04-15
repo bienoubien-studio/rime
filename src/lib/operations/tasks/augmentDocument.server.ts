@@ -2,6 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
 import type { GenericDoc } from 'rizom/types/doc.js';
 import type { Dic } from 'rizom/types/util';
+import { logger } from 'rizom/util/logger/index.server';
 import { getValueAtPath, isObjectLiteral } from 'rizom/util/object.js';
 
 /**
@@ -9,12 +10,12 @@ import { getValueAtPath, isObjectLiteral } from 'rizom/util/object.js';
  * add the title prop as defined in config or with default : id or filename for a collection
  * add the _live url if relevant, based on the config.
  */
-export const augmentDocument = <T extends GenericDoc>(args: {
+export const augmentDocument = async <T extends GenericDoc>(args: {
 	document: Partial<T>;
 	config: CompiledCollection | CompiledArea;
 	locale?: string;
 	event: RequestEvent;
-}): T => {
+}): Promise<T> => {
 	const { locale, config, event } = args;
 	let output = args.document;
 
@@ -35,10 +36,70 @@ export const augmentDocument = <T extends GenericDoc>(args: {
 		};
 	}
 
-	// populate urls
 	if (config.url) {
-		output.url = config.url(output as any);
+    
+    let url = config.url(output as any)
+    const match = url.match(/\[\.\.\.parent\.(\w+(?:\.\w+)*)\]/);
+		
+    if (match) {
+			
+      const fullMatch = match[0];
+      const attributePath = match[1];
+
+      // Create array to store parent attributes
+      let attributesArray: string[] = [];
+      let parent = Array.isArray(output.parent) && output.parent.length ? output.parent[0] : null
+      const MAX_DEPTH = 6
+      let depth = 0
+
+      while (parent && depth < MAX_DEPTH) {
+      		depth++
+      		let parentId
+      		if ('documentId' in parent) {
+      			parentId = parent.documentId
+      		} else {
+      			parentId = parent.id
+      		}
+
+      		const docs = await event.locals.api.collection(config.slug as any).find({
+      			query: `where[id][equals]=${parentId}`,
+      			locale
+      		});
+
+      		// Check if there is a result
+      		if (docs && docs.length > 0) {
+      			const parentDoc = docs[0];
+      			const parentAttribute = getValueAtPath(attributePath, parentDoc);
+
+      			if (parentAttribute && typeof parentAttribute === 'string') {
+      				attributesArray.push(parentAttribute);
+      			} else if (parentAttribute) {
+      				logger.warn('Bad URL property: not a string', { attributePath, parentAttribute });
+      			}
+
+      			// Move up to the next parent
+      			parent = parentDoc.parent && Array.isArray(parentDoc.parent) && parentDoc.parent.length > 0 
+      				? parentDoc.parent[0] 
+      				: null;
+      		} else {
+      			parent = null;
+      		}
+      	}
+
+			if(attributesArray.length){
+				// Replace the parent reference with the joined attributes
+				url = url.replace(fullMatch, attributesArray.reverse().join('/'))
+			}else{
+				url = url.replace( '/' + fullMatch, '')
+			}
+			
+    } else {
+      // replace "/[...parent.whatever.something.foo]" with ""
+      url = url.replace(/\/\[\.\.\.parent\.\w+(?:\.\w+)*\]/, '')
+    }
+		output.url = url
 	}
+
 	if (config.live && event.locals.user && config.url) {
 		output._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${output.url}&slug=${config.slug}&id=${output.id}`;
 		output._live += locale ? `&locale=${locale}` : '';
@@ -50,12 +111,12 @@ export const augmentDocument = <T extends GenericDoc>(args: {
 };
 
 function sortDocumentKeys<T extends Dic>(obj: T): T {
-	const specificOrder = ['id', 'title', 'status', 'type'];
+	const specificOrder = ['id', 'title', 'status'];
 	const endOrder = [
 		'locale',
 		'path',
 		'position',
-		'parentId',
+		'ownerId',
 		'createdAt',
 		'updatedAt',
 		'_type',

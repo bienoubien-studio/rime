@@ -53,12 +53,7 @@ export function defineTreeBlocksDiff({
 			}
 		}
 		return false;
-		// return (
-		// 	existing.path !== newBlock.path ||
-		// 	existing.position !== newBlock.position ||
-		// 	existing.label !== newBlock.label ||
-		// 	existing.parentId !== newBlock.parentId
-		// );
+		
 	});
 
 	return { toAdd, toDelete, toUpdate };

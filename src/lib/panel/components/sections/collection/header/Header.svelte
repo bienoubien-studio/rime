@@ -13,9 +13,11 @@
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
-	const showSelectUI = $derived(!compact);
-	const showSearchInput = $derived(!collection.selectMode);
-	const showDisplayMode = $derived(collection.isUpload && !compact);
+	const showSelectUI = $derived(!collection.isNested() && !compact);
+	const showSearchInput = $derived((!collection.isNested() || collection.isNested() && compact) && !collection.selectMode);
+	const showDisplayMode = $derived(
+		(collection.isUpload && !compact) || (collection.config.nested && !compact)
+	);
 	const showCompactCreateButton = $derived(compact);
 	const showFullHeader = $derived(!compact);
 
@@ -24,18 +26,22 @@
 
 <div class:rz-collection-header--compact={compact} class="rz-collection-header">
 	<div class="rz-collection-header__left">
+			
+		{#if showDisplayMode}
+			<DisplayMode />
+			<div class="rz-collection-header__separator"></div>
+		{/if}
+
+
 		{#if showSelectUI}
 			<SelectUI />
 		{/if}
 
+		
 		{#if showSearchInput}
 			<SearchInput {compact} />
 		{/if}
-
-		{#if showDisplayMode}
-			<DisplayMode />
-		{/if}
-
+		
 		{#if showCompactCreateButton}
 			<ButtonCreate size="sm" />
 		{/if}
@@ -47,7 +53,7 @@
 				<CustomHeaderComponent />
 			{/each}
 			<ButtonCreate />
-			<LanguageSwitcher />
+			<LanguageSwitcher onLocalClick={() => console.error('set locale')} />
 		</div>
 	{/if}
 </div>
@@ -62,6 +68,11 @@
 		border-bottom: var(--rz-border);
 		@mixin px var(--rz-size-6);
 		font-size: var(--rz-text-sm);
+	}
+
+	.rz-collection-header__separator{
+		border-left: var(--rz-border);
+		height: 1rem;
 	}
 
 	.rz-collection-header--compact {

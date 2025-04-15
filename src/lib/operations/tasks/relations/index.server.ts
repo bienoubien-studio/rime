@@ -17,7 +17,7 @@ export const saveRelations = async (args: {
 	adapter: Adapter;
 	locale?: string;
 	config: CompiledArea | CompiledCollection;
-	parentId: string;
+	ownerId: string;
 }) => {
 	const {
 		configMap,
@@ -27,14 +27,14 @@ export const saveRelations = async (args: {
 		adapter,
 		locale,
 		config,
-		parentId,
+		ownerId,
 		data
 	} = args;
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
-		parentId,
+		ownerId,
 		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
 	});
@@ -42,14 +42,14 @@ export const saveRelations = async (args: {
 	/** Delete relations from deletedTreeItems */
 	await adapter.relations.deleteFromPaths({
 		parentSlug: config.slug,
-		parentId,
+		ownerId,
 		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
 	});
 
 	/** Get relations in data */
 	const incomingRelations = extractRelations({
-		parentId,
+		ownerId,
 		data,
 		configMap,
 		locale
@@ -60,7 +60,7 @@ export const saveRelations = async (args: {
 	const existingRelations = await adapter.relations
 		.getAll({
 			parentSlug: config.slug,
-			parentId,
+			ownerId,
 			locale: locale
 		})
 		.then((relations) => {
@@ -94,7 +94,7 @@ export const saveRelations = async (args: {
 	if (relationsDiff.toAdd.length) {
 		await adapter.relations.create({
 			parentSlug: config.slug,
-			parentId,
+			ownerId,
 			relations: relationsDiff.toAdd
 		});
 	}

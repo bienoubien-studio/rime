@@ -7,14 +7,14 @@ import { transformDataToSchema } from '../util/path.js';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
-	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, parentId, paths, locale }) => {
+	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, ownerId, paths, locale }) => {
 		if (paths.length === 0) return true;
 
 		const relationTableName = `${parentSlug}Rels`;
 		const table = tables[relationTableName];
 		if (!table) return true;
 
-		const conditions: SQLWrapper[] = [eq(table.parentId, parentId)];
+		const conditions: SQLWrapper[] = [eq(table.ownerId, ownerId)];
 		if (locale) {
 			conditions.push(eq(table.locale, locale));
 		}
@@ -34,7 +34,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		return true;
 	};
 
-	const create: Create = async ({ parentSlug, parentId, relations }) => {
+	const create: Create = async ({ parentSlug, ownerId, relations }) => {
 		const relationTableName = `${parentSlug}Rels`;
 		const table = tables[relationTableName];
 		const columns = getTableColumns(table);
@@ -47,7 +47,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 				path: relation.path,
 				position: relation.position,
 				[relationToIdKey]: relation.documentId,
-				parentId
+				ownerId
 			};
 
 			if (relation.locale) {
@@ -107,7 +107,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		return true;
 	};
 
-	const getAll: GetAllRelations = async ({ parentSlug, parentId, locale }) => {
+	const getAll: GetAllRelations = async ({ parentSlug, ownerId, locale }) => {
 		const relationTableName = `${parentSlug}Rels`;
 
 		// If the collection doesn't have relation
@@ -123,11 +123,11 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 		let conditions;
 		if (locale && columns.includes('locale')) {
 			conditions = [
-				eq(table.parentId, parentId),
+				eq(table.ownerId, ownerId),
 				or(eq(table.locale, locale), isNull(table.locale))
 			];
 		} else {
-			conditions = [eq(table.parentId, parentId)];
+			conditions = [eq(table.ownerId, ownerId)];
 		}
 
 		const all = await db
@@ -153,7 +153,7 @@ export type AdapterRelationsInterface = ReturnType<typeof createAdapterRelations
 
 export type Relation = {
 	id?: string;
-	parentId: string;
+	ownerId: string;
 	path: string;
 	position: number;
 	relationTo: string;
@@ -162,11 +162,11 @@ export type Relation = {
 	livePreview?: GenericDoc;
 };
 
-export type BeforeOperationRelation = Omit<Relation, 'parentId'> & { parentId?: string };
+export type BeforeOperationRelation = Omit<Relation, 'ownerId'> & { ownerId?: string };
 
 type DeleteFromPaths = (args: {
 	parentSlug: PrototypeSlug;
-	parentId: string;
+	ownerId: string;
 	paths: string[];
 	locale?: string;
 }) => Promise<boolean>;
@@ -175,12 +175,12 @@ type Delete = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Pr
 type Update = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
 type Create = (args: {
 	parentSlug: PrototypeSlug;
-	parentId: string;
+	ownerId: string;
 	relations: BeforeOperationRelation[];
 }) => Promise<boolean>;
 
 type GetAllRelations = (args: {
 	parentSlug: PrototypeSlug;
-	parentId: string;
+	ownerId: string;
 	locale?: string;
 }) => Promise<Relation[]>;
