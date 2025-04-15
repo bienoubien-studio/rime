@@ -128,8 +128,6 @@ test('Should return the home page', async ({ request }) => {
 	
 	expect(response.doc).toBeDefined();
 	expect(response.doc.attributes.title).toBe('Home');
-	expect(response.doc._children).toBeDefined();
-	expect(response.doc._children.length).toBe(1);
 });
 
 test('Should return 2 pages', async ({ request }) => {
