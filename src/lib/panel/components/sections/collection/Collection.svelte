@@ -11,6 +11,7 @@
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import CollectionTree from './tree/CollectionTree.svelte';
+	import { getUserContext } from 'rizom/panel/context/user.svelte';
 
 	interface Props {
 		compact?: boolean;
@@ -22,6 +23,8 @@
 	const title = getContext<{ value: string }>('title');
 
 	const collection = getCollectionContext(slug);
+	const user = getUserContext()
+
 	setContext('rizom.collectionList', collection);
 
 	let currentDoc = $derived(page.params.id || null);
@@ -61,13 +64,14 @@
 								collection.config.label.singular
 							)}
 						</span>
-
-						<Button href="/panel/{collection.config.slug}/create" variant="outline">
-							{t__(
-								`common.create_first|${collection.config.label.gender}`,
-								collection.config.label.singular
-							)}
-						</Button>
+						{#if collection.config.access.create(user.attributes, {})}
+							<Button href="/panel/{collection.config.slug}/create" variant="outline">
+								{t__(
+									`common.create_first|${collection.config.label.gender}`,
+									collection.config.label.singular
+								)}
+							</Button>
+						{/if}
 					</div>
 				</div>
 			{/if}

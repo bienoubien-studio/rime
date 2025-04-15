@@ -58,7 +58,7 @@
 <style lang="postcss">
 	.rz-group-field__wrapper {
 		border: var(--rz-border);
-		margin: 0 var(--rz-fields-padding);
+		/* margin: 0 var(--rz-fields-padding); */
 		border-radius: var(--rz-radius-md);
 		&:global(:has(.rz-field-error)) {
 			@mixin ring var(--rz-color-error);
@@ -70,10 +70,6 @@
 		padding-top: var(--rz-fields-padding);
 		padding-bottom: var(--rz-fields-padding);
 		background-color: hsl(var(--rz-ground-6));
-		> :global(.rz-render-fields) {
-			padding-left: 0;
-			padding-right: 0;
-		}
 	}
 	.rz-group-field__content--hidden {
 		display: none;

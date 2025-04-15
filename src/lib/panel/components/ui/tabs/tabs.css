@@ -1,3 +1,9 @@
+
+.rz-tabs[data-tabs-root]{
+	margin-left: calc( -1 * var(--rz-fields-padding));
+	margin-right: calc( -1 * var(--rz-fields-padding));
+}
+
 /**************************************/
 /* Trigger
 /**************************************/

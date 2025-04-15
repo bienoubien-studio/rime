@@ -78,17 +78,16 @@
 <style type="postcss">
 	.rz-render-fields {
 		position: relative;
-		gap: var(--rz-size-8) 0;
+		gap: var(--rz-size-8);
 		display: grid;
 		container-type: inline-size;
 		grid-template-columns: repeat(12, 1fr);
 		height: fit-content;
+		padding-left: var(--rz-fields-padding);
+		padding-right: var(--rz-fields-padding);
+		
 		& > * {
 			position: relative;
-		}
-		:global(.rz-field-root) {
-			padding-left: var(--rz-fields-padding);
-			padding-right: var(--rz-fields-padding);
 		}
 	}
 

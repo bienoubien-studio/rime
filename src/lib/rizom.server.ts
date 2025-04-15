@@ -96,6 +96,7 @@ const getInstance = () => {
 		logger.info('import rizom instance ' + instance.key);
 		return instance;
 	}
+	console.log('')
 	logger.info('create rizom instance');
 	instance = createRizom();
 	return instance;
