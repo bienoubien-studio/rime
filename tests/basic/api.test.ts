@@ -125,9 +125,11 @@ test('Should return the home page', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}`).then((response) => {
 		return response.json();
 	});
-
+	
 	expect(response.doc).toBeDefined();
 	expect(response.doc.attributes.title).toBe('Home');
+	expect(response.doc._children).toBeDefined();
+	expect(response.doc._children.length).toBe(1);
 });
 
 test('Should return 2 pages', async ({ request }) => {
