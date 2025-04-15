@@ -52,11 +52,6 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 	const nested = $derived.by(() => toNestedStructure(docs))
 
-	$effect(() => {
-		if(nested)
-			logCollectionStructure()
-	})
-	
 	const buildFieldColumns = (fields: Field[], parentPath: string = '') => {
 		let columns: Array<{ path: string } & WithRequired<FormField, 'table'>> = [];
 		for (const field of fields) {
@@ -187,35 +182,35 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	}
 
 	// Utility function to generate a text representation of the collection structure
-	function generateTreeStructure(documents: GenericDoc[], level = 0) {
-		const lines: string[] = [];
+	// function generateTreeStructure(documents: GenericDoc[], level = 0) {
+	// 	const lines: string[] = [];
 
-		documents.forEach((doc) => {
-			// Create indentation based on nesting level
-			const indent = '  '.repeat(level);
+	// 	documents.forEach((doc) => {
+	// 		// Create indentation based on nesting level
+	// 		const indent = '  '.repeat(level);
 
-			// Add the current document with its ID
-			const parentInfo =
-				doc.parent && doc.parent.length ? `(parent: ${doc.parent[0]})` : '(root)';
+	// 		// Add the current document with its ID
+	// 		const parentInfo =
+	// 			doc.parent && doc.parent.length ? `(parent: ${doc.parent[0]})` : '(root)';
 
-			lines.push(`${indent}${doc.nestedPosition} - ${doc.id} ${parentInfo}`);
+	// 		lines.push(`${indent}${doc.nestedPosition} - ${doc.id} ${parentInfo}`);
 
-			// Process children recursively
-			if (doc._children && doc._children.length > 0) {
-				lines.push(...generateTreeStructure(doc._children, level + 1));
-			}
-		});
+	// 		// Process children recursively
+	// 		if (doc._children && doc._children.length > 0) {
+	// 			lines.push(...generateTreeStructure(doc._children, level + 1));
+	// 		}
+	// 	});
 
-		return lines;
-	}
+	// 	return lines;
+	// }
 
-	// Function to log the collection structure to console
-	function logCollectionStructure() {
-		console.log('Collection Structure:');
-		const structure = generateTreeStructure(nested);
-		structure.forEach((line) => console.log(line));
-		console.log('-------------------');
-	}
+	// // Function to log the collection structure to console
+	// function logCollectionStructure() {
+	// 	console.log('Collection Structure:');
+	// 	const structure = generateTreeStructure(nested);
+	// 	structure.forEach((line) => console.log(line));
+	// 	console.log('-------------------');
+	// }
 
 	/**
 	 * Handle document move operations with parent-child relationships
@@ -227,11 +222,11 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		to: { parent: string | null, index: number },
 	}) => {
 		
-		console.log('move ' + documentId)
-		console.log('from.parent', from.parent)
-		console.log('from.index', from.index)
-		console.log('to.parent', to.parent)
-		console.log('to.index', to.index)
+		// console.log('move ' + documentId)
+		// console.log('from.parent', from.parent)
+		// console.log('from.index', from.index)
+		// console.log('to.parent', to.parent)
+		// console.log('to.index', to.index)
 
 		// Step 1: Get the document from the flat docs array
 		const docToMove = docs.find(d => d.id === documentId) as GenericDoc;
@@ -244,30 +239,45 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		const findArrayInNested = (docs: any[], parentId: string | null): any[] => {
 			// If looking for root level
 			if (parentId === null) return docs;
-
-			// Look for the parent in this level
-			for (const doc of docs) {
-				if (doc.id === parentId) {
-					// Initialize _children if it doesn't exist
-					if (!doc._children) doc._children = [];
-					return doc._children;
+			
+			// Create a helper function to search with a proper return value
+			const search = (docs: any[], targetId: string): { found: boolean, array: any[] } => {
+				// Check current level first
+				for (const doc of docs) {
+					if (doc.id === targetId) {
+						// Initialize _children if it doesn't exist
+						if (!doc._children) doc._children = [];
+						return { found: true, array: doc._children };
+					}
 				}
-
-				// Look in children
-				if (doc._children && doc._children.length > 0) {
-					const result = findArrayInNested(doc._children, parentId);
-					if (result.length >= 0) return result; // Found it
+				
+				// Then check children
+				for (const doc of docs) {
+					if (doc._children && doc._children.length > 0) {
+						const result = search(doc._children, targetId);
+						if (result.found) {
+							return result;
+						}
+					}
 				}
-			}
-
-			// Not found, return empty array
-			return [];
+				
+				// Not found
+				return { found: false, array: [] };
+			};
+			
+			// Run the search
+			const result = search(docs, parentId);
+			return result.array;
 		};
 
 		// Step 4: Find source and target arrays
-		const sourceArray = findArrayInNested(nestedDocs, from.parent);
-		const targetArray = findArrayInNested(nestedDocs, to.parent);
+		let sourceArray = findArrayInNested(nestedDocs, from.parent);
+		let targetArray = findArrayInNested(nestedDocs, to.parent);
 
+		// console.log('sourceArray', sourceArray)
+		// console.log('targetArray', targetArray)
+
+		
 		// Step 5: Find the document in the source array
 		const sourceIndex = sourceArray.findIndex(d => d.id === documentId);
 		if (sourceIndex === -1) return; // Document not found in source
@@ -284,16 +294,25 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		sourceArray.splice(sourceIndex, 1);
 
 		// Step 8: Insert into target array
-		const targetIndex = Math.min(to.index, targetArray.length);
-		targetArray.splice(targetIndex, 0, docForNested);
+		targetArray.splice(to.index, 0, docForNested);
+
+		sourceArray = sourceArray.map((element, index) => ({
+			...element,
+			nestedPosition: index
+		}))
+		targetArray = targetArray.map((element, index) => ({
+			...element,
+			nestedPosition: index
+		}))
 
 		// Step 9: Update the flat docs based on the new nested structure
 		const updateFlatDocs = (nestedDocs: any[], parentId: string | null = null): [GenericDoc[], GenericDoc[]] => {
 			const updates: GenericDoc[] = [];
 			const newFlatDocs: GenericDoc[] = [];
+			const clones = cloneDeep(nestedDocs)
 
-			// Process each document at this level
-			nestedDocs.forEach((nestedDoc, index) => {
+			// // Process each document at this level
+			clones.forEach((nestedDoc, index) => {
 				// Find the corresponding document in the flat array
 				const flatDoc = docs.find(d => d.id === nestedDoc.id) as GenericDoc;
 				if (!flatDoc) return;
@@ -312,13 +331,10 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 				// Add to new flat docs array
 				newFlatDocs.push(updatedDoc);
-
+				
 				// If changed, add to updates array
 				if (parentChanged || positionChanged) {
-					// Update the original doc in the flat array
-					flatDoc.parent = newParent;
-					flatDoc.nestedPosition = index;
-					updates.push(flatDoc);
+					updates.push(updatedDoc);
 				}
 
 				// Process children recursively
@@ -334,6 +350,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 		// Step 10: Update the flat docs with the new structure
 		const [newFlatDocs, docsToUpdate] = updateFlatDocs(nestedDocs);
+		
+		// console.log(docsToUpdate)
+
 		docs = newFlatDocs as T[];
 		initialDocs = docs
 		stamp = Date.now();
@@ -354,6 +373,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	 */
 	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]): Promise<boolean> => {
 		
+		// console.log('call apiUpdateNestedStructure')
 		if (!docsToUpdate.length) {
 			console.log('No documents to update');
 			return true;
@@ -374,6 +394,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 					'Content-Type': 'application/json'
 				}
 			}).then(response => {
+				// console.log(response)
 				if (!response.ok) {
 					throw new Error(`API error: ${response.status}`);
 				}
@@ -384,7 +405,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		// Wait for all updates to complete
 		try {
 			const res = await Promise.all(updatePromises);
-			console.log(res)
+			// console.log(res)
 			return true;
 		} catch (error) {
 			console.error(error)
@@ -486,7 +507,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			return config.label.singular;
 		},
 		// logCollectionStructure,
-		statusList,
+		get statusList () {
+			return statusList
+		},
 		config,
 		canCreate,
 		isList,

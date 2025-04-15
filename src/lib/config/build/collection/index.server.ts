@@ -7,7 +7,7 @@ import { FormFieldBuilder } from 'rizom/fields/builders/index.js';
 const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<any>> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
-		const authHooks = await import('rizom/hooks/auth/hooks.server.js');
+		const authHooks = await import('rizom/operations/hooks/auth/hooks.server.js');
 		const { beforeUpdate, beforeCreate,beforeDelete, afterDelete, afterCreate } = authHooks;
 		hooks = {
 			...hooks,
@@ -19,7 +19,7 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 		};
 	}
 	if (collection.upload) {
-		const uploadHooks = await import('$lib/hooks/upload/index.server.js');
+		const uploadHooks = await import('$lib/operations/hooks/upload/index.server.js');
 		const { castBase64ToFile, processFileUpload, beforeDelete, populateSizes } = uploadHooks;
 		hooks = {
 			...hooks,

@@ -111,7 +111,7 @@ export const augmentDocument = async <T extends GenericDoc>(args: {
 };
 
 function sortDocumentKeys<T extends Dic>(obj: T): T {
-	const specificOrder = ['id', 'title', 'status', 'type'];
+	const specificOrder = ['id', 'title', 'status'];
 	const endOrder = [
 		'locale',
 		'path',

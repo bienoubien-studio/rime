@@ -23,6 +23,7 @@
 [v] Fix - translation not loaded on production
 [v] Blocks/Tree - global i18n
 [v] Make first user super admin, can't delete it 
+[ ] collection pagination
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests
@@ -30,7 +31,7 @@
 # V1
 [ ] Add fields hint/description
 [ ] Put bin commands in a separate package ex: @rizom/kit
-[ ] collection nested
+[v] collection nested
 [ ] page version
 [ ] page modification not saved message + changes saved to localStorage
 [ ] more better-auth integration

@@ -9,7 +9,6 @@ const API_BASE_URL = `${BASE_URL}/api`;
 let editorId: string;
 let editorToken: string;
 let editor2Id: string;
-let editor2Token: string;
 let adminId: string;
 let adminToken: string;
 let superAdminId: string;
@@ -108,15 +107,17 @@ test('Should create a page', async ({ request }) => {
 			attributes: {
 				title: 'Page',
 				slug: 'page',
-				parent: homeId
-			}
+				template: 'basic'
+			},
+			parent: homeId,
 		}
 	});
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Page');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc.attributes.parent.at(0).documentId).toBe(homeId);
+	expect(doc.parent.at(0).documentId).toBe(homeId);
+	expect(doc.attributes.template).toBe('basic');
 	pageId = doc.id;
 });
 
@@ -140,7 +141,7 @@ test('Should return 2 pages', async ({ request }) => {
 /** ---------------- QUERIES ---------------- */
 
 test('Should return page (query)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[attributes.parent][in_array]=${homeId}`;
+	const url = `${API_BASE_URL}/pages?where[parent][in_array]=${homeId}`;
 	const response = await request.get(url).then((response) => {
 		return response.json();
 	});
@@ -682,6 +683,7 @@ test('Editor should not update other editors', async ({ request }) => {
 	});
 	expect(response.status()).toBe(403);
 });
+
 
 //////////////////////////////////////////////
 // Auth Lock

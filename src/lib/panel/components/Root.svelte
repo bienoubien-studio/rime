@@ -46,10 +46,6 @@
 		}
 	}
 
-	$effect(() => {
-		onResize();
-	});
-
 	const setCollapsed = (bool: boolean) => {
 		isCollapsed = bool;
 		localeCollapsed = bool.toString();
@@ -61,6 +57,7 @@
 		if (localeCollapsed) {
 			setCollapsed(localeCollapsed === 'true');
 		}
+		onResize();
 	});
 </script>
 

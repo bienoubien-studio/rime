@@ -4,6 +4,7 @@
 	import Sortable from 'sortablejs';
 	import CollectionTreeNode from './CollectionTreeNode.svelte';
 	import { toast } from 'svelte-sonner';
+	import { countRows } from './util';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();
@@ -79,9 +80,6 @@
 	};
 
 	
-
-
-
 	$effect(() => {
 		if (shouldInit) {
 			initSortable();
@@ -98,7 +96,7 @@
 	<div
 		class="rz-collection-sortable rz-collection-sortable--root"
 		data-id="root"
-		style="--data-children-count={collection.nested.length}"
+		style="--data-rows-count={countRows(collection.nested)}"
 		data-empty={collection.nested.length === 0 ? '' : null}
 	>
 		{#each collection.nested as doc}
@@ -137,7 +135,7 @@
 					translate: calc(-1 * var(--rz-size-6)) calc(-1 * var(--rz-size-4));
 					position: absolute;
 					top: 0;
-					height: calc( var(--rz-size-4) + var(--rz-size-8) + (var(--data-children-count) - 1) * var(--rz-size-20));
+					height: calc( var(--rz-size-4) + var(--rz-size-8) + (var(--data-rows-count) - 1) * var(--rz-size-20));
 					left:0;
 				}
 				margin-top: var(--rz-size-4);

@@ -4,6 +4,7 @@
   import CollectionTreeNode from './CollectionTreeNode.svelte'
 	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
 	import StatusDot from '../StatusDot.svelte';
+	import { countRows } from './util';
 
 	type Props = { parentId: string; doc: GenericDoc, collection: CollectionContext };
 	const { parentId, doc, collection }: Props = $props();
@@ -24,7 +25,7 @@
         <StatusDot --rz-dot-size="0.3rem" color={docStatus.color} />
       {/if}
   </a>
-	<div class="rz-collection-sortable" style="--data-children-count:{doc._children.length}" data-id={doc.id} >
+	<div class="rz-collection-sortable" style="--data-rows-count:{countRows(doc._children)}" data-id={doc.id} >
     {#if doc._children && doc._children.length > 0}
       {#each doc._children as child (child.id)}
         <CollectionTreeNode {collection} doc={child} parentId={doc.id} />

@@ -57,6 +57,17 @@ const isLevelEnabled = (level: LogLevel): boolean => {
   return level >= currentLogLevel;
 };
 
+function getFormattedLocalTime(date: Date) {
+  const now = new Date();
+  return now.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+}
+
+const rizomFormatted = chalk.bold(chalk.gray('[rizom]'))
 // Base logger implementation
 const logger = {
   // Set the log level
@@ -76,36 +87,36 @@ const logger = {
   // Log methods
   trace: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.TRACE)) {
-      const timestamp = new Date().toISOString();
+      const timestamp = getFormattedLocalTime(new Date());
       console.trace(...args);
       writeToFile('TRACE', timestamp, args);
     }
   },
   debug: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.DEBUG)) {
-      const timestamp = new Date().toISOString();
+      const timestamp = getFormattedLocalTime(new Date());
       console.debug(chalk.redBright('DEBUG'), ...args);
       writeToFile('DEBUG', timestamp, args);
     }
   },
   info: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.INFO)) {
-      const timestamp = new Date().toISOString();
-      console.info(timestamp, chalk.blue(' INFO'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.info( chalk.dim(timestamp), rizomFormatted, chalk.blue(' INFO'), ...args);
       writeToFile('INFO', timestamp, args);
     }
   },
   warn: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.WARN)) {
-      const timestamp = new Date().toISOString();
-      console.warn(timestamp,chalk.yellow(' WARN'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.warn( chalk.dim(timestamp),rizomFormatted, chalk.yellow(' WARN'), ...args);
       writeToFile('WARN', timestamp, args);
     }
   },
   error: (...args: unknown[]) => {
     if (isLevelEnabled(LogLevel.ERROR)) {
-      const timestamp = new Date().toISOString();
-      console.error(timestamp, chalk.red('ERROR'),'[Rizom]', ...args);
+      const timestamp = getFormattedLocalTime(new Date());
+      console.error( chalk.dim(timestamp), rizomFormatted, chalk.red('ERROR'), ...args);
       writeToFile('ERROR', timestamp, args);
     }
   }

@@ -58,7 +58,12 @@ const tabAttributes = tab('attributes')
 			.live(false),
 		separator(),
 		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
-		separator()
+		separator(),
+		select('template').options('basic', 'large').access({
+			create: (user) => access.isAdmin(user),
+			update: (user) => access.isAdmin(user),
+			read: () => true
+		})
 	);
 
 const blockKeyFacts = block('keyFacts').fields(
@@ -123,7 +128,7 @@ const Pages = collection('pages', {
 	url: (doc) =>
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
-			: `${process.env.PUBLIC_RIZOM_URL}/${doc.attributes.slug}`,
+			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
 	status: true,
 	access: {
 		read: () => true,
@@ -229,7 +234,6 @@ const Medias = collection('medias', {
 });
 
 export default defineConfig({
-	siteUrl: process.env.PUBLIC_RIZOM_URL,
 	database: 'basic.sqlite',
 	collections: [Pages, Medias, News],
 	areas: [Settings, Navigation, Informations],
