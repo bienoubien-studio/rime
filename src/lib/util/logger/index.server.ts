@@ -3,9 +3,10 @@ import fs from 'fs/promises';
 import path from 'path';
 
 // Environment and configuration
-const LOG_DIR = process.env.RIZOM_LOG_DIR || 'logs';
-const LOG_FILE = 'rizom.log';
+const LOG_LEVEL = (process.env.RIZOM_LOG_LEVEL || 'info').toLowerCase() as keyof typeof LogLevel;
 const LOG_TO_FILE = process.env.RIZOM_LOG_TO_FILE === 'true';
+const LOG_DIR = path.join(process.cwd(), 'logs');
+const LOG_FILE = 'rizom.log';
 
 // Log levels with numeric values for comparison
 enum LogLevel {
@@ -35,7 +36,16 @@ const formatMessage = (args: unknown[]): string => {
   ).join(' ');
 };
 
-// Write to log file
+/**
+ * Get the current date formatted as YYYY-MM-DD for log file naming
+ */
+const getFormattedDate = (date: Date): string => {
+  return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+};
+
+/**
+ * Write log entry to a date-prefixed file
+ */
 const writeToFile = async (level: string, timestamp: string, args: unknown[]) => {
   if (!LOG_TO_FILE) return;
 
@@ -45,8 +55,15 @@ const writeToFile = async (level: string, timestamp: string, args: unknown[]) =>
     const cleanMessage = message.replace(/\u001b\[\d+m/g, '');
     const logEntry = `[${timestamp}] [${level}] ${cleanMessage}\n`;
     
+    // Create logs directory if it doesn't exist
     await fs.mkdir(LOG_DIR, { recursive: true });
-    await fs.appendFile(path.join(LOG_DIR, LOG_FILE), logEntry);
+    
+    // Get current date for log file name
+    const dateStr = getFormattedDate(new Date());
+    const logFileName = `${dateStr}.log`;
+    
+    // Append to date-specific log file
+    await fs.appendFile(path.join(LOG_DIR, logFileName), logEntry);
   } catch (error) {
     console.error('Failed to write to log file:', error);
   }
@@ -58,8 +75,7 @@ const isLevelEnabled = (level: LogLevel): boolean => {
 };
 
 function getFormattedLocalTime(date: Date) {
-  const now = new Date();
-  return now.toLocaleTimeString(undefined, {
+  return date.toLocaleTimeString(undefined, {
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit',
