@@ -97,7 +97,8 @@ const buildRootTable = ({
 						const {
 							schema: blockTable,
 							relationsDic: nestedRelationsDic,
-							relationFieldsMap: nestedRelationFieldsDic
+							relationFieldsMap: nestedRelationFieldsDic,
+							relationFieldsHasLocale: nestedRelationFieldsHasLocale
 						} = buildRootTable({
 							blocksRegister,
 							fields: block.raw.fields,
@@ -110,6 +111,7 @@ const buildRootTable = ({
 						});
 						relationsDic = nestedRelationsDic;
 						relationFieldsMap = nestedRelationFieldsDic;
+						if(nestedRelationFieldsHasLocale) relationFieldsHasLocale = true
 						blocksRegister.push(blockTableName);
 						blocksTables.push(blockTable);
 					}
@@ -125,7 +127,8 @@ const buildRootTable = ({
 					const {
 						schema: treeTable,
 						relationsDic: nestedRelationsDic,
-						relationFieldsMap: nestedRelationFieldsDic
+						relationFieldsMap: nestedRelationFieldsDic,
+						relationFieldsHasLocale: nestedRelationFieldsHasLocale
 					} = buildRootTable({
 						blocksRegister,
 						fields: field.raw.fields,
@@ -138,6 +141,7 @@ const buildRootTable = ({
 					});
 					relationsDic = nestedRelationsDic;
 					relationFieldsMap = nestedRelationFieldsDic;
+					if(nestedRelationFieldsHasLocale) relationFieldsHasLocale = true
 					blocksRegister.push(treeTableName);
 					blocksTables.push(treeTable);
 				}
@@ -186,7 +190,6 @@ const buildRootTable = ({
 		relationsDic
 	};
 };
-
 
 function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 	// Iterate through each field in the array
