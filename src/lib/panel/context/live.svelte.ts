@@ -116,20 +116,16 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	};
 
 	/**
-	 * Handles field value updates, including special handling for relation fields
+	 * Handles field value updates 
 	 */
 	const handleFieldUpdate = async (data: { path: string; value: any }) => {
-		console.log('handleFieldUpdate', data);
-		
-		// Process relations recursively
-		const processedValue = await processRelations(data.value);
-		
 		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate');
-		
-		// Update the document with the processed value
+		// Populate relations
+		const processedValue = await processRelations(data.value);
+		// Update the document
 		doc = setValueAtPath(doc, data.path, processedValue) as T;
 	};
-
+	
 	/**
 	 * Handles focusing a specific field in the UI
 	 */
