@@ -1,10 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { AreaSlug, GenericDoc } from 'rizom/types/doc.js';
 import type { Adapter } from 'rizom/sqlite/index.server.js';
 import { RizomError } from 'rizom/errors/index.js';
 import { transformDocument } from '../tasks/transformDocument.server.js';
 import type { LocalAPI } from '../localAPI/index.server.js';
+import type { RegisterArea } from 'rizom';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -41,7 +42,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
-			doc: document,
+			doc: document as unknown as RegisterArea[AreaSlug],
 			config,
 			operation: 'read',
 			api,
@@ -50,6 +51,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		});
 		document = result.doc as T;
 	}
-
+	
 	return document as T;
 };

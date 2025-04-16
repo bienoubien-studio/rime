@@ -48,13 +48,13 @@ export class LocalAPI {
 			defaultLocale: this.rizom.config.getDefaultLocale()
 		});
 	}
-
+	
 	area<Slug extends keyof RegisterArea>(slug: Slug) {
 		const areaConfig = this.rizom.config.getArea(slug);
 		if (!areaConfig) {
 			throw new RizomError(`${slug} is not a area`);
 		}
-		return new AreaInterface({
+		return new AreaInterface<RegisterArea[Slug]>({
 			event: this.#requestEvent,
 			config: areaConfig,
 			adapter: this.rizom.adapter,
