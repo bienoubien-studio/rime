@@ -166,7 +166,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		this.field.hooks!.beforeValidate.push(hook);
 	}
 
-	clone<B extends FormFieldBuilder<T>>(): B {
+	clone(): typeof this {
 		// Create a new instance of the same class
 		const Constructor = this.constructor as new (...args: any[]) => B;
 		// Get constructor parameters from the current instance
