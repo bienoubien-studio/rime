@@ -1,1 +1,2 @@
-export { buildGenerateHTML } from './fields/rich-text/core/generate-html.js';
+import RenderRichText from './fields/rich-text/core/render-rich-text.svelte'
+export { RenderRichText }
