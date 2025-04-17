@@ -1,75 +1,87 @@
 import { getContext, setContext } from 'svelte';
-import { readable, writable } from 'svelte/store';
 
-const PROXY_KEY = Symbol('rizom.APIProxy');
+const API_PROXY_KEY = Symbol('api-proxy');
 
-type Ressource = ReturnType<typeof createRessource>
-
-function createRessource(url: string) {
-
-  const getData = async (url: string): Promise<any> => {
-    return fetch(url, {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json'
-      }
-    });
-  };
-
-  let data = $state<any>(null);
-
-  $effect(() => {
-    if(data === null){
-      getData(url).then(r => r.json()).then((result) => {
+function createAPIProxy() {
+  // Use $state to make the resources collection reactive
+  const resources = $state(new Map());
+  
+  function getRessource(url:string) {
+    // Check if we already have this resource
+    if (!resources.has(url)) {
+      // Create a new resource
+      const resource = createResource(url);
+      resources.set(url, resource);
+    }
+    
+    return resources.get(url);
+  }
+  
+  function createResource(url:string) {
+    // Use $state for the resource data to make it reactive
+    let data = $state(null);
+    let isLoading = $state(true);
+    let error = $state(null);
+    
+    // Fetch the data immediately
+    fetchData();
+    
+    function fetchData() {
+      isLoading = true;
+      error = null;
+      
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(result => {
         data = result;
+        isLoading = false;
+      })
+      .catch(err => {
+        error = err;
+        isLoading = false;
+        console.error(`Error fetching ${url}:`, err);
       });
     }
-  });
-
-  return {
-    url,
-    get data() {
-      return data;
-    },
-    set data(value){
-      data = value
-    }
+    
+    // The resource object with reactive properties
+    return {
+      get url() { return url; },
+      get data() { return data; },
+      get isLoading() { return isLoading; },
+      get error() { return error; },
+      refresh() {
+        fetchData();
+      }
+    };
   }
-}
-
-function createStore() {
-  let ressources = $state<Ressource[]>([]);
-
-  const getLocaleRessource = (url: string) => {
-    return ressources.find((r) => r.url === url);
-  };
-
-  const getRessource = (url: string) => {
-    const localeRessource = getLocaleRessource(url);
-    if (!localeRessource) {
-      const ressource = createRessource(url);
-      ressources.push(ressource);
-      return ressource;
-    } else {
-      return localeRessource;
-    }
-  };
-
-  const invalidateAll = () => {
-    ressources.forEach(r => r.data = null);
-  };
-
+  
+  function invalidateAll() {
+    resources.forEach(resource => {
+      resource.refresh();
+    });
+  }
+  
   return {
     getRessource,
     invalidateAll
   };
 }
 
-export function setAPIProxyContext(key: string) {
-  const store = createStore();
-  return setContext(`${PROXY_KEY.toString()}.${key}`, store);
+export function setAPIProxyContext(key = 'default') {
+  const apiProxy = createAPIProxy();
+  return setContext(`${API_PROXY_KEY.toString()}.${key}`, apiProxy);
 }
 
-export function getAPIProxyContext(key: string) {
-  return getContext<ReturnType<typeof setAPIProxyContext>>(`${PROXY_KEY.toString()}.${key}`);
+export function getAPIProxyContext(key = 'default') {
+  return getContext<ReturnType<typeof setAPIProxyContext>>(`${API_PROXY_KEY.toString()}.${key}`);
 }
