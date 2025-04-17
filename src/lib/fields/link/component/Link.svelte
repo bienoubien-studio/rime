@@ -110,11 +110,18 @@
 			class="rz-link-field__bottom"
 			style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}"
 		>
+
 			<!-- Type -->
+			 {#if linkTypes.length === 1}
+					<Button class="rz-link__type-single" variant="secondary">
+						<Icon class="rz-link__type-icon" size={12} />
+						<p class="rz-link__type-text">{capitalize(linkType)}</p>
+					</Button>
+			 {:else}
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
-						<Button class="rz-link__type-button" variant="secondary" {...props}>
+						<Button variant="secondary" {...props}>
 							<Icon class="rz-link__type-icon" size={12} />
 							<p class="rz-link__type-text">{capitalize(linkType)}</p>
 							<ChevronDown class="rz-link__type-icon" size={12} />
@@ -134,7 +141,7 @@
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu.Root>
-
+			{/if}
 			<!-- Value -->
 
 			{#if isPrimitiveType}
@@ -185,6 +192,7 @@
 		top: -1.3rem;
 	}
 
+	
 	.rz-link-field__bottom {
 		display: flex;
 		position: relative;
@@ -194,6 +202,10 @@
 			display: none;
 		}
 
+		:global(.rz-link__type-single) {
+			pointer-events: none;
+		}
+		
 		:global(.rz-button) {
 			min-width: var(--rz-size-20);
 			border-top-left-radius: var(--rz-radius-md);
