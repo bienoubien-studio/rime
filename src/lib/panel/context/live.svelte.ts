@@ -21,6 +21,7 @@ type OnDataCallback = (args: { path: string; value: any }) => void;
 type LiveStore<T extends GenericDoc = GenericDoc> = ReturnType<typeof createStore<T>>;
 
 function createStore<T extends GenericDoc = GenericDoc>(href: string) {
+	
 	let enabled = $state(false);
 	let doc = $state<T>();
 	const callbacks: OnDataCallback[] = [];
@@ -62,12 +63,41 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	/**
 	 * Recursively processes relation objects in any data structure
 	 */
-	const processRelations = async (value: any): Promise<any> => {
+	const populate = async (value: any): Promise<any> => {
 		// Base case: null or undefined
 		if (value === null || value === undefined) {
 			return value;
 		}
 		
+		// Check if it's a resource link field value
+		if (
+			isObjectLiteral(value) && 
+			'value' in value && 
+			'target' in value && 
+			'type' in value && 
+			!['url', 'email', 'tel', 'anchor'].includes(value.type)
+		) {
+			if( value.type && value.value ){
+				try {
+					const response = await fetch(
+						`/api/${value.type}/${value.value}?depth=1`
+					).then((r) => r.json());
+					
+					if (response && response.doc && response.doc.url) {
+						return {
+							...value,
+							url: response.doc.url
+						};
+					}
+				} catch (err) {
+					console.error(err)
+					return value;
+				}
+			}
+		
+			return value;
+		}
+
 		// Check if it's a relation object
 		if (
 			isObjectLiteral(value) && 
@@ -87,7 +117,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 						return response.doc;
 					}
 				} catch (err) {
-					// Silently handle fetch errors
+					console.error(err)
 				}
 			}
 			return value;
@@ -97,7 +127,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		if (Array.isArray(value)) {
 			const result = [...value];
 			for (let i = 0; i < result.length; i++) {
-				result[i] = await processRelations(result[i]);
+				result[i] = await populate(result[i]);
 			}
 			return result;
 		}
@@ -106,7 +136,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		if (isObjectLiteral(value)) {
 			const result = {...value};
 			for (const key of Object.keys(result)) {
-				result[key] = await processRelations(result[key]);
+				result[key] = await populate(result[key]);
 			}
 			return result;
 		}
@@ -120,8 +150,8 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 	 */
 	const handleFieldUpdate = async (data: { path: string; value: any }) => {
 		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate');
-		// Populate relations
-		const processedValue = await processRelations(data.value);
+		// Populate relations / link
+		const processedValue = await populate(data.value);
 		// Update the document
 		doc = setValueAtPath(doc, data.path, processedValue) as T;
 	};
