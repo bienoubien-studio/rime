@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { FormErrors } from 'rizom/types/panel.js';
-	import { setFormContext } from 'rizom/panel/context/form.svelte';
-	import Text from 'rizom/fields/text/component/Text.svelte';
+	import type { FormErrors } from '$lib/types/panel.js';
+	import { setFormContext } from '$lib/panel/context/form.svelte';
+	import Text from '$lib/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
-	import { password, confirmPassword } from 'rizom/config/auth/usersFields';
-	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
-	import { t__ } from 'rizom/panel/i18n';
-	import { authClient } from 'rizom/panel/util/auth';
+	import { password, confirmPassword } from '$lib/config/auth/usersFields';
+	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
+	import { t__ } from '$lib/i18n';
+	import { authClient } from '$lib/panel/util/auth';
 
 	interface Props {
 		token: string;

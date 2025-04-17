@@ -1,16 +1,16 @@
 import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
-import { taskLogger } from 'rizom/util/logger/index.server.js';
+import { taskLogger } from '$lib/util/logger/index.server.js';
 import cache from '../cache/index.js';
-import { isBlocksField } from 'rizom/util/field.js';
-import type { Field } from 'rizom/types/fields.js';
-import type { BuiltConfig, ImageSizesConfig } from 'rizom/types/config.js';
-import { PACKAGE_NAME } from 'rizom/constant.js';
-import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
-import { isUploadConfig } from 'rizom/util/config.js';
-import { TabsBuilder } from 'rizom/fields/tabs/index.js';
-import { TreeBuilder } from 'rizom/fields/tree/index.js';
-import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
+import { isBlocksField } from '$lib/util/field.js';
+import type { Field } from '$lib/types/fields.js';
+import type { BuiltConfig, ImageSizesConfig } from '$lib/types/config.js';
+import { PACKAGE_NAME } from '$lib/constant.js';
+import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.js';
+import { isUploadConfig } from '$lib/util/config.js';
+import { TabsBuilder } from '$lib/fields/tabs/index.js';
+import { TreeBuilder } from '$lib/fields/tree/index.js';
+import { GroupFieldBuilder } from '$lib/fields/group/index.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */

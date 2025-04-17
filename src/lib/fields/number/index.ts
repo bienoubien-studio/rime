@@ -1,8 +1,8 @@
-import type { FormField } from 'rizom/types';
+import type { FormField } from '$lib/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
-import type { FieldValidationFunc } from 'rizom/types/fields.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import type { FieldValidationFunc } from '$lib/types/fields.js';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
 

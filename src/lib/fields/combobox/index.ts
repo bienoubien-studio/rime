@@ -1,6 +1,6 @@
-import type { FormField, Option } from 'rizom/types/index.js';
+import type { FormField, Option } from '$lib/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates';
 import Combobox from './component/ComboBox.svelte';
 
 class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {

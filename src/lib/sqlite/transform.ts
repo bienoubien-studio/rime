@@ -12,16 +12,16 @@ import type {
 	GenericDoc,
 	PrototypeSlug,
 	RawDoc
-} from 'rizom/types/doc.js';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
-import type { Dic } from 'rizom/types/util.js';
-import { extractFieldName } from 'rizom/fields/tree/util.js';
-import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
+} from '$lib/types/doc.js';
+import type { ConfigInterface } from '$lib/config/index.server.js';
+import type { Dic } from '$lib/types/util.js';
+import { extractFieldName } from '$lib/fields/tree/util.js';
+import { privateFieldNames } from '$lib/config/auth/privateFields.server.js';
 import type { AdapterTreeInterface } from './tree.js';
 import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import { logger } from 'rizom/util/logger/index.server.js';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
+import { logger } from '$lib/util/logger/index.server.js';
 
 /////////////////////////////////////////////
 // Types

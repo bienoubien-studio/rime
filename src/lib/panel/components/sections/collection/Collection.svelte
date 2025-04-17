@@ -5,13 +5,13 @@
 	import ListHeader from './list-header/ListHeader.svelte';
 	import Header from './header/Header.svelte';
 	import ScrollArea from '$lib/panel/components/ui/scroll-area/scroll-area.svelte';
-	import { getCollectionContext } from 'rizom/panel/context/collection.svelte';
+	import { getCollectionContext } from '$lib/panel/context/collection.svelte';
 	import { page } from '$app/state';
-	import type { PrototypeSlug } from 'rizom/types/doc';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import type { PrototypeSlug } from '$lib/types/doc';
+	import { t__ } from '$lib/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import CollectionTree from './tree/CollectionTree.svelte';
-	import { getUserContext } from 'rizom/panel/context/user.svelte';
+	import { getUserContext } from '$lib/panel/context/user.svelte';
 
 	interface Props {
 		compact?: boolean;

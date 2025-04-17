@@ -8,9 +8,9 @@
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import { setAPIProxyContext } from '../context/api-proxy.svelte.js';
 	import { page } from '$app/state';
-	import type { User } from 'rizom/types/auth.js';
-	import type { Route } from 'rizom/types/panel.js';
-	import type { BrowserConfig } from 'rizom/types/config.js';
+	import type { User } from '$lib/types/auth.js';
+	import type { Route } from '$lib/types/panel.js';
+	import type { BrowserConfig } from '$lib/types/config.js';
 
 	type Props = {
 		routes: Record<string, Route[]>;

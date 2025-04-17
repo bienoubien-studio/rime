@@ -1,6 +1,6 @@
 <script>
 	import { DatabaseZapIcon } from '@lucide/svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { toast } from 'svelte-sonner';
 
 	const clearCache = async () => {

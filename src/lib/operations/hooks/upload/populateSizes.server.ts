@@ -1,7 +1,7 @@
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { CollectionHookBeforeRead } from 'rizom/types/hooks.js';
-import type { WithUpload } from 'rizom/types/util.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { CollectionHookBeforeRead } from '$lib/types/hooks.js';
+import type { WithUpload } from '$lib/types/util.js';
 
 export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;

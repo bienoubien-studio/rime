@@ -1,4 +1,4 @@
-import type { FormField } from 'rizom/types/fields.js';
+import type { FormField } from '$lib/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';

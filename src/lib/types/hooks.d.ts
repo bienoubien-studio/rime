@@ -1,5 +1,5 @@
-import type { LocalAPI } from 'rizom/types/api.js';
-import type { Rizom } from 'rizom/rizom.server';
+import type { LocalAPI } from '$lib/types/api.js';
+import type { Rizom } from '$lib/rizom.server';
 import type { CompiledArea, CompiledCollection } from './config';
 import type { GenericDoc } from '.';
 import type { DeepPartial } from './util';

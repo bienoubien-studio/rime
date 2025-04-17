@@ -4,9 +4,9 @@
 	import { Editor } from '@tiptap/core';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
 	import { buildEditorConfig } from '../core/config-builders.js';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import type { RichTextFieldProps } from './props.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { RichTextFeature } from '../core/types';
 	import DragHandler from './drag-handle/drag-handle.svelte';
 	import Suggestion from './suggestion/suggestion.svelte';

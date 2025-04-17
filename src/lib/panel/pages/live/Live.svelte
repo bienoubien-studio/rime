@@ -1,15 +1,14 @@
 <script lang="ts">
-	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
+	import { PaneGroup, Pane, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
 	import { goto } from '$app/navigation';
-	import type { GenericDoc } from 'rizom/types/doc';
-	import LiveSidePanel from 'rizom/panel/components/sections/live/SidePanel.svelte';
-	import type { BrowserConfig } from 'rizom/types/config';
-	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import { t__ } from 'rizom/panel/i18n';
+	import type { GenericDoc } from '$lib/types/doc';
+	import LiveSidePanel from '$lib/panel/components/sections/live/SidePanel.svelte';
+	import type { BrowserConfig } from '$lib/types/config';
+	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
+	import { t__ } from '$lib/i18n';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-
+	
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
 

@@ -12,10 +12,10 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug, GenericDoc } from '../../types/doc.js';
 import type { CompiledCollection } from '../../types/config.js';
 import type { FormField } from '../../types/fields.js';
-import type { OperationQuery } from 'rizom/types/api.js';
-import { RizomError } from 'rizom/errors/index.js';
-import type { RegisterCollection } from 'rizom';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { OperationQuery } from '$lib/types/api.js';
+import { RizomError } from '$lib/errors/index.js';
+import type { RegisterCollection } from '$lib';
+import type { Adapter } from '$lib/sqlite/index.server.js';
 import type { LocalAPI } from './index.server.js';
 import type { DeepPartial } from '../../types/util.js';
 

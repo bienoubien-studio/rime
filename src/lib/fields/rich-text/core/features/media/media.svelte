@@ -1,15 +1,15 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core';
-	import type { UploadDoc } from 'rizom/types/doc.js';
+	import type { UploadDoc } from '$lib/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { onMount } from 'svelte';
-	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
-	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
+	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
+	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { X } from '@lucide/svelte';
-	import Input from 'rizom/panel/components/ui/input/input.svelte';
+	import Input from '$lib/panel/components/ui/input/input.svelte';
 
 	type NodeAttributes = {
 		id: string | null;

@@ -1,5 +1,5 @@
-import type { BuiltConfig, Config } from 'rizom/types/config.js';
-import type { FieldsComponents } from 'rizom/types/panel.js';
+import type { BuiltConfig, Config } from '$lib/types/config.js';
+import type { FieldsComponents } from '$lib/types/panel.js';
 
 type Args = {
 	plugins: Config['plugins'];

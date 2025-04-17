@@ -1,6 +1,6 @@
 /** Collection */
 
-import { PACKAGE_NAME } from 'rizom/constant.js';
+import { PACKAGE_NAME } from '$lib/constant.js';
 
 export const rootLayoutServer = `import type { ServerLoadEvent } from '@sveltejs/kit';
 

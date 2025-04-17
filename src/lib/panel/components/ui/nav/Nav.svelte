@@ -2,9 +2,9 @@
 	import NavItem from './NavItem.svelte';
 	import NavGroup from './NavGroup.svelte';
 	import UserButton from './UserButton.svelte';
-	import type { Route } from 'rizom/types/panel';
+	import type { Route } from '$lib/types/panel';
 	import { PanelsTopLeft } from '@lucide/svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	
 	type Props = { isCollapsed: boolean; setCollapsed: (value: boolean) => void; routes: Record<string, Route[]> };
 	const { isCollapsed, setCollapsed, routes: routesGroups }: Props = $props();

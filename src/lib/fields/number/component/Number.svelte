@@ -1,9 +1,9 @@
 <script lang="ts">
 	import './number.css';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import type { NumberFieldProps } from './props';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: NumberFieldProps = $props();
 

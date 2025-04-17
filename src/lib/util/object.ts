@@ -1,4 +1,4 @@
-import type { Dic, WithRequired } from 'rizom/types/util';
+import type { Dic, WithRequired } from '$lib/types/util';
 
 export const pick = <T extends object, K extends keyof T>(keys: K[], obj: T): Pick<T, K> => {
 	const res: Partial<T> = {};

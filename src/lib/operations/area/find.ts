@@ -1,11 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CompiledArea } from 'rizom/types/config.js';
-import type { AreaSlug, GenericDoc } from 'rizom/types/doc.js';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
-import { RizomError } from 'rizom/errors/index.js';
+import type { CompiledArea } from '$lib/types/config.js';
+import type { AreaSlug, GenericDoc } from '$lib/types/doc.js';
+import type { Adapter } from '$lib/sqlite/index.server.js';
+import { RizomError } from '$lib/errors/index.js';
 import { transformDocument } from '../tasks/transformDocument.server.js';
 import type { LocalAPI } from '../localAPI/index.server.js';
-import type { RegisterArea } from 'rizom';
+import type { RegisterArea } from '$lib';
 
 type FindArgs = {
 	locale?: string | undefined;

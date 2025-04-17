@@ -1,9 +1,9 @@
 <script lang="ts">
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
-	import { getAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
+	import type { GenericDoc, PrototypeSlug } from '$lib/types';
+	import { t__ } from '$lib/i18n/index.js';
+	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
+	import { getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 
 	type Ressource = {
 		label: string;
@@ -51,7 +51,7 @@
 			}
 		}
 	});
-	
+
 	$effect(() => {
 		if (!selected && resources.length && resources[0]._prototype === 'area') {
 			selected = resources[0];

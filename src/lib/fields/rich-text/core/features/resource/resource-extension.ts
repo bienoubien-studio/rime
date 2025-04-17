@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
 import CounterComponent from './resource.svelte';
-import type { Dic } from 'rizom/types/util';
+import type { Dic } from '$lib/types/util';
 
 export const Resource = Node.create({
   name: 'resource',

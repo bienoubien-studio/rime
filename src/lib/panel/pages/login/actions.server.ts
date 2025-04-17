@@ -1,8 +1,8 @@
 import { dev } from '$app/environment';
 import { redirect, type Actions } from '@sveltejs/kit';
-import { PANEL_USERS } from 'rizom/constant';
-import { handleError } from 'rizom/errors/handler.server';
-import { safe } from 'rizom/util/safe';
+import { PANEL_USERS } from '$lib/constant';
+import { handleError } from '$lib/errors/handler.server';
+import { safe } from '$lib/util/safe';
 
 export const loginActions: Actions = {
 	default: async ({ cookies, request, locals }) => {

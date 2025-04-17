@@ -1,5 +1,5 @@
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
-import { checkLiveRedirect } from 'rizom/panel/index.server';
+import { checkLiveRedirect } from '$lib/panel/index.server';
 
 export const load = async (event: ServerLoadEvent) => {
 	const { api } = event.locals;

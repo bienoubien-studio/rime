@@ -1,4 +1,4 @@
-import type { GenericBlock } from 'rizom/types/doc.js';
+import type { GenericBlock } from '$lib/types/doc.js';
 import type { Relation } from '../sqlite/relations.js';
 import { hasProps, isObjectLiteral } from './object.js';
 import type {
@@ -20,13 +20,13 @@ import type {
 	TabsField,
 	TextField,
 	ToggleField
-} from 'rizom/fields/types';
-import type { Dic } from 'rizom/types/util.js';
-import type { AnyField, FormField, Field } from 'rizom/types/fields.js';
-import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
-import type { GroupFieldRaw } from 'rizom/fields/group/index.js';
-import type { TabsFieldRaw } from 'rizom/fields/tabs/index.js';
-import type { TreeFieldRaw } from 'rizom/fields/tree/index.js';
+} from '$lib/fields/types';
+import type { Dic } from '$lib/types/util.js';
+import type { AnyField, FormField, Field } from '$lib/types/fields.js';
+import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+import type { GroupFieldRaw } from '$lib/fields/group/index.js';
+import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
+import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
 
 export const isPresentative = (field: Field): field is SeparatorField =>
 	['separator'].includes(field.type);

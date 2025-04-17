@@ -3,9 +3,9 @@ import { CollectionInterface } from './Collection.js';
 import { AreaInterface } from './Area.js';
 import type { Rizom } from '../../rizom.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { RegisterArea, RegisterCollection } from 'rizom';
-import type { FormErrors } from 'rizom/types/panel.js';
-import { email as validateEmail, password as validatePassword } from 'rizom/util/validate.js';
+import type { RegisterArea, RegisterCollection } from '$lib';
+import type { FormErrors } from '$lib/types/panel.js';
+import { email as validateEmail, password as validatePassword } from '$lib/util/validate.js';
 
 export type LocalAPIConstructorArgs = {
 	rizom: Rizom;

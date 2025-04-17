@@ -3,8 +3,8 @@
 	import { Plus } from '@lucide/svelte';
 	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
 	import { isFormField } from '$lib/util/field.js';
-	import type { Field } from 'rizom/types/fields.js';
-	import type { Dic } from 'rizom/types/util';
+	import type { Field } from '$lib/types/fields.js';
+	import type { Dic } from '$lib/types/util';
 	import type { Snippet } from 'svelte';
 
 	type AddItem = (emptyValues: Dic) => void;

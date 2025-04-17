@@ -1,4 +1,4 @@
-import type { PrototypeSlug } from 'rizom/types/doc';
+import type { PrototypeSlug } from '$lib/types/doc';
 import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 

@@ -1,4 +1,4 @@
-import type { User } from 'rizom/types/auth';
+import type { User } from '$lib/types/auth';
 
 export const isAdmin = (user?: User) => !!user && hasRoles(user, 'admin');
 

@@ -1,11 +1,11 @@
 import { extractTreeBlocks } from './extract.server';
-import type { TreeBlock } from 'rizom/types/doc';
-import type { Dic, WithRequired } from 'rizom/types/util';
+import type { TreeBlock } from '$lib/types/doc';
+import type { Dic, WithRequired } from '$lib/types/util';
 import { defineTreeBlocksDiff } from './diff.server';
-import type { Adapter, CompiledArea, CompiledCollection } from 'rizom/types';
+import type { Adapter, CompiledArea, CompiledCollection } from '$lib/types';
 import type { ConfigMap } from '../configMap/types';
 
-import { RizomError } from 'rizom/errors';
+import { RizomError } from '$lib/errors';
 
 export const saveTreeBlocks = async (args: {
 	configMap: ConfigMap;

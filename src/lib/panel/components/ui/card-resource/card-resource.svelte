@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { mimeTypeToIcon } from 'rizom/panel/util/upload.js';
+	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
 	import { X, Edit, FileIcon } from '@lucide/svelte';
 
 	type Resource = {

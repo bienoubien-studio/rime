@@ -1,7 +1,6 @@
 import type { Plugin, UserConfig } from 'vite';
 import { browserConfig } from './browser.js';
 import dotenv from 'dotenv';
-import { RizomError } from '../errors/index.js';
 import { hasRunInitCommand } from '../bin/util.server.js';
 import { existsSync, rmSync } from 'fs';
 import path from 'path';
@@ -16,7 +15,7 @@ export function rizom(): Plugin[] {
 			// Add a listener for when the server starts
 			server.httpServer?.once('listening', () => {
 				if (dev && !hasRunInitCommand()) {
-					throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
+					throw new Error('Missing required files, run `npx rizom init`');
 				}
 				// Check if we need to rebuild
 				const shouldRebuild = process.argv.includes('rebuild');

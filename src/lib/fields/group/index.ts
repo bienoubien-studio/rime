@@ -1,4 +1,4 @@
-import type { Field, FormField } from 'rizom/types/fields.js';
+import type { Field, FormField } from '$lib/types/fields.js';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Group from './component/Group.svelte';
 

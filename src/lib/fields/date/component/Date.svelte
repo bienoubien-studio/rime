@@ -8,7 +8,7 @@
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import type { DateField } from '../index.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	type Props = { path: string; config: DateField; form: DocumentFormContext };
 

@@ -1,8 +1,8 @@
 import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
-import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter';
-import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/util';
-import { omit } from 'rizom/util/object';
+import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter';
+import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
+import type { Dic } from '$lib/types/util';
+import { omit } from '$lib/util/object';
 import { transformDataToSchema } from '../util/path.js';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {

@@ -1,6 +1,6 @@
 import cloneDeep from 'clone-deep';
-import { RizomError } from 'rizom/errors/index.js';
-import { usersFields } from 'rizom/config/auth/usersFields.js';
+import { RizomError } from '$lib/errors/index.js';
+import { usersFields } from '$lib/config/auth/usersFields.js';
 import { mergeWithBlankDocument } from '../tasks/mergeWithBlank.js';
 import { setDefaultValues } from '../tasks/setDefaultValues.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
@@ -9,12 +9,12 @@ import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import type { GenericDoc, CollectionSlug } from 'rizom/types/doc.js';
-import type { RegisterCollection } from 'rizom';
-import type { DeepPartial } from 'rizom/types/util.js';
+import type { Adapter } from '$lib/sqlite/index.server.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
+import type { GenericDoc, CollectionSlug } from '$lib/types/doc.js';
+import type { RegisterCollection } from '$lib';
+import type { DeepPartial } from '$lib/types/util.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;

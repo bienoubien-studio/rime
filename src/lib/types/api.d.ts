@@ -1,4 +1,4 @@
-export type { LocalAPI } from 'rizom/operations/localAPI/index.server';
+export type { LocalAPI } from '$lib/operations/localAPI/index.server';
 
 export type OperationQuery =
 	| string

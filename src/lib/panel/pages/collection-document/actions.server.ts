@@ -1,8 +1,8 @@
 import { redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
-import { extractData } from 'rizom/operations/data.server.js';
-import type { CollectionSlug } from 'rizom/types/doc';
-import { handleError } from 'rizom/errors/handler.server';
-import { safe } from 'rizom/util/safe';
+import { extractData } from '$lib/operations/data.server.js';
+import type { CollectionSlug } from '$lib/types/doc';
+import { handleError } from '$lib/errors/handler.server';
+import { safe } from '$lib/util/safe';
 
 export default function (slug: CollectionSlug) {
 	const actions: Actions = {

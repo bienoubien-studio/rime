@@ -1,10 +1,10 @@
-import { taskLogger } from 'rizom/util/logger/index.server.js';
+import { taskLogger } from '$lib/util/logger/index.server.js';
 import cache from '../cache/index.js';
-import type { CompiledConfig } from 'rizom/types/config.js';
-import { privateFieldNames } from 'rizom/config/auth/privateFields.server';
-import type { FieldsComponents } from 'rizom/types/panel.js';
-import type { FieldsType } from 'rizom/types/fields.js';
-import { RizomFormError } from 'rizom/errors/index.js';
+import type { CompiledConfig } from '$lib/types/config.js';
+import { privateFieldNames } from '$lib/config/auth/privateFields.server';
+import type { FieldsComponents } from '$lib/types/panel.js';
+import type { FieldsType } from '$lib/types/fields.js';
+import { RizomFormError } from '$lib/errors/index.js';
 import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.js';
 
 

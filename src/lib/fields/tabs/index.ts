@@ -1,8 +1,8 @@
-import type { Field } from 'rizom/types/fields';
+import type { Field } from '$lib/types/fields';
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tabs from './component/Tabs.svelte';
-import type { WithoutBuilders } from 'rizom/types/util.js';
-import { isCamelCase } from 'rizom/util/string.js';
+import type { WithoutBuilders } from '$lib/types/util.js';
+import { isCamelCase } from '$lib/util/string.js';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
 export const tab = (label: string) => new TabBuilder(label);

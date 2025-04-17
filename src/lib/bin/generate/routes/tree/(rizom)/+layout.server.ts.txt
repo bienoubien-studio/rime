@@ -1,5 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { registerTranslation } from 'rizom/panel/i18n/register.server.js';
+import { registerTranslation } from 'rizom/i18n/register.server.js';
 
 export const ssr = false;
 

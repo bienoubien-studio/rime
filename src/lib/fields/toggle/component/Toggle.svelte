@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import type { ToggleProps } from './props';
-	import { slugify } from 'rizom/util/string.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { slugify } from '$lib/util/string.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: ToggleProps = $props();
 

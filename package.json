@@ -69,13 +69,13 @@
 			"types": "./dist/plugins/*.svelte.d.ts",
 			"default": "./dist/plugins/*.svelte"
 		},
-		"./panel/i18n": {
-			"types": "./dist/panel/i18n/index.d.ts",
-			"import": "./dist/panel/i18n/index.js"
+		"./i18n": {
+			"types": "./dist/i18n/index.d.ts",
+			"import": "./dist/i18n/index.js"
 		},
-		"./panel/i18n/*.js": {
-			"types": "./dist/panel/i18n/*.d.ts",
-			"import": "./dist/panel/i18n/*.js"
+		"./i18n/*.js": {
+			"types": "./dist/i18n/*.d.ts",
+			"import": "./dist/i18n/*.js"
 		},
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",

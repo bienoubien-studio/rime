@@ -1,6 +1,6 @@
 import { redirect, type RequestEvent } from '@sveltejs/kit';
-import { extractData } from 'rizom/operations/data.server.js';
-import { handleError } from 'rizom/errors/handler.server';
+import { extractData } from '$lib/operations/data.server.js';
+import { handleError } from '$lib/errors/handler.server';
 
 export const initActions = {
 	default: async ({ request, locals }: RequestEvent) => {

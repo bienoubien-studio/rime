@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
 	import CollectionTreeNode from './CollectionTreeNode.svelte';

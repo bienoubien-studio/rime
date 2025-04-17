@@ -3,18 +3,18 @@ import { getContext, onMount, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
-import { isUploadConfig } from 'rizom/util/config.js';
+import { isUploadConfig } from '$lib/util/config.js';
 import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
-import { getValueAtPath, hasProp } from 'rizom/util/object.js';
-import type { Field, FormField } from 'rizom/types/fields.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { FieldPanelTableConfig } from 'rizom/types/panel.js';
-import type { WithRequired } from 'rizom/types/util.js';
+import { getValueAtPath, hasProp } from '$lib/util/object.js';
+import type { Field, FormField } from '$lib/types/fields.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { FieldPanelTableConfig } from '$lib/types/panel.js';
+import type { WithRequired } from '$lib/types/util.js';
 import { env } from '$env/dynamic/public';
 import cloneDeep from 'clone-deep';
-import { snapshot } from 'rizom/util/state.js';
-import { toNestedStructure } from 'rizom/util/doc.js';
+import { snapshot } from '$lib/util/state.js';
+import { toNestedStructure } from '$lib/util/doc.js';
 
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid' | 'nested';

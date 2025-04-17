@@ -1,11 +1,11 @@
-import { TabsBuilder } from 'rizom/fields/tabs/index.js';
-import { isGroupField } from 'rizom/util/field.js';
-import type { FieldBuilder } from 'rizom/fields/builders/field.js';
-import type { DateField } from 'rizom/fields/date/index.js';
-import type { EmailField } from 'rizom/fields/email/index.js';
-import type { SlugField } from 'rizom/fields/slug/index.js';
-import type { TextField } from 'rizom/fields/text/index.js';
-import type { Field } from 'rizom/types/fields.js';
+import { TabsBuilder } from '$lib/fields/tabs/index.js';
+import { isGroupField } from '$lib/util/field.js';
+import type { FieldBuilder } from '$lib/fields/builders/field.js';
+import type { DateField } from '$lib/fields/date/index.js';
+import type { EmailField } from '$lib/fields/email/index.js';
+import type { SlugField } from '$lib/fields/slug/index.js';
+import type { TextField } from '$lib/fields/text/index.js';
+import type { Field } from '$lib/types/fields.js';
 
 export const hasMaybeTitle = (
 	field: Field

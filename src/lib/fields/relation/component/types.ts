@@ -1,5 +1,5 @@
-import type { CompiledCollection } from 'rizom/types/config';
-import type { GenericDoc } from 'rizom/types/doc';
+import type { CompiledCollection } from '$lib/types/config';
+import type { GenericDoc } from '$lib/types/doc';
 
 export type RelationFieldItem = {
 	id?: string;

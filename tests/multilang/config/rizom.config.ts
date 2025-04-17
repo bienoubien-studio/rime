@@ -17,7 +17,7 @@ import {
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
 import type { CollectionHookBeforeUpsert } from '$lib/types';
-import { collection, area, defineConfig } from 'rizom';
+import { collection, area, defineConfig } from '$lib';
 
 
 /////////////////////////////////////////////

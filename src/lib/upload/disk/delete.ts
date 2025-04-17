@@ -1,11 +1,11 @@
 import { existsSync, unlink, unlinkSync } from 'fs';
 import { toCamelCase } from '$lib/util/string.js';
 import path from 'path';
-import type { GenericDoc } from 'rizom/types/doc';
-import type { CompiledCollection } from 'rizom/types/config';
-import type { WithUpload } from 'rizom/types/util';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server';
-import { logger } from 'rizom/util/logger/index.server';
+import type { GenericDoc } from '$lib/types/doc';
+import type { CompiledCollection } from '$lib/types/config';
+import type { WithUpload } from '$lib/types/util';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server';
+import { logger } from '$lib/util/logger/index.server';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;

@@ -4,10 +4,10 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { toast } from 'svelte-sonner';
-	import * as util from 'rizom/util/file.js';
-	import { mimeTypeToIcon } from 'rizom/panel/util/upload.js';
-	import type { WithUpload } from 'rizom/types/util';
-	import type { CompiledCollection } from 'rizom/types/config';
+	import * as util from '$lib/util/file.js';
+	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
+	import type { WithUpload } from '$lib/types/util';
+	import type { CompiledCollection } from '$lib/types/config';
 
 	type Props = {
 		form: DocumentFormContext;

@@ -1,5 +1,5 @@
-import type { CompiledCollection, BrowserConfig, CompiledArea } from 'rizom/types/config';
-import type { DocPrototype, PrototypeSlug } from 'rizom/types/doc';
+import type { CompiledCollection, BrowserConfig, CompiledArea } from '$lib/types/config';
+import type { DocPrototype, PrototypeSlug } from '$lib/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BrowserConfig) {

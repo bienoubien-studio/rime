@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
-	import type { GenericDoc, FieldsType } from 'rizom/types';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
+	import type { GenericDoc, FieldsType } from '$lib/types';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import StatusDot from '../StatusDot.svelte';
-	import { getValueAtPath } from 'rizom/util/object';
+	import { getValueAtPath } from '$lib/util/object';
 
 	type Props = {
 		checked: boolean;

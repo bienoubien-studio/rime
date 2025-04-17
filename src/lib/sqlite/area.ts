@@ -1,10 +1,10 @@
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { generatePK } from './util.js';
 import { buildWithParam } from './with.js';
-import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc.js';
+import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { transformDataToSchema } from '../util/path.js';
-import type { DeepPartial } from 'rizom/types/util.js';
+import type { DeepPartial } from '$lib/types/util.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;

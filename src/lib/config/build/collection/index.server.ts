@@ -1,8 +1,8 @@
 import { panelUsersCollection } from '$lib/config/auth/usersConfig.server.js';
 import { usersFields } from '$lib/config/auth/usersFields.js';
-import type { BuiltCollection, Collection, PanelUsersConfig } from 'rizom/types/config.js';
-import type { CollectionHooks } from 'rizom/types/hooks.js';
-import { FormFieldBuilder } from 'rizom/fields/builders/index.js';
+import type { BuiltCollection, Collection, PanelUsersConfig } from '$lib/types/config.js';
+import type { CollectionHooks } from '$lib/types/hooks.js';
+import { FormFieldBuilder } from '$lib/fields/builders/index.js';
 
 const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<any>> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
@@ -29,14 +29,7 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 			beforeRead: [populateSizes, ...(hooks?.beforeRead || [])]
 		};
 	}
-	// if(collection.url){
-	// 	const urlHook = (await import('rizom/hooks/url.server.js')).populateDocumentURL;
-	// 	hooks = {
-	// 		...hooks,
-	// 		beforeUpdate: [urlHook, ...(hooks?.beforeUpdate || [])],
-	// 		beforeCreate: [urlHook, ...(hooks?.beforeCreate || [])],
-	// 	}
-	// }
+	 
 	return hooks;
 };
 

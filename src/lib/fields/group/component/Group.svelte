@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import { isFormField } from 'rizom/util/field.js';
-	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
-	import type { GroupField } from 'rizom/fields/group/index.js';
-	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte.js';
-	import type { WithoutBuilders } from 'rizom/types/util.js';
-	import type { GenericDoc } from 'rizom/types/doc.js';
+	import { isFormField } from '$lib/util/field.js';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
+	import type { GroupField } from '$lib/fields/group/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import type { WithoutBuilders } from '$lib/types/util.js';
+	import type { GenericDoc } from '$lib/types/doc.js';
 
 	type Props = {
 		path: string;

@@ -2,8 +2,8 @@ import { omit } from '../util/object.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { generatePK } from './util.js';
 import { toPascalCase } from '../util/string.js';
-import type { GenericBlock, PrototypeSlug } from 'rizom/types/doc.js';
-import type { GenericAdapterInterfaceArgs } from 'rizom/types/adapter.js';
+import type { GenericBlock, PrototypeSlug } from '$lib/types/doc.js';
+import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter.js';
 import { transformDataToSchema } from '../util/path.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {

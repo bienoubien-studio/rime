@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'fs';
-import { taskLogger } from 'rizom/util/logger/index.server.js';
+import { taskLogger } from '$lib/util/logger/index.server.js';
 import cache from '../cache/index.js';
 
 const write = (schema: string) => {

@@ -2,13 +2,13 @@
 	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { slugify } from '$lib/util/string.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { SlugField } from '../index';
-	import { Field } from 'rizom/panel/components/fields/index.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { getValueAtPath } from 'rizom/util/object.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
+	import { t__ } from '$lib/i18n/index.js';
+	import { getValueAtPath } from '$lib/util/object.js';
 	import { Hash } from '@lucide/svelte';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();

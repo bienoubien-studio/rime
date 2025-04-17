@@ -1,4 +1,4 @@
-import type { Field } from 'rizom/types/fields.js';
+import type { Field } from '$lib/types/fields.js';
 import { FieldBuilder } from '../builders/index.js';
 import Separator from './component/Separator.svelte';
 

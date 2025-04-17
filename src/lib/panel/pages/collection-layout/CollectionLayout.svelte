@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { setCollectionContext } from '$lib/panel/context/collection.svelte';
 	import { type Snippet } from 'svelte';
-	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
+	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import type { GenericDoc, PrototypeSlug } from '$lib/types/doc';
 
 	type Props = {
 		slug: PrototypeSlug;

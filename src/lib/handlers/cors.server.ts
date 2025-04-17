@@ -1,6 +1,6 @@
 import { error, type Handle } from '@sveltejs/kit';
-import { RizomError } from 'rizom/errors/index.js';
-import { logger } from 'rizom/util/logger/index.server.js';
+import { RizomError } from '$lib/errors/index.js';
+import { logger } from '$lib/util/logger/index.server.js';
 
 export const handleCORS: Handle = async ({ event, resolve }) => {
 	const { rizom } = event.locals;

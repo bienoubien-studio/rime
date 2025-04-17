@@ -4,7 +4,7 @@ export const DEFAULT_LOCALE = 'en';
 
 export type PanelLanguage = (typeof languages)[number];
 export type Namespace = (typeof namespaces)[number];
-export type Dictionaries = Record<Namespace, Record<string, string>>;
+export type Dictionaries = Record<string, Record<string, string>>;
 export type TranslationKey = `${Namespace}.${string}`;
 export type ModifiedKey = `${TranslationKey}|${'m' | 'f'}` | `${TranslationKey}|${'m' | 'f'}|p`;
 

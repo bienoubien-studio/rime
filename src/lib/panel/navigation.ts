@@ -1,6 +1,6 @@
-import type { User } from 'rizom/types/auth';
-import type { CompiledConfig } from 'rizom/types/config';
-import type { Dic } from 'rizom/types/util';
+import type { User } from '$lib/types/auth';
+import type { CompiledConfig } from '$lib/types/config';
+import type { Dic } from '$lib/types/util';
 
 interface Route {
 	title: string;

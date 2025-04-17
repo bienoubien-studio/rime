@@ -1,10 +1,10 @@
 import { error, type ServerLoad } from '@sveltejs/kit';
-import { handleError } from 'rizom/errors/handler.server';
-import { buildConfigMap } from 'rizom/operations/tasks/configMap/index.server';
-import { setDefaultValues } from 'rizom/operations/tasks/setDefaultValues';
+import { handleError } from '$lib/errors/handler.server';
+import { buildConfigMap } from '$lib/operations/tasks/configMap/index.server';
+import { setDefaultValues } from '$lib/operations/tasks/setDefaultValues';
 
-import type { CollectionSlug, GenericDoc } from 'rizom/types/doc.js';
-import { safe } from 'rizom/util/safe';
+import type { CollectionSlug, GenericDoc } from '$lib/types/doc.js';
+import { safe } from '$lib/util/safe';
 
 /////////////////////////////////////////////
 // Document Load

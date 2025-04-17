@@ -1,8 +1,8 @@
 import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../util/mime.js';
-import type { JsonFile } from 'rizom/types/upload';
+import type { JsonFile } from '$lib/types/upload';
 import { readFile } from 'fs/promises';
-import { fileSizeToString } from 'rizom/util/file.js';
-import { RizomError } from 'rizom/errors/index.js';
+import { fileSizeToString } from '$lib/util/file.js';
+import { RizomError } from '$lib/errors/index.js';
 
 export const jsonFileToFile = (jsonFile: JsonFile) => {
 	// Convert base64 to Blob

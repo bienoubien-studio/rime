@@ -1,9 +1,9 @@
 // See https://kit.svelte.dev/docs/types#app
 import type { Navigation } from '$lib/panel/navigation.ts';
 import type { Session } from 'better-auth';
-import type { Rizom } from 'rizom/types';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server';
-import type { User } from 'rizom/types/auth.js';
+import type { Rizom } from '$lib/types';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server';
+import type { User } from '$lib/types/auth.js';
 
 declare global {
 	//

@@ -1,7 +1,7 @@
-import type { GenericBlock } from 'rizom/types/doc.js';
-import type { Dic } from 'rizom/types/util.js';
+import type { GenericBlock } from '$lib/types/doc.js';
+import type { Dic } from '$lib/types/util.js';
 import type { ConfigMap } from '../configMap/types.js';
-import { getValueAtPath } from 'rizom/util/object.js';
+import { getValueAtPath } from '$lib/util/object.js';
 
 type ExtractBlocksArgs = {
 	data: Dic;

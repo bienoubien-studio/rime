@@ -1,9 +1,9 @@
 import deepmerge from 'deepmerge';
-import { isUploadConfig } from 'rizom/util/config.js';
-import { createBlankDocument } from 'rizom/util/doc.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { DeepPartial } from 'rizom/types/util';
+import { isUploadConfig } from '$lib/util/config.js';
+import { createBlankDocument } from '$lib/util/doc.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { DeepPartial } from '$lib/types/util';
 
 export const mergeWithBlankDocument = <T extends GenericDoc = GenericDoc>({
 	data,

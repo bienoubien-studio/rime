@@ -1,8 +1,8 @@
 import { RizomFormError } from '$lib/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import type { GenericDoc } from '$lib/types/doc.js';
 import { flatten, unflatten } from 'flat';
-import type { Dic } from 'rizom/types/util';
+import type { Dic } from '$lib/types/util';
 
 export const extractData = async (request: RequestEvent['request']) => {
 	let data;

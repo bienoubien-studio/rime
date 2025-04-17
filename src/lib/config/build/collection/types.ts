@@ -1,4 +1,4 @@
-import type { Collection } from 'rizom/types';
-import type { OmitPreservingDiscrimination } from 'rizom/types/util';
+import type { Collection } from '$lib/types';
+import type { OmitPreservingDiscrimination } from '$lib/types/util';
 
 export type CollectionWithoutSlug<S> = OmitPreservingDiscrimination<Collection<S>, 'slug'>;

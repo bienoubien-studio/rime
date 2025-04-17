@@ -1,11 +1,11 @@
 import { extractBlocks } from './extract.server.js';
 import { defineBlocksDiff } from './diff.server';
-import type { Dic } from 'rizom/types/util.js';
+import type { Dic } from '$lib/types/util.js';
 import type { ConfigMap } from '../configMap/types.js';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
-import { RizomError } from 'rizom/errors/index.js';
-import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
-import type { GenericBlock } from 'rizom/types/doc.js';
+import type { Adapter } from '$lib/sqlite/index.server.js';
+import { RizomError } from '$lib/errors/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
+import type { GenericBlock } from '$lib/types/doc.js';
 
 export const saveBlocks = async (args: {
 	configMap: ConfigMap;

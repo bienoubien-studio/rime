@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { GripVertical } from '@lucide/svelte';
-  import type { GenericDoc } from 'rizom/types';
+  import type { GenericDoc } from '$lib/types';
   import CollectionTreeNode from './CollectionTreeNode.svelte'
-	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import StatusDot from '../StatusDot.svelte';
 	import { countRows } from './util';
 

@@ -1,13 +1,13 @@
-import type { ImageSizesConfig } from 'rizom/types/config';
-import type { UploadDoc } from 'rizom/types';
+import type { ImageSizesConfig } from '$lib/types/config';
+import type { UploadDoc } from '$lib/types';
 import path from 'path';
 import { existsSync, writeFileSync } from 'fs';
-import { RizomError } from 'rizom/errors/index.js';
-import { pick } from 'rizom/util/object';
+import { RizomError } from '$lib/errors/index.js';
+import { pick } from '$lib/util/object';
 import sharp from 'sharp';
-import { toCamelCase } from 'rizom/util/string';
-import { normalizeFileName } from 'rizom/util/file';
-import type { Dic } from 'rizom/types/util';
+import { toCamelCase } from '$lib/util/string';
+import { normalizeFileName } from '$lib/util/file';
+import type { Dic } from '$lib/types/util';
 
 export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | false) => {
 	const { name: initialName, extension } = normalizeFileName(file.name);

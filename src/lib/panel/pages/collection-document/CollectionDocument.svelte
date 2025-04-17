@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Collection from 'rizom/panel/components/sections/collection/Collection.svelte';
-	import type { GenericDoc, PrototypeSlug } from 'rizom/types/doc';
-	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
-	import Document from 'rizom/panel/components/sections/document/Document.svelte';
-	import { PaneGroup, Pane, PaneResizer } from 'rizom/panel/components/ui/pane/index.js';
-	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
+	import Collection from '$lib/panel/components/sections/collection/Collection.svelte';
+	import type { GenericDoc, PrototypeSlug } from '$lib/types/doc';
+	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
+	import Document from '$lib/panel/components/sections/document/Document.svelte';
+	import { PaneGroup, Pane, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
+	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 
 	type Props = {
 		slug: PrototypeSlug;
@@ -30,7 +30,6 @@
 			<div class="rz-collection-container__list">
 				<Collection compact={true} {slug} />
 			</div>
-			
 		</Pane>
 		<PaneResizer />
 		<Pane minSize={30}>

@@ -2,17 +2,17 @@
 	import { onDestroy } from 'svelte';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Sortable from 'sortablejs';
-	import Doc from 'rizom/panel/components/sections/document/Document.svelte';
-	import UploadThumbCell from 'rizom/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
+	import Doc from '$lib/panel/components/sections/document/Document.svelte';
+	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import { createBlankDocument } from '$lib/util/doc.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import type { GenericDoc } from 'rizom/types/doc.js';
+	import { t__ } from '$lib/i18n/index.js';
+	import type { GenericDoc } from '$lib/types/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import './upload.css';
-	import CardResource from 'rizom/panel/components/ui/card-resource/card-resource.svelte'
+	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte'
 
 	const {
 		isFull,

@@ -2,16 +2,16 @@
 	import { X } from '@lucide/svelte';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
-	import Document from 'rizom/panel/components/sections/document/Document.svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Document from '$lib/panel/components/sections/document/Document.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import { createBlankDocument } from '$lib/util/doc.js';
 	import { dataError } from '$lib/panel/util/dataError.js';
 	import { dataFocused } from '$lib/panel/util/dataFocused.js';
-	import { useSortable } from 'rizom/panel/util/Sortable.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { useSortable } from '$lib/panel/util/Sortable.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
-	import type { GenericDoc } from 'rizom/types/doc.js';
+	import type { GenericDoc } from '$lib/types/doc.js';
 
 	const {
 		isFull,

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { t__ } from 'rizom/panel/i18n';
+	import { t__ } from '$lib/i18n';
 	import Button from '../../ui/button/button.svelte';
-	import { authClient } from 'rizom/panel/util/auth';
+	import { authClient } from '$lib/panel/util/auth';
 	import { toast } from 'svelte-sonner';
-	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
-	import { getUserContext } from 'rizom/panel/context/user.svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import { usersFields } from 'rizom/config/auth/usersFields';
-	import { text } from 'rizom/fields/text/index.js';
-	import validate from 'rizom/util/validate';
-	import { PANEL_USERS } from 'rizom/constant';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { getUserContext } from '$lib/panel/context/user.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { usersFields } from '$lib/config/auth/usersFields';
+	import { text } from '$lib/fields/text/index.js';
+	import validate from '$lib/util/validate';
+	import { PANEL_USERS } from '$lib/constant';
 
 	type Props = { operation: string; form: DocumentFormContext };
 	const { operation, form }: Props = $props();

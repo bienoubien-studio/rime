@@ -3,17 +3,17 @@
 	import UploadHeader from './upload-header/UploadHeader.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
-	import { setDocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
+	import { setDocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import type { GenericDoc } from 'rizom/types/doc';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import type { GenericDoc } from '$lib/types/doc';
 	import CurrentlyEdited from './CurrentlyEdited.svelte';
-	import { getUserContext } from 'rizom/panel/context/user.svelte';
+	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import AuthFooter from './AuthFooter.svelte';
 
 	type Props = {

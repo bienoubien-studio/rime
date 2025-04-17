@@ -1,4 +1,4 @@
-import type { Field, FormField } from 'rizom/types/fields.js';
+import type { Field, FormField } from '$lib/types/fields.js';
 import {
 	isBlocksField,
 	isFormField,
@@ -6,14 +6,14 @@ import {
 	isRelationField,
 	isTabsField,
 	isTreeFieldRaw
-} from 'rizom/util/field.js';
+} from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
-import type { LocaleConfig } from 'rizom/types/config.js';
+import type { LocaleConfig } from '$lib/types/config.js';
 import type { RelationFieldsMap } from './relations/definition.js';
-import { FormFieldBuilder, type FieldBuilder } from 'rizom/fields/builders/field.js';
-import { GroupFieldBuilder } from 'rizom/fields/group/index.js';
-import { TreeBuilder } from 'rizom/fields/tree/index.js';
+import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.js';
+import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { TreeBuilder } from '$lib/fields/tree/index.js';
 const p = toPascalCase;
 
 type Args = {

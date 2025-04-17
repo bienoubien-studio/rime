@@ -1,4 +1,4 @@
-import type { User } from 'rizom/types/auth';
+import type { User } from '$lib/types/auth';
 import { getContext, setContext } from 'svelte';
 
 function createUserStore(initial: User) {

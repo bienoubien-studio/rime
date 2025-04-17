@@ -1,5 +1,5 @@
-import type { FieldsType } from 'rizom/types/fields.js';
-import type { FieldPanelTableConfig } from 'rizom/types/panel';
+import type { FieldsType } from '$lib/types/fields.js';
+import type { FieldPanelTableConfig } from '$lib/types/panel';
 import type {
 	AnyFormField,
 	Field,
@@ -8,10 +8,10 @@ import type {
 	FieldValidationFunc,
 	FieldWidth,
 	FormField
-} from 'rizom/types/fields';
-import { toSnakeCase } from 'rizom/util/string.js';
+} from '$lib/types/fields';
+import { toSnakeCase } from '$lib/util/string.js';
 import { toCamelCase } from 'drizzle-orm/casing';
-import type { Dic, WithoutBuilders } from 'rizom/types/util';
+import type { Dic, WithoutBuilders } from '$lib/types/util';
 import type { Component } from 'svelte';
 import cloneDeep from 'clone-deep';
 

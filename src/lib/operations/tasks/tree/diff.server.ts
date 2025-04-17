@@ -1,6 +1,6 @@
-import type { TreeBlock } from 'rizom/types/doc';
-import type { WithRequired } from 'rizom/types/util';
-import { isObjectLiteral } from 'rizom/util/object';
+import type { TreeBlock } from '$lib/types/doc';
+import type { WithRequired } from '$lib/types/util';
+import { isObjectLiteral } from '$lib/util/object';
 
 export type TreeBlocksDiff = {
 	toAdd: WithRequired<TreeBlock, 'path'>[];

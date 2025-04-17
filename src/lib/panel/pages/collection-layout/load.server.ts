@@ -1,5 +1,5 @@
 import { type ServerLoad } from '@sveltejs/kit';
-import type { CollectionSlug } from 'rizom/types/doc.js';
+import type { CollectionSlug } from '$lib/types/doc.js';
 
 /////////////////////////////////////////////
 // Layout load

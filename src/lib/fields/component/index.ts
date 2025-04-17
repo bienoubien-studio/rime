@@ -1,9 +1,9 @@
-import type { Field } from 'rizom/types/fields.js';
+import type { Field } from '$lib/types/fields.js';
 import { FieldBuilder } from '../builders/index.js';
-import type { FieldAccess } from 'rizom/types/fields';
+import type { FieldAccess } from '$lib/types/fields';
 import type { Component } from 'svelte';
-import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte.js';
-import type { GenericDoc } from 'rizom/types/index.js';
+import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+import type { GenericDoc } from '$lib/types/index.js';
 
 type TypedComponent = Component<{
 	path: string;

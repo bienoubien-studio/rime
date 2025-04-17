@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Document from 'rizom/panel/components/sections/document/Document.svelte';
+	import Document from '$lib/panel/components/sections/document/Document.svelte';
 	import type { AreaProps } from './props.js';
-	import Unauthorized from 'rizom/panel/components/sections/unauthorized/Unauthorized.svelte';
-	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte.js';
+	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
+	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 
 	const { data }: AreaProps = $props();
 

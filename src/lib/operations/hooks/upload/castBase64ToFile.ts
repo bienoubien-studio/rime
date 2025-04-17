@@ -1,8 +1,8 @@
-import { RizomError } from 'rizom/errors/index.js';
-import { isFile } from 'rizom/util/file.js';
-import { jsonFileToFile } from 'rizom/upload/util/converter.js';
-import type { CollectionHookBeforeUpsert } from 'rizom/types/hooks.js';
-import type { UploadDoc } from 'rizom/types/doc.js';
+import { RizomError } from '$lib/errors/index.js';
+import { isFile } from '$lib/util/file.js';
+import { jsonFileToFile } from '$lib/upload/util/converter.js';
+import type { CollectionHookBeforeUpsert } from '$lib/types/hooks.js';
+import type { UploadDoc } from '$lib/types/doc.js';
 
 /**
  * Hook executed before save/update operations to convert base64 encoded files to File objects.

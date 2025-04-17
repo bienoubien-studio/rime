@@ -1,8 +1,8 @@
 <script lang="ts">
-	import SpinLoader from 'rizom/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import type { Collection } from 'rizom/types';
-	import type { WithUpload } from 'rizom/types/util';
+	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
+	import { t__ } from '$lib/i18n/index.js';
+	import type { Collection } from '$lib/types';
+	import type { WithUpload } from '$lib/types/util';
 	import { toast } from 'svelte-sonner';
 
 	import type { ChangeEventHandler } from 'svelte/elements';

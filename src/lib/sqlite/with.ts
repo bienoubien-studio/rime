@@ -1,6 +1,6 @@
 import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 import { rizom } from '$lib/index.js';
-import type { Dic } from 'rizom/types/util';
+import type { Dic } from '$lib/types/util';
 
 type BuildWithParamArgs = {
 	slug: string;

@@ -1,8 +1,8 @@
-import type { TreeBlock } from 'rizom/types/doc';
+import type { TreeBlock } from '$lib/types/doc';
 import cloneDeep from 'clone-deep';
-import type { Dic, WithRequired } from 'rizom/types/util';
+import type { Dic, WithRequired } from '$lib/types/util';
 import type { ConfigMap } from '../configMap/types';
-import { getValueAtPath } from 'rizom/util/object';
+import { getValueAtPath } from '$lib/util/object';
 
 type ExtractTreesArgs = {
 	data: Dic;

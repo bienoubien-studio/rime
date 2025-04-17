@@ -2,25 +2,25 @@ import {
 	buildCollection,
 	mergePanelUsersCollectionWithDefault
 } from './collection/index.server.js';
-import { access } from 'rizom/util/access/index.js';
+import { access } from '$lib/util/access/index.js';
 import type {
 	BuiltCollection,
 	BuiltConfig,
 	BuiltArea,
 	CompiledConfig,
 	Config
-} from 'rizom/types/config.js';
-import { RizomError } from 'rizom/errors/index.js';
-import type { Dic } from 'rizom/types/util.js';
+} from '$lib/types/config.js';
+import { RizomError } from '$lib/errors/index.js';
+import type { Dic } from '$lib/types/util.js';
 import { buildArea } from './area/index.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
-import { cache } from 'rizom/plugins/cache/index.js';
-import { mailer } from 'rizom/plugins/mailer/index.server.js';
-import { hasProp } from 'rizom/util/object.js';
+import { cache } from '$lib/plugins/cache/index.js';
+import { mailer } from '$lib/plugins/mailer/index.server.js';
+import { hasProp } from '$lib/util/object.js';
 import { BookType, SlidersVertical } from '@lucide/svelte';
-import { PANEL_USERS } from 'rizom/constant.js';
+import { PANEL_USERS } from '$lib/constant.js';
 
 const dev = process.env.NODE_ENV === 'development';
 

@@ -1,10 +1,10 @@
-import type { FieldBuilder } from 'rizom/fields/builders';
+import type { FieldBuilder } from '$lib/fields/builders';
 import type { AnyField, Field } from './fields';
-import type { TabsFieldRaw } from 'rizom/fields/tabs';
-import type { BlocksFieldRaw } from 'rizom/fields/blocks';
-import type { GroupFieldRaw } from 'rizom/fields/group';
+import type { TabsFieldRaw } from '$lib/fields/tabs';
+import type { BlocksFieldRaw } from '$lib/fields/blocks';
+import type { GroupFieldRaw } from '$lib/fields/group';
 import type { Collection } from './config';
-import type { ImageSizesConfig, RelationValue } from 'rizom/types';
+import type { ImageSizesConfig, RelationValue } from '$lib/types';
 
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;

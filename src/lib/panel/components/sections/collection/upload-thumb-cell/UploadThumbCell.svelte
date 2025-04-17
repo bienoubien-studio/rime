@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { FileText } from '@lucide/svelte';
-	import { mimeTypeToIcon } from 'rizom/panel/util/upload.js';
+	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
 
 	type Props = {
 		url?: string;

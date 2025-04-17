@@ -1,5 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { capitalize } from 'rizom/util/string.js';
+import { capitalize } from '$lib/util/string.js';
 import type { DashboardEntry } from './types';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {

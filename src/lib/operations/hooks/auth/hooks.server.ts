@@ -1,12 +1,12 @@
-import { RizomError } from 'rizom/errors';
-import type { GenericDoc } from 'rizom/types/doc.js';
+import { RizomError } from '$lib/errors';
+import type { GenericDoc } from '$lib/types/doc.js';
 import type {
 	CollectionHookAfterCreate,
 	CollectionHookAfterDelete,
 	CollectionHookBeforeCreate,
 	CollectionHookBeforeDelete,
 	CollectionHookBeforeUpdate
-} from 'rizom/types/hooks.js';
+} from '$lib/types/hooks.js';
 
 /////////////////////////////////////////////
 // Create a better-auth user before creation

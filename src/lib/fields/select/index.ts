@@ -1,7 +1,7 @@
-import type { FormField, Option } from 'rizom/types/index.js';
+import type { FormField, Option } from '$lib/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
 import Select from './component/Select.svelte';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 
 class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 	get component() {

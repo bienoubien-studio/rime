@@ -3,8 +3,8 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { onDestroy, onMount } from 'svelte';
 	import type { RichTextFeature } from '../../core/types.js';
-	import { capitalize } from 'rizom/util/string.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { t__ } from '$lib/i18n/index.js';
 
 	type Props = {
 		editor: Editor;

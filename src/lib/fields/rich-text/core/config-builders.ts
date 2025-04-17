@@ -1,8 +1,8 @@
 import type { EditorOptions } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
-import { t__ } from "rizom/panel/i18n";
+import { t__ } from "$lib/i18n";
 import Typography from '@tiptap/extension-typography';
-import type { MediaFeatureDefinition, PredefinedFeatureName, ResourceFeatureDefinition, RichTextEditorConfig, RichTextFeature } from "rizom/fields/rich-text/core/types";
+import type { MediaFeatureDefinition, PredefinedFeatureName, ResourceFeatureDefinition, RichTextEditorConfig, RichTextFeature } from "$lib/fields/rich-text/core/types";
 import { defaultFeatures, predefinedFeatures } from "./features";
 import ListItem from '@tiptap/extension-list-item'
 import Dropcursor from '@tiptap/extension-dropcursor'

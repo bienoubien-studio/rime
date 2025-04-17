@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { Dictionaries } from 'rizom/panel/i18n';
-	import i18n from 'rizom/panel/i18n';
+	import type { Dictionaries } from 'rizom/i18n';
+	import i18n from 'rizom/i18n';
 	import 'rizom/panel/style/index.css';
 
 	type Props = { children: Snippet; data: { translations: Dictionaries } };

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import * as Card from '$lib/panel/components/ui/card/index';
 	import { getContext } from 'svelte';
-	import type { GenericDoc } from 'rizom/types/doc';
+	import type { GenericDoc } from '$lib/types/doc';
 
 	type Props = { checked: boolean; doc: GenericDoc };
 	const { checked, doc }: Props = $props();

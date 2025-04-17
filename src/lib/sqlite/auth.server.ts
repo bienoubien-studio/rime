@@ -1,16 +1,16 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import validate from '../util/validate.js';
-import type { User } from 'rizom/types/auth.js';
-import type { CollectionSlug, PrototypeSlug } from 'rizom/types/doc.js';
+import type { User } from '$lib/types/auth.js';
+import type { CollectionSlug, PrototypeSlug } from '$lib/types/doc.js';
 import { betterAuth as initBetterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
-import { RizomError, RizomFormError } from 'rizom/errors/index.js';
+import { RizomError, RizomFormError } from '$lib/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import rizom from 'rizom/rizom.server.js';
-import type { Dic } from 'rizom/types/util.js';
-import { PANEL_USERS } from 'rizom/constant.js';
+import rizom from '$lib/rizom.server.js';
+import type { Dic } from '$lib/types/util.js';
+import { PANEL_USERS } from '$lib/constant.js';
 
 
 const dev = process.env.NODE_ENV === 'development';

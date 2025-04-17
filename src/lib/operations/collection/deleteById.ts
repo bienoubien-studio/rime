@@ -1,10 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import type { GenericDoc, CollectionSlug } from 'rizom/types/doc.js';
-import type { RegisterCollection } from 'rizom';
-import { RizomError } from 'rizom/errors';
+import type { Adapter } from '$lib/sqlite/index.server.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
+import type { GenericDoc, CollectionSlug } from '$lib/types/doc.js';
+import type { RegisterCollection } from '$lib';
+import { RizomError } from '$lib/errors';
 
 type DeleteArgs = {
 	id: string;

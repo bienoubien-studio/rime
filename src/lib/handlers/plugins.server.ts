@@ -1,6 +1,6 @@
 import { type Handle } from '@sveltejs/kit';
-import { cache } from 'rizom/plugins/cache/index.js';
-import type { Config } from 'rizom/types/index.js';
+import { cache } from '$lib/plugins/cache/index.js';
+import type { Config } from '$lib/types/index.js';
 
 type Args = { config: Config };
 

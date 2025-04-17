@@ -32,7 +32,7 @@ import {
 } from '@lucide/svelte';
 
 import { collection, area, defineConfig } from '$lib/index.js';
-import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizom/types/hooks';
+import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from '$lib/types/hooks';
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';

@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
 	import { getContext } from 'svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import DisplayMode from './DisplayMode.svelte';
 	import SearchInput from './SearchInput.svelte';
 	import SelectUI from './SelectUI.svelte';
 	import ButtonCreate from './ButtonCreate.svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import Cookies from 'js-cookie';
+	import { invalidateAll } from '$app/navigation';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();
@@ -14,7 +16,9 @@
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const showSelectUI = $derived(!collection.isNested() && !compact);
-	const showSearchInput = $derived((!collection.isNested() || collection.isNested() && compact) && !collection.selectMode);
+	const showSearchInput = $derived(
+		(!collection.isNested() || (collection.isNested() && compact)) && !collection.selectMode
+	);
 	const showDisplayMode = $derived(
 		(collection.isUpload && !compact) || (collection.config.nested && !compact)
 	);
@@ -26,22 +30,19 @@
 
 <div class:rz-collection-header--compact={compact} class="rz-collection-header">
 	<div class="rz-collection-header__left">
-			
 		{#if showDisplayMode}
 			<DisplayMode />
 			<div class="rz-collection-header__separator"></div>
 		{/if}
 
-
 		{#if showSelectUI}
 			<SelectUI />
 		{/if}
 
-		
 		{#if showSearchInput}
 			<SearchInput {compact} />
 		{/if}
-		
+
 		{#if showCompactCreateButton}
 			<ButtonCreate size="sm" />
 		{/if}
@@ -53,7 +54,12 @@
 				<CustomHeaderComponent />
 			{/each}
 			<ButtonCreate />
-			<LanguageSwitcher onLocalClick={() => console.error('set locale')} />
+			<LanguageSwitcher
+				onLocalClick={(code) => {
+					Cookies.set('Locale', code);
+					invalidateAll();
+				}}
+			/>
 		</div>
 	{/if}
 </div>
@@ -70,7 +76,7 @@
 		font-size: var(--rz-text-sm);
 	}
 
-	.rz-collection-header__separator{
+	.rz-collection-header__separator {
 		border-left: var(--rz-border);
 		height: 1rem;
 	}

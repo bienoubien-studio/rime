@@ -1,4 +1,4 @@
-import { RizomFormError } from 'rizom/errors/index.js';
+import { RizomFormError } from '$lib/errors/index.js';
 
 export const password = (value: unknown) => {
 	if (typeof value !== 'string') {

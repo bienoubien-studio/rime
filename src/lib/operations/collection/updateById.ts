@@ -5,17 +5,17 @@ import type {
 	GenericDoc,
 	CompiledCollection,
 	CollectionSlug
-} from 'rizom/types';
-import { RizomError } from 'rizom/errors/index.js';
-import { usersFields } from 'rizom/config/auth/usersFields.js';
+} from '$lib/types';
+import { RizomError } from '$lib/errors/index.js';
+import { usersFields } from '$lib/config/auth/usersFields.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { setDefaultValues } from '../tasks/setDefaultValues.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
-import type { RegisterCollection } from 'rizom';
-import type { DeepPartial } from 'rizom/types/util.js';
+import type { RegisterCollection } from '$lib';
+import type { DeepPartial } from '$lib/types/util.js';
 
 type Args<T> = {
 	id: string;

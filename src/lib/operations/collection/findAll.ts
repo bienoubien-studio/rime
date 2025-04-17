@@ -1,9 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CompiledCollection } from 'rizom/types/config.js';
-import type { CollectionSlug, GenericDoc, RawDoc } from 'rizom/types/doc.js';
-import type { RegisterCollection } from 'rizom';
-import { RizomError } from 'rizom/errors/index.js';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
+import type { CompiledCollection } from '$lib/types/config.js';
+import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/types/doc.js';
+import type { RegisterCollection } from '$lib';
+import { RizomError } from '$lib/errors/index.js';
+import type { Adapter } from '$lib/sqlite/index.server.js';
 import { transformDocument } from '../tasks/transformDocument.server.js';
 import type { LocalAPI } from '../localAPI/index.server.js';
 

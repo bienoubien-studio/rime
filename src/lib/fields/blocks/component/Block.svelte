@@ -3,10 +3,10 @@
 	import BlockActions from './BlockActions.svelte';
 	import { capitalize } from '$lib/util/string.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { useOnce } from 'rizom/panel/util/once.svelte.js';
-	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
+	import { useOnce } from '$lib/panel/util/once.svelte.js';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import type { BlocksFieldRaw } from '../index.ts';
-	import type { GenericBlock } from 'rizom/types/doc.js';
+	import type { GenericBlock } from '$lib/types/doc.js';
 	import { watch } from 'runed';
 
 	type Props = {

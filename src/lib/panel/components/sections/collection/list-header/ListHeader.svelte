@@ -2,8 +2,8 @@
 	import { capitalize } from '$lib/util/string.js';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { getContext } from 'svelte';
-	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import type { FormField } from 'rizom/types/fields';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
+	import type { FormField } from '$lib/types/fields';
 
 	type TableColumn = Partial<FormField> & { name: string; label?: string };
 	type Props = { compact: boolean };

@@ -5,7 +5,7 @@ import createAdapterRelationsInterface, { type AdapterRelationsInterface } from 
 import createAdapterAuthInterface from './auth.server.js';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
+import type { ConfigInterface } from '$lib/config/index.server.js';
 import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
 import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
 

@@ -2,10 +2,10 @@
 	import Cookies from 'js-cookie';
 	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import type { TabsFieldRaw } from '../index.js';
-	import RichText from 'rizom/fields/rich-text/component/RichText.svelte';
-	import type { RichTextField } from 'rizom/fields/types.js';
+	import RichText from '$lib/fields/rich-text/component/RichText.svelte';
+	import type { RichTextField } from '$lib/fields/types.js';
 
 	type Tab = TabsFieldRaw['tabs'][number];
 	type Props = { config: TabsFieldRaw; path: string; form: DocumentFormContext };

@@ -1,7 +1,7 @@
 import { flatten } from 'flat';
 import cache from '../../bin/generate/cache/index.js';
-import type { CompiledConfig } from 'rizom/types/config.js';
-import type { Dic } from 'rizom/types/util.js';
+import type { CompiledConfig } from '$lib/types/config.js';
+import type { Dic } from '$lib/types/util.js';
 
 const serializeValue = (value: any): string => {
 	if (value === null) return 'null';

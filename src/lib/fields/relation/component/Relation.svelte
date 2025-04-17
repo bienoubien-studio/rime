@@ -5,15 +5,15 @@
 	import Default from './default/Default.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { snapshot } from '$lib/util/state.js';
-	import { getValueAtPath } from 'rizom/util/object.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { getValueAtPath } from '$lib/util/object.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
-	import { getCollectionContext } from 'rizom/panel/context/collection.svelte.js';
+	import { getCollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import type { Relation } from '$lib/sqlite/relations.js';
-	import type { GenericDoc } from 'rizom/types/doc.js';
+	import type { GenericDoc } from '$lib/types/doc.js';
 	import type { RelationField } from '../index';
 	import type { RelationFieldItem } from './types.js';
 

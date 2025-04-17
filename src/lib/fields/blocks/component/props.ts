@@ -1,4 +1,4 @@
-import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
+import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 import type { BlocksFieldRaw } from '../index.js';
 
 export type BlocksProps = {

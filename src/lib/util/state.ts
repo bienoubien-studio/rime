@@ -1,4 +1,4 @@
-import type { Dic } from 'rizom/types/util';
+import type { Dic } from '$lib/types/util';
 
 export const snapshot = <T>(state: T) => {
 	function unProxy(object: any) {

@@ -1,7 +1,7 @@
-import type { FormField } from 'rizom/types/fields.js';
+import type { FormField } from '$lib/types/fields.js';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Checkbox from './component/Checkbox.svelte';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 
 class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
 	get component() {

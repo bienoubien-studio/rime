@@ -8,11 +8,11 @@ import {
 	templateHead,
 	templateImports
 } from './templates.js';
-import type { BuiltConfig } from 'rizom/types/config.js';
-import type { Dic } from 'rizom/types/util.js';
+import type { BuiltConfig } from '$lib/types/config.js';
+import type { Dic } from '$lib/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
-import { toCamelCase } from 'rizom/util/string.js';
+import { toCamelCase } from '$lib/util/string.js';
 
 
 export function generateSchemaString(config: BuiltConfig): string {

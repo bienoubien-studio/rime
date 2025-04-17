@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import Email from 'rizom/fields/email/component/Email.svelte';
+	import Email from '$lib/fields/email/component/Email.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
-	import { email } from 'rizom/config/auth/usersFields.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { email } from '$lib/config/auth/usersFields.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import { toast } from 'svelte-sonner';
-	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
-	import { authClient } from 'rizom/panel/util/auth';
-	import { PANEL_USERS } from 'rizom/constant';
+	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
+	import { authClient } from '$lib/panel/util/auth';
+	import { PANEL_USERS } from '$lib/constant';
 
 	const context = setFormContext({}, 'login');
 

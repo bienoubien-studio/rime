@@ -1,14 +1,14 @@
-import { RizomError, RizomFormError } from 'rizom/errors';
-import type { Adapter } from 'rizom/sqlite/index.server.js';
-import type { CompiledArea, CompiledCollection } from 'rizom/types/config.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { FormErrors } from 'rizom/types/panel.js';
-import type { User } from 'rizom/types/auth.js';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import { RizomError, RizomFormError } from '$lib/errors';
+import type { Adapter } from '$lib/sqlite/index.server.js';
+import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { FormErrors } from '$lib/types/panel.js';
+import type { User } from '$lib/types/auth.js';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { ConfigMap } from './configMap/types';
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object';
-import type { DeepPartial } from 'rizom/types/util';
-import { logger } from 'rizom/util/logger/index.server';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
+import type { DeepPartial } from '$lib/types/util';
+import { logger } from '$lib/util/logger/index.server';
 
 export const validateFields = async <T extends GenericDoc>(args: {
 	data: DeepPartial<T>;

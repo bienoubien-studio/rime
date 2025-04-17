@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Button from '../../ui/button/button.svelte';
 	import { ChevronLeft } from '@lucide/svelte';
 	import ButtonSave from './ButtonSave.svelte';

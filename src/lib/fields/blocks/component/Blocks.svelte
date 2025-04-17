@@ -2,16 +2,16 @@
 	import { capitalize } from '$lib/util/string.js';
 	import AddBlockButton from './AddBlockButton.svelte';
 	import Block from './Block.svelte';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
-	import type { GenericBlock } from 'rizom/types/doc.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+	import type { GenericBlock } from '$lib/types/doc.js';
 	import type { BlocksProps } from './props.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 
 	const { path, config, form }: BlocksProps = $props();
 

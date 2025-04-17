@@ -3,7 +3,7 @@ import path from 'path';
 import * as templates from './templates.js';
 import { intro, outro, text, log, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
-import { randomId } from 'rizom/util/random.js';
+import { randomId } from '$lib/util/random.js';
 import { fileURLToPath } from 'url';
 import { cp, mkdir } from 'fs/promises';
 

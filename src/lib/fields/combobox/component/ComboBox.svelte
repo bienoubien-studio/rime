@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { Field } from 'rizom/panel';
+	import { Field } from '$lib/panel';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Popover from '$lib/panel/components/ui/popover/index.js';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Check, ChevronsUpDown } from '@lucide/svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { t__ } from '$lib/i18n/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
-	import type { Option } from 'rizom/types/fields.js';
+	import type { Option } from '$lib/types/fields.js';
 
 	const { path, config, form }: ComboBoxProps = $props();
 

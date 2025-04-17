@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Link } from '@lucide/svelte';
-	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	
 	const { form }: { form: DocumentFormContext<any> }= $props();
 </script>

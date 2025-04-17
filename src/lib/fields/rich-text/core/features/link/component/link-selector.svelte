@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core';
-	import IconButton from 'rizom/fields/rich-text/component/bubble-menu/icon-button/icon-button.svelte';
+	import IconButton from '$lib/fields/rich-text/component/bubble-menu/icon-button/icon-button.svelte';
 	import { Check, Trash, Link2 } from '@lucide/svelte';
 	import { url as validateURL } from '$lib/util/validate.js';
 	import Input from '$lib/panel/components/ui/input/input.svelte';

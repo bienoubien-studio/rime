@@ -3,11 +3,11 @@ import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
-import { toPascalCase } from 'rizom/util/string.js';
+import { toPascalCase } from '$lib/util/string.js';
 import type { Component } from 'svelte';
-import type { FormField } from 'rizom/types/index.js';
-import type { Dic, WithoutBuilders } from 'rizom/types/util.js';
-import type { Field } from 'rizom/types/fields.js';
+import type { FormField } from '$lib/types/index.js';
+import type { Dic, WithoutBuilders } from '$lib/types/util.js';
+import type { Field } from '$lib/types/fields.js';
 import type { IconProps } from '@lucide/svelte';
 
 export const blocks = (name: string, blocks: BlockBuilder[]) => new BlocksBuilder(name, blocks);

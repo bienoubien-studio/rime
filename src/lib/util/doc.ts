@@ -1,8 +1,8 @@
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { CompiledCollection, CompiledArea } from '$lib/types/config.js';
 import type { Link } from '../fields/link/types.js';
-import type { Dic } from 'rizom/types/util.js';
-import { isUploadConfig } from 'rizom/util/config.js';
+import type { Dic } from '$lib/types/util.js';
+import { isUploadConfig } from '$lib/util/config.js';
 import { snapshot } from './state.js';
 import cloneDeep from 'clone-deep';
 

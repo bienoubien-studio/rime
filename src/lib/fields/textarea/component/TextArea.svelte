@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { Field } from 'rizom/panel/components/fields/index.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
-	import { dataError } from 'rizom/panel/util/dataError.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { dataError } from '$lib/panel/util/dataError.js';
 	import type { TextAreaFieldProps } from './props.js';
 
 	const { path, config, form }: TextAreaFieldProps = $props();

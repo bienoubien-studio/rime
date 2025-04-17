@@ -1,5 +1,5 @@
-import { compileFields } from 'rizom/fields/compile.js';
-import type { BuiltConfig, CompiledConfig } from 'rizom/types/config.js';
+import { compileFields } from '$lib/fields/compile.js';
+import type { BuiltConfig, CompiledConfig } from '$lib/types/config.js';
 
 export const compileConfig = (config: BuiltConfig): CompiledConfig => {
 	return {

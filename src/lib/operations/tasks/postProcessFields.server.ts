@@ -1,8 +1,8 @@
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object.js';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import type { ConfigMap } from './configMap/types.js';
-import type { User } from 'rizom/types/auth.js';
-import type { Dic } from 'rizom/types/util';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
+import type { User } from '$lib/types/auth.js';
+import type { Dic } from '$lib/types/util';
+import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 
 export const postprocessFields = async <T extends Dic>(args: {
 	document: T;

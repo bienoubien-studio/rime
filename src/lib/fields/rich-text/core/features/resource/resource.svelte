@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core';
-	import type { GenericDoc, UploadDoc } from 'rizom/types/doc.js';
+	import type { GenericDoc, UploadDoc } from '$lib/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { onMount } from 'svelte';
-	import { setAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
+	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import CardResource from 'rizom/panel/components/ui/card-resource/card-resource.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
 
 	type NodeAttributes = {
 		id: string | null;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Toaster } from 'rizom/panel/components/ui/sonner';
+	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import type { Snippet } from 'svelte';
 
 	type Props = {

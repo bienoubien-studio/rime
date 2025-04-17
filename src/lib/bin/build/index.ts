@@ -2,7 +2,7 @@
 import { spawnSync } from 'child_process';
 import { copyFileSync, cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { polkaServer } from './templates.js';
-import { taskLogger } from 'rizom/util/logger/index.server.js';
+import { taskLogger } from '$lib/util/logger/index.server.js';
 
 export const build = (args: { withDatabase?: boolean }) => {
 		// Delete app folder if it exists

@@ -1,4 +1,4 @@
-import type { GenericBlock } from 'rizom/types/doc.js';
+import type { GenericBlock } from '$lib/types/doc.js';
 
 type BlocksDiff = {
 	toAdd: GenericBlock[];

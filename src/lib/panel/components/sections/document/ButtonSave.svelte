@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { Save } from '@lucide/svelte';

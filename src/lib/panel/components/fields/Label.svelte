@@ -3,7 +3,7 @@
 	import { capitalize } from '$lib/util/string.js';
 	import { Label } from '../ui/label/index.js';
 	import type { Snippet } from 'svelte';
-	import type { AnyFormField } from 'rizom/types/fields';
+	import type { AnyFormField } from '$lib/types/fields';
 
 	type Props = { config?: AnyFormField; children?: Snippet };
 	const { config, children }: Props = $props();

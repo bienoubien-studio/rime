@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { LayoutGrid, List, TextQuote } from '@lucide/svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
-	import type { CollectionContext } from 'rizom/panel/context/collection.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 

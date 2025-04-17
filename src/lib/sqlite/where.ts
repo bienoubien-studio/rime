@@ -2,14 +2,14 @@ import { and, or, eq, getTableColumns, inArray } from 'drizzle-orm';
 import * as drizzleORM from 'drizzle-orm';
 import qs, { type ParsedQs } from 'qs';
 import { rizom } from '$lib/index.js';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
+import type { PrototypeSlug } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Dic } from '../types/util.js';
 import { RizomError } from '../errors/index.js';
 import { isObjectLiteral } from '../util/object.js';
 import type { OperationQuery } from '../types/index.js';
-import { logger } from 'rizom/util/logger/index.server.js';
-import { isRelationField } from 'rizom/util/field.js';
+import { logger } from '$lib/util/logger/index.server.js';
+import { isRelationField } from '$lib/util/field.js';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;

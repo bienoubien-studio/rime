@@ -1,9 +1,9 @@
-import type { GetRegisterType } from 'rizom';
-import type { FormField } from 'rizom/types';
+import type { GetRegisterType } from '$lib';
+import type { FormField } from '$lib/types';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
-import type { FieldHook } from 'rizom/types/fields';
-import validate from 'rizom/util/validate.js';
+import type { FieldHook } from '$lib/types/fields';
+import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
 
 // Before save populate ressource URL

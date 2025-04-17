@@ -1,15 +1,15 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import Email from 'rizom/fields/email/component/Email.svelte';
-	import Text from 'rizom/fields/text/component/Text.svelte';
+	import Email from '$lib/fields/email/component/Email.svelte';
+	import Text from '$lib/fields/text/component/Text.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
-	import type { FormErrors } from 'rizom/types';
-	import { email } from 'rizom/config/auth/usersFields.js';
-	import { text } from 'rizom/fields/text/index.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import type { FormErrors } from '$lib/types';
+	import { email } from '$lib/config/auth/usersFields.js';
+	import { text } from '$lib/fields/text/index.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import { toast } from 'svelte-sonner';
-	import AuthForm from 'rizom/panel/components/sections/auth/AuthForm.svelte';
+	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { KeyRound } from '@lucide/svelte';
 
 	type Props = {

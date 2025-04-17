@@ -1,6 +1,6 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
-import { RizomError } from 'rizom/errors/index.js';
-import type { PrototypeSlug } from 'rizom/types/doc.js';
+import { RizomError } from '$lib/errors/index.js';
+import type { PrototypeSlug } from '$lib/types/doc.js';
 
 const dev = process.env.NODE_ENV === 'development';
 

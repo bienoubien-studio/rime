@@ -1,6 +1,6 @@
 import { json, type Handle } from '@sveltejs/kit';
 import apiInit from '../api/init.js';
-import { logout } from 'rizom/panel/pages/logout/actions.server.js';
+import { logout } from '$lib/panel/pages/logout/actions.server.js';
 import buildNavigation from '$lib/panel/navigation.js';
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {

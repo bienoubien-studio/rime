@@ -1,9 +1,9 @@
 import type { FieldBuilder } from '../config/fields';
 import type { User } from './auth';
 import type { GenericDoc } from './doc';
-import type { GetRegisterType } from 'rizom';
+import type { GetRegisterType } from '$lib';
 import type { FieldPanelTableConfig } from './panel';
-import type { LocalAPI } from 'rizom/types/api';
+import type { LocalAPI } from '$lib/types/api';
 
 type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,

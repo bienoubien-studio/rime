@@ -1,6 +1,6 @@
 import dedent from 'dedent';
-import { PANEL_USERS } from 'rizom/constant';
-import { toSnakeCase } from 'rizom/util/string.js';
+import { PANEL_USERS } from '$lib/constant';
+import { toSnakeCase } from '$lib/util/string.js';
 const s = toSnakeCase;
 
 export const templateImports = `

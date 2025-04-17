@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { Eye } from '@lucide/svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
-	import PageHeader from 'rizom/panel/components/ui/page-header/PageHeader.svelte';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte';
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte.js';
-	import LanguageSwitcher from 'rizom/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
+	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
+	import { t__ } from '$lib/i18n/index.js';
 	import type { DashboardEntry } from './types.js';
+	import Cookies from 'js-cookie';
+	import { invalidateAll } from '$app/navigation';
 
 	type Props = { entries: DashboardEntry[] };
 	const { entries }: Props = $props();
@@ -29,7 +31,12 @@
 					<CustomHeaderComponent />
 				{/each}
 			</div>
-			<LanguageSwitcher />
+			<LanguageSwitcher
+			onLocalClick={(code) => {
+				Cookies.set('Locale', code);
+				invalidateAll();
+			}}
+		/>
 		</PageHeader>
 	{/if}
 

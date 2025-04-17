@@ -1,7 +1,7 @@
-import { cleanupStoredFiles } from 'rizom/upload/disk/delete.js';
-import type { CollectionHookBeforeDelete } from 'rizom/types/hooks.js';
-import type { WithUpload } from 'rizom/types/util.js';
-import type { CompiledCollection } from 'rizom/types/config.js';
+import { cleanupStoredFiles } from '$lib/upload/disk/delete.js';
+import type { CollectionHookBeforeDelete } from '$lib/types/hooks.js';
+import type { WithUpload } from '$lib/types/util.js';
+import type { CompiledCollection } from '$lib/types/config.js';
 
 /**
  * Hook executed before deleting a document to clean up associated files from storage.

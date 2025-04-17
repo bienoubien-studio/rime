@@ -8,8 +8,8 @@
 	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, FieldsType, FormField, AnyField } from 'rizom/types/fields.js';
-	import { getConfigContext } from 'rizom/panel/context/config.svelte.js';
+	import type { Field, FieldsType, FormField, AnyField } from '$lib/types/fields.js';
+	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 	import type { Component } from 'svelte';
 
 	type Props = {

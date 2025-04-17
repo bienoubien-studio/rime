@@ -2,7 +2,7 @@
 	import type { Editor } from '@tiptap/core';
 	import { Asterisk, Check, ChevronDown } from '@lucide/svelte';
 	import * as Popover from '$lib/panel/components/ui/popover/index.js';
-	import type { RichTextFeatureNode } from 'rizom/fields/rich-text/core/types.js';
+	import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types.js';
 	import { onMount, onDestroy } from 'svelte';
 	import './node-selector.css';
 

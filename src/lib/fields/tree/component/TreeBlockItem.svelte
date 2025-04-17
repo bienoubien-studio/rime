@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { GripVertical } from '@lucide/svelte';
-	import RenderFields from 'rizom/panel/components/fields/RenderFields.svelte';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import TreeBlockItem from './TreeBlockItem.svelte';
 	import type { TreeBlockProps } from './types.js';
 	import TreeBlockActions from './TreeBlockActions.svelte';
-	import type { TreeBlock } from 'rizom/types/doc.js';
-	import { snapshot } from 'rizom/util/state.js';
+	import type { TreeBlock } from '$lib/types/doc.js';
+	import { snapshot } from '$lib/util/state.js';
 	import { extractFieldName } from '../util.js';
-	import { useOnce } from 'rizom/panel/util/once.svelte.js';
+	import { useOnce } from '$lib/panel/util/once.svelte.js';
 
 	const { config, treeKey, treeState, form, sorting = false, path }: TreeBlockProps = $props();
 

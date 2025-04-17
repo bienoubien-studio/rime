@@ -1,17 +1,17 @@
-import { text } from 'rizom/fields/text/index.js';
-import { date } from 'rizom/fields/date/index.js';
-import { isUploadConfig } from 'rizom/util/config.js';
-import { capitalize, toCamelCase } from 'rizom/util/string.js';
-import { isRolesField } from 'rizom/util/field.js';
+import { text } from '$lib/fields/text/index.js';
+import { date } from '$lib/fields/date/index.js';
+import { isUploadConfig } from '$lib/util/config.js';
+import { capitalize, toCamelCase } from '$lib/util/string.js';
+import { isRolesField } from '$lib/util/field.js';
 import { findTitleField } from '../fields/findTitle.js';
 import { usersFields } from '../../auth/usersFields.js';
-import type { Collection, ImageSizesConfig } from 'rizom/types/config.js';
-import type { User } from 'rizom/types/auth.js';
+import type { Collection, ImageSizesConfig } from '$lib/types/config.js';
+import type { User } from '$lib/types/auth.js';
 import type { CollectionWithoutSlug } from './types';
-import { PANEL_USERS } from 'rizom/constant.js';
-import { relation } from 'rizom/fields/relation/index.js';
-import { number } from 'rizom/fields/number/index.js';
-import type { CollectionSlug } from 'rizom/types/index.js';
+import { PANEL_USERS } from '$lib/constant.js';
+import { relation } from '$lib/fields/relation/index.js';
+import { number } from '$lib/fields/number/index.js';
+import type { CollectionSlug } from '$lib/types/index.js';
 
 export function collection<S extends string>(
 	slug: S,

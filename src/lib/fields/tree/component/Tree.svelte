@@ -4,13 +4,13 @@
 	import { capitalize } from '$lib/util/string.js';
 	import AddItemButton from './AddItemButton.svelte';
 	import TreeBlockItem from './TreeBlockItem.svelte';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import Sortable from 'sortablejs';
 	import type { TreeProps } from './props.js';
-	import type { Dic } from 'rizom/types/util.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import type { Dic } from '$lib/types/util.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 
 	const { path, config, form }: TreeProps = $props();
 

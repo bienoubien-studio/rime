@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { SquarePlus } from '@lucide/svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
-	import { type CollectionContext } from 'rizom/panel/context/collection.svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
+	import { t__ } from '$lib/i18n/index.js';
 
 	type ButtonSize = 'sm' | 'default';
 	const { size = 'default' }: { size?: ButtonSize } = $props();

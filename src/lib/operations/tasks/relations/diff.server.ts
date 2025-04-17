@@ -1,4 +1,4 @@
-import type { BeforeOperationRelation, Relation } from 'rizom/sqlite/relations.js';
+import type { BeforeOperationRelation, Relation } from '$lib/sqlite/relations.js';
 
 export type RelationDiff = {
 	toAdd: BeforeOperationRelation[];

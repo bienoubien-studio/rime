@@ -4,7 +4,7 @@
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 	import NavItemButton from './NavItemButton.svelte';
-	import type { Route } from 'rizom/types/panel';
+	import type { Route } from '$lib/types/panel';
 	
 	type Props = {
 		isCollapsed: boolean;

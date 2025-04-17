@@ -1,8 +1,8 @@
-import { validate } from 'rizom/util/index.js';
-import { access } from 'rizom/util/access/index.js';
-import { email } from 'rizom/fields/email/index.js';
-import { select } from 'rizom/fields/select/index.js';
-import { text } from 'rizom/fields/text/index.js';
+import { validate } from '$lib/util/index.js';
+import { access } from '$lib/util/access/index.js';
+import { email } from '$lib/fields/email/index.js';
+import { select } from '$lib/fields/select/index.js';
+import { text } from '$lib/fields/text/index.js';
 
 const emailField = email('email')
 	.access({

@@ -1,8 +1,8 @@
-import type { FormField } from 'rizom/types/fields.js';
+import type { FormField } from '$lib/types/fields.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 import TextArea from './component/TextArea.svelte';
-import { capitalize } from 'rizom/util/string.js';
+import { capitalize } from '$lib/util/string.js';
 
 export const textarea = (name: string) => new TextAreaFieldBuilder(name, 'textarea');
 

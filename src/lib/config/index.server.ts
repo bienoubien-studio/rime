@@ -3,17 +3,17 @@ import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../util/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
-import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config.js';
-import type { AsyncReturnType, Dic } from 'rizom/types/util.js';
-import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from 'rizom/types/index.js';
-import type { AreaSlug } from 'rizom/types/doc.js';
+import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/types/config.js';
+import type { AsyncReturnType, Dic } from '$lib/types/util.js';
+import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from '$lib/types/index.js';
+import type { AreaSlug } from '$lib/types/doc.js';
 import {
 	isBlocksFieldRaw,
 	isFormField,
 	isGroupFieldRaw,
 	isTabsFieldRaw,
 	isTreeFieldRaw
-} from 'rizom/util/field.js';
+} from '$lib/util/field.js';
 
 const dev = process.env.NODE_ENV === 'development';
 

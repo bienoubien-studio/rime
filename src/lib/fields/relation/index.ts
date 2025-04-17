@@ -1,11 +1,11 @@
-import type { CollectionSlug, FormField, GenericDoc } from 'rizom/types';
-import type { GetRegisterType, RegisterCollection } from 'rizom';
+import type { CollectionSlug, FormField, GenericDoc } from '$lib/types';
+import type { GetRegisterType, RegisterCollection } from '$lib';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
-import type { FieldHook } from 'rizom/types/fields';
-import { capitalize } from 'rizom/util/string';
-import type { Relation } from 'rizom/sqlite/relations';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import type { FieldHook } from '$lib/types/fields';
+import { capitalize } from '$lib/util/string';
+import type { Relation } from '$lib/sqlite/relations';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 
 type RelationValue = string | Array<Relation | string>;
 

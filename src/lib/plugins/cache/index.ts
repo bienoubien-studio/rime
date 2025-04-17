@@ -1,8 +1,8 @@
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import { Cache } from './cache.server.js';
-import type { Plugin } from 'rizom/types';
+import type { Plugin } from '$lib/types';
 import { handler } from './handler.server.js';
-import { toHash } from 'rizom/util/string.js';
+import { toHash } from '$lib/util/string.js';
 import HeaderButton from './HeaderButton.svelte';
 
 export type CacheActions = {

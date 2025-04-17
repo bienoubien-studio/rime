@@ -1,8 +1,8 @@
-import type { FormField } from 'rizom/types';
+import type { FormField } from '$lib/types';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 import Text from './component/Text.svelte';
-import { capitalize } from 'rizom/util/string.js';
+import { capitalize } from '$lib/util/string.js';
 
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {

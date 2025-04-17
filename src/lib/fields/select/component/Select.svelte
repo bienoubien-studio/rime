@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { moveItem } from '$lib/util/array';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import { Field } from 'rizom/panel/components/fields/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { useSortable } from '$lib/panel/util/Sortable.js';
-	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
+	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props.js';
-	import { t__ } from 'rizom/panel/i18n/index.js';
-	import { root } from 'rizom/panel/components/fields/root.svelte.js';
+	import { t__ } from '$lib/i18n/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: SelectFieldProps = $props();
 

@@ -1,13 +1,13 @@
-import type { Field, FormField } from 'rizom/types/fields.js';
+import type { Field, FormField } from '$lib/types/fields.js';
 import {
 	isBlocksFieldRaw,
 	isFormField,
 	isTreeFieldRaw,
 	isTabsFieldRaw,
 	isGroupFieldRaw
-} from 'rizom/util/field.js';
-import type { GenericDoc } from 'rizom/types/doc.js';
-import type { DeepPartial, Dic } from 'rizom/types/util.js';
+} from '$lib/util/field.js';
+import type { GenericDoc } from '$lib/types/doc.js';
+import type { DeepPartial, Dic } from '$lib/types/util.js';
 import { buildTreeFieldsMap } from './buildTreeMap.server.js';
 import type { ConfigMap } from './types.js';
 

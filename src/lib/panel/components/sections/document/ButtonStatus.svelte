@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DocumentFormContext } from 'rizom/panel/context/documentForm.svelte';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Button from '../../ui/button/button.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import StatusDot from '../collection/StatusDot.svelte';

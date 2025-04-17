@@ -4,12 +4,12 @@
 	import { Button } from '../../ui/button';
 	import { X, PencilRuler, Eye } from '@lucide/svelte';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
-	import { t__ } from 'rizom/panel/i18n/index.js';
+	import { t__ } from '$lib/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
 	import ButtonStatus from './ButtonStatus.svelte';
-	import type { CompiledCollection, CompiledArea } from 'rizom/types/config';
+	import type { CompiledCollection, CompiledArea } from '$lib/types/config';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { getLocaleContext } from 'rizom/panel/context/locale.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import Cookies from 'js-cookie';
 
