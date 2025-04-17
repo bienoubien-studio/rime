@@ -9,6 +9,7 @@
 	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
 	import { t__ } from '$lib/i18n/index.js';
 	import type { WithoutBuilders } from '$lib/types/util.js';
+	import { env } from '$env/dynamic/public';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
@@ -20,6 +21,7 @@
 	const { class: className, config, addBlock, size }: Props = $props();
 
 	let open = $state(false);
+	let ariaSelected = $state('')
 
 	const add = (block: WithoutBuilders<BlocksFieldBlock>) => {
 		open = false;
@@ -50,39 +52,57 @@
 		<span>{t__('fields.add_block')}</span>
 	</Button>
 
-	<Command.Dialog bind:open>
+	<Command.Dialog onStateChange={state => { ariaSelected = state.value }} bind:open>
 		<Command.Input class="rz-add-block-button__search" placeholder={t__('common.search')} />
+		
+		<div class="rz-add-block-button__command-content">
+			<Command.List class="rz-add-block-button__list">
+				<Command.Empty>No results found.</Command.Empty>
+				<Command.Group heading="Component">
+					{#each config.blocks as block}
+						{@const BlockIcon = block.icon || ToyBrick}
+						<Command.Item
+							class="rz-add-block-button__item"
+							value={block.name}
+							onSelect={() => {
+								add(block);
+								open = false;
+							}}
+						>
+							<div class="rz-add-block-button__icon-wrapper">
+								<BlockIcon size={17} />
+							</div>
 
-		<Command.List class="rz-add-block-button__list">
-			<Command.Empty>No results found.</Command.Empty>
-			<Command.Group heading="Component">
-				{#each config.blocks as block}
-					{@const BlockIcon = block.icon || ToyBrick}
-					<Command.Item
-						class="rz-add-block-button__item"
-						value={block.name}
-						onSelect={() => {
-							add(block);
-							open = false;
-						}}
-					>
-						<div class="rz-add-block-button__icon-wrapper">
-							<BlockIcon size={17} />
-						</div>
-						<div class="rz-add-block-button__info">
-							<p class="rz-add-block-button__title">
-								{block.label || capitalize(block.name)}
-							</p>
-							{#if block.description}
-								<p class="rz-add-block-button__description">
-									{block.description}
+							<div class="rz-add-block-button__info">
+								<p class="rz-add-block-button__title">
+									{block.label || capitalize(block.name)}
 								</p>
-							{/if}
-						</div>
-					</Command.Item>
+								{#if block.description}
+									<p class="rz-add-block-button__description">
+										{block.description}
+									</p>
+								{/if}
+							</div>
+
+						</Command.Item>
+					{/each}
+				</Command.Group>
+			</Command.List>
+
+			<div class="rz-add-block-button__preview-wrap">
+				{#each config.blocks as block}
+					<div class:rz-add-block-button__preview--active={ariaSelected === block.name} class="rz-add-block-button__preview">
+						{#if block.image}
+							<img src="{env.PUBLIC_RIZOM_URL}{block.image}" alt="preview" />
+						{:else}
+							no preview
+						{/if}
+					</div>
 				{/each}
-			</Command.Group>
-		</Command.List>
+			</div>
+		</div>
+		
+
 	</Command.Dialog>
 {/if}
 
@@ -91,13 +111,19 @@
 		.rz-add-block-button {
 			gap: var(--rz-size-2);
 		}
-
+		
+		.rz-add-block-button__command-content{
+			display: grid;
+			position: relative;
+			grid-template-columns: 3fr 2fr;
+		}
 		.rz-add-block-button__search {
 			border-radius: var(--rz-radius-xl);
 		}
 
 		.rz-add-block-button__list {
 			padding: var(--rz-size-2);
+			border-right: var(--rz-border);
 		}
 
 		.rz-add-block-button__item {
@@ -107,6 +133,22 @@
 		}
 		.rz-add-block-button__item[aria-selected='true'] {
 			background-color: hsl(var(--rz-ground-5));
+		}
+
+		.rz-add-block-button__preview-wrap{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			img{
+				width: 200px;
+				height: auto;
+			}
+		}
+		.rz-add-block-button__preview.rz-add-block-button__preview--active{
+			display: block;
+		}
+		.rz-add-block-button__preview{
+			display: none;
 		}
 	}
 
@@ -126,7 +168,8 @@
 	}
 
 	.rz-add-block-button__description {
-		@mixin color foreground, 0.7;
+		color: hsl(var(--rz-ground-2));
+		margin-top: var(--rz-size-1);
 		font-size: var(--rz-text-sm);
 	}
 </style>

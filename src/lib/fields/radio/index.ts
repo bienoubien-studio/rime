@@ -1,7 +1,7 @@
-import type { FormField, Option } from '$lib/types/index.js';
+import type { FormField, Option } from 'rizom/types/index.js';
 import { SelectFieldBuilder } from '../builders/index.js';
 import Radio from './component/Radio.svelte';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 	get component() {
@@ -13,7 +13,7 @@ class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 		const suffix = templateUniqueRequired(this.field);
 		return `${camel}: text('${snake}')${suffix}`;
 	}
-
+	
 	toType() {
 		const optionsString = this.field.options.map(option => `'${option.value}'` ).join(' | ')
 		return `${this.field.name}${this.field.required ? '' : '?'}: ${optionsString}`;
