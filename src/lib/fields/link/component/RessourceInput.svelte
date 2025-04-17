@@ -3,6 +3,7 @@
 	import type { GenericDoc, PrototypeSlug } from 'rizom/types';
 	import { t__ } from 'rizom/panel/i18n/index.js';
 	import Tag from 'rizom/panel/components/ui/tag/tag.svelte';
+	import { getAPIProxyContext } from 'rizom/panel/context/api-proxy.svelte';
 
 	type Ressource = {
 		label: string;
@@ -21,42 +22,40 @@
 
 	let search = $state('');
 	let inputFocused = $state(false);
-	let ressources = $state<Ressource[]>([]);
+	let resources = $state<Ressource[]>([]);
 	let selected = $state<Ressource | null>();
 
-	const getRessources = async (slug: string) => {
-		const res = await fetch(`/api/${slug}`, {
-			method: 'GET',
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-		if (res.ok) {
-			const response = await res.json();
-			const docs = 'docs' in response ? response.docs : [response.doc];
-			const ressources: Ressource[] = docs.map((doc: GenericDoc) => ({
-				id: doc.id,
-				label: doc._prototype === 'collection' ? doc.title : doc._type,
-				_prototype: doc._prototype
-			}));
-			if (ressourceId) {
-				selected = ressources.find((ressource) => ressource.id === ressourceId);
-			}
-			return ressources;
-		}
-		return [];
-	};
+	const APIProxy = getAPIProxyContext('document');
+	let resource = $state<any>(null);
 
+	function convertDocToResource(doc: GenericDoc) {
+		return {
+			id: doc.id,
+			label: doc._prototype === 'collection' ? doc.title : doc._type,
+			_prototype: doc._prototype
+		};
+	}
+
+	// When reactiveStateValue changes, update the resource
 	$effect(() => {
-		getRessources(ressourceType)
-			.then((result) => {
-				ressources = result;
-			})
-			.then(() => {
-				if (ressources.length && ressources[0]._prototype === 'area') {
-					selected = ressources[0];
-				}
-			});
+		resource = APIProxy.getRessource(`/api/${ressourceType}`);
+	});
+
+	// Now this effect will run whenever resource.data changes
+	$effect(() => {
+		if (resource && resource.data) {
+			const docs = 'docs' in resource.data ? resource.data.docs : [resource.data.doc];
+			resources = docs.map(convertDocToResource);
+			if (!selected && ressourceId) {
+				selected = resources.find((ressource) => ressource.id === ressourceId);
+			}
+		}
+	});
+	
+	$effect(() => {
+		if (!selected && resources.length && resources[0]._prototype === 'area') {
+			selected = resources[0];
+		}
 	});
 
 	$effect(() => {
@@ -100,7 +99,7 @@
 				/>
 				{#if inputFocused}
 					<Command.List>
-						{#each ressources as ressource}
+						{#each resources as ressource}
 							<Command.Item
 								value={ressource.label}
 								onSelect={() => {
@@ -111,7 +110,7 @@
 								<span>{ressource.label}</span>
 							</Command.Item>
 						{/each}
-						{#if ressources.length === 0}
+						{#if resources.length === 0}
 							<Command.Empty>No {ressourceType}</Command.Empty>
 						{/if}
 					</Command.List>
