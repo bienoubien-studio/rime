@@ -19,6 +19,7 @@ import type { CompiledCollection, CompiledArea } from 'rizom/types/config.js';
 import { t__ } from '../i18n/index.js';
 import type { AreaSlug, TreeBlock } from 'rizom/types/doc.js';
 import { isObjectLiteral } from 'rizom/util/object.js';
+import { getAPIProxyContext } from './api-proxy.svelte.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
@@ -50,7 +51,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
-	
+
+	const apiProxy = getAPIProxyContext('document')
+
 	function initLevel() {
 		const last = key.split('_').pop() as string;
 		const isDigit = /[\d]+/.test(last);
@@ -453,10 +456,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				await invalidateAll();
 				intialDoc = doc;
 			} else {
+				toast.success(t__('common.doc_created'));
+				apiProxy.invalidateAll()
 				// Do not redirect on creation if it's a nested form
 				// the form will auto close and we are back to the parent
 				// Form so no need to assign the returned doc
-				toast.success(t__('common.doc_created'));
 				if (onNestedDocumentCreated) onNestedDocumentCreated(doc);
 			}
 		} else if (result.type === 'redirect') {
