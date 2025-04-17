@@ -154,11 +154,7 @@
 			justify-content: flex-start;
 			flex-direction: row;
 		}
-		.rz-block__title {
-			position: static;
-			justify-content: flex-start;
-			rotate: 0deg;
-		}
+		
 		:global(.rz-block-actions) {
 			position: absolute;
 			opacity: 0;
@@ -182,16 +178,10 @@
 		display: flex;
 		height: var(--rz-size-6);
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		gap: var(--rz-size-2);
 		padding: var(--rz-size-1);
 		font-size: var(--rz-text-xs);
-		position: absolute;
-		transform-origin: bottom left;
-		top: 0;
-		left: 0;
-		width: 100px;
-		rotate: 90deg;
 	}
 
 	.rz-block__heading {
