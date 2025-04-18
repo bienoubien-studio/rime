@@ -4,12 +4,12 @@ import Cell from './component/Cell.svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import cloneDeep from 'clone-deep';
-import { snapshot } from '$lib/util/state.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
-import type { FormField } from '$lib/types/index.js';
-import type { Dic } from '$lib/types/util.js';
-import type { Field } from '$lib/types/fields.js';
-import type { TreeBlock } from '$lib/types/doc.js';
+import { snapshot } from 'rizom/util/state.js';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import type { FormField } from 'rizom/types/index.js';
+import type { Dic } from 'rizom/types/util.js';
+import type { Field } from 'rizom/types/fields.js';
+import type { TreeBlock } from 'rizom/types/doc.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
@@ -69,8 +69,12 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 			throw new Error('localized() must be called after fields assignment')
 		}
 		this.field.localized = true
+		
 		// Add a locale prop in its fields
-		this.field.fields.push(text('locale').hidden())
+		const hasAlreadyLocale = !!this.field.fields.filter(field => field instanceof FormFieldBuilder).find(field => field.raw.name === 'locale')
+		if(!hasAlreadyLocale){
+			this.field.fields.push(text('locale').hidden())
+		}
 		// Set all descendant fields localized
 		this.field.fields = this.field.fields.map(field => {
 				// If it's a "position" or "path" field do not set as localized

@@ -45,7 +45,10 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		// Set all descendant fields localized
 		this.field.blocks = this.field.blocks.map((blockBuilder) => {
 			// Add a locale prop in each block
-			blockBuilder.block.fields.push(text('locale').hidden())
+			const hasAlreadyLocale = !!blockBuilder.block.fields.filter(field => field instanceof FormFieldBuilder).find(field => field.raw.name === 'locale')
+			if(!hasAlreadyLocale){
+				blockBuilder.block.fields.push(text('locale').hidden())
+			}
 			// In each block process fields
 			blockBuilder.block.fields = blockBuilder.block.fields.map(field => {
 				// If type / position / path field do not set as localized
