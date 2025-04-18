@@ -1,5 +1,4 @@
 import { existsSync, unlink, unlinkSync } from 'fs';
-import { toCamelCase } from '$lib/util/string.js';
 import path from 'path';
 import type { GenericDoc } from '$lib/types/doc';
 import type { CompiledCollection } from '$lib/types/config';

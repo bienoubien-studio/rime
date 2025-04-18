@@ -4,8 +4,6 @@ import { logger } from '$lib/util/logger/index.server.js';
 import { LocalAPI } from '../operations/localAPI/index.server.js';
 import type { Config } from '$lib/types/index.js';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { generateId } from 'better-auth';
-import { random } from '$lib/util/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 

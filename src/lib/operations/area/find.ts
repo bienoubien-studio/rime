@@ -5,7 +5,7 @@ import type { Adapter } from '$lib/sqlite/index.server.js';
 import { RizomError } from '$lib/errors/index.js';
 import { transformDocument } from '../tasks/transformDocument.server.js';
 import type { LocalAPI } from '../localAPI/index.server.js';
-import type { RegisterArea } from '$lib';
+import type { RegisterArea } from 'rizom';
 
 type FindArgs = {
 	locale?: string | undefined;

@@ -1,4 +1,4 @@
-import type { Field, FormField } from '$lib/types/fields.js';
+import type { Field } from '$lib/types/fields.js';
 import {
 	isBlocksFieldRaw,
 	isFormField,

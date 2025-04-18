@@ -32,11 +32,11 @@
 				{/each}
 			</div>
 			<LanguageSwitcher
-			onLocalClick={(code) => {
-				Cookies.set('Locale', code);
-				invalidateAll();
-			}}
-		/>
+				onLocalClick={(code) => {
+					Cookies.set('Locale', code);
+					invalidateAll();
+				}}
+			/>
 		</PageHeader>
 	{/if}
 

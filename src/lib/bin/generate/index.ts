@@ -44,7 +44,7 @@ export const generate = async (force?: boolean) => {
 		try {
 			// Use Vite's SSR capabilities to load the module
 			logger.info('Loading config from:', configPathJS);
-			// import { buildConfig } from '$lib/config/build/index.js';
+			// import { buildConfig } from 'rizom/config/build/index.js';
 
 			const buildModule = await vite.ssrLoadModule('rizom/config/build/index.js');
 			const configModule = await vite.ssrLoadModule(configPathJS);

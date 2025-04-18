@@ -20,9 +20,9 @@ import type {
 	TabsField,
 	TextField,
 	ToggleField
-} from '$lib/fields/types';
-import type { Dic } from '$lib/types/util.js';
-import type { AnyField, FormField, Field } from '$lib/types/fields.js';
+} from 'rizom/fields/types';
+import type { Dic } from 'rizom/types/util.js';
+import type { FormField, Field } from '$lib/types/fields.js';
 import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import type { GroupFieldRaw } from '$lib/fields/group/index.js';
 import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';

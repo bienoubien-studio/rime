@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/errors';
+import { RizomError } from '$lib/errors/index.js';
 import type { GenericDoc } from '$lib/types/doc.js';
 import type {
 	CollectionHookAfterCreate,

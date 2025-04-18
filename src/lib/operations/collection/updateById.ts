@@ -14,7 +14,7 @@ import { setDefaultValues } from '../tasks/setDefaultValues.js';
 import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
-import type { RegisterCollection } from '$lib';
+import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from '$lib/types/util.js';
 
 type Args<T> = {

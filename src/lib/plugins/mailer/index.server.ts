@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import type { Plugin } from '$lib/plugins/index.js';
 import type { SendMailArgs, SMTPConfig } from './types';
-import { RizomError } from '$lib/errors';
+import { RizomError } from '$lib/errors/index.js';
 
 export const mailer: Plugin<SMTPConfig> = (smtpConfig: SMTPConfig) => {
 	const { password, ...restAuth } = smtpConfig.auth;

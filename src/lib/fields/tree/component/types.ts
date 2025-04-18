@@ -1,5 +1,5 @@
 import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-import type { TreeFieldRaw } from '..';
+import type { TreeFieldRaw } from '../index.js';
 import type { TreeBlock } from '$lib/types/doc';
 import type { Dic } from '$lib/types/util';
 

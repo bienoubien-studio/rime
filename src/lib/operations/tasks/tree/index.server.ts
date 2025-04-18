@@ -5,7 +5,7 @@ import { defineTreeBlocksDiff } from './diff.server';
 import type { Adapter, CompiledArea, CompiledCollection } from '$lib/types';
 import type { ConfigMap } from '../configMap/types';
 
-import { RizomError } from '$lib/errors';
+import { RizomError } from '$lib/errors/index.js';
 
 export const saveTreeBlocks = async (args: {
 	configMap: ConfigMap;

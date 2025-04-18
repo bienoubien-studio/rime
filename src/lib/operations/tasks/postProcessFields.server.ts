@@ -1,4 +1,4 @@
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from 'rizom/util/object.js';
 import type { ConfigMap } from './configMap/types.js';
 import type { User } from '$lib/types/auth.js';
 import type { Dic } from '$lib/types/util';

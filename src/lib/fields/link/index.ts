@@ -1,8 +1,7 @@
-import type { GetRegisterType } from '$lib';
-import type { FormField } from '$lib/types';
+import type { GetRegisterType } from 'rizom';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
-import type { FieldHook } from '$lib/types/fields';
+import type { FieldHook, FormField } from '$lib/types/fields.js';
 import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
 

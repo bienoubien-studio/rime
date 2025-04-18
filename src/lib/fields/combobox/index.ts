@@ -1,6 +1,6 @@
-import type { FormField, Option } from '$lib/types/index.js';
+import type { FormField, Option } from '$lib/types/fields.js';
 import { SelectFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates';
+import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
 import Combobox from './component/ComboBox.svelte';
 
 class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {

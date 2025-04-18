@@ -5,7 +5,7 @@ import type { AreaSlug, CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
 import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './util.js';
-import type { BaseDoc, GetRegisterType, RegisterArea } from '$lib';
+import type { BaseDoc, GetRegisterType, RegisterArea } from 'rizom';
 import type { FieldBuilder } from '$lib/fields/builders/field.js';
 import type { FieldsComponents } from './panel.js';
 import type { PanelLanguage } from '$lib/i18n/index.js';

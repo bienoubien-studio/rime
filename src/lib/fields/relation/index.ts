@@ -1,8 +1,8 @@
-import type { CollectionSlug, FormField, GenericDoc } from '$lib/types';
-import type { GetRegisterType, RegisterCollection } from '$lib';
+import type { CollectionSlug, GenericDoc } from '$lib/types/doc.js';
+import type { GetRegisterType, RegisterCollection } from 'rizom';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
-import type { FieldHook } from '$lib/types/fields';
+import type { FieldHook, FormField } from '$lib/types/fields';
 import { capitalize } from '$lib/util/string';
 import type { Relation } from '$lib/sqlite/relations';
 import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';

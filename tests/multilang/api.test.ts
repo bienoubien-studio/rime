@@ -1,7 +1,7 @@
 import test, { expect } from '@playwright/test';
-import { filePathToBase64 } from '$lib/upload/util/converter.js';
+import { filePathToBase64 } from 'rizom/upload/util/converter.js';
 import path from 'path';
-import { PANEL_USERS } from '$lib/constant';
+import { PANEL_USERS } from 'rizom/constant';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
 

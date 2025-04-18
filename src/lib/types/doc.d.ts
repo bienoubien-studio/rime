@@ -1,7 +1,7 @@
-import type { RegisterCollection } from '$lib';
-import type { GetRegisterType } from '$lib';
+import type { RegisterCollection } from 'rizom';
+import type { GetRegisterType } from 'rizom';
 import type { Dic } from './util.js';
-import type { RegisterArea } from '$lib';
+import type { RegisterArea } from 'rizom';
 
 export type DocPrototype = 'area' | 'collection';
 

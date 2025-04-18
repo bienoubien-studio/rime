@@ -1,4 +1,4 @@
-import { defineConfig } from '$lib';
+import { defineConfig } from 'rizom';
 
 export default defineConfig({
   database: 'empty.sqlite',

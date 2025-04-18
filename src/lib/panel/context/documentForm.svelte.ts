@@ -13,13 +13,13 @@ import { getValueAtPath, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
-import type { GenericBlock, GenericDoc, AnyFormField } from '$lib/types';
+import type { AnyFormField } from '$lib/types/fields.js';
 import type { Dic } from '$lib/types/util';
 import type { CompiledCollection, CompiledArea } from '$lib/types/config.js';
-import { t__ } from '../../i18n/index.js';
-import type { AreaSlug, TreeBlock } from '$lib/types/doc.js';
+import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
+import { t__ } from '../../i18n/index.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,

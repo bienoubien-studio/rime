@@ -13,7 +13,7 @@ import type { Adapter } from '$lib/sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/types/config.js';
 import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/types/doc.js';
-import type { RegisterCollection } from '$lib';
+import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from '$lib/types/util.js';
 
 type Args<T> = {

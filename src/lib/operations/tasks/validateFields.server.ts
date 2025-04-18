@@ -1,5 +1,4 @@
-import { RizomError, RizomFormError } from '$lib/errors';
-import type { Adapter } from '$lib/sqlite/index.server.js';
+import { RizomFormError } from '$lib/errors/index.js';
 import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
 import type { GenericDoc } from '$lib/types/doc.js';
 import type { FormErrors } from '$lib/types/panel.js';

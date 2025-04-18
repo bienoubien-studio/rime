@@ -5,13 +5,13 @@ import {
 	isTabsFieldRaw,
 	isTreeFieldRaw
 } from '../util/field.js';
-import { isAuthConfig } from '$lib/util/config.js';
-import cache from '$lib/bin/generate/cache/index.js';
-import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/types/config.js';
-import type { PrototypeSlug } from '$lib/types/doc.js';
-import type { FormField } from '$lib/types/fields.js';
-import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-import { PANEL_USERS } from '$lib/constant.js';
+import { isAuthConfig } from 'rizom/util/config.js';
+import cache from 'rizom/bin/generate/cache/index.js';
+import type { CompiledCollection, CompiledArea, CompiledConfig } from 'rizom/types/config.js';
+import type { PrototypeSlug } from 'rizom/types/doc.js';
+import type { FormField } from 'rizom/types/fields.js';
+import type { BlocksFieldRaw } from 'rizom/fields/blocks/index.js';
+import { PANEL_USERS } from 'rizom/constant.js';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
@@ -73,9 +73,9 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		if (!hasRolesField) errors.push(`Field roles is missing in collection ${config.slug}`);
 		if (!hasEmailField) errors.push(`Field email is missing in collection ${config.slug}`);
 	}
-
+	
 	const validateBlockField = (fields: FormField[], blockType: string) => {
-		const reserved = ['path', 'type', 'ownerId', 'position'];
+		const reserved = ['path', 'type', 'ownerId', 'position', 'locale'];
 		for (const key of reserved) {
 			if (fields.map((f) => f.name).filter((name) => name === key).length > 1) {
 				errors.push(`${key} is a reserved field in blocks (block ${blockType})`);

@@ -1,5 +1,5 @@
 import { getExtensionFromMimeType, getMimeTypeFromExtension } from '../util/mime.js';
-import type { JsonFile } from '$lib/types/upload';
+import type { JsonFile } from '$lib/types/upload.js';
 import { readFile } from 'fs/promises';
 import { fileSizeToString } from '$lib/util/file.js';
 import { RizomError } from '$lib/errors/index.js';

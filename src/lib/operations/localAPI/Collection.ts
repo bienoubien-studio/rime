@@ -14,7 +14,7 @@ import type { CompiledCollection } from '../../types/config.js';
 import type { FormField } from '../../types/fields.js';
 import type { OperationQuery } from '$lib/types/api.js';
 import { RizomError } from '$lib/errors/index.js';
-import type { RegisterCollection } from '$lib';
+import type { RegisterCollection } from 'rizom';
 import type { Adapter } from '$lib/sqlite/index.server.js';
 import type { LocalAPI } from './index.server.js';
 import type { DeepPartial } from '../../types/util.js';
