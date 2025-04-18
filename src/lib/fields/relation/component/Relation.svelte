@@ -43,7 +43,7 @@
 	const nothingToSelect = $derived(initialItems.length === 0);
 
 	let isFull = $derived.by(() => {
-		if(config.many){
+		if(!config.many){
 			if(selectedItems.length === 1) return true
 		}else{
 			if(availableItems.length === 0 && selectedItems.length > 0){
