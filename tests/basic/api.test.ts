@@ -168,6 +168,86 @@ test('Should return 1 page', async ({ request }) => {
 });
 
 //////////////////////////////////////////////
+// Offset / Limit
+//////////////////////////////////////////////
+
+test('Should get correct offset / limit', async ({ request }) => {
+	const headers = {
+		Authorization: `Bearer ${superAdminToken}`
+	}
+
+	// Delete home	
+	await request.delete(`${API_BASE_URL}/pages/${homeId}`, { headers });
+
+	// Create 100 pages 
+	for(let i = 1; i < 100; i++){
+		await request.post(`${API_BASE_URL}/pages`, {
+			headers,
+			data: {
+				attributes: {
+					title: 'Page ' + i,
+					slug: 'page-' + i,
+				}
+			}
+		});
+	}
+	
+	// Check findAll
+	for(let i = 1; i < 10; i++){
+		const pagination = i
+		const offset = (pagination - 1) * 10
+		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=createdAt`).then((response) => {
+			return response.json();
+		});
+		expect(response.docs).toBeDefined();
+		expect(response.docs.length).toBe(10);
+		expect(response.docs.at(0).title).toBe('Page ' + (offset + 1));
+		expect(response.docs.at(9).title).toBe('Page ' + (offset + 10));
+	}
+
+	// Create 100 other pages 
+	for(let i = 1; i < 100; i++){
+		await request.post(`${API_BASE_URL}/pages`, {
+			headers,
+			data: {
+				attributes: {
+					title: 'Other ' + i,
+					slug: 'other-' + i,
+				}
+			}
+		});
+	}
+
+	// Check with query
+	for(let i = 1; i < 10; i++){
+		const pagination = i
+		const offset = (pagination - 1) * 10
+		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`).then((response) => {
+			return response.json();
+		});
+		expect(response.docs).toBeDefined();
+		expect(response.docs.length).toBe(10);
+		expect(response.docs.at(0).title).toBe('Other ' + (offset + 1));
+		expect(response.docs.at(9).title).toBe('Other ' + (offset + 10));
+	}
+
+	// Re-create home
+	const response = await request.post(`${API_BASE_URL}/pages`, {
+		headers,
+		data: {
+			attributes: {
+				title: 'Home',
+				slug: 'home'
+			}
+		}
+	});
+
+	const { doc } = await response.json();
+	homeId = doc.id;
+
+});
+
+//////////////////////////////////////////////
 // Upload Collection
 //////////////////////////////////////////////
 

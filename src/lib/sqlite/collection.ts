@@ -19,16 +19,17 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	//////////////////////////////////////////////
 	// Find All documents in a collection
 	//////////////////////////////////////////////
-	const findAll: FindAll = async ({ slug, sort, limit, locale }) => {
+	const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
 		const withParam = buildWithParam({ slug, locale });
 		const orderBy = buildOrderByParam({ tables, slug, by: sort });
 		// @ts-expect-error todo
 		const rawDocs = await db.query[slug].findMany({
 			with: withParam,
 			limit: limit || undefined,
+			offset: offset || undefined,
 			orderBy
 		});
-
+		
 		return new Promise((resolve) => resolve(rawDocs));
 	};
 
@@ -170,15 +171,16 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	//////////////////////////////////////////////
 	// Query documents with a qsQuery
 	//////////////////////////////////////////////
-	const query: QueryDocuments = async ({ slug, query, sort, limit, locale }) => {
+	const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
 		const params: Dic = {
 			with: buildWithParam({ slug, locale }),
 			where: buildWhereParam({ query, slug, locale, db }),
 			orderBy: sort ? buildOrderByParam({ tables, slug, by: sort }) : undefined,
-			limit: limit || undefined
+			limit: limit || undefined,
+			offset: offset || undefined
 		};
 
-		// Remove undefined properties, why ?
+		// Remove undefined properties
 		Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
 		// @ts-expect-error todo
@@ -209,6 +211,7 @@ type FindAll = (args: {
 	slug: PrototypeSlug;
 	sort?: string;
 	limit?: number;
+	offset?: number;
 	locale?: string;
 }) => Promise<RawDoc[]>;
 
@@ -217,6 +220,7 @@ type QueryDocuments = (args: {
 	query: OperationQuery;
 	sort?: string;
 	limit?: number;
+	offset?: number;
 	locale?: string;
 }) => Promise<RawDoc[]>;
 

@@ -16,10 +16,11 @@ type Args = {
 	sort?: string;
 	depth?: number;
 	limit?: number;
+	offset?: number;
 };
 
 export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> => {
-	const { config, event, locale, adapter, sort, limit, api, depth } = args;
+	const { config, event, locale, adapter, sort, limit, offset, api, depth } = args;
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
@@ -30,6 +31,7 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 		slug: config.slug,
 		sort,
 		limit,
+		offset,
 		locale
 	});
 

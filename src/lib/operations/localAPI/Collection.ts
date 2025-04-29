@@ -79,7 +79,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	find({ query, locale, sort = '-createdAt', depth = 0, limit }: FindArgs): Promise<Doc[]> {
+	find({ query, locale, sort = '-createdAt', depth = 0, limit, offset }: FindArgs): Promise<Doc[]> {
 		
 		this.#api.preventOperationLoop()
 
@@ -92,7 +92,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			api: this.#api,
 			sort,
 			depth,
-			limit
+			limit,
+			offset
 		};
 
 		if (this.#event.locals.cacheEnabled) {
@@ -103,6 +104,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				sort,
 				depth,
 				limit,
+				offset,
 				locale,
 				query
 			);
@@ -112,7 +114,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
-	findAll({ locale, sort = '-createdAt', depth = 0, limit }: FindAllArgs = {}): Promise<Doc[]> {
+	findAll({ locale, sort = '-createdAt', depth = 0, limit, offset }: FindAllArgs = {}): Promise<Doc[]> {
 		
 		this.#api.preventOperationLoop()
 
@@ -124,7 +126,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			api: this.#api,
 			sort,
 			depth,
-			limit
+			limit,
+			offset,
 		};
 
 		if (this.#event.locals.cacheEnabled) {
@@ -135,6 +138,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				sort,
 				depth,
 				limit,
+				offset,
 				locale
 			);
 			return this.#event.locals.rizom.plugins.cache.get(key, () => findAll<Doc>(params));
@@ -218,6 +222,7 @@ type FindArgs = {
 	sort?: string;
 	depth?: number;
 	limit?: number;
+	offset?: number;
 };
 
 type FindAllArgs = {
@@ -225,6 +230,7 @@ type FindAllArgs = {
 	sort?: string;
 	depth?: number;
 	limit?: number;
+	offset?: number;
 };
 
 type FindByIdArgs = {

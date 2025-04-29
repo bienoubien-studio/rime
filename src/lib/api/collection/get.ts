@@ -22,6 +22,7 @@ export default function (slug: CollectionSlug) {
 				sort: params.get('sort') || '-createdAt',
 				depth: params.get('depth') ? parseInt(params.get('depth')!) : 0,
 				limit: params.get('limit') ? parseInt(params.get('limit')!) : undefined,
+				offset: params.get('offset') ? parseInt(params.get('offset')!) : undefined,
 				query: qs.parse(event.url.search.substring(1))
 			};
 			apiMethod = 'find';
@@ -31,10 +32,11 @@ export default function (slug: CollectionSlug) {
 				sort: params.get('sort') || '-createdAt',
 				depth: params.get('depth') ? parseInt(params.get('depth')!) : 0,
 				limit: params.get('limit') ? parseInt(params.get('limit')!) : undefined,
+				offset: params.get('offset') ? parseInt(params.get('offset')!) : undefined,
 			};
 			apiMethod = 'findAll';
 		}
-
+		
 		// @ts-ignore params match function signature
 		const [error, docs] = await safe(api.collection(slug)[apiMethod](apiParams));
 		if (error) {
