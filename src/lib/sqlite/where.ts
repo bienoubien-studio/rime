@@ -57,7 +57,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			return false;
 		}
 
-		const fn = operatorFn(operator);
+		const fn = operators[operator];
 		const value = formatValue({ operator, value: rawValue });
 
 		// Convert dot notation to double underscore
@@ -127,33 +127,26 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			: false;
 };
 
-const isOperator = (str: string) =>
-	['equals', 'in_array', 'not_in_array', 'not_equals', 'like', 'ilike', 'not_like'].includes(str);
-
-const operatorFn = (operator: string): any => {
-	const operators: Record<string, any> = {
-		equals: drizzleORM.eq,
-		not_equals: drizzleORM.ne,
-		in_array: drizzleORM.inArray,
-		like: drizzleORM.like,
-		ilike: drizzleORM.ilike,
-		between: drizzleORM.between,
-		not_between: drizzleORM.notBetween,
-		not_like: drizzleORM.notLike,
-		not_in_array: drizzleORM.notInArray,
-		is_not_null: drizzleORM.isNotNull,
-		is_null: drizzleORM.isNull,
-		less_than_or_equals: drizzleORM.lte,
-		less_than: drizzleORM.lt,
-		greater_than_or_equals: drizzleORM.gte,
-		greater_than: drizzleORM.gt,
-	};
-	if( operator in operators){
-		return operators[operator];
-	}else{
-		throw new RizomError(RizomError.OPERATION_ERROR, operator + 'not supported')
-	}
+const operators: Record<string, any> = {
+	equals: drizzleORM.eq,
+	not_equals: drizzleORM.ne,
+	in_array: drizzleORM.inArray,
+	like: drizzleORM.like,
+	ilike: drizzleORM.ilike,
+	between: drizzleORM.between,
+	not_between: drizzleORM.notBetween,
+	not_like: drizzleORM.notLike,
+	not_in_array: drizzleORM.notInArray,
+	is_not_null: drizzleORM.isNotNull,
+	is_null: drizzleORM.isNull,
+	less_than_or_equals: drizzleORM.lte,
+	less_than: drizzleORM.lt,
+	greater_than_or_equals: drizzleORM.gte,
+	greater_than: drizzleORM.gt,
 };
+
+const isOperator = (str: string) => Object.keys(operators).includes(str);
+
 
 const formatValue = ({ operator, value }: { operator: string; value: any }) => {
 	switch (true) {
