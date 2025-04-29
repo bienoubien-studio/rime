@@ -68,9 +68,6 @@
 		padding: 0 var(--rz-size-7);
 		border-bottom: var(--rz-border);
 		background-color: hsl(var(--rz-ground-5) / 0.6);
-		/* @media (prefers-color-scheme: light) {
-			background-color: hsl(var(--rz-ground-7));
-		} */
 	}
 	.rz-nav-group--nav-collapsed .rz-nav-group__content {
 		background-color: transparent;
