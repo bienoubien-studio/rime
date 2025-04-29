@@ -1,9 +1,12 @@
 .rz-calendar {
-	background-color: hsl(var(--rz-ground-6));
-	border-radius: var(--rz-radius-xl);
+	background-color: hsl(var(--rz-ground-7));
+	border-radius: var(--rz-radius-lg);
 	padding: var(--rz-size-3);
 }
 
+.rz-date__popover-content{
+	border-radius: var(--rz-radius-md);
+}
 /**************************************/
 /* Cell
 /**************************************/

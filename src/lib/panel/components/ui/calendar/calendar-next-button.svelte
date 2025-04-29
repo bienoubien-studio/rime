@@ -7,14 +7,14 @@
 		class: className,
 		children,
 		...restProps
-	}: CalendarPrimitive.PrevButtonProps = $props();
+	}: CalendarPrimitive.NextButtonProps = $props();
 </script>
 
 {#snippet Fallback()}
 	<ChevronRight size={16} />
 {/snippet}
 
-<CalendarPrimitive.PrevButton
+<CalendarPrimitive.NextButton
 	bind:ref
 	class="rz-calendar-next-button rz-button rz-button--outline {className}"
 	children={children || Fallback}
