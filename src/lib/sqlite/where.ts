@@ -137,10 +137,22 @@ const operatorFn = (operator: string): any => {
 		in_array: drizzleORM.inArray,
 		like: drizzleORM.like,
 		ilike: drizzleORM.ilike,
+		between: drizzleORM.between,
+		not_between: drizzleORM.notBetween,
 		not_like: drizzleORM.notLike,
-		not_in_array: drizzleORM.notInArray
+		not_in_array: drizzleORM.notInArray,
+		is_not_null: drizzleORM.isNotNull,
+		is_null: drizzleORM.isNull,
+		less_than_or_equals: drizzleORM.lte,
+		less_than: drizzleORM.lt,
+		greater_than_or_equals: drizzleORM.gte,
+		greater_than: drizzleORM.gt,
 	};
-	return operators[operator] || drizzleORM.eq;
+	if( operator in operators){
+		return operators[operator];
+	}else{
+		throw new RizomError(RizomError.OPERATION_ERROR, operator + 'not supported')
+	}
 };
 
 const formatValue = ({ operator, value }: { operator: string; value: any }) => {
