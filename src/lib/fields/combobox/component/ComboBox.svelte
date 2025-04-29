@@ -8,7 +8,8 @@
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
 	import type { Option } from '$lib/types/fields.js';
-
+	import './combobox.css'
+	
 	const { path, config, form }: ComboBoxProps = $props();
 
 	const field = $derived(form.useField(path, config));
@@ -79,48 +80,3 @@
 	</Popover.Root>
 	<Field.Error error={field.error} />
 </fieldset>
-
-<style lang="postcss">
-	.rz-combobox-field :global {
-		.rz-combobox__trigger.rz-button {
-			min-width: 200px;
-			height: var(--rz-size-11);
-			justify-content: space-between;
-		}
-
-		.rz-combobox__chevron {
-			margin-left: var(--rz-size-2);
-			height: var(--rz-size-4);
-			width: var(--rz-size-4);
-			flex-shrink: 0;
-			opacity: 0.5;
-		}
-
-		.rz-combobox__content {
-			width: 200px;
-			padding: 0;
-		}
-
-		.rz-combobox__search {
-			height: var(--rz-size-9);
-		}
-
-		.rz-combobox__item {
-			justify-content: space-between;
-		}
-
-		.rz-combobox__item:hover {
-			background-color: hsl(var(--rz-ground-7) / 0.5);
-		}
-
-		.rz-combobox__check {
-			margin-right: var(--rz-size-2);
-			height: var(--rz-size-4);
-			width: var(--rz-size-4);
-		}
-
-		.rz-combobox__check--hidden {
-			visibility: hidden;
-		}
-	}
-</style>

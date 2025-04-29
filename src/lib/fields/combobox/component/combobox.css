@@ -14,6 +14,7 @@
 
 .rz-combobox__content {
 	width: 200px;
+	border-radius: var(--rz-radius-md);
 	padding: 0;
 }
 
@@ -22,12 +23,13 @@
 }
 
 .rz-combobox__item {
+	height: var(--rz-size-11);
 	justify-content: space-between;
 }
 
-.rz-combobox__item:hover {
+/* .rz-combobox__item:hover {
 	background-color: hsl(var(--rz-ground-7) / 0.5);
-}
+} */
 
 .rz-combobox__check {
 	margin-right: var(--rz-size-2);
