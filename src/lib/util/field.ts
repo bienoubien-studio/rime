@@ -62,11 +62,13 @@ export const isRolesField = (field: Field): field is SelectField =>
 export const isRelationResolved = <T>(value: any): value is T => {
 	return value && isObjectLiteral(value) && hasProps(['title', '_prototype', '_type'], value);
 };
+
 export const isRelationUnresolved = (
 	value: any
 ): value is Omit<Relation, 'path' | 'position' | 'ownerId'> => {
 	return value && isObjectLiteral(value) && hasProps(['relationTo', 'documentId'], value);
 };
+
 export const resolveRelation = async <T>(value: any): Promise<T> => {
 	if (isRelationResolved<T>(value)) {
 		return value;
@@ -75,6 +77,7 @@ export const resolveRelation = async <T>(value: any): Promise<T> => {
 		.then((r) => r.json())
 		.then((r) => r.doc)) as T;
 };
+
 export const richTextJSONToText = (value: string): string => {
 	let textValue: string;
 	const renderNodes = (nodes: { [k: string]: any }) => {

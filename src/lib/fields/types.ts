@@ -15,5 +15,6 @@ export type { SeparatorField } from './separator/index.js';
 export type { SlugField } from './slug/index.js';
 export type { TabsField } from './tabs/index.js';
 export type { TextField } from './text/index.js';
+export type { TimeField } from './time/index.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { ToggleField } from './toggle/index.js';

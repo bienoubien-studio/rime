@@ -52,9 +52,15 @@ const normalizeValue = (value: any) => {
 	if (value === 'undefined') {
 		return undefined;
 	}
+	// For time values return raw value
+	if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {
+		return value;
+	}
+	// For integers parseInt
 	if (/^[\d]+$/.test(value)) {
 		return parseInt(value);
 	}
+	// For floats parseFloat
 	if (/^[\d]+.[\d]+$/.test(value)) {
 		return parseFloat(value);
 	}
