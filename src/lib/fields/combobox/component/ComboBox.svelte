@@ -80,3 +80,13 @@
 	</Popover.Root>
 	<Field.Error error={field.error} />
 </fieldset>
+
+<style lang="postcss">
+	.rz-combobox-field :global {
+		.rz-combobox__trigger.rz-button {
+			min-width: 200px;
+			height: var(--rz-size-11);
+			justify-content: space-between;
+		}
+	}
+</style>
