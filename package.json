@@ -1,6 +1,6 @@
 {
 	"name": "rizom",
-	"version": "0.7.3",
+	"version": "0.7.4",
 	"homepage": "https://github.com/bienoubien-studio/rizom",
 	"scripts": {
 		"dev": "vite dev",
