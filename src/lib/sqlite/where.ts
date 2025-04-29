@@ -49,6 +49,22 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
+		// Handle nested AND/OR conditions
+		if ('and' in conditionObject && Array.isArray(conditionObject.and)) {
+			const subConditions = conditionObject.and
+				.map((condition) => buildCondition(condition as Dic))
+				.filter(Boolean);
+			return subConditions.length ? and(...subConditions) : false;
+		}
+		
+		if ('or' in conditionObject && Array.isArray(conditionObject.or)) {
+			const subConditions = conditionObject.or
+				.map((condition) => buildCondition(condition as Dic))
+				.filter(Boolean);
+			return subConditions.length ? or(...subConditions) : false;
+		}
+
+		// Handle regular field conditions
 		const [column, operatorObj] = Object.entries(conditionObject)[0];
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
 
@@ -110,21 +126,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		);
 	};
 
-	const conditions = Object.entries(query.where)
-		.flatMap(([key, value]) => {
-			if (['and', 'or'].includes(key) && Array.isArray(value)) {
-				const subConditions = value.map((v) => buildCondition(v as ParsedQs)).filter(Boolean);
-				return key === 'and' ? and(...subConditions) : or(...subConditions);
-			}
-			return buildCondition({ [key]: value } as Dic);
-		})
-		.filter(Boolean);
-
-	return conditions.length === 1
-		? conditions[0]
-		: conditions.length > 1
-			? and(...conditions)
-			: false;
+	return buildCondition(query.where as Dic);
 };
 
 const operators: Record<string, any> = {
@@ -147,9 +149,10 @@ const operators: Record<string, any> = {
 
 const isOperator = (str: string) => Object.keys(operators).includes(str);
 
-
 const formatValue = ({ operator, value }: { operator: string; value: any }) => {
 	switch (true) {
+		case typeof value === 'string' && /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})?)?$/.test(value):
+			return new Date(value);
 		case ['in_array', 'not_in_array'].includes(operator):
 			return value.split(',');
 		case ['like', 'ilike', 'not_like'].includes(operator):
