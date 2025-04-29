@@ -42,6 +42,21 @@
 		display: flex;
     width: 200px;
     position: relative;
+    :global{
+      .rz-input{
+        display: block;
+      }
+      @media (prefers-color-scheme: dark) {
+        .rz-input{
+          color-scheme: light;
+        }
+      }
+      @media (prefers-color-scheme: light) {
+        .rz-input{
+          color-scheme: dark;
+        }
+      }
+    }
   }
   
 	.rz-time-field__icon {
