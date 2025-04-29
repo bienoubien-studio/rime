@@ -23,8 +23,9 @@
 [v] Fix - translation not loaded on production
 [v] Blocks/Tree - global i18n
 [v] Make first user super admin, can't delete it 
-[ ] fix bug when Area has a required field without default value
-[ ] collection pagination
+[v] Pagination limit/offset capabilities
+[ ] Batch offset/update
+[ ] handle Area with required field without default value
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests
