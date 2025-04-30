@@ -13,7 +13,7 @@ import { getValueAtPath, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
-import type { AnyFormField } from '$lib/types/fields.js';
+import type { AnyFormField, FormField } from '$lib/types/fields.js';
 import type { Dic } from '$lib/types/util';
 import type { CompiledCollection, CompiledArea } from '$lib/types/config.js';
 import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/types/doc.js';

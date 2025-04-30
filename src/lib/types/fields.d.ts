@@ -4,6 +4,7 @@ import type { GenericDoc } from './doc';
 import type { GetRegisterType } from 'rizom';
 import type { FieldPanelTableConfig } from './panel';
 import type { LocalAPI } from '$lib/types/api.js';
+import type { DocumentFormContext } from 'rizom/panel';
 
 type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
@@ -52,7 +53,7 @@ type FormField = Field & {
 	hooks?: FieldHooks;
 	defaultValue?: unknown;
 	isEmpty: (value: unknown) => boolean;
-	
+
 };
 
 type BaseSelectField = FormField & {
@@ -68,11 +69,21 @@ type FieldHookContext<T extends AnyFormField = AnyFormField> = {
 	/** The field config */
 	config: T;
 };
+
+type FieldHookOnChange = (value: any,
+	context: {
+		siblings: Record<string, any>;
+		useField: DocumentFormContext['useField'],
+		useBlocks: DocumentFormContext['useBlocks'],
+		useTree: DocumentFormContext['useTree']
+	}
+) => void;
 type FieldHook<T extends FormField = any> = (value: any, context: FieldHookContext<T>) => any;
 type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeValidate?: FieldHook[];
 	beforeSave?: FieldHook[];
+	onChange?: FieldHookOnChange[]
 };
 
 export type Option = {

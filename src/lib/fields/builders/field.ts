@@ -1,4 +1,4 @@
-import type { FieldsType } from 'rizom/types/fields.js';
+import type { FieldHookOnChange, FieldsType } from 'rizom/types/fields.js';
 import type { FieldPanelTableConfig } from 'rizom/types/panel';
 import type {
 	AnyFormField,
@@ -61,6 +61,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	constructor(name: string, type: FieldsType) {
 		super(type);
 		this.field.name = name;
+		this.field.hooks = {};
 		this.field.defaultValue = null;
 		this.field.isEmpty = (value) => !value;
 		this.field.access = {
@@ -154,18 +155,27 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	beforeRead(hook: FieldHook) {
 		this.field.hooks!.beforeRead ??= [];
 		this.field.hooks!.beforeRead.push(hook);
+		return this;
 	}
 
 	beforeSave(hook: FieldHook) {
 		this.field.hooks!.beforeSave ??= [];
 		this.field.hooks!.beforeSave.push(hook);
+		return this;
 	}
 
 	beforeValidate(hook: FieldHook) {
 		this.field.hooks!.beforeValidate ??= [];
 		this.field.hooks!.beforeValidate.push(hook);
+		return this;
 	}
-
+	
+	onChange(hook: FieldHookOnChange) {
+		this.field.hooks!.onChange ??= [];
+		this.field.hooks!.onChange.push(hook);
+		return this;
+	}
+	
 	clone(): typeof this {
 		// Create a new instance of the same class
 		const Constructor = this.constructor as new (...args: any[]) => typeof this;

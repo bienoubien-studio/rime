@@ -5,8 +5,8 @@
 	import type { TextFieldProps } from './props.js';
 
 	const { path, config, type = 'text', form, icon: Icon }: TextFieldProps = $props();
-	const field = $derived(form.useField(path, config));
-
+	const field = $derived(form.useField(path || config.name, config));
+	
 	const onInput = (event: Event) => {
 		field.value = (event.target as HTMLInputElement).value;
 	};
