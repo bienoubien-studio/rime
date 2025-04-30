@@ -39,7 +39,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		depth,
 		event
 	});
-
+	
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as unknown as RegisterArea[AreaSlug],
@@ -49,7 +49,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			rizom: event.locals.rizom,
 			event
 		});
-		document = result.doc as T;
+		document = result.doc as unknown as T;
 	}
 	
 	return document as T;
