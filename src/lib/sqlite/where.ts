@@ -49,7 +49,8 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
-		// Handle nested AND/OR conditions
+		
+		// Handle nested AND conditions
 		if ('and' in conditionObject && Array.isArray(conditionObject.and)) {
 			const subConditions = conditionObject.and
 				.map((condition) => buildCondition(condition as Dic))
@@ -57,6 +58,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			return subConditions.length ? and(...subConditions) : false;
 		}
 		
+		// Handle nested OR conditions
 		if ('or' in conditionObject && Array.isArray(conditionObject.or)) {
 			const subConditions = conditionObject.or
 				.map((condition) => buildCondition(condition as Dic))
@@ -73,12 +75,16 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			return false;
 		}
 
+		// get the correct Drizzle operator
 		const fn = operators[operator];
+		// Format compared value to support Date, Arrays,...
 		const value = formatValue({ operator, value: rawValue });
 
 		// Convert dot notation to double underscore
+		// for fields included in groups or tabs
 		const sqlColumn = column.replace(/\./g, '__');
 
+		// Handle in18
 		if (unlocalizedColumns.includes(sqlColumn)) {
 			return fn(table[sqlColumn], value);
 		}
@@ -93,22 +99,30 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 			);
 		}
 
-		// Try if it's a relation field
+		// Look for a relation field
+		// Get document config
 		const documentConfig = rizom.config.getBySlug(slug);
 		if (!documentConfig) {
-			throw new Error('should never happen');
+			throw new Error(`${slug} not found (should never happen)`);
 		}
+		
+		// Get the field config
 		const fieldConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
+		
 		if (!fieldConfig) {
+			// @TODO handle relation props ex: author.email
 			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
 			return false;
 		}
-		const isRelationColumn = fieldConfig && isRelationField(fieldConfig);
-		if (!isRelationColumn) {
+		
+		// Not a relation
+		if (!isRelationField(fieldConfig)) {
 			logger.warn(`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`);
 			return false;
 		}
 		
+		// Only compare with the relation ID for now
+		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
 		const relationTableName = `${slug}Rels`;
 		const relationTable = rizom.adapter.tables[relationTableName];
@@ -154,6 +168,9 @@ const formatValue = ({ operator, value }: { operator: string; value: any }) => {
 		case typeof value === 'string' && /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?(Z|[+-]\d{2}:\d{2})?)?$/.test(value):
 			return new Date(value);
 		case ['in_array', 'not_in_array'].includes(operator):
+			// Value is an array do nothing
+			if( Array.isArray(value) ) return value
+			// Handle string value with "," separators for url params
 			return value.split(',');
 		case ['like', 'ilike', 'not_like'].includes(operator):
 			return `%${value}%`;
