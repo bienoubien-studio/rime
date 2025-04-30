@@ -14,28 +14,39 @@
 
 	const { path, config, form }: Props = $props();
 	const locale = getLocaleContext();
+	const timeZone = getLocalTimeZone();
 
 	const field = $derived(form.useField(path, config));
-	const initialValue = form.getRawValue(path) || new Date();
-
-	let calendarDate = $state<DateValue>(
-		new CalendarDate(
-			initialValue.getFullYear(),
-			initialValue.getMonth() + 1,
-			initialValue.getDate()
-		)
-	);
-
-	let date = $state<Date | null>(initialValue);
-	let timeZone = getLocalTimeZone();
-
-	$effect(() => {
-		date = calendarDate ? calendarDate.toDate(timeZone) : null;
+	
+	// Derive date from field.value
+	const date = $derived.by(() => {
+		return field.value instanceof Date ? field.value : null;
 	});
-
-	$effect(() => {
-		if (date !== field.value) field.value = date;
+	
+	// Derive calendarDate from date
+	const calendarDate = $derived.by(() => {
+		if (date) {
+			return new CalendarDate(
+				date.getFullYear(),
+				date.getMonth() + 1,
+				date.getDate()
+			);
+		}
+		return undefined;
 	});
+	
+	// Handle calendar selection changes
+	function handleCalendarChange(newCalendarDate: DateValue | undefined) {
+		if (newCalendarDate) {
+			const newDate = newCalendarDate.toDate(timeZone);
+			// Only update if the date actually changed
+			if (!date || date.getTime() !== newDate.getTime()) {
+				field.value = newDate;
+			}
+		} else if (field.value !== null) {
+			field.value = null;
+		}
+	}
 
 	const dateLabel = $derived(date ? locale.dateFormat(date) : 'Select a date');
 </script>
@@ -60,7 +71,12 @@
 		</Popover.Trigger>
 		<Popover.Portal>
 			<Popover.Content align="start" class="rz-date__popover-content">
-				<Calendar type="single" bind:value={calendarDate} initialFocus />
+				<Calendar 
+					type="single" 
+					value={calendarDate} 
+					onValueChange={handleCalendarChange}
+					initialFocus 
+				/>
 			</Popover.Content>
 		</Popover.Portal>
 	</Popover.Root>
