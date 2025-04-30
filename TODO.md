@@ -25,6 +25,8 @@
 [v] Make first user super admin, can't delete it 
 [v] Pagination limit/offset capabilities
 [ ] Batch offset/update
+[ ] Field hook afterUpdate
+[ ] Field hook maybe add siblings
 [ ] handle Area with required field without default value
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
