@@ -87,6 +87,8 @@
 			min-width: 200px;
 			height: var(--rz-size-11);
 			justify-content: space-between;
+			border: var(--rz-border);
+			background-color: hsl(var(--rz-color-input));
 		}
 	}
 </style>

@@ -1,8 +1,3 @@
-.rz-combobox__trigger.rz-button {
-	min-width: 200px;
-	height: var(--rz-size-11);
-	justify-content: space-between;
-}
 
 .rz-combobox__chevron {
 	margin-left: var(--rz-size-2);
@@ -15,6 +10,7 @@
 .rz-combobox__content {
 	width: 200px;
 	border-radius: var(--rz-radius-md);
+	background-color: hsl(var(--rz-color-input));
 	padding: 0;
 }
 
