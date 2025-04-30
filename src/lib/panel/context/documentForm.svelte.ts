@@ -118,11 +118,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	 *
 	 * @example
 	 * const form = getDocumentFormContext()
-	 * const value = form.useValue('blocks.0.title')
+	 * const value = form.getValue('blocks.0.title')
 	 *
 	 * //value will update if doc.blocks.0.title update
 	 */
-	function useValue<T>(path: string): T | null {
+	function getValue<T>(path: string): T | null {
 		return getValueAtPath(path, doc) || null;
 	}
 
@@ -376,6 +376,15 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			return true;
 		};
 
+		const getSiblings = () => {
+			let siblings: Dic = doc;
+			if (parts.length > 1) {
+				const upperPath = path.substring(0, path.lastIndexOf('.'));
+				siblings = getValueAtPath(upperPath, doc) || {};
+			}
+			return siblings
+		}
+
 		return {
 			get value() {
 				return getValueAtPath(path, doc);
@@ -388,6 +397,16 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				}
 				if (valid) {
 					setValue(path, value);
+					if(Array.isArray(config.hooks?.onChange)){
+						for(const hook of config.hooks?.onChange){
+							hook( value, {
+								siblings: getSiblings(),
+								useField, 
+								useBlocks, 
+								useTree
+							})
+						}
+					}
 				}
 			},
 
@@ -407,12 +426,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				let visible = true;
 				if (config.condition) {
 					try {
-						let siblings: Dic = doc;
-						if (parts.length > 1) {
-							const upperPath = path.substring(0, path.lastIndexOf('.'));
-							siblings = getValueAtPath(upperPath, doc) || {};
-						}
-						visible = config.condition(doc, siblings);
+						visible = config.condition(doc, getSiblings());
 					} catch (err: any) {
 						console.error(err.message);
 					}

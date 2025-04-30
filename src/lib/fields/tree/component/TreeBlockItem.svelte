@@ -19,7 +19,7 @@
 			.filter((str) => str !== '_children').length
 	);
 	const position = $derived(parseInt(path.split('.').pop() || '0'));
-	const itemValue = $derived(form.useValue<TreeBlock>(path));
+	const itemValue = $derived(form.getValue<TreeBlock>(path));
 	const parentPath = $derived(path.split('.').slice(0, -1).join('.'));
 	const parentPathFormated = $derived.by(() => {
 		if (depth === 1) return '';
