@@ -1,11 +1,6 @@
 import { expect, test } from 'vitest';
 import { createConfigInterface } from './index.server.js';
-
-const config = await createConfigInterface({
-	database: '',
-	collections: [],
-	areas: []
-});
+import { getFieldByPath } from 'rizom/util/config.js';
 
 const fields = [
 	{
@@ -185,7 +180,7 @@ const fields = [
 
 test('should return correct config', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('hero.heroType', fields);
+	const field = getFieldByPath('hero.heroType', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('heroType');
@@ -193,7 +188,7 @@ test('should return correct config', () => {
 
 test('should return correct block field config', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('layout.components.0.text', fields, {
+	const field = getFieldByPath('layout.components.0.text', fields, {
 		inBlockType: 'paragraph'
 	});
 	expect(field).toBeDefined();
@@ -204,7 +199,7 @@ test('should return correct block field config', () => {
 
 test('should return correct title field config', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('attributes.title', fields);
+	const field = getFieldByPath('attributes.title', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('title');
@@ -213,7 +208,7 @@ test('should return correct title field config', () => {
 
 test('should return correct field config inside group', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('attributes.group.ok', fields);
+	const field = getFieldByPath('attributes.group.ok', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('ok');
@@ -222,7 +217,7 @@ test('should return correct field config inside group', () => {
 
 test('should return correct field config inside tree', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('footer.nav.0.label', fields);
+	const field = getFieldByPath('footer.nav.0.label', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('label');
@@ -231,7 +226,7 @@ test('should return correct field config inside tree', () => {
 
 test('should return correct field config inside tree 2', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('footer.nav.0.link', fields);
+	const field = getFieldByPath('footer.nav.0.link', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('link');
@@ -240,7 +235,7 @@ test('should return correct field config inside tree 2', () => {
 
 test('should return correct field config inside tree inside group', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('footer.nav.0.group.metaTitle', fields);
+	const field = getFieldByPath('footer.nav.0.group.metaTitle', fields);
 	expect(field).toBeDefined();
 	expect(field?.name).toBeDefined();
 	expect(field?.name).toBe('metaTitle');
@@ -249,7 +244,7 @@ test('should return correct field config inside tree inside group', () => {
 
 test('should return correct field config inside blocks inside tree', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('layout.components.0.legends.0.legend', fields, {
+	const field = getFieldByPath('layout.components.0.legends.0.legend', fields, {
 		inBlockType: 'slider'
 	});
 	expect(field).toBeDefined();
@@ -260,6 +255,6 @@ test('should return correct field config inside blocks inside tree', () => {
 
 test('should not return field config inside blocks without param', () => {
 	//@ts-expect-error no need for field.access prop for testing this
-	const field = config.getFieldByPath('layout.components.0.legends.0.legend', fields);
+	const field = getFieldByPath('layout.components.0.legends.0.legend', fields);
 	expect(field).toBe(null);
 });

@@ -20,6 +20,7 @@ import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/types/do
 import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
 import { t__ } from '../../i18n/index.js';
+import { getFieldConfigByPath } from 'rizom/util/config.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
@@ -33,6 +34,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	//
 	let intialDoc = $state(initial);
 	let doc = $state<T>(initial);
+	const documentConfig = config;
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
 	let processing = $state(false);
@@ -40,8 +42,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const operation = $derived(doc.id ? 'update' : 'create');
 	const user = getUserContext();
 	const errors = setErrorsContext(key);
-	const isCollection = config.type === 'collection';
-	const collection = isCollection ? getCollectionContext(config.slug) : null;
+	const isCollection = documentConfig.type === 'collection';
+	const collection = isCollection ? getCollectionContext(documentConfig.slug) : null;
 	const hasError = $derived(errors.length);
 	const canSubmit = $derived(
 		!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError
@@ -61,13 +63,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 	
 	function initTitle() {
-		if (config.type === 'area') {
-			return config.label;
+		if (documentConfig.type === 'area') {
+			return documentConfig.label;
 		} else {
 			$effect(() => {
-				title = getValueAtPath(config.asTitle, doc) || '[untitled]';
+				title = getValueAtPath(documentConfig.asTitle, doc) || '[untitled]';
 			});
-			const initialTitle = getValueAtPath<string>(config.asTitle, doc);
+			const initialTitle = getValueAtPath<string>(documentConfig.asTitle, doc);
 			return doc && initialTitle ? initialTitle : '[untitled]';
 		}
 	}
@@ -336,7 +338,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return snapshot(getValueAtPath(path, doc)) || null;
 	}
 
-	function useField(path: string | undefined, config: AnyFormField) {
+	function useField(path: string, config?: FormField) {
+		
+		if(!config){
+			config = getFieldConfigByPath(path, documentConfig.fields)
+			if(!config) throw new Error(`can't find config for field : ${path}`)
+		}
+		
 		path = path || config.name;
 
 		const parts = $derived(path.split('.'));
@@ -523,7 +531,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		getRawValue,
 		enhance,
 		useField,
-		useValue,
+		getValue,
 		useBlocks,
 		useTree,
 		nestedLevel,

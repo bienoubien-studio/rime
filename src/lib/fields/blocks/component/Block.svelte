@@ -23,7 +23,7 @@
 	let currentPath = $state.raw(path);
 	let isOpen = $state(true);
 	const position = $derived(parseInt(currentPath.split('.').pop() || '0'));
-	const blockValue = $derived(form.useValue<GenericBlock>(path));
+	const blockValue = $derived(form.getValue<GenericBlock>(path));
 
 	const { once } = useOnce();
 

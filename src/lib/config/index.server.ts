@@ -71,61 +71,7 @@ export async function createConfigInterface(rawConfig: Config) {
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
 	};
 
-	type GetFieldByPathOptions = {
-		inBlockType?: string;
-	};
 
-	const getFieldByPath = (path: string, fields: Field[], options?: GetFieldByPathOptions) => {
-		const parts = path.split('.');
-
-		const findInFields = (currentFields: Field[], remainingParts: string[]): FormField | null => {
-			if (remainingParts.length === 0) return null;
-
-			const currentPart = remainingParts[0];
-
-			for (const field of currentFields) {
-				// Handle tabs
-				if (isTabsFieldRaw(field)) {
-					const tab = field.tabs.find((t) => t.name === currentPart);
-					if (tab) {
-						return findInFields(tab.fields, remainingParts.slice(1));
-					}
-					continue;
-				}
-
-				// Handle regular fields
-				if (isFormField(field)) {
-					if (field.name === currentPart) {
-						if (remainingParts.length === 1) {
-							return field;
-						}
-
-						if (isGroupFieldRaw(field)) {
-							return findInFields(field.fields, remainingParts.slice(1));
-						}
-
-						// Handle blocks
-						if (isBlocksFieldRaw(field)) {
-							if (options?.inBlockType) {
-								const block = field.blocks.find((b) => b.name === options.inBlockType);
-								if (block) {
-									return findInFields(block.fields, remainingParts.slice(2));
-								}
-							}
-						}
-
-						if (isTreeFieldRaw(field)) {
-							return findInFields(field.fields, remainingParts.slice(2));
-						}
-					}
-				}
-			}
-
-			return null;
-		};
-
-		return findInFields(fields, parts);
-	};
 
 	return {
 		//
@@ -167,8 +113,7 @@ export async function createConfigInterface(rawConfig: Config) {
 				: [];
 			return locales.includes(locale);
 		},
-
-		getFieldByPath,
+		
 		getDocumentPrototype,
 		getArea,
 		getCollection,

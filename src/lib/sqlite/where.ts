@@ -10,6 +10,7 @@ import { isObjectLiteral } from '../util/object.js';
 import type { OperationQuery } from '../types/index.js';
 import { logger } from '$lib/util/logger/index.server.js';
 import { isRelationField } from '$lib/util/field.js';
+import { getFieldConfigByPath } from 'rizom/util/config.js';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;
@@ -107,7 +108,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 		}
 		
 		// Get the field config
-		const fieldConfig = rizom.config.getFieldByPath(column, documentConfig.fields);
+		const fieldConfig = getFieldConfigByPath(column, documentConfig.fields);
 		
 		if (!fieldConfig) {
 			// @TODO handle relation props ex: author.email
