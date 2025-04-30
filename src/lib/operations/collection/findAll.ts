@@ -24,7 +24,7 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
 	}
 
 	let documentsRaw = await adapter.collection.findAll({
