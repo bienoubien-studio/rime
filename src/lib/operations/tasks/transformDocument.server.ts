@@ -15,8 +15,11 @@ export const transformDocument = async <T>(args: {
 	api: LocalAPI;
 	depth?: number;
 	config: CompiledArea | CompiledCollection;
+	augment?: boolean
+	withURL?: boolean
+	withBlank?: boolean
 }) => {
-	const { raw, adapter, locale, event, api, depth, config } = args;
+	const { raw, adapter, locale, event, api, depth, config, augment = true, withBlank = true, withURL = true } = args;
 
 	let document = await adapter.transform.doc({
 		doc: raw,
@@ -24,18 +27,20 @@ export const transformDocument = async <T>(args: {
 		locale,
 		event,
 		api,
-		depth
+		depth,
+		withBlank
 	});
 
 	const configMap = buildConfigMap(document, config.fields);
-	document = await augmentDocument({ document, config, event, locale });
+
+	if (augment) {
+		document = await augmentDocument({ document, config, event, locale });
+	}
 
 	document = await postprocessFields({
 		document,
 		configMap,
-		user: event.locals.user,
-		api,
-		locale
+		event,
 	});
 
 	return document as T;

@@ -7,13 +7,6 @@ import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/type
 import type { AsyncReturnType, Dic } from '$lib/types/util.js';
 import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from '$lib/types/index.js';
 import type { AreaSlug } from '$lib/types/doc.js';
-import {
-	isBlocksFieldRaw,
-	isFormField,
-	isGroupFieldRaw,
-	isTabsFieldRaw,
-	isTreeFieldRaw
-} from '$lib/util/field.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -71,8 +64,6 @@ export async function createConfigInterface(rawConfig: Config) {
 		throw new RizomError(slug + 'is neither a collection nor a globlal');
 	};
 
-
-
 	return {
 		//
 		get raw() {
@@ -113,7 +104,7 @@ export async function createConfigInterface(rawConfig: Config) {
 				: [];
 			return locales.includes(locale);
 		},
-		
+
 		getDocumentPrototype,
 		getArea,
 		getCollection,

@@ -5,6 +5,7 @@ import type { GetRegisterType } from 'rizom';
 import type { FieldPanelTableConfig } from './panel';
 import type { LocalAPI } from '$lib/types/api.js';
 import type { DocumentFormContext } from 'rizom/panel';
+import type { RequestEvent } from '@sveltejs/kit';
 
 type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
@@ -62,8 +63,7 @@ type BaseSelectField = FormField & {
 };
 
 type FieldHookContext<T extends AnyFormField = AnyFormField> = {
-	api: LocalAPI;
-	locale?: string;
+	event: RequestEvent;
 	/** The document Id being processed */
 	documentId?: string,
 	/** The field config */

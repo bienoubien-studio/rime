@@ -9,18 +9,20 @@ import type { DeepPartial, Dic } from '$lib/types/util.js';
 import { RizomError } from '$lib/errors/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { transformDataToSchema } from '../util/path.js';
+import type { ConfigInterface } from 'rizom/config/index.server.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
 	tables: any;
+	configInterface: ConfigInterface;
 };
 
-const createAdapterCollectionInterface = ({ db, tables }: Args) => {
+const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
 	//////////////////////////////////////////////
 	// Find All documents in a collection
 	//////////////////////////////////////////////
 	const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
-		const withParam = buildWithParam({ slug, locale });
+		const withParam = buildWithParam({ slug, locale, tables, configInterface });
 		const orderBy = buildOrderByParam({ tables, slug, by: sort });
 		// @ts-expect-error todo
 		const rawDocs = await db.query[slug].findMany({
@@ -29,7 +31,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 			offset: offset || undefined,
 			orderBy
 		});
-		
+
 		return new Promise((resolve) => resolve(rawDocs));
 	};
 
@@ -37,7 +39,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	// Find a document by id
 	//////////////////////////////////////////////
 	const findById: FindById = async ({ slug, id, locale }) => {
-		const withParam = buildWithParam({ slug, locale });
+		const withParam = buildWithParam({ slug, locale, tables, configInterface });
 		// @ts-expect-error foo
 		const doc = await db.query[slug].findFirst({
 			where: eq(tables[slug].id, id),
@@ -173,7 +175,7 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 	//////////////////////////////////////////////
 	const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
 		const params: Dic = {
-			with: buildWithParam({ slug, locale }),
+			with: buildWithParam({ slug, locale, tables, configInterface }),
 			where: buildWhereParam({ query, slug, locale, db }),
 			orderBy: sort ? buildOrderByParam({ tables, slug, by: sort }) : undefined,
 			limit: limit || undefined,
@@ -189,12 +191,69 @@ const createAdapterCollectionInterface = ({ db, tables }: Args) => {
 		return result;
 	};
 
+	//////////////////////////////////////////////
+	// Select
+	//////////////////////////////////////////////
+	const select: SelectDocuments = async ({ slug, select, query, sort, limit, offset, locale }) => {
+		
+		const params: Dic = {
+			with: buildWithParam({ slug, select, tables, configInterface, locale }) || undefined,
+			orderBy: sort ? buildOrderByParam({ tables, slug, by: sort }) : undefined,
+			limit: limit || undefined,
+			offset: offset || undefined
+		};
+		
+		if(query){
+			params.where = buildWhereParam({ query, slug, locale, db })
+		}
+
+		// Remove undefined properties
+		Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+
+		// Get the table for this document type
+		const table = tables[slug];
+		
+		// Create an object to hold the columns we want to select
+		const selectColumns: Dic = {};
+		
+		
+		// If select fields are specified, build the select columns object
+		if (select && select.length > 0) {
+			// Always include the ID column
+			selectColumns.id = true;
+			
+			// Process each requested field
+			for (const path of select) {
+				// Convert nested paths (dot notation) to SQL format (double underscore)
+				// Example: 'attributes.slug' becomes 'attributes__slug'
+				const sqlPath = path.replace(/\./g, '__');
+				
+				// If this column exists directly on the table, add it to our select
+				if (sqlPath in table) {
+					selectColumns[sqlPath] = true;
+				}
+			}
+		}
+		if(Object.keys(selectColumns).length > 0){
+			// @ts-expect-error todo
+			return await db.query[slug].findMany({ 
+				columns: selectColumns,
+				...params 
+			});
+		}else{
+			// @ts-expect-error todo
+			return await db.query[slug].findMany(params);
+		}
+		
+	};
+
 	return {
 		findAll,
 		findById,
 		deleteById,
 		insert,
 		update,
+		select,
 		query
 	};
 };
@@ -224,7 +283,22 @@ type QueryDocuments = (args: {
 	locale?: string;
 }) => Promise<RawDoc[]>;
 
-type FindById = (args: { slug: PrototypeSlug; id: string; locale?: string }) => Promise<RawDoc>;
+type SelectDocuments = (args: {
+	slug: PrototypeSlug;
+	select: string[];
+	query?: OperationQuery;
+	sort?: string;
+	limit?: number;
+	offset?: number;
+	locale?: string;
+}) => Promise<RawDoc[]>;
+
+type FindById = (args: {
+	slug: PrototypeSlug;
+	id: string;
+	locale?: string;
+	select?: string[];
+}) => Promise<RawDoc>;
 
 type DeleteById = (args: { slug: PrototypeSlug; id: string }) => Promise<string | undefined>;
 

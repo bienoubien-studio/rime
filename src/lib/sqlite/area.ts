@@ -4,32 +4,61 @@ import { buildWithParam } from './with.js';
 import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { transformDataToSchema } from '../util/path.js';
-import type { DeepPartial } from '$lib/types/util.js';
+import type { DeepPartial, Dic } from '$lib/types/util.js';
+import type { ConfigInterface } from 'rizom/config/index.server.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	tables: any;
+	configInterface: ConfigInterface
 };
 
-const createAdapterAreaInterface = ({ db, tables }: AreaInterfaceArgs) => {
+const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfaceArgs) => {
 	//
 	type KeyOfTables = keyof typeof tables;
 
 	/** Get area doc */
-	const get: Get = async ({ slug, locale }) => {
-		const withParam = buildWithParam({ slug, locale });
+	const get: Get = async ({ slug, locale, select }) => {
+		
+		const params: Dic = {
+			with : buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
+		}
 
+		// Get the table for this document type
+		const table = tables[slug];
+		
+		// Create an object to hold the columns we want to select
+		const selectColumns: Dic = {};
+		
+		// If select fields are specified, build the select columns object
+		if (select && select.length > 0) {
+			// Always include the ID column
+			selectColumns.id = true;
+			
+			// Process each requested field
+			for (const path of select) {
+				// Convert nested paths (dot notation) to SQL format (double underscore)
+				// Example: 'attributes.slug' becomes 'attributes__slug'
+				const sqlPath = path.replace(/\./g, '__');
+				
+				// If this column exists directly on the table, add it to our select
+				if (sqlPath in table) {
+					selectColumns[sqlPath] = true;
+				}
+			}
+
+			if(Object.keys(selectColumns).length){
+				params.columns = selectColumns
+			}
+		}
+		
 		// @ts-expect-error suck
-		let doc = await db.query[slug].findFirst({
-			with: withParam
-		});
+		let doc = await db.query[slug].findFirst(params);
 
 		if (!doc) {
 			await createArea(slug, {}, locale);
 			// @ts-expect-error suck
-			doc = await db.query[slug].findFirst({
-				with: withParam
-			});
+			doc = await db.query[slug].findFirst(params);
 		}
 		if (!doc) {
 			throw new Error('Database error');
@@ -149,7 +178,12 @@ export type AdapterAreaInterface = ReturnType<typeof createAdapterAreaInterface>
 // Types
 //////////////////////////////////////////////
 
-type Get = (args: { slug: PrototypeSlug; locale?: string; depth?: number }) => Promise<GenericDoc>;
+type Get = (args: { 
+	slug: PrototypeSlug; 
+	locale?: string; 
+	depth?: number;
+	select?: string[];
+}) => Promise<GenericDoc>;
 
 type Update = (args: {
 	slug: PrototypeSlug;

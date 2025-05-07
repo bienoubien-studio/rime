@@ -41,12 +41,13 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return createBlankDocument(this.config) as Doc;
 	}
 	
-	find({ locale, depth = 0 }: FindArgs): Promise<Doc> {
+	find({ locale, select = [], depth = 0 }: FindArgs): Promise<Doc> {
 
 		this.#api.preventOperationLoop()
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
+			select,
 			config: this.config,
 			event: this.#event,
 			adapter: this.#adapter,
@@ -57,6 +58,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		if (this.#event.locals.cacheEnabled) {
 			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
 				'find',
+				select.join(','),
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
 				depth,
@@ -64,7 +66,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			);
 			return this.#event.locals.rizom.plugins.cache.get(key, () => find<Doc>(params));
 		}
-
+		
 		return find<Doc>(params);
 	}
 
@@ -85,4 +87,4 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 
 export { AreaInterface };
 
-type FindArgs = { locale?: string; depth?: number };
+type FindArgs = { locale?: string; depth?: number, select?: string[] };

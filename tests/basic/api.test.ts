@@ -138,6 +138,44 @@ test('Should return 2 pages', async ({ request }) => {
 	expect(response.docs.length).toBe(2);
 });
 
+/** ---------------- SELECT ---------------- */
+
+test('Should return 2 pages with only attributes.slug and id prop', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug`).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(2);
+	expect(response.docs[0].id).toBeDefined();
+	expect(response.docs[0].attributes.slug).toBeDefined();
+	expect(response.docs[0].attributes.title).toBeUndefined();
+	expect(response.docs[0].attributes.template).toBeUndefined();
+	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[1].id).toBeDefined();
+	expect(response.docs[1].attributes.slug).toBeDefined();
+	expect(response.docs[1].attributes.title).toBeUndefined();
+	expect(response.docs[1].attributes.template).toBeUndefined();
+	expect(response.docs[1].parent).toBeUndefined();
+});
+
+test('Should return 2 pages with only attributes slug, title and id prop', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug,attributes.title`).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(2);
+	expect(response.docs[0].id).toBeDefined();
+	expect(response.docs[0].attributes.slug).toBeDefined();
+	expect(response.docs[0].attributes.title).toBeDefined();
+	expect(response.docs[0].attributes.template).toBeUndefined();
+	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[1].id).toBeDefined();
+	expect(response.docs[1].attributes.slug).toBeDefined();
+	expect(response.docs[1].attributes.title).toBeDefined();
+	expect(response.docs[1].attributes.template).toBeUndefined();
+	expect(response.docs[1].parent).toBeUndefined();
+});
+
 /** ---------------- QUERIES ---------------- */
 
 test('Should return page (query)', async ({ request }) => {
@@ -176,7 +214,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 		Authorization: `Bearer ${superAdminToken}`
 	}
 
-	// Delete home	
+	// Delete home for test // recreate at the end
 	await request.delete(`${API_BASE_URL}/pages/${homeId}`, { headers });
 
 	// Create 100 pages 
@@ -246,6 +284,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	homeId = doc.id;
 
 });
+
 
 //////////////////////////////////////////////
 // Upload Collection
@@ -606,6 +645,21 @@ test('Should get the updated settings', async ({ request }) => {
 test('Should not get settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`);
 	expect(response.status()).toBe(403);
+});
+
+/** SELECT */
+
+test('Should get settings with only id and maintenance', async ({ request }) => {
+	const response = await request
+		.get(`${API_BASE_URL}/settings?select=maintenance`, {
+			headers: {
+				Authorization: `Bearer ${superAdminToken}`
+			}
+		})
+		.then((r) => r.json());
+	expect(response.doc.maintenance).toBe(true);
+	expect(response.doc.id).toBeDefined();
+	expect(Object.keys(response.doc).length).toBe(2)
 });
 
 //////////////////////////////////////////////

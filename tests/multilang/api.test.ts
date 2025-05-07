@@ -243,6 +243,18 @@ test('Should return home EN (query)', async ({ request }) => {
 	expect(response.docs[0].attributes.title).toBe('Home');
 });
 
+test('Should return home EN (query) with select', async ({ request }) => {
+	const url = `${API_BASE_URL}/pages?where[attributes.title][equals]=Home&locale=en&select=attributes.title`;
+	const response = await request.get(url).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(1);
+	expect(response.docs[0].attributes.title).toBe('Home');
+	expect(response.docs[0].id).toBeDefined();
+	expect(Object.keys(response.docs[0]).length).toBe(2);
+});
+
 test('Should return home FR (query)', async ({ request }) => {
 	const url = `${API_BASE_URL}/pages?where[attributes.author][like]=${adminUserId}`;
 	const response = await request.get(url).then((response) => {
@@ -251,6 +263,18 @@ test('Should return home FR (query)', async ({ request }) => {
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(1);
 	expect(response.docs[0].attributes.title).toBe('Accueil');
+});
+
+test('Should return home FR (query) with select', async ({ request }) => {
+	const url = `${API_BASE_URL}/pages?where[attributes.author][like]=${adminUserId}&select=attributes.title`;
+	const response = await request.get(url).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(1);
+	expect(response.docs[0].attributes.title).toBe('Accueil');
+	expect(response.docs[0].id).toBeDefined();
+	expect(Object.keys(response.docs[0]).length).toBe(2);
 });
 
 test('Should return home (draft)', async ({ request }) => {
@@ -335,6 +359,44 @@ test('Should return 2 page', async ({ request }) => {
 	});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(2);
+});
+
+/** ---------------- SELECT ---------------- */
+
+test('Should return 2 pages with only attributes.slug and id prop', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug`).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(2);
+	expect(response.docs[0].id).toBeDefined();
+	expect(response.docs[0].attributes.slug).toBeDefined();
+	expect(response.docs[0].attributes.title).toBeUndefined();
+	expect(response.docs[0].attributes.template).toBeUndefined();
+	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[1].id).toBeDefined();
+	expect(response.docs[1].attributes.slug).toBeDefined();
+	expect(response.docs[1].attributes.title).toBeUndefined();
+	expect(response.docs[1].attributes.template).toBeUndefined();
+	expect(response.docs[1].parent).toBeUndefined();
+});
+
+test('Should return 2 pages with only attributes slug, title and id prop', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug,attributes.title`).then((response) => {
+		return response.json();
+	});
+	expect(response.docs).toBeDefined();
+	expect(response.docs.length).toBe(2);
+	expect(response.docs[0].id).toBeDefined();
+	expect(response.docs[0].attributes.slug).toBeDefined();
+	expect(response.docs[0].attributes.title).toBeDefined();
+	expect(response.docs[0].attributes.template).toBeUndefined();
+	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[1].id).toBeDefined();
+	expect(response.docs[1].attributes.slug).toBeDefined();
+	expect(response.docs[1].attributes.title).toBeDefined();
+	expect(response.docs[1].attributes.template).toBeUndefined();
+	expect(response.docs[1].parent).toBeUndefined();
 });
 
 
