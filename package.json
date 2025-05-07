@@ -115,7 +115,6 @@
 		"vite": "^6.0.0"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.51.1",
 		"@rizom/regenerate-images": "^0.0.5",
 		"@sveltejs/adapter-node": "^5.2.12",
 		"@sveltejs/kit": "^2.20.3",
@@ -153,6 +152,7 @@
 		"@clack/prompts": "^0.7.0",
 		"@internationalized/date": "^3.7.0",
 		"@lucide/svelte": "^0.479.0",
+		"@playwright/test": "^1.52.0",
 		"@tiptap/core": "^2.11.7",
 		"@tiptap/extension-blockquote": "^2.11.7",
 		"@tiptap/extension-bold": "^2.11.7",

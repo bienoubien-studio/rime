@@ -4,16 +4,16 @@ import type { RequestEvent } from "@sveltejs/kit";
 import { getValueAtPath } from "rizom/util/object";
 import { logger } from "rizom/util/logger/index.server";
 
-export const populateURL = async (
-  document: GenericDoc,
+export const populateURL = async <T extends GenericDoc>(
+  document: T,
   context: {
     event: RequestEvent,
     locale?: string,
     config: CompiledCollection | CompiledArea
-  }) => {
+  }): Promise<T> => {
 
   const { config, event, locale } = context
-
+  
   if (config.url) {
 
     let url
@@ -21,7 +21,7 @@ export const populateURL = async (
     try {
       url = config.url(document as any)
     } catch (err) {
-      return null
+      return document
     }
 
     const match = url.match(/\[\.\.\.parent\.(\w+(?:\.\w+)*)\]/);
@@ -48,7 +48,7 @@ export const populateURL = async (
         const docs = await event.locals.api.collection(config.slug as any).select({
           query: `where[id][equals]=${parentId}`,
           select: [attributePath],
-          locale: locale || event.locals.locale
+          locale
         });
 
         // Check if there is a result
@@ -82,7 +82,12 @@ export const populateURL = async (
       // replace "/[...parent.whatever.something.foo]" with ""
       url = url.replace(/\/\[\.\.\.parent\.\w+(?:\.\w+)*\]/, '')
     }
-    return url
+    
+    if(document.url !== url){
+      document.url = url
+      await event.locals.rizom.adapter.collection.update({ slug: config.slug, id: document.id, locale, data: { url }})
+    }
+
   }
-  return null
+  return document
 }

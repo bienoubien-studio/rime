@@ -217,7 +217,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, data, locale }: UpdateByIdArgs<Doc>): Promise<Doc> {
+	updateById({ id, data, locale, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
 		
 		this.#api.preventOperationLoop()
 
@@ -228,7 +228,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			config: this.config,
 			event: this.#event,
 			api: this.#api,
-			adapter: this.#adapter
+			adapter: this.#adapter,
+			isFallbackLocale
 		});
 	}
 
@@ -291,4 +292,5 @@ type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
 	data: DeepPartial<T>;
 	locale?: string;
+	isFallbackLocale?: boolean;
 };

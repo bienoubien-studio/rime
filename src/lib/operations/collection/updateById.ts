@@ -26,10 +26,11 @@ type Args<T> = {
 	event: RequestEvent;
 	api: LocalAPI;
 	adapter: Adapter;
+	isFallbackLocale: boolean;
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, adapter, locale, api, id } = args;
+	const { config, event, adapter, locale, api, id, isFallbackLocale } = args;
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, { id });
@@ -58,23 +59,25 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		operation: 'update',
 		user: event.locals.user
 	});
-
-	for (const hook of config.hooks?.beforeUpdate || []) {
-		const result = await hook({
-			/**
-			 * TS is expecting a more specific types, 
-			 * but with RegisterCollection[Slug] devs get their 
-			 * types in the hook definition arguments
-			 */
-			data : data as DeepPartial<RegisterCollection[CollectionSlug]>,
-			config,
-			originalDoc: original as RegisterCollection[CollectionSlug],
-			operation: 'update',
-			api,
-			rizom: event.locals.rizom,
-			event
-		});
-		data = result.data as Partial<T>;
+	
+	if(!isFallbackLocale){
+		for (const hook of config.hooks?.beforeUpdate || []) {
+			const result = await hook({
+				/**
+				 * TS is expecting a more specific types, 
+				 * but with RegisterCollection[Slug] devs get their 
+				 * types in the hook definition arguments
+				 */
+				data : data as DeepPartial<RegisterCollection[CollectionSlug]>,
+				config,
+				originalDoc: original as RegisterCollection[CollectionSlug],
+				operation: 'update',
+				api,
+				rizom: event.locals.rizom,
+				event
+			});
+			data = result.data as Partial<T>;
+		}
 	}
 
 	const incomingPaths = Object.keys(configMap);
@@ -122,14 +125,10 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		treeDiff
 	});
 
-	const document = await api.collection(config.slug).findById({ id, locale });
+	let document = await api.collection(config.slug).findById({ id, locale });
 	
 	// Populate URL
-	const url = await populateURL(document, { config, event, locale })
-	if(url && document.url !== url){
-		adapter.collection.update({ slug: config.slug, id, locale, data: { url }})
-		document.url = url
-	}
+	document = await populateURL(document, { config, event, locale })
 	
 	// If parent has changed populate URL for all language
 	if('parent' in data){
@@ -137,10 +136,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		if (locales.length) {
 			for(const otherLocale of locales){
 				const documentLocale = await api.collection(config.slug).findById({ id, locale: otherLocale });
-				const url = await populateURL(documentLocale, { config, event, locale: otherLocale })
-				if(url && documentLocale.url !== url){
-					adapter.collection.update({ slug: config.slug, id, locale: otherLocale, data: { url }})
-				}
+				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}
 	}

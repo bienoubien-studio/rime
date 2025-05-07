@@ -120,11 +120,8 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	let document = (await api.collection(config.slug).findById({ id: createdId, locale })) as T;
 
-	const url = await populateURL(document, { config, event })
-	if(url && document.url !== url){
-		adapter.collection.update({ slug: config.slug, id: createdId, locale, data: { url }})
-		document.url = url
-	}
+	document = await populateURL(document, { config, event, locale })
+	
 	
 	if (locale) {
 		const locales = event.locals.rizom.config.getLocalesCodes();
@@ -150,12 +147,9 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 				let localizedDocument = await api
 					.collection(config.slug)
 					//@ts-ignore
-					.updateById({ id: createdId, data: incomingData, locale: otherLocale });
+					.updateById({ id: createdId, data: incomingData, locale: otherLocale, isFallbackLocale: true });
 				
-				const url = await populateURL(localizedDocument, { config, event, locale })
-				if(url && localizedDocument.url !== url){
-					adapter.collection.update({ slug: config.slug, id: createdId, locale: otherLocale, data: { url }})
-				}
+				await populateURL(localizedDocument, { config, event, locale })
 			}
 		}
 		api.enforceLocale(locale);
