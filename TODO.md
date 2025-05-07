@@ -24,9 +24,9 @@
 [v] Blocks/Tree - global i18n
 [v] Make first user super admin, can't delete it 
 [v] Pagination limit/offset capabilities
+[v] Field hook onChange
+[ ] Update document url on save hook (ex: when parent change for nested collection)
 [ ] Batch offset/update
-[ ] Field hook afterUpdate
-[ ] Field hook maybe add siblings
 [ ] handle Area with required field without default value
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
