@@ -17,11 +17,10 @@ import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type { Dic } from 'rizom/types/util.js';
 import { extractFieldName } from 'rizom/fields/tree/util.js';
 import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
-import type { AdapterTreeInterface } from './tree.js';
-import type { AdapterBlocksInterface } from './blocks.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
 import { logger } from 'rizom/util/logger/index.server.js';
+import { getBlocksTableNames, getTreeTableNames } from 'rizom/util/schema.js';
 
 /////////////////////////////////////////////
 // Types
@@ -30,8 +29,6 @@ import { logger } from 'rizom/util/logger/index.server.js';
 type CreateTransformInterfaceArgs = {
 	configInterface: ConfigInterface;
 	tables: any;
-	treeInterface: AdapterTreeInterface;
-	blocksInterface: AdapterBlocksInterface;
 };
 export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 
@@ -41,9 +38,7 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 
 export const databaseTransformInterface = ({
 	configInterface,
-	tables,
-	blocksInterface,
-	treeInterface
+	tables
 }: CreateTransformInterfaceArgs) => {
 	type Transformed<T> = Omit<T, '_url' | '_type' | '_prototype'> & {
 		title?: string;
@@ -56,10 +51,11 @@ export const databaseTransformInterface = ({
 		api: LocalAPI;
 		event: RequestEvent;
 		depth?: number;
+		withBlank?: boolean;
 	}): Promise<Transformed<T>> => {
 		//
 
-		const { slug, locale, api, event, depth = 0 } = args;
+		const { slug, locale, api, event, withBlank = true, depth = 0 } = args;
 		let doc = args.doc;
 
 		const tableNameRelationFields = `${slug}Rels`;
@@ -72,26 +68,16 @@ export const databaseTransformInterface = ({
 		} else {
 			docLocalAPI = api.area(slug);
 		}
-		
+
 		const blankDocument = docLocalAPI.blank();
 
 		/** Add localized fields */
-		if (locale && tableNameLocales in tables) {
-			const localizedColumns = Object.keys(
-				omit(['ownerId', 'locale'], getTableColumns(tables[tableNameLocales as PrototypeSlug]))
-			);
-
-			const defaultLocalizedValues: Dic = {};
-			for (const column of localizedColumns) {
-				defaultLocalizedValues[column] = null;
-			}
-
-			doc = { ...defaultLocalizedValues, ...doc[tableNameLocales][0], ...doc };
-
+		if (locale && tableNameLocales in tables && doc[tableNameLocales]) {
+			doc = { ...doc[tableNameLocales][0], ...doc };
 			delete doc[tableNameLocales];
 			delete doc.ownerId;
 		}
-
+		
 		let flatDoc: Dic = flatten(doc);
 
 		// Transform flattened keys from database schema format to document format
@@ -102,8 +88,9 @@ export const databaseTransformInterface = ({
 		//////////////////////////////////////////////
 
 		/** Extract all blocks  */
-		const blocksTables = blocksInterface.getBlocksTableNames(slug);
-		const blocks: Dic[] = blocksTables.flatMap(blockTable => doc[blockTable] || []);
+		const blocksTables = getBlocksTableNames(slug, tables);
+		const blocks: Dic[] = blocksTables.flatMap((blockTable) => doc[blockTable] || []);
+
 
 		/** Place each block in its path */
 		for (let block of blocks) {
@@ -131,10 +118,10 @@ export const databaseTransformInterface = ({
 		/////////////////////////////////////////////
 		// Tree handling
 		//////////////////////////////////////////////
-		
+
 		/** Extract all blocks  */
-		const treeTables = treeInterface.getBlocksTableNames(slug);
-		let treeBlocks: Dic[] = treeTables.flatMap(treeTable => doc[treeTable] || []);
+		const treeTables = getTreeTableNames(slug, tables);
+		let treeBlocks: Dic[] = treeTables.flatMap((treeTable) => doc[treeTable] || []);
 
 		treeBlocks = treeBlocks.sort((a, b) => a.path.localeCompare(b.path));
 
@@ -171,7 +158,7 @@ export const databaseTransformInterface = ({
 		}
 
 		/** Place relations */
-		if (tableNameRelationFields in tables) {
+		if (doc[tableNameRelationFields]) {
 			for (const relation of doc[tableNameRelationFields]) {
 				/** Relation collection key ex: usersId */
 				const relationToIdKey = Object.keys(relation).filter(
@@ -229,8 +216,13 @@ export const databaseTransformInterface = ({
 		}
 
 		keysToDelete.push(...privateFieldNames);
-		output = omit(keysToDelete, deepmerge(blankDocument, output));
-		
+
+		if (withBlank) {
+			output = omit(keysToDelete, deepmerge(blankDocument, output));
+		} else {
+			output = omit(keysToDelete, output);
+		}
+
 		return output as T;
 	};
 

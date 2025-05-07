@@ -4,6 +4,7 @@ import { createBlankDocument } from '../../util/doc.js';
 import { isFormField } from '../../util/field.js';
 import { create } from '../collection/create.js';
 import { deleteById } from '../collection/deleteById.js';
+import { select } from '../collection/select.js';
 import { find } from '../collection/find.js';
 import { findAll } from '../collection/findAll.js';
 import { findById } from '../collection/findById.js';
@@ -114,6 +115,43 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
+	select({ select: selectArray, query, locale, sort = '-createdAt', depth = 0, limit, offset }: SelectArgs): Promise<Doc[]> {
+		
+		this.#api.preventOperationLoop()
+
+		const params = {
+			select: selectArray,
+			query,
+			locale: this.#fallbackLocale(locale),
+			config: this.config,
+			event: this.#event,
+			adapter: this.#adapter,
+			api: this.#api,
+			sort,
+			depth,
+			limit,
+			offset
+		};
+		
+		if (this.#event.locals.cacheEnabled) {
+			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+				'select',
+				selectArray.join(','),
+				this.config.slug,
+				this.#event.locals.user?.roles.join(',') || 'no-user',
+				sort,
+				depth,
+				limit,
+				offset,
+				locale,
+				query
+			);
+			return this.#event.locals.rizom.plugins.cache.get(key, () => select<Doc>(params));
+		}
+
+		return select<Doc>(params);
+	}
+
 	findAll({ locale, sort = '-createdAt', depth = 0, limit, offset }: FindAllArgs = {}): Promise<Doc[]> {
 		
 		this.#api.preventOperationLoop()
@@ -218,6 +256,16 @@ type DeleteByIdArgs = { id: string };
 
 type FindArgs = {
 	query: OperationQuery;
+	locale?: string;
+	sort?: string;
+	depth?: number;
+	limit?: number;
+	offset?: number;
+};
+
+type SelectArgs = {
+	select: string[];
+	query?: OperationQuery;
 	locale?: string;
 	sort?: string;
 	depth?: number;

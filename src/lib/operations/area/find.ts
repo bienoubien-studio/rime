@@ -14,11 +14,12 @@ type FindArgs = {
 	adapter: Adapter;
 	api: LocalAPI;
 	depth?: number;
+	select?: string[];
 };
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
 	//
-	const { config, event, adapter, locale, api, depth } = args;
+	const { config, event, adapter, locale, api, depth, select } = args;
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
@@ -27,7 +28,8 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 
 	let documentRaw = await adapter.area.get({
 		slug: config.slug,
-		locale
+		locale,
+		select
 	});
 
 	let document = await transformDocument<T>({
@@ -37,7 +39,9 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		adapter,
 		locale,
 		depth,
-		event
+		event,
+		augment: Array.isArray(select) && select.length ? false : true,
+		withBlank: Array.isArray(select) && select.length ? false : true,
 	});
 	
 	for (const hook of config.hooks?.beforeRead || []) {

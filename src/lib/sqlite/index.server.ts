@@ -22,14 +22,20 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	});
 	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
 	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
-	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({ db, tables });
-	const area: AdapterAreaInterface = createAdapterAreaInterface({ db, tables });
+	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({
+		db,
+		tables,
+		configInterface
+	});
+	const area: AdapterAreaInterface = createAdapterAreaInterface({ 
+		db, 
+		tables, 
+		configInterface 
+	});
 	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
 	const transform: AdapterTransformInterface = databaseTransformInterface({
-		configInterface,
 		tables,
-		treeInterface: tree,
-		blocksInterface: blocks
+		configInterface
 	});
 
 	return {
