@@ -36,7 +36,7 @@
 			<Document
 				class="rz-collection-container__doc"
 				doc={data.doc}
-				onClose={() => goto(`/panel/${slug}`)}
+				onClose={() => goto(`/panel/${slug}`, { invalidateAll : true })}
 				operation={data.operation}
 				readOnly={data.readOnly}
 			/>
