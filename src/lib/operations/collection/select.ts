@@ -41,9 +41,7 @@ export const select = async <T extends GenericDoc>(args: SelectArgs): Promise<T[
     locale,
     select
   });
-
-  console.log(documentsRaw);
-
+  
   const processDocument = async (documentRaw: RawDoc) => {
     let document = await transformDocument<T>({
       raw: documentRaw,
