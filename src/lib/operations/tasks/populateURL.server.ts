@@ -6,10 +6,10 @@ import { logger } from "rizom/util/logger/index.server";
 
 export const populateURL = async (
   document: GenericDoc,
-  context: { 
-    event: RequestEvent, 
+  context: {
+    event: RequestEvent,
     locale?: string,
-    config: CompiledCollection | CompiledArea 
+    config: CompiledCollection | CompiledArea
   }) => {
 
   const { config, event, locale } = context
@@ -17,10 +17,10 @@ export const populateURL = async (
   if (config.url) {
 
     let url
-    
-    try{
+
+    try {
       url = config.url(document as any)
-    }catch(err){
+    } catch (err) {
       return null
     }
 
@@ -48,7 +48,7 @@ export const populateURL = async (
         const docs = await event.locals.api.collection(config.slug as any).select({
           query: `where[id][equals]=${parentId}`,
           select: [attributePath],
-          locale: locale || event.locals.locale
+          locale: locale || event.locals.locale
         });
 
         // Check if there is a result
