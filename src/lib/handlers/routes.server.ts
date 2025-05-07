@@ -2,11 +2,13 @@ import { json, type Handle } from '@sveltejs/kit';
 import apiInit from '../api/init.js';
 import { logout } from '$lib/panel/pages/logout/actions.server.js';
 import buildNavigation from '$lib/panel/navigation.js';
+import { dev } from '$app/environment';
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;
 
-	if (event.url.pathname === '/api/reload-config') {
+	// dummy request to reload config
+	if (dev && event.url.pathname === '/api/reload-config') {
 		return json({ success: true });
 	}
 

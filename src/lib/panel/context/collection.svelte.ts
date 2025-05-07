@@ -181,37 +181,6 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		return [orderedDocs, docsToUpdate];
 	}
 
-	// Utility function to generate a text representation of the collection structure
-	// function generateTreeStructure(documents: GenericDoc[], level = 0) {
-	// 	const lines: string[] = [];
-
-	// 	documents.forEach((doc) => {
-	// 		// Create indentation based on nesting level
-	// 		const indent = '  '.repeat(level);
-
-	// 		// Add the current document with its ID
-	// 		const parentInfo =
-	// 			doc.parent && doc.parent.length ? `(parent: ${doc.parent[0]})` : '(root)';
-
-	// 		lines.push(`${indent}${doc.nestedPosition} - ${doc.id} ${parentInfo}`);
-
-	// 		// Process children recursively
-	// 		if (doc._children && doc._children.length > 0) {
-	// 			lines.push(...generateTreeStructure(doc._children, level + 1));
-	// 		}
-	// 	});
-
-	// 	return lines;
-	// }
-
-	// // Function to log the collection structure to console
-	// function logCollectionStructure() {
-	// 	console.log('Collection Structure:');
-	// 	const structure = generateTreeStructure(nested);
-	// 	structure.forEach((line) => console.log(line));
-	// 	console.log('-------------------');
-	// }
-
 	/**
 	 * Handle document move operations with parent-child relationships
 	 * @param params Object containing from and to information
@@ -364,232 +333,287 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			return new Promise(resolve => resolve(true))
 		}
 	};
-
 	
 	/**
-	 * Update the nested structure via API calls
+	 * Update the nested structure via API calls and regenerate URLs for documents and their children
 	 * @param docsToUpdate Array of documents that need updating
 	 * @returns Promise that resolves to true if all updates succeeded
 	 */
 	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]): Promise<boolean> => {
 		
-		// console.log('call apiUpdateNestedStructure')
 		if (!docsToUpdate.length) {
 			console.log('No documents to update');
 			return true;
 		}
 
-		// Create API update promises for all documents that need updating
-		const updatePromises = docsToUpdate.map(docToUpdate => {
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${docToUpdate.id}`;
-			const body = JSON.stringify({
-				parent: docToUpdate.parent,
-				nestedPosition: docToUpdate.nestedPosition
-			});
-
-			return fetch(url, {
-				method: 'PATCH',
-				body: body,
-				headers: {
-					'Content-Type': 'application/json'
+		/**
+		 * Recursively update a document and all its children
+		 * @param docId ID of the document to update
+		 * @param parentUpdate Whether this is a parent update (includes parent and nestedPosition) or just URL regeneration
+		 * @param processedIds Set of document IDs that have already been processed to prevent infinite loops
+		 */
+			const updateDocumentAndChildren = async (
+				doc: GenericDoc, 
+				parentUpdate = true,
+				processedIds = new Set<string>()
+			): Promise<GenericDoc | null> => {
+				// Prevent infinite loops or duplicate processing
+				if (processedIds.has(doc.id)) {
+					return null;
 				}
-			}).then(response => {
-				// console.log(response)
-				if (!response.ok) {
-					throw new Error(`API error: ${response.status}`);
-				}
-				return response.json();
-			});
-		});
-
-		// Wait for all updates to complete
-		try {
-			const res = await Promise.all(updatePromises);
-			// console.log(res)
-			return true;
-		} catch (error) {
-			console.error(error)
-			return false;
-		}
-	}
-
-	function isList() {
-		return displayMode === 'list';
-	}
-	function isGrid() {
-		return displayMode === 'grid';
-	}
-	function isNested() {
-		return displayMode === 'nested';
-	}
-	
-	function display(mode: DisplayMode) {
-		localStorage.setItem(`collection.${config.slug}.display`, mode);
-		displayMode = mode;
-	}
-
-	function toggleSelectOf(docId: string) {
-		if (selected.includes(docId)) {
-			selected = selected.filter((id) => id !== docId);
-		} else {
-			selected.push(docId);
-		}
-	}
-
-	function selectAll() {
-		selected = docs.map((doc) => doc.id);
-	}
-
-	async function deleteSelection() {
-		deleteDocs(selected);
-		selectMode = false;
-	}
-
-	function filterBy(inputValue: string) {
-		if (inputValue !== '') {
-			const scores: any[] = [];
-			for (const doc of initialDocs) {
-				const asTitle = getValueAtPath(config.asTitle, doc);
-				if (!asTitle) continue;
-				const score = commandScore(asTitle, inputValue);
-				if (score > 0) {
-					scores.push({
-						doc,
-						score
+				processedIds.add(doc.id);
+				
+				// Update the document
+				const url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
+				const body = JSON.stringify(
+					parentUpdate 
+						? { parent: doc.parent, nestedPosition: doc.nestedPosition }
+						: { parent: doc.parent } // Just trigger URL regeneration
+				);
+				
+				try {
+					const response = await fetch(url, {
+						method: 'PATCH',
+						body: body,
+						headers: {
+							'Content-Type': 'application/json'
+						}
 					});
+					
+					if (!response.ok) {
+						console.warn(`API error: ${response.status} for document ${doc.id}`);
+						return null;
+					}
+					
+					// Get the updated document
+					const updatedDoc = await response.json();
+					
+					// Now fetch all children of this document
+					const childrenResponse = await fetch(
+						`${env.PUBLIC_RIZOM_URL}/api/${config.slug}?where[parent][in_array]=${doc.id}&select=id,parent`
+					);
+					
+					if (!childrenResponse.ok) {
+						console.warn(`Could not fetch children of document ${doc.id}`);
+						return updatedDoc;
+					}
+					
+					const childrenData = await childrenResponse.json();
+					const children = childrenData.docs || [];
+					
+					// If there are children, recursively update each one
+					if (children.length > 0) {
+						// Process each child recursively (these are just URL regenerations, not parent updates)
+						await Promise.all(
+							children.map((child:GenericDoc) => updateDocumentAndChildren(child, false, processedIds))
+						);
+					}
+					
+					return updatedDoc;
+				} catch (error) {
+					console.error(`Error updating document ${doc.id}:`, error);
+					return null;
 				}
-			}
-			const results = scores.sort(function (a, b) {
-				if (a.score === b.score) {
-					return a.doc[config.asTitle].localeCompare(b.doc[config.asTitle]);
-				}
-				return b.score - a.score;
-			});
-			docs = results.map((r) => r.doc);
-		} else {
-			docs = [...initialDocs];
-		}
-	}
+			};
 
-	async function deleteDoc(id: string) {
-		const res = await fetch(`/api/${config.slug}/${id}`, {
-			method: 'DELETE',
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-		if (res.status === 200) {
-			docs = [...docs].filter((doc) => doc.id !== id);
-		} else if (res.status === 404) {
-			console.error('not found');
-		}
-	}
+			// Create API update promises for all documents that need updating
+			const updatePromises = docsToUpdate.map(docToUpdate => 
+				updateDocumentAndChildren(docToUpdate)
+			);
 
-	function addDoc(doc: T) {
-		docs.push(doc);
-		sortBy(sortingBy, false);
-	}
-
-	function updateDoc(incomingDoc: T) {
-		for (const [index, doc] of docs.entries()) {
-			if (doc.id === incomingDoc.id) {
-				docs[index] = incomingDoc;
-				return;
+			// Wait for all updates to complete
+			try {
+				const results = await Promise.all(updatePromises);
+				// Update local docs with the updated versions
+				results.forEach(updatedDoc => {
+					if (updatedDoc) {
+						updateDoc(updatedDoc as T);
+					}
+				});
+				return true;
+			} catch (error) {
+				console.error('Error updating nested structure:', error);
+				return false;
 			}
 		}
-	}
 
-	return {
-		get stamp() {
-			return stamp;
-		},
-		get title() {
-			return config.label.singular;
-		},
-		// logCollectionStructure,
-		get statusList () {
-			return statusList
-		},
-		config,
-		canCreate,
-		isList,
-		isGrid,
-		isNested,
-		display,
-
-		columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
-		sortBy,
-		get sortingOrder() {
-			return sortingOrder;
-		},
-		get sortingBy() {
-			return sortingBy;
-		},
-		toggleSelectOf,
-		selectAll,
-		get selected() {
-			return selected;
-		},
-		set selected(value) {
-			selected = value;
-		},
-		get selectMode() {
-			return selectMode;
-		},
-		set selectMode(bool) {
-			selectMode = bool;
-		},
-		deleteSelection,
-
-		filterBy,
-
-		get isUpload() {
-			return isUploadConfig(config);
-		},
-
-
-		/////////////////////////////////////////////
-		// Docs
-		//////////////////////////////////////////////
-		addDoc,
-		updateDoc,
-		deleteDoc,
-		deleteDocs,
-		get docs() {
-			return docs;
-		},
-		set docs(value) {
-			docs = value;
-			stamp = Date.now();
-		},
-		get length() {
-			return docs.length;
-		},
+		function isList() {
+			return displayMode === 'list';
+		}
+		function isGrid() {
+			return displayMode === 'grid';
+		}
+		function isNested() {
+			return displayMode === 'nested';
+		}
 		
-		get nested() {
-			return nested
-		},
-		handleNestedDocumentMove,
+		function display(mode: DisplayMode) {
+			localStorage.setItem(`collection.${config.slug}.display`, mode);
+			displayMode = mode;
+		}
 
+		function toggleSelectOf(docId: string) {
+			if (selected.includes(docId)) {
+				selected = selected.filter((id) => id !== docId);
+			} else {
+				selected.push(docId);
+			}
+		}
+
+		function selectAll() {
+			selected = docs.map((doc) => doc.id);
+		}
+
+		async function deleteSelection() {
+			deleteDocs(selected);
+			selectMode = false;
+		}
+
+		function filterBy(inputValue: string) {
+			if (inputValue !== '') {
+				const scores: any[] = [];
+				for (const doc of initialDocs) {
+					const asTitle = getValueAtPath(config.asTitle, doc);
+					if (!asTitle) continue;
+					const score = commandScore(asTitle, inputValue);
+					if (score > 0) {
+						scores.push({
+							doc,
+							score
+						});
+					}
+				}
+				const results = scores.sort(function (a, b) {
+					if (a.score === b.score) {
+						return a.doc[config.asTitle].localeCompare(b.doc[config.asTitle]);
+					}
+					return b.score - a.score;
+				});
+				docs = results.map((r) => r.doc);
+			} else {
+				docs = [...initialDocs];
+			}
+		}
+
+		async function deleteDoc(id: string) {
+			const res = await fetch(`/api/${config.slug}/${id}`, {
+				method: 'DELETE',
+				headers: {
+					'content-type': 'application/json'
+				}
+			});
+			if (res.status === 200) {
+				docs = [...docs].filter((doc) => doc.id !== id);
+			} else if (res.status === 404) {
+				console.error('not found');
+			}
+		}
+
+		function addDoc(doc: T) {
+			docs.push(doc);
+			sortBy(sortingBy, false);
+		}
+
+		function updateDoc(incomingDoc: T) {
+			for (const [index, doc] of docs.entries()) {
+				if (doc.id === incomingDoc.id) {
+					docs[index] = incomingDoc;
+					return;
+				}
+			}
+		}
+
+		return {
+			get stamp() {
+				return stamp;
+			},
+			get title() {
+				return config.label.singular;
+			},
+			// logCollectionStructure,
+			get statusList () {
+				return statusList
+			},
+			config,
+			canCreate,
+			isList,
+			isGrid,
+			isNested,
+			display,
+
+			columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
+			sortBy,
+			get sortingOrder() {
+				return sortingOrder;
+			},
+			get sortingBy() {
+				return sortingBy;
+			},
+			toggleSelectOf,
+			selectAll,
+			get selected() {
+				return selected;
+			},
+			set selected(value) {
+				selected = value;
+			},
+			get selectMode() {
+				return selectMode;
+			},
+			set selectMode(bool) {
+				selectMode = bool;
+			},
+			deleteSelection,
+
+			filterBy,
+
+			get isUpload() {
+				return isUploadConfig(config);
+			},
+
+
+			/////////////////////////////////////////////
+			// Docs
+			//////////////////////////////////////////////
+			addDoc,
+			updateDoc,
+			deleteDoc,
+			deleteDocs,
+			get docs() {
+				return docs;
+			},
+			set docs(value) {
+				docs = value;
+				stamp = Date.now();
+			},
+			get length() {
+				return docs.length;
+			},
+			
+			get nested() {
+				return nested
+			},
+			handleNestedDocumentMove,
+
+		};
+	}
+
+	const COLLECTION_KEY = 'rizom.collection';
+
+	export function setCollectionContext(args: Args) {
+		const store = createCollectionStore(args);
+		return setContext(`${COLLECTION_KEY}.${args.key || 'root'}`, store);
+	}
+
+	export function getCollectionContext(key: string = 'root') {
+		return getContext<CollectionContext>(`${COLLECTION_KEY}.${key}`);
+	}
+
+	export type CollectionContext = ReturnType<typeof setCollectionContext>;
+
+	type Args<T extends GenericDoc = GenericDoc> = {
+		initial: T[];
+		config: CompiledCollection;
+		canCreate: boolean;
+		key?: string;
 	};
-}
-
-const COLLECTION_KEY = 'rizom.collection';
-
-export function setCollectionContext(args: Args) {
-	const store = createCollectionStore(args);
-	return setContext(`${COLLECTION_KEY}.${args.key || 'root'}`, store);
-}
-
-export function getCollectionContext(key: string = 'root') {
-	return getContext<CollectionContext>(`${COLLECTION_KEY}.${key}`);
-}
-
-export type CollectionContext = ReturnType<typeof setCollectionContext>;
-
-type Args<T extends GenericDoc = GenericDoc> = {
-	initial: T[];
-	config: CompiledCollection;
-	canCreate: boolean;
-	key?: string;
-};
