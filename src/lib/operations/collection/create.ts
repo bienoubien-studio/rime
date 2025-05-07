@@ -15,6 +15,7 @@ import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/types/doc.js';
 import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from '$lib/types/util.js';
+import { populateURL } from '../tasks/populateURL.server.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;
@@ -119,6 +120,12 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	let document = (await api.collection(config.slug).findById({ id: createdId, locale })) as T;
 
+	const url = await populateURL(document, { config, event })
+	if(url && document.url !== url){
+		adapter.collection.update({ slug: config.slug, id: createdId, locale, data: { url }})
+		document.url = url
+	}
+	
 	if (locale) {
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		
@@ -140,10 +147,15 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
 				api.enforceLocale(otherLocale);
-				await api
+				let localizedDocument = await api
 					.collection(config.slug)
 					//@ts-ignore
 					.updateById({ id: createdId, data: incomingData, locale: otherLocale });
+				
+				const url = await populateURL(localizedDocument, { config, event, locale })
+				if(url && localizedDocument.url !== url){
+					adapter.collection.update({ slug: config.slug, id: createdId, locale: otherLocale, data: { url }})
+				}
 			}
 		}
 		api.enforceLocale(locale);

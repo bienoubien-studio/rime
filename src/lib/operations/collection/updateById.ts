@@ -16,6 +16,7 @@ import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { RegisterCollection } from 'rizom';
 import type { DeepPartial } from '$lib/types/util.js';
+import { populateURL } from '../tasks/populateURL.server.js';
 
 type Args<T> = {
 	id: string;
@@ -62,8 +63,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		const result = await hook({
 			/**
 			 * TS is expecting a more specific types, 
-			 * it's defined as RegisterCollection[Slug] in types so devs get their 
-			 * types in the hook args
+			 * but with RegisterCollection[Slug] devs get their 
+			 * types in the hook definition arguments
 			 */
 			data : data as DeepPartial<RegisterCollection[CollectionSlug]>,
 			config,
@@ -122,6 +123,27 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	const document = await api.collection(config.slug).findById({ id, locale });
+	
+	// Populate URL
+	const url = await populateURL(document, { config, event, locale })
+	if(url && document.url !== url){
+		adapter.collection.update({ slug: config.slug, id, locale, data: { url }})
+		document.url = url
+	}
+	
+	// If parent has changed populate URL for all language
+	if('parent' in data){
+		const locales = event.locals.rizom.config.getLocalesCodes();
+		if (locales.length) {
+			for(const otherLocale of locales){
+				const documentLocale = await api.collection(config.slug).findById({ id, locale: otherLocale });
+				const url = await populateURL(documentLocale, { config, event, locale: otherLocale })
+				if(url && documentLocale.url !== url){
+					adapter.collection.update({ slug: config.slug, id, locale: otherLocale, data: { url }})
+				}
+			}
+		}
+	}
 
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
@@ -136,3 +158,4 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	return document as T;
 };
+

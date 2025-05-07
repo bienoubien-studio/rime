@@ -77,9 +77,9 @@ export function collection<S extends string>(
 		fields.push(relation('parent').to(slug as CollectionSlug).hidden());
 	}
 	
-	// if(config.url){
-	// 	fields.push(text('url').hidden());
-	// }
+	if(config.url){
+		fields.push(text('url').hidden().localized());
+	}
 	
 	// Augment Auth fields
 	if (config.auth) {

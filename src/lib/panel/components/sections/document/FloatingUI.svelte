@@ -16,13 +16,11 @@
 		disabled={!form.canSubmit}
 		processing={form.processing}
 	/>
-
+	
 	{#if form.config.url}
 		<LanguageSwitcher onLocalClick={(code) => {
 			const makeUrl = form.config.url!
-			//@ts-ignore
-			const url = makeUrl({ ...form.doc, locale: code})
-			window.location.href = url + '?live=1'
+			window.location.href = form.doc.url + '?live=1'
 		}}  />
 	{/if}
 

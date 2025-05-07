@@ -4,9 +4,10 @@ import LinkComp from './component/Link.svelte';
 import type { FieldHook, FormField } from '$lib/types/fields.js';
 import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
+import { log } from 'console';
 
 // Before save populate ressource URL
-const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, locale, documentId }) => {
+const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, documentId }) => {
 	const hasValue = !!value;
 	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
 		!['url', 'email', 'tel', 'anchor'].includes(type);
@@ -18,10 +19,10 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { api, lo
 		if( link.value !== documentId ){
 			try {
 				let doc;
-				if (api.rizom.config.isCollection(link.type)) {
-					doc = await api.collection(link.type).findById({ id: link.value || '', locale });
-				} else if( api.rizom.config.isArea(link.type) ) {
-					doc = await api.area(link.type).find({ locale });
+				if ( event.locals.rizom.config.isCollection(link.type) ) {
+					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`).then(r => r.json());
+				} else if( event.locals.rizom.config.isArea(link.type) ) {
+					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`).then(r => r.json());
 				}
 				if (!doc) {
 					link.value = null;
@@ -49,8 +50,8 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.hooks = {
-			beforeRead: [],
-			beforeSave: [populateRessourceURL],
+			beforeRead: [populateRessourceURL],
+			beforeSave: [],
 			beforeValidate: []
 		};
 	}
