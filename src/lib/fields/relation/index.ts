@@ -11,13 +11,13 @@ type RelationValue = string | Array<Relation | string>;
 
 const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 	value: RelationValue,
-	{ api, config }
+	{ event, config }
 ) => {
 	const output = [];
 
 	const retrieveRelation = async (id: string) => {
 		try {
-			return await api.collection(config.relationTo).findById({ id });
+			return await event.locals.api.collection(config.relationTo).findById({ id });
 		} catch (err: any) {
 			console.error('Error in relation beforValidate hook : ' + err.message);
 		}
