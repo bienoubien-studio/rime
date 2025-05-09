@@ -88,6 +88,13 @@
 		padding: var(--rz-size-2) var(--rz-size-4);
 	}
 
+	.rz-button--size-xs {
+		height: var(--rz-size-6);
+		padding: var(--rz-size-1) var(--rz-size-2);
+		font-size: var(--rz-text-2xs);
+		border-radius: var(--rz-radius-md);
+	}
+
 	.rz-button--size-sm {
 		height: var(--rz-size-8);
 		padding: var(--rz-size-2) var(--rz-size-3);
