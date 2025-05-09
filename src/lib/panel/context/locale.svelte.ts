@@ -8,9 +8,9 @@ function createStore(initial?: string) {
 	let bcp47 = $state<string>();
 	const config = getConfigContext();
 
-	const setValue = (val?: string) => {
-		if (config.raw.localization && val) {
-			code = val;
+	const setValue = (value?: string) => {
+		if (config.raw.localization && value) {
+			code = value;
 			bcp47 = config.raw.localization.locales.find((l) => l.code === code)?.bcp47;
 		}
 	};
@@ -34,7 +34,9 @@ function createStore(initial?: string) {
 
 	return {
 		dateFormat,
-
+		get defaultCode(){
+			return config.raw.localization?.default
+		},
 		get code() {
 			return code;
 		},
