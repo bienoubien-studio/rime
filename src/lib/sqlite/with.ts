@@ -1,4 +1,4 @@
-import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
+import { asc, eq, getTableColumns, SQL, like, or } from 'drizzle-orm';
 import type { Dic } from '$lib/types/util';
 import type { ConfigInterface } from 'rizom/config/index.server';
 import { getBlocksTableNames, getTreeTableNames } from 'rizom/util/schema';
@@ -37,6 +37,11 @@ export const buildWithParam = ({
 
 	const withParam: Dic = {};
 	
+	// Track paths for different field types
+	const directRelationPaths: string[] = [];
+	const blockPaths: string[] = [];
+	const treePaths: string[] = [];
+	
 	for (const path of select) {
 		// Convert dot notation to double underscore notation for SQLite queries
 		const sqlPath = path.replace(/\./g, '__');
@@ -44,6 +49,7 @@ export const buildWithParam = ({
 		const fieldConfig = getFieldConfigByPath(path, documentConfig.fields);
 		if (fieldConfig && isRelationField(fieldConfig)) {
 			// Handle relation fields
+			directRelationPaths.push(path);
 			if (!withParam[`${slug}Rels`]) {
 				withParam[`${slug}Rels`] = {
 					orderBy: [asc(tables[`${slug}Rels`].path), asc(tables[`${slug}Rels`].position)]
@@ -51,6 +57,7 @@ export const buildWithParam = ({
 			}
 		} else if (fieldConfig && isBlocksFieldRaw(fieldConfig)) {
 			// Handle blocks fields
+			blockPaths.push(path);
 			const blocksTables = getBlocksTableNames(slug, tables);
 			for (const blocksTable of blocksTables) {
 				if (!withParam[blocksTable]) {
@@ -80,6 +87,7 @@ export const buildWithParam = ({
 			}
 		} else if (fieldConfig && isTreeFieldRaw(fieldConfig)) {
 			// Handle tree fields
+			treePaths.push(path);
 			const treeTables = getTreeTableNames(slug, tables);
 			for (const treeTable of treeTables) {
 				if (!withParam[treeTable]) {
@@ -124,6 +132,112 @@ export const buildWithParam = ({
 							columns: { [sqlPath]: true } 
 						};
 					}
+				}
+			}
+		}
+	}
+	
+	// Handle nested relationships
+	
+	// 1. Include relations table if we have any container paths (blocks or trees)
+	if ((directRelationPaths.length > 0 || blockPaths.length > 0 || treePaths.length > 0) && 
+		`${slug}Rels` in tables && 
+		!withParam[`${slug}Rels`]) {
+		
+		const relsTable = tables[`${slug}Rels`];
+		
+		if (blockPaths.length > 0 || treePaths.length > 0) {
+			// Create a where condition that matches relations within any of the container paths
+			withParam[`${slug}Rels`] = {
+				where: (relation: any, { like, or }: any) => {
+					const conditions = [];
+					
+					// Add conditions for block paths
+					for (const path of blockPaths) {
+						conditions.push(like(relation.path, `${path}__%`));
+					}
+					
+					// Add conditions for tree paths
+					for (const path of treePaths) {
+						conditions.push(like(relation.path, `${path}__%`));
+					}
+					
+					// Add direct relation paths if any
+					for (const path of directRelationPaths) {
+						conditions.push(like(relation.path, path));
+					}
+					
+					return or(...conditions);
+				},
+				orderBy: [asc(relsTable.path), asc(relsTable.position)]
+			};
+		} else {
+			// If we only have direct relation paths, use the standard approach
+			withParam[`${slug}Rels`] = {
+				orderBy: [asc(relsTable.path), asc(relsTable.position)]
+			};
+		}
+	}
+	
+	// 2. Include tree tables for blocks that might contain trees
+	if (blockPaths.length > 0) {
+		const treeTables = getTreeTableNames(slug, tables);
+		for (const treeTable of treeTables) {
+			if (!withParam[treeTable]) {
+				const treeTableObj = tables[treeTable];
+				
+				withParam[treeTable] = {
+					where: (tree: any, { like, or }: any) => {
+						const conditions = blockPaths.map(path => {
+							return like(tree.path, `${path}__%`);
+						});
+						return or(...conditions);
+					},
+					orderBy: [asc(treeTableObj.position)]
+				};
+				
+				// Handle localized trees
+				if (locale && `${treeTable}Locales` in tables) {
+					withParam[treeTable] = {
+						...withParam[treeTable],
+						with: {
+							[`${treeTable}Locales`]: {
+								where: eq(tables[`${treeTable}Locales`].locale, locale)
+							}
+						}
+					};
+				}
+			}
+		}
+	}
+	
+	// 3. Include block tables for trees that might contain blocks
+	if (treePaths.length > 0) {
+		const blocksTables = getBlocksTableNames(slug, tables);
+		for (const blocksTable of blocksTables) {
+			if (!withParam[blocksTable]) {
+				const blocksTableObj = tables[blocksTable];
+				
+				withParam[blocksTable] = {
+					where: (block: any, { like, or }: any) => {
+						const conditions = treePaths.map(path => {
+							return like(block.path, `${path}__%`);
+						});
+						return or(...conditions);
+					},
+					orderBy: [asc(blocksTableObj.position)]
+				};
+				
+				// Handle localized blocks
+				if (locale && `${blocksTable}Locales` in tables) {
+					withParam[blocksTable] = {
+						...withParam[blocksTable],
+						with: {
+							[`${blocksTable}Locales`]: {
+								where: eq(tables[`${blocksTable}Locales`].locale, locale)
+							}
+						}
+					};
 				}
 			}
 		}
