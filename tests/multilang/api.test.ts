@@ -186,6 +186,24 @@ test('Should create a page', async ({ request }) => {
 	pageId = doc.id;
 });
 
+test('Should get only the layout page prop', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/pages/?where[id][equals]=${pageId}&select=layout.components`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		}
+	});
+	expect(response.status()).toBe(200);
+	const { docs } = await response.json();
+	const doc = docs[0]
+	expect(Object.keys(doc).length).toBe(2);
+	expect(doc.id).toBeDefined();
+	expect(doc.layout).toBeDefined()
+	expect(doc.layout.components).toBeDefined();
+	expect(doc.layout.components.length).toBe(2);
+	expect(doc.layout.components.at(0).text).toBe('Foo');
+	expect(doc.layout.components.at(1).legend).toBe('legend');
+});
+
 test('Should return the home page', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${homeId}`).then((response) => {
 		return response.json();
