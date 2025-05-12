@@ -38,8 +38,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	console.log(1, data)
-
 	const original = (await api.collection(config.slug).findById({ locale, id })) as T;
 
 	if (config.auth) {
@@ -61,8 +59,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		configMap,
 		operation: 'update'
 	});
-
-	
 	
 	if(!isFallbackLocale){
 		for (const hook of config.hooks?.beforeUpdate || []) {
@@ -84,7 +80,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		}
 	}
 
-	
 	const incomingPaths = Object.keys(configMap);
 
 	await adapter.collection.update({
