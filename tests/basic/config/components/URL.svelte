@@ -5,10 +5,10 @@
 	const { form }: { form: DocumentFormContext<any> }= $props();
 </script>
 
-{#if form.config.url}
-	<a href={form.config.url(form.doc) || null} class="rz-comp-url" target="_blank">
+{#if form.doc.url}
+	<a href={form.doc.url} class="rz-comp-url" target="_blank">
 		<Link size="12" />
-		{form.config.url(form.doc)}
+		{form.doc.url}
 	</a>
 {/if}
 
@@ -22,10 +22,8 @@
 		gap: var(--rz-size-3);
 		justify-content: flex-start;
 		align-items: center;
-		/* font-family: monospace; */
 		letter-spacing: 0.02em;
 		font-size: var(--rz-text-sm);
-		margin: 0 var(--rz-fields-padding);
 		padding: var(--rz-size-1) var(--rz-size-3);
 		border: 1px solid hsl(var(--rz-ground-2) / 0.2);
 	}
