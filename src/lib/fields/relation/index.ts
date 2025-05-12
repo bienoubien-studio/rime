@@ -6,6 +6,8 @@ import type { FieldHook, FormField } from '$lib/types/fields';
 import { capitalize } from '$lib/util/string';
 import type { Relation } from '$lib/sqlite/relations';
 import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { RizomError } from 'rizom/errors';
+import { logger } from 'rizom/util/logger/index.server';
 
 type RelationValue = string | Array<Relation | string>;
 
@@ -14,17 +16,18 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 	{ event, config }
 ) => {
 	const output = [];
-
+	
 	const retrieveRelation = async (id: string) => {
 		try {
 			return await event.locals.api.collection(config.relationTo).findById({ id });
 		} catch (err: any) {
-			console.error('Error in relation beforValidate hook : ' + err.message);
+			logger.error('Error in relation beforValidate hook : ' + err.message);
+			throw new RizomError(RizomError.OPERATION_ERROR, err.message)
 		}
-		return null;
 	};
 
 	if (value && Array.isArray(value)) {
+		
 		for (const relation of value) {
 			let documentId;
 			if (typeof relation === 'string') {
