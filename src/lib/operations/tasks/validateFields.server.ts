@@ -2,8 +2,6 @@ import { RizomFormError } from '$lib/errors/index.js';
 import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
 import type { GenericDoc } from '$lib/types/doc.js';
 import type { FormErrors } from '$lib/types/panel.js';
-import type { User } from '$lib/types/auth.js';
-import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import type { DeepPartial } from '$lib/types/util';
