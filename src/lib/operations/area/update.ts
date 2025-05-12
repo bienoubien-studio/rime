@@ -3,6 +3,7 @@ import type { Adapter } from '$lib/sqlite/index.server.js';
 import type { CompiledArea } from '$lib/types/config.js';
 import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { GenericDoc } from '$lib/types/doc.js';
+import type { AreaSlug } from '$lib/types/index.js';
 import { RizomError } from '$lib/errors/index.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
@@ -10,6 +11,7 @@ import { saveBlocks } from '../tasks/blocks/index.server.js';
 import { saveTreeBlocks } from '../tasks/tree/index.server.js';
 import { saveRelations } from '../tasks/relations/index.server.js';
 import type { DeepPartial } from '$lib/types/util.js';
+import type { RegisterArea } from 'rizom';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -20,7 +22,7 @@ type UpdateArgs<T> = {
 	api: LocalAPI;
 };
 
-export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
+export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
 	const { config, event, adapter, locale, api } = args;
 	let data = args.data;
@@ -30,26 +32,30 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await api.area(config.slug).find({ locale })) as T;
+	const original = (await api.area(config.slug).find({ locale })) as unknown as T;
 	const originalConfigMap = buildConfigMap(original, config.fields);
 	const configMap = buildConfigMap(data, config.fields);
 
 	data = await validateFields({
 		data,
-		api,
+		event,
 		locale,
 		config,
 		configMap,
 		original,
 		operation: 'update',
-		user: event.locals.user
 	});
 
 	for (const hook of config.hooks?.beforeUpdate || []) {
+		/**
+		 * TS is expecting a more specific types, 
+		 * but with RegisterArea[AreaSlug] devs get their 
+		 * types in the hook definition arguments
+		 */
 		const result = await hook({
-			data,
+			data: data as DeepPartial<RegisterArea[AreaSlug]>,
 			config,
-			originalDoc: original,
+			originalDoc: original as unknown as RegisterArea[AreaSlug],
 			operation: 'update',
 			api,
 			rizom: event.locals.rizom,
@@ -115,5 +121,5 @@ export const update = async <T extends GenericDoc>(args: UpdateArgs<T>) => {
 		});
 	}
 
-	return document as T;
+	return document as unknown as T;
 };

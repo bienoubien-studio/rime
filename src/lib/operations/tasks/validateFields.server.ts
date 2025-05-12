@@ -8,19 +8,21 @@ import type { ConfigMap } from './configMap/types';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import type { DeepPartial } from '$lib/types/util';
 import { logger } from '$lib/util/logger/index.server';
+import type { RequestEvent } from '@sveltejs/kit';
 
 export const validateFields = async <T extends GenericDoc>(args: {
 	data: DeepPartial<T>;
-	api: LocalAPI;
+	event: RequestEvent;
 	locale?: string;
 	config: CompiledArea | CompiledCollection;
 	configMap: ConfigMap;
 	original?: T;
 	operation: 'create' | 'update';
-	user?: User;
 }) => {
 	const errors: FormErrors = {};
-	const { api, locale, configMap, original, operation, user } = args;
+	const { event, locale, configMap, original, operation } = args;
+	const { user, api } = event.locals
+
 	const slug = args.config.slug;
 	const isCollection = api.rizom.config.isCollection(slug);
 	let output = { ...args.data };
@@ -60,7 +62,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 		if (config.hooks?.beforeValidate) {
 			if (value) {
 				for (const hook of config.hooks.beforeValidate) {
-					value = await hook(value, { config, api, locale });
+					value = await hook(value, { config, event });
 					output = setValueAtPath(output, key, value);
 				}
 			}
@@ -96,7 +98,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 		if (config.hooks?.beforeSave) {
 			if (value) {
 				for (const hook of config.hooks.beforeSave) {
-					value = await hook(value, { config, api, locale });
+					value = await hook(value, { config, event });
 					output = setValueAtPath(output, key, value);
 				}
 			}
