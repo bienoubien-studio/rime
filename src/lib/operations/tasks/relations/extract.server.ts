@@ -35,13 +35,31 @@ export const extractRelations = ({ ownerId, data, configMap, locale }: Args) => 
 				}
 				return result;
 			};
+			
+			const completeRelation = ({ value, position = 0 }: AugmentRelationArgs) => {
+				const result: BeforeOperationRelation = {
+					position,
+					relationTo: config.relationTo,
+					documentId: value.documentId,
+					ownerId,
+					path
+				};
+				if (localized) {
+					result.locale = locale;
+				}
+				return result;
+			};
 
+			// If value is array
 			if (Array.isArray(relationRawValue)) {
 				output = relationRawValue.map((value, n) => {
+					// Array of string build the relation value
 					if (typeof value === 'string') {
 						return relationFromString({ value, position: n });
+					}else{
+						// Complete possible missing props
+						return completeRelation({ value, position: n })
 					}
-					return value;
 				});
 				// Check if it's a string
 			} else if (typeof relationRawValue === 'string') {
@@ -56,5 +74,10 @@ export const extractRelations = ({ ownerId, data, configMap, locale }: Args) => 
 
 type RelationFromStringArgs = {
 	value: string;
+	position?: number;
+};
+
+type AugmentRelationArgs = {
+	value: Partial<BeforeOperationRelation> & { documentId: string };
 	position?: number;
 };
