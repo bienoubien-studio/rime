@@ -34,6 +34,10 @@ export class LocalAPI {
 		this.#requestEvent.locals.locale = locale;
 	}
 
+	getLocale() {
+		return this.#requestEvent.locals.locale
+	}
+	
 	collection<Slug extends keyof RegisterCollection>(slug: Slug) {
 		const collectionConfig = this.rizom.config.getCollection(slug);
 		if (!collectionConfig) {
