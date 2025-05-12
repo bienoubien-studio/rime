@@ -57,12 +57,11 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	data = await setDefaultValues({ data, adapter, configMap });
 	data = await validateFields({
 		data,
-		api,
+		event,
 		locale,
 		config,
 		configMap,
 		operation: 'create',
-		user: event.locals.user
 	});
 
 	for (const hook of config.hooks?.beforeCreate || []) {
