@@ -40,6 +40,7 @@ export type {
 // Doc types
 export type {
 	BaseDoc,
+	AreaSlug,
 	CollectionSlug,
 	DocPrototype,
 	GenericBlock,

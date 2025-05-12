@@ -56,5 +56,5 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		document = result.doc as unknown as T;
 	}
 	
-	return document as T;
+	return document;
 };
