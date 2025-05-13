@@ -9,10 +9,8 @@
 	import ButtonStatus from './ButtonStatus.svelte';
 	import type { CompiledCollection, CompiledArea } from '$lib/types/config';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { invalidateAll } from '$app/navigation';
-	import Cookies from 'js-cookie';
-
+	
 	// Props
 	type Props = {
 		onClose?: any;
@@ -65,7 +63,6 @@
 
 		<LanguageSwitcher
 			onLocalClick={(code) => {
-				Cookies.set('Locale', code);
 				invalidateAll();
 			}}
 		/>

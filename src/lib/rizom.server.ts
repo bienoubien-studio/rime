@@ -63,15 +63,30 @@ function createRizom() {
 			return config;
 		},
 
+		/**
+		 * define the locale to use in the event
+		 * based on this hierarchy :
+		 * - locale inside the url ex: /en/foo
+		 * - locale from searchParams
+		 * - locale from cookie
+		 * - default locale
+		 */
 		defineLocale({ event }: { event: RequestEvent }) {
+			
+			// locale present inside the url params ex : /en/foo
 			const params = event.params;
+			const paramLocale = params.locale;
+			
+			// locale present as a search param ex : ?locale=en
 			const searchParams = event.url.searchParams;
 			const hasParams = searchParams.toString();
-			const paramLocale = params.locale;
 			const searchParamLocale = hasParams && searchParams.get('locale');
+			
+			// locale from the cookie
 			const cookieLocale = event.cookies.get('Locale');
 			const defaultLocale = config.getDefaultLocale();
 			const locale = paramLocale || searchParamLocale || cookieLocale;
+			
 			if (locale && config.getLocalesCodes().includes(locale)) {
 				// event.cookies.set('Locale', locale, { path: '.' });
 				return locale;

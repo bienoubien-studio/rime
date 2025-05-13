@@ -7,7 +7,6 @@
 	import SelectUI from './SelectUI.svelte';
 	import ButtonCreate from './ButtonCreate.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import Cookies from 'js-cookie';
 	import { invalidateAll } from '$app/navigation';
 
 	type Props = { compact: boolean };
@@ -54,12 +53,7 @@
 				<CustomHeaderComponent />
 			{/each}
 			<ButtonCreate />
-			<LanguageSwitcher
-				onLocalClick={(code) => {
-					Cookies.set('Locale', code);
-					invalidateAll();
-				}}
-			/>
+			<LanguageSwitcher onLocalClick={(code) => invalidateAll()} />
 		</div>
 	{/if}
 </div>

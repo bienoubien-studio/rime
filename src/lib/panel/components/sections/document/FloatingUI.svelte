@@ -4,9 +4,28 @@
 	import { ChevronLeft } from '@lucide/svelte';
 	import ButtonSave from './ButtonSave.svelte';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
+	import { env } from '$env/dynamic/public';
+	import { type GenericDoc } from '$lib/types/doc.js';
+	import { toast } from 'svelte-sonner';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
+
+	function onLocaleClick (code:string) {
+		fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
+				.then((response) => response.json())
+				.then((data: { docs: GenericDoc[] }) => {
+						if(Array.isArray(data.docs) && data.docs.length){
+							const url = data.docs[0].url
+							window.location.href = url + '?live=1'
+						}
+					}
+				).catch(err => {
+					toast.error(`an error occured getting ${code} url`)
+					console.error(err)
+				})
+	}
+
 </script>
 
 <div class="rz-floating-ui">
@@ -18,10 +37,7 @@
 	/>
 	
 	{#if form.config.url}
-		<LanguageSwitcher onLocalClick={(code) => {
-			const makeUrl = form.config.url!
-			window.location.href = form.doc.url + '?live=1'
-		}}  />
+		<LanguageSwitcher onLocalClick={onLocaleClick}  />
 	{/if}
 
 </div>

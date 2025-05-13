@@ -2,6 +2,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import Cookies from 'js-cookie';
 
 	type Props = { onLocalClick : (code:string) => void }
 	const { onLocalClick }: Props = $props()
@@ -18,7 +19,10 @@
 			<Button
 				disabled={item.code === locale.code}
 				data-active={item.code === locale.code ? '' : null}
-				onclick={() => onLocalClick(item.code)}
+				onclick={() => {
+					Cookies.set('Locale', item.code);
+					onLocalClick(item.code)
+				}}
 				variant="outline"
 				size="icon"
 			>
