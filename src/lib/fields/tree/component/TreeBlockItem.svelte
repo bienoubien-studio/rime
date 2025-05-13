@@ -37,7 +37,7 @@
 	const { once } = useOnce();
 
 	once(() => {
-		if (!itemValue || (itemValue && itemValue.id.startsWith('temp-'))) {
+		if (!itemValue) {
 			isOpen = true;
 		} else if (itemValue) {
 			isOpen = (localStorage.getItem(`${itemValue.id}:open`) || 'false') === 'true';
@@ -185,6 +185,10 @@
 		display: none;
 	}
 
+	.rz-tree-item__content--closed:has(:global(.rz-field-error)) {
+		@mixin ring var(--rz-color-error);
+	}
+	
 	:global(.rz-tree-item-actions) {
 		opacity: 0;
 		pointer-events: none;

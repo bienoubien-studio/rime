@@ -252,6 +252,10 @@
 		gap: var(--rz-size-4);
 		min-width: 140px;
 		padding: 0 var(--rz-size-4);
+		:global(.rz-label){
+			text-wrap: nowrap;
+		}
+
 		@container rz-field-root (max-width:420px) {
 			min-width: auto;
 			:global(.rz-label) {

@@ -5,7 +5,7 @@ import type { WithoutBuilders } from '$lib/types/util.js';
 import { isCamelCase } from '$lib/util/string.js';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
-export const tab = (label: string) => new TabBuilder(label);
+export const tab = (name: string) => new TabBuilder(name);
 
 export class TabsBuilder extends FieldBuilder<TabsField> {
 	constructor(...tabs: TabBuilder[]) {
