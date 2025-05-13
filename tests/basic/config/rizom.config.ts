@@ -121,6 +121,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 const Pages = collection('pages', {
 	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
 	group: 'content',
+	description: "Edit and create your website pages",
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
 	live: true,
@@ -151,6 +152,7 @@ const Link = [
 const Navigation = area('navigation', {
 	icon: Menu,
 	group: 'global',
+	description: "Define your website navigation",
 	fields: [
 		//
 		tabs(
@@ -172,6 +174,7 @@ const Navigation = area('navigation', {
 const Settings = area('settings', {
 	icon: Settings2,
 	group: 'system',
+	description: "System settings, maintenance and more",
 	fields: [toggle('maintenance').label('Maintenance'), relation('logo').to('medias')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -181,6 +184,7 @@ const Settings = area('settings', {
 const Informations = area('infos', {
 	icon: Contact,
 	group: 'global',
+	description: "Update your website information, email, name of the website,...",
 	fields: [email('email'), slug('instagram').placeholder('nom-du-compte'), textarea('address').label('Adresse')],
 	access: {
 		read: () => true
@@ -206,6 +210,7 @@ const tabNewsAttributes = tab('attributes').fields(
 const News = collection('news', {
 	icon: NotebookText,
 	group: 'content',
+	description: "Create article for your readers",
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
 	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
@@ -218,6 +223,7 @@ const News = collection('news', {
 
 const Medias = collection('medias', {
 	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
+	description: "Manage images, video, audio, documents,...",
 	upload: true,
 	icon: Images,
 	group: 'content',

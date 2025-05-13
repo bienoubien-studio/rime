@@ -19,6 +19,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 					.then((docs: any[]) =>
 						entries.push({
 							prototype: 'collection',
+							description: collection.description || null,
 							slug: collection.slug,
 							gender: collection.label?.gender || 'm',
 							canCreate: user && collection.access.create(user, {}),
@@ -46,6 +47,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',
+				description: area.description || null,
 				slug: area.slug,
 				link: `/panel/${area.slug}`,
 				title: area.label || capitalize(area.slug)

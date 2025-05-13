@@ -10,6 +10,7 @@ export default {
 	drop_file: 'Déposez votre fichier ici',
 	edit_link: 'Editer le lien',
 	resetPassword: 'Réinitialiser le mot de passe',
+	live_in_sync: 'Synchronisation avec le container',
 	newPassword: 'Nouveau mot de passe',
 	confirmPassword: 'Confirmez le mot de passe',
 	forgotPassword: 'Mot de passe oublié',
@@ -26,5 +27,6 @@ export default {
 	select_all: 'Tout sélectionner',
 	signin: 'Se connecter',
 	view_page: 'Voir la page',
-	view_site: 'Voir le site'
+	view_site: 'Voir le site',
+	welcome: 'Bienvenue'
 };

@@ -27,5 +27,6 @@ export default {
 	select_all: 'Select all',
 	signin: 'Sign In',
 	view_page: 'View page',
-	view_site: 'View website'
+	view_site: 'View website',
+	welcome: 'Welcome'
 };

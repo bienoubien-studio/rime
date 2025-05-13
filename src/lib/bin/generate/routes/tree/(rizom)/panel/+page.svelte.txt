@@ -3,4 +3,4 @@
   const { data } = $props();
 </script>
 
-<Dashboard entries={data.entries} />
+<Dashboard entries={data.entries} user={data.user} />

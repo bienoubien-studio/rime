@@ -3,7 +3,6 @@ import type { Access, User } from './auth.js';
 import type { AnyField, Field, FieldsType, Option } from './fields.js';
 import type { AreaSlug, CollectionSlug, GenericDoc } from './doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
-import type { ComponentType } from 'svelte.js';
 import type { AtLeastOne, WithoutBuilders, WithRequired } from './util.js';
 import type { BaseDoc, GetRegisterType, RegisterArea } from 'rizom';
 import type { FieldBuilder } from '$lib/fields/builders/field.js';
@@ -13,6 +12,8 @@ import type { RegisterCollection } from '$lib';
 import type { SMTPConfig } from '$lib/plugins/mailer/types.js';
 import type { Plugin } from '$lib/plugins/index.js';
 import type { IconProps } from '@lucide/svelte';
+import type { Component } from 'svelte';
+import type { DashboardEntry } from 'rizom/panel/pages/dashboard/types.js';
 
 export type DocumentPrototype = 'collection' | 'area';
 
@@ -62,8 +63,8 @@ export interface Config {
 		language?: PanelLanguage;
 		navigation?: NavigationConfig;
 		components?: {
-			header?: ComponentType[];
-			dashboard?: ComponentType;
+			header?: Component[];
+			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
 		};
 	};
 	cache?: { isEnabled?: (event: RequestEvent) => boolean };
@@ -110,10 +111,16 @@ type CollectionLabel = {
 
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
+	/** Description for the collection/area, basically displayed on the dashboard */
+	description?: string;
+	/** Sidebar navigation group */
 	group?: string;
+	/** Document fields definition */
 	fields: FieldBuilder<Field>[];
-	icon?: ComponentType;
+	/** Optional icon */
+	icon?: Component<IconProps>;
 	access?: Access;
+	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
 };
 
@@ -121,10 +128,16 @@ export type DocumentStatus = { value: string; color: string };
 
 export type BaseCollection<S> = {
 	slug: S;
+	/** The collection label */
 	label?: CollectionLabel;
 	auth?: true;
 	hooks?: CollectionHooks<RegisterCollection[S]>;
+	/** A function to generate the document URL */
 	url?: (doc: RegisterCollection[S]) => string;
+	/** Enable document status, 
+	 * if set to true "published" and "draft"
+	 * will be used as default status
+	 */
 	status?: boolean | DocumentStatus[];
 	nested?: boolean;
 } & BaseDocConfig;
@@ -168,8 +181,10 @@ export type Collection<S> = BaseCollection<S> &
 	);
 
 export type Area<S> = BaseDocConfig & {
+	/** A function to generate the document URL */
 	url?: (doc: RegisterArea[S]) => string;
 	hooks?: AreaHooks<RegisterArea[S]>;
+	/** The area label */
 	label?: string;
 };
 
@@ -179,7 +194,9 @@ export type DocConfig = Collection | Area;
 export type BuiltDocConfig = BuiltCollection | BuiltArea;
 
 export type BuiltConfig = {
+	/** Database location relative to the root project ex: ./db/my-app.sqlite */
 	database: string;
+	/** The database location */
 	siteUrl?: string;
 	collections: BuiltCollection[];
 	areas: BuiltArea[];
@@ -193,9 +210,9 @@ export type BuiltConfig = {
 		navigation: NavigationConfig;
 		access: (user?: User) => boolean;
 		components?: {
-			header: ComponentType[];
-			collectionHeader: ComponentType[];
-			// dashboard: ComponentType;
+			header: Component[];
+			collectionHeader: Component[];
+			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
 		};
 		language: 'fr' | 'en';
 	};
@@ -207,9 +224,9 @@ export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | '
 		language: 'fr' | 'en';
 		navigation: NavigationConfig;
 		components: {
-			header: ComponentType[];
-			dashboard?: ComponentType;
-			collectionHeader: ComponentType[];
+			header: Component[];
+			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
+			collectionHeader: Component[];
 		};
 	};
 };
@@ -219,8 +236,8 @@ type NavigationConfig = { groups: Array<{ label: string; icon: Component<IconPro
 export type CustomPanelRoute = {
 	group?: string;
 	label: string;
-	icon?: ComponentType;
-	component: ComponentType;
+	icon?: Component<IconProps>;
+	component: Component;
 };
 
 export type BuiltCollection = Omit<Collection<CollectionSlug>, 'status'> & {
@@ -243,7 +260,7 @@ export type BuiltArea = Area<AreaSlug> & {
 
 export type ImageSizesConfig = {
 	name: string;
-	/** If none provide will fallback to original file extesion */
+	/** If none provided, will fallback to original file extesion */
 	out?: Array<'jpg' | 'webp'>;
 	/** Default compression: 60 */
 	compression?: number;

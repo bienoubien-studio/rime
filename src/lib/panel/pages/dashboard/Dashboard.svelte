@@ -1,21 +1,18 @@
 <script lang="ts">
-	import { Eye } from '@lucide/svelte';
+	import { ArrowUpRight, Eye } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { t__ } from '$lib/i18n/index.js';
 	import type { DashboardEntry } from './types.js';
-	import Cookies from 'js-cookie';
 	import { invalidateAll } from '$app/navigation';
+	import type { User } from 'rizom/types/auth.js';
 
-	type Props = { entries: DashboardEntry[] };
-	const { entries }: Props = $props();
+	type Props = { entries: DashboardEntry[]; user?: User };
+	const { entries, user }: Props = $props();
 
 	const config = getConfigContext();
-
-	const locale = getLocaleContext();
 </script>
 
 <div class="rz-dashboard">
@@ -31,28 +28,32 @@
 					<CustomHeaderComponent />
 				{/each}
 			</div>
-			<LanguageSwitcher
-				onLocalClick={(code) => {
-					Cookies.set('Locale', code);
-					invalidateAll();
-				}}
-			/>
+			<LanguageSwitcher onLocalClick={() => invalidateAll()} />
 		</PageHeader>
 	{/if}
 
 	{#if config.raw.panel.components.dashboard}
 		{@const CustomDashBoard = config.raw.panel.components.dashboard}
-		<CustomDashBoard />
+		<CustomDashBoard {entries} />
 	{:else}
+		<header class="rz-dashboard__header">
+			{t__('common.welcome')}
+			{user!.name}
+		</header>
 		<div class="rz-dashboard__content">
 			{#each entries as entry}
 				{@const Icon = config.raw.icons[entry.slug]}
-
-				<a href={entry.link}>
-					<Icon size="32" />
+				<a class="rz-dashboard__entry" href={entry.link}>
+					<div class="rz-dashboard__entry-icon">
+						<Icon size="16" strokeWidth="1" />
+					</div>
 					<header>
 						<h2>{entry.title}</h2>
+						<ArrowUpRight strokeWidth="1" size="18" />
 					</header>
+					{#if entry.description}
+						<p class="rz-dashboard__entry-description">{entry.description}</p>
+					{/if}
 				</a>
 			{/each}
 		</div>
@@ -73,38 +74,68 @@
 
 		h2 {
 			font-size: var(--rz-text-xl);
-			@mixin font-light;
+			@mixin font-medium;
 		}
+	}
+
+	.rz-dashboard__entry-icon {
+		width: var(--rz-size-10);
+		height: var(--rz-size-10);
+		background-color: hsl(var(--rz-ground-7));
+		border-radius: var(--rz-size-10);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.rz-dashboard__entry-description {
+		opacity: 0.6;
+		font-size: var(--text-sm);
+	}
+
+	.rz-dashboard__header {
+		padding: var(--rz-size-8);
+		padding-bottom: 0;
+		@mixin font-medium;
+		font-size: var(--rz-text-3xl);
 	}
 
 	.rz-dashboard__content {
 		display: grid;
-		gap: var(--rz-size-2);
+		gap: var(--rz-size-6);
 		padding: var(--rz-size-8);
 		height: 100%;
 		grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
 
 		a {
 			height: 100%;
-			border: var(--rz-border);
+			background-color: hsl(var(--rz-ground-6));
 			border-radius: var(--rz-radius-sm);
 			padding: var(--rz-size-4);
 			position: relative;
-			text-align: center;
 			min-height: 180px;
 			display: flex;
-			gap: var(--rz-size-3);
 			flex-direction: column;
-			justify-content: center;
-			align-items: center;
+			gap: var(--rz-size-4);
 			transition: background-color 0.3s ease-out;
-			background-color: hsl(var(--rz-ground-6));
+
+			--rz-ring-offset-bg: var(--rz-ground-5);
+			--rz-ring-offset: 4px;
+			@mixin ring var(--rz-ground-4);
+
 			&:hover {
-				background-color: hsl(var(--rz-ground-7));
+				background-color: hsl(var(--rz-ground-7) / 0.7);
 			}
+
 			:global(svg) {
-				opacity: 0.1;
+				opacity: 0.7;
 				z-index: 0;
+			}
+
+			header {
+				display: flex;
+				align-items: center;
+				gap: var(--rz-size-2);
 			}
 		}
 	}
