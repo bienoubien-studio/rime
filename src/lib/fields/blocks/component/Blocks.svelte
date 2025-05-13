@@ -8,14 +8,10 @@
 	import Sortable from 'sortablejs';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-	import type { GenericBlock, GenericDoc } from '$lib/types/doc.js';
+	import type { GenericBlock } from '$lib/types/doc.js';
 	import type { BlocksProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { env } from '$env/dynamic/public';
-	import { getValueAtPath, omit, omitId } from 'rizom/util/object';
-	import type { Dic } from 'rizom/types/util';
-	import { random } from 'rizom/util';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -64,7 +60,7 @@
 			sortingInitialized = true;
 		}
 	});
-	
+
 	function getConfigByBlockType(type: string, block: any): BlocksFieldRaw['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
@@ -78,49 +74,6 @@
 	}
 	function expandAll() {
 		blocksComponents.forEach((comp) => comp.setCollapse(false));
-	}	
-
-	async function getDefaultLocaleContent(): Promise<void> {
-		const result = await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}/?where[id][equals]=${form.doc.id}&select=${path}&locale=${locale.defaultCode}`)
-			.then(r => r.json())
-		if(result.docs && Array.isArray(result.docs) && result.docs.length){
-			const document = result.docs[0]
-			const defaultLocaleBlocks = getValueAtPath<Dic[]>(path, document) || []
-			
-			// Recursively remove id property from blocks
-			const removeIds = <T>(data: T): T => {
-				if (!data) return data;
-				
-				// Handle arrays
-				if (Array.isArray(data)) {
-					return data.map(item => removeIds(item)) as unknown as T;
-				}
-				
-				// Handle objects
-				if (typeof data === 'object' && data !== null) {
-					// First omit the id and locale properties
-					const withoutId = omit(['id', 'locale'], data as Dic);
-					let result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
-					if(locale.code && 'locale' in data){
-						result.locale = locale.code
-					}
-					// Then recursively process all remaining properties
-					for (const key in result) {
-						if (key !== 'id' && typeof result[key] === 'object' && result[key] !== null) {
-							result[key] = removeIds(result[key]);
-						}
-					}
-					
-					return result as unknown as T;
-				}
-				
-				// Return primitive values as is
-				return data;
-			};
-			
-			// Remove ids from blocks before setting the value
-			field.value = removeIds(defaultLocaleBlocks);
-		}
 	}
 	
 	onDestroy(() => {
@@ -138,14 +91,11 @@
 				<sup>{locale.code}</sup>
 			{/if}
 		</h3>
-		
+
 		{#if hasBlocks}
-		<div class="rz-blocks__actions">
-				{#if locale && config.localized}
-					<Button onclick={getDefaultLocaleContent} variant="secondary" size="xs">get content from {locale.defaultCode}</Button>
-				{/if}
-				<Button onclick={collapseAll} variant="link">Collapse all</Button>
-				<Button onclick={expandAll} variant="link">Expand all</Button>
+			<div class="rz-blocks__actions">
+				<Button onclick={collapseAll} size="xs" variant="outline">Collapse all</Button>
+				<Button onclick={expandAll} size="xs" variant="outline">Expand all</Button>
 			</div>
 		{/if}
 	</header>
@@ -166,12 +116,21 @@
 		{/if}
 	</div>
 
-	<AddBlockButton
-		addBlock={add}
-		class="rz-blocks__add-button"
-		size={nested ? 'sm' : 'default'}
-		{config}
-	/>
+	<div class="rz-blocks__actions-bottom">
+		<AddBlockButton
+			addBlock={add}
+			class="rz-blocks__add-button"
+			size={nested ? 'sm' : 'default'}
+			{config}
+		/>
+		
+		{#if locale && locale.code !== locale.defaultCode && config.localized}
+			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
+				Get <span class="uz-upper">{locale.defaultCode}</span> data
+			</Button>
+		{/if}
+	</div>
+
 </fieldset>
 
 <style lang="postcss">
@@ -207,4 +166,10 @@
 		display: flex;
 		justify-content: space-between;
 	}
+	.rz-blocks__actions-bottom{
+		display: flex;
+		gap: var(--rz-size-3);
+		align-items: center;
+	}
+
 </style>

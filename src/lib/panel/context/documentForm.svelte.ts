@@ -9,11 +9,11 @@ import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
 import { getUserContext } from './user.svelte.js';
-import { getValueAtPath, setValueAtPath } from '../../util/object.js';
+import { getValueAtPath, omit, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
-import type { AnyFormField, FormField } from '$lib/types/fields.js';
+import type { FormField } from '$lib/types/fields.js';
 import type { Dic } from '$lib/types/util';
 import type { CompiledCollection, CompiledArea } from '$lib/types/config.js';
 import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/types/doc.js';
@@ -21,6 +21,9 @@ import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
 import { t__ } from '../../i18n/index.js';
 import { getFieldConfigByPath } from 'rizom/util/config.js';
+import { env } from '$env/dynamic/public';
+import { random } from 'rizom/util/index.js';
+
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
@@ -385,13 +388,59 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			return siblings
 		}
 
-		return {
-			get value() {
-				return getValueAtPath(path, doc);
-			},
+		const setValueFromDefaultLocale = async () => {
+			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`
+			let fetchURL:string = BASE_API_URL
+			if(isCollection){
+				fetchURL += `?where[id][equals]=${doc.id}&select=${path}&locale=${locale.defaultCode}`
+			}else{
+				fetchURL += `?select=${path}&locale=${locale.defaultCode}`
+			}
+			// Fetch data
+			const result = await fetch(fetchURL).then((r) => r.json());
+			// Process data
+			if (isCollection && Array.isArray(result.docs) && result.docs.length || result.doc) {
+				// Extract data from the appropriate response structure:
+				// - For collections: data is in result.docs[0]
+				// - For areas: data is in result.doc
+				const document = isCollection ? result.docs[0] : result.doc;
+				const defaultLocaleValue = getValueAtPath<Dic[]>(path, document) || [];
+				// Recursively remove id property from blocks/tree/relations
+				// This ensure elements to be threated as new,
+				// preventing an unwanted delete or update with the wrong locale
+				const removeIds = <T,>(data: T): T => {
+					// Handle arrays
+					if (Array.isArray(data)) {
+						return data.map((item) => removeIds(item)) as unknown as T;
+					}
+					// Handle objects
+					if (typeof data === 'object' && data !== null) {
+						// First omit the id and locale properties
+						const withoutId = omit(['id', 'locale'], data as Dic);
+						let result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
+						// Replace with the current locale if present
+						if (locale.code && 'locale' in data) {
+							result.locale = locale.code;
+						}
+						// Then recursively process all remaining properties
+						for (const key in result) {
+							if (key !== 'id' && typeof result[key] === 'object' && result[key] !== null) {
+								result[key] = removeIds(result[key]);
+							}
+						}
+						return result as unknown as T;
+					}
+					// Return primitive values as is
+					return data;
+				};
+				
+				// Remove ids from blocks before setting the value
+				setFieldValue(removeIds(defaultLocaleValue));
+			}
+		}
 
-			set value(value: any) {
-				const valid = validate(value);
+		const setFieldValue = (value:any) => {
+			const valid = validate(value);
 				if (operation === 'update' && !config.access.update(user.attributes)) {
 					return;
 				}
@@ -408,6 +457,19 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 						}
 					}
 				}
+		}
+
+		return {
+			
+			path,
+			setValueFromDefaultLocale,
+
+			get value() {
+				return getValueAtPath(path, doc);
+			},
+
+			set value(value: any) {
+				setFieldValue(value)
 			},
 
 			get editable() {
@@ -434,15 +496,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				return visible;
 			},
 
-			path,
-
 			get error() {
 				return errors.value[path] || false;
 			},
 
 			get isEmpty() {
 				return !!config.isEmpty && config.isEmpty(getValueAtPath(path, doc));
-			}
+			},
 		};
 	}
 
@@ -463,7 +523,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		for (const key of Object.keys(flatData)) {
 			formData.set(key, flatData[key]);
 		}
-
+		
 		const response = await fetch(action, {
 			method: 'POST',
 			body: formData
@@ -538,7 +598,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		// Combine all parts to form the final action URL
 		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};
-
+	
 	return {
 		key,
 		setValue,

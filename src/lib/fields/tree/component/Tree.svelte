@@ -9,8 +9,9 @@
 	import type { TreeProps } from './props.js';
 	import type { Dic } from '$lib/types/util.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	
+
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import Button from 'rizom/panel/components/ui/button/button.svelte';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -126,18 +127,27 @@
 			{/if}
 		</div>
 	{/key}
-	<AddItemButton
-		addItem={add}
-		class="rz-tree__add-button"
-		size={nested ? 'sm' : 'default'}
-		fields={config.fields}
-	>
-		{config.addItemLabel}
-	</AddItemButton>
+
+	<div class="rz-tree__actions">
+		<AddItemButton
+			addItem={add}
+			class="rz-tree__add-button"
+			size={nested ? 'sm' : 'default'}
+			fields={config.fields}
+		>
+			{config.addItemLabel}
+		</AddItemButton>
+
+		{#if locale && locale.code !== locale.defaultCode && config.localized}
+			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
+				Get <span class="uz-upper">{locale.defaultCode}</span> data
+			</Button>
+		{/if}
+	</div>
+
 </fieldset>
 
 <style lang="postcss">
-
 	.rz-tree__title {
 		margin-bottom: var(--rz-size-4);
 		font-size: var(--rz-text-xl);
@@ -151,18 +161,21 @@
 	.rz-tree__list :global(.rz-tree__list) {
 		margin-left: 2rem;
 	}
-
+	
 	.rz-tree__list {
 		display: grid;
 		margin-left: 1rem;
-	}
-	
-	:global(.rz-tree__add-button) {
-		margin-top: var(--rz-size-4);
 	}
 
 	sup {
 		font-size: var(--rz-text-2xs);
 		text-transform: uppercase;
 	}
+
+	.rz-tree__actions{
+		display: flex;
+		align-items: center;
+		gap: var(--rz-size-3);
+	}
+
 </style>
