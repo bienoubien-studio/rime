@@ -7,11 +7,22 @@ import { capitalize } from '$lib/util/string.js';
 type AreaWithoutSlug<S> = OmitPreservingDiscrimination<Area<S>, 'slug'>;
 
 export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S> {
+
+	let fields: typeof config.fields = [
+		...config.fields,
+		text('editedBy').hidden(), 
+		date('updatedAt').hidden()
+	];
+
+	if (config.url) {
+		fields.push(text('url').hidden().localized());
+	}
+	
 	return {
 		...config,
 		slug,
 		label: config.label ? config.label : capitalize(slug),
-		fields: [...config.fields, text('editedBy').hidden(), date('updatedAt').hidden()],
+		fields: fields,
 		access: {
 			create: (user) => !!user,
 			read: (user) => !!user,
