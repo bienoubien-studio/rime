@@ -30,15 +30,13 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'^plugins$',
 		'^cache',
 
-		// Exclude panel properties except components
+		// Exclude critical panel properties
 		'^panel\.access',
 		'^panel\.routes',
 		'^panel\.users',
 
-		// Exclude area and collection access
-		'collections\.\.hooks',
-
 		// Exclude area and collection hooks
+		'collections\.\.hooks',
 		'areas\.\.hooks',
 
 		// Generic patterns
@@ -214,7 +212,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 			return value;
 
 		default:
-			return '';
+			return 'null';
 	}
 }
 
