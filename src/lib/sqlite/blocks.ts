@@ -4,7 +4,7 @@ import { generatePK } from './util.js';
 import { toPascalCase } from '../util/string.js';
 import type { GenericBlock, PrototypeSlug } from '$lib/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter.js';
-import { transformDataToSchema } from '../util/path.js';
+import { transformDataToSchema } from '../util/schema.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
     //

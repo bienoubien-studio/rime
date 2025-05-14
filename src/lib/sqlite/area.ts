@@ -3,9 +3,11 @@ import { generatePK } from './util.js';
 import { buildWithParam } from './with.js';
 import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { transformDataToSchema } from '../util/path.js';
+import { transformDataToSchema } from '../util/schema.js';
 import type { DeepPartial, Dic } from '$lib/types/util.js';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
+import type { ConfigInterface } from '../config/index.server.js';
+import { createBlankDocument } from 'rizom/util/doc.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;

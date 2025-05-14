@@ -3,7 +3,7 @@ import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter';
 import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
 import type { Dic } from '$lib/types/util';
 import { omit } from '$lib/util/object';
-import { transformDataToSchema } from '../util/path.js';
+import { transformDataToSchema } from '../util/schema.js';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//

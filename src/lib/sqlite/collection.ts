@@ -8,8 +8,8 @@ import type { OperationQuery } from '$lib/types/api.js';
 import type { DeepPartial, Dic } from '$lib/types/util.js';
 import { RizomError } from '$lib/errors/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { transformDataToSchema } from '../util/path.js';
-import type { ConfigInterface } from 'rizom/config/index.server.js';
+import { transformDataToSchema } from '../util/schema.js';
+import type { ConfigInterface } from '../config/index.server.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;

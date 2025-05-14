@@ -1,8 +1,6 @@
 import { omit } from '../util/object.js';
-import { getTableColumns } from 'drizzle-orm';
 import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../util/string.js';
-import { transformKeysToDoc } from '../util/path.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
 import type {
@@ -15,12 +13,12 @@ import type {
 } from 'rizom/types/doc.js';
 import type { ConfigInterface } from 'rizom/config/index.server.js';
 import type { Dic } from 'rizom/types/util.js';
-import { extractFieldName } from 'rizom/fields/tree/util.js';
-import { privateFieldNames } from 'rizom/config/auth/privateFields.server.js';
+import { extractFieldName } from '../fields/tree/util.js';
+import { privateFieldNames } from '../config/auth/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from 'rizom/operations/localAPI/index.server.js';
-import { logger } from 'rizom/util/logger/index.server.js';
-import { getBlocksTableNames, getTreeTableNames } from 'rizom/util/schema.js';
+import type { LocalAPI } from '../operations/localAPI/index.server.js';
+import { logger } from '../util/logger/index.server.js';
+import { getBlocksTableNames, getTreeTableNames, transformKeysToDoc } from '../util/schema.js';
 
 /////////////////////////////////////////////
 // Types

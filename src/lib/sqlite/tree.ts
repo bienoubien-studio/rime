@@ -6,7 +6,7 @@ import type { TreeBlock, PrototypeSlug } from '$lib/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter.js';
 import type { WithRequired } from '$lib/types/util.js';
 import { extractFieldName } from '$lib/fields/tree/util.js';
-import { transformDataToSchema } from '../util/path.js';
+import { transformDataToSchema } from '../util/schema.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
