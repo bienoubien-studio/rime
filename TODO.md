@@ -25,17 +25,17 @@
 [v] Make first user super admin, can't delete it 
 [v] Pagination limit/offset capabilities
 [v] Field hook onChange
-[ ] Update document url on save hook (ex: when parent change for nested collection)
-[ ] Batch offset/update
+[v] Update document url on save hook (ex: when parent change for nested collection)
 [ ] handle Area with required field without default value
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 [ ] More tests
 
 # V1
+[v] collection nested
+[ ] Batch offset/update
 [ ] Add fields hint/description
 [ ] Put bin commands in a separate package ex: @rizom/kit ?
-[v] collection nested
 [ ] page version
 [ ] page modification not saved message + changes saved to localStorage
 [ ] more better-auth integration
