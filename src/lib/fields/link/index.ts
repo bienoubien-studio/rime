@@ -5,6 +5,7 @@ import type { FieldHook, FormField } from '$lib/types/fields.js';
 import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
 import { log } from 'console';
+import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
 
 // Before save populate ressource URL
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, documentId }) => {
@@ -71,7 +72,8 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 	toSchema(parentPath?: string) {
 		const { camel, snake } = this.getSchemaName(parentPath);
-		return `${camel}: text('${snake}', { mode: 'json'})`;
+		const suffix = templateUniqueRequired(this.field);
+		return `${camel}: text('${snake}', { mode: 'json'})${suffix}`;
 	}
 
 	unique() {
