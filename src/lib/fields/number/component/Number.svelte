@@ -8,7 +8,7 @@
 	const { path, config, form }: NumberFieldProps = $props();
 
 	const field = $derived(form.useField(path, config));
-	const initialValue = form.getRawValue(path);
+	const initialValue = form.getRawValue(path) || config.defaultValue;
 
 	let value = $state(initialValue);
 

@@ -22,6 +22,7 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 	constructor(name: string) {
 		super(name, 'number');
 		this.field.validate = validateNumber;
+		this.field.isEmpty = (value) => typeof value !== 'number';
 	}
 
 	get component() {
