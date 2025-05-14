@@ -17,7 +17,7 @@ import {
 	rootLayoutServer
 } from './templates.js';
 import cache from '../cache/index.js';
-import { taskLogger } from '$lib/util/logger/index.server.js';
+import { logger, taskLogger } from '$lib/util/logger/index.server.js';
 import { slugify } from '$lib/util/string.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -40,6 +40,7 @@ function generateRoutes(config: BuiltConfig) {
 						.join(',')
 				: ''
 		}
+		css:${config.panel.css ? config.panel.css : 'none'}
   `;
 	const cachedMemo = cache.get('routes');
 
@@ -68,6 +69,15 @@ function generateRoutes(config: BuiltConfig) {
 
 	if (!fs.existsSync(apiRoute)) {
 		fs.mkdirSync(apiRoute);
+	}
+
+	// Handle custom CSS in layout file
+	if (fs.existsSync(path.join(rizomRoutes, '+layout.svelte'))) {
+		if (config.panel?.css) {
+			injectCustomCSS(path.join(rizomRoutes, '+layout.svelte'), config.panel.css);
+		} else {
+			removeCustomCSS(path.join(rizomRoutes, '+layout.svelte'));
+		}
 	}
 
 	// root layout
@@ -201,12 +211,78 @@ async function removeTxtSuffix(directory: string) {
 				try {
 					fs.renameSync(fullPath, newPath);
 				} catch (renameErr) {
-					console.error(`Error renaming ${fullPath}:`, renameErr);
+					logger.error(`Error renaming ${fullPath}:`, renameErr);
 				}
 			}
 		});
 	} catch (err) {
-		console.error('Error reading directory:', err);
+		logger.error('Error reading directory:', err);
+	}
+}
+
+/**
+ * Injects a custom CSS link into the layout file
+ * @param layoutFilePath Path to the layout file
+ * @param cssPath Custom CSS path from config
+ */
+function injectCustomCSS(layoutFilePath: string, cssPath: string) {
+	try {
+		if (fs.existsSync(layoutFilePath)) {
+			let content = fs.readFileSync(layoutFilePath, 'utf8');
+			const cssLinkTag = `<svelte:head><link rel="stylesheet" href="${cssPath}" /></svelte:head>`;
+			
+			if (content.includes('<svelte:head>')) {
+				// Replace existing svelte:head tag with our custom CSS
+				const headRegex = /<svelte:head>.*?<\/svelte:head>/s;
+				content = content.replace(headRegex, cssLinkTag);
+				fs.writeFileSync(layoutFilePath, content, 'utf8');
+				taskLogger.done(`Custom CSS link updated in ${layoutFilePath}`);
+			} else {
+				// Find the position to insert the custom CSS link
+				const insertPosition = content.indexOf('<div class="rz-root">');
+				
+				if (insertPosition !== -1) {
+					// Insert the CSS link tag before the div
+					const newContent = content.slice(0, insertPosition) + cssLinkTag + content.slice(insertPosition);
+					
+					// Write the updated content back to the file
+					fs.writeFileSync(layoutFilePath, newContent, 'utf8');
+					taskLogger.done(`Custom CSS link added in ${layoutFilePath}`);
+				} else {
+					logger.error(`Could not find insertion point in ${layoutFilePath}`);
+				}
+			}
+		} else {
+			logger.error(`Layout file not found: ${layoutFilePath}`);
+		}
+	} catch (err) {
+		logger.error(`Error injecting custom CSS into layout file: ${err}`);
+	}
+}
+
+/**
+ * Removes any custom CSS link from the layout file
+ * @param layoutFilePath Path to the layout file
+ */
+function removeCustomCSS(layoutFilePath: string) {
+	try {
+		if (fs.existsSync(layoutFilePath)) {
+			let content = fs.readFileSync(layoutFilePath, 'utf8');
+			
+			if (content.includes('<svelte:head>')) {
+				// Remove the svelte:head tag and its contents
+				const headRegex = /<svelte:head>.*?<\/svelte:head>/s;
+				content = content.replace(headRegex, '');
+				
+				// Write the updated content back to the file
+				fs.writeFileSync(layoutFilePath, content, 'utf8');
+				taskLogger.done(`Custom CSS link removed from ${layoutFilePath}`);
+			}
+		} else {
+			logger.error(`Layout file not found: ${layoutFilePath}`);
+		}
+	} catch (err) {
+		logger.error(`Error removing custom CSS from layout file: ${err}`);
 	}
 }
 

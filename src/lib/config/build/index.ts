@@ -97,7 +97,8 @@ const buildConfig = async <C extends boolean = true>(
 			components: {
 				header: config.panel?.components?.header || [],
 				...(config.panel?.components?.dashboard && { dashboard: config.panel.components.dashboard })
-			}
+			},
+			css: config.panel?.css
 		},
 		collections,
 		plugins: {},
@@ -105,7 +106,7 @@ const buildConfig = async <C extends boolean = true>(
 		trustedOrigins,
 		icons
 	};
-
+	
 	const collectionFields = builtConfig.collections.flatMap((collection) => collection.fields);
 	const areaFields = builtConfig.areas.flatMap((area) => area.fields);
 

@@ -64,8 +64,15 @@ export interface Config {
 		navigation?: NavigationConfig;
 		components?: {
 			header?: Component[];
+			collectionHeader?: Component[];
 			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
 		};
+		/** a relative path from static or an external url 
+		 * @example
+		 * // for static/panel/custom.css
+		 * css : '/panel/custom.css'
+		*/
+		css?: string;
 	};
 	cache?: { isEnabled?: (event: RequestEvent) => boolean };
 	smtp?: SMTPConfig;
@@ -214,6 +221,12 @@ export type BuiltConfig = {
 			collectionHeader?: Component[];
 			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
 		};
+		css?: string;
+		/**
+		 * Define the panel language
+		 * 
+		 * If none defined it will try to use the current locale if the translation is available
+		 */
 		language: 'fr' | 'en';
 	};
 };
