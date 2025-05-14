@@ -65,8 +65,6 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	 * // Using custom features
 	 * richText('intro').features(myCustomFeature)
 	 * 
-	 * // Using shortcut config string (legacy)
-	 * richText('intro').features('[h1|h2] bold|italic|link')
 	 */
 	features(...features: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>) {
 		this.field.features = features
