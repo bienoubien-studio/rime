@@ -67,7 +67,7 @@ const Informations = area('infos', {
 	group: 'informations',
 	fields: [
 		richText('about').localized(),
-		text('email'),
+		text('email').required(),
 		text('instagram'),
 		link('legals').localized()
 	],

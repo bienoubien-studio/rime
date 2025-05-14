@@ -58,7 +58,10 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		let doc = await db.query[slug].findFirst(params);
 
 		if (!doc) {
-			await createArea(slug, {}, locale);
+			const areaConfig = configInterface.getArea(slug)
+			if(!areaConfig) throw new RizomError(RizomError.INIT, slug + 'is not an area, should never happen')
+			
+			await createArea(slug, createBlankDocument(areaConfig), locale);
 			// @ts-expect-error suck
 			doc = await db.query[slug].findFirst(params);
 		}
@@ -70,6 +73,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 	/** Area Create */
 	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
+		
 		const createId = generatePK();
 		const tableLocales = `${slug}Locales` as KeyOfTables;
 
@@ -77,8 +81,10 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const unlocalizedColumns = getTableColumns(tables[slug]);
 			const localizedColumns = getTableColumns(tables[tableLocales]);
 
-			const unlocalizedData = transformDataToSchema(values, unlocalizedColumns);
-			const localizedData = transformDataToSchema(values, localizedColumns);
+			// Fill required fields without default value 
+			// with a placeholder value to prevent error on area creation
+			const unlocalizedData = transformDataToSchema(values, unlocalizedColumns, { fillNotNull : true });
+			const localizedData = transformDataToSchema(values, localizedColumns, { fillNotNull : true });
 
 			await db.insert(tables[slug]).values({
 				...unlocalizedData,
@@ -93,8 +99,9 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 		} else {
 			const columns = getTableColumns(tables[slug]);
-			const schemaData = transformDataToSchema(values, columns);
-
+			// Fill required fields with default values if not provide to prevent error on area creation
+			const schemaData = transformDataToSchema(values, columns, { fillNotNull : true });
+			// console.log(Object.keys(columns))
 			await db.insert(tables[slug]).values({
 				...schemaData,
 				id: createId
