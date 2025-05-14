@@ -35,11 +35,11 @@ export async function createConfigInterface(rawConfig: Config) {
 		}
 	}
 
-	const getArea = (slug: string): CompiledArea | undefined => {
+	const getArea = (slug: string) => {
 		return config.areas.find((g) => g.slug === slug);
 	};
-
-	const getCollection = (slug: string): CompiledCollection | undefined => {
+	
+	const getCollection = (slug: string) => {
 		return config.collections.find((c) => c.slug === slug);
 	};
 
