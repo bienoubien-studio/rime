@@ -26,10 +26,9 @@
 [v] Pagination limit/offset capabilities
 [v] Field hook onChange
 [v] Update document url on save hook (ex: when parent change for nested collection)
-[ ] handle Area with required field without default value
+[v] handle Area with required field without default value
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
-[ ] More tests
 
 # V1
 [v] collection nested
@@ -40,3 +39,4 @@
 [ ] page modification not saved message + changes saved to localStorage
 [ ] more better-auth integration
 [ ] configurable medias/config path
+[ ] More tests
