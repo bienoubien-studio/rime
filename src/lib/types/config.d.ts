@@ -211,7 +211,7 @@ export type BuiltConfig = {
 		access: (user?: User) => boolean;
 		components?: {
 			header: Component[];
-			collectionHeader: Component[];
+			collectionHeader?: Component[];
 			dashboard?: Component<{ entries: DashboardEntry[], user?: User }>;
 		};
 		language: 'fr' | 'en';
