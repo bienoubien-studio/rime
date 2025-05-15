@@ -61,7 +61,8 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 			throw new Error(`${this.field.name} should at least have one option`);
 		}
 		if (!this.field.defaultValue) {
-			this.field.defaultValue = [this.field.options[0].value];
+			const defaultOption = this.field.options[0].value
+			this.field.defaultValue = this.field.many ? [defaultOption] : defaultOption
 		}
 		return super.compile();
 	}
