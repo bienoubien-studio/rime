@@ -80,7 +80,14 @@ export type {
 } from './hooks.js';
 
 // Panel types
-export type { CollectionLayoutProps, FieldPanelTableConfig, FormErrors, Route } from './panel.js';
+export type { 
+	CollectionLayoutProps, 
+	FieldPanelTableConfig, 
+	FormErrors, 
+	Route,
+} from './panel.js';
+
+export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js'
 
 // Upload types
 export type { JsonFile } from './upload.js';
