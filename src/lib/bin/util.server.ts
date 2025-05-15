@@ -12,7 +12,7 @@ export const hasRunInitCommand = () => {
     const hooksServerFile = path.resolve(projectRoot, './src/hooks.server.ts');
     const dbDir = path.resolve(projectRoot, './db');
     const configDir = path.resolve(projectRoot, './src/config');
-    const rizomConfigFile = path.resolve(configDir, './rizom.config.ts');
+    const rizomConfigFile = path.resolve(configDir, './rizom.config.js');
     
     // Check each file/directory and log warnings for missing ones
     const hasEnvFile = existsSync(envFile);
@@ -34,7 +34,7 @@ export const hasRunInitCommand = () => {
     if (!hasConfigDir) logger.warn('Missing src/config directory');
     
     const hasRizomConfig = existsSync(rizomConfigFile);
-    if (!hasRizomConfig) logger.warn('Missing src/config/rizom.config.ts file');
+    if (!hasRizomConfig) logger.warn('Missing src/config/rizom.config.js file');
     
     // Return combined result
     return (
