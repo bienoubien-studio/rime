@@ -12,18 +12,24 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 	const hasValue = !!value;
 	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
 		!['url', 'email', 'tel', 'anchor'].includes(type);
-	
+
 	if (hasValue && isResourceLinkType(value.type)) {
 		const link = value
-		
+
 		// Compare with the current document beign processed to prevent infinite loop
 		if( link.value !== documentId ){
 			try {
 				let doc;
 				if ( event.locals.rizom.config.isCollection(link.type) ) {
-					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`).then(r => r.json());
+					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`)
+						.then(r => r.json())
+						.then(r => r.docs[0])
 				} else if( event.locals.rizom.config.isArea(link.type) ) {
-					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`).then(r => r.json());
+					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
+						.then(r => r.json())
+						.then(r => {console.log(r); return r})
+						.then(r => r.doc)
+						
 				}
 				if (!doc) {
 					link.value = null;
