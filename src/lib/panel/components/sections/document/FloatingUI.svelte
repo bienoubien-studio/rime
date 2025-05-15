@@ -5,7 +5,7 @@
 	import ButtonSave from './ButtonSave.svelte';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import { env } from '$env/dynamic/public';
-	import { type GenericDoc } from '$lib/types/doc.js';
+	import type { GenericDoc } from '$lib/types/doc.js';
 	import { toast } from 'svelte-sonner';
 
 	type Props = { form: DocumentFormContext; onClose: any };
