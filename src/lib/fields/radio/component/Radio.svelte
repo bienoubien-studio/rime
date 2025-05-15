@@ -5,25 +5,16 @@
 	import { capitalize, slugify } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-
+	
 	const { path, config, form }: RadioFieldProps = $props();
 	const field = $derived(form.useField(path, config));
-
-	let initialValue = form.getRawValue(path) ?? config.defaultValue;
-	let value = $state<string | undefined>(initialValue);
-
-	$effect(() => {
-		if (value && value !== field.value) {
-			field.value = value;
-		}
-	});
-
+	
 	const fieldId = $derived(slugify(`${form.key}-${path}`));
 </script>
 
 <fieldset class="rz-field-radio {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
-	<RadioGroup.Root bind:value class="rz-radio" disabled={!field.editable}>
+	<RadioGroup.Root bind:value={field.value} class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index}
 			<div class="rz-radio__option">
 				<RadioGroup.Item value={option.value} id="{fieldId}-{index}" class="rz-radio__input" />
