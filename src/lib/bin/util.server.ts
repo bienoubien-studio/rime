@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import path from "path";
-import { logger } from '$lib/util/logger/index.server';
+import { logger } from '../util/logger/index.server';
 
 export const hasRunInitCommand = () => {
     const projectRoot = process.cwd();
