@@ -130,7 +130,9 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
 	
-	// If parent has changed populate URL for all language
+	// If parent has changed populate URL for all language.
+	// Note : There is no need to update all localized url as
+	// if no parent the url is built with the document data only
 	if('parent' in data){
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		if (locales.length) {
