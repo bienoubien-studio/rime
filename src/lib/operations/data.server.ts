@@ -61,7 +61,7 @@ const normalizeValue = (value: any) => {
 		return parseInt(value);
 	}
 	// For floats parseFloat
-	if (/^[\d]+.[\d]+$/.test(value)) {
+	if (/^[\d]+\.[\d]+$/.test(value)) {
 		return parseFloat(value);
 	}
 	return value;
