@@ -7,6 +7,7 @@ export const hasRunInitCommand = () => {
         existsSync(path.resolve(projectRoot, './.env')) &&
         existsSync(path.resolve(projectRoot, './drizzle.config.ts')) &&
         existsSync(path.resolve(projectRoot, './src/lib/server/schema.ts')) &&
+        existsSync(path.resolve(projectRoot, './src/hooks.server.ts')) &&
         existsSync(path.resolve(projectRoot, './db')) &&
         existsSync(path.resolve(projectRoot, './src/config'))
     );
