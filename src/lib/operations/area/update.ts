@@ -4,6 +4,7 @@ import type { CompiledArea } from '$lib/types/config.js';
 import type { LocalAPI } from '$lib/operations/localAPI/index.server.js';
 import type { GenericDoc } from '$lib/types/doc.js';
 import type { AreaSlug } from '$lib/types/index.js';
+import { populateURL } from '../tasks/populateURL.server.js';
 import { RizomError } from '$lib/errors/index.js';
 import { validateFields } from '../tasks/validateFields.server.js';
 import { buildConfigMap } from '../tasks/configMap/index.server.js';
@@ -108,7 +109,10 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		treeDiff
 	});
 
-	const document = await api.area(config.slug).find({ locale });
+	let document = await api.area(config.slug).find({ locale });
+	
+	// Populate URL
+	document = await populateURL(document, { config, event, locale })
 
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
