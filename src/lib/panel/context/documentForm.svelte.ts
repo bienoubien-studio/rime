@@ -465,9 +465,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			setValueFromDefaultLocale,
 
 			get value() {
-				return getValueAtPath(path, doc);
+				return getValueAtPath(path, doc) || config.defaultValue;
 			},
-
+			
 			set value(value: any) {
 				setFieldValue(value)
 			},
