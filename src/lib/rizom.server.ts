@@ -27,7 +27,7 @@ function createRizom() {
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
 		initialized = false;
 		if (dev && !hasRunInitCommand()) {
-			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom-init`');
+			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
 		}
 		// Initialize config
 		config = await createConfigInterface(rawConfig);
