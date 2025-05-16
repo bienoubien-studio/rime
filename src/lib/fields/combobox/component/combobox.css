@@ -15,6 +15,7 @@
 }
 
 .rz-combobox__search {
+	broder: 1px solid red;
 	height: var(--rz-size-9);
 }
 
@@ -31,4 +32,10 @@
 
 .rz-combobox__check--hidden {
 	visibility: hidden;
+}
+
+.rz-combobox__option-label{
+	display: flex;
+	align-items:center;
+	gap: var(--rz-size-3);
 }

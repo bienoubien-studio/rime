@@ -7,7 +7,7 @@
 	import { t__ } from '$lib/i18n/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
-	import type { Option } from '$lib/types/fields.js';
+	import type { OptionWithIcon } from '$lib/types/fields.js';
 	import './combobox.css'
 	
 	const { path, config, form }: ComboBoxProps = $props();
@@ -17,9 +17,19 @@
 	
 	let search = $state('');
 	let open = $state(false);
-	let selected = $derived<Option | undefined>(options.find((o) => o.value === field.value));
+	let selected = $derived<OptionWithIcon | undefined>(options.find((o) => o.value === field.value));
 
 </script>
+
+{#snippet label(option:OptionWithIcon)}
+	<span class="rz-combobox__option-label">
+		{#if option.icon}
+			{@const Icon = option.icon}
+			<Icon size="12" />
+		{/if}
+		{option?.label}
+	</span>
+{/snippet}
 
 <fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
@@ -33,7 +43,11 @@
 					class="rz-combobox__trigger"
 					{...props}
 				>
-					{selected?.label || 'Select...'}
+					{#if selected}
+						{@render label(selected)}
+					{:else}
+						{t__('fields.select')}
+					{/if}
 					<ChevronsUpDown class="rz-combobox__chevron" />
 				</Button>
 			{/snippet}
@@ -41,7 +55,7 @@
 		<Popover.Portal>
 			<Popover.Content class="rz-combobox__content">
 				<Command.Root>
-					{#if options.length > 8}
+					{#if options.length > 4}
 						<Command.Input
 							bind:value={search}
 							placeholder={t__('common.search')}
@@ -61,7 +75,7 @@
 									open = false;
 								}}
 							>
-								{option.label}
+								{@render label(option)}
 								<Check
 									class={`rz-combobox__check ${selected?.value !== option.value ? 'rz-combobox__check--hidden' : ''}`}
 								/>
