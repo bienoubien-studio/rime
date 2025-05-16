@@ -6,6 +6,8 @@ import type { FieldPanelTableConfig } from './panel';
 import type { LocalAPI } from '$lib/types/api.js';
 import type { DocumentFormContext } from 'rizom/panel';
 import type { RequestEvent } from '@sveltejs/kit';
+import type { Component } from 'svelte';
+import type { IconProps } from '@lucide/svelte';
 
 type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
@@ -89,6 +91,12 @@ type FieldHooks = {
 export type Option = {
 	value: string;
 	label?: string;
+};
+
+export type OptionWithIcon = {
+	value: string;
+	label?: string;
+	icon?: Component<IconProps>;
 };
 
 export type RelationValue<T> =

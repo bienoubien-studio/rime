@@ -31,8 +31,8 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
 		this.field.validate = ensureSelectIsOption;
 	}
-
-	options(...options: Option[] | string[]) {
+	
+	options(...options: T["options"] | string[]) {
 		this.field.options = options.map((option) => {
 			if (typeof option === 'string') {
 				return { label: capitalize(option), value: option };
