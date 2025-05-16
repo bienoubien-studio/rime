@@ -14,17 +14,11 @@
 
 	const field = $derived(form.useField(path, config));
 	const options = config.options;
-	const initialValue = form.getRawValue(path!);
+	
 	let search = $state('');
 	let open = $state(false);
-	let value = $state(initialValue);
-	let selected = $state<Option | undefined>(options.find((o) => o.value === initialValue));
+	let selected = $derived<Option | undefined>(options.find((o) => o.value === field.value));
 
-	$effect(() => {
-		if (selected && field.value !== selected.value) {
-			field.value = selected.value;
-		}
-	});
 </script>
 
 <fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
@@ -62,14 +56,14 @@
 								value={option.value}
 								onSelect={() => {
 									selected = option;
-									value = selected.value;
+									field.value = option.value
 									search = '';
 									open = false;
 								}}
 							>
 								{option.label}
 								<Check
-									class={`rz-combobox__check ${value !== option.value ? 'rz-combobox__check--hidden' : ''}`}
+									class={`rz-combobox__check ${selected?.value !== option.value ? 'rz-combobox__check--hidden' : ''}`}
 								/>
 							</Command.Item>
 						{/each}
