@@ -14,11 +14,6 @@
 	padding: 0;
 }
 
-.rz-combobox__search {
-	broder: 1px solid red;
-	height: var(--rz-size-9);
-}
-
 .rz-combobox__item {
 	height: var(--rz-size-11);
 	justify-content: space-between;
