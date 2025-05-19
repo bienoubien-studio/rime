@@ -116,6 +116,8 @@ type CollectionLabel = {
 	gender: 'f' | 'm';
 };
 
+export type VersionsConfig = { draft?: boolean; autoSave?: boolean; maxVersions?: number };
+
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
 	/** Description for the collection/area, basically displayed on the dashboard */
@@ -126,12 +128,12 @@ type BaseDocConfig<S extends string = string> = {
 	fields: FieldBuilder<Field>[];
 	/** Optional icon */
 	icon?: Component<IconProps>;
+	/** Enable document versions */
+	versions?: boolean | VersionsConfig;
 	access?: Access;
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
 };
-
-export type DocumentStatus = { value: string; color: string };
 
 export type BaseCollection<S> = {
 	slug: S;
@@ -141,11 +143,6 @@ export type BaseCollection<S> = {
 	hooks?: CollectionHooks<RegisterCollection[S]>;
 	/** A function to generate the document URL */
 	url?: (doc: RegisterCollection[S]) => string;
-	/** Enable document status, 
-	 * if set to true "published" and "draft"
-	 * will be used as default status
-	 */
-	status?: boolean | DocumentStatus[];
 	nested?: boolean;
 } & BaseDocConfig;
 
@@ -253,12 +250,12 @@ export type CustomPanelRoute = {
 	component: Component;
 };
 
-export type BuiltCollection = Omit<Collection<CollectionSlug>, 'status'> & {
+export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions'> & {
 	type: 'collection';
 	label: CollectionLabel;
 	slug: CollectionSlug;
 	asTitle: string;
-	status?: DocumentStatus[];
+	versions: false | Required<VersionsConfig>;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 

@@ -25,6 +25,7 @@ type Args = {
 	relationFieldsMap?: RelationFieldsMap;
 	relationsDic?: Record<string, string[]>;
 	hasAuth?: boolean;
+	versionsFrom?: string | false;
 	blocksRegister: string[];
 };
 
@@ -44,6 +45,7 @@ const buildRootTable = ({
 	relationFieldsMap = {},
 	relationsDic = {},
 	hasAuth,
+	versionsFrom,
 	blocksRegister
 }: Args): Return => {
 	const blocksTables: string[] = [];
@@ -176,6 +178,9 @@ const buildRootTable = ({
 		const strFields = generateFieldsTemplates(incomingFields);
 		if (hasParent) {
 			strFields.push(templateParent(rootName));
+		}
+		if(versionsFrom){
+			strFields.push(templateParent(versionsFrom));
 		}
 		if (hasAuth) {
 			strFields.push(templateHasAuth(rootName));

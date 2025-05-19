@@ -11,7 +11,9 @@ import type { CollectionWithoutSlug } from './types';
 import { PANEL_USERS } from '$lib/constant.js';
 import { relation } from '$lib/fields/relation/index.js';
 import { number } from '$lib/fields/number/index.js';
+import { select } from 'rizom/fields/select/index.js';
 import type { CollectionSlug } from '$lib/types/index.js';
+import type { RegisterCollection } from 'rizom';
 
 export function collection<S extends string>(
 	slug: S,
@@ -62,16 +64,18 @@ export function collection<S extends string>(
 	}
 
 	// Augment Status
-	if (config.status) {
-		if (config.status === true) {
-			config.status = [
-				{ value: 'draft', color: 'orange' },
-				{ value: 'published', color: 'green' }
-			];
+	if (config.versions) {
+		if (config.versions === true) {
+			config.versions = {
+				draft: false, autoSave: false, maxVersions: 4
+			};
+		}else if(config.versions.draft){
+			fields.push(select('status').options('draft', 'published').defaultValue('draft').hidden());
 		}
-		fields.push(text('status').defaultValue(config.status[0].value).hidden());
+	}else{
+		config.versions = false
 	}
-
+	
 	if(config.nested){
 		fields.push(number('nestedPosition').defaultValue(0).hidden());
 		fields.push(relation('parent').to(slug as CollectionSlug).hidden());
