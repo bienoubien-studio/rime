@@ -5,7 +5,6 @@ import {
 	isGroupField,
 	isRelationField,
 	isTabsField,
-	isTreeFieldRaw
 } from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
@@ -165,6 +164,9 @@ const buildRootTable = ({
 		const strUnlocalizedFields = generateFieldsTemplates(incomingFields, false);
 		if (hasParent) {
 			strUnlocalizedFields.push(templateParent(rootName));
+		}
+		if(versionsFrom){
+			strUnlocalizedFields.push(templateParent(versionsFrom));
 		}
 		if (hasAuth) {
 			strUnlocalizedFields.push(templateHasAuth(rootName));

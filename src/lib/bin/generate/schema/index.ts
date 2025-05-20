@@ -7,16 +7,18 @@ import {
 	templateExportTables,
 	templateHead,
 	templateImports,
+	templateRelationMany,
+	templateRelationOne,
 	templateTable
 } from './templates.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import type { Dic } from 'rizom/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
-import { toCamelCase } from 'rizom/util/string.js';
+import { toCamelCase, toPascalCase } from 'rizom/util/string.js';
 
 
-export function generateSchemaString(config: BuiltConfig): string {
+export function generateSchemaString(config: BuiltConfig) {
 	const schema: string[] = [templateImports];
 	let enumTables: string[] = [];
 	let enumRelations: string[] = [];
@@ -24,16 +26,28 @@ export function generateSchemaString(config: BuiltConfig): string {
 	let blocksRegister: string[] = [];
 
 	for (const collection of config.collections) {
+
 		const collectionSlug = toCamelCase(collection.slug);
 		let rootTableName = collectionSlug
-		schema.push( templateHead(collection.slug) )
+		let versionsRelationsDefinitions: string[] = []
 
-		if(collection.versions){
+		schema.push(templateHead(collection.slug))
+
+		if (collection.versions) {
 			enumTables = [...enumTables, collectionSlug];
-			rootTableName = `${collectionSlug}Versions` 
+			rootTableName = `${collectionSlug}Versions`
 			schema.push(templateTable(collectionSlug, ''))
+			versionsRelationsDefinitions = [templateRelationOne({
+				name: `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`,
+				table: rootTableName,
+				parent: collectionSlug
+			}), templateRelationMany({
+				name: `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`,
+				table: rootTableName,
+				many: [rootTableName]
+			})]
 		}
-		
+
 		const {
 			schema: collectionSchema,
 			relationsDic,
@@ -66,7 +80,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 
 		const relationsTableNames = Object.values(relationsDic).flat();
 
-		enumTables = [...enumTables, rootTableName, ...relationsTableNames];
+		enumTables = Array.from(new Set([...enumTables, rootTableName, ...relationsTableNames]));
 		enumRelations = [...enumRelations, ...relationsNames];
 		relationFieldsExportDic = {
 			...relationFieldsExportDic,
@@ -76,6 +90,7 @@ export function generateSchemaString(config: BuiltConfig): string {
 		schema.push(
 			collectionSchema,
 			junctionTable,
+			...versionsRelationsDefinitions,
 			relationsDefinitions
 		);
 
@@ -86,14 +101,27 @@ export function generateSchemaString(config: BuiltConfig): string {
 	 */
 	for (const area of config.areas) {
 		const areaSlug = toCamelCase(area.slug);
-
 		let rootTableName = areaSlug
-		schema.push( templateHead(area.slug) )
+		let versionsRelationsDefinitions: string[] = []
 
-		if(area.versions){
+		schema.push(templateHead(area.slug))
+
+		if (area.versions) {
 			enumTables = [...enumTables, areaSlug];
-			rootTableName = `${areaSlug}Versions` 
+			rootTableName = `${areaSlug}Versions`
 			schema.push(templateTable(areaSlug, ''))
+			versionsRelationsDefinitions = [
+				templateRelationOne({
+					name: `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`,
+					table: rootTableName,
+					parent: areaSlug
+				}),
+				templateRelationMany({
+					name: `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`,
+					table: rootTableName,
+					many: [rootTableName]
+				})
+			]
 		}
 
 		const {
@@ -121,11 +149,10 @@ export function generateSchemaString(config: BuiltConfig): string {
 			relationsDic[rootTableName].push(junctionTableName);
 		}
 
-		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({
-			relationsDic
-		});
 
-		const relationsTableNames = Object.values(relationsDic).flat();
+		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({ relationsDic });
+
+		const relationsTableNames = Array.from(new Set(Object.values(relationsDic).flat()));
 
 		enumTables = [...enumTables, rootTableName, ...relationsTableNames];
 		enumRelations = [...enumRelations, ...relationsNames];
@@ -134,7 +161,12 @@ export function generateSchemaString(config: BuiltConfig): string {
 			[rootTableName]: relationFieldsMap
 		};
 
-		schema.push(areaSchema, junctionTable, relationsDefinitions);
+		schema.push(
+			areaSchema,
+			junctionTable,
+			...versionsRelationsDefinitions,
+			relationsDefinitions
+		);
 	}
 
 	schema.push(templateAuth);
