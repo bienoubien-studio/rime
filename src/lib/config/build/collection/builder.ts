@@ -13,7 +13,6 @@ import { relation } from '$lib/fields/relation/index.js';
 import { number } from '$lib/fields/number/index.js';
 import { select } from 'rizom/fields/select/index.js';
 import type { CollectionSlug } from '$lib/types/index.js';
-import type { RegisterCollection } from 'rizom';
 
 export function collection<S extends string>(
 	slug: S,

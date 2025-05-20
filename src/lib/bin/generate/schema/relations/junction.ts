@@ -44,21 +44,6 @@ type Args = {
 };
 
 type Return = {
-	/**
-	 * @example
-	 * export const pagesRels = sqliteTable('pages_rels', {
-	 *   id: pk(),
-	 *   path: text('path'),
-	 *   position: integer('position'),
-	 *   ownerId: text('owner_id').references(() => pages.id, { onDelete: 'cascade' }),
-	 *   mediasId: text('media_id').references(() => medias.id, { onDelete: 'cascade' }),
-	 *   locale: text('locale')
-	 * })
-	 */
 	junctionTable: string;
-	/**
-	 * @example
-	 * pagesRels
-	 */
 	junctionTableName: string;
 };

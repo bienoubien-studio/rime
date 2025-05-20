@@ -4,8 +4,6 @@ import { select } from '$lib/fields/select/index.js';
 import type { Area } from '$lib/types/config.js';
 import type { OmitPreservingDiscrimination } from '$lib/types/util.js';
 import { capitalize } from '$lib/util/string.js';
-import { relation } from '$lib/fields/relation/index.js';
-import type { RegisterArea } from 'rizom';
 
 type AreaWithoutSlug<S> = OmitPreservingDiscrimination<Area<S>, 'slug'>;
 
