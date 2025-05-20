@@ -36,7 +36,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		if (collection.versions) {
 			enumTables = [...enumTables, collectionSlug];
 			rootTableName = `${collectionSlug}Versions`
-			schema.push(templateTable(collectionSlug, ''))
+			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
 			versionsRelationsDefinitions = [templateRelationOne({
 				name: `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`,
 				table: rootTableName,
@@ -109,7 +109,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		if (area.versions) {
 			enumTables = [...enumTables, areaSlug];
 			rootTableName = `${areaSlug}Versions`
-			schema.push(templateTable(areaSlug, ''))
+			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
 			versionsRelationsDefinitions = [
 				templateRelationOne({
 					name: `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`,
