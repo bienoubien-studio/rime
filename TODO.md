@@ -27,6 +27,7 @@
 [v] Field hook onChange
 [v] Update document url on save hook (ex: when parent change for nested collection)
 [v] handle Area with required field without default value
+[ ] Better junction table naming
 [ ] core plugins as direct props of rizom, ex rizom.cache
 [ ] pnpm deps issue
 
@@ -36,7 +37,7 @@
 [ ] Add fields hint/description
 [ ] Put bin commands in a separate package ex: @rizom/kit ?
 [ ] page version
-[ ] page modification not saved message + changes saved to localStorage
+[ ] page modification not saved message + changes saved to a page draft
 [ ] more better-auth integration
-[ ] configurable medias/config path
+[ ] configurable medias/config/panel path
 [ ] More tests
