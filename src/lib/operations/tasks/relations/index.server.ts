@@ -31,9 +31,11 @@ export const saveRelations = async (args: {
 		data
 	} = args;
 
+	const parentTable = !!config.versions ? `${config.slug}Versions` : config.slug
+
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
-		parentSlug: config.slug,
+		parentSlug: parentTable,
 		ownerId,
 		paths: blocksDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
@@ -41,7 +43,7 @@ export const saveRelations = async (args: {
 
 	/** Delete relations from deletedTreeItems */
 	await adapter.relations.deleteFromPaths({
-		parentSlug: config.slug,
+		parentSlug: parentTable,
 		ownerId,
 		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
@@ -59,7 +61,7 @@ export const saveRelations = async (args: {
 	// if not present in incoming paths don't keep it.
 	const existingRelations = await adapter.relations
 		.getAll({
-			parentSlug: config.slug,
+			parentSlug: parentTable,
 			ownerId,
 			locale: locale
 		})
@@ -79,21 +81,21 @@ export const saveRelations = async (args: {
 
 	if (relationsDiff.toDelete.length) {
 		await adapter.relations.delete({
-			parentSlug: config.slug,
+			parentSlug: parentTable,
 			relations: relationsDiff.toDelete
 		});
 	}
-
+	
 	if (relationsDiff.toUpdate.length) {
 		await adapter.relations.update({
-			parentSlug: config.slug,
+			parentSlug: parentTable,
 			relations: relationsDiff.toUpdate
 		});
 	}
 
 	if (relationsDiff.toAdd.length) {
 		await adapter.relations.create({
-			parentSlug: config.slug,
+			parentSlug: parentTable,
 			ownerId,
 			relations: relationsDiff.toAdd
 		});

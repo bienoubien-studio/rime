@@ -165,22 +165,22 @@ export type Relation = {
 export type BeforeOperationRelation = Omit<Relation, 'ownerId'> & { ownerId?: string };
 
 type DeleteFromPaths = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	ownerId: string;
 	paths: string[];
 	locale?: string;
 }) => Promise<boolean>;
 
-type Delete = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
-type Update = (args: { parentSlug: PrototypeSlug; relations: Relation[] }) => Promise<boolean>;
+type Delete = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
+type Update = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
 type Create = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	ownerId: string;
 	relations: BeforeOperationRelation[];
 }) => Promise<boolean>;
 
 type GetAllRelations = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	ownerId: string;
 	locale?: string;
 }) => Promise<Relation[]>;

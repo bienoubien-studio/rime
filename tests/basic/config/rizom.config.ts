@@ -130,7 +130,7 @@ const Pages = collection('pages', {
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
 			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
-	status: true,
+	// versions: true,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),

@@ -30,6 +30,8 @@ export const saveTreeBlocks = async (args: {
 		locale
 	} = args;
 
+	const parentTable = !!config.versions ? `${config.slug}Versions` : config.slug
+
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({
 		data,
@@ -62,7 +64,7 @@ export const saveTreeBlocks = async (args: {
 	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {
 		await Promise.all(
-			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: config.slug, block }))
+			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block }))
 		);
 	}
 
@@ -70,7 +72,7 @@ export const saveTreeBlocks = async (args: {
 		await Promise.all(
 			treeDiff.toAdd.map((block) =>
 				adapter.tree.create({
-					parentSlug: config.slug,
+					parentSlug: parentTable,
 					ownerId,
 					block,
 					locale: locale
@@ -82,7 +84,7 @@ export const saveTreeBlocks = async (args: {
 	if (treeDiff.toUpdate.length) {
 		await Promise.all(
 			treeDiff.toUpdate.map((block) =>
-				adapter.tree.update({ parentSlug: config.slug, block, locale: locale })
+				adapter.tree.update({ parentSlug: parentTable, block, locale: locale })
 			)
 		);
 	}

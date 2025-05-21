@@ -7,9 +7,7 @@ import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter.js';
 import { transformDataToSchema } from '../util/schema.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
-    //
-    type KeyOfTables = keyof typeof tables;
-
+    
     const buildBlockTableName = (slug: string, blockName: string) =>
         `${slug}Blocks${toPascalCase(blockName)}`;
 
@@ -22,7 +20,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
             await db.update(tables[table]).set(values).where(eq(tables[table].id, block.id));
         }
 
-        const keyTableLocales = `${table}Locales` as KeyOfTables;
+        const keyTableLocales = `${table}Locales` as keyof typeof tables;
         if (locale && keyTableLocales in tables) {
             const tableLocales = tables[keyTableLocales];
             const localizedColumns = getTableColumns(tableLocales);
@@ -118,16 +116,16 @@ export type AdapterBlocksInterface = ReturnType<typeof createAdapterBlocksInterf
 //////////////////////////////////////////////
 
 type UpdateBlock = (args: {
-    parentSlug: PrototypeSlug;
+    parentSlug: string;
     block: GenericBlock;
     locale?: string;
 }) => Promise<boolean>;
 
 type CreateBlock = (args: {
-    parentSlug: PrototypeSlug;
+    parentSlug: string;
     block: GenericBlock;
     ownerId: string;
     locale?: string;
 }) => Promise<boolean>;
 
-type DeleteBlock = (args: { parentSlug: PrototypeSlug; block: GenericBlock }) => Promise<boolean>;
+type DeleteBlock = (args: { parentSlug: string; block: GenericBlock }) => Promise<boolean>;

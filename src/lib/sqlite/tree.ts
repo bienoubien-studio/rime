@@ -123,19 +123,19 @@ export type AdapterTreeInterface = ReturnType<typeof createAdapterTreeInterface>
 //////////////////////////////////////////////
 
 type UpdateBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 	locale?: string;
 }) => Promise<boolean>;
 
 type CreateBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 	ownerId: string;
 	locale?: string;
 }) => Promise<boolean>;
 
 type DeleteBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 }) => Promise<boolean>;

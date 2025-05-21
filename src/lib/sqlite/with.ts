@@ -31,10 +31,7 @@ export const buildWithParam = ({
 
 	// Get document configuration
 	const documentConfig = configInterface.getBySlug(slug);
-	if (!documentConfig) {
-		throw new RizomError(RizomError.OPERATION_ERROR, 'Config not found for ' + slug);
-	}
-
+	
 	const withParam: Dic = {};
 	
 	// Track paths for different field types

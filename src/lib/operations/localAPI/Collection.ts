@@ -185,7 +185,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findAll<Doc>(params);
 	}
 
-	findById({ id, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
+	findById({ id, versionId, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
 		
 		this.#api.preventOperationLoop()
 
@@ -194,6 +194,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		}
 		const params = {
 			id,
+			versionId,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
@@ -201,13 +202,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			api: this.#api,
 			depth
 		};
-
+		
 		if (this.#event.locals.cacheEnabled) {
 			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
 				'findById',
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
 				id,
+				versionId || 'latest',
 				depth,
 				locale
 			);
@@ -284,6 +286,7 @@ type FindAllArgs = {
 
 type FindByIdArgs = {
 	id?: string;
+	versionId?: string;
 	locale?: string;
 	depth?: number;
 };

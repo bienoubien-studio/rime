@@ -85,7 +85,11 @@ export const populateURL = async <T extends GenericDoc>(
     
     if(document.url !== url){
       document.url = url
-      await event.locals.rizom.adapter.collection.update({ slug: config.slug, id: document.id, locale, data: { url }})
+      if( document._prototype === 'collection' ){
+        await event.locals.rizom.adapter.collection.update({ slug: config.slug, id: document.id, locale, data: { url }})
+      }else{
+        await event.locals.rizom.adapter.area.update({ slug: config.slug, locale, data: { url }})
+      }
     }
 
   }

@@ -40,10 +40,7 @@ export class LocalAPI {
 	
 	collection<Slug extends keyof RegisterCollection>(slug: Slug) {
 		const collectionConfig = this.rizom.config.getCollection(slug);
-		if (!collectionConfig) {
-			throw new RizomError(`${slug} is not a collection`);
-		}
-
+		
 		return new CollectionInterface<RegisterCollection[Slug]>({
 			event: this.#requestEvent,
 			config: collectionConfig,
@@ -55,9 +52,7 @@ export class LocalAPI {
 	
 	area<Slug extends keyof RegisterArea>(slug: Slug) {
 		const areaConfig = this.rizom.config.getArea(slug);
-		if (!areaConfig) {
-			throw new RizomError(`${slug} is not a area`);
-		}
+		
 		return new AreaInterface<RegisterArea[Slug]>({
 			event: this.#requestEvent,
 			config: areaConfig,

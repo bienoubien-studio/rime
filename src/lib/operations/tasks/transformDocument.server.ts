@@ -19,7 +19,7 @@ export const transformDocument = async <T>(args: {
 	withURL?: boolean
 	withBlank?: boolean
 }) => {
-	const { raw, adapter, locale, event, api, depth, config, augment = true, withBlank = true, withURL = true } = args;
+	const { raw, adapter, locale, event, api, depth, config, augment = true, withBlank = true } = args;
 
 	let document = await adapter.transform.doc({
 		doc: raw,

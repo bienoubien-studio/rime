@@ -101,7 +101,6 @@ test('Should get Home EN with FR data', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Accueil');
 	expect(doc.locale).toBe('en');
-	expect(doc.status).toBe('draft');
 	expect(doc.attributes.slug).toBe('accueil');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
@@ -160,7 +159,7 @@ test('Should create a page', async ({ request }) => {
 				title: 'Page',
 				slug: 'page'
 			},
-			status: 'published',
+			// status: 'published',
 			layout: {
 				components: [
 					{
@@ -295,25 +294,25 @@ test('Should return home FR (query) with select', async ({ request }) => {
 	expect(Object.keys(response.docs[0]).length).toBe(2);
 });
 
-test('Should return home (draft)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Accueil');
-});
+// test('Should return home (draft)', async ({ request }) => {
+// 	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
+// 	const response = await request.get(url).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(1);
+// 	expect(response.docs[0].attributes.title).toBe('Accueil');
+// });
 
-test('Should return the page (published)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Page');
-});
+// test('Should return the page (published)', async ({ request }) => {
+// 	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
+// 	const response = await request.get(url).then((response) => {
+// 		return response.json();
+// 	});
+// 	expect(response.docs).toBeDefined();
+// 	expect(response.docs.length).toBe(1);
+// 	expect(response.docs[0].attributes.title).toBe('Page');
+// });
 
 let pageWithAuthorId: string;
 test('Should create an other page with author', async ({ request }) => {

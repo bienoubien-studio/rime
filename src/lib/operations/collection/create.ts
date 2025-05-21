@@ -79,14 +79,15 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	const incomingPaths = Object.keys(configMap);
 
-	const createdId = await adapter.collection.insert({
+	const created = await adapter.collection.insert({
 		slug: config.slug,
 		data,
 		locale
 	});
 
+	// Use the versionId for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
-		ownerId: createdId,
+		ownerId: created.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -96,7 +97,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		ownerId: createdId,
+		ownerId: created.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -106,7 +107,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	await saveRelations({
-		ownerId: createdId,
+		ownerId: created.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -117,7 +118,8 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		treeDiff
 	});
 
-	let document = (await api.collection(config.slug).findById({ id: createdId, locale })) as T;
+	// Use the document ID to find the created document
+	let document = (await api.collection(config.slug).findById({ id: created.id, locale, versionId: created.versionId })) as T;
 
 	document = await populateURL(document, { config, event, locale })
 	
@@ -146,7 +148,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 				let localizedDocument = await api
 					.collection(config.slug)
 					//@ts-ignore
-					.updateById({ id: createdId, data: incomingData, locale: otherLocale, isFallbackLocale: true });
+					.updateById({ id: created.id, versionId: created.versionId, data: incomingData, locale: otherLocale, isFallbackLocale: true });
 				
 				await populateURL(localizedDocument, { config, event, locale })
 			}

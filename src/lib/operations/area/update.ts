@@ -21,11 +21,12 @@ type UpdateArgs<T> = {
 	event: RequestEvent;
 	adapter: Adapter;
 	api: LocalAPI;
+	versionId?: string;
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, adapter, locale, api } = args;
+	const { config, event, adapter, locale, api, versionId } = args;
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, {});
@@ -33,7 +34,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await api.area(config.slug).find({ locale })) as unknown as T;
+	const original = (await api.area(config.slug).find({ locale, versionId })) as unknown as T;
 	const originalConfigMap = buildConfigMap(original, config.fields);
 	const configMap = buildConfigMap(data, config.fields);
 
@@ -46,7 +47,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		original,
 		operation: 'update',
 	});
-
+	
 	for (const hook of config.hooks?.beforeUpdate || []) {
 		/**
 		 * TS is expecting a more specific types, 
@@ -67,14 +68,17 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 
 	const incomingPaths = Object.keys(configMap);
 
-	await adapter.area.update({
+	const updateResult = await adapter.area.update({
 		slug: config.slug,
 		data,
-		locale
+		locale,
+		versionId
 	});
 
+	
+	// Use the versionId from the update result for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -86,7 +90,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -98,7 +102,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	});
 
 	await saveRelations({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -109,10 +113,23 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		treeDiff
 	});
 
-	let document = await api.area(config.slug).find({ locale });
+	
+	// Get the updated area with the correct version ID
+	let document = await api.area(config.slug).find({ locale, versionId: updateResult.versionId });
 	
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
+
+	// Handle localized URLs if needed
+	const locales = event.locals.rizom.config.getLocalesCodes();
+	if (locales.length) {
+		for(const otherLocale of locales){
+			if (otherLocale !== locale) {
+				const documentLocale = await api.area(config.slug).find({ locale: otherLocale, versionId: updateResult.versionId });
+				await populateURL(documentLocale, { config, event, locale: otherLocale })
+			}
+		}
+	}
 
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
@@ -125,5 +142,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		});
 	}
 
+	
 	return document as unknown as T;
 };

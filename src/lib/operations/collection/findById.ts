@@ -9,6 +9,7 @@ import { transformDocument } from '../tasks/transformDocument.server.js';
 
 type Args = {
 	id: string;
+	versionId?: string;
 	locale?: string | undefined;
 	config: CompiledCollection;
 	api: LocalAPI;
@@ -19,7 +20,7 @@ type Args = {
 };
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
-	const { config, event, id, adapter, locale, api, depth, select } = args;
+	const { config, event, id, versionId, adapter, locale, api, depth, select } = args;
 
 	/////////////////////////////////////////////
 	// Authorized
@@ -32,6 +33,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	const documentRaw = await adapter.collection.findById({
 		slug: config.slug,
 		id,
+		versionId,
 		locale,
 		select
 	});
