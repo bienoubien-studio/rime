@@ -34,18 +34,27 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(collection.slug))
 
 		if (collection.versions) {
-			enumTables = [...enumTables, collectionSlug];
 			rootTableName = `${collectionSlug}Versions`
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
+			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
+			
 			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
-			versionsRelationsDefinitions = [templateRelationOne({
-				name: `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`,
-				table: rootTableName,
-				parent: collectionSlug
-			}), templateRelationMany({
-				name: `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`,
-				table: rootTableName,
-				many: [rootTableName]
-			})]
+			
+			versionsRelationsDefinitions = [
+				templateRelationOne({
+					name: manyVersionsToOneName,
+					table: rootTableName,
+					parent: collectionSlug
+				}),
+				templateRelationMany({
+					name: oneToManyVersionsName,
+					table: collectionSlug,
+					many: [rootTableName]
+				})
+			]
+
+			enumTables = [...enumTables, collectionSlug];
+			enumRelations = [ ...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
 		}
 
 		const {
@@ -107,21 +116,27 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(area.slug))
 
 		if (area.versions) {
-			enumTables = [...enumTables, areaSlug];
 			rootTableName = `${areaSlug}Versions`
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
+			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
+			
 			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
+			
 			versionsRelationsDefinitions = [
 				templateRelationOne({
-					name: `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`,
+					name: manyVersionsToOneName,
 					table: rootTableName,
 					parent: areaSlug
 				}),
 				templateRelationMany({
-					name: `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`,
-					table: rootTableName,
+					name: oneToManyVersionsName,
+					table: areaSlug,
 					many: [rootTableName]
 				})
 			]
+
+			enumTables = [...enumTables, areaSlug];
+			enumRelations = [...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
 		}
 
 		const {
