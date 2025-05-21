@@ -3,7 +3,7 @@ import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../util/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
-import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/types/config.js';
+import type { CompiledConfig } from '$lib/types/config.js';
 import type { AsyncReturnType, Dic } from '$lib/types/util.js';
 import type { CollectionSlug, Config, Field, FormField, PrototypeSlug } from '$lib/types/index.js';
 import type { AreaSlug } from '$lib/types/doc.js';
@@ -36,23 +36,37 @@ export async function createConfigInterface(rawConfig: Config) {
 	}
 
 	const getArea = (slug: string) => {
-		return config.areas.find((g) => g.slug === slug);
+		const areaConfig = config.areas.find((g) => g.slug === slug);
+		if (!areaConfig) throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not an area`)
+		return areaConfig
 	};
 	
 	const getCollection = (slug: string) => {
-		return config.collections.find((c) => c.slug === slug);
+		const collectionConfig = config.collections.find((c) => c.slug === slug);
+		if (!collectionConfig) throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not a collection`)
+		return collectionConfig
 	};
 
 	const getBySlug = (slug: string) => {
-		return getArea(slug) || getCollection(slug);
+		console.log('get config ' + slug)
+		// Try to find in collections
+		const collectionConfig = config.collections.find((c) => c.slug === slug);
+		if (collectionConfig) return collectionConfig;
+		
+		// Try to find in areas
+		const areaConfig = config.areas.find((g) => g.slug === slug);
+		if (areaConfig) return areaConfig;
+		
+		// Not found in either
+		throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not a valid area or collection`);
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug => {
-		return !!getCollection(slug);
+		return !!config.collections.find((c) => c.slug === slug);
 	};
 
 	const isArea = (slug: string): slug is AreaSlug => {
-		return !!getArea(slug);
+		return !!config.areas.find((g) => g.slug === slug);
 	};
 
 	const getDocumentPrototype = (slug: PrototypeSlug) => {
@@ -61,7 +75,7 @@ export async function createConfigInterface(rawConfig: Config) {
 		} else if (isArea(slug)) {
 			return 'area';
 		}
-		throw new RizomError(slug + 'is neither a collection nor a globlal');
+		throw new RizomError(RizomError.CONFIG_ERROR, slug + 'is neither a collection nor a globlal');
 	};
 
 	return {
