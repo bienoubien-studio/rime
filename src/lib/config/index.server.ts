@@ -48,7 +48,6 @@ export async function createConfigInterface(rawConfig: Config) {
 	};
 
 	const getBySlug = (slug: string) => {
-		console.log('get config ' + slug)
 		// Try to find in collections
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
 		if (collectionConfig) return collectionConfig;
