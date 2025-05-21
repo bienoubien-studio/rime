@@ -1,9 +1,8 @@
 import { and, eq, getTableColumns } from 'drizzle-orm';
-import { generatePK } from './util.js';
+import { generatePK, updateTableRecord, insertTableRecord, upsertLocalizedData, prepareSchemaData } from './util.js';
 import { buildWithParam } from './with.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import { transformDataToSchema } from '../util/schema.js';
 import type { DeepPartial, Dic } from '$lib/types/util.js';
 import type { ConfigInterface } from '../config/index.server.js';
 import { createBlankDocument } from 'rizom/util/doc.js';
@@ -167,40 +166,33 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
 		
 		const createId = generatePK();
-		const tableLocales = `${slug}Locales` as KeyOfTables;
+		const tableLocales = `${slug}Locales`;
 
-		if (locale && tableLocales in tables) {
-			const unlocalizedColumns = getTableColumns(tables[slug]);
-			const localizedColumns = getTableColumns(tables[tableLocales]);
+		// Prepare data for insertion using the shared utility function
+		const { mainData, localizedData, isLocalized } = prepareSchemaData(values, {
+			tables,
+			mainTableName: slug,
+			localesTableName: tableLocales,
+			locale,
+			fillNotNull: true
+		});
 
-			// Fill required fields without default value 
-			// with a placeholder value to prevent error on area creation
-			const unlocalizedData = transformDataToSchema(values, unlocalizedColumns, { fillNotNull : true });
-			const localizedData = transformDataToSchema(values, localizedColumns, { fillNotNull : true });
+		// Insert main record
+		await insertTableRecord(db, tables, slug, {
+			...mainData,
+			id: createId
+		});
 
-			await db.insert(tables[slug]).values({
-				...unlocalizedData,
-				id: createId
-			});
-
-			await db.insert(tables[tableLocales]).values({
+		// Insert localized data if needed
+		if (isLocalized) {
+			await insertTableRecord(db, tables, tableLocales, {
 				...localizedData,
-				id: generatePK(),
 				ownerId: createId,
 				locale
 			});
-		} else {
-			const columns = getTableColumns(tables[slug]);
-			// Fill required fields with default values if not provide to prevent error on area creation
-			const schemaData = transformDataToSchema(values, columns, { fillNotNull : true });
-			// console.log(Object.keys(columns))
-			await db.insert(tables[slug]).values({
-				...schemaData,
-				id: createId
-			});
 		}
 	};
-
+	
 	const update: Update = async ({ slug, data, locale, versionId }) => {
 		const now = new Date();
 		const areaConfig = configInterface.getArea(slug);
@@ -213,59 +205,28 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		if (!hasVersions) {
 			// Original implementation for non-versioned areas
 			const keyTableLocales = `${slug}Locales`;
-			if (locale && keyTableLocales in tables) {
-				const unlocalizedColumns = getTableColumns(tables[slug]);
-				const localizedColumns = getTableColumns(tables[keyTableLocales as PrototypeSlug]);
+			// Prepare data for update using the shared utility function
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: slug,
+				localesTableName: keyTableLocales,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
+			// Update main table
+			await updateTableRecord(db, tables, slug, {
+				recordId: area.id,
+				data: mainData,
+				timestamp: now
+			});
 
-				// Update main table
-				if (Object.keys(unlocalizedData).length) {
-					await db
-						.update(tables[slug])
-						.set({
-							...unlocalizedData,
-							updatedAt: now
-						})
-						.where(eq(tables[slug].id, area.id));
-				}
-
-				// Update locales table
-				if (Object.keys(localizedData).length) {
-					const tableLocales = tables[keyTableLocales as PrototypeSlug];
-					// @ts-expect-error todo...
-					const localizedRow = await db.query[keyTableLocales as PrototypeSlug].findFirst({
-						where: and(eq(tableLocales.ownerId, area.id), eq(tableLocales.locale, locale))
-					});
-
-					if (!localizedRow) {
-						await db.insert(tableLocales).values({
-							...localizedData,
-							id: generatePK(),
-							locale: locale,
-							ownerId: area.id
-						});
-					} else {
-						await db
-							.update(tableLocales)
-							.set(localizedData)
-							.where(and(eq(tableLocales.ownerId, area.id), eq(tableLocales.locale, locale)));
-					}
-				}
-			} else {
-				const columns = getTableColumns(tables[slug]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				if (Object.keys(schemaData).length) {
-					await db
-						.update(tables[slug])
-						.set({
-							...schemaData,
-							updatedAt: now
-						})
-						.where(eq(tables[slug].id, area.id));
-				}
+			// Update localized data if needed
+			if (isLocalized) {
+				await upsertLocalizedData(db, tables, keyTableLocales, {
+					ownerId: area.id,
+					data: localizedData,
+					locale: locale!
+				});
 			}
 
 			// For non-versioned areas, versionId is the same as id
@@ -284,63 +245,28 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const versionsTable = `${slug}Versions`;
 			const versionsLocalesTable = `${versionsTable}Locales`;
 
-			if (locale && versionsLocalesTable in tables) {
-				// Handle localized fields
-				const unlocalizedColumns = getTableColumns(tables[versionsTable]);
-				const localizedColumns = getTableColumns(tables[versionsLocalesTable]);
+			// Prepare data for update using the shared utility function
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: versionsTable,
+				localesTableName: versionsLocalesTable,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
+			// Update version directly
+			await updateTableRecord(db, tables, versionsTable, {
+				recordId: versionId,
+				data: mainData,
+				timestamp: now
+			});
 
-				// Update version directly
-				if (Object.keys(unlocalizedData).length) {
-					await db
-						.update(tables[versionsTable])
-						.set({
-							...unlocalizedData,
-							updatedAt: now
-						})
-						.where(eq(tables[versionsTable].id, versionId));
-				}
-
-				// Update localized data if any
-				if (Object.keys(localizedData).length) {
-					const tableLocales = tables[versionsLocalesTable];
-					// @ts-expect-error todo
-					const localizedRow = await db.query[versionsLocalesTable].findFirst({
-						where: and(eq(tableLocales.ownerId, versionId), eq(tableLocales.locale, locale))
-					});
-
-					if (localizedRow) {
-						await db
-							.update(tableLocales)
-							.set(localizedData)
-							.where(
-								and(eq(tableLocales.ownerId, versionId), eq(tableLocales.locale, locale))
-							);
-					} else {
-						await db.insert(tableLocales).values({
-							id: generatePK(),
-							...localizedData,
-							ownerId: versionId,
-							locale
-						});
-					}
-				}
-			} else {
-				// Handle non-localized fields
-				const columns = getTableColumns(tables[versionsTable]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				if (Object.keys(schemaData).length) {
-					await db
-						.update(tables[versionsTable])
-						.set({
-							...schemaData,
-							updatedAt: now
-						})
-						.where(eq(tables[versionsTable].id, versionId));
-				}
+			// Update localized data if needed
+			if (isLocalized) {
+				await upsertLocalizedData(db, tables, versionsLocalesTable, {
+					ownerId: versionId,
+					data: localizedData,
+					locale: locale!
+				});
 			}
 
 			// Return both the area id and the version id
@@ -360,44 +286,29 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const versionsLocalesTable = `${versionsTable}Locales`;
 			const createVersionId = generatePK();
 
-			if (locale && versionsLocalesTable in tables) {
-				// Handle localized fields
-				const unlocalizedColumns = getTableColumns(tables[versionsTable]);
-				const localizedColumns = getTableColumns(tables[versionsLocalesTable]);
+			// Prepare data for insertion using the shared utility function
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: versionsTable,
+				localesTableName: versionsLocalesTable,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
+			// Insert new version
+			await insertTableRecord(db, tables, versionsTable, {
+				id: createVersionId,
+				...mainData,
+				ownerId: area.id,
+				createdAt: now,
+				updatedAt: now
+			});
 
-				// Insert new version
-				await db.insert(tables[versionsTable]).values({
-					id: createVersionId,
-					...unlocalizedData,
-					ownerId: area.id,
-					createdAt: now,
-					updatedAt: now
-				});
-
-				// Insert localized data if any
-				if (Object.keys(localizedData).length) {
-					await db.insert(tables[versionsLocalesTable]).values({
-						id: generatePK(),
-						...localizedData,
-						ownerId: createVersionId,
-						locale
-					});
-				}
-			} else {
-				// Handle non-localized fields
-				const columns = getTableColumns(tables[versionsTable]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				// Insert new version
-				await db.insert(tables[versionsTable]).values({
-					id: createVersionId,
-					...schemaData,
-					ownerId: area.id,
-					createdAt: now,
-					updatedAt: now
+			// Insert localized data if needed
+			if (isLocalized) {
+				await insertTableRecord(db, tables, versionsLocalesTable, {
+					...localizedData,
+					ownerId: createVersionId,
+					locale
 				});
 			}
 

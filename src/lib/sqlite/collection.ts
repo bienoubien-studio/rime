@@ -1,15 +1,14 @@
-import { and, desc, eq, getTableColumns } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
+import { generatePK, updateTableRecord, insertTableRecord, upsertLocalizedData, prepareSchemaData } from './util.js';
 import { buildWithParam } from './with.js';
-import { generatePK } from './util.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
-import { RizomError } from '$lib/errors/index.js';
-import { transformDataToSchema } from '../util/schema.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/types/doc.js';
 import type { OperationQuery } from '$lib/types/api.js';
-import type { DeepPartial, Dic } from '$lib/types/util.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { DeepPartial, Dic } from '$lib/types/util.js';
 import type { ConfigInterface } from '../config/index.server.js';
+import { RizomError } from 'rizom/errors/index.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -160,276 +159,181 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// Create a new document
 	//////////////////////////////////////////////
 	const insert: Insert = async ({ slug, data, locale }) => {
-		const config = configInterface.getCollection(slug)
-		const hasVersions = !!config.versions
-		const table = hasVersions ? `${slug}Versions` : slug
-		const tableLocales = hasVersions ? `${slug}VersionsLocales` : `${slug}Locales`
-		const createId = generatePK();
-		const now = new Date()
-		// Initialize rootId - will be set if this is a versioned collection
-		let rootId: string | undefined = undefined;
+		
+		const config = configInterface.getCollection(slug);
+		const hasVersions = !!config.versions;
+		const now = new Date();
+		
+		// Initialize IDs
+		let rootId: string | undefined;
+		let versionId: string = generatePK();
 
-		// if it's versioned collection, create the root table entry
-		// with ony id, and create/update date, all other data 
-		// will be handled by versions tables
+		// Determine table names based on versioning
+		const mainTable = hasVersions ? `${slug}Versions` : slug;
+		const localesTable = hasVersions ? `${slug}VersionsLocales` : `${slug}Locales`;
+
+		// Prepare data for insertion
+		const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			tables,
+			mainTableName: mainTable,
+			localesTableName: localesTable,
+			locale
+		});
+
+		// If it's a versioned collection, create the root document first
 		if (hasVersions) {
-			rootId = generatePK();
-			await db.insert(tables[slug]).values({
-				id: rootId,
+			// Create root document with only id and timestamps
+			rootId = await insertTableRecord(db, tables, slug, {
 				createdAt: now,
 				updatedAt: now
 			});
 		}
 
-		if (locale && tableLocales in tables) {
-			const unlocalizedColumns = getTableColumns(tables[table]);
-			const localizedColumns = getTableColumns(tables[tableLocales]);
-			// Transform data based on table columns ex : attributes.title -> attributes__title
-			const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-			const localizedData = transformDataToSchema(data, localizedColumns);
+		// Insert main record
+		await insertTableRecord(db, tables, mainTable, {
+			id: versionId,
+			...mainData,
+			...(hasVersions ? { ownerId: rootId } : {}),
+			createdAt: now,
+			updatedAt: now
+		});
 
-			// insert in table wich could be a {table}Versions 
-			// and if it's a versioned collection add rootId as the ownerId 
-			await db.insert(tables[table]).values({
-				...unlocalizedData,
-				...(hasVersions ? { ownerId: rootId } : {}),
-				id: createId,
-				createdAt: now,
-				updatedAt: now
-			});
-
-			await db.insert(tables[tableLocales]).values({
+		// Insert localized data if needed
+		if (isLocalized && Object.keys(localizedData).length) {
+			await insertTableRecord(db, tables, localesTable, {
 				...localizedData,
-				id: generatePK(),
-				ownerId: createId,
-				locale
+				ownerId: versionId,
+				locale: locale!
 			});
-
-		} else {
-			// Transform all data based on main table columns
-			const columns = getTableColumns(tables[table]);
-			const schemaData = transformDataToSchema(data, columns);
-
-			// insert in table wich could be a {table}Versions 
-			// and if it's a versioned collection add rootId as the ownerId
-			await db.insert(tables[table]).values({
-				id: createId,
-				...schemaData,
-				...(hasVersions ? { ownerId: rootId } : {}),
-				createdAt: new Date(),
-				updatedAt: new Date()
-			});
-
 		}
 
 		// For versioned collections, return both the root ID and the version ID
 		// For non-versioned collections, versionId is the same as id
 		return { 
-			id: hasVersions && rootId ? rootId : createId, 
-			versionId: createId 
+			id: hasVersions && rootId ? rootId : versionId, 
+			versionId: versionId 
 		};
 	};
 
 	//////////////////////////////////////////////
-	// Update a document
+	// Shared helper functions for database operations
 	//////////////////////////////////////////////
+
+	// Use shared utility functions from util.ts
+	// These functions have been moved to util.ts for reuse across modules
+
 	const update: Update = async ({ slug, id, versionId, data, locale }) => {
+		
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
-
+		
 		if (!hasVersions) {
-			// Original implementation for non-versioned collections
+			// Scenario 0: Non-versioned collections
 			const tableName = slug;
 			const tableLocalesName = `${slug}Locales`;
 
-			if (locale && tableLocalesName in tables) {
-				const unlocalizedColumns = getTableColumns(tables[tableName]);
-				const localizedColumns = getTableColumns(tables[tableLocalesName]);
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: tableName,
+				localesTableName: tableLocalesName,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
+			// Update main table
+			await updateTableRecord(db, tables, tableName, {
+				recordId: id,
+				data: mainData,
+				timestamp: now
+			});
 
-				// Update main table
-				if (Object.keys(unlocalizedData).length) {
-					await db
-						.update(tables[tableName])
-						.set({
-							...unlocalizedData,
-							updatedAt: now
-						})
-						.where(eq(tables[tableName].id, id));
-				}
-
-				// Update locales table
-				if (Object.keys(localizedData).length) {
-					const tableLocales = tables[tableLocalesName];
-					// @ts-expect-error todo
-					const localizedRow = await db.query[tableLocalesName].findFirst({
-						where: and(eq(tableLocales.ownerId, id), eq(tableLocales.locale, locale))
-					});
-
-					if (localizedRow) {
-						await db
-							.update(tableLocales)
-							.set(localizedData)
-							.where(
-								and(eq(tableLocales.ownerId, id), eq(tableLocales.locale, locale))
-							);
-					} else {
-						await db.insert(tableLocales).values({
-							id: generatePK(),
-							...localizedData,
-							ownerId: id,
-							locale
-						});
-					}
-				}
-			} else {
-				const columns = getTableColumns(tables[tableName]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				if (Object.keys(schemaData).length) {
-					await db
-						.update(tables[tableName])
-						.set({
-							...schemaData,
-							updatedAt: now
-						})
-						.where(eq(tables[tableName].id, id));
-				}
+			// Update locales table if needed
+			if (isLocalized) {
+				await upsertLocalizedData(db, tables, tableLocalesName, {
+					ownerId: id,
+					data: localizedData,
+					locale: locale!
+				});
 			}
 
 			// For non-versioned collections, versionId is the same as id
 			return { id, versionId: id };
 		} else if (hasVersions && versionId) {
-			// Scenario 2: Update a specific version directly
+			// Scenario 1: Update a specific version directly
 
 			// First, update the root table's updatedAt
-			await db
-				.update(tables[slug])
-				.set({
-					updatedAt: now
-				})
-				.where(eq(tables[slug].id, id));
+			await updateTableRecord(db, tables, slug, {
+				recordId: id,
+				data: {},
+				timestamp: now
+			});
 			
 			const versionsTable = `${slug}Versions`;
 			const versionsLocalesTable = `${versionsTable}Locales`;
 
-			if (locale && versionsLocalesTable in tables) {
-				// Handle localized fields
-				const unlocalizedColumns = getTableColumns(tables[versionsTable]);
-				const localizedColumns = getTableColumns(tables[versionsLocalesTable]);
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: versionsTable,
+				localesTableName: versionsLocalesTable,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
 
-				// Update version directly
-				if (Object.keys(unlocalizedData).length) {
-					await db
-						.update(tables[versionsTable])
-						.set({
-							...unlocalizedData,
-							updatedAt: now
-						})
-						.where(eq(tables[versionsTable].id, versionId));
-				}
+			// Update version directly
+			await updateTableRecord(db, tables, versionsTable, {
+				recordId: versionId,
+				data: mainData,
+				timestamp: now
+			});
 
-				// Update localized data if any
-				if (Object.keys(localizedData).length) {
-					const tableLocales = tables[versionsLocalesTable];
-					// @ts-expect-error todo
-					const localizedRow = await db.query[versionsLocalesTable].findFirst({
-						where: and(eq(tableLocales.ownerId, versionId), eq(tableLocales.locale, locale))
-					});
-
-					if (localizedRow) {
-						await db
-							.update(tableLocales)
-							.set(localizedData)
-							.where(
-								and(eq(tableLocales.ownerId, versionId), eq(tableLocales.locale, locale))
-							);
-					} else {
-						await db.insert(tableLocales).values({
-							id: generatePK(),
-							...localizedData,
-							ownerId: versionId,
-							locale
-						});
-					}
-				}
-			} else {
-				// Handle non-localized fields
-				const columns = getTableColumns(tables[versionsTable]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				if (Object.keys(schemaData).length) {
-					await db
-						.update(tables[versionsTable])
-						.set({
-							...schemaData,
-							updatedAt: now
-						})
-						.where(eq(tables[versionsTable].id, versionId));
-				}
+			// Update localized data if needed
+			if (isLocalized) {
+				await upsertLocalizedData(db, tables, versionsLocalesTable, {
+					ownerId: versionId,
+					data: localizedData,
+					locale: locale!
+				});
 			}
 
 			// For direct version updates, return both the document id and the version id
-			return { id, versionId: versionId };
+			return { id, versionId };
 		} else {
-			// Scenario 1: Update root and create a new version
+			// Scenario 2: Update root and create a new version
+			
 			// 1. First, update the root table's updatedAt
-			await db
-				.update(tables[slug])
-				.set({
-					updatedAt: now
-				})
-				.where(eq(tables[slug].id, id));
+			await updateTableRecord(db, tables, slug, {
+				recordId: id,
+				data: {},
+				timestamp: now
+			});
 
 			// 2. Create a new version entry
 			const versionsTable = `${slug}Versions`;
 			const versionsLocalesTable = `${versionsTable}Locales`;
 			const createVersionId = generatePK();
 
-			if (locale && versionsLocalesTable in tables) {
-				// Handle localized fields
-				const unlocalizedColumns = getTableColumns(tables[versionsTable]);
-				const localizedColumns = getTableColumns(tables[versionsLocalesTable]);
+			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+				tables,
+				mainTableName: versionsTable,
+				localesTableName: versionsLocalesTable,
+				locale
+			});
 
-				const unlocalizedData = transformDataToSchema(data, unlocalizedColumns);
-				const localizedData = transformDataToSchema(data, localizedColumns);
+			// Insert new version
+			await insertTableRecord(db, tables, versionsTable, {
+				id: createVersionId,
+				...mainData,
+				ownerId: id,
+				createdAt: now,
+				updatedAt: now
+			});
 
-				// Insert new version
-				await db.insert(tables[versionsTable]).values({
-					id: createVersionId,
-					...unlocalizedData,
-					ownerId: id,
-					createdAt: now,
-					updatedAt: now
-				});
-
-				// Insert localized data if any
-				if (Object.keys(localizedData).length) {
-					await db.insert(tables[versionsLocalesTable]).values({
-						id: generatePK(),
-						...localizedData,
-						ownerId: createVersionId,
-						locale
-					});
-				}
-			} else {
-				// Handle non-localized fields
-				const columns = getTableColumns(tables[versionsTable]);
-				const schemaData = transformDataToSchema(data, columns);
-
-				// Insert new version
-				await db.insert(tables[versionsTable]).values({
-					id: createVersionId,
-					...schemaData,
-					ownerId: id,
-					createdAt: now,
-					updatedAt: now
+			// Insert localized data if needed
+			if (isLocalized && Object.keys(localizedData).length) {
+				await insertTableRecord(db, tables, versionsLocalesTable, {
+					...localizedData,
+					ownerId: createVersionId,
+					locale: locale!
 				});
 			}
 
