@@ -2,6 +2,7 @@ import { t__ } from '$lib/i18n/index.js';
 import type { FormErrors } from '$lib/types/panel.js';
 
 class RizomError extends Error {
+
 	static UNKWONW = 'unknown';
 	static DATA_BASE_ERROR = 'database error';
 	static FORM_ERROR = 'form_error';
@@ -16,7 +17,8 @@ class RizomError extends Error {
 	static FIRST_USER_DEV = 'first_user_dev';
 	static OPERATION_ERROR = 'operation_error';
 	static MAIL_ERROR = 'mail_error';
-
+	static BAD_REQUEST = 'bad_request';
+	
 	code = RizomError.UNKWONW;
 	status: number;
 
@@ -26,6 +28,7 @@ class RizomError extends Error {
 		this.code = code;
 		const statusCodes = {
 			[RizomError.FORM_ERROR]: 400,
+			[RizomError.BAD_REQUEST]: 400,
 			[RizomError.INVALID_CREDENTIALS]: 401,
 			[RizomError.UNAUTHORIZED]: 403,
 			[RizomError.USER_BANNED]: 403,

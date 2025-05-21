@@ -37,13 +37,13 @@ export async function createConfigInterface(rawConfig: Config) {
 
 	const getArea = (slug: string) => {
 		const areaConfig = config.areas.find((g) => g.slug === slug);
-		if (!areaConfig) throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not an area`)
+		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`)
 		return areaConfig
 	};
 	
 	const getCollection = (slug: string) => {
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
-		if (!collectionConfig) throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not a collection`)
+		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`)
 		return collectionConfig
 	};
 
@@ -58,7 +58,7 @@ export async function createConfigInterface(rawConfig: Config) {
 		if (areaConfig) return areaConfig;
 		
 		// Not found in either
-		throw new RizomError(RizomError.CONFIG_ERROR, `${slug} is not a valid area or collection`);
+		throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug => {
@@ -75,7 +75,7 @@ export async function createConfigInterface(rawConfig: Config) {
 		} else if (isArea(slug)) {
 			return 'area';
 		}
-		throw new RizomError(RizomError.CONFIG_ERROR, slug + 'is neither a collection nor a globlal');
+		throw new RizomError(RizomError.BAD_REQUEST, slug + 'is neither a collection nor a globlal');
 	};
 
 	return {
