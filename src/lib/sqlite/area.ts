@@ -1,5 +1,4 @@
-import { and, eq, getTableColumns } from 'drizzle-orm';
-import { generatePK, updateTableRecord, insertTableRecord, upsertLocalizedData, prepareSchemaData } from './util.js';
+import { eq } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
@@ -7,6 +6,7 @@ import type { DeepPartial, Dic } from '$lib/types/util.js';
 import type { ConfigInterface } from '../config/index.server.js';
 import { createBlankDocument } from 'rizom/util/doc.js';
 import { RizomError } from 'rizom/errors/index.js';
+import * as util from '../util/schema.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
@@ -16,8 +16,7 @@ type AreaInterfaceArgs = {
 
 const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfaceArgs) => {
 	//
-	type KeyOfTables = keyof typeof tables;
-
+	
 	/** Get area doc */
 	const get: Get = async ({ slug, locale, select, versionId }) => {
 		const areaConfig = configInterface.getArea(slug);
@@ -73,7 +72,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			return doc;
 		} else {
 			// Implementation for versioned areas
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, locale, tables, configInterface });
 
 			// Configure the query based on whether we want a specific version or the latest
@@ -145,31 +144,19 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			if (!doc) {
 				throw new Error('Database error');
 			}
-
-			// Check if we have version data
-			if (!doc[versionsTable] || doc[versionsTable].length === 0) {
-				throw new RizomError(RizomError.NOT_FOUND, 'area found but without version, should never happen');
-			}
-
-			// Transform the result to combine root and version data
-			const versionData = doc[versionsTable][0];
-			return {
-				id: doc.id,
-				...versionData,
-				// Keep version ID for reference
-				versionId: versionData.id
-			};
+			
+			return util.mergeDocumentWithVersion(doc, versionsTable);
 		}
 	};
 
 	/** Area Create */
 	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
 		
-		const createId = generatePK();
+		const createId = util.generatePK();
 		const tableLocales = `${slug}Locales`;
 
 		// Prepare data for insertion using the shared utility function
-		const { mainData, localizedData, isLocalized } = prepareSchemaData(values, {
+		const { mainData, localizedData, isLocalized } = util.prepareSchemaData(values, {
 			tables,
 			mainTableName: slug,
 			localesTableName: tableLocales,
@@ -178,21 +165,21 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		});
 
 		// Insert main record
-		await insertTableRecord(db, tables, slug, {
+		await util.insertTableRecord(db, tables, slug, {
 			...mainData,
 			id: createId
 		});
 
 		// Insert localized data if needed
 		if (isLocalized) {
-			await insertTableRecord(db, tables, tableLocales, {
+			await util.insertTableRecord(db, tables, tableLocales, {
 				...localizedData,
 				ownerId: createId,
 				locale
 			});
 		}
 	};
-	
+
 	const update: Update = async ({ slug, data, locale, versionId }) => {
 		const now = new Date();
 		const areaConfig = configInterface.getArea(slug);
@@ -206,7 +193,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// Original implementation for non-versioned areas
 			const keyTableLocales = `${slug}Locales`;
 			// Prepare data for update using the shared utility function
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: slug,
 				localesTableName: keyTableLocales,
@@ -214,7 +201,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			// Update main table
-			await updateTableRecord(db, tables, slug, {
+			await util.updateTableRecord(db, tables, slug, {
 				recordId: area.id,
 				data: mainData,
 				timestamp: now
@@ -222,7 +209,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Update localized data if needed
 			if (isLocalized) {
-				await upsertLocalizedData(db, tables, keyTableLocales, {
+				await util.upsertLocalizedData(db, tables, keyTableLocales, {
 					ownerId: area.id,
 					data: localizedData,
 					locale: locale!
@@ -242,11 +229,11 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				})
 				.where(eq(tables[slug].id, area.id));
 			
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
 
 			// Prepare data for update using the shared utility function
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: versionsTable,
 				localesTableName: versionsLocalesTable,
@@ -254,7 +241,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			// Update version directly
-			await updateTableRecord(db, tables, versionsTable, {
+			await util.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
 				data: mainData,
 				timestamp: now
@@ -262,7 +249,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Update localized data if needed
 			if (isLocalized) {
-				await upsertLocalizedData(db, tables, versionsLocalesTable, {
+				await util.upsertLocalizedData(db, tables, versionsLocalesTable, {
 					ownerId: versionId,
 					data: localizedData,
 					locale: locale!
@@ -282,12 +269,12 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				.where(eq(tables[slug].id, area.id));
 
 			// 2. Create a new version entry
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
-			const createVersionId = generatePK();
+			const createVersionId = util.generatePK();
 
 			// Prepare data for insertion using the shared utility function
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: versionsTable,
 				localesTableName: versionsLocalesTable,
@@ -295,7 +282,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			// Insert new version
-			await insertTableRecord(db, tables, versionsTable, {
+			await util.insertTableRecord(db, tables, versionsTable, {
 				id: createVersionId,
 				...mainData,
 				ownerId: area.id,
@@ -305,7 +292,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Insert localized data if needed
 			if (isLocalized) {
-				await insertTableRecord(db, tables, versionsLocalesTable, {
+				await util.insertTableRecord(db, tables, versionsLocalesTable, {
 					...localizedData,
 					ownerId: createVersionId,
 					locale

@@ -6,6 +6,7 @@ import type { Adapter } from '$lib/sqlite/index.server.js';
 import { RizomError } from '$lib/errors/index.js';
 import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
 import type { GenericBlock } from '$lib/types/doc.js';
+import { makeVersionsTableName } from '../../../util/schema.js';
 
 export const saveBlocks = async (args: {
 	configMap: ConfigMap;
@@ -30,7 +31,7 @@ export const saveBlocks = async (args: {
 		locale
 	} = args;
 
-	const parentTable = !!config.versions ? `${config.slug}Versions` : config.slug
+	const parentTable = !!config.versions ? makeVersionsTableName(config.slug) : config.slug
 
 	const incomingBlocks = extractBlocks({
 		data,

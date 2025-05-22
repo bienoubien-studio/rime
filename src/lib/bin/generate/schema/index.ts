@@ -16,6 +16,7 @@ import type { Dic } from 'rizom/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
 import { toCamelCase, toPascalCase } from 'rizom/util/string.js';
+import { makeVersionsTableName } from '../../../util/schema.js';
 
 
 export function generateSchemaString(config: BuiltConfig) {
@@ -34,7 +35,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(collection.slug))
 
 		if (collection.versions) {
-			rootTableName = `${collectionSlug}Versions`
+			rootTableName = makeVersionsTableName(collectionSlug)
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
 			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
 			
@@ -116,7 +117,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(area.slug))
 
 		if (area.versions) {
-			rootTableName = `${areaSlug}Versions`
+			rootTableName = makeVersionsTableName(areaSlug)
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
 			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
 			

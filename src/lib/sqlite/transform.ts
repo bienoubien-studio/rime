@@ -18,7 +18,7 @@ import { privateFieldNames } from '../config/auth/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from '../operations/localAPI/index.server.js';
 import { logger } from '../util/logger/index.server.js';
-import { getBlocksTableNames, getTreeTableNames, transformKeysToDoc } from '../util/schema.js';
+import { getBlocksTableNames, getTreeTableNames, makeVersionsTableName, transformDatabaseColumnsToPaths } from '../util/schema.js';
 
 /////////////////////////////////////////////
 // Types
@@ -58,7 +58,7 @@ export const databaseTransformInterface = ({
 
 		const config = configInterface.getBySlug(slug)
 		const isVersioned = !!config.versions
-		const tableName = isVersioned ? `${slug}Versions` : slug;
+		const tableName = isVersioned ? makeVersionsTableName(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
 		const tableNameLocales = `${tableName}Locales`;
 
@@ -84,8 +84,8 @@ export const databaseTransformInterface = ({
 		let flatDoc: Dic = flatten(doc);
 
 		// Transform flattened keys from database schema format to document format
-		flatDoc = transformKeysToDoc(flatDoc);
-
+		flatDoc = transformDatabaseColumnsToPaths(flatDoc);
+		
 		/////////////////////////////////////////////
 		// Blocks handling
 		//////////////////////////////////////////////

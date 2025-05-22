@@ -1,5 +1,4 @@
 import { desc, eq } from 'drizzle-orm';
-import { generatePK, updateTableRecord, insertTableRecord, upsertLocalizedData, prepareSchemaData } from './util.js';
 import { buildWithParam } from './with.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
@@ -8,7 +7,8 @@ import type { OperationQuery } from '$lib/types/api.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { DeepPartial, Dic } from '$lib/types/util.js';
 import type { ConfigInterface } from '../config/index.server.js';
-import { RizomError } from 'rizom/errors/index.js';
+import { RizomError } from '../errors/index.js';
+import * as util from '../util/schema.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -30,6 +30,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
 			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
 
+			console.log(orderBy)
 			// @ts-expect-error todo
 			const rawDocs = await db.query[slug].findMany({
 				with: withParam,
@@ -41,7 +42,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			return rawDocs;
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
 			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
 
@@ -60,15 +61,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// Transform the result to combine root and version data
-			return rawDocs.map((doc: RawDoc) => {
-				const versionData = doc[versionsTable][0] || {};
-				return {
-					id: doc.id,
-					...versionData,
-					// Keep version ID for reference
-					versionId: versionData.id
-				};
-			});
+			return rawDocs.map((doc: RawDoc) => util.mergeDocumentWithVersion(doc, versionsTable))
+
 		}
 	};
 
@@ -95,7 +89,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			return doc;
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
 
 			let params
@@ -133,14 +127,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				throw new RizomError(RizomError.NOT_FOUND, 'document found but without version, should never happend');
 			}
 
-			// Transform the result to combine root and version data
-			const versionData = doc[versionsTable][0];
-			return {
-				id: doc.id,
-				...versionData,
-				// Keep version ID for reference
-				versionId: versionData.id
-			};
+			return util.mergeDocumentWithVersion(doc, versionsTable)
 		}
 	};
 
@@ -159,60 +146,90 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// Create a new document
 	//////////////////////////////////////////////
 	const insert: Insert = async ({ slug, data, locale }) => {
-		
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
 		const now = new Date();
-		
-		// Initialize IDs
-		let rootId: string | undefined;
-		let versionId: string = generatePK();
 
-		// Determine table names based on versioning
-		const mainTable = hasVersions ? `${slug}Versions` : slug;
-		const localesTable = hasVersions ? `${slug}VersionsLocales` : `${slug}Locales`;
-
-		// Prepare data for insertion
-		const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
-			tables,
-			mainTableName: mainTable,
-			localesTableName: localesTable,
-			locale
-		});
-
-		// If it's a versioned collection, create the root document first
 		if (hasVersions) {
-			// Create root document with only id and timestamps
-			rootId = await insertTableRecord(db, tables, slug, {
+			// *** VERSIONED COLLECTION FLOW ***
+
+			// Create root document first
+			const docId = await util.insertTableRecord(db, tables, slug, {
 				createdAt: now,
 				updatedAt: now
 			});
-		}
 
-		// Insert main record
-		await insertTableRecord(db, tables, mainTable, {
-			id: versionId,
-			...mainData,
-			...(hasVersions ? { ownerId: rootId } : {}),
-			createdAt: now,
-			updatedAt: now
-		});
+			// Generate version ID
+			const versionId = util.generatePK();
+			const versionsTableName = util.makeVersionsTableName(slug)
 
-		// Insert localized data if needed
-		if (isLocalized && Object.keys(localizedData).length) {
-			await insertTableRecord(db, tables, localesTable, {
-				...localizedData,
-				ownerId: versionId,
-				locale: locale!
+			// Prepare data for versions table
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
+				tables,
+				mainTableName: versionsTableName,
+				localesTableName: `${versionsTableName}Locales`,
+				locale
 			});
-		}
 
-		// For versioned collections, return both the root ID and the version ID
-		// For non-versioned collections, versionId is the same as id
-		return { 
-			id: hasVersions && rootId ? rootId : versionId, 
-			versionId: versionId 
-		};
+			// Insert version record
+			await util.insertTableRecord(db, tables, versionsTableName, {
+				id: versionId,
+				ownerId: docId,
+				...mainData,
+				createdAt: now,
+				updatedAt: now
+			});
+
+			// Insert localized data if needed
+			if (isLocalized && Object.keys(localizedData).length) {
+				await util.insertTableRecord(db, tables, `${versionsTableName}Locales`, {
+					...localizedData,
+					ownerId: versionId,
+					locale: locale!
+				});
+			}
+
+			// Return both IDs for versioned collections
+			return {
+				id: docId,
+				versionId
+			};
+		} else {
+
+			// Generate document ID
+			const docId = util.generatePK();
+
+			// Prepare data for main table
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
+				tables,
+				mainTableName: slug,
+				localesTableName: `${slug}Locales`,
+				locale
+			});
+
+			// Insert main record
+			await util.insertTableRecord(db, tables, slug, {
+				id: docId,
+				...mainData,
+				createdAt: now,
+				updatedAt: now
+			});
+
+			// Insert localized data if needed
+			if (isLocalized && Object.keys(localizedData).length) {
+				await util.insertTableRecord(db, tables, `${slug}Locales`, {
+					...localizedData,
+					ownerId: docId,
+					locale: locale!
+				});
+			}
+
+			// For non-versioned collections, id and versionId are the same
+			return {
+				id: docId,
+				versionId: docId
+			};
+		}
 	};
 
 	//////////////////////////////////////////////
@@ -223,17 +240,17 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// These functions have been moved to util.ts for reuse across modules
 
 	const update: Update = async ({ slug, id, versionId, data, locale }) => {
-		
+
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
-		
+
 		if (!hasVersions) {
 			// Scenario 0: Non-versioned collections
 			const tableName = slug;
 			const tableLocalesName = `${slug}Locales`;
 
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: tableName,
 				localesTableName: tableLocalesName,
@@ -241,7 +258,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// Update main table
-			await updateTableRecord(db, tables, tableName, {
+			await util.updateTableRecord(db, tables, tableName, {
 				recordId: id,
 				data: mainData,
 				timestamp: now
@@ -249,7 +266,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Update locales table if needed
 			if (isLocalized) {
-				await upsertLocalizedData(db, tables, tableLocalesName, {
+				await util.upsertLocalizedData(db, tables, tableLocalesName, {
 					ownerId: id,
 					data: localizedData,
 					locale: locale!
@@ -262,16 +279,16 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Scenario 1: Update a specific version directly
 
 			// First, update the root table's updatedAt
-			await updateTableRecord(db, tables, slug, {
+			await util.updateTableRecord(db, tables, slug, {
 				recordId: id,
 				data: {},
 				timestamp: now
 			});
-			
-			const versionsTable = `${slug}Versions`;
+
+			const versionsTable = util.makeVersionsTableName(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
 
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: versionsTable,
 				localesTableName: versionsLocalesTable,
@@ -280,7 +297,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 
 			// Update version directly
-			await updateTableRecord(db, tables, versionsTable, {
+			await util.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
 				data: mainData,
 				timestamp: now
@@ -288,7 +305,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Update localized data if needed
 			if (isLocalized) {
-				await upsertLocalizedData(db, tables, versionsLocalesTable, {
+				await util.upsertLocalizedData(db, tables, versionsLocalesTable, {
 					ownerId: versionId,
 					data: localizedData,
 					locale: locale!
@@ -299,20 +316,20 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			return { id, versionId };
 		} else {
 			// Scenario 2: Update root and create a new version
-			
+
 			// 1. First, update the root table's updatedAt
-			await updateTableRecord(db, tables, slug, {
+			await util.updateTableRecord(db, tables, slug, {
 				recordId: id,
 				data: {},
 				timestamp: now
 			});
 
 			// 2. Create a new version entry
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
-			const createVersionId = generatePK();
+			const createVersionId = util.generatePK();
 
-			const { mainData, localizedData, isLocalized } = prepareSchemaData(data, {
+			const { mainData, localizedData, isLocalized } = util.prepareSchemaData(data, {
 				tables,
 				mainTableName: versionsTable,
 				localesTableName: versionsLocalesTable,
@@ -320,7 +337,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// Insert new version
-			await insertTableRecord(db, tables, versionsTable, {
+			await util.insertTableRecord(db, tables, versionsTable, {
 				id: createVersionId,
 				...mainData,
 				ownerId: id,
@@ -330,7 +347,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await insertTableRecord(db, tables, versionsLocalesTable, {
+				await util.insertTableRecord(db, tables, versionsLocalesTable, {
 					...localizedData,
 					ownerId: createVersionId,
 					locale: locale!
@@ -364,14 +381,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// @ts-expect-error todo
 			const result = await db.query[slug].findMany(params);
-
+			
 			return result;
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
 			const whereParam = buildWhereParam({ query, slug: versionsTable, locale, db });
-			
+
 			// Build the query parameters for pagination and sorting of the root table
 			const params: Dic = {
 				limit: limit,
@@ -393,23 +410,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					}
 				}
 			});
-			
+
 			// Transform the results to include version data
-			const result = rawDocs.map((doc: Record<string, any>) => {
-				if (!doc[versionsTable] || !doc[versionsTable].length) {
-					return doc;
-				}
-
-				const versionData = doc[versionsTable][0];
-				delete doc[versionsTable];
-
-				return {
-					id: doc.id,
-					...versionData,
-					// Keep version ID for reference
-					versionId: versionData.id
-				};
-			});
+			const result = rawDocs.map((doc: RawDoc) => util.mergeDocumentWithVersion(doc, versionsTable))
 
 			return result;
 		}
@@ -474,10 +477,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = `${slug}Versions`;
+			const versionsTable = util.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, tables, configInterface, locale }) || undefined;
 			const whereParam = query ? buildWhereParam({ query, slug: versionsTable, locale, db }) : undefined;
-			
+
 			// Build the query parameters for pagination and sorting of the root table
 			const params: Dic = {
 				limit: limit,
@@ -489,7 +492,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Get the versions table for column selection
 			const versionsTableObj = tables[versionsTable];
-			
+
 			// Create an object to hold the columns we want to select
 			const selectColumns: Dic = {};
 
@@ -526,21 +529,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// Transform the results to include version data
-			const result = rawDocs.map((doc: Record<string, any>) => {
-				if (!doc[versionsTable] || !doc[versionsTable].length) {
-					return doc;
-				}
-
-				const versionData = doc[versionsTable][0];
-				delete doc[versionsTable];
-
-				return {
-					id: doc.id,
-					...versionData,
-					// Keep version ID for reference
-					versionId: versionData.id
-				};
-			});
+			const result = rawDocs.map((doc: RawDoc) => util.mergeDocumentWithVersion(doc, versionsTable))
 
 			return result;
 		}

@@ -6,6 +6,7 @@ import type { Adapter, CompiledArea, CompiledCollection } from '$lib/types';
 import type { ConfigMap } from '../configMap/types';
 
 import { RizomError } from '$lib/errors/index.js';
+import { makeVersionsTableName } from 'rizom/util/schema';
 
 export const saveTreeBlocks = async (args: {
 	configMap: ConfigMap;
@@ -30,7 +31,7 @@ export const saveTreeBlocks = async (args: {
 		locale
 	} = args;
 
-	const parentTable = !!config.versions ? `${config.slug}Versions` : config.slug
+	const parentTable = !!config.versions ? makeVersionsTableName(config.slug) : config.slug
 
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({

@@ -11,6 +11,7 @@ import { isUploadConfig } from '$lib/util/config.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { makeVersionsTableName } from '../../../util/schema.js';
 
 /* -------------------------------------------------------------------------- */
 /*                              Schema Templates                              */
@@ -30,18 +31,30 @@ export type Block${toPascalCase(slug)} = {
   ${content}
 }`;
 
-const templateRegister = (collectionSlugs: string[], areaSlugs: string[]): string => {
-	const registerCollections = collectionSlugs.length
+const templateRegister = (config:BuiltConfig): string => {
+	const registerCollections = config.collections.length
 		? [
 				'\tinterface RegisterCollection {',
-				`${collectionSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				`${config.collections.map((collection) => {
+					let collectionRegister = `\t\t'${collection.slug}': ${makeDocTypeName(collection.slug)}`
+					if(!!collection.versions){
+						collectionRegister += `\n\t\t'${makeVersionsTableName(collection.slug)}': ${makeDocTypeName(collection.slug)}`
+					}
+					return collectionRegister
+				}).join('\n')};`,
 				'\t}'
 			]
 		: [];
-	const registerAreas = areaSlugs.length
+	const registerAreas = config.areas.length
 		? [
-				'\tinterface RegisterArea {',
-				`${areaSlugs.map((slug) => `\t\t'${slug}': ${makeDocTypeName(slug)}`).join('\n')};`,
+				'\tinterface RegisterCollection {',
+				`${config.areas.map((area) => {
+					let areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`
+					if(!!area.versions){
+						areaRegister += `\n\t\t'${makeVersionsTableName(area.slug)}': ${makeDocTypeName(area.slug)}`
+					}
+					return areaRegister
+				}).join('\n')};`,
 				'\t}'
 			]
 		: [];
@@ -144,11 +157,8 @@ export type RelationValue<T> =
 		})
 		.join('\n');
 
-	const collectionSlugs = config.collections.map((c) => c.slug);
-	const areaSlugs = config.areas.map((g) => g.slug);
-
 	// const docType = templateAnyDoc(prototypeSlugs);
-	const register = templateRegister(collectionSlugs, areaSlugs);
+	const register = templateRegister(config);
 
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;

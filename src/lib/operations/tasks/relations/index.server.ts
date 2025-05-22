@@ -6,6 +6,7 @@ import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
 import type { GenericBlock } from '$lib/types/doc.js';
 import type { Dic } from '$lib/types/util';
 import type { TreeBlocksDiff } from '../tree/diff.server';
+import { makeVersionsTableName } from 'rizom/util/schema.js';
 
 type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };
 export const saveRelations = async (args: {
@@ -31,7 +32,7 @@ export const saveRelations = async (args: {
 		data
 	} = args;
 
-	const parentTable = !!config.versions ? `${config.slug}Versions` : config.slug
+	const parentTable = !!config.versions ? makeVersionsTableName(config.slug) : config.slug
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
