@@ -1,6 +1,6 @@
 import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter';
-import type { GenericDoc, PrototypeSlug } from '$lib/types/doc.js';
+import type { GenericDoc } from '$lib/types/doc.js';
 import type { Dic } from '$lib/types/util';
 import { omit } from '$lib/util/object';
 import { transformDataToSchema } from '../util/schema.js';

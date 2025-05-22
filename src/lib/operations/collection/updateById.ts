@@ -32,8 +32,7 @@ type Args<T> = {
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
 	const { config, event, adapter, locale, api, id, versionId, isFallbackLocale } = args;
-	const isVersioned = !!config.versions
-
+	
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, { id });
@@ -42,7 +41,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	}
 
 	const original = (await api.collection(config.slug).findById({ locale, id, versionId })) as T;
-
+	
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
