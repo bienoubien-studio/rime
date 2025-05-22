@@ -1,4 +1,5 @@
 import { type PlaywrightTestConfig, defineConfig } from '@playwright/test';
+import path from 'path'
 
 type Args = {
 	name: string;
@@ -25,13 +26,13 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 		projects: [
 			{
 				name: 'setup',
-				testDir: `./tests`,
+				testDir: path.join(process.cwd(), './tests'),
 				testMatch: /setup\.test\.ts/
 			},
 			{
 				name: 'tests',
 				dependencies: ['setup'],
-				testDir: `./tests/${name}`,
+				testDir: path.join(process.cwd(), `./tests/${name}`),
 				testMatch: /^.*\.test\.ts$/
 
 				// testMatch: /pages\.test\.ts/

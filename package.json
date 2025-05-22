@@ -14,9 +14,9 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
-		"test:multilang": "playwright test -c ./playwright.config.multilang.ts",
-		"test:basic": "playwright test -c ./playwright.config.basic.ts",
-		"test:empty": "playwright test -c ./playwright.config.empty.ts",
+		"test:multilang": "playwright test -c ./tests/multilang/playwright.config.multilang.ts",
+		"test:basic": "playwright test -c ./tests/basic/playwright.config.basic.ts",
+		"test:empty": "playwright test -c ./tests/empty/playwright.config.empty.ts",
 		"test": "pnpm test:empty && pnpm test:multilang && pnpm test:basic",
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/",
 		"local-pack": "npm run build && npm pack && echo \"Package created at: $(pwd)/$(npm pack | tail -1)\""

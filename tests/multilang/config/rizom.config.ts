@@ -74,7 +74,7 @@ const Informations = area('infos', {
 	access: {
 		read: () => true
 	},
-	url: (doc) => {
+	url: (doc:any) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: true
@@ -199,7 +199,6 @@ const Pages = collection('pages', {
 	icon: Newspaper,
 	group: 'Content',
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
-	status: true,
 	url: (doc) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
