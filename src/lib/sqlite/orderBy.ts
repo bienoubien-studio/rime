@@ -38,7 +38,6 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 	if (!hasVersions) {
 		const rootTableColumns = Object.keys(getTableColumns(rootTable));
 		
-		console.log(columnStr)
 		// Check if the column exists in the root table
 		if (rootTableColumns.includes(columnStr)) {
 			return [orderFunc(rootTable[columnStr])];

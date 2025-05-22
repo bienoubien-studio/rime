@@ -21,6 +21,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	// Find All documents in a collection
 	//////////////////////////////////////////////
+
 	const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
@@ -30,7 +31,6 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
 			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
 
-			console.log(orderBy)
 			// @ts-expect-error todo
 			const rawDocs = await db.query[slug].findMany({
 				with: withParam,
@@ -69,6 +69,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	// Find a document by id
 	//////////////////////////////////////////////
+
 	const findById: FindById = async ({ slug, id, versionId, locale }) => {
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
@@ -134,6 +135,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	// Delete a document by ID
 	//////////////////////////////////////////////
+
 	const deleteById: DeleteById = async ({ slug, id }) => {
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
@@ -145,14 +147,13 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	// Create a new document
 	//////////////////////////////////////////////
+
 	const insert: Insert = async ({ slug, data, locale }) => {
 		const config = configInterface.getCollection(slug);
 		const hasVersions = !!config.versions;
 		const now = new Date();
 
 		if (hasVersions) {
-			// *** VERSIONED COLLECTION FLOW ***
-
 			// Create root document first
 			const docId = await util.insertTableRecord(db, tables, slug, {
 				createdAt: now,
@@ -236,9 +237,6 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// Shared helper functions for database operations
 	//////////////////////////////////////////////
 
-	// Use shared utility functions from util.ts
-	// These functions have been moved to util.ts for reuse across modules
-
 	const update: Update = async ({ slug, id, versionId, data, locale }) => {
 
 		const now = new Date();
@@ -274,8 +272,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 
 			// For non-versioned collections, versionId is the same as id
+			// it is used for saving blocks/relations/tree with cirrect ownerId
 			return { id, versionId: id };
 		} else if (hasVersions && versionId) {
+
 			// Scenario 1: Update a specific version directly
 
 			// First, update the root table's updatedAt
@@ -381,7 +381,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// @ts-expect-error todo
 			const result = await db.query[slug].findMany(params);
-			
+
 			return result;
 		} else {
 			// Implementation for versioned collections
