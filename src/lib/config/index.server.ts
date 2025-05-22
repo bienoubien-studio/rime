@@ -42,29 +42,35 @@ export async function createConfigInterface(rawConfig: Config) {
 	};
 	
 	const getCollection = (slug: string) => {
+		const isVersionCollection = slug.includes('_versions')
+		slug = isVersionCollection ? slug.replace('_versions', '') : slug
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
 		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`)
-		return collectionConfig
+		return isVersionCollection ? { ...collectionConfig, slug: slug + '_versions', versions: false } : collectionConfig
 	};
-
+	
 	const getBySlug = (slug: string) => {
 		// Try to find in collections
-		const collectionConfig = config.collections.find((c) => c.slug === slug);
-		if (collectionConfig) return collectionConfig;
-		
-		// Try to find in areas
-		const areaConfig = config.areas.find((g) => g.slug === slug);
-		if (areaConfig) return areaConfig;
-		
-		// Not found in either
-		throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
+		try{
+			const config = getCollection(slug)
+			return config
+		}catch{
+			try{
+				const config = getArea(slug)
+				return config
+			}catch{
+				throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
+			}
+		}
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug => {
+		slug = slug.includes('_versions') ? slug.replace('_versions', '') : slug
 		return !!config.collections.find((c) => c.slug === slug);
 	};
 
 	const isArea = (slug: string): slug is AreaSlug => {
+		slug = slug.includes('_versions') ? slug.replace('_versions', '') : slug
 		return !!config.areas.find((g) => g.slug === slug);
 	};
 
