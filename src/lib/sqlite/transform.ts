@@ -18,7 +18,7 @@ import { privateFieldNames } from '../config/auth/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { LocalAPI } from '../operations/localAPI/index.server.js';
 import { logger } from '../util/logger/index.server.js';
-import { getBlocksTableNames, getTreeTableNames, transformKeysToDoc } from '../util/schema.js';
+import { getBlocksTableNames, getTreeTableNames, makeVersionsTableName, transformDatabaseColumnsToPaths } from '../util/schema.js';
 
 /////////////////////////////////////////////
 // Types
@@ -56,10 +56,15 @@ export const databaseTransformInterface = ({
 		const { slug, locale, api, event, withBlank = true, depth = 0 } = args;
 		let doc = args.doc;
 
-		const tableNameRelationFields = `${slug}Rels`;
-		const tableNameLocales = `${slug}Locales`;
+		const config = configInterface.getBySlug(slug)
+		const isVersioned = !!config.versions
+		const tableName = isVersioned ? makeVersionsTableName(slug) : slug;
+		const tableNameRelationFields = `${tableName}Rels`;
+		const tableNameLocales = `${tableName}Locales`;
+
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
+
 		let docLocalAPI;
 		if (configInterface.isCollection(slug)) {
 			docLocalAPI = api.collection(slug);
@@ -79,20 +84,20 @@ export const databaseTransformInterface = ({
 		let flatDoc: Dic = flatten(doc);
 
 		// Transform flattened keys from database schema format to document format
-		flatDoc = transformKeysToDoc(flatDoc);
-
+		flatDoc = transformDatabaseColumnsToPaths(flatDoc);
+		
 		/////////////////////////////////////////////
 		// Blocks handling
 		//////////////////////////////////////////////
 
 		/** Extract all blocks  */
-		const blocksTables = getBlocksTableNames(slug, tables);
+		const blocksTables = getBlocksTableNames(tableName, tables);
 		const blocks: Dic[] = blocksTables.flatMap((blockTable) => doc[blockTable] || []);
 
 
 		/** Place each block in its path */
 		for (let block of blocks) {
-			const blockLocaleTableName = `${slug}Blocks${toPascalCase(block.type)}Locales`;
+			const blockLocaleTableName = `${tableName}Blocks${toPascalCase(block.type)}Locales`;
 			if (locale && blockLocaleTableName in tables) {
 				block = {
 					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
@@ -118,7 +123,7 @@ export const databaseTransformInterface = ({
 		//////////////////////////////////////////////
 
 		/** Extract all blocks  */
-		const treeTables = getTreeTableNames(slug, tables);
+		const treeTables = getTreeTableNames(tableName, tables);
 		let treeBlocks: Dic[] = treeTables.flatMap((treeTable) => doc[treeTable] || []);
 
 		treeBlocks = treeBlocks.sort((a, b) => a.path.localeCompare(b.path));
@@ -127,7 +132,7 @@ export const databaseTransformInterface = ({
 		for (let block of treeBlocks) {
 			try {
 				const [fieldName] = extractFieldName(block.path);
-				const treeBlockLocaleTableName = `${slug}Tree${toPascalCase(fieldName)}Locales`;
+				const treeBlockLocaleTableName = `${tableName}Tree${toPascalCase(fieldName)}Locales`;
 
 				if (locale && treeBlockLocaleTableName in tables) {
 					block = {

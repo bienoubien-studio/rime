@@ -223,8 +223,8 @@ test('Should get correct offset / limit', async ({ request }) => {
 			headers,
 			data: {
 				attributes: {
-					title: 'Page ' + i,
-					slug: 'page-' + i,
+					title: 'Page ' + i.toString().padStart(3, '0'),
+					slug: 'page-' + i.toString().padStart(3, '0'),
 				}
 			}
 		});
@@ -234,26 +234,34 @@ test('Should get correct offset / limit', async ({ request }) => {
 	for(let i = 1; i < 10; i++){
 		const pagination = i
 		const offset = (pagination - 1) * 10
-		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=createdAt`).then((response) => {
+		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=attributes.title`).then((response) => {
 			return response.json();
 		});
 		expect(response.docs).toBeDefined();
 		expect(response.docs.length).toBe(10);
-		expect(response.docs.at(0).title).toBe('Page ' + (offset + 1));
-		expect(response.docs.at(9).title).toBe('Page ' + (offset + 10));
+		expect(response.docs.at(0).title).toBe('Page ' + (offset + 1).toString().padStart(3, '0'));
+		expect(response.docs.at(9).title).toBe('Page ' + (offset + 10).toString().padStart(3, '0'));
 	}
 
 	// Create 100 other pages 
 	for(let i = 1; i < 100; i++){
-		await request.post(`${API_BASE_URL}/pages`, {
+		const { doc } = await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
 				attributes: {
-					title: 'Other ' + i,
-					slug: 'other-' + i,
+					title: 'Other ' + i.toString().padStart(3, '0'),
+					slug: 'other-' + i.toString().padStart(3, '0'),
 				}
 			}
+		}).then(r => r.json());
+		
+		await request.patch(`${API_BASE_URL}/pages/${doc.id}`, {
+			headers,
+			data: {
+				createdAt: new Date(new Date('2025-05-22T06:58:35.000Z').getTime() + (i * 1000))
+			}
 		});
+
 	}
 
 	// Check with query
@@ -265,8 +273,8 @@ test('Should get correct offset / limit', async ({ request }) => {
 		});
 		expect(response.docs).toBeDefined();
 		expect(response.docs.length).toBe(10);
-		expect(response.docs.at(0).title).toBe('Other ' + (offset + 1));
-		expect(response.docs.at(9).title).toBe('Other ' + (offset + 10));
+		expect(response.docs.at(0).title).toBe('Other ' + (offset + 1).toString().padStart(3, '0'));
+		expect(response.docs.at(9).title).toBe('Other ' + (offset + 10).toString().padStart(3, '0'));
 	}
 
 	// Re-create home

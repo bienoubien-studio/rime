@@ -14,7 +14,7 @@ import { getFieldConfigByPath } from 'rizom/util/config.js';
 
 type BuildWhereArgs = {
 	query: OperationQuery | string;
-	slug: PrototypeSlug;
+	slug: string;
 	locale?: string;
 	db: BetterSQLite3Database<any>;
 };

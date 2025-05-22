@@ -2,6 +2,7 @@ import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/upload/util/converter.js';
 import path from 'path';
 import { PANEL_USERS } from 'rizom/constant';
+import { bearer } from 'better-auth/plugins';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
 
@@ -62,11 +63,110 @@ test('Login should be successfull', async ({ request }) => {
 });
 
 ///////////////////////////////////////////////
-// Collection create / update / delete / read
+// Collections
 //////////////////////////////////////////////
 
 let homeId: string;
 let pageId: string;
+
+/**
+ * Offset limit
+ */
+test('Should get correct offset / limit', async ({ request }) => {
+	const headers = {
+		Authorization: `Bearer ${token}`
+	}
+
+	const to3digits = (n:number) => n.toString().padStart(3, '0')
+	
+	// Create 100 pages 
+	for(let i = 1; i < 100; i++){
+		await request.post(`${API_BASE_URL}/pages`, {
+			headers,
+			data: {
+				attributes: {
+					title: 'Page ' + to3digits(i),
+					slug: 'page-' + to3digits(i),
+				}
+			}
+		});
+	}
+	
+	// Check findAll
+	for(let i = 1; i < 10; i++){
+		const pagination = i
+		const offset = (pagination - 1) * 10
+		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=attributes.title`).then((response) => {
+			return response.json();
+		});
+		expect(response.docs).toBeDefined();
+		expect(response.docs.length).toBe(10);
+		expect(response.docs.at(0).title).toBe('Page ' + to3digits(offset + 1));
+		expect(response.docs.at(9).title).toBe('Page ' + to3digits(offset + 10));
+	}
+
+	// Create 100 other pages 
+	for(let i = 1; i < 100; i++){
+		const { doc } = await request.post(`${API_BASE_URL}/pages`, {
+			headers,
+			data: {
+				attributes: {
+					title: 'Other ' + to3digits(i),
+					slug: 'other-' + to3digits(i),
+				}
+			}
+		}).then(r => r.json());
+		
+		await request.patch(`${API_BASE_URL}/pages/${doc.id}`, {
+			headers,
+			data: {
+				createdAt: new Date(new Date('2025-05-22T06:58:35.000Z').getTime() + (i * 1000))
+			}
+		});
+
+	}
+
+	// Check with query
+	for(let i = 1; i < 10; i++){
+		const pagination = i
+		const offset = (pagination - 1) * 10
+		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=-createdAt`).then((response) => {
+			return response.json();
+		});
+		expect(response.docs).toBeDefined();
+		expect(response.docs.length).toBe(10);
+		expect(response.docs.at(0).title).toBe('Other ' + to3digits(offset + 1));
+		expect(response.docs.at(9).title).toBe('Other ' + to3digits(offset + 10));
+	}
+
+	// Clean, delete all pages
+	let allPages = await request.get(`${API_BASE_URL}/pages`)
+		.then(r => r.json())
+		.then(r => r.docs)
+		.catch(err => {
+			console.log(err)
+			expect(false).toBe(true)
+		})
+	
+	expect(allPages.toBeDefined)
+	expect(allPages.length).toBe(198)
+
+	await Promise.all(
+		allPages.map((doc:any) => request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
+			headers: {
+				Authorization: `Bearer ${token}`
+			},
+		}))
+	).catch(err => {
+		console.log(err)
+		expect(false).toBe(true)
+	})
+
+	allPages =  await request.get(`${API_BASE_URL}/pages`).then(r => r.json()).then(r => r.docs)
+	expect(allPages).toBeDefined()
+	expect(allPages.length).toBe(0)
+
+});
 
 test('Should create Home', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
@@ -101,7 +201,6 @@ test('Should get Home EN with FR data', async ({ request }) => {
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Accueil');
 	expect(doc.locale).toBe('en');
-	expect(doc.status).toBe('draft');
 	expect(doc.attributes.slug).toBe('accueil');
 	expect(doc.attributes.author).toBeDefined();
 	expect(doc.attributes.author).toHaveLength(1);
@@ -160,7 +259,7 @@ test('Should create a page', async ({ request }) => {
 				title: 'Page',
 				slug: 'page'
 			},
-			status: 'published',
+			// status: 'published',
 			layout: {
 				components: [
 					{
@@ -223,34 +322,9 @@ test('Should return 2 pages', async ({ request }) => {
 	expect(response.docs.length).toBe(2);
 });
 
-// //////////////////////////////////////////////
-// // Upload Collection
-// //////////////////////////////////////////////
-
-let imageID: string
-test('Should create a Media', async ({ request }) => {
-	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
-	const response = await request.post(`${API_BASE_URL}/medias`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
-		data: {
-			file: { base64, filename: 'Land$scape -3.JPG' },
-			alt: 'alt'
-		}
-	});
-	const status = response.status();
-	expect(status).toBe(200);
-	const { doc } = await response.json();
-	expect(doc).toBeDefined();
-	expect(doc.alt).toBe('alt');
-	expect(doc.filename).toBe('landscape-3.jpg');
-	expect(doc.mimeType).toBe('image/jpeg');
-	imageID = doc.id
-});
-
-// /** ---------------- QUERIES ---------------- */
-
+/** 
+ *  Queries
+*/
 test('Should return home EN (query)', async ({ request }) => {
 	const url = `${API_BASE_URL}/pages?where[attributes.title][equals]=Home&locale=en`;
 	const response = await request.get(url).then((response) => {
@@ -295,24 +369,30 @@ test('Should return home FR (query) with select', async ({ request }) => {
 	expect(Object.keys(response.docs[0]).length).toBe(2);
 });
 
-test('Should return home (draft)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=draft`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
-	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Accueil');
-});
+// //////////////////////////////////////////////
+// // Upload Collection
+// //////////////////////////////////////////////
 
-test('Should return the page (published)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[status][equals]=published`;
-	const response = await request.get(url).then((response) => {
-		return response.json();
+let imageID: string
+test('Should create a Media', async ({ request }) => {
+	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
+	const response = await request.post(`${API_BASE_URL}/medias`, {
+		headers: {
+			Authorization: `Bearer ${token}`
+		},
+		data: {
+			file: { base64, filename: 'Land$scape -3.JPG' },
+			alt: 'alt'
+		}
 	});
-	expect(response.docs).toBeDefined();
-	expect(response.docs.length).toBe(1);
-	expect(response.docs[0].attributes.title).toBe('Page');
+	const status = response.status();
+	expect(status).toBe(200);
+	const { doc } = await response.json();
+	expect(doc).toBeDefined();
+	expect(doc.alt).toBe('alt');
+	expect(doc.filename).toBe('landscape-3.jpg');
+	expect(doc.mimeType).toBe('image/jpeg');
+	imageID = doc.id
 });
 
 let pageWithAuthorId: string;

@@ -27,7 +27,6 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 				} else if( event.locals.rizom.config.isArea(link.type) ) {
 					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
 						.then(r => r.json())
-						.then(r => {console.log(r); return r})
 						.then(r => r.doc)
 						
 				}

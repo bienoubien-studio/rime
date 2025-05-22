@@ -20,6 +20,7 @@ import { populateURL } from '../tasks/populateURL.server.js';
 
 type Args<T> = {
 	id: string;
+	versionId?: string;
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
@@ -30,7 +31,8 @@ type Args<T> = {
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, adapter, locale, api, id, isFallbackLocale } = args;
+	const { config, event, adapter, locale, api, id, versionId, isFallbackLocale } = args;
+	
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, { id });
@@ -38,8 +40,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await api.collection(config.slug).findById({ locale, id })) as T;
-
+	const original = (await api.collection(config.slug).findById({ locale, id, versionId })) as T;
+	
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
@@ -60,6 +62,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		operation: 'update'
 	});
 	
+	// We do not re-run hooks on locale fallbackCreation
 	if(!isFallbackLocale){
 		for (const hook of config.hooks?.beforeUpdate || []) {
 			const result = await hook({
@@ -82,15 +85,16 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	const incomingPaths = Object.keys(configMap);
 
-	await adapter.collection.update({
+	const updateResult = await adapter.collection.update({
 		id,
+		versionId,
 		slug: config.slug,
 		data: data,
 		locale: locale
 	});
-
+	
 	const blocksDiff = await saveBlocks({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		originalConfigMap,
 		data,
@@ -102,7 +106,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 	
 	const treeDiff = await saveTreeBlocks({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		originalConfigMap,
 		data,
@@ -114,7 +118,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	await saveRelations({
-		ownerId: original.id,
+		ownerId: updateResult.versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -125,8 +129,12 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		treeDiff
 	});
 
-	let document = await api.collection(config.slug).findById({ id, locale });
+	let document = await api.collection(config.slug).findById({ id, locale, versionId: updateResult.versionId });
 	
+	/**
+	 * @TODO handle url generation over all versions ??
+	 */
+
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
 	
@@ -137,7 +145,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		if (locales.length) {
 			for(const otherLocale of locales){
-				const documentLocale = await api.collection(config.slug).findById({ id, locale: otherLocale });
+				const documentLocale = await api.collection(config.slug).findById({ id, locale: otherLocale, versionId: updateResult.versionId });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}

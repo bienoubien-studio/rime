@@ -6,16 +6,20 @@ import {
 	templateExportSchema,
 	templateExportTables,
 	templateHead,
-	templateImports
+	templateImports,
+	templateRelationMany,
+	templateRelationOne,
+	templateTable
 } from './templates.js';
 import type { BuiltConfig } from 'rizom/types/config.js';
 import type { Dic } from 'rizom/types/util.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
-import { toCamelCase } from 'rizom/util/string.js';
+import { toCamelCase, toPascalCase } from 'rizom/util/string.js';
+import { makeVersionsTableName } from '../../../util/schema.js';
 
 
-export function generateSchemaString(config: BuiltConfig): string {
+export function generateSchemaString(config: BuiltConfig) {
 	const schema: string[] = [templateImports];
 	let enumTables: string[] = [];
 	let enumRelations: string[] = [];
@@ -23,7 +27,36 @@ export function generateSchemaString(config: BuiltConfig): string {
 	let blocksRegister: string[] = [];
 
 	for (const collection of config.collections) {
+
 		const collectionSlug = toCamelCase(collection.slug);
+		let rootTableName = collectionSlug
+		let versionsRelationsDefinitions: string[] = []
+
+		schema.push(templateHead(collection.slug))
+
+		if (collection.versions) {
+			rootTableName = makeVersionsTableName(collectionSlug)
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
+			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
+			
+			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
+			
+			versionsRelationsDefinitions = [
+				templateRelationOne({
+					name: manyVersionsToOneName,
+					table: rootTableName,
+					parent: collectionSlug
+				}),
+				templateRelationMany({
+					name: oneToManyVersionsName,
+					table: collectionSlug,
+					many: [rootTableName]
+				})
+			]
+
+			enumTables = [...enumTables, collectionSlug];
+			enumRelations = [ ...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
+		}
 
 		const {
 			schema: collectionSchema,
@@ -33,21 +66,22 @@ export function generateSchemaString(config: BuiltConfig): string {
 		} = buildRootTable({
 			blocksRegister,
 			fields: collection.fields,
-			rootName: collectionSlug,
+			rootName: rootTableName,
 			locales: config.localization?.locales || [],
 			hasAuth: !!collection.auth,
-			tableName: collectionSlug
+			versionsFrom: collection.versions ? collectionSlug : false,
+			tableName: rootTableName
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
-			tableName: collectionSlug,
+			tableName: rootTableName,
 			relationFieldsMap,
 			hasLocale: relationFieldsHasLocale
 		});
 
 		if (junctionTable.length) {
-			relationsDic[collectionSlug] ??= [];
-			relationsDic[collectionSlug].push(junctionTableName);
+			relationsDic[rootTableName] ??= [];
+			relationsDic[rootTableName].push(junctionTableName);
 		}
 
 		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({
@@ -56,19 +90,20 @@ export function generateSchemaString(config: BuiltConfig): string {
 
 		const relationsTableNames = Object.values(relationsDic).flat();
 
-		enumTables = [...enumTables, collectionSlug, ...relationsTableNames];
+		enumTables = Array.from(new Set([...enumTables, rootTableName, ...relationsTableNames]));
 		enumRelations = [...enumRelations, ...relationsNames];
 		relationFieldsExportDic = {
 			...relationFieldsExportDic,
-			[collectionSlug]: relationFieldsMap
+			[rootTableName]: relationFieldsMap
 		};
 
 		schema.push(
-			templateHead(collection.slug),
 			collectionSchema,
 			junctionTable,
+			...versionsRelationsDefinitions,
 			relationsDefinitions
 		);
+
 	}
 
 	/**
@@ -76,6 +111,34 @@ export function generateSchemaString(config: BuiltConfig): string {
 	 */
 	for (const area of config.areas) {
 		const areaSlug = toCamelCase(area.slug);
+		let rootTableName = areaSlug
+		let versionsRelationsDefinitions: string[] = []
+
+		schema.push(templateHead(area.slug))
+
+		if (area.versions) {
+			rootTableName = makeVersionsTableName(areaSlug)
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
+			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
+			
+			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
+			
+			versionsRelationsDefinitions = [
+				templateRelationOne({
+					name: manyVersionsToOneName,
+					table: rootTableName,
+					parent: areaSlug
+				}),
+				templateRelationMany({
+					name: oneToManyVersionsName,
+					table: areaSlug,
+					many: [rootTableName]
+				})
+			]
+
+			enumTables = [...enumTables, areaSlug];
+			enumRelations = [...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
+		}
 
 		const {
 			schema: areaSchema,
@@ -85,36 +148,41 @@ export function generateSchemaString(config: BuiltConfig): string {
 		} = buildRootTable({
 			blocksRegister,
 			fields: area.fields,
-			rootName: areaSlug,
+			rootName: rootTableName,
 			locales: config.localization?.locales || [],
-			tableName: areaSlug
+			tableName: rootTableName,
+			versionsFrom: area.versions ? areaSlug : false,
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
-			tableName: areaSlug,
+			tableName: rootTableName,
 			relationFieldsMap,
 			hasLocale: relationFieldsHasLocale
 		});
 
 		if (junctionTable.length) {
-			relationsDic[areaSlug] ??= [];
-			relationsDic[areaSlug].push(junctionTableName);
+			relationsDic[rootTableName] ??= [];
+			relationsDic[rootTableName].push(junctionTableName);
 		}
 
-		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({
-			relationsDic
-		});
 
-		const relationsTableNames = Object.values(relationsDic).flat();
+		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({ relationsDic });
 
-		enumTables = [...enumTables, areaSlug, ...relationsTableNames];
+		const relationsTableNames = Array.from(new Set(Object.values(relationsDic).flat()));
+
+		enumTables = [...enumTables, rootTableName, ...relationsTableNames];
 		enumRelations = [...enumRelations, ...relationsNames];
 		relationFieldsExportDic = {
 			...relationFieldsExportDic,
-			[areaSlug]: relationFieldsMap
+			[rootTableName]: relationFieldsMap
 		};
 
-		schema.push(templateHead(area.slug), areaSchema, junctionTable, relationsDefinitions);
+		schema.push(
+			areaSchema,
+			junctionTable,
+			...versionsRelationsDefinitions,
+			relationsDefinitions
+		);
 	}
 
 	schema.push(templateAuth);

@@ -1,12 +1,11 @@
 import { omit } from '../util/object.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
-import { generatePK } from './util.js';
 import { toPascalCase } from '../util/string.js';
 import type { TreeBlock, PrototypeSlug } from '$lib/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from '$lib/types/adapter.js';
 import type { WithRequired } from '$lib/types/util.js';
 import { extractFieldName } from '$lib/fields/tree/util.js';
-import { transformDataToSchema } from '../util/schema.js';
+import { transformDataToSchema, generatePK } from '../util/schema.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
@@ -123,19 +122,19 @@ export type AdapterTreeInterface = ReturnType<typeof createAdapterTreeInterface>
 //////////////////////////////////////////////
 
 type UpdateBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 	locale?: string;
 }) => Promise<boolean>;
 
 type CreateBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 	ownerId: string;
 	locale?: string;
 }) => Promise<boolean>;
 
 type DeleteBlock = (args: {
-	parentSlug: PrototypeSlug;
+	parentSlug: string;
 	block: WithRequired<TreeBlock, 'path'>;
 }) => Promise<boolean>;

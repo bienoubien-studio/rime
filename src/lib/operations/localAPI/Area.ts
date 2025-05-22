@@ -40,14 +40,15 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	blank(): Doc {
 		return createBlankDocument(this.config) as Doc;
 	}
-	
-	find({ locale, select = [], depth = 0 }: FindArgs): Promise<Doc> {
+
+	find({ locale, select = [], depth = 0, versionId }: FindArgs): Promise<Doc> {
 
 		this.#api.preventOperationLoop()
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
 			select,
+			versionId,
 			config: this.config,
 			event: this.#event,
 			adapter: this.#adapter,
@@ -60,6 +61,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 				'find',
 				select.join(','),
 				this.config.slug,
+				versionId || 'latest',
 				this.#event.locals.user?.roles.join(',') || 'no-user',
 				depth,
 				locale
@@ -87,4 +89,9 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 
 export { AreaInterface };
 
-type FindArgs = { locale?: string; depth?: number, select?: string[] };
+type FindArgs = {
+	locale?: string;
+	versionId?: string;
+	depth?: number, 
+	select?: string[]
+};

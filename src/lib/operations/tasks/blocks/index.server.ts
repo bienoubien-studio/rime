@@ -6,6 +6,7 @@ import type { Adapter } from '$lib/sqlite/index.server.js';
 import { RizomError } from '$lib/errors/index.js';
 import type { CompiledArea, CompiledCollection } from '$lib/types/config.js';
 import type { GenericBlock } from '$lib/types/doc.js';
+import { makeVersionsTableName } from '../../../util/schema.js';
 
 export const saveBlocks = async (args: {
 	configMap: ConfigMap;
@@ -30,11 +31,13 @@ export const saveBlocks = async (args: {
 		locale
 	} = args;
 
+	const parentTable = !!config.versions ? makeVersionsTableName(config.slug) : config.slug
+
 	const incomingBlocks = extractBlocks({
 		data,
 		configMap
 	});
-
+	
 	let existingBlocks: GenericBlock[] = [];
 	if (original) {
 		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
@@ -57,7 +60,7 @@ export const saveBlocks = async (args: {
 
 	if (blocksDiff.toDelete.length) {
 		await Promise.all(
-			blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: config.slug, block }))
+			blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: parentTable, block }))
 		);
 	}
 
@@ -65,7 +68,7 @@ export const saveBlocks = async (args: {
 		await Promise.all(
 			blocksDiff.toAdd.map((block) =>
 				adapter.blocks.create({
-					parentSlug: config.slug,
+					parentSlug: parentTable,
 					ownerId,
 					block,
 					locale
@@ -77,7 +80,7 @@ export const saveBlocks = async (args: {
 	if (blocksDiff.toUpdate.length) {
 		await Promise.all(
 			blocksDiff.toUpdate.map((block) =>
-				adapter.blocks.update({ parentSlug: config.slug, block, locale: locale })
+				adapter.blocks.update({ parentSlug: parentTable, block, locale: locale })
 			)
 		);
 	}

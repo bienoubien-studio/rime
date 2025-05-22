@@ -23,6 +23,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import type { BuiltConfig } from '$lib/types/config.js';
 import type { Dic } from '$lib/types/util.js';
+import { makeVersionsTableName } from 'rizom/util/schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -83,9 +84,8 @@ function generateRoutes(config: BuiltConfig) {
 	// root layout
 	fs.writeFileSync(path.join(rootRoutes, '+layout.server.ts'), rootLayoutServer);
 
-	for (const collection of config.collections) {
-		const collectionRoute = path.join(panelRoute, collection.slug);
-		const collectionAPIRoute = path.join(apiRoute, collection.slug);
+	function generateCollectionAPIRoutes (slug:string, isAuth:boolean) {
+		const collectionAPIRoute = path.join(apiRoute, slug);
 
 		//////////////////////////////////////////////
 		// API routes
@@ -95,7 +95,7 @@ function generateRoutes(config: BuiltConfig) {
 			fs.mkdirSync(collectionAPIRoute);
 			fs.writeFileSync(
 				path.join(collectionAPIRoute, '+server.ts'),
-				collectionAPIServer(collection.slug)
+				collectionAPIServer(slug)
 			);
 
 			const collectionIdAPIRoute = path.join(collectionAPIRoute, '[id]');
@@ -103,17 +103,17 @@ function generateRoutes(config: BuiltConfig) {
 
 			fs.writeFileSync(
 				path.join(collectionIdAPIRoute, '+server.ts'),
-				collectionIdAPIServer(collection.slug)
+				collectionIdAPIServer(slug)
 			);
 
 			/** Auth specific routes */
-			if (collection.auth) {
+			if (isAuth) {
 				/** Login */
 				const collectionAPIAuthLogin = path.join(collectionAPIRoute, 'login');
 				fs.mkdirSync(collectionAPIAuthLogin);
 				fs.writeFileSync(
 					path.join(collectionAPIAuthLogin, '+server.ts'),
-					collectionAPIAuthLoginServer(collection.slug)
+					collectionAPIAuthLoginServer(slug)
 				);
 
 				/** Logout */
@@ -124,6 +124,15 @@ function generateRoutes(config: BuiltConfig) {
 					collectionAPIAuthLogoutServer()
 				);
 			}
+		}
+	} 
+
+	for (const collection of config.collections) {
+		const collectionRoute = path.join(panelRoute, collection.slug);
+		
+		generateCollectionAPIRoutes(collection.slug, !!collection.auth)
+		if( collection.versions ){
+			generateCollectionAPIRoutes(makeVersionsTableName(collection.slug), !!collection.auth)
 		}
 
 		//////////////////////////////////////////////
@@ -157,24 +166,28 @@ function generateRoutes(config: BuiltConfig) {
 		}
 	}
 
+	function generateAreaAPIRoutes (slug:string) {
+		const areaAPIRoute = path.join(apiRoute, slug);
+		if (!fs.existsSync(areaAPIRoute)) {
+			fs.mkdirSync(areaAPIRoute);
+			fs.writeFileSync(path.join(areaAPIRoute, '+server.ts'), areaAPIServer(slug));
+		}
+	}
+
 	for (const area of config.areas) {
 		const areaRoute = path.join(panelRoute, area.slug);
-		const areaAPIRoute = path.join(apiRoute, area.slug);
-
+		
+		generateAreaAPIRoutes(area.slug)
+		if( area.versions ){
+			generateAreaAPIRoutes(makeVersionsTableName(area.slug))
+		}
+		
 		if (!fs.existsSync(areaRoute)) {
 			fs.mkdirSync(areaRoute);
 			fs.writeFileSync(path.join(areaRoute, '+page.server.ts'), areaPageServer(area.slug));
 			fs.writeFileSync(path.join(areaRoute, '+page.svelte'), areaPageSvelte(area.slug));
 		}
 
-		//////////////////////////////////////////////
-		// API routes
-		//////////////////////////////////////////////
-
-		if (!fs.existsSync(areaAPIRoute)) {
-			fs.mkdirSync(areaAPIRoute);
-			fs.writeFileSync(path.join(areaAPIRoute, '+server.ts'), areaAPIServer(area.slug));
-		}
 	}
 
 	const customRoutes: Dic = config.panel?.routes;

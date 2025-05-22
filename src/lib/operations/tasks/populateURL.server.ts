@@ -13,7 +13,7 @@ export const populateURL = async <T extends GenericDoc>(
   }): Promise<T> => {
 
   const { config, event, locale } = context
-  
+
   if (config.url) {
 
     let url
@@ -82,10 +82,25 @@ export const populateURL = async <T extends GenericDoc>(
       // replace "/[...parent.whatever.something.foo]" with ""
       url = url.replace(/\/\[\.\.\.parent\.\w+(?:\.\w+)*\]/, '')
     }
-    
-    if(document.url !== url){
+
+    if (document.url !== url) {
       document.url = url
-      await event.locals.rizom.adapter.collection.update({ slug: config.slug, id: document.id, locale, data: { url }})
+      if (document._prototype === 'collection') {
+        await event.locals.rizom.adapter.collection.update({ 
+          slug: config.slug, 
+          id: document.id, 
+          versionId: document.versionId, 
+          locale, 
+          data: { url }
+        })
+      } else {
+        await event.locals.rizom.adapter.area.update({ 
+          slug: config.slug, 
+          versionId: document.versionId,
+          locale, 
+          data: { url } 
+        })
+      }
     }
 
   }

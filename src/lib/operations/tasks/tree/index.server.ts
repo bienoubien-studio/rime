@@ -6,6 +6,7 @@ import type { Adapter, CompiledArea, CompiledCollection } from '$lib/types';
 import type { ConfigMap } from '../configMap/types';
 
 import { RizomError } from '$lib/errors/index.js';
+import { makeVersionsTableName } from 'rizom/util/schema';
 
 export const saveTreeBlocks = async (args: {
 	configMap: ConfigMap;
@@ -29,6 +30,8 @@ export const saveTreeBlocks = async (args: {
 		ownerId,
 		locale
 	} = args;
+
+	const parentTable = !!config.versions ? makeVersionsTableName(config.slug) : config.slug
 
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({
@@ -62,7 +65,7 @@ export const saveTreeBlocks = async (args: {
 	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {
 		await Promise.all(
-			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: config.slug, block }))
+			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block }))
 		);
 	}
 
@@ -70,7 +73,7 @@ export const saveTreeBlocks = async (args: {
 		await Promise.all(
 			treeDiff.toAdd.map((block) =>
 				adapter.tree.create({
-					parentSlug: config.slug,
+					parentSlug: parentTable,
 					ownerId,
 					block,
 					locale: locale
@@ -82,7 +85,7 @@ export const saveTreeBlocks = async (args: {
 	if (treeDiff.toUpdate.length) {
 		await Promise.all(
 			treeDiff.toUpdate.map((block) =>
-				adapter.tree.update({ parentSlug: config.slug, block, locale: locale })
+				adapter.tree.update({ parentSlug: parentTable, block, locale: locale })
 			)
 		);
 	}

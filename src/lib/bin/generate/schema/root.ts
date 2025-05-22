@@ -5,7 +5,6 @@ import {
 	isGroupField,
 	isRelationField,
 	isTabsField,
-	isTreeFieldRaw
 } from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
@@ -25,6 +24,7 @@ type Args = {
 	relationFieldsMap?: RelationFieldsMap;
 	relationsDic?: Record<string, string[]>;
 	hasAuth?: boolean;
+	versionsFrom?: string | false;
 	blocksRegister: string[];
 };
 
@@ -44,6 +44,7 @@ const buildRootTable = ({
 	relationFieldsMap = {},
 	relationsDic = {},
 	hasAuth,
+	versionsFrom,
 	blocksRegister
 }: Args): Return => {
 	const blocksTables: string[] = [];
@@ -164,6 +165,9 @@ const buildRootTable = ({
 		if (hasParent) {
 			strUnlocalizedFields.push(templateParent(rootName));
 		}
+		if(versionsFrom){
+			strUnlocalizedFields.push(templateParent(versionsFrom));
+		}
 		if (hasAuth) {
 			strUnlocalizedFields.push(templateHasAuth(rootName));
 		}
@@ -176,6 +180,9 @@ const buildRootTable = ({
 		const strFields = generateFieldsTemplates(incomingFields);
 		if (hasParent) {
 			strFields.push(templateParent(rootName));
+		}
+		if(versionsFrom){
+			strFields.push(templateParent(versionsFrom));
 		}
 		if (hasAuth) {
 			strFields.push(templateHasAuth(rootName));
