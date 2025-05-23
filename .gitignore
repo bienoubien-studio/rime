@@ -44,5 +44,6 @@ test-results
 pnpm-lock.yaml
 
 .auto
+.windsurf
 src/params
 rizom.code-workspace
