@@ -70,7 +70,7 @@
 {/snippet}
 
 {#if json?.content}
-	{#each json.content as node}
+	{#each json.content as node, index (index)}
 		{#if node.type === 'text'}
 			{@render renderMarks(node)}
 			<!--  -->

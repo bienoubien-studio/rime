@@ -1,7 +1,7 @@
 import { redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
-import { extractData } from '$lib/operations/data.server.js';
-import type { CollectionSlug } from '$lib/types/doc';
-import { handleError } from '$lib/errors/handler.server';
+import { extractData } from '$lib/core/operations/shared/data.server.js';
+import type { CollectionSlug } from '$lib/core/types/doc';
+import { handleError } from '$lib/core/errors/handler.server';
 import { safe } from '$lib/util/safe';
 
 export default function (slug: CollectionSlug) {
@@ -11,8 +11,7 @@ export default function (slug: CollectionSlug) {
 		//////////////////////////////////////////////
 		create: async (event: RequestEvent) => {
 			const { api, locale } = event.locals;
-			let doc;
-
+			
 			// A redirect parameter equals to 0 can be present if we're in a nested form
 			// to prevent redirection after entry creation
 			// ex: for relation creation

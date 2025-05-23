@@ -1,6 +1,6 @@
-import type { User } from '$lib/types/auth';
-import type { CompiledConfig } from '$lib/types/config';
-import type { Dic } from '$lib/types/util';
+import type { User } from '$lib/core/collections/auth/types';
+import type { CompiledConfig } from '$lib/core/config/types';
+import type { Dic } from '$lib/util/types';
 
 interface Route {
 	title: string;

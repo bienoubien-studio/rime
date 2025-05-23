@@ -3,9 +3,9 @@
 	import { capitalize } from '$lib/util/string.js';
 	import { Label } from '../ui/label/index.js';
 	import type { Snippet } from 'svelte';
-	import type { AnyFormField } from '$lib/types/fields';
-
-	type Props = { config?: AnyFormField; children?: Snippet };
+	import type { FormField } from '$lib/fields/types.js';
+	
+	type Props = { config?: FormField; children?: Snippet };
 	const { config, children }: Props = $props();
 
 	const locale = getLocaleContext();

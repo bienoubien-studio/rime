@@ -5,7 +5,7 @@
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import * as Card from '$lib/panel/components/ui/card/index';
 	import { getContext } from 'svelte';
-	import type { GenericDoc } from '$lib/types/doc';
+	import type { GenericDoc } from '$lib/core/types/doc';
 
 	type Props = { checked: boolean; doc: GenericDoc };
 	const { checked, doc }: Props = $props();
@@ -33,7 +33,7 @@
 				{doc.title}
 			</p>
 			<div class="rz-grid-item__metadata">
-				{#each ['filesize', 'mimeType'] as key}
+				{#each ['filesize', 'mimeType'] as key, index (index)}
 					<p class="rz-grid-item__metadata">{doc[key]}</p>
 				{/each}
 			</div>

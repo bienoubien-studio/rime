@@ -1,7 +1,7 @@
-import type { FormField } from '$lib/types/fields.js';
+import type { FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import validate from '$lib/util/validate';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 import EmailComp from './component/Email.svelte';
 
 class EmailFieldBuilder extends FormFieldBuilder<EmailField> {

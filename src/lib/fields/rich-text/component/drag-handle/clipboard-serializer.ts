@@ -5,7 +5,7 @@ import * as pmView from '@tiptap/pm/view';
 function getPmView() {
   try {
       return pmView;
-  } catch (error) {
+  } catch {
       return null;
   }
 }
@@ -13,16 +13,15 @@ function getPmView() {
 
 export function serializeForClipboard(view: EditorView, slice: Slice) {
   // Newer Tiptap/ProseMirror
-  // @ts-ignore
   if (view && typeof view.serializeForClipboard === 'function') {
     return view.serializeForClipboard(slice);
   }
 
   // Older version fallback
   const proseMirrorView = getPmView();
-  // @ts-ignore
+  // @ts-expect-error __serializeForClipboard exists
   if (proseMirrorView && typeof proseMirrorView?.__serializeForClipboard === 'function') {
-    // @ts-ignore
+    // @ts-expect-error __serializeForClipboard exists
     return proseMirrorView.__serializeForClipboard(view, slice);
   }
 

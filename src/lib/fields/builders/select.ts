@@ -1,4 +1,4 @@
-import type { FieldsType, FieldValidationFunc, FormField, Option } from '$lib/types/fields.js';
+import type { FieldsType, FieldValidationFunc, FormField, Option } from '$lib/fields/types.js';
 import { FormFieldBuilder } from './field.js';
 import { capitalize } from '$lib/util/string.js';
 

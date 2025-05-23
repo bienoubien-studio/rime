@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
 import CounterComponent from './resource.svelte';
-import type { Dic } from '$lib/types/util';
+import type { Dic } from '$lib/util/types';
 
 export const Resource = Node.create({
   name: 'resource',
@@ -24,11 +24,11 @@ export const Resource = Node.create({
     }, {});
   },
 
-  //@ts-ignore
+  //@ts-expect-error boring
   addCommands() {
     return {
       insertResource: (attributes = {}) => 
-        //@ts-ignore
+        //@ts-expect-error boring
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,

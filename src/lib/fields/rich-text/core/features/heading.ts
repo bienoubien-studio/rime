@@ -32,7 +32,7 @@ const headingItems: RichTextFeatureNode[] = [
       command: ({ editor }) => editor.chain().focus().toggleHeading({ level: 2 }).run()
     },
     suggestion: {
-      command: ({ editor, range }) => editor.chain().focus().toggleHeading({ level: 2 }).run()
+      command: ({ editor }) => editor.chain().focus().toggleHeading({ level: 2 }).run()
     }
   },
   {

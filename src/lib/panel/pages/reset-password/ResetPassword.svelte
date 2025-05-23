@@ -1,17 +1,15 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { FormErrors } from '$lib/types/panel.js';
+	import type { FormErrors } from '$lib/panel/types.js';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import Text from '$lib/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
-	import { password, confirmPassword } from '$lib/config/auth/usersFields';
+	import { password, confirmPassword } from '$lib/core/collections/auth/config/usersFields';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { t__ } from '$lib/i18n';
 	import { authClient } from '$lib/panel/util/auth';
 
 	interface Props {
-		token: string;
-		slug: string;
 		form?: { errors?: FormErrors };
 	}
 

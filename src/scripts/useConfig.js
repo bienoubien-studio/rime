@@ -16,11 +16,11 @@ program
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous
-			execSync('bun ./src/lib/bin/index.ts clear --force');
+			execSync('bun ./src/lib/core/dev/cli/index.ts clear --force');
 			execSync(`rm -fr ${frontRoutesPath}`);
 
 			// Init files and DB
-			execSync(`bun ./src/lib/bin/index.ts init --name ${name}`);
+			execSync(`bun ./src/lib/core/dev/cli/index.ts init --name ${name}`);
 
 			// Copy entire config directory
 			const testConfigDirPath = path.join(projectRoot, 'tests', name, 'config');
@@ -41,7 +41,7 @@ program
 				execSync(`cp -rf ${testFrontRoutesPath} ${frontRoutesPath}`);
 			}
 			// Generate
-			const stdout = execSync(`bun ./src/lib/bin/index.ts generate --force`);
+			const stdout = execSync(`bun ./src/lib/core/dev/cli/index.ts generate --force`);
 			if(stdout.toString().includes('Generation completed successfully')){
 				console.log('Successfull files generation and database pushed')
 			}

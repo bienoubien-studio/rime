@@ -5,9 +5,9 @@
 	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import type { GroupField } from '$lib/fields/group/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import type { WithoutBuilders } from '$lib/types/util.js';
-	import type { GenericDoc } from '$lib/types/doc.js';
-
+	import type { WithoutBuilders } from '$lib/util/types.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
+	
 	type Props = {
 		path: string;
 		config: WithoutBuilders<GroupField>;

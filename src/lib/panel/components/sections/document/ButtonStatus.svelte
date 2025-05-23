@@ -42,7 +42,7 @@
 				<Dialog.Title></Dialog.Title>
 			</Dialog.Header>
 			<div class="rz-status-dialog__list">
-				{#each statusList as status}
+				{#each statusList as status, index (index)}
 					<Button
 						size="lg"
 						variant="outline"

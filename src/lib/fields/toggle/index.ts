@@ -1,8 +1,8 @@
-import type { FormField } from '$lib/types';
+import type { FormField } from '$lib/fields/types.js';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 
 export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	constructor(name: string) {

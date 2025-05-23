@@ -1,6 +1,6 @@
-import type { FormField, OptionWithIcon } from '$lib/types/fields.js';
+import type { FormField, OptionWithIcon } from '$lib/fields/types.js';
 import { SelectFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 import Combobox from './component/ComboBox.svelte';
 
 class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
@@ -12,7 +12,7 @@ class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 	}
 
 	options(...options: OptionWithIcon[] | string[]) {
-		return super.options(...options)
+		return super.options(...options);
 	}
 
 	toSchema(parentPath?: string) {

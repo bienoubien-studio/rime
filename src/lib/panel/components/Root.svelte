@@ -8,9 +8,9 @@
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import { setAPIProxyContext } from '../context/api-proxy.svelte.js';
 	import { page } from '$app/state';
-	import type { User } from '$lib/types/auth.js';
-	import type { Route } from '$lib/types/panel.js';
-	import type { BrowserConfig } from '$lib/types/config.js';
+	import type { User } from '$lib/core/collections/auth/types.js';
+	import type { Route } from '$lib/panel/types.js';
+	import type { BrowserConfig } from '$lib/core/config/types/index.js';
 
 	type Props = {
 		routes: Record<string, Route[]>;
@@ -41,7 +41,7 @@
 		} else {
 			if (!localeCollapsed || localeCollapsed === 'false') {
 				isCollapsed = false;
-				localeCollapsed === 'false';
+				localeCollapsed = 'false';
 			}
 		}
 	}

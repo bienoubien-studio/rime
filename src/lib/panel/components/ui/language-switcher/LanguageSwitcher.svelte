@@ -15,7 +15,7 @@
 
 {#if locales.length}
 	<div class="rz-language-switch">
-		{#each locales as item}
+		{#each locales as item, index (index)}
 			<Button
 				disabled={item.code === locale.code}
 				data-active={item.code === locale.code ? '' : null}

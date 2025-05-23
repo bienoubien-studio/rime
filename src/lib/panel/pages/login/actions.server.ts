@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { redirect, type Actions } from '@sveltejs/kit';
-import { PANEL_USERS } from '$lib/constant';
-import { handleError } from '$lib/errors/handler.server';
+import { PANEL_USERS } from '$lib/core/constant';
+import { handleError } from '$lib/core/errors/handler.server';
 import { safe } from '$lib/util/safe';
 
 export const loginActions: Actions = {

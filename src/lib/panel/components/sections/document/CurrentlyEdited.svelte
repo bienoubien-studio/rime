@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Button } from '../../ui/button';
 	import { onMount } from 'svelte';
-	import type { GenericDoc } from '$lib/types/doc.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { User } from '$lib/types/auth.js';
-	import { PANEL_USERS } from '$lib/constant';
+	import { PANEL_USERS } from '$lib/core/constant';
 
 	type Props = { by: string; user: User; doc: GenericDoc };
 	const { by, user, doc }: Props = $props();

@@ -6,18 +6,15 @@
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from '$lib/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
-	import ButtonStatus from './ButtonStatus.svelte';
-	import type { CompiledCollection, CompiledArea } from '$lib/types/config';
+	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { invalidateAll } from '$app/navigation';
 	
 	// Props
 	type Props = {
 		onClose?: any;
-		class?: string;
 		form: DocumentFormContext;
 		config: CompiledArea | CompiledCollection;
-		collectionUrl?: string;
 	};
 	const { form, onClose, config }: Props = $props();
 	
@@ -35,9 +32,9 @@
 		<h1 class="rz-page-header__title">
 			{title.value}
 		</h1>
-		{#if config.type === 'collection' && config.status}
+		<!-- {#if config.type === 'collection' && config.status}
 			<ButtonStatus statusList={config.status} {form} />
-		{/if}
+		{/if} -->
 	</div>
 
 	<div class="rz-page-header__right">
@@ -61,11 +58,7 @@
 
 		<ButtonSave disabled={!form.canSubmit} processing={form.processing} />
 
-		<LanguageSwitcher
-			onLocalClick={(code) => {
-				invalidateAll();
-			}}
-		/>
+		<LanguageSwitcher onLocalClick={invalidateAll} />
 		
 	</div>
 </PageHeader>

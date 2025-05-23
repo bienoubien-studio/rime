@@ -8,7 +8,7 @@ const resourceFeatureNode: RichTextFeatureNode = {
   icon: Images,
   isActive: ({ editor }) => editor.isActive('richt-text-resource'),
   suggestion: {
-    //@ts-ignore
+    //@ts-expect-error boring
     command: ({ editor }) => editor.chain().focus().insertResource().run()
   }
 };

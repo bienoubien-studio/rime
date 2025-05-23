@@ -4,7 +4,7 @@
 	import TreeBlockItem from './TreeBlockItem.svelte';
 	import type { TreeBlockProps } from './types.js';
 	import TreeBlockActions from './TreeBlockActions.svelte';
-	import type { TreeBlock } from '$lib/types/doc.js';
+	import type { TreeBlock } from '$lib/core/types/doc.js';
 	import { snapshot } from '$lib/util/state.js';
 	import { extractFieldName } from '../util.js';
 	import { useOnce } from '$lib/panel/util/once.svelte.js';

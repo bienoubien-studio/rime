@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Collection from '$lib/panel/components/sections/collection/Collection.svelte';
-	import type { GenericDoc, PrototypeSlug } from '$lib/types/doc';
+	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';
 	import { PaneGroup, Pane, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
@@ -10,7 +10,6 @@
 	type Props = {
 		slug: PrototypeSlug;
 		data: {
-			docs: GenericDoc[];
 			doc: GenericDoc;
 			status: number;
 			readOnly: boolean;

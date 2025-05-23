@@ -1,6 +1,6 @@
-import type { FormField } from '$lib/types/fields.js';
+import type { FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 import TextArea from './component/TextArea.svelte';
 import { capitalize } from '$lib/util/string.js';
 

@@ -1,4 +1,4 @@
-import type { AreaSlug, GenericDoc } from '$lib/types/doc';
+import type { AreaSlug, GenericDoc } from '$lib/core/types/doc';
 
 export type AreaProps = {
 	data: AreaData;
@@ -8,7 +8,7 @@ export type AreaProps = {
 export type AreaData =
 	| {
 			status: 401;
-			doc: {};
+			doc: Record<never, never>;
 			operation: 'update';
 	  }
 	| {

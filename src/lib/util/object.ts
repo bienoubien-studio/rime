@@ -1,4 +1,4 @@
-import type { Dic, WithRequired } from '$lib/types/util';
+import type { Dic, WithRequired } from '$lib/util/types';
 
 export const pick = <T extends object, K extends keyof T>(keys: K[], obj: T): Pick<T, K> => {
 	const res: Partial<T> = {};
@@ -110,7 +110,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
 	return output;
 };
 
-export const getValueAtPath = <T extends unknown>(path: string, obj: Dic): T | null | undefined => {
+export const getValueAtPath = <T>(path: string, obj: Dic): T | null | undefined => {
 	const parts = path.split('.');
 	let current = obj;
 	for (const part of parts) {
@@ -169,10 +169,8 @@ export const setValueAtPath = <T extends Dic>(obj: T, path: string, value: unkno
 			previous[previousKey][lastIndex] = value;
 		}
 	} else {
-		// We're setting a property directly on the root object
-		//@ts-ignore just now I don't care that T is generic and can only be indexed
-		// for reading... and actually TS I just set it like that :
-		result[lastIndex] = value;
+		// Use a type assertion only for the assignment
+		(result as any)[lastIndex] = value;
 	}
 
 	return result;

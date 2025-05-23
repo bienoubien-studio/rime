@@ -3,10 +3,10 @@
 	import NodeSelector from './node-selector/node-selector.svelte';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
-	import type { RichTextFeature } from '../../core/types';
 	import IconButton from './icon-button/icon-button.svelte';
 	import './bubble-menu.css';
 	import { getRichTextContext } from '../context.svelte';
+	import type { RichTextFeature } from '../../core/types.js';
 
 	type Props = {
 		editor: Editor;
@@ -100,7 +100,7 @@
 	{/if}
 
 	{#if bubbleMenuItems.length > 0}
-		{#each bubbleMenuItems as item}
+		{#each bubbleMenuItems as item, index (index)}
 			{#if item.bubbleMenu && item.bubbleMenu.component}
 				{@const FeatureComponent = item.bubbleMenu.component}
 				<FeatureComponent active={activeItems[item.name]} {editor} {path} context={richTextContext} />

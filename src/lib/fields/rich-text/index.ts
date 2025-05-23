@@ -1,4 +1,4 @@
-import type { FormField } from '$lib/types/fields.js';
+import type { FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
@@ -74,7 +74,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	static readonly jsonParse = (value: string) => {
 		try {
 			value = JSON.parse(value);
-		} catch (err: any) {
+		} catch {
 			if (typeof value === 'string') {
 				return value;
 			}

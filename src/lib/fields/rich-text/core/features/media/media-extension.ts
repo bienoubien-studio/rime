@@ -2,7 +2,7 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
 
 import CounterComponent from './media.svelte';
-import type { Dic } from '$lib/types/util';
+import type { Dic } from '$lib/util/types';
 
 export const Media = Node.create({
   name: 'media',
@@ -24,11 +24,11 @@ export const Media = Node.create({
     }, {});
   },
 
-  //@ts-ignore
+  //@ts-expect-error boring
   addCommands() {
     return {
       insertMedia: (attributes = {}) => 
-        //@ts-ignore
+        //@ts-expect-error boring
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,

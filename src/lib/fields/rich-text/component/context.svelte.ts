@@ -1,7 +1,7 @@
 import type { Editor } from '@tiptap/core';
 import { getContext, setContext } from 'svelte';
 
-function createRichTextState(key: string) {
+function createRichTextState() {
 	
   let bubbleOpen = $state(false)
   let suggestionOpen = $state(false)
@@ -31,7 +31,7 @@ function createRichTextState(key: string) {
 }
 
 export function setRichTextContext(key:string) {
-	const state = createRichTextState(key);
+	const state = createRichTextState();
 	return setContext(key, state);
 }
 

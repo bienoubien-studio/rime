@@ -1,4 +1,4 @@
-import type { Dic } from "rizom/types/util";
+import type { Dic } from "$lib/util/types";
 
 type Row = Dic & { _children?: Row[] }
 

@@ -6,11 +6,11 @@ import commandScore from 'command-score';
 import { isUploadConfig } from '$lib/util/config.js';
 import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
 import { getValueAtPath, hasProp } from '$lib/util/object.js';
-import type { Field, FormField } from '$lib/types/fields.js';
-import type { GenericDoc } from '$lib/types/doc.js';
-import type { CompiledCollection } from '$lib/types/config.js';
-import type { FieldPanelTableConfig } from '$lib/types/panel.js';
-import type { WithRequired } from '$lib/types/util.js';
+import type { Field, FormField } from '$lib/fields/types.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { FieldPanelTableConfig } from '$lib/panel/types.js';
+import type { WithRequired } from '$lib/util/types.js';
 import { env } from '$env/dynamic/public';
 import cloneDeep from 'clone-deep';
 import { snapshot } from '$lib/util/state.js';
@@ -32,7 +32,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	let selected = $state<string[]>([]);
 	let displayMode = $state<DisplayMode>('list');
 	let stamp = $state(Date.now()); // Add a timestamp to track changes
-	const statusList = $derived(config.status && Array.isArray(config.status) ? config.status : null)
+	// const statusList = $derived(config.status && Array.isArray(config.status) ? config.status : null);
 
 	onMount(() => {
 		displayMode =
@@ -50,7 +50,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		if (!selectMode) selected = [];
 	});
 
-	const nested = $derived.by(() => toNestedStructure(docs))
+	const nested = $derived.by(() => toNestedStructure(docs));
 
 	const buildFieldColumns = (fields: Field[], parentPath: string = '') => {
 		let columns: Array<{ path: string } & WithRequired<FormField, 'table'>> = [];
@@ -90,7 +90,6 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		})
 		.sort((a, b) => a.table.position - b.table.position);
 
-	
 	const sortBy = (fieldName: string, toggle: boolean = true) => {
 		if (sortingBy === fieldName) {
 			if (toggle) {
@@ -153,7 +152,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 		await invalidateAll();
 	};
-	
+
 	/**
 	 * Rebuilds nested positions for all documents in the hierarchy
 	 * @param documents Array of documents to process
@@ -179,18 +178,21 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			return clone;
 		});
 		return [orderedDocs, docsToUpdate];
-	}
+	};
 
 	/**
 	 * Handle document move operations with parent-child relationships
 	 * @param params Object containing from and to information
 	 */
-	const handleNestedDocumentMove = async ({ from, to, documentId }: {
-		documentId: string,
-		from: { parent: string | null, index: number },
-		to: { parent: string | null, index: number },
+	const handleNestedDocumentMove = async ({
+		from,
+		to,
+		documentId
+	}: {
+		documentId: string;
+		from: { parent: string | null; index: number };
+		to: { parent: string | null; index: number };
 	}) => {
-		
 		// console.log('move ' + documentId)
 		// console.log('from.parent', from.parent)
 		// console.log('from.index', from.index)
@@ -198,7 +200,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		// console.log('to.index', to.index)
 
 		// Step 1: Get the document from the flat docs array
-		const docToMove = docs.find(d => d.id === documentId) as GenericDoc;
+		const docToMove = docs.find((d) => d.id === documentId) as GenericDoc;
 		if (!docToMove) return;
 
 		// Step 2: Get a deep clone of the current nested structure
@@ -208,9 +210,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		const findArrayInNested = (docs: any[], parentId: string | null): any[] => {
 			// If looking for root level
 			if (parentId === null) return docs;
-			
+
 			// Create a helper function to search with a proper return value
-			const search = (docs: any[], targetId: string): { found: boolean, array: any[] } => {
+			const search = (docs: any[], targetId: string): { found: boolean; array: any[] } => {
 				// Check current level first
 				for (const doc of docs) {
 					if (doc.id === targetId) {
@@ -219,7 +221,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 						return { found: true, array: doc._children };
 					}
 				}
-				
+
 				// Then check children
 				for (const doc of docs) {
 					if (doc._children && doc._children.length > 0) {
@@ -229,11 +231,11 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 						}
 					}
 				}
-				
+
 				// Not found
 				return { found: false, array: [] };
 			};
-			
+
 			// Run the search
 			const result = search(docs, parentId);
 			return result.array;
@@ -246,9 +248,8 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		// console.log('sourceArray', sourceArray)
 		// console.log('targetArray', targetArray)
 
-		
 		// Step 5: Find the document in the source array
-		const sourceIndex = sourceArray.findIndex(d => d.id === documentId);
+		const sourceIndex = sourceArray.findIndex((d) => d.id === documentId);
 		if (sourceIndex === -1) return; // Document not found in source
 
 		// Step 6: Create a simplified representation for the nested structure
@@ -268,22 +269,25 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		sourceArray = sourceArray.map((element, index) => ({
 			...element,
 			nestedPosition: index
-		}))
+		}));
 		targetArray = targetArray.map((element, index) => ({
 			...element,
 			nestedPosition: index
-		}))
+		}));
 
 		// Step 9: Update the flat docs based on the new nested structure
-		const updateFlatDocs = (nestedDocs: any[], parentId: string | null = null): [GenericDoc[], GenericDoc[]] => {
+		const updateFlatDocs = (
+			nestedDocs: any[],
+			parentId: string | null = null
+		): [GenericDoc[], GenericDoc[]] => {
 			const updates: GenericDoc[] = [];
 			const newFlatDocs: GenericDoc[] = [];
-			const clones = cloneDeep(nestedDocs)
+			const clones = cloneDeep(nestedDocs);
 
 			// // Process each document at this level
 			clones.forEach((nestedDoc, index) => {
 				// Find the corresponding document in the flat array
-				const flatDoc = docs.find(d => d.id === nestedDoc.id) as GenericDoc;
+				const flatDoc = docs.find((d) => d.id === nestedDoc.id) as GenericDoc;
 				if (!flatDoc) return;
 
 				// Create a clone of the flat doc to update
@@ -300,7 +304,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 				// Add to new flat docs array
 				newFlatDocs.push(updatedDoc);
-				
+
 				// If changed, add to updates array
 				if (parentChanged || positionChanged) {
 					updates.push(updatedDoc);
@@ -319,28 +323,27 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 		// Step 10: Update the flat docs with the new structure
 		const [newFlatDocs, docsToUpdate] = updateFlatDocs(nestedDocs);
-		
+
 		// console.log(docsToUpdate)
 
 		docs = newFlatDocs as T[];
-		initialDocs = docs
+		initialDocs = docs;
 		stamp = Date.now();
 
 		// Step 11: Update the API
 		if (docsToUpdate.length > 0) {
-			return apiUpdateNestedStructure(docsToUpdate)
+			return apiUpdateNestedStructure(docsToUpdate);
 		} else {
-			return new Promise(resolve => resolve(true))
+			return new Promise((resolve) => resolve(true));
 		}
 	};
-	
+
 	/**
 	 * Update the nested structure via API calls and regenerate URLs for documents and their children
 	 * @param docsToUpdate Array of documents that need updating
 	 * @returns Promise that resolves to true if all updates succeeded
 	 */
 	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]): Promise<boolean> => {
-		
 		if (!docsToUpdate.length) {
 			console.log('No documents to update');
 			return true;
@@ -352,268 +355,268 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		 * @param parentUpdate Whether this is a parent update (includes parent and nestedPosition) or just URL regeneration
 		 * @param processedIds Set of document IDs that have already been processed to prevent infinite loops
 		 */
-			const updateDocumentAndChildren = async (
-				doc: GenericDoc, 
-				parentUpdate = true,
-				processedIds = new Set<string>()
-			): Promise<GenericDoc | null> => {
-				// Prevent infinite loops or duplicate processing
-				if (processedIds.has(doc.id)) {
-					return null;
-				}
-				processedIds.add(doc.id);
-				
-				// Update the document
-				const url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
-				const body = JSON.stringify(
-					parentUpdate 
-						? { parent: doc.parent, nestedPosition: doc.nestedPosition }
-						: { parent: doc.parent } // Just trigger URL regeneration
-				);
-				
-				try {
-					const response = await fetch(url, {
-						method: 'PATCH',
-						body: body,
-						headers: {
-							'Content-Type': 'application/json'
-						}
-					});
-					
-					if (!response.ok) {
-						console.warn(`API error: ${response.status} for document ${doc.id}`);
-						return null;
-					}
-					
-					// Get the updated document
-					const updatedDoc = await response.json();
-					
-					// Now fetch all children of this document
-					const childrenResponse = await fetch(
-						`${env.PUBLIC_RIZOM_URL}/api/${config.slug}?where[parent][in_array]=${doc.id}&select=id,parent`
-					);
-					
-					if (!childrenResponse.ok) {
-						console.warn(`Could not fetch children of document ${doc.id}`);
-						return updatedDoc;
-					}
-					
-					const childrenData = await childrenResponse.json();
-					const children = childrenData.docs || [];
-					
-					// If there are children, recursively update each one
-					if (children.length > 0) {
-						// Process each child recursively (these are just URL regenerations, not parent updates)
-						await Promise.all(
-							children.map((child:GenericDoc) => updateDocumentAndChildren(child, false, processedIds))
-						);
-					}
-					
-					return updatedDoc;
-				} catch (error) {
-					console.error(`Error updating document ${doc.id}:`, error);
-					return null;
-				}
-			};
+		const updateDocumentAndChildren = async (
+			doc: GenericDoc,
+			parentUpdate = true,
+			processedIds = new Set<string>()
+		): Promise<GenericDoc | null> => {
+			// Prevent infinite loops or duplicate processing
+			if (processedIds.has(doc.id)) {
+				return null;
+			}
+			processedIds.add(doc.id);
 
-			// Create API update promises for all documents that need updating
-			const updatePromises = docsToUpdate.map(docToUpdate => 
-				updateDocumentAndChildren(docToUpdate)
+			// Update the document
+			const url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
+			const body = JSON.stringify(
+				parentUpdate
+					? { parent: doc.parent, nestedPosition: doc.nestedPosition }
+					: { parent: doc.parent } // Just trigger URL regeneration
 			);
 
-			// Wait for all updates to complete
 			try {
-				const results = await Promise.all(updatePromises);
-				// Update local docs with the updated versions
-				results.forEach(updatedDoc => {
-					if (updatedDoc) {
-						updateDoc(updatedDoc as T);
+				const response = await fetch(url, {
+					method: 'PATCH',
+					body: body,
+					headers: {
+						'Content-Type': 'application/json'
 					}
 				});
-				return true;
-			} catch (error) {
-				console.error('Error updating nested structure:', error);
-				return false;
-			}
-		}
 
-		function isList() {
-			return displayMode === 'list';
-		}
-		function isGrid() {
-			return displayMode === 'grid';
-		}
-		function isNested() {
-			return displayMode === 'nested';
-		}
-		
-		function display(mode: DisplayMode) {
-			localStorage.setItem(`collection.${config.slug}.display`, mode);
-			displayMode = mode;
-		}
-
-		function toggleSelectOf(docId: string) {
-			if (selected.includes(docId)) {
-				selected = selected.filter((id) => id !== docId);
-			} else {
-				selected.push(docId);
-			}
-		}
-
-		function selectAll() {
-			selected = docs.map((doc) => doc.id);
-		}
-
-		async function deleteSelection() {
-			deleteDocs(selected);
-			selectMode = false;
-		}
-
-		function filterBy(inputValue: string) {
-			if (inputValue !== '') {
-				const scores: any[] = [];
-				for (const doc of initialDocs) {
-					const asTitle = getValueAtPath(config.asTitle, doc);
-					if (!asTitle) continue;
-					const score = commandScore(asTitle, inputValue);
-					if (score > 0) {
-						scores.push({
-							doc,
-							score
-						});
-					}
+				if (!response.ok) {
+					console.warn(`API error: ${response.status} for document ${doc.id}`);
+					return null;
 				}
-				const results = scores.sort(function (a, b) {
-					if (a.score === b.score) {
-						return a.doc[config.asTitle].localeCompare(b.doc[config.asTitle]);
-					}
-					return b.score - a.score;
-				});
-				docs = results.map((r) => r.doc);
-			} else {
-				docs = [...initialDocs];
-			}
-		}
 
-		async function deleteDoc(id: string) {
-			const res = await fetch(`/api/${config.slug}/${id}`, {
-				method: 'DELETE',
-				headers: {
-					'content-type': 'application/json'
+				// Get the updated document
+				const updatedDoc = await response.json();
+
+				// Now fetch all children of this document
+				const childrenResponse = await fetch(
+					`${env.PUBLIC_RIZOM_URL}/api/${config.slug}?where[parent][in_array]=${doc.id}&select=id,parent`
+				);
+
+				if (!childrenResponse.ok) {
+					console.warn(`Could not fetch children of document ${doc.id}`);
+					return updatedDoc;
+				}
+
+				const childrenData = await childrenResponse.json();
+				const children = childrenData.docs || [];
+
+				// If there are children, recursively update each one
+				if (children.length > 0) {
+					// Process each child recursively (these are just URL regenerations, not parent updates)
+					await Promise.all(
+						children.map((child: GenericDoc) =>
+							updateDocumentAndChildren(child, false, processedIds)
+						)
+					);
+				}
+
+				return updatedDoc;
+			} catch (error) {
+				console.error(`Error updating document ${doc.id}:`, error);
+				return null;
+			}
+		};
+
+		// Create API update promises for all documents that need updating
+		const updatePromises = docsToUpdate.map((docToUpdate) =>
+			updateDocumentAndChildren(docToUpdate)
+		);
+
+		// Wait for all updates to complete
+		try {
+			const results = await Promise.all(updatePromises);
+			// Update local docs with the updated versions
+			results.forEach((updatedDoc) => {
+				if (updatedDoc) {
+					updateDoc(updatedDoc as T);
 				}
 			});
-			if (res.status === 200) {
-				docs = [...docs].filter((doc) => doc.id !== id);
-			} else if (res.status === 404) {
-				console.error('not found');
-			}
+			return true;
+		} catch (error) {
+			console.error('Error updating nested structure:', error);
+			return false;
 		}
+	};
 
-		function addDoc(doc: T) {
-			docs.push(doc);
-			sortBy(sortingBy, false);
+	function isList() {
+		return displayMode === 'list';
+	}
+	function isGrid() {
+		return displayMode === 'grid';
+	}
+	function isNested() {
+		return displayMode === 'nested';
+	}
+
+	function display(mode: DisplayMode) {
+		localStorage.setItem(`collection.${config.slug}.display`, mode);
+		displayMode = mode;
+	}
+
+	function toggleSelectOf(docId: string) {
+		if (selected.includes(docId)) {
+			selected = selected.filter((id) => id !== docId);
+		} else {
+			selected.push(docId);
 		}
+	}
 
-		function updateDoc(incomingDoc: T) {
-			for (const [index, doc] of docs.entries()) {
-				if (doc.id === incomingDoc.id) {
-					docs[index] = incomingDoc;
-					return;
+	function selectAll() {
+		selected = docs.map((doc) => doc.id);
+	}
+
+	async function deleteSelection() {
+		deleteDocs(selected);
+		selectMode = false;
+	}
+
+	function filterBy(inputValue: string) {
+		if (inputValue !== '') {
+			const scores: any[] = [];
+			for (const doc of initialDocs) {
+				const asTitle = getValueAtPath(config.asTitle, doc);
+				if (!asTitle) continue;
+				const score = commandScore(asTitle, inputValue);
+				if (score > 0) {
+					scores.push({
+						doc,
+						score
+					});
 				}
 			}
+			const results = scores.sort(function (a, b) {
+				if (a.score === b.score) {
+					return a.doc[config.asTitle].localeCompare(b.doc[config.asTitle]);
+				}
+				return b.score - a.score;
+			});
+			docs = results.map((r) => r.doc);
+		} else {
+			docs = [...initialDocs];
 		}
-
-		return {
-			get stamp() {
-				return stamp;
-			},
-			get title() {
-				return config.label.singular;
-			},
-			// logCollectionStructure,
-			get statusList () {
-				return statusList
-			},
-			config,
-			canCreate,
-			isList,
-			isGrid,
-			isNested,
-			display,
-
-			columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
-			sortBy,
-			get sortingOrder() {
-				return sortingOrder;
-			},
-			get sortingBy() {
-				return sortingBy;
-			},
-			toggleSelectOf,
-			selectAll,
-			get selected() {
-				return selected;
-			},
-			set selected(value) {
-				selected = value;
-			},
-			get selectMode() {
-				return selectMode;
-			},
-			set selectMode(bool) {
-				selectMode = bool;
-			},
-			deleteSelection,
-
-			filterBy,
-
-			get isUpload() {
-				return isUploadConfig(config);
-			},
-
-
-			/////////////////////////////////////////////
-			// Docs
-			//////////////////////////////////////////////
-			addDoc,
-			updateDoc,
-			deleteDoc,
-			deleteDocs,
-			get docs() {
-				return docs;
-			},
-			set docs(value) {
-				docs = value;
-				stamp = Date.now();
-			},
-			get length() {
-				return docs.length;
-			},
-			
-			get nested() {
-				return nested
-			},
-			handleNestedDocumentMove,
-
-		};
 	}
 
-	const COLLECTION_KEY = 'rizom.collection';
-
-	export function setCollectionContext(args: Args) {
-		const store = createCollectionStore(args);
-		return setContext(`${COLLECTION_KEY}.${args.key || 'root'}`, store);
+	async function deleteDoc(id: string) {
+		const res = await fetch(`/api/${config.slug}/${id}`, {
+			method: 'DELETE',
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+		if (res.status === 200) {
+			docs = [...docs].filter((doc) => doc.id !== id);
+		} else if (res.status === 404) {
+			console.error('not found');
+		}
 	}
 
-	export function getCollectionContext(key: string = 'root') {
-		return getContext<CollectionContext>(`${COLLECTION_KEY}.${key}`);
+	function addDoc(doc: T) {
+		docs.push(doc);
+		sortBy(sortingBy, false);
 	}
 
-	export type CollectionContext = ReturnType<typeof setCollectionContext>;
+	function updateDoc(incomingDoc: T) {
+		for (const [index, doc] of docs.entries()) {
+			if (doc.id === incomingDoc.id) {
+				docs[index] = incomingDoc;
+				return;
+			}
+		}
+	}
 
-	type Args<T extends GenericDoc = GenericDoc> = {
-		initial: T[];
-		config: CompiledCollection;
-		canCreate: boolean;
-		key?: string;
+	return {
+		get stamp() {
+			return stamp;
+		},
+		get title() {
+			return config.label.singular;
+		},
+		// logCollectionStructure,
+		// get statusList() {
+		// 	return statusList;
+		// },
+		config,
+		canCreate,
+		isList,
+		isGrid,
+		isNested,
+		display,
+
+		columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
+		sortBy,
+		get sortingOrder() {
+			return sortingOrder;
+		},
+		get sortingBy() {
+			return sortingBy;
+		},
+		toggleSelectOf,
+		selectAll,
+		get selected() {
+			return selected;
+		},
+		set selected(value) {
+			selected = value;
+		},
+		get selectMode() {
+			return selectMode;
+		},
+		set selectMode(bool) {
+			selectMode = bool;
+		},
+		deleteSelection,
+
+		filterBy,
+
+		get isUpload() {
+			return isUploadConfig(config);
+		},
+
+		/////////////////////////////////////////////
+		// Docs
+		//////////////////////////////////////////////
+		addDoc,
+		updateDoc,
+		deleteDoc,
+		deleteDocs,
+		get docs() {
+			return docs;
+		},
+		set docs(value) {
+			docs = value;
+			stamp = Date.now();
+		},
+		get length() {
+			return docs.length;
+		},
+
+		get nested() {
+			return nested;
+		},
+		handleNestedDocumentMove
 	};
+}
+
+const COLLECTION_KEY = 'rizom.collection';
+
+export function setCollectionContext(args: Args) {
+	const store = createCollectionStore(args);
+	return setContext(`${COLLECTION_KEY}.${args.key || 'root'}`, store);
+}
+
+export function getCollectionContext(key: string = 'root') {
+	return getContext<CollectionContext>(`${COLLECTION_KEY}.${key}`);
+}
+
+export type CollectionContext = ReturnType<typeof setCollectionContext>;
+
+type Args<T extends GenericDoc = GenericDoc> = {
+	initial: T[];
+	config: CompiledCollection;
+	canCreate: boolean;
+	key?: string;
+};

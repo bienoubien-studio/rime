@@ -1,6 +1,6 @@
-import type { BuiltCollection, Collection, CompiledCollection } from '$lib/types/config.js';
-import type { WithUpload } from '$lib/types/util.js';
-import type { Field, FormField } from 'rizom/types/fields.js';
+import type { BuiltCollection, Collection, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { WithUpload } from '$lib/util/types.js';
+import type { Field, FormField } from '$lib/fields/types.js';
 import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from './field';
 
 export function isUploadConfig(config: { upload?: boolean }): config is WithUpload<typeof config> {

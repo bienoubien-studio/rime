@@ -7,7 +7,7 @@
 	import { t__ } from '$lib/i18n/index.js';
 	import type { DashboardEntry } from './types.js';
 	import { invalidateAll } from '$app/navigation';
-	import type { User } from 'rizom/types/auth.js';
+	import type { User } from '$lib/types/auth.js';
 
 	type Props = { entries: DashboardEntry[]; user?: User };
 	const { entries, user }: Props = $props();
@@ -24,7 +24,7 @@
 						{t__('common.view_site')}
 					</Button>
 				{/if}
-				{#each config.raw.panel.components.header as CustomHeaderComponent}
+				{#each config.raw.panel.components.header as CustomHeaderComponent, index (index)}
 					<CustomHeaderComponent />
 				{/each}
 			</div>
@@ -41,7 +41,7 @@
 			{user!.name}
 		</header>
 		<div class="rz-dashboard__content">
-			{#each entries as entry}
+			{#each entries as entry, index (index)}
 				{@const Icon = config.raw.icons[entry.slug]}
 				<a class="rz-dashboard__entry" href={entry.link}>
 					<div class="rz-dashboard__entry-icon">

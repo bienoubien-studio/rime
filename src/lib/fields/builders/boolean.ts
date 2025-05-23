@@ -1,6 +1,6 @@
-import type { FieldsType, FieldValidationFunc, FormField } from '$lib/types/fields.js';
+import type { FieldsType, FieldValidationFunc, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from './field.js';
-import type { WithoutBuilders } from '$lib/types/util.js';
+import type { WithoutBuilders } from '$lib/util/types.js';
 
 type BooleanField = FormField & {
 	type: any;

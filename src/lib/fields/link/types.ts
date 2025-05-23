@@ -1,4 +1,4 @@
-import type { GetRegisterType } from "rizom";
+import type { GetRegisterType } from '$lib/index.js';
 
 export type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'PrototypeSlug'>;
 export type Link = {

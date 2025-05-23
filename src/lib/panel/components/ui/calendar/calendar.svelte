@@ -28,11 +28,11 @@
 			<Calendar.NextButton />
 		</Calendar.Header>
 		<Calendar.Months>
-			{#each months as month}
+			{#each months as month, index (index)}
 				<Calendar.Grid>
 					<Calendar.GridHead>
 						<Calendar.GridRow>
-							{#each weekdays as weekday}
+							{#each weekdays as weekday, index (index)}
 								<Calendar.HeadCell>
 									{weekday.slice(0, 2)}
 								</Calendar.HeadCell>
@@ -40,9 +40,9 @@
 						</Calendar.GridRow>
 					</Calendar.GridHead>
 					<Calendar.GridBody>
-						{#each month.weeks as weekDates}
+						{#each month.weeks as weekDates, index (index)}
 							<Calendar.GridRow>
-								{#each weekDates as date}
+								{#each weekDates as date, index (index)}
 									<Calendar.Cell {date} month={month.value}>
 										<Calendar.Day />
 									</Calendar.Cell>

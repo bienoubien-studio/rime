@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tooltip as TooltipPrimitive } from 'bits-ui';
-	import { fly, fade } from "svelte/transition";
+	import { fly } from "svelte/transition";
 	import './tooltip.css';
 
 	let {

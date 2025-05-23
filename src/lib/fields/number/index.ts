@@ -1,7 +1,7 @@
 import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
-import type { FormField, FieldValidationFunc } from '$lib/types/fields.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import type { FormField, FieldValidationFunc } from '$lib/fields/types.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
 

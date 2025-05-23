@@ -11,7 +11,7 @@
 	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import { t__ } from '$lib/i18n/index.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
-	import type { GenericDoc } from '$lib/types/doc.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	const {
 		isFull,

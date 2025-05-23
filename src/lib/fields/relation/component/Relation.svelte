@@ -12,11 +12,11 @@
 	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
 	import { getCollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import type { Relation } from '$lib/sqlite/relations.js';
-	import type { GenericDoc } from '$lib/types/doc.js';
+	import type { Relation } from '$lib/adapter-sqlite/relations.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationField } from '../index';
 	import type { RelationFieldItem } from './types.js';
-
+	
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();

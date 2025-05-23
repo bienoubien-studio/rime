@@ -1,9 +1,9 @@
-import type { Field } from '$lib/types/fields.js';
+import type { Field } from '$lib/fields/types.js';
 import { FieldBuilder } from '../builders/index.js';
-import type { FieldAccess } from '$lib/types/fields';
+import type { FieldAccess } from '$lib/fields/types.js';
 import type { Component } from 'svelte';
 import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-import type { GenericDoc } from '$lib/types/index.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 
 type TypedComponent = Component<{
 	path: string;

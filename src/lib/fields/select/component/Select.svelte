@@ -101,7 +101,7 @@
 					/>
 					{#if inputFocused}
 						<Command.List>
-							{#each options as option}
+							{#each options as option, index (index)}
 								<Command.Item
 									value={option.value}
 									onSelect={() => {

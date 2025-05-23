@@ -49,11 +49,11 @@
 
 	{#if showFullHeader}
 		<div class="rz-collection-header__right">
-			{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent}
+			{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent, index (index)}
 				<CustomHeaderComponent />
 			{/each}
 			<ButtonCreate />
-			<LanguageSwitcher onLocalClick={(code) => invalidateAll()} />
+			<LanguageSwitcher onLocalClick={() => invalidateAll()} />
 		</div>
 	{/if}
 </div>

@@ -1,7 +1,7 @@
 import test, { expect } from '@playwright/test';
-import { filePathToBase64 } from 'rizom/upload/util/converter.js';
+import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import path from 'path';
-import { PANEL_USERS } from 'rizom/constant';
+import { PANEL_USERS } from 'rizom/core/constant';
 import { bearer } from 'better-auth/plugins';
 
 const API_BASE_URL = 'http://rizom.test:5173/api';
@@ -130,7 +130,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	for(let i = 1; i < 10; i++){
 		const pagination = i
 		const offset = (pagination - 1) * 10
-		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=-createdAt`).then((response) => {
+		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`).then((response) => {
 			return response.json();
 		});
 		expect(response.docs).toBeDefined();

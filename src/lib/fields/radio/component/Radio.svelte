@@ -15,7 +15,7 @@
 <fieldset class="rz-field-radio {config.className || ''}" use:root={field}>
 	<Field.Label {config} />
 	<RadioGroup.Root bind:value={field.value} class="rz-radio" disabled={!field.editable}>
-		{#each config.options as option, index}
+		{#each config.options as option, index (index)}
 			<div class="rz-radio__option">
 				<RadioGroup.Item value={option.value} id="{fieldId}-{index}" class="rz-radio__input" />
 				<Label class="rz-radio__label" for="{fieldId}-{index}">

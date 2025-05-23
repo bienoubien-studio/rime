@@ -1,5 +1,5 @@
-import type { CompiledCollection } from '$lib/types/config';
-import type { GenericDoc } from '$lib/types/doc';
+import type { CompiledCollection } from '$lib/core/config/types';
+import type { GenericDoc } from '$lib/core/types/doc';
 
 export type RelationFieldItem = {
 	id?: string;
@@ -13,8 +13,8 @@ export type RelationFieldItem = {
 	url?: string;
 	livePreview?: GenericDoc;
 	editUrl: string;
-	_type: string,
-	_prototype: string,
+	_type: string;
+	_prototype: string;
 };
 
 export type RelationComponentProps = {

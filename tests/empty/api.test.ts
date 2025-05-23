@@ -1,5 +1,5 @@
 import test, { expect } from '@playwright/test';
-import { PANEL_USERS } from 'rizom/constant';
+import { PANEL_USERS } from 'rizom/core/constant';
 
 const BASE_URL = 'http://rizom.test:5173';
 const API_BASE_URL = `${BASE_URL}/api`;

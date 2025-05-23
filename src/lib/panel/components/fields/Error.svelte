@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t__ } from '$lib/i18n/index.js';
-	import { RizomError, RizomFormError } from '$lib/errors/index.js';
+	import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 
 	type Props = { error: string | false };
 

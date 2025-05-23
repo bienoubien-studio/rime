@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
-	import type { GenericDoc, FieldsType } from '$lib/types';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import StatusDot from '../StatusDot.svelte';
 	import { getValueAtPath } from '$lib/util/object';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
+	import type { FieldsType } from '$lib/fields/types.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	type Props = {
 		checked: boolean;
@@ -64,7 +65,7 @@
 	</div>
 
 	{#if !compact}
-		{#each collection.columns as column}
+		{#each collection.columns as column, index (index)}
 			
 			<div class="rz-list-row__cell">
 				{#if column.table?.cell}

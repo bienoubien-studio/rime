@@ -4,8 +4,8 @@
 	import Text from '$lib/fields/text/component/Text.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { enhance } from '$app/forms';
-	import type { FormErrors } from '$lib/types';
-	import { email } from '$lib/config/auth/usersFields.js';
+	import type { FormErrors } from '$lib/types.js';
+	import { email } from '$lib/core/collections/auth/config/usersFields.js';
 	import { text } from '$lib/fields/text/index.js';
 	import { t__ } from '$lib/i18n/index.js';
 	import { toast } from 'svelte-sonner';

@@ -3,7 +3,7 @@
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import type { FormField } from '$lib/types/fields';
+	import type { FormField } from '$lib/fields/types.js';
 
 	type TableColumn = Partial<FormField> & { name: string; label?: string };
 	type Props = { compact: boolean };
@@ -48,7 +48,7 @@
 	{@render sortableColumnHeader({ name: collection.config.asTitle.split('.').at(-1) || 'title' })}
 
 	{#if !compact}
-		{#each collection.columns as column}
+		{#each collection.columns as column, index (index)}
 			{#if column.table.sort}
 				{@render sortableColumnHeader(column)}
 			{:else}

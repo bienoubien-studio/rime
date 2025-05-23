@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { PaneGroup, Pane, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
 	import { goto } from '$app/navigation';
-	import type { GenericDoc } from '$lib/types/doc';
+	import type { GenericDoc } from '$lib/core/types/doc';
 	import LiveSidePanel from '$lib/panel/components/sections/live/SidePanel.svelte';
-	import type { BrowserConfig } from '$lib/types/config';
+	import type { BrowserConfig } from '$lib/core/config/types';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from '$lib/i18n';
 	import { fade } from 'svelte/transition';
@@ -113,7 +113,6 @@
 						doc={data.doc}
 						user={data.user}
 						locale={data.locale}
-						slug={data.slug}
 					/>
 				{/key}
 			</div>

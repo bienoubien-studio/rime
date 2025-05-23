@@ -5,10 +5,10 @@
 	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
 	import { isFormField } from '$lib/util/field.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import type { GenericBlock } from '$lib/types/doc.js';
+	import type { GenericBlock } from '$lib/core/types/doc.js';
 	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
 	import { t__ } from '$lib/i18n/index.js';
-	import type { WithoutBuilders } from '$lib/types/util.js';
+	import type { WithoutBuilders } from '$lib/util/types.js';
 	import { env } from '$env/dynamic/public';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
@@ -59,7 +59,7 @@
 			<Command.List class="rz-add-block-button__list">
 				<Command.Empty>No results found.</Command.Empty>
 				<Command.Group heading="Component">
-					{#each config.blocks as block}
+					{#each config.blocks as block, index (index)}
 						{@const BlockIcon = block.icon || ToyBrick}
 						<Command.Item
 							class="rz-add-block-button__item"
@@ -90,7 +90,7 @@
 			</Command.List>
 
 			<div class="rz-add-block-button__preview-wrap">
-				{#each config.blocks as block}
+				{#each config.blocks as block, index (index)}
 					<div class:rz-add-block-button__preview--active={ariaSelected === block.name} class="rz-add-block-button__preview">
 						{#if block.image}
 							<img src="{env.PUBLIC_RIZOM_URL}{block.image}" alt="preview" />

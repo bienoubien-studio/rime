@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { GripVertical } from '@lucide/svelte';
-  import type { GenericDoc } from '$lib/types';
+  import type { GenericDoc } from '$lib/core/types/doc.js';
   import CollectionTreeNode from './CollectionTreeNode.svelte'
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import StatusDot from '../StatusDot.svelte';

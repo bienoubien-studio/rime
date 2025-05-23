@@ -1,8 +1,8 @@
-import type { FormField } from '$lib/types';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 import Text from './component/Text.svelte';
 import { capitalize } from '$lib/util/string.js';
+import type { FormField } from '$lib/fields/types.js';
 
 //////////////////////////////////////////////
 class TextFieldBuilder extends FormFieldBuilder<TextField> {

@@ -4,9 +4,9 @@
 	import { toast } from 'svelte-sonner';
 	import Email from '$lib/fields/email/component/Email.svelte';
 	import Text from '$lib/fields/text/component/Text.svelte';
-	import type { FormErrors } from '$lib/types';
+	import type { FormErrors } from '$lib/types.js';
 	import { text } from '$lib/fields/text/index.js';
-	import { usersFields } from '$lib/config/auth/usersFields.js';
+	import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { t__ } from '$lib/i18n';
 	import Button from '$lib/panel/components/ui/button/button.svelte';

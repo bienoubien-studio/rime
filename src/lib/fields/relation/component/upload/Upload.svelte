@@ -9,7 +9,7 @@
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import { createBlankDocument } from '$lib/util/doc.js';
 	import { t__ } from '$lib/i18n/index.js';
-	import type { GenericDoc } from '$lib/types/doc.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import './upload.css';
 	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte'
@@ -138,7 +138,7 @@
 
 	<Command.List class="rz-relation-upload__command-list">
 		<Command.Empty>No results found.</Command.Empty>
-		{#each availableItems as item}
+		{#each availableItems as item, index (index)}
 			<Command.Item
 				class="rz-relation-upload__command-item"
 				value={item.filename}

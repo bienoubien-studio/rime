@@ -13,16 +13,16 @@ import { getValueAtPath, omit, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { getLocaleContext } from './locale.svelte.js';
 import type { ActionResult } from '@sveltejs/kit';
-import type { FormField } from '$lib/types/fields.js';
-import type { Dic } from '$lib/types/util';
-import type { CompiledCollection, CompiledArea } from '$lib/types/config.js';
-import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/types/doc.js';
+import type { FormField } from '$lib/fields/types.js';
+import type { Dic } from '$lib/util/types';
+import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
+import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
 import { t__ } from '../../i18n/index.js';
-import { getFieldConfigByPath } from 'rizom/util/config.js';
+import { getFieldConfigByPath } from '$lib/util/config.js';
 import { env } from '$env/dynamic/public';
-import { random } from 'rizom/util/index.js';
+import { random } from '$lib/util/index.js';
 
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
@@ -182,7 +182,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				const parts = path.split('.');
 				let current = items;
 				let parentArray = items;
-				let finalIndex = parseInt(parts[parts.length - 1]);
+				const finalIndex = parseInt(parts[parts.length - 1]);
 
 				for (let i = 0; i < parts.length - 1; i++) {
 					const part = parts[i];
@@ -278,18 +278,18 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			// return;
 			let blocks = [...getBlocks()];
 
-			const cloneBlock = <T>(block: GenericBlock) => {
+			const cloneBlock = <T extends Record<string, any>>(block: T) => {
 				// First deep clone the block so duplicate origin
 				// is not impacted.
-				let clone = cloneDeep(block);
+				const clone = cloneDeep<T>(block);
 				// Function to reset all nested id properties
 				// so nested elements are threated as created elements
-				const resetIds = <T extends Record<string, any>>(obj: T) => {
+				const resetIds = <O extends Record<string, any>>(obj: O) => {
 					if ('id' in obj) {
 						obj = { ...obj, id: generateTempId() };
 					}
 					for (const key of Object.keys(obj)) {
-						let value = obj[key];
+						const value = obj[key];
 						if (Array.isArray(value) && value.length && isObjectLiteral(value[0])) {
 							obj = {
 								...obj,
@@ -417,7 +417,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 					if (typeof data === 'object' && data !== null) {
 						// First omit the id and locale properties
 						const withoutId = omit(['id', 'locale'], data as Dic);
-						let result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
+						const result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
 						// Replace with the current locale if present
 						if (locale.code && 'locale' in data) {
 							result.locale = locale.code;
@@ -447,7 +447,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				if (valid) {
 					setValue(path, value);
 					if(Array.isArray(config.hooks?.onChange)){
-						for(const hook of config.hooks?.onChange){
+						for(const hook of config.hooks?.onChange || []){
 							hook( value, {
 								siblings: getSiblings(),
 								useField, 

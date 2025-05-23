@@ -2,7 +2,7 @@
 	import NavItem from './NavItem.svelte';
 	import NavGroup from './NavGroup.svelte';
 	import UserButton from './UserButton.svelte';
-	import type { Route } from '$lib/types/panel';
+	import type { Route } from '$lib/panel/types';
 	import { PanelsTopLeft } from '@lucide/svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	
@@ -36,7 +36,7 @@
 
 		<div class="rz-nav__body">
 			<nav class="rz-nav__nav">
-				{#each Object.entries(routesGroups) as [groupName, routes]}
+				{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
 					{#if groupName !== 'none'}
 						{@const icon = getGroupIcon(groupName)}
 						<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>

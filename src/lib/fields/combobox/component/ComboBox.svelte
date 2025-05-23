@@ -7,7 +7,7 @@
 	import { t__ } from '$lib/i18n/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
-	import type { OptionWithIcon } from '$lib/types/fields.js';
+	import type { OptionWithIcon } from '$lib/fields/types.js';
 	import './combobox.css'
 	
 	const { path, config, form }: ComboBoxProps = $props();
@@ -64,7 +64,7 @@
 					{/if}
 					<Command.Empty>Nothing found.</Command.Empty>
 					<Command.Group>
-						{#each options as option}
+						{#each options as option, index (index)}
 							<Command.Item
 								class="rz-combobox__item"
 								value={option.value}

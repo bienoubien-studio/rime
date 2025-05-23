@@ -1,5 +1,5 @@
 import { type ServerLoad } from '@sveltejs/kit';
-import type { CollectionSlug } from '$lib/types/doc.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 
 /////////////////////////////////////////////
 // Layout load

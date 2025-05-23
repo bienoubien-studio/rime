@@ -8,6 +8,7 @@ type Args = {
 export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 	return defineConfig({
 		workers: 1,
+		reporter: 'line',
 		webServer: {
 			command: `pnpm rizom:use ${name} && pnpm vite dev`,
 			port: 5173,

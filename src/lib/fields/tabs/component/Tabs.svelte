@@ -63,7 +63,7 @@
 <div class="rz-tabs">
 	<Tabs.Root onValueChange={onActiveTabChange} value={activeTabName}>
 		<Tabs.List>
-			{#each config.tabs.filter(isTabVisible) as tab, index}
+			{#each config.tabs.filter(isTabVisible) as tab, index (index)}
 				<Tabs.Trigger
 					data-error={tabErrors.includes(tabIds[index]) ? 'true' : null}
 					value={tab.name}
@@ -73,7 +73,7 @@
 			{/each}
 		</Tabs.List>
 
-		{#each config.tabs.filter(isTabVisible) as tab, index}
+		{#each config.tabs.filter(isTabVisible) as tab, index (index)}
 			<Tabs.Content data-tab-id={tabIds[index]} value={tab.name}>
 				<!-- If the first field is a rich text field, render it directly -->
 				{#if tab.fields.length === 1 && tab.fields[0].type === 'richText'}

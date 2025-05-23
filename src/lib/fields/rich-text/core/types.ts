@@ -3,7 +3,7 @@ import type { Editor, EditorOptions, Range, Extension, Node, Mark } from "@tipta
 import type { Component } from "svelte";
 import type { RichTextField } from "../index.js";
 import type { Snippet } from 'svelte';
-import type { CollectionSlug } from "rizom/types/index.js";
+import type { CollectionSlug } from "$lib/core/types/doc.js";
 import type { RichTextContext } from "../component/context.svelte.js";
 
 export type SetEditorConfig = (args: {

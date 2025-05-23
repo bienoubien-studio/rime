@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Checkbox as CheckboxPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
-	import {Check} from '@lucide/svelte';
+	import { Check } from '@lucide/svelte';
 	import './checkbox.css';
 
 	let {
@@ -14,9 +14,7 @@
 </script>
 
 <CheckboxPrimitive.Root bind:ref class="rz-checkbox {className}" bind:checked {...restProps}>
-	{#snippet children({ checked })}
-		<div class="rz-checkbox__indicator">
-			<Check class="rz-checkbox__icon {iconCheckedClass}" size={10} />
-		</div>
-	{/snippet}
+	<div class="rz-checkbox__indicator">
+		<Check class="rz-checkbox__icon {iconCheckedClass}" size={10} />
+	</div>
 </CheckboxPrimitive.Root>

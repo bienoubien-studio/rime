@@ -7,11 +7,11 @@
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import Sortable from 'sortablejs';
 	import type { TreeProps } from './props.js';
-	import type { Dic } from '$lib/types/util.js';
+	import type { Dic } from '$lib/util/types.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import Button from 'rizom/panel/components/ui/button/button.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -33,7 +33,7 @@
 		swapThreshold: 0.93,
 		group: {
 			name: `list-${key}`,
-			put: (to, _, el, __) => {
+			put: (to, _, el) => {
 				if (!el.classList.contains('rz-tree-item')) return false;
 				const targetDepth = parseInt(to.el.dataset.treeDepth || '0');
 				const childrenCount = parseInt(el.dataset.treeChildren || '0');
@@ -45,9 +45,9 @@
 		onEnd: function (evt) {
 			const { newIndex, to } = evt;
 
-			//@ts-ignore
+			//@ts-expect-error boring
 			const initialPath = evt.item.__attributes['data-path'];
-			//@ts-ignore
+			//@ts-expect-error boring
 			const targetListPath = to.__attributes['data-path'];
 			const isTargetPathRoot = targetListPath === path;
 			const targetPath = `${targetListPath}${!isTargetPathRoot ? '._children' : ''}.${newIndex}`;
@@ -144,7 +144,6 @@
 			</Button>
 		{/if}
 	</div>
-
 </fieldset>
 
 <style lang="postcss">
@@ -161,7 +160,7 @@
 	.rz-tree__list :global(.rz-tree__list) {
 		margin-left: 2rem;
 	}
-	
+
 	.rz-tree__list {
 		display: grid;
 		margin-left: 1rem;
@@ -172,10 +171,9 @@
 		text-transform: uppercase;
 	}
 
-	.rz-tree__actions{
+	.rz-tree__actions {
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
 	}
-
 </style>

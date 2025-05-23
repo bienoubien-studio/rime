@@ -9,7 +9,6 @@ import * as string from './string.js';
 import * as validate from './validate.js';
 import * as file from './file.js';
 import * as access from './access/index.js';
-import { classList } from './classList.js';
 
 export {
 	access,
@@ -22,6 +21,5 @@ export {
 	random,
 	state,
 	string,
-	validate,
-	classList
+	validate
 };

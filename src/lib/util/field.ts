@@ -1,28 +1,18 @@
-import type { GenericBlock } from '$lib/types/doc.js';
-import type { Relation } from '../sqlite/relations.js';
+import type { GenericBlock } from '$lib/core/types/doc.js';
+import type { Relation } from '../adapter-sqlite/relations.js';
 import { hasProps, isObjectLiteral } from './object.js';
 import type {
 	BlocksField,
-	CheckboxField,
-	ComboBoxField,
 	ComponentField,
 	DateField,
-	EmailField,
 	GroupField,
-	LinkField,
-	NumberField,
-	RadioField,
 	RelationField,
-	RichTextField,
 	SelectField,
 	SeparatorField,
-	SlugField,
 	TabsField,
-	TextField,
-	ToggleField
-} from 'rizom/fields/types';
-import type { Dic } from 'rizom/types/util.js';
-import type { FormField, Field } from '$lib/types/fields.js';
+} from '$lib/fields/types.js';
+import type { Dic } from '$lib/util/types.js';
+import type { FormField, Field } from '$lib/fields/types.js';
 import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import type { GroupFieldRaw } from '$lib/fields/group/index.js';
 import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
@@ -39,23 +29,13 @@ export const isComponentField = (field: Field): field is ComponentField =>
 export const isBlocksField = (field: Field): field is BlocksField => field.type === 'blocks';
 export const isBlocksFieldRaw = (field: Field): field is BlocksFieldRaw => field.type === 'blocks';
 export const isTreeFieldRaw = (field: Field): field is TreeFieldRaw => field.type === 'tree';
-export const isTextField = (field: Field): field is TextField => field.type === 'text';
-export const isEmailField = (field: Field): field is EmailField => field.type === 'email';
-export const isNumberField = (field: Field): field is NumberField => field.type === 'number';
 export const isSelectField = (field: Field): field is SelectField => field.type === 'select';
-export const isComboBoxField = (field: Field): field is ComboBoxField => field.type === 'combobox';
-export const isLinkField = (field: Field): field is LinkField => field.type === 'link';
-export const isToggleField = (field: Field): field is ToggleField => field.type === 'toggle';
 export const isGroupField = (field: Field): field is GroupField => field.type === 'group';
 export const isGroupFieldRaw = (field: Field): field is GroupFieldRaw => field.type === 'group';
 export const isTabsField = (field: Field): field is TabsField => field.type === 'tabs';
 export const isTabsFieldRaw = (field: Field): field is TabsFieldRaw => field.type === 'tabs';
-export const isRadioField = (field: Field): field is RadioField => field.type === 'radio';
-export const isCheckboxField = (field: Field): field is CheckboxField => field.type === 'checkbox';
 export const isDateField = (field: Field): field is DateField => field.type === 'date';
-export const isRichTextField = (field: Field): field is RichTextField => field.type === 'richText';
 export const isRelationField = (field: Field): field is RelationField => field.type === 'relation';
-export const isSlugField = (field: Field): field is SlugField => field.type === 'slug';
 export const isRolesField = (field: Field): field is SelectField =>
 	isFormField(field) && isSelectField(field) && field.name === 'roles';
 

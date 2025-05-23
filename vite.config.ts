@@ -1,5 +1,5 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rizom } from './src/lib/vite';
+import { rizom } from './src/lib/core/dev/vite/index.js';
 import { defineConfig } from 'vite';
 
 export default defineConfig({

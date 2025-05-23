@@ -2,12 +2,12 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Email from '$lib/fields/email/component/Email.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
-	import { email } from '$lib/config/auth/usersFields.js';
+	import { email } from '$lib/core/collections/auth/config/usersFields.js';
 	import { t__ } from '$lib/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { authClient } from '$lib/panel/util/auth';
-	import { PANEL_USERS } from '$lib/constant';
+	import { PANEL_USERS } from '$lib/core/constant';
 
 	const context = setFormContext({}, 'login');
 

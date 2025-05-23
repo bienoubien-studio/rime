@@ -3,7 +3,7 @@
 	import { type Snippet } from 'svelte';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import type { GenericDoc, PrototypeSlug } from '$lib/types/doc';
+	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
 
 	type Props = {
 		slug: PrototypeSlug;

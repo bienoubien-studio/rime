@@ -6,8 +6,8 @@
 	import { toast } from 'svelte-sonner';
 	import * as util from '$lib/util/file.js';
 	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
-	import type { WithUpload } from '$lib/types/util';
-	import type { CompiledCollection } from '$lib/types/config';
+	import type { WithUpload } from '$lib/util/types';
+	import type { CompiledCollection } from '$lib/core/config/types';
 
 	type Props = {
 		form: DocumentFormContext;
@@ -86,7 +86,7 @@
 				{/if}
 			</div>
 			<div class="rz-doc-upload-header__info">
-				{#each ['filename', 'filesize', 'mimeType'] as key}
+				{#each ['filename', 'filesize', 'mimeType'] as key, index (index)}
 					<h4>{capitalize(key)}</h4>
 					{#if !create && key === 'filename'}
 						<a target="_blank" href="/medias/{form.doc[key]}">{form.doc[key]}</a>

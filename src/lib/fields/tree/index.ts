@@ -4,12 +4,11 @@ import Cell from './component/Cell.svelte';
 import { text } from '../text/index.js';
 import { number } from '../number/index.js';
 import cloneDeep from 'clone-deep';
-import { snapshot } from 'rizom/util/state.js';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
-import type { FormField } from 'rizom/types/index.js';
-import type { Dic } from 'rizom/types/util.js';
-import type { Field } from 'rizom/types/fields.js';
-import type { TreeBlock } from 'rizom/types/doc.js';
+import { snapshot } from '$lib/util/state.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import type { FormField, Field } from '$lib/fields/types.js';
+import type { Dic } from '$lib/util/types.js';
+import type { TreeBlock } from '$lib/core/types/doc.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
@@ -65,33 +64,38 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	}
 
 	localized() {
-		if(this.field.fields.length === 0){
-			throw new Error('localized() must be called after fields assignment')
+		if (this.field.fields.length === 0) {
+			throw new Error('localized() must be called after fields assignment');
 		}
-		this.field.localized = true
-		
+		this.field.localized = true;
+
 		// Add a locale prop in its fields
-		const hasAlreadyLocale = !!this.field.fields.filter(field => field instanceof FormFieldBuilder).find(field => field.raw.name === 'locale')
-		if(!hasAlreadyLocale){
-			this.field.fields.push(text('locale').hidden())
+		const hasAlreadyLocale = !!this.field.fields
+			.filter((field) => field instanceof FormFieldBuilder)
+			.find((field) => field.raw.name === 'locale');
+		if (!hasAlreadyLocale) {
+			this.field.fields.push(text('locale').hidden());
 		}
 		// Set all descendant fields localized
-		this.field.fields = this.field.fields.map(field => {
-				// If it's a "position" or "path" field do not set as localized
-				// as it's a treeBlock property
-				if(field instanceof FormFieldBuilder && ['position', 'path', 'locale'].includes(field.raw.name)){
-					return field
-				}
-				// For all others fields set as localized
-				if('localized' in field && field instanceof FormFieldBuilder){
-					// Clone to prevent localizing a field used elsewhere
-					const fieldClone = field.clone()
-					fieldClone.localized()
-					return fieldClone
-				}
-				return field
-			});
-		return this
+		this.field.fields = this.field.fields.map((field) => {
+			// If it's a "position" or "path" field do not set as localized
+			// as it's a treeBlock property
+			if (
+				field instanceof FormFieldBuilder &&
+				['position', 'path', 'locale'].includes(field.raw.name)
+			) {
+				return field;
+			}
+			// For all others fields set as localized
+			if ('localized' in field && field instanceof FormFieldBuilder) {
+				// Clone to prevent localizing a field used elsewhere
+				const fieldClone = field.clone();
+				fieldClone.localized();
+				return fieldClone;
+			}
+			return field;
+		});
+		return this;
 	}
 
 	compile() {

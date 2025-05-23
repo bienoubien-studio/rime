@@ -1,13 +1,13 @@
-import type { CollectionSlug, GenericDoc } from '$lib/types/doc.js';
-import type { GetRegisterType, RegisterCollection } from 'rizom';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { RegisterCollection } from '$lib/index.js';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
-import type { FieldHook, FormField } from '$lib/types/fields';
+import type { FieldHook, FormField } from '$lib/fields/types.js';
 import { capitalize } from '$lib/util/string';
-import type { Relation } from '$lib/sqlite/relations';
-import { templateUniqueRequired } from '$lib/bin/generate/schema/templates.js';
-import { RizomError } from 'rizom/errors';
-import { logger } from 'rizom/util/logger/index.server';
+import type { Relation } from '$lib/adapter-sqlite/relations';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { RizomError } from '$lib/core/errors';
+import { logger } from '$lib/core/logger/index.server';
 
 type RelationValue = string | Array<Relation | string>;
 
@@ -103,7 +103,7 @@ export const relation = (name: string) => new RelationFieldBuilder(name);
 //////////////////////////////////////////////
 export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	type: 'relation';
-	relationTo: GetRegisterType<'CollectionSlug'>;
+	relationTo: CollectionSlug;
 	layout?: 'tags' | 'list';
 	many?: boolean;
 	defaultValue?: string | string[];

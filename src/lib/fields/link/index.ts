@@ -1,11 +1,10 @@
-import type { GetRegisterType } from 'rizom';
+import type { GetRegisterType } from '$lib/index.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
-import type { FieldHook, FormField } from '$lib/types/fields.js';
+import type { FormField, FieldHook } from '$lib/fields/types.js';
 import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
-import { log } from 'console';
-import { templateUniqueRequired } from 'rizom/bin/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 
 // Before save populate ressource URL
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, documentId }) => {

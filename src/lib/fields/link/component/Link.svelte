@@ -132,7 +132,7 @@
 				<DropdownMenu.Portal>
 					<DropdownMenu.Content class="rz-link__type-content" align="start">
 						<DropdownMenu.RadioGroup onValueChange={onTypeChange} bind:value={linkType}>
-							{#each linkTypes as type}
+							{#each linkTypes as type, index (index)}
 								<DropdownMenu.RadioItem value={type}>
 									{capitalize(type)}
 								</DropdownMenu.RadioItem>

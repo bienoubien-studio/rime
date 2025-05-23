@@ -8,7 +8,7 @@
 	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import type { GenericDoc } from '$lib/types/doc';
+	import type { GenericDoc } from '$lib/core/types/doc';
 	import CurrentlyEdited from './CurrentlyEdited.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';

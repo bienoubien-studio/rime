@@ -1,4 +1,4 @@
-import type { AreaSlug, CollectionSlug, GenericDoc } from '$lib/types/doc.js';
+import type { AreaSlug, CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 
 export type DashboardEntry =
 	| {

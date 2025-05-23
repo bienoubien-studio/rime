@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { PrototypeSlug } from '$lib/types/doc';
+import type { PrototypeSlug } from '$lib/core/types/doc';
 
 export async function liveLoad(event: ServerLoadEvent) {
 	const { api, user, rizom } = event.locals;

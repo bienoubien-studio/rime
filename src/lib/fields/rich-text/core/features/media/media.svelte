@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { NodeViewProps } from '@tiptap/core';
-	import type { UploadDoc } from '$lib/types/doc.js';
+	import type { UploadDoc } from '$lib/core/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { onMount } from 'svelte';
@@ -168,7 +168,7 @@
 
 	<Command.List>
 		<Command.Empty>No results found.</Command.Empty>
-		{#each docs as doc}
+		{#each docs as doc, index (index)}
 			<Command.Item
 				value={doc.filename}
 				onSelect={() => {

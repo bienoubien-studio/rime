@@ -3,8 +3,8 @@ import type { ActionResult, SubmitFunction } from '@sveltejs/kit';
 import { applyAction } from '$app/forms';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte';
-import type { AnyFormField } from '$lib/types/fields';
-import type { Dic } from '$lib/types/util';
+import type { AnyFormField } from '$lib/fields/types.js';
+import type { Dic } from '$lib/util/types';
 
 type Status = ActionResult['type'];
 

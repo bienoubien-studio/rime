@@ -3,10 +3,10 @@
 	import { Plus } from '@lucide/svelte';
 	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
 	import { isFormField } from '$lib/util/field.js';
-	import type { Field } from '$lib/types/fields.js';
-	import type { Dic } from '$lib/types/util';
+	import type { Dic } from '$lib/util/types';
 	import type { Snippet } from 'svelte';
-
+	import type { Field } from '$lib/fields/types.js';
+	
 	type AddItem = (emptyValues: Dic) => void;
 	type Props = {
 		size: 'default' | 'sm';

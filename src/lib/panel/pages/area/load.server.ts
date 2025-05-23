@@ -1,5 +1,5 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { AreaSlug } from '$lib/types/doc';
+import type { AreaSlug } from '$lib/core/types/doc';
 import type { AreaData } from './props';
 
 export default function (slug: AreaSlug) {

@@ -1,10 +1,9 @@
 import { error, type ServerLoad } from '@sveltejs/kit';
-import { handleError } from '$lib/errors/handler.server';
-import { buildConfigMap } from '$lib/operations/tasks/configMap/index.server';
-import { setDefaultValues } from '$lib/operations/tasks/setDefaultValues';
-
-import type { CollectionSlug, GenericDoc } from '$lib/types/doc.js';
+import { handleError } from '$lib/core/errors/handler.server';
+import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
+import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
 import { safe } from '$lib/util/safe';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 
 /////////////////////////////////////////////
 // Document Load
@@ -29,7 +28,7 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 			/** Make blank document */
-			let blankDocument = collection.blank();
+			const blankDocument = collection.blank();
 			const configMap = buildConfigMap(blankDocument, collection.config.fields);
 			doc = await setDefaultValues({ data: blankDocument, adapter: rizom.adapter, configMap });
 		} else {

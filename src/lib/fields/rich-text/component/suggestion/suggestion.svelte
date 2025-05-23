@@ -2,17 +2,16 @@
 	import type { Editor } from '@tiptap/core';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { onDestroy, onMount } from 'svelte';
-	import type { RichTextFeature } from '../../core/types.js';
 	import { capitalize } from '$lib/util/string.js';
 	import { t__ } from '$lib/i18n/index.js';
+	import type { RichTextFeature } from '../../core/types.js';
 
 	type Props = {
 		editor: Editor;
 		features: RichTextFeature[];
-		path: string;
 	};
 
-	let { editor, features = [], path }: Props = $props();
+	let { editor, features = [] }: Props = $props();
 
 	let isOpen = $state(false);
 
@@ -62,7 +61,7 @@
 	<Command.List>
 		<Command.Empty>No results found.</Command.Empty>
 
-		{#each allSuggestionItems as item}
+		{#each allSuggestionItems as item, index (index)}
 			{@const ItemIcon = item.icon}
 			<Command.Item
 				value={item.name}

@@ -7,7 +7,7 @@
 	import ScrollArea from '$lib/panel/components/ui/scroll-area/scroll-area.svelte';
 	import { getCollectionContext } from '$lib/panel/context/collection.svelte';
 	import { page } from '$app/state';
-	import type { PrototypeSlug } from '$lib/types/doc';
+	import type { PrototypeSlug } from '$lib/core/types/doc';
 	import { t__ } from '$lib/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import CollectionTree from './tree/CollectionTree.svelte';
@@ -82,7 +82,7 @@
 				class:rz-collection-area__list={!collection.isGrid()}
 				class:rz-collection-area__grid={collection.isGrid()}
 			>
-				{#each collection.docs as doc}
+				{#each collection.docs as doc, index (index)}
 					{@const checked = collection.selected.includes(doc.id)}
 					{@const active = currentDoc === doc.id}
 					{#if collection.isList() || (compact && collection.isNested())}

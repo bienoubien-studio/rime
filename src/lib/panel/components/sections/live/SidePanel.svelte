@@ -5,15 +5,13 @@
 	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import type { User } from '$lib/types/auth.js';
-	import type { PrototypeSlug } from '$lib/types/doc.js';
-	import type { BrowserConfig } from '$lib/types/config.js';
+	import type { User } from '$lib/core/collections/auth/types.js';
+	import type { BrowserConfig } from '$lib/core/config/types/index.js';
 	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { goto } from '$app/navigation';
 
 	type Props = {
 		doc: any;
-		slug: PrototypeSlug;
 		locale: string | undefined;
 		config: BrowserConfig;
 		onDataChange: any;

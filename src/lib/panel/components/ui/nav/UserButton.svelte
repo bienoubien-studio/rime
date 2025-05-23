@@ -3,7 +3,7 @@
 	import Button from '../button/button.svelte';
 	import { LogOut } from '@lucide/svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
-	import { PANEL_USERS } from '$lib/constant';
+	import { PANEL_USERS } from '$lib/core/constant';
 
 	type Props = { navCollapsed: boolean };
 	const { navCollapsed }: Props = $props();

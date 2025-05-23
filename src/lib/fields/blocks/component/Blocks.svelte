@@ -8,7 +8,7 @@
 	import Sortable from 'sortablejs';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-	import type { GenericBlock } from '$lib/types/doc.js';
+	import type { GenericBlock } from '$lib/core/types/doc.js';
 	import type { BlocksProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
@@ -61,7 +61,7 @@
 		}
 	});
 
-	function getConfigByBlockType(type: string, block: any): BlocksFieldRaw['blocks'][number] {
+	function getConfigByBlockType(type: string): BlocksFieldRaw['blocks'][number] {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
 			throw new Error(`Block configuration not found for type: ${type}`);

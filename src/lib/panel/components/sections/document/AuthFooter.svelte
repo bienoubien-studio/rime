@@ -6,10 +6,10 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { usersFields } from '$lib/config/auth/usersFields';
+	import { usersFields } from '$lib/core/collections/auth/config/usersFields';
 	import { text } from '$lib/fields/text/index.js';
 	import validate from '$lib/util/validate';
-	import { PANEL_USERS } from '$lib/constant';
+	import { PANEL_USERS } from '$lib/core/constant';
 
 	type Props = { operation: string; form: DocumentFormContext };
 	const { operation, form }: Props = $props();

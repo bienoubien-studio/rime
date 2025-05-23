@@ -171,7 +171,7 @@ export function DragHandlePlugin(
         (selection as NodeSelection).node.type.isInline ||
         (selection as NodeSelection).node.type.name === 'tableRow'
       ) {
-        let $pos = view.state.doc.resolve(selection.from);
+        const $pos = view.state.doc.resolve(selection.from);
         selection = NodeSelection.create(view.state.doc, $pos.before());
       }
     }
@@ -299,7 +299,7 @@ export function DragHandlePlugin(
 
       function onDragHandleDrag(e: DragEvent) {
         hideDragHandle();
-        let scrollY = window.scrollY;
+        const scrollY = window.scrollY;
         if (e.clientY < options.scrollTreshold) {
           window.scrollTo({ top: scrollY - 30, behavior: 'smooth' });
         } else if (window.innerHeight - e.clientY < options.scrollTreshold) {

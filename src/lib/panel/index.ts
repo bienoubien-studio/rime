@@ -1,5 +1,5 @@
 import type { Snippet } from 'svelte';
-import type { CollectionSlug, GenericDoc } from '$lib/types/doc';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc';
 import Area from './pages/area/Area.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
 import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte';
@@ -32,7 +32,7 @@ export {
 	Field
 };
 
-export type { DocumentFormContext } from './context/documentForm.svelte.js'
+export type { DocumentFormContext } from './context/documentForm.svelte.js';
 
 export type CollectionLayoutProps = {
 	slug: CollectionSlug;

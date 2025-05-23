@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
-	import { capitalize, slugify } from '$lib/util/string.js';
+	import { capitalize } from '$lib/util/string.js';
 	import { Label } from '../ui/label/index.js';
-	import type { AnyFormField } from '$lib/types/fields.js';
+	import type { AnyFormField } from '$lib/fields/types.js';
 
 	type Props = { config: AnyFormField; for: string };
 	const { config, for: labelFor }: Props = $props();

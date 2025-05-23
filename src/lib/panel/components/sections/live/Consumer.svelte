@@ -1,6 +1,6 @@
 <script lang="ts" generics="T">
 	import { getLiveContext } from '$lib/panel/context/live.svelte.js';
-	import type { WithRelationPopulated } from '$lib/types/util';
+	import type { WithRelationPopulated } from '$lib/util/types';
 	import type { Snippet } from 'svelte';
 	
 	let { child, data } = $props<{

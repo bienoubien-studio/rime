@@ -8,7 +8,7 @@ const mediaFeatureNode: RichTextFeatureNode = {
   icon: Images,
   isActive: ({ editor }) => editor.isActive('richt-text-media'),
   suggestion: {
-    //@ts-ignore
+    //@ts-expect-error insertMedia is defined by the extension
     command: ({ editor }) => editor.chain().focus().insertMedia().run()
   }
 };

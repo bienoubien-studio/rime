@@ -13,7 +13,7 @@
 	const collectionStamp = $derived(collection.stamp);
 
 	let sortingInitialized = $state(false);
-	let sorting = $state(false);
+	
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
 	const shouldInit = $derived(!sortingInitialized && collection.docs.length > 0);
 
@@ -24,16 +24,14 @@
 		group: {
 			name: `list-nested`
 		},
-		onStart: () => (sorting = true),
-		onUnchoose: () => (sorting = false),
 		onEnd: function (evt) {
 			const { newIndex, oldIndex } = evt;
 			
-			//@ts-ignore
+			//@ts-expect-error boring
 			const fromParentId = evt.item.getAttribute('data-parent') || evt.item.__attributes?.['data-parent'];
-			//@ts-ignore
+			//@ts-expect-error boring
 			const toParentId = evt.to.getAttribute('data-id') || evt.to.__attributes?.['data-id'];
-			//@ts-ignore
+			//@ts-expect-error boring
 			const nodeId = evt.item.getAttribute('data-id') || evt.item.__attributes?.['data-id']
 
 			collection.handleNestedDocumentMove({
@@ -50,7 +48,6 @@
 				if(success){
 					toast.success('Order updated')
 					resetSortable();
-					sorting = false;
 				}else{
 					toast.error('An error occured')
 				}
@@ -99,7 +96,7 @@
 		style="--data-rows-count={countRows(collection.nested)}"
 		data-empty={collection.nested.length === 0 ? '' : null}
 	>
-		{#each collection.nested as doc}
+		{#each collection.nested as doc, index (index)}
 			<CollectionTreeNode {collection} parentId="root" {doc} />
 		{/each}
 	</div>

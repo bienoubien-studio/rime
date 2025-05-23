@@ -8,7 +8,7 @@
 	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, FieldsType, FormField, AnyField } from '$lib/types/fields.js';
+	import type { Field, FieldsType, FormField, AnyField } from '$lib/fields/types.js';
 	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 	import type { Component } from 'svelte';
 
@@ -48,7 +48,7 @@
 </script>
 
 <div class="rz-render-fields">
-	{#each authorizedFields as field}
+	{#each authorizedFields as field, index (index)}
 		{#if !form.isLive || (form.isLive && isLiveField(field))}
 			{#if isComponentField(field)}
 				{@const FieldComponent = field.component}

@@ -1,17 +1,18 @@
-import type { FieldHookOnChange, FieldsType } from 'rizom/types/fields.js';
-import type { FieldPanelTableConfig } from 'rizom/types/panel';
+import type { FieldPanelTableConfig } from '$lib/panel/types';
 import type {
 	AnyFormField,
 	Field,
 	FieldAccess,
-	FieldHook,
 	FieldValidationFunc,
 	FieldWidth,
-	FormField
-} from 'rizom/types/fields';
-import { toSnakeCase } from 'rizom/util/string.js';
+	FieldHook,
+	FormField,
+	FieldHookOnChange,
+	FieldsType
+} from '$lib/fields/types.js';
+import { toSnakeCase } from '$lib/util/string.js';
 import { toCamelCase } from 'drizzle-orm/casing';
-import type { Dic, WithoutBuilders } from 'rizom/types/util';
+import type { Dic, WithoutBuilders } from '$lib/util/types';
 import type { Component } from 'svelte';
 import cloneDeep from 'clone-deep';
 
@@ -97,7 +98,9 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	}
 
 	toSchema(parentPath?: string): string {
-		console.warn(this.field.type + ' missing toSchema not implementated');
+		console.warn(
+			`${this.field.type} ${parentPath ? `@${parentPath}/${this.field.name}` : ''}missing toSchema not implementated`
+		);
 		return '';
 	}
 
@@ -169,26 +172,26 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		this.field.hooks!.beforeValidate.push(hook);
 		return this;
 	}
-	
+
 	onChange(hook: FieldHookOnChange) {
 		this.field.hooks!.onChange ??= [];
 		this.field.hooks!.onChange.push(hook);
 		return this;
 	}
-	
+
 	clone(): typeof this {
 		// Create a new instance of the same class
 		const Constructor = this.constructor as new (...args: any[]) => typeof this;
 		// Get constructor parameters from the current instance
 		const name = this.field.name;
 		const type = this.field.type;
-		
+
 		// Create a new instance
 		const clone = new Constructor(name, type);
-		
+
 		// Deep clone the field object to avoid reference issues
 		clone.field = cloneDeep(this.field);
-		
+
 		return clone;
 	}
 }

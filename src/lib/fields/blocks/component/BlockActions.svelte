@@ -7,8 +7,7 @@
 	};
 
 	const { deleteBlock, duplicateBlock }: Props = $props();
-
-	let open = $state(false);
+	
 </script>
 
 <div class="rz-block-actions">
