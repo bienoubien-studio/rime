@@ -1,6 +1,0 @@
-<script>
-  import { Dashboard } from 'rizom/panel';
-  const { data } = $props();
-</script>
-
-<Dashboard entries={data.entries} user={data.user} />

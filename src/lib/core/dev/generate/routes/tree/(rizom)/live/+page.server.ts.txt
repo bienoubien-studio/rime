@@ -1,3 +1,0 @@
-import { pagesLoad } from 'rizom/panel/pages';
-
-export const load = pagesLoad.live;

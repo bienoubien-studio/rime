@@ -1,5 +1,0 @@
-<script lang="ts">
-  import { ForgotPassword } from 'rizom/panel';
-</script>
-
-<ForgotPassword />

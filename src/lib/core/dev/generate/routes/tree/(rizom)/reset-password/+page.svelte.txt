@@ -1,6 +1,0 @@
-<script lang="ts">
-  import { ResetPassword } from 'rizom/panel';
-  const { data } = $props();
-</script>
-
-<ResetPassword slug={data.slug} token={data.token} />

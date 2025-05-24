@@ -1,0 +1,110 @@
+import fs from 'fs';
+import path from 'path';
+import cache from '../../cache/index.js';
+import { slugify } from '$lib/util/string.js';
+import type { BuiltConfig } from '$lib/core/config/types/index.js';
+
+/**
+ * Types for route definitions
+ */
+export type RouteTemplateFunction<T extends any[] = any[]> = (...args: T) => string;
+export type RouteDefinition = Record<string, RouteTemplateFunction>;
+export type Routes = Record<string, RouteDefinition>;
+
+/**
+ * Check if routes need to be regenerated based on config changes
+ * @returns true if routes should be regenerated, false otherwise
+ * @example
+ * // Check if routes need to be regenerated
+ * const config = { areas: [], collections: [], panel: { css: 'styles.css' } };
+ * const needsRegeneration = shouldRegenerateRoutes(config);
+ * // If the config has changed since last run, needsRegeneration will be true
+ */
+export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
+  const memo = `
+    areas:${config.areas.map((g) => `${g.slug}`).join(',')}
+    collections:${config.collections.map((c) => `${c.slug}${c.auth ? '.auth' : ''}`).join(',')}
+    custom:${
+      config.panel?.routes
+        ? Object.entries(config.panel.routes)
+            .map(([k, v]) => `${k}-${slugify(v.component.toString())}`)
+            .join(',')
+        : ''
+    }
+    css:${config.panel.css ? config.panel.css : 'none'}
+  `;
+  
+  const cachedMemo = cache.get('routes');
+  
+  if (cachedMemo && cachedMemo === memo) {
+    return false;
+  }
+  
+  cache.set('routes', memo);
+  return true;
+}
+
+/**
+ * Creates a directory if it doesn't exist
+ * @example
+ * // Ensure a directory exists
+ * const dirPath = '/path/to/directory';
+ * ensureDir(dirPath);
+ * // The directory will be created if it doesn't exist
+ */
+export function ensureDir(dirPath: string): void {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+/**
+ * Writes a route file with its content
+ * @param basePath The base path where routes are generated
+ * @param routePath The specific route path
+ * @param fileType The type of file to generate (page, pageServer, layout, layoutServer)
+ * @param content The content to write to the file
+ * @example
+ * // Write a page file for a collection
+ * const basePath = '/path/to/src/routes';
+ * const routePath = '(rizom)/panel/news';
+ * const fileType = 'page';
+ * const content = '<script>\n  import { Collection } from "rizom/panel"\n</script>...';
+ * writeRouteFile(basePath, routePath, fileType, content);
+ * // Creates /path/to/src/routes/(rizom)/panel/news/+page.svelte with the provided content
+ */
+export function writeRouteFile(basePath: string, routePath: string, fileType: string, content: string): void {
+  const dir = path.join(basePath, routePath);
+  ensureDir(dir);
+  
+  let fileName: string;
+  if (fileType === 'layout') {
+    fileName = '+layout.svelte';
+  } else if (fileType === 'layoutServer') {
+    fileName = '+layout.server.ts';
+  } else if (fileType === 'page') {
+    fileName = '+page.svelte';
+  } else if (fileType === 'pageServer') {
+    fileName = '+page.server.ts';
+  } else if (fileType === 'error') {
+    fileName = '+error.svelte';
+  } else if (fileType === 'server') {
+    fileName = '+server.ts';
+  } else {
+    fileName = `+${fileType}.svelte`;
+  }
+  
+  fs.writeFileSync(path.join(dir, fileName), content);
+}
+
+/**
+ * Cast slug in generated templates for document with versions
+ * in order to prevent TS error that slug_versions is not a collection/area
+ * 
+ * @example 
+ * castVersionSlug('pages_versions')
+ * // output : pages_versions as pages
+ * export const GET = api.collection.get(pages_versions as pages) 
+ */
+export const TScastVersionSlug = (slug:string) => 
+  slug.includes('_versions') ? `${slug} as ${slug.replace('_versions', '')}` : slug

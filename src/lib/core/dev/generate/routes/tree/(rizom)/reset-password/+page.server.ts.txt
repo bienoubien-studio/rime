@@ -1,3 +1,0 @@
-import { pagesLoad, pagesActions } from 'rizom/panel/pages';
-
-export const load = pagesLoad.resetPassword;
