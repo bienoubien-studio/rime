@@ -36,6 +36,7 @@ import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizo
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
+import { apiInit } from './api-init/index.js';
 
 
 const tabSEO = tab('metas')
@@ -252,7 +253,7 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
-	plugins: [regenerateImages()],
+	plugins: [apiInit(), regenerateImages()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

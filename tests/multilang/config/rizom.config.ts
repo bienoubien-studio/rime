@@ -18,6 +18,7 @@ import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
 import type { CollectionHookBeforeUpsert } from '$lib/types';
 import { collection, area, defineConfig } from '$lib';
+import { apiInit } from './api-init/index.js';
 
 
 /////////////////////////////////////////////
@@ -252,7 +253,7 @@ export default defineConfig({
 	},
 
 	// cors: ['localhost:5173', 'rizom.test:5173'],
-
+	plugins: [apiInit()],
 	panel: {
 		language: 'fr',
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),
