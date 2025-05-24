@@ -6,7 +6,7 @@
 	import { toast } from 'svelte-sonner';
 	import { password, confirmPassword } from '$lib/core/collections/auth/config/usersFields';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
-	import { t__ } from '$lib/i18n';
+	import { t__ } from '$lib/core/i18n';
 	import { authClient } from '$lib/panel/util/auth';
 
 	interface Props {

@@ -8,7 +8,7 @@
 	import { text } from '$lib/fields/text/index.js';
 	import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
-	import { t__ } from '$lib/i18n';
+	import { t__ } from '$lib/core/i18n';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { KeyRound } from '@lucide/svelte';
 

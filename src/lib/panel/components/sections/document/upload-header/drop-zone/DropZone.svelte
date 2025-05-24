@@ -1,7 +1,7 @@
 <script lang="ts">
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import { t__ } from '$lib/i18n/index.js';
-	import type { Collection } from '$lib/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { Collection } from '$lib/types.js';
 	import type { WithUpload } from '$lib/util/types';
 	import { toast } from 'svelte-sonner';
 

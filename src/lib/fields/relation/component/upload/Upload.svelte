@@ -8,7 +8,7 @@
 	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import { createBlankDocument } from '$lib/util/doc.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import './upload.css';

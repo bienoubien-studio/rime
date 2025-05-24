@@ -70,12 +70,12 @@
 			"default": "./dist/plugins/*.svelte"
 		},
 		"./i18n": {
-			"types": "./dist/i18n/index.d.ts",
-			"import": "./dist/i18n/index.js"
+			"types": "./dist/core/i18n/index.d.ts",
+			"import": "./dist/core/i18n/index.js"
 		},
 		"./i18n/*.js": {
-			"types": "./dist/i18n/*.d.ts",
-			"import": "./dist/i18n/*.js"
+			"types": "./dist/core/i18n/*.d.ts",
+			"import": "./dist/core/i18n/*.js"
 		},
 		"./panel/pages": {
 			"types": "./dist/panel/pages/index.d.ts",

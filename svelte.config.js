@@ -8,6 +8,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
+			'rizom/i18n': './src/lib/core/i18n',
 			'rizom/api': './src/lib/api.js',
 			'$lib': './src/lib',
 			rizom: './src/lib'

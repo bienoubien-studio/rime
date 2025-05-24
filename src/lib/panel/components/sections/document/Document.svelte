@@ -13,7 +13,7 @@
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import AuthFooter from './AuthFooter.svelte';
 
 	type Props = {

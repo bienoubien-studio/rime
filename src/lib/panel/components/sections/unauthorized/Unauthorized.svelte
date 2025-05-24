@@ -1,6 +1,6 @@
 <script>
 	import { Ban } from '@lucide/svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 </script>
 
 <div class="rz-unauthorized">

@@ -3,7 +3,7 @@
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import { Search } from '@lucide/svelte';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	type Props = { compact: boolean };
 	const { compact }: Props = $props();

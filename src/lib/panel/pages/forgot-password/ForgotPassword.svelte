@@ -3,7 +3,7 @@
 	import Email from '$lib/fields/email/component/Email.svelte';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import { email } from '$lib/core/collections/auth/config/usersFields.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { authClient } from '$lib/panel/util/auth';

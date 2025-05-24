@@ -7,7 +7,7 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import type { GenericBlock } from '$lib/core/types/doc.js';
 	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import type { WithoutBuilders } from '$lib/util/types.js';
 	import { env } from '$env/dynamic/public';
 

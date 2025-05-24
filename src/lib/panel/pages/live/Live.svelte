@@ -5,7 +5,7 @@
 	import LiveSidePanel from '$lib/panel/components/sections/live/SidePanel.svelte';
 	import type { BrowserConfig } from '$lib/core/config/types';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import { t__ } from '$lib/i18n';
+	import { t__ } from '$lib/core/i18n';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	

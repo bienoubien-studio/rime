@@ -8,7 +8,7 @@
 	import { getCollectionContext } from '$lib/panel/context/collection.svelte';
 	import { page } from '$app/state';
 	import type { PrototypeSlug } from '$lib/core/types/doc';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import CollectionTree from './tree/CollectionTree.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';

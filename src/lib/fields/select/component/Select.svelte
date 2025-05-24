@@ -5,7 +5,7 @@
 	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import type { SelectFieldProps } from './props.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: SelectFieldProps = $props();

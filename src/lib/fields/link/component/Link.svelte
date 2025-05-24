@@ -8,7 +8,7 @@
 	import { capitalize } from '$lib/util/string.js';
 	import RessourceInput from './RessourceInput.svelte';
 	import Label from '$lib/panel/components/ui/label/label.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { LinkFieldProps } from './props';
 	import type { Link } from '../types';

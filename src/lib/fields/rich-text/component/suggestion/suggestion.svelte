@@ -3,7 +3,7 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { onDestroy, onMount } from 'svelte';
 	import { capitalize } from '$lib/util/string.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import type { RichTextFeature } from '../../core/types.js';
 
 	type Props = {

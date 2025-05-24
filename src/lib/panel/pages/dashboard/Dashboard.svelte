@@ -4,11 +4,11 @@
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import type { DashboardEntry } from './types.js';
 	import { invalidateAll } from '$app/navigation';
-	import type { User } from '$lib/types/auth.js';
-
+	import type { User } from '$lib/core/collections/auth/types.js';
+	
 	type Props = { entries: DashboardEntry[]; user?: User };
 	const { entries, user }: Props = $props();
 

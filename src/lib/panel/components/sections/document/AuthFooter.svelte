@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { t__ } from '$lib/i18n';
+	import { t__ } from '$lib/core/i18n';
 	import Button from '../../ui/button/button.svelte';
 	import { authClient } from '$lib/panel/util/auth';
 	import { toast } from 'svelte-sonner';

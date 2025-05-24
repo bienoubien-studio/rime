@@ -3,7 +3,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	type ButtonSize = 'sm' | 'default';
 	const { size = 'default' }: { size?: ButtonSize } = $props();

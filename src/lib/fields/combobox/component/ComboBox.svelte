@@ -4,7 +4,7 @@
 	import * as Popover from '$lib/panel/components/ui/popover/index.js';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Check, ChevronsUpDown } from '@lucide/svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
 	import type { OptionWithIcon } from '$lib/fields/types.js';

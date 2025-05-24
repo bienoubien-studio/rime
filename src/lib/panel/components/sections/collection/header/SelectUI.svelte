@@ -3,7 +3,7 @@
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 

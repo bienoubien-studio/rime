@@ -5,7 +5,7 @@
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { SlugField } from '../index';
 	import { Field } from '$lib/panel/components/fields/index.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { getValueAtPath } from '$lib/util/object.js';
 	import { Hash } from '@lucide/svelte';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';

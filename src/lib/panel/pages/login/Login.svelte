@@ -7,7 +7,7 @@
 	import type { FormErrors } from '$lib/types.js';
 	import { email } from '$lib/core/collections/auth/config/usersFields.js';
 	import { text } from '$lib/fields/text/index.js';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { toast } from 'svelte-sonner';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { KeyRound } from '@lucide/svelte';

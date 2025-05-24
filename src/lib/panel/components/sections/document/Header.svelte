@@ -4,7 +4,7 @@
 	import { Button } from '../../ui/button';
 	import { X, PencilRuler, Eye } from '@lucide/svelte';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
-	import { t__ } from '$lib/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import ButtonSave from './ButtonSave.svelte';
 	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
