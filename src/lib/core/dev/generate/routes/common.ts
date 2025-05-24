@@ -114,8 +114,10 @@ const forgotPasswordPage = () => `
  * (rizom)/forgot-password/+page.server.ts
  */
 const forgotPasswordPageServer = () => `
-import { pagesActions } from '${PACKAGE_NAME}/panel/pages'
-export const actions = pagesActions.forgotPassword`;
+import { pagesLoad } from 'rizom/panel/pages';
+
+export const load = pagesLoad.forgotPassword;
+`;
 
 /**
  * Reset password page template
@@ -134,8 +136,10 @@ const resetPasswordPage = () => `
  * (rizom)/reset-password/+page.server.ts
  */
 const resetPasswordPageServer = () => `
-import { pagesActions } from '${PACKAGE_NAME}/panel/pages'
-export const actions = pagesActions.resetPassword`;
+import { pagesLoad } from 'rizom/panel/pages';
+
+export const load = pagesLoad.resetPassword;
+`;
 
 /**
  * Panel layout template
