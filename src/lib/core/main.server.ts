@@ -6,8 +6,8 @@ import type { AsyncReturnType } from '../util/types.js';
 import type { Config } from '$lib/core/config/types/index.js';
 import type { Plugins } from '$lib/core/types/plugins.js';
 import { RizomError } from './errors/index.js';
-import { registerTranslation } from '$lib/i18n/register.server.js';
-import i18n from '../i18n/index.js';
+import { registerTranslation } from '$lib/core/i18n/register.server.js';
+import i18n from './i18n/index.js';
 import { hasRunInitCommand } from './dev/cli/util.server.js';
 import { logger } from './logger/index.server.js';
 

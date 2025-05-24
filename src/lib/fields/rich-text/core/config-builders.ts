@@ -1,6 +1,6 @@
 import type { EditorOptions } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
-import { t__ } from "$lib/i18n";
+import { t__ } from "$lib/core/i18n";
 import Typography from '@tiptap/extension-typography';
 import type { MediaFeatureDefinition, PredefinedFeatureName, ResourceFeatureDefinition, RichTextEditorConfig, RichTextFeature } from "$lib/fields/rich-text/core/types";
 import { defaultFeatures, predefinedFeatures } from "./features";

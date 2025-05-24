@@ -7,7 +7,7 @@ import type { AtLeastOne, WithoutBuilders, WithRequired } from '$lib/util/types.
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { FieldBuilder } from '$lib/fields/builders/field.js';
 import type { FieldsComponents } from '../../../panel/types.js';
-import type { PanelLanguage } from '$lib/i18n/index.js';
+import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
 import type { Plugin } from '$lib/core/types/plugins.js';
 import type { IconProps } from '@lucide/svelte';

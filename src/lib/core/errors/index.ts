@@ -1,4 +1,4 @@
-import { t__ } from '$lib/i18n/index.js';
+import { t__ } from '$lib/core/i18n/index.js';
 import type { FormErrors } from '$lib/panel/types.js';
 
 class RizomError extends Error {

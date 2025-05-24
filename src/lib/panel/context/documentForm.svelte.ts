@@ -19,7 +19,7 @@ import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/in
 import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
-import { t__ } from '../../i18n/index.js';
+import { t__ } from '../../core/i18n/index.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import { env } from '$env/dynamic/public';
 import { random } from '$lib/util/index.js';
