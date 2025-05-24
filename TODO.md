@@ -28,8 +28,9 @@
 [v] Update document url on save hook (ex: when parent change for nested collection)
 [v] handle Area with required field without default value
 [ ] Move URLS from config.url(...) to a separate table  with columns : documentId, locale, url, because all versions should have the same url possibly localised...
-[ ] Better junction table naming
+[ ] Move api <-> rizom
 [ ] core plugins as direct props of rizom, ex rizom.cache
+[ ] Better junction table naming
 [ ] pnpm deps issue
 
 # V1
