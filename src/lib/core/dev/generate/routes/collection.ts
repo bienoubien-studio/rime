@@ -6,7 +6,6 @@ import { TScastVersionSlug, type Routes } from './util.js';
  * (rizom)/panel/{collection.slug}/+layout.svelte
  */
 const layout = (slug: string) => `
-//
 <script lang="ts">
   import { CollectionLayout, type CollectionLayoutProps } from '${PACKAGE_NAME}/panel'
   const { data, children }: CollectionLayoutProps = $props();
@@ -54,7 +53,28 @@ const docPageServer = (slug: string) => `
 import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
 
 export const load = pagesLoad.collection.doc('${slug}')
-export const actions = pagesActions.collection('${slug}')`;
+export const actions = pagesActions.collection.doc('${slug}')`;
+
+/**
+ * Document page versions template
+ * (rizom)/panel/{collection.slug}/[id]/+page.svelte
+ */
+const docPageVersions = (slug: string) => `
+<script lang="ts">
+  import { CollectionVersionsDoc, type CollectionVersionsDocProps } from '${PACKAGE_NAME}/panel'
+  const { data }: CollectionVersionsDocProps = $props()
+</script>
+<CollectionVersionsDoc {data} slug='${slug}' />`;
+
+/**
+ * Document page server template
+ * (rizom)/panel/{collection.slug}/[id]/+page.server.ts
+ */
+const docPageVersionsServer = (slug: string) => `
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+
+export const load = pagesLoad.collection.doc('${slug}')
+export const actions = pagesActions.collection.doc('${slug}')`;
 
 /**
  * API collection list operations
@@ -63,8 +83,8 @@ export const actions = pagesActions.collection('${slug}')`;
 const apiCollectionServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
 
-export const GET = api.collection.get('${TScastVersionSlug(slug)}')
-export const POST = api.collection.create('${TScastVersionSlug(slug)}')
+export const GET = api.collection.get(${TScastVersionSlug(slug)})
+export const POST = api.collection.create(${TScastVersionSlug(slug)})
 `
 
 /**
@@ -74,9 +94,9 @@ export const POST = api.collection.create('${TScastVersionSlug(slug)}')
 const apiCollectionDocServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
 
-export const GET = api.collection.getById('${TScastVersionSlug(slug)}')
-export const PATCH = api.collection.updateById('${TScastVersionSlug(slug)}')
-export const DELETE = api.collection.deleteById('${TScastVersionSlug(slug)}')
+export const GET = api.collection.getById(${TScastVersionSlug(slug)})
+export const PATCH = api.collection.updateById(${TScastVersionSlug(slug)})
+export const DELETE = api.collection.deleteById(${TScastVersionSlug(slug)})
 `;
 
 /**
@@ -109,6 +129,16 @@ export const collectionPanelRoutes: Routes = {
   '(rizom)/panel/{collection.slug}/[id]': {
     page: docPage,
     pageServer: docPageServer
+  }
+};
+
+/**
+ * Collection verions panel routes
+ */
+export const collectionVersionsPanelRoutes: Routes = {
+  '(rizom)/panel/{collection.slug}/[id]/versions': {
+    page: docPageVersions,
+    pageServer: docPageVersionsServer
   }
 };
 

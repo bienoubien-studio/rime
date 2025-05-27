@@ -3,13 +3,13 @@ import { capitalize } from '$lib/util/string.js';
 import type { DashboardEntry } from './types';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
-	const { rizom, locale, user, api } = event.locals;
+	const { locale, user, rizom } = event.locals;
 
 	const entries: DashboardEntry[] = [];
 
 	const requests = rizom.config.collections.map((collection) =>
 		user && collection.access.read(user, {})
-			? api
+			? rizom
 					.collection(collection.slug)
 					.findAll({
 						limit: 4,

@@ -86,7 +86,7 @@ const Informations = area('infos', {
 //////////////////////////////////////////////
 
 const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
-	const { data, api } = args;
+	const { data, rizom } = args;
 
 	if (data?.attributes?.isHome) {
 		const query = {
@@ -97,10 +97,10 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 			}
 		};
 
-		const pagesIsHome = await api.collection('pages').find({ query });
+		const pagesIsHome = await rizom.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await api.collection('pages').updateById({
+			await rizom.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});
@@ -111,12 +111,12 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 };
 
 const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
-	const { api, operation, event } = args;
+	const { rizom, operation, event } = args;
 	let data = args.data;
 
 	const queryPagesWithSlug = async ({ slug }: { slug: string }) => {
 		const query = `where[attributes.slug][equals]=${slug}`;
-		return api.collection('pages').find({
+		return rizom.collection('pages').find({
 			query,
 			locale: event.locals.locale
 		});

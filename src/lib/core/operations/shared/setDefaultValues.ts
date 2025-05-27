@@ -39,12 +39,19 @@ type GetDefaultValue = (args: {
 	adapter: Adapter;
 }) => Promise<any>;
 
+//@TODO put this in the select field directly
 const defaultSelectValue = (config: SelectField) =>
 	typeof config.defaultValue === 'string' ? [config.defaultValue] : config.defaultValue;
 
+/**
+ * This function is trying to set the default value
+ * form an existing relation record
+ */
 const defaultRelationValue = async (config: RelationField, key: string, adapter: Adapter) => {
+	
 	const buildRelation = async (defaultValue: any) => {
 		let condition;
+		//@TODO encapsulate this into adapter.relation.something
 		const relationTable = adapter.tables[config.relationTo];
 		if (typeof defaultValue === 'string') {
 			condition = eq(relationTable.id, defaultValue);

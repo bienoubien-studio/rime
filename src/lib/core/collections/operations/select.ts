@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { LocalAPI } from '$lib/core/operations/local-api.server.js';
+import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
@@ -14,8 +14,6 @@ type SelectArgs = {
   locale?: string | undefined;
   config: CompiledCollection;
   event: RequestEvent & { locals: App.Locals };
-  adapter: Adapter;
-  api: LocalAPI;
   sort?: string;
   depth?: number;
   limit?: number;
@@ -25,14 +23,15 @@ type SelectArgs = {
 
 export const select = async <T extends GenericDoc>(args: SelectArgs): Promise<T[]> => {
   //
-  const { config, event, locale, adapter, sort, limit, offset, api, depth, query, select = [] } = args;
+  const { config, event, locale, sort, limit, offset, depth, query, select = [] } = args;
+  const { rizom } = event.locals
 
   const authorized = config.access.read(event.locals.user, {});
   if (!authorized) {
     throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
   }
 
-  const documentsRaw = await adapter.collection.select({
+  const documentsRaw = await rizom.adapter.collection.select({
     slug: config.slug,
     query,
     sort,
@@ -46,8 +45,6 @@ export const select = async <T extends GenericDoc>(args: SelectArgs): Promise<T[
     let document = await transformDocument<T>({
       raw: documentRaw,
       config,
-      api,
-      adapter,
       locale,
       depth,
       event,
@@ -60,7 +57,6 @@ export const select = async <T extends GenericDoc>(args: SelectArgs): Promise<T[
         doc: document as unknown as RegisterCollection[CollectionSlug],
         config,
         operation: 'read',
-        api,
         rizom: event.locals.rizom,
         event
       });

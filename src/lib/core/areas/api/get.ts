@@ -7,7 +7,7 @@ import type { Dic } from '$lib/util/types';
 export default function (slug: AreaSlug) {
 	//
 	async function GET(event: RequestEvent) {
-		const { api, locale } = event.locals;
+		const { rizom, locale } = event.locals;
 
 		const paramLocale = event.url.searchParams.get('locale');
 		const paramDepth = event.url.searchParams.get('depth');
@@ -23,7 +23,7 @@ export default function (slug: AreaSlug) {
 			params.select = paramSelect.split(',');
 		}
 
-		const [error, doc] = await safe(api.area(slug).find(params));
+		const [error, doc] = await safe(rizom.area(slug).find(params));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

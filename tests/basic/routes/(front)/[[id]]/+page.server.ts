@@ -1,13 +1,13 @@
 import { error, redirect, type ServerLoadEvent } from '@sveltejs/kit';
 
 export const load = async (event: ServerLoadEvent) => {
-	const { api, user } = event.locals;
+	const { rizom, user } = event.locals;
 	let { id } = event.params;
 
 	const query = id
 		? `where[attributes.slug][equals]=${id}`
 		: `where[attributes.isHome][equals]=true`;
-	const docs = await api.collection('pages').find({ query, depth: 2 });
+	const docs = await rizom.collection('pages').find({ query, depth: 2 });
 	if (!docs.length) {
 		throw error(404, 'Not found');
 	}

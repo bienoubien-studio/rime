@@ -26,7 +26,7 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
  *    - Nullifies related document fields
  */
 export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (args) => {
-	const { operation, config, api } = args;
+	const { operation, config, rizom } = args;
 	if (!isUploadConfig(config)) throw new Error('Should never throw');
 
 	let data = args.data || {};
@@ -34,7 +34,7 @@ export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (
 	const sizesConfig = hasSizeConfig ? config.imageSizes : [];
 
 	if (data.file) {
-		if (operation === 'update') await cleanupStoredFiles({ config, api, id: args.originalDoc.id });
+		if (operation === 'update') await cleanupStoredFiles({ config, rizom, id: args.originalDoc.id });
 		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
 		data = {
 			...omit(['file'], data),
@@ -46,7 +46,7 @@ export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (
 	// If data.file is explicitly set to null : delete file
 	if (data.file === null) {
 		// delete files
-		if (operation === 'update') await cleanupStoredFiles({ config, api, id: args.originalDoc.id });
+		if (operation === 'update') await cleanupStoredFiles({ config, rizom, id: args.originalDoc.id });
 		// update data for DB update
 		for (const size of sizesConfig!) {
 			data = {

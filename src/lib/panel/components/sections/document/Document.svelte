@@ -26,6 +26,7 @@
 		onClose?: any;
 		nestedLevel?: number;
 		onNestedDocumentCreated?: any;
+		isEditingVersion?: boolean
 	};
 
 	const {
@@ -37,6 +38,7 @@
 		nestedLevel = 0,
 		onDataChange = null,
 		onFieldFocus = null,
+		isEditingVersion = false,
 		class: className
 	}: Props = $props();
 
@@ -113,7 +115,7 @@
 		{/if}
 
 		{#if !liveEditing}
-			<Header {form} {config} {onClose}></Header>
+			<Header {form} {config} {onClose} {isEditingVersion}></Header>
 		{/if}
 
 		<div class="rz-document__fields">

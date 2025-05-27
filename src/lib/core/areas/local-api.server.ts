@@ -5,29 +5,25 @@ import { update } from './operations/update.js';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { Adapter } from '$lib/adapter-sqlite/types.js';
-import type { LocalAPI } from '../operations/local-api.server.js';
+import type { Rizom } from '../rizom.server.js';
 import type { DeepPartial } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledArea;
-	adapter: Adapter;
 	defaultLocale: string | undefined;
-	api: LocalAPI;
 	event: RequestEvent;
 };
 
 class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	#event: RequestEvent;
-	#adapter: Adapter;
-	#api: LocalAPI;
+	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledArea;
 
-	constructor({ config, adapter, defaultLocale, event, api }: Args) {
+	constructor({ config, defaultLocale, event }: Args) {
 		this.config = config;
-		this.#adapter = adapter;
 		this.#event = event;
-		this.#api = api;
+		this.#rizom = event.locals.rizom;
 		this.defaultLocale = defaultLocale;
 		this.find = this.find.bind(this);
 		this.update = this.update.bind(this);
@@ -43,7 +39,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 
 	find({ locale, select = [], depth = 0, versionId }: FindArgs): Promise<Doc> {
 
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
@@ -51,13 +47,12 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			versionId,
 			config: this.config,
 			event: this.#event,
-			adapter: this.#adapter,
-			api: this.#api,
+			rizom: this.#rizom,
 			depth
 		};
 
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+			const key = this.#event.locals.rizom.cache.toHashKey(
 				'find',
 				select.join(','),
 				this.config.slug,
@@ -66,23 +61,22 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 				depth,
 				locale
 			);
-			return this.#event.locals.rizom.plugins.cache.get(key, () => find<Doc>(params));
+			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
 		}
 		
 		return find<Doc>(params);
 	}
 
-	update(args: { data: DeepPartial<Doc>; locale?: string }): Promise<Doc> {
+	update(args: { data: DeepPartial<Doc>; locale?: string, versionId?:string }): Promise<Doc> {
 
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		return update<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
+			versionId: args.versionId,
 			config: this.config,
-			event: this.#event,
-			api: this.#api,
-			adapter: this.#adapter
+			event: this.#event
 		});
 	}
 }

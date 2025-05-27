@@ -7,11 +7,13 @@ import { handleError } from '$lib/core/errors/handler.server';
 export default function (slug: AreaSlug) {
 	const actions = {
 		update: async (event: RequestEvent) => {
-			const { api, locale } = event.locals;
+			const { rizom, locale } = event.locals;
+			const versionId = event.url.searchParams.get('versionId') || undefined
 
 			const [error, doc] = await safe(
-				api.area(slug).update({
+				rizom.area(slug).update({
 					data: await extractData(event.request),
+					versionId,
 					locale
 				})
 			);

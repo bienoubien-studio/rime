@@ -5,28 +5,25 @@ import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { buildConfigMap } from '../configMap/index.server.js';
 import { augmentDocument } from './augmentDocument.server.js';
 import { postprocessFields } from './postProcessFields.server.js';
-import type { LocalAPI } from '../local-api.server.js';
+import type { Rizom } from '../../rizom.server.js';
 
 export const transformDocument = async <T>(args: {
 	raw: RawDoc;
-	adapter: Adapter;
 	locale?: string;
 	event: RequestEvent;
-	api: LocalAPI;
 	depth?: number;
 	config: CompiledArea | CompiledCollection;
 	augment?: boolean
 	withURL?: boolean
 	withBlank?: boolean
 }) => {
-	const { raw, adapter, locale, event, api, depth, config, augment = true, withBlank = true } = args;
+	const { raw, locale, event, depth, config, augment = true, withBlank = true } = args;
 
-	let document = await adapter.transform.doc({
+	let document = await event.locals.rizom.adapter.transform.doc({
 		doc: raw,
 		slug: config.slug,
 		locale,
 		event,
-		api,
 		depth,
 		withBlank
 	});

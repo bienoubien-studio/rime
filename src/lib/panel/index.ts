@@ -2,6 +2,7 @@ import type { Snippet } from 'svelte';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc';
 import Area from './pages/area/Area.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
+import CollectionVersionsDoc from './pages/collection-document/CollectionVersionsDoc.svelte';
 import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte';
 import ForgotPassword from './pages/forgot-password/ForgotPassword.svelte';
 import Init from './pages/init/Init.svelte';
@@ -17,6 +18,7 @@ import { Field } from './components/fields/index.js';
 
 export {
 	Area,
+	CollectionVersionsDoc,
 	CollectionDoc,
 	CollectionLayout,
 	ForgotPassword,

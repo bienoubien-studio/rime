@@ -11,7 +11,7 @@ import { saveRelations } from '../../operations/relations/index.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { LocalAPI } from '$lib/core/operations/local-api.server.js';
+import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
@@ -21,15 +21,15 @@ type Args<T> = {
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
-	api: LocalAPI;
+	draft?: boolean;
 	event: RequestEvent & {
 		locals: App.Locals;
 	};
-	adapter: Adapter;
 };
 
 export const create = async <T extends GenericDoc>(args: Args<T>) => {
-	const { config, event, adapter, locale, api } = args;
+	const { config, event, locale, draft } = args;
+	const { rizom } = event.locals
 
 	let data = args.data;
 	const incomingData = cloneDeep(data);
@@ -39,7 +39,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
-
+	
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
@@ -54,7 +54,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	// throw new Error('thats an error');
 
-	data = await setDefaultValues({ data, adapter, configMap });
+	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
 	data = await validateFields({
 		data,
 		event,
@@ -70,7 +70,6 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			data,
 			config,
 			operation: 'create',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});
@@ -79,10 +78,11 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	const incomingPaths = Object.keys(configMap);
 
-	const created = await adapter.collection.insert({
+	const created = await rizom.adapter.collection.insert({
 		slug: config.slug,
 		data,
-		locale
+		locale,
+		draft
 	});
 
 	// Use the versionId for blocks, trees, and relations
@@ -91,7 +91,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		configMap,
 		data,
 		incomingPaths,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -101,7 +101,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		configMap,
 		data,
 		incomingPaths,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -111,7 +111,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		configMap,
 		data,
 		incomingPaths,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale,
 		blocksDiff,
@@ -119,7 +119,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	});
 
 	// Use the document ID to find the created document
-	let document = (await api.collection(config.slug).findById({ id: created.id, locale, versionId: created.versionId })) as T;
+	let document = (await rizom.collection(config.slug).findById({ id: created.id, locale, versionId: created.versionId })) as T;
 
 	document = await populateURL(document, { config, event, locale })
 	
@@ -144,8 +144,8 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			// Get locales
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
-				api.enforceLocale(otherLocale);
-				const localizedDocument = await api
+				rizom.enforceLocale(otherLocale);
+				const localizedDocument = await rizom
 					.collection(config.slug)
 					//@ts-expect-error go make a coffee
 					.updateById({ id: created.id, versionId: created.versionId, data: incomingData, locale: otherLocale, isFallbackLocale: true });
@@ -153,7 +153,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 				await populateURL(localizedDocument, { config, event, locale })
 			}
 		}
-		api.enforceLocale(locale);
+		rizom.enforceLocale(locale);
 	}
 
 	for (const hook of config.hooks?.afterCreate || []) {
@@ -161,7 +161,6 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'create',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});

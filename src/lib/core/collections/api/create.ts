@@ -8,9 +8,9 @@ import { safe } from '$lib/util/safe.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { api, locale } = event.locals;
+		const { rizom, locale } = event.locals;
 
-		const collection = api.collection(slug);
+		const collection = rizom.collection(slug);
 		const data = await extractData(event.request);
 
 		// Bypass confirm password for api auth collection creation calls

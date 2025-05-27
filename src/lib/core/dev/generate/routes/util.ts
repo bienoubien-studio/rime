@@ -103,8 +103,8 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
  * 
  * @example 
  * castVersionSlug('pages_versions')
- * // output : pages_versions as pages
- * export const GET = api.collection.get(pages_versions as pages) 
+ * // output : 'pages_versions' as 'pages'
+ * export const GET = api.collection.get('pages_versions' as 'pages') 
  */
 export const TScastVersionSlug = (slug:string) => 
-  slug.includes('_versions') ? `${slug} as ${slug.replace('_versions', '')}` : slug
+  slug.includes('_versions') ? `'${slug}' as '${slug.replace('_versions', '')}'` : `'${slug}'`

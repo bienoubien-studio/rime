@@ -204,8 +204,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// Update main table
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: area.id,
-				data: mainData,
-				timestamp: now
+				data: { ...mainData, updatedAt: now }
 			});
 
 			// Update localized data if needed
@@ -244,8 +243,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// Update version directly
 			await adapterUtil.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
-				data: mainData,
-				timestamp: now
+				data: { ...mainData, updatedAt: now }
 			});
 
 			// Update localized data if needed

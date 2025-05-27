@@ -3,17 +3,17 @@ import path from 'path';
 import type { GenericDoc } from '$lib/core/types/doc';
 import type { CompiledCollection } from '$lib/core/config/types';
 import type { WithUpload } from '$lib/util/types';
-import type { LocalAPI } from '$lib/core/operations/local-api.server';
+import type { Rizom } from '$lib/core/rizom.server';
 import { logger } from '$lib/core/logger/index.server';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;
-	api: LocalAPI;
+	rizom: Rizom;
 	id: string;
 };
 
-export const cleanupStoredFiles = async ({ config, api, id }: Args): Promise<GenericDoc> => {
-	const doc = await api.collection<any>(config.slug).findById({ id });
+export const cleanupStoredFiles = async ({ config, rizom, id }: Args): Promise<GenericDoc> => {
+	const doc = await rizom.collection<any>(config.slug).findById({ id });
 
 	try {
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);

@@ -76,7 +76,7 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
-	let imports = new Set<string>(['BaseDoc', 'LocalAPI', 'Navigation', 'User', 'Rizom']);
+	let imports = new Set<string>(['BaseDoc', 'Rizom', 'Navigation', 'User', 'Rizom']);
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
@@ -171,7 +171,7 @@ export type RelationValue<T> =
       session: Session | undefined;
       user: User | undefined;
       rizom: Rizom;
-      api: LocalAPI;
+      api: Rizom;
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;

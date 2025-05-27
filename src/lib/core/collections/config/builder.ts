@@ -69,7 +69,7 @@ export function collection<S extends string>(
 				draft: false, autoSave: false, maxVersions: 4
 			};
 		}else if(config.versions.draft){
-			fields.push(select('status').options('draft', 'published').defaultValue('draft').hidden());
+			fields.push(text('status').defaultValue('draft').hidden());
 		}
 	}else{
 		config.versions = false

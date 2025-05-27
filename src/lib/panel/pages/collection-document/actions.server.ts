@@ -10,16 +10,18 @@ export default function (slug: CollectionSlug) {
 		// Create
 		//////////////////////////////////////////////
 		create: async (event: RequestEvent) => {
-			const { api, locale } = event.locals;
+			const { rizom, locale } = event.locals;
 			
 			// A redirect parameter equals to 0 can be present if we're in a nested form
 			// to prevent redirection after entry creation
 			// ex: for relation creation
 			const withoutRedirect = event.url.searchParams.get('redirect') === '0';
+			const draft = event.url.searchParams.get('draft') === 'true';
 
 			const [error, result] = await safe(
-				api.collection(slug).create({
+				rizom.collection(slug).create({
 					data: await extractData(event.request),
+					draft,
 					locale
 				})
 			);
@@ -39,13 +41,19 @@ export default function (slug: CollectionSlug) {
 		// Update
 		//////////////////////////////////////////////
 		update: async (event: RequestEvent) => {
-			const { api, locale } = event.locals;
+			const { rizom, locale } = event.locals;
 			const id = event.params.id || '';
+			const versionId = event.url.searchParams.get('versionId') || undefined
+			const draft = event.url.searchParams.get('draft') === 'true';
+
+			console.log('#########  ' + draft )
 
 			const [error, doc] = await safe(
-				api.collection(slug).updateById({
+				rizom.collection(slug).updateById({
 					id,
 					data: await extractData(event.request),
+					versionId,
+					draft,
 					locale
 				})
 			);

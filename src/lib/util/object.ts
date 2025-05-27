@@ -144,8 +144,12 @@ export const setValueAtPath = <T extends Dic>(obj: T, path: string, value: unkno
 		previous = current;
 		previousKey = index;
 
+		// Create the object path if it doesn't exist
 		if (!current[index]) {
-			throw new Error(`Path ${path} does not exist at part ${part}`);
+			// If the next part is a number, create an array, otherwise create an object
+			const nextPart = parts[i + 1];
+			const isNextPartNumeric = /^\d+$/.test(nextPart);
+			current[index] = isNextPartNumeric ? [] : {};
 		}
 
 		// Create a shallow copy of the current level before moving deeper

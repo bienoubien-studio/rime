@@ -19,10 +19,10 @@ export const validateFields = async <T extends GenericDoc>(args: {
 }) => {
 	const errors: FormErrors = {};
 	const { event, locale, configMap, original, operation } = args;
-	const { user, api } = event.locals
+	const { user, rizom } = event.locals
 
 	const slug = args.config.slug;
-	const isCollection = api.rizom.config.isCollection(slug);
+	const isCollection = rizom.config.isCollection(slug);
 	let output = { ...args.data };
 
 	for (const [key, config] of Object.entries(configMap)) {
@@ -47,7 +47,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 				operation === 'create'
 					? `where[${key}][equals]=${value}`
 					: `where[and][0][${key}][equals]=${value}&where[and][1][id][not_equals]=${original?.id}`;
-			const existing = await api.collection(slug).find({ locale, query });
+			const existing = await rizom.collection(slug).find({ locale, query });
 			if (existing.length) {
 				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}

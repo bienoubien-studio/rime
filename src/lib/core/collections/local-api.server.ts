@@ -16,36 +16,32 @@ import type { CompiledCollection } from '../config/types/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import type { LocalAPI } from '../operations/local-api.server.js';
+import type { Rizom } from '../rizom.server.js';
 import type { DeepPartial } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledCollection;
-	adapter: Adapter;
 	defaultLocale: string | undefined;
-	api: LocalAPI;
 	event: RequestEvent;
 };
 
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	
 	#event: RequestEvent;
-	#adapter: Adapter;
-	#api: LocalAPI;
+	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
 
-	constructor({ config, adapter, defaultLocale, event, api }: Args) {
+	constructor({ config, defaultLocale, event }: Args) {
 		this.config = config;
-		this.#adapter = adapter;
 		this.defaultLocale = defaultLocale;
 		this.#event = event;
-		this.#api = api;
+		this.#rizom = event.locals.rizom;
 		this.create = this.create.bind(this);
 		this.find = this.find.bind(this);
 		this.findAll = this.findAll.bind(this);
 		this.findById = this.findById.bind(this);
+		this.select = this.select.bind(this);
 	}
 
 	#fallbackLocale(locale?: string) {
@@ -69,28 +65,25 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return !!this.config.auth;
 	}
 
-	create(args: { data: DeepPartial<Doc>; locale?: string }) {
+	create(args: { data: DeepPartial<Doc>; locale?: string, draft?: boolean }) {
 		return create<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
+			draft: args.draft,
 			config: this.config,
 			event: this.#event,
-			api: this.#api,
-			adapter: this.#adapter
 		});
 	}
 
 	find({ query, locale, sort = '-createdAt', depth = 0, limit, offset }: FindArgs): Promise<Doc[]> {
 		
-		this.#api.preventOperationLoop()
-
+		this.#rizom.preventOperationLoop()
+		
 		const params = {
 			query,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
-			adapter: this.#adapter,
-			api: this.#api,
 			sort,
 			depth,
 			limit,
@@ -98,7 +91,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+			const key = this.#event.locals.rizom.cache.toHashKey(
 				'find',
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
@@ -109,7 +102,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				locale,
 				query
 			);
-			return this.#event.locals.rizom.plugins.cache.get(key, () => find<Doc>(params));
+			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
 		}
 
 		return find<Doc>(params);
@@ -117,7 +110,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 	select({ select: selectArray, query, locale, sort = '-createdAt', depth = 0, limit, offset }: SelectArgs): Promise<Doc[]> {
 		
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		const params = {
 			select: selectArray,
@@ -125,8 +118,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
-			adapter: this.#adapter,
-			api: this.#api,
 			sort,
 			depth,
 			limit,
@@ -134,7 +125,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 		
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+			const key = this.#event.locals.rizom.cache.toHashKey(
 				'select',
 				selectArray.join(','),
 				this.config.slug,
@@ -146,7 +137,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				locale,
 				query
 			);
-			return this.#event.locals.rizom.plugins.cache.get(key, () => select<Doc>(params));
+			return this.#event.locals.rizom.cache.get(key, () => select<Doc>(params));
 		}
 
 		return select<Doc>(params);
@@ -154,14 +145,12 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 	findAll({ locale, sort = '-createdAt', depth = 0, limit, offset }: FindAllArgs = {}): Promise<Doc[]> {
 		
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
-			adapter: this.#adapter,
-			api: this.#api,
 			sort,
 			depth,
 			limit,
@@ -169,7 +158,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+			const key = this.#event.locals.rizom.cache.toHashKey(
 				'findAll',
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
@@ -179,7 +168,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				offset,
 				locale
 			);
-			return this.#event.locals.rizom.plugins.cache.get(key, () => findAll<Doc>(params));
+			return this.#event.locals.rizom.cache.get(key, () => findAll<Doc>(params));
 		}
 
 		return findAll<Doc>(params);
@@ -187,7 +176,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 	findById({ id, versionId, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
 		
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		if (!id) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -198,13 +187,11 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
-			adapter: this.#adapter,
-			api: this.#api,
 			depth
 		};
 		
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.plugins.cache.toHashKey(
+			const key = this.#event.locals.rizom.cache.toHashKey(
 				'findById',
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
@@ -213,38 +200,36 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				depth,
 				locale
 			);
-			return this.#event.locals.rizom.plugins.cache.get(key, () => findById<Doc>(params));
+			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
 		}
 
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, data, locale, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
+	updateById({ id, versionId, data, locale, draft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
 		
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		return updateById<Doc>({
 			id,
+			versionId,
+			draft,
 			data,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
-			api: this.#api,
-			adapter: this.#adapter,
 			isFallbackLocale
 		});
 	}
 
 	deleteById = ({ id }: DeleteByIdArgs) => {
 		
-		this.#api.preventOperationLoop()
+		this.#rizom.preventOperationLoop()
 
 		return deleteById({
 			id,
 			config: this.config,
 			event: this.#event,
-			api: this.#api,
-			adapter: this.#adapter
 		});
 	};
 }
@@ -293,6 +278,8 @@ type FindByIdArgs = {
 
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
+	versionId?: string;
+	draft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string;
 	isFallbackLocale?: boolean;

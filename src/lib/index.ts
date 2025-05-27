@@ -1,4 +1,4 @@
-import rizom from '$lib/core/main.server.js';
+import rizom from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
 import type { Config } from '$lib/core/config/types/index.js';
 

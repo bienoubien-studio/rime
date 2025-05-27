@@ -2,8 +2,9 @@
 import type { Navigation } from '$lib/panel/navigation.ts';
 import type { Session } from 'better-auth';
 import type { Rizom } from '$lib/types';
-import type { LocalAPI } from '$lib/core/operations/local-api.server';
+import type { Rizom } from '$lib/core/rizom.server';
 import type { User } from '$lib/core/collections/auth/types.js';
+import type { CorePlugins } from '$lib/core/types/plugins.js';
 
 declare global {
 	//
@@ -18,11 +19,10 @@ declare global {
 			session: Session | undefined;
 			user: User | undefined;
 			rizom: Rizom;
-			api: LocalAPI;
 			routes: Navigation;
 			locale: string | undefined;
 		}
-
+		
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}

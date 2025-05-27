@@ -6,10 +6,10 @@ import { safe } from '$lib/util/safe.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function DELETE(event: RequestEvent) {
-		const { api } = event.locals;
+		const { rizom } = event.locals;
 		const id = event.params.id || '';
 
-		const [error] = await safe(api.collection(slug).deleteById({ id }));
+		const [error] = await safe(rizom.collection(slug).deleteById({ id }));
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

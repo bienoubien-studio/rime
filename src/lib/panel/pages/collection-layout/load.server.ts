@@ -7,9 +7,9 @@ import type { CollectionSlug } from '$lib/core/types/doc.js';
 export function layoutLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {
-		const { api, locale, user } = event.locals;
+		const { rizom, locale, user } = event.locals;
 
-		const collection = api.collection(slug);
+		const collection = rizom.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 
 		const docs = await collection.findAll({ locale });

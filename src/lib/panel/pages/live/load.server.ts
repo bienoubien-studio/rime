@@ -3,7 +3,7 @@ import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { PrototypeSlug } from '$lib/core/types/doc';
 
 export async function liveLoad(event: ServerLoadEvent) {
-	const { api, user, rizom } = event.locals;
+	const { user, rizom } = event.locals;
 	event.depends('data:src');
 	const params = event.url.searchParams;
 
@@ -21,10 +21,10 @@ export async function liveLoad(event: ServerLoadEvent) {
 		const output = { user, src: src, slug, locale };
 
 		if (rizom.config.isCollection(slug)) {
-			const doc = await api.collection(slug).findById({ id, locale });
+			const doc = await rizom.collection(slug).findById({ id, locale });
 			return { ...output, doc };
 		} else {
-			const doc = await api.area(slug).find({ locale });
+			const doc = await rizom.area(slug).find({ locale });
 			return { ...output, doc };
 		}
 	} else {

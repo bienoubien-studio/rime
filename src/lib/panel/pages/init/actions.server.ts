@@ -4,12 +4,12 @@ import { handleError } from '$lib/core/errors/handler.server';
 
 export const initActions = {
 	default: async ({ request, locals }: RequestEvent) => {
-		const { api } = locals;
+		const { rizom } = locals;
 
 		const data = await extractData(request);
 		try {
 			const { email, name, password } = data;
-			await api.createFirstPanelUser({ email, name, password });
+			await rizom.createFirstPanelUser({ email, name, password });
 			throw redirect(302, '/panel/login');
 		} catch (err: any) {
 			return handleError(err, {

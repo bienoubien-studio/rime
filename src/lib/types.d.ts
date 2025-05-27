@@ -10,7 +10,7 @@ export type {
 } from './adapter-sqlite/types.js';
 
 // API types
-export type { LocalAPI } from './core/operations/local-api.server.js';
+export type { Rizom } from './core/rizom.server.js';
 
 // Auth types
 export type { Access, User } from './core/collections/auth/types.js';
@@ -96,6 +96,6 @@ export type { Link } from './fields/link/types.js';
 export type { WithRelationPopulated } from '$lib/util/types.js'
 
 export type { Plugin, Plugins } from './core/types/plugins.js';
-export type { Rizom } from './core/main.server.js';
+export type { Rizom } from './core/cms.server.js';
 export type { RichTextFeatureNode, RichTextFeatureMark, RichTextFeature } from './fields/rich-text/core/types.js'
 export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js'

@@ -7,15 +7,15 @@ import { safe } from '$lib/util/safe.js';
 export default function (slug: AreaSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { api, locale } = event.locals;
+		const { rizom, locale } = event.locals;
 
 		const paramLocale = event.url.searchParams.get('locale');
 		const data = await extractData(event.request);
 
 		const [error, doc] = await safe(
-			api.area(slug).update({ data, locale: paramLocale || data.locale || locale })
+			rizom.area(slug).update({ data, locale: paramLocale || data.locale || locale })
 		);
-
+		
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

@@ -263,6 +263,7 @@ export type BuiltArea = Area<AreaSlug> & {
 	label: string;
 	slug: AreaSlug;
 	asTitle: string;
+	versions: false | Required<VersionsConfig>;
 	fields: FieldBuilder<Field>[];
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };

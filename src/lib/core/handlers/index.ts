@@ -1,5 +1,5 @@
 import { handleAuth } from './auth.server.js';
-import { createCMSHandler } from './rizom.server.js';
+import { createCMSHandler } from './main.server.js';
 import { handleRoutes } from './routes.server.js';
 import type { Config } from '$lib/core/config/types/index.js';
 import { createPluginsHandler } from './plugins.server.js';

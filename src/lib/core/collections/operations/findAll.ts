@@ -3,16 +3,12 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { transformDocument } from '$lib/core/operations/shared/transformDocument.server.js';
-import type { LocalAPI } from '../../operations/local-api.server.js';
 
 type Args = {
 	locale?: string | undefined;
 	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
-	adapter: Adapter;
-	api: LocalAPI;
 	sort?: string;
 	depth?: number;
 	limit?: number;
@@ -20,14 +16,15 @@ type Args = {
 };
 
 export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> => {
-	const { config, event, locale, adapter, sort, limit, offset, api, depth } = args;
+	const { config, event, locale, sort, limit, offset, depth } = args;
+	const { rizom } = event.locals
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
 	}
-
-	const documentsRaw = await adapter.collection.findAll({
+	
+	const documentsRaw = await rizom.adapter.collection.findAll({
 		slug: config.slug,
 		sort,
 		limit,
@@ -40,8 +37,6 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 		let document = await transformDocument<T>({
 			raw: documentRaw,
 			config,
-			api,
-			adapter,
 			locale,
 			depth,
 			event
@@ -52,7 +47,6 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 				doc: document as RegisterCollection[CollectionSlug],
 				config,
 				operation: 'read',
-				api,
 				rizom: event.locals.rizom,
 				event
 			});

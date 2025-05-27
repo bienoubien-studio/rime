@@ -8,7 +8,7 @@ import { RizomError } from '$lib/core/errors/index.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function PATCH(event: RequestEvent) {
-		const { api, locale } = event.locals;
+		const { rizom, locale } = event.locals;
 
 		const id = event.params.id;
 		if (!id) throw new RizomError(RizomError.NOT_FOUND);
@@ -16,7 +16,7 @@ export default function (slug: CollectionSlug) {
 		const data = await extractData(event.request);
 
 		const [error, doc] = await safe(
-			api.collection(slug).updateById({
+			rizom.collection(slug).updateById({
 				id,
 				data,
 				locale: data.locale || locale

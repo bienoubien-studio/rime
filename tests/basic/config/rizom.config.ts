@@ -96,20 +96,20 @@ const tabLayout = tab('layout')
 	);
 
 const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
-	args.rizom.plugins.cache.clear();
+	args.rizom.cache.clear();
 	return args;
 };
 
 const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
-	const { data, api } = args;
+	const { data, rizom } = args;
 
 	if (data?.attributes?.isHome) {
 		const query = `where[attributes.isHome][equals]=true`
 
-		const pagesIsHome = await api.collection('pages').find({ query });
+		const pagesIsHome = await rizom.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await api.collection('pages').updateById({
+			await rizom.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});

@@ -16,7 +16,7 @@ import type { Dic } from '$lib/util/types.js';
 import { extractFieldName } from '../fields/tree/util.js';
 import { privateFieldNames } from '../core/collections/auth/config/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { LocalAPI } from '../core/operations/local-api.server.js';
+import type { Rizom } from '../core/rizom.server.js';
 import { logger } from '../core/logger/index.server.js';
 import { getBlocksTableNames, getTreeTableNames, makeVersionsTableName, transformDatabaseColumnsToPaths } from '../util/schema.js';
 
@@ -46,14 +46,15 @@ export const databaseTransformInterface = ({
 		doc: RawDoc;
 		slug: AreaSlug | CollectionSlug;
 		locale?: string;
-		api: LocalAPI;
 		event: RequestEvent;
 		depth?: number;
 		withBlank?: boolean;
 	}): Promise<Transformed<T>> => {
 		//
 
-		const { slug, locale, api, event, withBlank = true, depth = 0 } = args;
+		const { slug, locale, event, withBlank = true, depth = 0 } = args;
+		const { rizom } = event.locals
+
 		let doc = args.doc;
 
 		const config = configInterface.getBySlug(slug)
@@ -61,18 +62,17 @@ export const databaseTransformInterface = ({
 		const tableName = isVersioned ? makeVersionsTableName(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
 		const tableNameLocales = `${tableName}Locales`;
-
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
-		let docLocalAPI;
+		let docRizom;
 		if (configInterface.isCollection(slug)) {
-			docLocalAPI = api.collection(slug);
+			docRizom = rizom.collection(slug);
 		} else {
-			docLocalAPI = api.area(slug);
+			docRizom = rizom.area(slug);
 		}
 
-		const blankDocument = docLocalAPI.blank();
+		const blankDocument = docRizom.blank();
 
 		/** Add localized fields */
 		if (locale && tableNameLocales in tables && doc[tableNameLocales]) {
@@ -175,7 +175,7 @@ export const databaseTransformInterface = ({
 				/** Get relation if depth > 0 */
 				if (depth > 0) {
 					const relationSlug = relationToIdKey.replace('Id', '') as CollectionSlug;
-					relationOutput = await api
+					relationOutput = await rizom
 						.collection(relationSlug)
 						.findById({ id: relationToId, locale: relation.locale, depth: depth - 1 });
 				} else {

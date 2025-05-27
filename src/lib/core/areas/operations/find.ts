@@ -4,15 +4,14 @@ import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { transformDocument } from '$lib/core/operations/shared/transformDocument.server.js';
-import type { LocalAPI } from '../../operations/local-api.server.js';
-import type { RegisterArea } from '$lib/index.js';
+import type { Rizom } from '../../rizom.server.js';
+import { rizom, type RegisterArea } from '$lib/index.js';
 
 type FindArgs = {
 	locale?: string | undefined;
 	config: CompiledArea;
 	event: RequestEvent;
-	adapter: Adapter;
-	api: LocalAPI;
+	rizom: Rizom;
 	depth?: number;
 	select?: string[];
 	versionId?: string;
@@ -20,14 +19,14 @@ type FindArgs = {
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
 	//
-	const { config, event, adapter, locale, api, depth, select, versionId } = args;
+	const { config, event, locale, depth, select, versionId } = args;
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
 	}
 
-	const documentRaw = await adapter.area.get({
+	const documentRaw = await rizom.adapter.area.get({
 		slug: config.slug,
 		locale,
 		select,
@@ -37,8 +36,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 	let document = await transformDocument<T>({
 		raw: documentRaw,
 		config,
-		api,
-		adapter,
 		locale,
 		depth,
 		event,
@@ -51,7 +48,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			doc: document as unknown as RegisterArea[AreaSlug],
 			config,
 			operation: 'read',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});

@@ -73,7 +73,7 @@
 		{#if editor && editor.isEditable}
 			{#if standAlone}
 				<DragHandler {editor} />
-				<Suggestion {editor} {features} {path} />
+				<Suggestion {editor} {features} />
 			{/if}
 
 			{#key key}

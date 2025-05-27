@@ -34,7 +34,7 @@
 		gridTemplateColumn = `grid-template-columns: 2fr repeat(${compact ? 1 : columnLength - 1}, minmax(0, 1fr));`;
 	});
 
-	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, true) : '');
+	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, {short: true}) : '');
 </script>
 
 <div style={gridTemplateColumn} class="rz-list-row" class:rz-list-row--active={active}>
@@ -54,12 +54,12 @@
 				{/if}
 				
 				<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
-				{#if collection.statusList }
+				<!-- {#if collection.statusList }
 					{@const docStatus =
 						collection.statusList.find((status) => doc.status === status.value) ||
 						collection.statusList[0]}
 					<StatusDot --rz-dot-size="0.28rem" color={docStatus.color} />
-				{/if}
+				{/if} -->
 			</a>
 		{/if}
 	</div>

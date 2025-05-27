@@ -1,17 +1,15 @@
 import { error, redirect, type ServerLoadEvent } from '@sveltejs/kit';
 
 export const load = async (event: ServerLoadEvent) => {
-	const { api, user, rizom } = event.locals;
+	const { rizom, user, locale } = event.locals;
 	let { id } = event.params;
-
-	const locale = rizom.defineLocale({ event });
-
+	
 	if (!id && event.params.locale && !rizom.config.isValidLocale(event.params.locale)) {
 		id = event.params.locale;
 	}
 
 	const query = id ? `where[attributes.slug][equals]=${id}` : `where[attributes.isHome][equals]=true`;
-	const docs = await api.collection('pages').find({ query, locale, depth: 2 });
+	const docs = await rizom.collection('pages').find({ query, locale, depth: 2 });
 	if (!docs.length) {
 		throw error(404, 'Not found');
 	}

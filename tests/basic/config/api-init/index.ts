@@ -11,7 +11,7 @@ export const apiInit: Plugin<never> = () => {
     if(!dev) throw new RizomError(RizomError.INIT, '/api/init route should only be called in dev environment.')
     try {
       const { email, password, name } = await extractData(event.request);
-      await event.locals.api.createFirstPanelUser({ email, password, name });
+      await event.locals.rizom.createFirstPanelUser({ email, password, name });
       return json({ initialized: true });
     } catch (err: any) {
       throw handleError(err, { context: 'api' });

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { writeRouteFile, ensureDir, shouldRegenerateRoutes, type RouteDefinition, type Routes } from './util.js';
-import { collectionAPIAuthRoutes, collectionAPIRoutes, collectionPanelRoutes } from './collection.js';
+import { collectionAPIAuthRoutes, collectionAPIRoutes, collectionPanelRoutes, collectionVersionsPanelRoutes } from './collection.js';
 import { areaAPIRoutes, areaRoutes } from './area.js';
 import { commonRoutes, customRoute } from './common.js';
 import { injectCustomCSS, removeCustomCSS } from './custom-css.js';
@@ -80,6 +80,7 @@ function generateRoutes(config: BuiltConfig): void {
     processRoutes(collection.slug, collectionAPIAuthRoutes)
     
 		if(collection.versions){
+			processRoutes(collection.slug, collectionVersionsPanelRoutes)
 			processRoutes(collection.slug + '_versions', collectionAPIRoutes)
 		}
 

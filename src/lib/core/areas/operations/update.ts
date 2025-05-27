@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { LocalAPI } from '$lib/core/operations/local-api.server.js';
+import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { AreaSlug } from '$lib/types.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
@@ -19,14 +19,13 @@ type UpdateArgs<T> = {
 	locale?: string | undefined;
 	config: CompiledArea;
 	event: RequestEvent;
-	adapter: Adapter;
-	api: LocalAPI;
 	versionId?: string;
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, adapter, locale, api, versionId } = args;
+	const { config, event, locale, versionId } = args;
+	const { rizom } = event.locals
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, {});
@@ -34,7 +33,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await api.area(config.slug).find({ locale, versionId })) as unknown as T;
+	const original = (await rizom.area(config.slug).find({ locale, versionId })) as unknown as T;
 	const originalConfigMap = buildConfigMap(original, config.fields);
 	const configMap = buildConfigMap(data, config.fields);
 
@@ -59,8 +58,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			config,
 			originalDoc: original as unknown as RegisterArea[AreaSlug],
 			operation: 'update',
-			api,
-			rizom: event.locals.rizom,
+			rizom,
 			event
 		});
 		data = result.data as Partial<T>;
@@ -68,7 +66,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 
 	const incomingPaths = Object.keys(configMap);
 
-	const updateResult = await adapter.area.update({
+	const updateResult = await rizom.adapter.area.update({
 		slug: config.slug,
 		data,
 		locale,
@@ -84,7 +82,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		incomingPaths,
 		original,
 		originalConfigMap,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -96,7 +94,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		incomingPaths,
 		original,
 		originalConfigMap,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -106,7 +104,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		configMap,
 		data,
 		incomingPaths,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale,
 		blocksDiff,
@@ -115,7 +113,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 
 	
 	// Get the updated area with the correct version ID
-	let document = await api.area(config.slug).find({ locale, versionId: updateResult.versionId });
+	let document = await  rizom.area(config.slug).find({ locale, versionId: updateResult.versionId });
 	
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
@@ -125,7 +123,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	if (locales.length) {
 		for(const otherLocale of locales){
 			if (otherLocale !== locale) {
-				const documentLocale = await api.area(config.slug).find({ locale: otherLocale, versionId: updateResult.versionId });
+				const documentLocale = await  rizom.area(config.slug).find({ locale: otherLocale, versionId: updateResult.versionId });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}
@@ -136,7 +134,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			doc: document,
 			config,
 			operation: 'update',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});

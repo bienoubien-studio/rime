@@ -19,7 +19,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
 	
 	const retrieveRelation = async (id: string) => {
 		try {
-			return await event.locals.api.collection(config.relationTo).findById({ id });
+			return await event.locals.rizom.collection(config.relationTo).findById({ id });
 		} catch (err: any) {
 			logger.error('Error in relation beforValidate hook : ' + err.message);
 			throw new RizomError(RizomError.OPERATION_ERROR, err.message)

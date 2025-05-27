@@ -45,7 +45,7 @@ export const populateURL = async <T extends GenericDoc>(
           parentId = parent.id
         }
 
-        const docs = await event.locals.api.collection(config.slug as any).select({
+        const docs = await event.locals.rizom.collection(config.slug as any).select({
           query: `where[id][equals]=${parentId}`,
           select: [attributePath],
           locale

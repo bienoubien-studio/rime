@@ -1,5 +1,5 @@
-import type { LocalAPI } from '$lib/core/operations/local-api.server.js';
-import type { Rizom } from '$lib/core/main.server';
+import type { Rizom } from '$lib/core/rizom.server.js';
+import type { Rizom } from '$lib/core/cms.server';
 import type { CompiledArea, CompiledCollection } from '.';
 import type { GenericDoc } from '../../..';
 import type { DeepPartial } from '$lib/util/types';
@@ -7,7 +7,6 @@ import type { DeepPartial } from '$lib/util/types';
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
 type HookContext = {
-	api: LocalAPI;
 	rizom: Rizom;
 	event: RequestEvent & { locals: App.Locals };
 	config: CompiledCollection;

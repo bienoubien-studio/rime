@@ -11,14 +11,14 @@ import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 export function docLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {
-		const { api, locale, user, rizom } = event.locals;
+		const { locale, user, rizom } = event.locals;
 		const { id } = event.params;
-
+		
 		if (!id) throw error(404, 'Not found');
 
 		let doc: GenericDoc;
 		let readOnly = false;
-		const collection = api.collection<any>(slug);
+		const collection = rizom.collection<any>(slug);
 		const operation = id === 'create' ? 'create' : 'update';
 
 		if (id === 'create') {
@@ -39,10 +39,12 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			/** Get doc */
-			const [error, document] = await safe(collection.findById({ id, locale }));
-			doc = document;
+			const versionId = event.url.searchParams.get('versionId') || undefined
 
+			/** Get doc */
+			const [error, document] = await safe(collection.findById({ id, locale, versionId }));
+			doc = document;
+			
 			if (error) {
 				return handleError(error, { context: 'load' });
 			}

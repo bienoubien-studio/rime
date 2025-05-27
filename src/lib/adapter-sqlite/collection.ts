@@ -10,6 +10,7 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
+import type { BuiltCollection, CompiledCollection } from '../types.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -25,9 +26,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 	const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
+		const isVersioned = !!config.versions;
 
-		if (!hasVersions) {
+		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
 			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
@@ -73,9 +74,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 	const findById: FindById = async ({ slug, id, versionId, locale }) => {
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
+		const isVersioned = !!config.versions;
 
-		if (!hasVersions) {
+		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
 			// @ts-expect-error foo
@@ -149,12 +150,12 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// Create a new document
 	//////////////////////////////////////////////
 
-	const insert: Insert = async ({ slug, data, locale }) => {
+	const insert: Insert = async ({ slug, data, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
+		const isVersioned = !!config.versions;
 		const now = new Date();
 
-		if (hasVersions) {
+		if (isVersioned) {
 			// Create root document first
 			const docId = await adapterUtil.insertTableRecord(db, tables, slug, {
 				createdAt: now,
@@ -173,6 +174,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				locale
 			});
 
+			if(config.versions && config.versions.draft){
+				mainData.status = draft ? 'draft' : 'published'
+			}
+			
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -233,18 +238,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			};
 		}
 	};
-
-	//////////////////////////////////////////////
-	// Shared helper functions for database operations
-	//////////////////////////////////////////////
-
-	const update: Update = async ({ slug, id, versionId, data, locale }) => {
+	
+	const update: Update = async ({ slug, id, versionId, data, locale, draft }) => {
 
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
+		const isVersioned = !!config.versions;
 
-		if (!hasVersions) {
+		if (!isVersioned) {
 			// Scenario 0: Non-versioned collections
 			const tableName = slug;
 			const tableLocalesName = `${slug}Locales`;
@@ -259,8 +260,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Update main table
 			await adapterUtil.updateTableRecord(db, tables, tableName, {
 				recordId: id,
-				data: mainData,
-				timestamp: now
+				data: { ...mainData, updatedAt: now }
 			});
 
 			// Update locales table if needed
@@ -275,15 +275,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// For non-versioned collections, versionId is the same as id
 			// it is used for saving blocks/relations/tree with cirrect ownerId
 			return { id, versionId: id };
-		} else if (hasVersions && versionId) {
+		} else if (isVersioned && versionId) {
 
 			// Scenario 1: Update a specific version directly
 
 			// First, update the root table's updatedAt
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: id,
-				data: {},
-				timestamp: now
+				data: { updatedAt: now }
 			});
 
 			const versionsTable = schemaUtil.makeVersionsTableName(slug);
@@ -296,12 +295,24 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				locale
 			});
 
+			// if draft is enabled on the collection
+			if(config.versions && config.versions.draft){
+				// if it's a draft save only set the status
+				if(draft){
+					mainData.status = 'draft'
+				}else{
+					// if it's a publishing save
+					// set the status to published
+					mainData.status = 'published'
+					// update all rows first to draft
+					await db.update(tables[versionsTable]).set({ status: 'draft' })
+				}
+			}
 
 			// Update version directly
 			await adapterUtil.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
-				data: mainData,
-				timestamp: now
+				data: { ...mainData, updatedAt: now }
 			});
 
 			// Update localized data if needed
@@ -321,8 +332,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// 1. First, update the root table's updatedAt
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: id,
-				data: {},
-				timestamp: now
+				data: { updatedAt: now }
 			});
 
 			// 2. Create a new version entry
@@ -337,6 +347,20 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				locale
 			});
 
+			// if draft is enabled on the collection
+			if(config.versions && config.versions.draft){
+				// if it's a draft save only set the status
+				if(draft){
+					mainData.status = 'draft'
+				}else{
+					// if it's a publishing save
+					// set the status to published
+					mainData.status = 'published'
+					// update all rows first to draft
+					await db.update(tables[versionsTable]).set({ status: 'draft' })
+				}
+			}
+			
 			// Insert new version
 			await adapterUtil.insertTableRecord(db, tables, versionsTable, {
 				id: createVersionId,
@@ -365,9 +389,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
-
-		if (!hasVersions) {
+		const isVersioned = config.versions;
+		
+		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const params: Dic = {
 				with: buildWithParam({ slug, locale, tables, configInterface }),
@@ -424,9 +448,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	//////////////////////////////////////////////
 	const select: SelectDocuments = async ({ slug, select, query, sort, limit, offset, locale }) => {
 		const config = configInterface.getCollection(slug);
-		const hasVersions = !!config.versions;
+		const isVersioned = !!config.versions;
 
-		if (!hasVersions) {
+		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const params: Dic = {
 				with: buildWithParam({ slug, select, tables, configInterface, locale }) || undefined,
@@ -597,6 +621,7 @@ type Insert = (args: {
 	slug: PrototypeSlug;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
+	draft?: boolean;
 }) => Promise<{ id: string; versionId: string }>;
 
 type Update = (args: {
@@ -604,6 +629,8 @@ type Update = (args: {
 	id: string;
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
+	/** Optional parameter to specify if should save as draft or published */
+	draft?: boolean;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<{ id: string; versionId: string }>;

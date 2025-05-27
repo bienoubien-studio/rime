@@ -5,9 +5,14 @@ import createAdapterRelationsInterface, { type AdapterRelationsInterface } from 
 import createAdapterAuthInterface from './auth.server.js';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
 import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
+import type { ConfigInterface } from '$lib/core/config/index.server.js';
+
+type CreateAdapterArgs = {
+	schema: any;
+	configInterface: ConfigInterface;
+};
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
@@ -18,7 +23,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const auth = createAdapterAuthInterface({
 		db,
 		schema,
-		trustedOrigins: configInterface.raw.trustedOrigins
+		configInterface
 	});
 	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
 	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
@@ -60,11 +65,3 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 export default createAdapter;
 
 export type Adapter = ReturnType<typeof createAdapter>;
-//////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
-
-type CreateAdapterArgs = {
-	schema: any;
-	configInterface: ConfigInterface;
-};

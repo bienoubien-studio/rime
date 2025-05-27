@@ -509,7 +509,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const submit = async (action: string) => {
 		if (processing) return;
 		processing = true;
-
+		
 		const data: Dic = {};
 		
 		for (const key of Object.keys(changes)) {
@@ -568,7 +568,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		element = formElement;
 		const listener = (event: SubmitEvent) => {
 			event.preventDefault();
-			submit(formElement.action);
+			const saveDraft = !!event.submitter?.dataset.draft
+			const versionId = event.submitter?.dataset.version
+			let action = saveDraft ? `${formElement.action}&draft=true` : formElement.action
+			if(versionId){
+				action += `&versionId=${versionId}`
+			}
+			submit(action);
 		};
 		formElement.addEventListener('submit', listener);
 		return {
@@ -594,7 +600,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		}
 		// Add a redirect parameter if we're in a nested form ex: relation creation
 		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
-
+		
 		// Combine all parts to form the final action URL
 		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};

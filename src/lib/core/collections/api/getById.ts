@@ -6,7 +6,7 @@ import { safe } from '$lib/util/safe.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
-		const { api, locale } = event.locals;
+		const { rizom, locale } = event.locals;
 		const { id } = event.params;
 
 		const paramLocale = event.url.searchParams.get('locale');
@@ -14,9 +14,9 @@ export default function (slug: CollectionSlug) {
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const [error, doc] = await safe(
-			api.collection(slug).findById({ id, locale: paramLocale || locale, depth })
+			rizom.collection(slug).findById({ id, locale: paramLocale || locale, depth })
 		);
-
+		
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

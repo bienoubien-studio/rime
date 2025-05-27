@@ -1,19 +1,41 @@
 <script lang="ts">
-	import { t__ } from '$lib/core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
+	import type { ButtonProps, ButtonVariant } from '../../ui/button/index.js';
 	import SpinLoader from '../../ui/spin-loader/SpinLoader.svelte';
 	import { Save } from '@lucide/svelte';
 
-	type Props = { disabled: boolean; processing: boolean; class?: string };
+	type Props = {
+		variant?: ButtonVariant;
+		disabled: boolean;
+		processing: boolean;
+		class?: string;
+		label: string;
+	} & ButtonProps;
 
-	const { disabled, processing, class: className }: Props = $props();
+	const {
+		formaction,
+		variant = 'default',
+		disabled,
+		processing,
+		label,
+		class: className,
+		...restProps
+	}: Props = $props();
+
 </script>
 
-<Button class={className || null} type="submit" {disabled}>
+<Button
+	{variant}
+	formaction={formaction || null}
+	class={className || null}
+	type="submit"
+	{disabled}
+	{...restProps}
+>
 	{#if processing}
 		<SpinLoader />
 	{:else}
 		<Save size="13" />
 	{/if}
-	{t__('common.save')}
+	{label}
 </Button>

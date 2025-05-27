@@ -4,9 +4,9 @@ import type { AreaData } from './props';
 
 export default function (slug: AreaSlug) {
 	const load = async ({ locals }: ServerLoadEvent): Promise<AreaData> => {
-		const { api, locale } = locals;
+		const { rizom, locale } = locals;
 
-		const area = api.area(slug);
+		const area = rizom.area(slug);
 		const authorizedRead = area.config.access.read(locals.user, {});
 		const authorizedUpdate = area.config.access.update(locals.user, {});
 
@@ -14,7 +14,7 @@ export default function (slug: AreaSlug) {
 			return { doc: {}, operation: 'update', status: 401 };
 		}
 
-		const doc = await api.area(slug).find({ locale });
+		const doc = await rizom.area(slug).find({ locale });
 
 		if (!authorizedUpdate) {
 			return { doc, operation: 'update', status: 200, readOnly: true };

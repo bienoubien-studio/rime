@@ -3,7 +3,7 @@ import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../../util/object.js';
 import { buildConfig } from './build/index.js';
 import { existsSync, mkdirSync } from 'fs';
-import type { CompiledConfig } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types/index.js';
 import type { AsyncReturnType, Dic } from '$lib/util/types.js';
 import type { CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
@@ -36,30 +36,44 @@ export async function createConfigInterface(rawConfig: Config) {
 		}
 	}
 
-	const getArea = (slug: string) => {
+	const getArea = (slug: string): CompiledArea => {
+		const isVersionArea = slug.includes('_versions')
+		slug = isVersionArea ? slug.replace('_versions', '') : slug
+		
 		const areaConfig = config.areas.find((g) => g.slug === slug);
 		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`)
+
+		if (isVersionArea) {
+			return { ...areaConfig, slug: slug + '_versions', versions: false } as CompiledArea
+		}
+
 		return areaConfig
 	};
-	
-	const getCollection = (slug: string) => {
+
+	const getCollection = (slug: string): CompiledCollection => {
 		const isVersionCollection = slug.includes('_versions')
 		slug = isVersionCollection ? slug.replace('_versions', '') : slug
+
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
 		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`)
-		return isVersionCollection ? { ...collectionConfig, slug: slug + '_versions', versions: false } : collectionConfig
+
+		if (isVersionCollection) {
+			return { ...collectionConfig, slug: slug + '_versions', versions: false } as CompiledCollection
+		}
+
+		return collectionConfig
 	};
-	
+
 	const getBySlug = (slug: string) => {
 		// Try to find in collections
-		try{
+		try {
 			const config = getCollection(slug)
 			return config
-		}catch{
-			try{
+		} catch {
+			try {
 				const config = getArea(slug)
 				return config
-			}catch{
+			} catch {
 				throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
 			}
 		}

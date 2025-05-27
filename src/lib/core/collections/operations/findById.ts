@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { LocalAPI } from '$lib/core/operations/local-api.server.js';
+import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
@@ -12,15 +12,14 @@ type Args = {
 	versionId?: string;
 	locale?: string | undefined;
 	config: CompiledCollection;
-	api: LocalAPI;
 	event: RequestEvent;
-	adapter: Adapter;
 	depth?: number;
 	select?: string[];
 };
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
-	const { config, event, id, versionId, adapter, locale, api, depth, select } = args;
+	const { config, event, id, versionId, locale, depth, select } = args;
+	const { rizom } = event.locals
 
 	/////////////////////////////////////////////
 	// Authorized
@@ -30,7 +29,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
 	}
 	
-	const documentRaw = await adapter.collection.findById({
+	const documentRaw = await rizom.adapter.collection.findById({
 		slug: config.slug,
 		id,
 		versionId,
@@ -41,19 +40,16 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	let document = await transformDocument<T>({
 		raw: documentRaw,
 		config,
-		api,
-		adapter,
 		locale,
 		depth,
 		event
 	});
-
+	
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'read',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});

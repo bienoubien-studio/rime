@@ -17,16 +17,12 @@ export const generatePK = (): string => {
 export async function updateTableRecord(db: any, tables: any, tableName: string, options: {
   recordId: string;
   data: any;
-  timestamp: Date;
 }) {
-  const { recordId, data, timestamp } = options;
+  const { recordId, data } = options;
   if (Object.keys(data).length) {
     await db
       .update(tables[tableName])
-      .set({
-        ...data,
-        updatedAt: timestamp
-      })
+      .set(data)
       .where(eq(tables[tableName].id, recordId));
   }
 }
@@ -119,6 +115,7 @@ export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string )
   }
 
   const versionData = doc[versionTableName][0];
+  
   return {
     ...omit([versionTableName], doc),
     ...omit(['id', 'ownerId', 'createdAt', 'updatedAt'], versionData),

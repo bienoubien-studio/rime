@@ -1,7 +1,7 @@
 import { type RequestEvent } from '@sveltejs/kit';
 import type {
 	Adapter,
-	LocalAPI,
+	Rizom,
 	GenericDoc,
 	CompiledCollection,
 	CollectionSlug
@@ -17,22 +17,23 @@ import { saveRelations } from '../../operations/relations/index.server.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
+import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 
 type Args<T> = {
 	id: string;
 	versionId?: string;
+	draft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
 	event: RequestEvent;
-	api: LocalAPI;
-	adapter: Adapter;
 	isFallbackLocale: boolean;
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, adapter, locale, api, id, versionId, isFallbackLocale } = args;
-	
+	const { config, event, locale, id, versionId, draft, isFallbackLocale } = args;
+	const { rizom } = event.locals
+
 	let data = args.data;
 
 	const authorized = config.access.update(event.locals.user, { id });
@@ -40,7 +41,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await api.collection(config.slug).findById({ locale, id, versionId })) as T;
+	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId })) as T;
 	
 	if (config.auth) {
 		/** Add auth fields into validation process */
@@ -50,7 +51,13 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	const configMap = buildConfigMap(data, config.fields);
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
-	data = await setDefaultValues({ data, adapter, configMap });
+	// If we are not updating a specific existing versions
+	// add fields from the original, that way required field values will be present
+	if(config.versions && !versionId){
+		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
+	}
+
+	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
 	
 	data = await validateFields({
 		data,
@@ -75,7 +82,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 				config,
 				originalDoc: original as RegisterCollection[CollectionSlug],
 				operation: 'update',
-				api,
 				rizom: event.locals.rizom,
 				event
 			});
@@ -85,9 +91,10 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	const incomingPaths = Object.keys(configMap);
 
-	const updateResult = await adapter.collection.update({
+	const updateResult = await rizom.adapter.collection.update({
 		id,
 		versionId,
+		draft,
 		slug: config.slug,
 		data: data,
 		locale: locale
@@ -100,7 +107,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		data,
 		incomingPaths,
 		original,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -112,7 +119,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		data,
 		incomingPaths,
 		original,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale
 	});
@@ -122,14 +129,14 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		configMap,
 		data,
 		incomingPaths,
-		adapter,
+		adapter: rizom.adapter,
 		config,
 		locale,
 		blocksDiff,
 		treeDiff
 	});
 
-	let document = await api.collection(config.slug).findById({ id, locale, versionId: updateResult.versionId });
+	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: updateResult.versionId });
 	
 	/**
 	 * @TODO handle url generation over all versions ??
@@ -145,7 +152,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		if (locales.length) {
 			for(const otherLocale of locales){
-				const documentLocale = await api.collection(config.slug).findById({ id, locale: otherLocale, versionId: updateResult.versionId });
+				const documentLocale = await rizom.collection(config.slug).findById({ id, locale: otherLocale, versionId: updateResult.versionId });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}
@@ -156,7 +163,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 			doc: document,
 			config,
 			operation: 'update',
-			api,
 			rizom: event.locals.rizom,
 			event
 		});

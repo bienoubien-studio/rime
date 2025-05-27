@@ -17,7 +17,13 @@ function createStore(initial?: string) {
 
 	setValue(initial);
 
-	const dateFormat = (date: Date, short = false) => {
+	const dateFormat = (date: Date | string, args: { short?:boolean, withTime?:boolean } = { short: false, withTime: false }) => {
+		const { short, withTime } = args
+		
+		if(typeof date === 'string'){
+			date = new Date(date)
+		}
+
 		const options: Intl.DateTimeFormatOptions = {
 			weekday: 'long',
 			year: 'numeric',
@@ -25,6 +31,12 @@ function createStore(initial?: string) {
 			day: 'numeric'
 		};
 		if (short) delete options.weekday;
+		if (withTime) {
+			options.hour = '2-digit';
+			options.minute = '2-digit';
+			options.second = '2-digit';
+			options.hour12 = false; // Use 24-hour format
+		}
 		if (bcp47) {
 			return date.toLocaleDateString(bcp47, options);
 		} else {

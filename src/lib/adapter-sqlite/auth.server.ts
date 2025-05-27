@@ -8,9 +8,10 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin, bearer } from 'better-auth/plugins';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import rizom from '$lib/core/main.server.js';
 import type { Dic } from '$lib/util/types.js';
 import { PANEL_USERS } from '$lib/core/constant.js';
+import type { ConfigInterface } from '$lib/core/config/index.server.js';
+import type { CorePlugins } from '$lib/core/types/plugins.js';
 
 
 const dev = process.env.NODE_ENV === 'development';
@@ -21,11 +22,12 @@ const dev = process.env.NODE_ENV === 'development';
  * @returns Object containing all auth-related functions
  */
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
-	const { db, schema, trustedOrigins } = args;
+	const { db, schema, configInterface } = args;
+	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer']
 
 	const betterAuth = initBetterAuth({
 		plugins: [bearer(), admin()],
-		trustedOrigins,
+		trustedOrigins: configInterface.raw.trustedOrigins,
 		database: drizzleAdapter(db, {
 			provider: 'sqlite',
 			schema: {
@@ -63,7 +65,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		emailAndPassword: {
 			enabled: true,
 			sendResetPassword: async ({ user, url }) => {
-				await rizom.plugins.mailer.sendMail({
+				await mailer.sendMail({
 					to: user.email,
 					subject: 'Reset your password',
 					text: `Click the link to reset your password: ${url}`
@@ -79,7 +81,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 */
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
-		const panelUsersTable = rizom.adapter.tables[PANEL_USERS]
+		const panelUsersTable = schema[PANEL_USERS]
 
 		if (users.length || !dev) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -132,7 +134,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * @returns BetterAuth user ID or null if not found
 	 */
 	const getAuthUserId = async ({ slug, id }: { slug: string; id: string }) => {
-		const userTable = rizom.adapter.tables[slug];
+		const userTable = schema[slug];
 		//@ts-expect-error slug is key of query
 		const user = await db.query[slug].findFirst({ where: eq(userTable.id, id) });
 		if (user) {
@@ -219,7 +221,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		authUserId,
 		slug
 	}: GetUserAttributesArgs): Promise<User | undefined> => {
-		const table = rizom.adapter.tables[slug];
+		const table = schema[slug];
 
 		const columns: Dic = {
 			id: table.id,
@@ -276,7 +278,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			throw new RizomFormError({ email: RizomFormError.INVALID_FIELD });
 		}
 
-		const userTable = rizom.adapter.tables[slug];
+		const userTable = schema[slug];
 
 		//@ts-expect-error will fix it
 		const user = await db.query[slug].findFirst({
@@ -411,7 +413,7 @@ type GetUserAttributesArgs = {
 type AuthDatabaseInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	schema: any;
-	trustedOrigins: string[];
+	configInterface: ConfigInterface;
 };
 
 type CreateFirstUserArgs = {

@@ -19,6 +19,6 @@ export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const event = args.event;
 	const id = (event && event.params.id) || '';
-	await cleanupStoredFiles({ config, api: args.api, id });
+	await cleanupStoredFiles({ config, rizom: args.rizom, id });
 	return args;
 };
