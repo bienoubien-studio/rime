@@ -44,7 +44,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	}
 
 	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId, draft: true })) as T;
-	
+
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
@@ -54,8 +54,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	// If we are not updating a specific existing versions
 	// add fields from the original, that way required field values will be present
-	if(config.versions && newDraft){
-		if(config.upload && !data.file && original.filename){
+	if (config.versions && newDraft) {
+		if (config.upload && !data.file && original.filename) {
 			// Create a File object from the existing file path
 			const filePath = path.resolve(process.cwd(), 'static', 'medias', original.filename);
 			try {
@@ -87,10 +87,10 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		configMap,
 		operation: 'update'
 	});
-	
+
 
 	// We do not re-run hooks on locale fallbackCreation
-	if(!isFallbackLocale){
+	if (!isFallbackLocale) {
 		for (const hook of config.hooks?.beforeUpdate || []) {
 			const result = await hook({
 				/**
@@ -98,7 +98,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 				 * but with RegisterCollection[Slug] devs get their 
 				 * types in the hook definition arguments
 				 */
-				data : data as DeepPartial<RegisterCollection[CollectionSlug]>,
+				data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
 				config,
 				originalDoc: original as RegisterCollection[CollectionSlug],
 				operation: 'update',
@@ -119,7 +119,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		data: data,
 		locale: locale
 	});
-	
+
 	const blocksDiff = await saveBlocks({
 		ownerId: updateResult.versionId,
 		configMap,
@@ -131,7 +131,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		config,
 		locale
 	});
-	
+
 	const treeDiff = await saveTreeBlocks({
 		ownerId: updateResult.versionId,
 		configMap,
@@ -157,21 +157,21 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: updateResult.versionId });
-	
+
 	/**
 	 * @TODO handle url generation over all versions ??
 	 */
 
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
-	
+
 	// If parent has changed populate URL for all language.
 	// Note : There is no need to update all localized url as
 	// if no parent the url is built with the document data only
-	if('parent' in data){
+	if ('parent' in data) {
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		if (locales.length) {
-			for(const otherLocale of locales){
+			for (const otherLocale of locales) {
 				const documentLocale = await rizom.collection(config.slug).findById({ id, locale: otherLocale, versionId: updateResult.versionId });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
