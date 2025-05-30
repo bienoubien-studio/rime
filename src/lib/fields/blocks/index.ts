@@ -130,9 +130,9 @@ class BlockBuilder {
 	}
 }
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 export type BlocksField = FormField & {
 	type: 'blocks';
 	tree?: boolean;
@@ -157,9 +157,9 @@ export type BlocksFieldRaw = FormField & {
 	blocks: WithoutBuilders<BlocksFieldBlock>[];
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		blocks: any;

@@ -28,9 +28,9 @@ class ComboBoxFieldBuilder extends SelectFieldBuilder<ComboBoxField> {
 
 export const combobox = (name: string) => new ComboBoxFieldBuilder(name, 'combobox');
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type ComboBoxField = FormField & {
 	type: 'combobox';
 	options: OptionWithIcon[];
@@ -38,9 +38,9 @@ export type ComboBoxField = FormField & {
 	unique?: boolean;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		combobox: any;

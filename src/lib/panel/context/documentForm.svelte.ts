@@ -579,9 +579,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			}
 			// As new draft ?
 			let action = formElement.action
-			const newDraft = !!event.submitter?.dataset.newDraft
-			if (newDraft) {
-				action += `&newDraft=true`
+			const draft = !!event.submitter?.dataset.draft
+			if (draft) {
+				action += `&draft=true`
 			}
 			submit(action);
 		};

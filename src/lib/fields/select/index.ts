@@ -21,7 +21,7 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 		const optionsJoinedType = this.field.options.map(o => o.value).join(' | ')
 		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
 	}
-	
+
 	many() {
 		this.field.many = true;
 		return this;
@@ -35,9 +35,9 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 
 export const select = (name: string) => new SelectManyFieldBuilder(name, 'select');
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 
 export type SelectField = FormField & {
 	type: 'select';
@@ -46,9 +46,9 @@ export type SelectField = FormField & {
 	many?: boolean;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		select: any;

@@ -107,9 +107,9 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 export const link = (name: string) => new LinkFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 
 export type LinkField = FormField & {
 	type: 'link';
@@ -119,9 +119,9 @@ export type LinkField = FormField & {
 	types?: LinkType[];
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		link: any;

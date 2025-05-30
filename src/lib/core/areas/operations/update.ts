@@ -13,6 +13,7 @@ import type { DeepPartial } from '$lib/util/types.js';
 import type { RegisterArea } from '$lib/index.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
+import { getVersionUpdateOperation, VERSIONS_OPERATIONS } from '$lib/core/operations/shared/get-versions-operation.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -20,37 +21,75 @@ type UpdateArgs<T> = {
 	config: CompiledArea;
 	event: RequestEvent;
 	versionId?: string;
-	newDraft?: boolean;
+	draft?: boolean;
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, locale, versionId, newDraft } = args;
+	const { config, event, locale } = args;
 	const { rizom } = event.locals
 	let data = args.data;
+	let versionId = args.versionId
+
+	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
+
+	// Version OUTCOMES : 
+	// a - update_latest
+	// b - update_published
+	// c - create_draft_from_published
+	// d - create_version_from_latest
+
+	// scenario 1 : no versions
+
+	// scenario 2 : versions but no draft
+	// a. if versionId update the versionId
+	// b. if no versionId create a new version
+
+	// scenario 3 : versions with drafts
+	// a. if versionId update the versionId
+	// b. if no versionId and draft is falsy update the published
+	// c. if no versionId and draft is true create a new draft from the published version
 
 	const authorized = config.access.update(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await rizom.area(config.slug).find({ locale, versionId, draft: true })) as unknown as T;
+	// Allow draft version to retrieve the latest
+	const original = (await rizom.area(config.slug).find({
+		locale,
+		versionId,
+		draft: [ VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST, VERSIONS_OPERATIONS.UPDATE_VERSION ].includes(versionOperation)
+	})) as unknown as T;
+
+	// // 3.b, 3.c, 2.b : when no versionId provided, get either : 
+	// // - the latest if draft is true
+	// // - the published if draft is false
+	// // set the versionId from the original to update the proper version
+	if (config.versions && !versionId) {
+		versionId = original.versionId
+	}
+	
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
-	// If we are not updating a specific existing versions
-	// add fields from the original doc in data, that way required field values will be present
+	// For scenario 2.b and 3.c a new version is created
+	// So add fields from the original doc in data, that way required field values will be present
 	// when creating the new version
-	if (config.versions && newDraft) {
+	if (config.versions && [ VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED, VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST ].includes(versionOperation)) {
 		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
+		if (config.versions.draft && !data.status) {
+			//@ts-ignore will fix this
+			data.status = "draft"
+		}
 	}
-
+	
 	const configMap = buildConfigMap(data, config.fields);
 
-	data = await setDefaultValues({ 
-		data, 
-		adapter: rizom.adapter, 
+	data = await setDefaultValues({
+		data,
+		adapter: rizom.adapter,
 		configMap,
-		mode: "required"
+		mode: [ VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED, VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST ].includes(versionOperation) ? "always" : "required"
 	});
 
 	data = await validateFields({
@@ -87,7 +126,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		data,
 		locale,
 		versionId,
-		newDraft
+		versionOperation
 	});
 
 	// Use the versionId from the update result for blocks, trees, and relations
@@ -129,7 +168,11 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 
 
 	// Get the updated area with the correct version ID
-	let document = await rizom.area(config.slug).find({ locale, versionId: updateResult.versionId, draft: true });
+	let document = await rizom.area(config.slug).find({ 
+		locale, 
+		versionId: updateResult.versionId, 
+		draft: true
+	});
 
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })

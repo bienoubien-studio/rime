@@ -69,9 +69,9 @@ class TabBuilder {
 	}
 }
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 export type TabsField = Field & {
 	type: 'tabs';
@@ -92,9 +92,9 @@ export type TabsFieldRaw = Field & {
 	tabs: Array<Omit<TabsFieldTab, 'fields'> & { fields: Field[] }>;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		tabs: Record<string, Record<string, any>>;

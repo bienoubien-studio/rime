@@ -6,7 +6,6 @@ import { isObjectLiteral, omit } from "$lib/util/object";
 import { transformDataToSchema } from "$lib/util/schema";
 import type { BuiltArea, BuiltCollection } from "../types.js";
 import type { OperationQuery, ParsedOperationQuery } from "$lib/core/types/index.js";
-import { logger } from "$lib/core/logger/index.server.js";
 
 /**
  * Main function to generated primaryKeys
@@ -129,7 +128,7 @@ export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string) 
 
 /**
  * Build the query params to get either the latest updated document
- * or the published one if version.draft is enabled
+ * or the published one if version.draft is enabled and draft is true
  */
 export function buildPublishedOrLatestVersionParams( args: { draft?: boolean, config: BuiltArea | BuiltCollection, table: any }) {
   const { config, table, draft } = args

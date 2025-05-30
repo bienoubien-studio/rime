@@ -73,7 +73,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	find({ select: selectArray, query, locale, sort = '-createdAt', depth = 0, limit, offset, draft }: FindArgs): Promise<Doc[]> {
+	find({ select: selectArray, query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft }: FindArgs): Promise<Doc[]> {
 		
 		this.#rizom.preventOperationLoop()
 
@@ -109,7 +109,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 		return find<Doc>(params);
 	}
-
+	
 	findById({ id, versionId, locale, draft, depth = 0 }: FindByIdArgs): Promise<Doc> {
 		
 		this.#rizom.preventOperationLoop()
@@ -144,14 +144,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, versionId, data, locale, newDraft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
+	updateById({ id, versionId, data, locale, draft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
 
 		this.#rizom.preventOperationLoop()
 
 		return updateById<Doc>({
 			id,
 			versionId,
-			newDraft,
+			draft,
 			data,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -210,7 +210,7 @@ type FindByIdArgs = {
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
 	versionId?: string;
-	newDraft?: boolean;
+	draft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string;
 	isFallbackLocale?: boolean;

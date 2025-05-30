@@ -24,7 +24,7 @@ import path from 'node:path';
 type Args<T> = {
 	id: string;
 	versionId?: string;
-	newDraft?: boolean;
+	draft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
@@ -33,28 +33,43 @@ type Args<T> = {
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, locale, id, versionId, newDraft, isFallbackLocale } = args;
+	const { config, event, locale, id, versionId, isFallbackLocale } = args;
 	const { rizom } = event.locals
-
 	let data = args.data;
+	let draft: boolean | undefined
 
 	const authorized = config.access.update(event.locals.user, { id });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId, draft: true })) as T;
+	// scenario 1 : no versions
+	
+	// scenario 2 : versions but no draft
+	// a. if versionId update the versionId
+	// b. if no versionId create a new version
+	if(config.versions && !config.versions.draft && !versionId){
+		draft = true
+	}
+
+	// scenario 3 : versions with drafts
+	// a. if versionId update the versionId
+	// b. if no versionId and draft is not true update the published
+	// c. if no versionId and draft is true update the latest
+
+	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId, draft })) as T;
 
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
-
+	
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
-	// If we are not updating a specific existing versions
-	// add fields from the original, that way required field values will be present
-	if (config.versions && newDraft) {
+	// For scenario 2.b and 3.c a new version is created
+	// so add fields from the original, that way required field values will be present
+	// also get the original file if we are on an upload collection
+	if (config.versions && draft) {
 		if (config.upload && !data.file && original.filename) {
 			// Create a File object from the existing file path
 			const filePath = path.resolve(process.cwd(), 'static', 'medias', original.filename);
@@ -65,7 +80,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 				console.error(`Failed to create file from path: ${filePath}`, err);
 			}
 		}
-
 		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
 	}
 
@@ -114,7 +128,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	const updateResult = await rizom.adapter.collection.update({
 		id,
 		versionId,
-		newDraft,
+		draft,
 		slug: config.slug,
 		data: data,
 		locale: locale

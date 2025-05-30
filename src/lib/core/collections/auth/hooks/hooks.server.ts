@@ -8,9 +8,9 @@ import type {
 	CollectionHookBeforeUpdate
 } from '$lib/core/config/types/hooks.js';
 
-/////////////////////////////////////////////
-// Create a better-auth user before creation
-//////////////////////////////////////////////
+/****************************************************/
+/* Create a better-auth user before creation
+/****************************************************/
 export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 	const { rizom } = args;
 
@@ -37,11 +37,11 @@ export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 	};
 };
 
-//////////////////////////////////////////////
-// After creation set proper better-auth role
+/****************************************************/
+/* After creation set proper better-auth role
 // as it's not working with signupEmail
 // Only admin can change roles
-//////////////////////////////////////////////
+/****************************************************/
 export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) => {
 	const { rizom, event, doc } = args;
 	const isAdmin = 'roles' in doc && Array.isArray(doc.roles) && doc.roles.includes('admin');
@@ -56,11 +56,11 @@ export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) =
 	return args;
 };
 
-//////////////////////////////////////////////
-// Before update :
+/****************************************************/
+/* Before update :
 // - set proper better-auth role
 // - prevent superadmin to be changed by someone else
-//////////////////////////////////////////////
+/****************************************************/
 export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args) => {
 	const { rizom, event, originalDoc } = args;
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
@@ -89,9 +89,9 @@ export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args)
 	return args;
 };
 
-//////////////////////////////////////////////
-// Prevent superadmin to be deleted
-//////////////////////////////////////////////
+/****************************************************/
+/* Prevent superadmin to be deleted
+/****************************************************/
 export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 	const { doc, rizom } = args;
 	const isSuperAdminDeletion = await rizom.auth.isSuperAdmin(doc.id);
@@ -101,9 +101,9 @@ export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 	return args;
 };
 
-//////////////////////////////////////////////
-// After delete, delete better-auth user
-//////////////////////////////////////////////
+/****************************************************/
+/* After delete, delete better-auth user
+/****************************************************/
 export const afterDelete: CollectionHookAfterDelete = async (args) => {
 	const { doc, rizom } = args;
 	await rizom.auth.deleteAuthUserById({

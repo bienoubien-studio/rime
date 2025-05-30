@@ -98,9 +98,9 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 
 export const relation = (name: string) => new RelationFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	type: 'relation';
 	relationTo: CollectionSlug;
@@ -112,9 +112,9 @@ export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 
 type QueryResolver<Doc extends GenericDoc = GenericDoc> = (doc: Doc) => string;
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		relation: any;

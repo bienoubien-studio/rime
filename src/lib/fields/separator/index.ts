@@ -10,16 +10,16 @@ class SeparatorFieldBuilder extends FieldBuilder<SeparatorField> {
 
 export const separator = () => new SeparatorFieldBuilder('separator');
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type SeparatorField = Field & {
 	type: 'separator';
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		separator: any;

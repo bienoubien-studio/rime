@@ -29,18 +29,18 @@ class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 export type ComponentField = Field & {
 	type: 'component';
 	component: TypedComponent;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		component: any;

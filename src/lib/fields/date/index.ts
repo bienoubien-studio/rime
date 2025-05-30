@@ -36,7 +36,7 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 	toSchema(parentPath?: string) {
 		const { camel, snake } = this.getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		return `${camel}: integer('${snake}', { mode : 'timestamp' })${suffix}`;
+		return `${camel}: integer('${snake}', { mode : 'timestamp_ms' })${suffix}`;
 	}
 
 	defaultValue(value: Date) {
@@ -62,9 +62,9 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type DateField = FormField & {
 	type: 'date';
 	defaultValue?: Date | (() => Date);
@@ -72,9 +72,9 @@ export type DateField = FormField & {
 	isTitle?: true;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		date: any;

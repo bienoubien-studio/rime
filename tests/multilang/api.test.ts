@@ -10,9 +10,9 @@ let token: string;
 
 
 
-//////////////////////////////////////////////
-// Init
-//////////////////////////////////////////////
+/****************************************************/
+/* Init
+/****************************************************/
 test('Second init should return 404', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/init`, {
 		data: {
@@ -24,9 +24,9 @@ test('Second init should return 404', async ({ request }) => {
 	expect(response.status()).toBe(404);
 });
 
-//////////////////////////////////////////////
-// Login
-//////////////////////////////////////////////
+/****************************************************/
+/* Login
+/****************************************************/
 
 let adminUserId: string;
 
@@ -62,9 +62,9 @@ test('Login should be successfull', async ({ request }) => {
 	adminUserId = json.user.id;
 });
 
-///////////////////////////////////////////////
+/****************************************************//
 // Collections
-//////////////////////////////////////////////
+/****************************************************/
 
 let homeId: string;
 let pageId: string;
@@ -369,9 +369,9 @@ test('Should return home FR (query) with select', async ({ request }) => {
 	expect(Object.keys(response.docs[0]).length).toBe(2);
 });
 
-// //////////////////////////////////////////////
-// // Upload Collection
-// //////////////////////////////////////////////
+// /****************************************************/
+/* // Upload Collection
+// /****************************************************/
 
 let imageID: string
 test('Should create a Media', async ({ request }) => {
@@ -498,9 +498,9 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 });
 
 
-//////////////////////////////////////////////
-// BLOCKS Localized
-//////////////////////////////////////////////
+/****************************************************/
+/* BLOCKS Localized
+/****************************************************/
 let pageWithBlockID: string
 test('Should create a page with blocks', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
@@ -607,9 +607,9 @@ test('Should still get the FR content of page with blocks', async ({ request }) 
 	expect(doc.locale).toBe('fr');
 })
 
-//////////////////////////////////////////////
-// TREE Localized
-//////////////////////////////////////////////
+/****************************************************/
+/* TREE Localized
+/****************************************************/
 test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/menu?locale=en`, {
 		headers: {
@@ -699,9 +699,9 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 	expect(doc.locale).toBe('fr');
 })
 
-//////////////////////////////////////////////
-// AUTH Collection
-//////////////////////////////////////////////
+/****************************************************/
+/* AUTH Collection
+/****************************************************/
 
 let editorId: string;
 
@@ -776,9 +776,9 @@ test('Should not create a page', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-//////////////////////////////////////////////
-// Area
-//////////////////////////////////////////////
+/****************************************************/
+/* Area
+/****************************************************/
 
 test('Login should be successfull (again)', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
@@ -909,9 +909,9 @@ test('Should get informations', async ({ request }) => {
 	expect(response.doc.instagram).toBe('@fooo');
 });
 
-/////////////////////////////////////////////
-// Relations
-//////////////////////////////////////////////
+/****************************************************/
+/* Relations
+/****************************************************/
 
 let page2Id: string;
 let editor2Id: string;
@@ -1141,9 +1141,9 @@ test('Should delete test page', async ({ request }) => {
 	expect(response.status()).toBe(200);
 });
 
-//////////////////////////////////////////////
-// Editor access
-//////////////////////////////////////////////
+/****************************************************/
+/* Editor access
+/****************************************************/
 
 test('Should logout admin user', async ({ request }) => {
 	const response = await request
@@ -1215,9 +1215,9 @@ test('Editor should update home', async ({ request }) => {
 	expect(data.doc.attributes.title).toBe('Home edited by editor');
 });
 
-//////////////////////////////////////////////
-// Auth Lock
-//////////////////////////////////////////////
+/****************************************************/
+/* Auth Lock
+/****************************************************/
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request

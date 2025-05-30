@@ -16,7 +16,7 @@ export default function (slug: CollectionSlug) {
 
 		const apiParams = {
 			locale: params.get('locale') || locale,
-			sort: params.get('sort') || '-createdAt',
+			sort: params.get('sort') || undefined,
 			depth: params.get('depth') ? parseInt(params.get('depth')!) : 0,
 			limit: params.get('limit') ? parseInt(params.get('limit')!) : undefined,
 			offset: params.get('offset') ? parseInt(params.get('offset')!) : undefined,

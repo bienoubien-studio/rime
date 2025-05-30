@@ -576,9 +576,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			return isUploadConfig(config);
 		},
 
-		/////////////////////////////////////////////
+		/****************************************************/
 		// Docs
-		//////////////////////////////////////////////
+		/****************************************************/
 		addDoc,
 		updateDoc,
 		deleteDoc,

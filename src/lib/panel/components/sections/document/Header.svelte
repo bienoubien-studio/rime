@@ -84,7 +84,7 @@
 				disabled={!form.canSubmit}
 				processing={form.processing}
 				data-submit
-				data-new-draft
+				data-draft
 			/>
 
 			<Button onclick={() => goto(versionsUrl)} variant="outline" icon={History} size="icon" />
@@ -100,7 +100,7 @@
 				processing={form.processing}
 				label={t__('common.save_new_draft')}
 				data-status="draft"
-				data-new-draft
+				data-draft
 			/>
 
 			<!-- PUBLISH -->

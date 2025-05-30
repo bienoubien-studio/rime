@@ -152,9 +152,8 @@ test.describe('Admin panel', () => {
 		await passwordInput.pressSequentially('a&1Aa&1A', { delay: 100 });
 		// Submit the form
 		await submitButton.click();
-		// Wait for navigation after login
 		await page.waitForNavigation();
-
+		
 		const globals = [{ slug: 'settings', label: 'Settings' }];
 
 		for (const { slug, label } of globals) {
@@ -262,7 +261,7 @@ test.describe('Lock user', () => {
 			await submitButton.click();
 		}
 		// Wait for navigation after successive login failed
-		await page.waitForNavigation();
+		await page.waitForURL(`${BASE_URL}/locked`);
 		expect(page.url()).toBe(`${BASE_URL}/locked`);
 	});
 });

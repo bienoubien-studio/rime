@@ -14,9 +14,9 @@ let adminToken: string;
 let superAdminId: string;
 let superAdminToken: string;
 
-//////////////////////////////////////////////
-// Init
-//////////////////////////////////////////////
+/****************************************************/
+/* Init
+/****************************************************/
 
 test('Second init should return 404', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/init`, {
@@ -29,9 +29,9 @@ test('Second init should return 404', async ({ request }) => {
 	expect(response.status()).toBe(404);
 });
 
-//////////////////////////////////////////////
-// Login
-//////////////////////////////////////////////
+/****************************************************/
+/* Login
+/****************************************************/
 
 test('Login should not be successfull', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
@@ -61,9 +61,9 @@ test('Superadmin login should be successfull', async ({ request }) => {
 	superAdminId = json.user.id;
 });
 
-///////////////////////////////////////////////
+/****************************************************//
 // Collection create / update / delete / read
-//////////////////////////////////////////////
+/****************************************************/
 
 let homeId: string;
 let pageId: string;
@@ -205,9 +205,9 @@ test('Should return 1 page', async ({ request }) => {
 	expect(response.docs.length).toBe(1);
 });
 
-//////////////////////////////////////////////
-// Offset / Limit
-//////////////////////////////////////////////
+/****************************************************/
+/* Offset / Limit
+/****************************************************/
 
 test('Should get correct offset / limit', async ({ request }) => {
 	const headers = {
@@ -294,9 +294,9 @@ test('Should get correct offset / limit', async ({ request }) => {
 });
 
 
-//////////////////////////////////////////////
-// Upload Collection
-//////////////////////////////////////////////
+/****************************************************/
+/* Upload Collection
+/****************************************************/
 
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
@@ -318,9 +318,9 @@ test('Should create a Media', async ({ request }) => {
 	expect(doc.mimeType).toBe('image/jpeg');
 });
 
-//////////////////////////////////////////////
-// AUTH Collection
-//////////////////////////////////////////////
+/****************************************************/
+/* AUTH Collection
+/****************************************************/
 
 test('Should not get users', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}`);
@@ -599,9 +599,9 @@ test('Admin should not change superAdmin roles', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-//////////////////////////////////////////////
-// Area
-//////////////////////////////////////////////
+/****************************************************/
+/* Area
+/****************************************************/
 
 test('SuperAdmin login should be successfull (again)', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
@@ -670,9 +670,9 @@ test('Should get settings with only id and maintenance', async ({ request }) => 
 	expect(Object.keys(response.doc).length).toBe(2)
 });
 
-//////////////////////////////////////////////
-// Editor access
-//////////////////////////////////////////////
+/****************************************************/
+/* Editor access
+/****************************************************/
 
 test('Should not logout admin user', async ({ request }) => {
 	const response = await request
@@ -827,9 +827,9 @@ test('Editor should not update other editors', async ({ request }) => {
 });
 
 
-//////////////////////////////////////////////
-// Auth Lock
-//////////////////////////////////////////////
+/****************************************************/
+/* Auth Lock
+/****************************************************/
 
 test('Should not logout editor', async ({ request }) => {
 	const response = await request

@@ -5,9 +5,9 @@ import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
 import { safe } from '$lib/util/safe';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 
-/////////////////////////////////////////////
-// Document Load
-//////////////////////////////////////////////
+/****************************************************/
+/* Document Load
+/****************************************************/
 export function docLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {

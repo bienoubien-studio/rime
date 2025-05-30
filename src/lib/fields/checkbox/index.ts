@@ -19,17 +19,17 @@ class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
 
 export const checkbox = (name: string) => new CheckboxFieldBuilder(name, 'checkbox');
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type CheckboxField = FormField & {
 	type: 'checkbox';
 	defaultValue?: boolean;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		checkbox: any;

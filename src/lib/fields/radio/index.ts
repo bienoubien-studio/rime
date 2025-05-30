@@ -28,9 +28,9 @@ class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 
 export const radio = (name: string) => new RadioFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 
 export type RadioField = FormField & {
 	type: 'radio';
@@ -39,9 +39,9 @@ export type RadioField = FormField & {
 	many: false;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		radio: any;

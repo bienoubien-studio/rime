@@ -38,9 +38,9 @@ class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type TimeField = FormField & {
 	type: 'time';
 	defaultValue?: string | (() => string);
@@ -48,9 +48,9 @@ export type TimeField = FormField & {
 	isTitle?: true;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		time: any;

@@ -4,7 +4,7 @@ import Text from './component/Text.svelte';
 import { capitalize } from '$lib/util/string.js';
 import type { FormField } from '$lib/fields/types.js';
 
-//////////////////////////////////////////////
+/****************************************************/
 class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	unique() {
 		this.field.unique = true;
@@ -66,9 +66,9 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 
 export const text = (name: string) => new TextFieldBuilder(name, 'text');
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type TextField = FormField & {
 	type: 'text';
 	defaultValue?: string;
@@ -78,9 +78,9 @@ export type TextField = FormField & {
 	layout: 'compact';
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		text: any;

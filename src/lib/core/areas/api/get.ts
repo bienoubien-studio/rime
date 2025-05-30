@@ -3,6 +3,7 @@ import { handleError } from '$lib/core/errors/handler.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
 import { safe } from '$lib/util/safe.js';
 import type { Dic } from '$lib/util/types';
+import { logger } from '$lib/core/logger/index.server.js';
 
 export default function (slug: AreaSlug) {
 	//
@@ -12,15 +13,17 @@ export default function (slug: AreaSlug) {
 		const paramLocale = event.url.searchParams.get('locale');
 		const paramDepth = event.url.searchParams.get('depth');
 		const paramSelect = event.url.searchParams.get('select');
-		const paramDraft = event.url.searchParams.get('draft');
+		const versionId = event.url.searchParams.get('versionId') || undefined;
+		const draft = event.url.searchParams.get('draft') ? event.url.searchParams.get('draft') === 'true' : undefined;
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const params: Dic = {
 			locale: paramLocale || locale,
-			draft: paramDraft,
+			draft,
+			versionId,
 			depth
 		};
-
+			
 		if (paramSelect) {
 			params.select = paramSelect.split(',');
 		}

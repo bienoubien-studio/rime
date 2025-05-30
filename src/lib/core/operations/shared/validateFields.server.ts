@@ -28,9 +28,9 @@ export const validateFields = async <T extends GenericDoc>(args: {
 	for (const [key, config] of Object.entries(configMap)) {
 		let value: any = getValueAtPath(key, output);
 		
-		/////////////////////////////////////////////
-		// Validation
-		//////////////////////////////////////////////
+		/****************************************************/
+		/* Validation
+		/****************************************************/
 
 		// Required
 		if (config.required && config.isEmpty(value)) {
@@ -53,9 +53,9 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			}
 		}
 
-		/////////////////////////////////////////////
-		// Field hook before validate
-		//////////////////////////////////////////////
+		/****************************************************/
+		/* Field hook before validate
+		/****************************************************/
 
 		if (config.hooks?.beforeValidate) {
 			if (value) {
@@ -66,9 +66,9 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			}
 		}
 
-		/////////////////////////////////////////////
-		// Validate
-		//////////////////////////////////////////////
+		/****************************************************/
+		/* Validate
+		/****************************************************/
 
 		if (config.validate && value) {
 			try {
@@ -89,9 +89,9 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			}
 		}
 
-		/////////////////////////////////////////////
-		// Field hook before Save
-		//////////////////////////////////////////////
+		/****************************************************/
+		/* Field hook before Save
+		/****************************************************/
 
 		if (config.hooks?.beforeSave) {
 			if (value) {
@@ -102,9 +102,9 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			}
 		}
 
-		/////////////////////////////////////////////
-		// Access
-		//////////////////////////////////////////////
+		/****************************************************/
+		/* Access
+		/****************************************************/
 
 		if (config.access && config.access.update && operation === 'update') {
 			const authorizedFieldUpdate = config.access.update(user, {

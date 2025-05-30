@@ -46,9 +46,9 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 
 export const group = (name: string) => new GroupFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 export type GroupField = FormField & {
 	type: 'group';
@@ -64,9 +64,9 @@ export type GroupFieldRaw = FormField & {
 	fields: Field[];
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		group: Record<string, any>;

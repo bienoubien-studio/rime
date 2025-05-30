@@ -33,6 +33,7 @@ export const cache: Plugin<CacheOptions> = (options) => {
 		isEnabled: options?.isEnabled || ((event) => !event.locals.user)
 	};
 
+	
 	return {
 		name: 'cache',
 		core: true,

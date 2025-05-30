@@ -55,9 +55,9 @@ class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type TextAreaField = FormField & {
 	type: 'textarea';
 	defaultValue?: string;
@@ -65,9 +65,9 @@ export type TextAreaField = FormField & {
 	placeholder: string;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		textarea: any;

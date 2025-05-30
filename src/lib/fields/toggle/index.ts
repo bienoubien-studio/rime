@@ -45,18 +45,18 @@ export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 
 export const toggle = (name: string) => new ToggleFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 
 export interface ToggleField extends FormField {
 	type: 'toggle';
 	defaultValue?: boolean;
 }
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		toggle: any;

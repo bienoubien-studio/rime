@@ -22,9 +22,9 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, versionId, locale, depth, select, draft } = args;
 	const { rizom } = event.locals
 
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Authorized
-	//////////////////////////////////////////////
+	/****************************************************/
 	const authorized = config.access.read(event.locals.user, { id });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);

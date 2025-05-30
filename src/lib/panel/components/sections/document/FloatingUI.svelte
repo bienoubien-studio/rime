@@ -38,7 +38,6 @@
 			class="rz-floating-ui__save"
 			disabled={!form.canSubmit}
 			processing={form.processing}
-			data-version={form.doc.versionId || null}
 		/>
 	{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
 		<ButtonSave
@@ -46,7 +45,6 @@
 			class="rz-floating-ui__save"
 			disabled={!form.canSubmit}
 			processing={form.processing}
-			data-version={form.doc.versionId || null}
 			data-draft
 		/>
 	{:else}
@@ -55,10 +53,9 @@
 			class="rz-floating-ui__save"
 			disabled={!form.canSubmit}
 			processing={form.processing}
-			data-version={form.doc.versionId || null}
 		/>
 	{/if}
-	
+
 	{#if form.config.url}
 		<LanguageSwitcher onLocalClick={onLocaleClick} />
 	{/if}

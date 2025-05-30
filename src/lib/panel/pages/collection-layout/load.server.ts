@@ -1,9 +1,9 @@
 import { type ServerLoad } from '@sveltejs/kit';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 
-/////////////////////////////////////////////
-// Layout load
-//////////////////////////////////////////////
+/****************************************************/
+/* Layout load
+/****************************************************/
 export function layoutLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {

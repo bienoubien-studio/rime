@@ -27,18 +27,24 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 	const rootTable = tables[slug];
 	by = by ? pathToDatabaseColumn(by) : by
 	
-	// If no sort parameter or sorting by system fields (createdAt/updatedAt),
-	// default to descending by createdAt on the main table
-	if (!by || by === 'createdAt' || by === 'updatedAt' || by === '-createdAt' || by === '-updatedAt') {
+	// Default case: no sort parameter provided
+	if (!by) {
+		// Default to sorting by updatedAt in descending order
+		return [desc(rootTable.updatedAt)];
+	}
+	
+	// Handle system fields (createdAt/updatedAt)
+	if (by === 'createdAt' || by === 'updatedAt' || by === '-createdAt' || by === '-updatedAt') {
+		// Determine sort direction (asc/desc) based on presence of '-' prefix
 		const orderFunc = getOrderFunc(by);
-		const columnStr = by ? by.replace(/^-/, '') : 'createdAt';
+		// Remove the '-' prefix if present to get the actual column name
+		const columnStr = by.replace(/^-/, '');
 		return [orderFunc(rootTable[columnStr])];
 	}
 	
-	// Parse the sort parameter for other fields
 	const orderFunc = getOrderFunc(by);
 	const columnStr = by.replace(/^-/, '');
-	
+
 	// For non-versioned collections
 	if (!hasVersions) {
 		const rootTableColumns = Object.keys(getTableColumns(rootTable));

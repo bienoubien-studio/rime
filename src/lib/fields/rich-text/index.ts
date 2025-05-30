@@ -107,9 +107,9 @@ export type RichTextField = FormField & {
 	defaultValue?: { type: 'doc'; content: any[] };
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 
 declare module 'rizom' {
 	interface RegisterFieldsType {

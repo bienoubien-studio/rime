@@ -19,9 +19,9 @@ type Args = {
 
 const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
 
-	//////////////////////////////////////////////
-	// Find by Id
-	//////////////////////////////////////////////
+	/****************************************************/
+	/* Find by Id
+	/****************************************************/
 
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
@@ -84,9 +84,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	//////////////////////////////////////////////
+	/****************************************************/
 	// Delete a document by ID
-	//////////////////////////////////////////////
+	/****************************************************/
 
 	const deleteById: DeleteById = async ({ slug, id }) => {
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
@@ -96,9 +96,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		return docs[0].id;
 	};
 
-	//////////////////////////////////////////////
+	/****************************************************/
 	// Create a new document
-	//////////////////////////////////////////////
+	/****************************************************/
 
 	const insert: Insert = async ({ slug, data, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
@@ -189,7 +189,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	const update: Update = async ({ slug, id, versionId, data, locale, newDraft }) => {
+	const update: Update = async ({ slug, id, versionId, data, locale, draft }) => {
 
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
@@ -225,7 +225,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// For non-versioned collections, versionId is the same as id
 			// it is used for saving blocks/relations/tree with cirrect ownerId
 			return { id, versionId: id };
-		} else if (isVersioned && versionId && !newDraft) {
+		} else if (isVersioned && versionId && !draft) {
 
 			// Scenario 1: Update a specific version directly
 
@@ -318,9 +318,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	//////////////////////////////////////////////
+	/****************************************************/
 	// Find documents
-	//////////////////////////////////////////////
+	/****************************************************/
 
 	const find: FindDocuments = async ({ slug, select, query: incomingQuery, sort, limit, offset, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
@@ -332,11 +332,11 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Original implementation for non-versioned collections
 			const params: Dic = {
 				with: buildWithParam({ slug, select, tables, configInterface, locale }) || undefined,
-				orderBy: sort ? buildOrderByParam({ slug, locale, tables, configInterface, by: sort }) : undefined,
+				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort }),
 				limit: limit || undefined,
 				offset: offset || undefined
 			};
-
+			
 			if (query) {
 				params.where = buildWhereParam({ query, slug, locale, db })
 			}
@@ -482,9 +482,9 @@ export default createAdapterCollectionInterface;
 
 export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollectionInterface>;
 
-//////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 type FindDocuments = (args: {
 	slug: PrototypeSlug;
@@ -524,7 +524,7 @@ type Update = (args: {
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
 	/** Optional parameter to specify if should save as new draft */
-	newDraft?: boolean;
+	draft?: boolean;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<{ id: string; versionId: string }>;

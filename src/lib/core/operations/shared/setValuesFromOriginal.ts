@@ -11,6 +11,8 @@ export const setValuesFromOriginal = async <T extends Dic>(args: {
   const { original, configMap } = args;
   let output = { ...args.data };
   for (const [key, config] of Object.entries(configMap)) {
+    // skip the status prop to prevent publishing a new created doc
+    if(key === 'status') continue
     let value = getValueAtPath(key, output);
     let isEmpty;
     

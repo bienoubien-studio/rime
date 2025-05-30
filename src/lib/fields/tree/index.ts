@@ -146,9 +146,9 @@ export const treeToString = (blocks: TreeBlock[] | undefined | null) => {
 	return '=====================\n' + transformToIndentedString(representation);
 };
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 export type TreeField = FormField & {
 	type: 'tree';
@@ -162,9 +162,9 @@ export type TreeFieldBlockRenderTitle = (args: { values: Dic }) => string;
 
 export type TreeFieldRaw = FormField & Omit<TreeField, 'fields'> & { fields: Field[] };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		tree: any;

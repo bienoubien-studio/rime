@@ -111,9 +111,9 @@ export default createAdapterBlocksInterface;
 
 export type AdapterBlocksInterface = ReturnType<typeof createAdapterBlocksInterface>;
 
-//////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 type UpdateBlock = (args: {
     parentSlug: string;

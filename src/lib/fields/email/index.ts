@@ -45,9 +45,9 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 
 export const email = (name: string) => new EmailFieldBuilder(name);
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type EmailField = FormField & {
 	type: 'email';
 	defaultValue?: string;
@@ -56,9 +56,9 @@ export type EmailField = FormField & {
 	isTitle?: true;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		email: any;

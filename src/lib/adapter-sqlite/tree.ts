@@ -118,9 +118,9 @@ export default createAdapterTreeInterface;
 
 export type AdapterTreeInterface = ReturnType<typeof createAdapterTreeInterface>;
 
-//////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 type UpdateBlock = (args: {
 	parentSlug: string;

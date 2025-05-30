@@ -68,9 +68,9 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 export type SlugField = FormField & {
 	type: 'slug';
 	slugify?: string;
@@ -80,9 +80,9 @@ export type SlugField = FormField & {
 	layout: 'compact' | 'default';
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		slug: any;

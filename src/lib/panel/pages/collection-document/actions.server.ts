@@ -6,9 +6,9 @@ import { safe } from '$lib/util/safe';
 
 export default function (slug: CollectionSlug) {
 	const actions: Actions = {
-		//////////////////////////////////////////////
+		/****************************************************/
 		// Create
-		//////////////////////////////////////////////
+		/****************************************************/
 		create: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
 			
@@ -37,21 +37,21 @@ export default function (slug: CollectionSlug) {
 			return redirect(303, `/panel/${slug}/${result.doc.id}`);
 		},
 
-		//////////////////////////////////////////////
+		/****************************************************/
 		// Update
-		//////////////////////////////////////////////
+		/****************************************************/
 		update: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
 			const id = event.params.id || '';
 			const versionId = event.url.searchParams.get('versionId') || undefined
-			const newDraft = event.url.searchParams.get('newDraft') === 'true';
+			const draft = event.url.searchParams.get('draft') === 'true';
 			
 			const [error, doc] = await safe(
 				rizom.collection(slug).updateById({
 					id,
 					data: await extractData(event.request),
 					versionId,
-					newDraft,
+					draft,
 					locale
 				})
 			);
@@ -60,7 +60,7 @@ export default function (slug: CollectionSlug) {
 				return handleError(error, { context: 'action' });
 			}
 			
-			if(newDraft && 'versionId' in doc){
+			if(draft && 'versionId' in doc){
 				const referer = event.request.headers.get('referer')
 				if(referer && referer.includes('/versions')){
 					return redirect(303, `/panel/${slug}/${doc.id}/versions?versionId=${doc.versionId}`)

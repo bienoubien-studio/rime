@@ -20,9 +20,9 @@ import type { Rizom } from '../core/rizom.server.js';
 import { logger } from '../core/logger/index.server.js';
 import { getBlocksTableNames, getTreeTableNames, makeVersionsTableName, transformDatabaseColumnsToPaths } from '../util/schema.js';
 
-/////////////////////////////////////////////
-// Types
-//////////////////////////////////////////////
+/****************************************************/
+/* Types
+/****************************************************/
 
 type CreateTransformInterfaceArgs = {
 	configInterface: ConfigInterface;
@@ -30,9 +30,9 @@ type CreateTransformInterfaceArgs = {
 };
 export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 
-/////////////////////////////////////////////
-// Interface
-//////////////////////////////////////////////
+/****************************************************/
+/* Interface
+/****************************************************/
 
 export const databaseTransformInterface = ({
 	configInterface,
@@ -86,9 +86,9 @@ export const databaseTransformInterface = ({
 		// Transform flattened keys from database schema format to document format
 		flatDoc = transformDatabaseColumnsToPaths(flatDoc);
 		
-		/////////////////////////////////////////////
+		/****************************************************/
 		// Blocks handling
-		//////////////////////////////////////////////
+		/****************************************************/
 
 		/** Extract all blocks  */
 		const blocksTables = getBlocksTableNames(tableName, tables);
@@ -118,9 +118,9 @@ export const databaseTransformInterface = ({
 			flatDoc[`${path}.${position}`] = block;
 		}
 
-		/////////////////////////////////////////////
+		/****************************************************/
 		// Tree handling
-		//////////////////////////////////////////////
+		/****************************************************/
 
 		/** Extract all blocks  */
 		const treeTables = getTreeTableNames(tableName, tables);

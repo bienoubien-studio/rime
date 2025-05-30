@@ -10,12 +10,19 @@ export default function (slug: AreaSlug) {
 		const { rizom, locale } = event.locals;
 
 		const paramLocale = event.url.searchParams.get('locale');
+		const versionId = event.url.searchParams.get('versionId') || undefined;
+		const draft = event.url.searchParams.get('draft') ? event.url.searchParams.get('draft') === 'true' : undefined;
 		const data = await extractData(event.request);
-
-		const [error, doc] = await safe(
-			rizom.area(slug).update({ data, locale: paramLocale || data.locale || locale })
-		);
 		
+		const [error, doc] = await safe(
+			rizom.area(slug).update({ 
+				data,
+				versionId,
+				draft,
+				locale: paramLocale || data.locale || locale 
+			})
+		);
+			
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

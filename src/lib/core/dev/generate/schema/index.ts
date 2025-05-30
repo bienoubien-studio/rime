@@ -39,7 +39,7 @@ export function generateSchemaString(config: BuiltConfig) {
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
 			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
 			
-			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
+			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp_ms' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp_ms' })`))
 			
 			versionsRelationsDefinitions = [
 				templateRelationOne({
@@ -121,7 +121,7 @@ export function generateSchemaString(config: BuiltConfig) {
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
 			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
 			
-			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp' })`))
+			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp_ms' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp_ms' })`))
 			
 			versionsRelationsDefinitions = [
 				templateRelationOne({

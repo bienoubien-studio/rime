@@ -43,18 +43,18 @@ const buildConfig = async (
 	let areas: BuiltArea[] = [];
 	const icons: Dic = {};
 
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Retrieve Default Users collection
-	//////////////////////////////////////////////
+	/****************************************************/
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
 	config.collections = [
 		...config.collections.filter((c) => c.slug !== PANEL_USERS),
 		panelUsersCollection
 	];
 	
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Build Collections
-	//////////////////////////////////////////////
+	/****************************************************/
 	for (const collection of [...config.collections]) {
 		const buildtCollection = await buildCollection(collection);
 		collections = [...collections, buildtCollection];
@@ -62,9 +62,9 @@ const buildConfig = async (
 		if (collection.icon) icons[collection.slug] = collection.icon;
 	}
 
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Build area
-	//////////////////////////////////////////////
+	/****************************************************/
 	for (const area of config.areas) {
 		areas = [...areas, buildArea(area)];
 		// add icon to iconMap
@@ -116,9 +116,9 @@ const buildConfig = async (
 
 	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...areaFields]);
 
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Plugins
-	//////////////////////////////////////////////
+	/****************************************************/
 
 	// IMPORTANT !
 	// Core plugins that includes handlers should be added also here :
@@ -142,9 +142,9 @@ const buildConfig = async (
 		...fieldsComponentsMap
 	};
 
-	/////////////////////////////////////////////
+	/****************************************************/
 	// Generate files
-	//////////////////////////////////////////////
+	/****************************************************/
 
 	let compiledConfig = compileConfig(builtConfig);
 	

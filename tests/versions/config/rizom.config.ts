@@ -17,7 +17,7 @@ const Settings = area('settings', {
 	icon: Settings2,
 	group: 'system',
 	description: "System settings, maintenance and more",
-	fields: [toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
+	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
 	},

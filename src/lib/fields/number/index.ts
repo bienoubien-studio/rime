@@ -62,9 +62,9 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 	}
 }
 
-/////////////////////////////////////////////
-// Type
-//////////////////////////////////////////////
+/****************************************************/
+/* Type
+/****************************************************/
 
 export type NumberField = FormField & {
 	type: 'number';
@@ -73,9 +73,9 @@ export type NumberField = FormField & {
 	defaultValue?: number;
 };
 
-/////////////////////////////////////////////
-// Register
-//////////////////////////////////////////////
+/****************************************************/
+/* Register
+/****************************************************/
 declare module 'rizom' {
 	interface RegisterFieldsType {
 		number: any;
