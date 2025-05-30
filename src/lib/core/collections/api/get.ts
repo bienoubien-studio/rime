@@ -22,7 +22,7 @@ export default function (slug: CollectionSlug) {
 			offset: params.get('offset') ? parseInt(params.get('offset')!) : undefined,
 			draft: params.get('draft') ? params.get('draft') === 'true' : undefined,
 			query,
-			select: params.get('select') ? params.get('draft')!.split(',') : undefined
+			select: params.get('select') ? params.get('select')!.split(',') : undefined
 		};
 		
 		const [error, docs] = await safe(rizom.collection(slug).find(apiParams));

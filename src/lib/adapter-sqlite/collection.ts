@@ -10,8 +10,6 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
-import type { ParsedQs } from 'qs';
-
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -22,56 +20,7 @@ type Args = {
 const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
 
 	//////////////////////////////////////////////
-	// Find All documents in a collection
-	//////////////////////////////////////////////
-
-	// const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
-	// 	return find({ slug, sort, limit, offset, locale })
-	// 	// const config = configInterface.getCollection(slug);
-	// 	// const isVersioned = !!config.versions;
-
-	// 	// if (!isVersioned) {
-	// 	// 	// Original implementation for non-versioned collections
-	// 	// 	const withParam = buildWithParam({ slug, locale, tables, configInterface });
-	// 	// 	const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
-
-	// 	// 	// @ts-expect-error todo
-	// 	// 	const rawDocs = await db.query[slug].findMany({
-	// 	// 		with: withParam,
-	// 	// 		limit: limit || undefined,
-	// 	// 		offset: offset || undefined,
-	// 	// 		orderBy
-	// 	// 	});
-
-	// 	// 	return rawDocs;
-	// 	// } else {
-	// 	// 	// Implementation for versioned collections
-	// 	// 	const versionsTable = schemaUtil.makeVersionsTableName(slug);
-	// 	// 	const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
-	// 	// 	const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
-
-	// 	// 	// @ts-expect-error todo
-	// 	// 	const rawDocs = await db.query[slug].findMany({
-	// 	// 		with: {
-	// 	// 			[versionsTable]: {
-	// 	// 				with: withParam,
-	// 	// 				orderBy: [desc(tables[versionsTable].updatedAt)],
-	// 	// 				limit: 1
-	// 	// 			}
-	// 	// 		},
-	// 	// 		limit: limit || undefined,
-	// 	// 		offset: offset || undefined,
-	// 	// 		orderBy
-	// 	// 	});
-
-	// 	// 	// Transform the result to combine root and version data
-	// 	// 	return rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
-
-	// 	// }
-	// };
-
-	//////////////////////////////////////////////
-	// Find a document by id
+	// Find by Id
 	//////////////////////////////////////////////
 
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
@@ -369,69 +318,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	// //////////////////////////////////////////////
-	// // Query documents with a qsQuery
-	// //////////////////////////////////////////////
-	// const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
-	// 	return find({ slug, query, sort, limit, offset, locale })
-	// 	// const config = configInterface.getCollection(slug);
-	// 	// const isVersioned = config.versions;
-
-	// 	// if (!isVersioned) {
-	// 	// 	// Original implementation for non-versioned collections
-	// 	// 	const params: Dic = {
-	// 	// 		with: buildWithParam({ slug, locale, tables, configInterface }),
-	// 	// 		where: buildWhereParam({ query, slug, locale, db }),
-	// 	// 		orderBy: sort ? buildOrderByParam({ slug, locale, tables, configInterface, by: sort }) : undefined,
-	// 	// 		limit: limit || undefined,
-	// 	// 		offset: offset || undefined
-	// 	// 	};
-
-	// 	// 	// Remove undefined properties
-	// 	// 	Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
-
-	// 	// 	// @ts-expect-error todo
-	// 	// 	const result = await db.query[slug].findMany(params);
-
-	// 	// 	return result;
-	// 	// } else {
-	// 	// 	// Implementation for versioned collections
-	// 	// 	const versionsTable = schemaUtil.makeVersionsTableName(slug);
-	// 	// 	const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
-	// 	// 	const whereParam = buildWhereParam({ query, slug: versionsTable, locale, db });
-
-	// 	// 	// Build the query parameters for pagination and sorting of the root table
-	// 	// 	const params: Dic = {
-	// 	// 		limit: limit,
-	// 	// 		offset: offset
-	// 	// 	};
-
-	// 	// 	// Remove undefined properties
-	// 	// 	Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
-
-	// 	// 	// @ts-expect-error todo
-	// 	// 	const rawDocs = await db.query[slug].findMany({
-	// 	// 		...params,
-	// 	// 		with: {
-	// 	// 			[versionsTable]: {
-	// 	// 				with: withParam,
-	// 	// 				where: whereParam,
-	// 	// 				orderBy: [desc(tables[versionsTable].updatedAt)],
-	// 	// 				limit: 1
-	// 	// 			}
-	// 	// 		}
-	// 	// 	});
-
-	// 	// 	// Transform the results to include version data
-	// 	// 	const result = rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
-
-	// 	// 	return result;
-	// 	// }
-	// };
-
 	//////////////////////////////////////////////
-	// Select
+	// Find documents
 	//////////////////////////////////////////////
+
 	const find: FindDocuments = async ({ slug, select, query: incomingQuery, sort, limit, offset, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
@@ -580,13 +470,11 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	};
 
 	return {
-		// findAll,
 		findById,
 		deleteById,
 		insert,
 		update,
 		find,
-		// query
 	};
 };
 
@@ -598,23 +486,6 @@ export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollecti
 // Types
 //////////////////////////////////////////////
 
-type FindAll = (args: {
-	slug: PrototypeSlug;
-	sort?: string;
-	limit?: number;
-	offset?: number;
-	locale?: string;
-}) => Promise<RawDoc[]>;
-
-type QueryDocuments = (args: {
-	slug: PrototypeSlug;
-	query: OperationQuery;
-	sort?: string;
-	limit?: number;
-	offset?: number;
-	locale?: string;
-}) => Promise<RawDoc[]>;
-
 type FindDocuments = (args: {
 	slug: PrototypeSlug;
 	select?: string[];
@@ -623,7 +494,7 @@ type FindDocuments = (args: {
 	limit?: number;
 	offset?: number;
 	locale?: string;
-	// Allow draft document
+	// Allow draft documents
 	draft?: boolean;
 }) => Promise<RawDoc[]>;
 
