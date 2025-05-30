@@ -160,7 +160,7 @@
 	}
 
 	.rz-button--secondary {
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-ground-4));
 		color: hsl(var(--rz-ground-0));
 		fill: hsl(var(--rz-ground-0));
 		&:hover {

@@ -26,7 +26,6 @@
 		onClose?: any;
 		nestedLevel?: number;
 		onNestedDocumentCreated?: any;
-		isEditingVersion?: boolean
 	};
 
 	const {
@@ -38,7 +37,6 @@
 		nestedLevel = 0,
 		onDataChange = null,
 		onFieldFocus = null,
-		isEditingVersion = false,
 		class: className
 	}: Props = $props();
 
@@ -87,9 +85,17 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
-			if (form.canSubmit) formElement.requestSubmit();
+			if (!form.canSubmit) return
+			const saveButton = formElement.querySelector('button[data-submit]');
+			if (saveButton) {
+					formElement.requestSubmit(saveButton as HTMLButtonElement);
+				} else {
+					// Fallback to default submit if no specific button found
+					formElement.requestSubmit();
+				}
 		}
 	}
+
 </script>
 
 <svelte:window onkeydown={handleKeyDown} />
@@ -115,7 +121,7 @@
 		{/if}
 
 		{#if !liveEditing}
-			<Header {form} {config} {onClose} {isEditingVersion}></Header>
+			<Header {form} {config} {onClose}></Header>
 		{/if}
 
 		<div class="rz-document__fields">

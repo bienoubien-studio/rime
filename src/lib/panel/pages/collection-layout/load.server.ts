@@ -12,7 +12,7 @@ export function layoutLoad(slug: CollectionSlug) {
 		const collection = rizom.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 
-		const docs = await collection.findAll({ locale });
+		const docs = await collection.find({ locale });
 
 		return {
 			docs,

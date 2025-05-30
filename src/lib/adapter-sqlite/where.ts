@@ -1,44 +1,24 @@
 import { and, or, eq, getTableColumns, inArray } from 'drizzle-orm';
 import * as drizzleORM from 'drizzle-orm';
-import qs from 'qs';
 import { rizom } from '$lib/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Dic } from '$lib/util/types.js';
-import { RizomError } from '../core/errors/index.js';
-import { isObjectLiteral } from '../util/object.js';
-import type { OperationQuery } from '$lib/core/types/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { isRelationField } from '$lib/util/field.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
+import type { ParsedQs } from 'qs';
+import { RizomError } from '$lib/core/errors/index.js';
 
 type BuildWhereArgs = {
-	query: OperationQuery | string;
+	query: ParsedQs;
 	slug: string;
 	locale?: string;
 	db: BetterSQLite3Database<any>;
+	draft?: boolean;
 };
 
-export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: BuildWhereArgs) => {
-	let query: OperationQuery;
-
-	if (typeof incomingQuery === 'string') {
-		try {
-			query = qs.parse(incomingQuery);
-		} catch (err: any) {
-			throw new RizomError('Unable to parse given string query ' + err.message);
-		}
-	} else {
-		if (!isObjectLiteral(incomingQuery)) {
-			throw new RizomError('Unable to parse given object query');
-		}
-		query = incomingQuery;
-	}
-
-	if (!query.where) {
-		logger.warn(`The query should have a root "where" property`);
-		return false;
-	}
-
+export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
+	
 	const table = rizom.adapter.tables[slug];
 	const tableNameLocales = `${slug}Locales`;
 	const tableLocales = rizom.adapter.tables[tableNameLocales];
@@ -49,6 +29,7 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
+		
 		// Handle nested AND conditions
 		if ('and' in conditionObject && Array.isArray(conditionObject.and)) {
 			const subConditions = conditionObject.and
@@ -64,14 +45,23 @@ export const buildWhereParam = ({ query: incomingQuery, slug, db, locale }: Buil
 				.filter(Boolean);
 			return subConditions.length ? or(...subConditions) : false;
 		}
+		
+		// Handle id field for versioned collections
+		// if "id" inside the query it should refer to the root table
+		// record id not from the versions table
+    if (slug.endsWith('_versions') && 'id' in conditionObject) {
+			// Replace id with ownerId and keep the same operator and value
+			const idOperator = conditionObject.id;
+			delete conditionObject.id;
+			conditionObject.ownerId = idOperator;	
+		}
 
 		// Handle regular field conditions
 		const [column, operatorObj] = Object.entries(conditionObject)[0];
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
 
 		if (!isOperator(operator)) {
-			logger.warn(`The operator "${operator}" is not supported`);
-			return false;
+			throw new RizomError(RizomError.INVALID_DATA, operator + 'is not supported')
 		}
 
 		// get the correct Drizzle operator

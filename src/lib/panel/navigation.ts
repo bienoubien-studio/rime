@@ -34,7 +34,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 	};
 
 	// Process collections
-	config.collections.forEach((collection) => {
+	config.collections.filter(collection => !collection.slug.endsWith('_versions')).forEach((collection) => {
 		if (user && collection.access.read(user, {})) {
 			const route: Route = {
 				title: collection.label.plural,
@@ -44,7 +44,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 			addRouteToGroup(route, collection.group);
 		}
 	});
-
+	
 	// Process areas
 	config.areas.forEach((area) => {
 		if (user && area.access.read(user, {})) {

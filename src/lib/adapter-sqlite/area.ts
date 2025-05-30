@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
@@ -19,7 +19,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	//
 	
 	/** Get area doc */
-	const get: Get = async ({ slug, locale, select, versionId }) => {
+	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
 		const areaConfig = configInterface.getArea(slug);
 		if (!areaConfig) throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
 		
@@ -72,11 +72,21 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			}
 			return doc;
 		} else {
+
+			// First check for record presence
+			// @ts-expect-error suck
+			let area = await db.query[slug].findFirst({ id : true });
+			// If no area exists yet, create it
+			if (!area) {
+				await createArea(slug, createBlankDocument(areaConfig), locale);
+			}
+			
 			// Implementation for versioned areas
 			const versionsTable = schemaUtil.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, locale, tables, configInterface });
 
 			// Configure the query based on whether we want a specific version or the latest
+			// For the "save in a new draft" action we need to get the published version
 			let params;
 			if (versionId) {
 				// If versionId is provided, get that specific version
@@ -89,21 +99,21 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 					}
 				};
 			} else {
-				// Otherwise get the latest version
+				// If versions.draft enabled then get the published document
+				// else get the latest
 				params = {
 					with: {
 						[versionsTable]: {
 							with: withParam,
-							orderBy: [{ column: tables[versionsTable].updatedAt, order: 'desc' }],
-							limit: 1
+							...adapterUtil.buildPublishedOrLatestVersionParams({ draft, config: areaConfig, table: tables[versionsTable]})
 						}
 					}
 				};
 			}
-
+			
 			// Get the versions table for column selection
 			const versionsTableObj = tables[versionsTable];
-			
+
 			// Create an object to hold the columns we want to select
 			const selectColumns: Dic = {};
 
@@ -123,69 +133,103 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 						selectColumns[sqlPath] = true;
 					}
 				}
-
-				// Apply the select columns to the versions table query
-				if (Object.keys(selectColumns).length > 0) {
-					// Add the columns to the with parameter instead of directly to the query
-					// as Drizzle doesn't support direct column selection on nested queries
-					// We'll handle the selection after we get the results
-				}
 			}
-
+			
 			// @ts-expect-error suck
 			let doc = await db.query[slug].findFirst(params);
-
-			// If no area exists yet, create it
-			if (!doc) {
-				await createArea(slug, createBlankDocument(areaConfig), locale);
-				// @ts-expect-error suck
-				doc = await db.query[slug].findFirst(params);
-			}
-
+			
 			if (!doc) {
 				throw new Error('Database error');
 			}
-			
+
 			return adapterUtil.mergeDocumentWithVersion(doc, versionsTable);
 		}
 	};
 
 	/** Area Create */
 	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
+		const now = new Date();
+		const config = configInterface.getArea(slug);
 		
-		const createId = adapterUtil.generatePK();
-		const tableLocales = `${slug}Locales`;
+		const hasVersions = !!config.versions;
 
-		// Prepare data for insertion using the shared utility function
-		const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
-			tables,
-			mainTableName: slug,
-			localesTableName: tableLocales,
-			locale,
-			fillNotNull: true
-		});
+		if (hasVersions) {
+			// Create root document first
+			const docId = await adapterUtil.insertTableRecord(db, tables, slug, {
+				createdAt: now,
+				updatedAt: now
+			});
 
-		// Insert main record
-		await adapterUtil.insertTableRecord(db, tables, slug, {
-			...mainData,
-			id: createId
-		});
+			// Generate version ID
+			const versionsTableName = schemaUtil.makeVersionsTableName(slug)
 
-		// Insert localized data if needed
-		if (isLocalized) {
-			await adapterUtil.insertTableRecord(db, tables, tableLocales, {
-				...localizedData,
-				ownerId: createId,
+			// Prepare data for versions table
+			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
+				tables,
+				mainTableName: versionsTableName,
+				localesTableName: `${versionsTableName}Locales`,
 				locale
 			});
+
+			if (config.versions && config.versions.draft) {
+				mainData.status = 'published'
+			}
+
+			// Insert version record
+			const versionId = await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
+				ownerId: docId,
+				...mainData,
+				createdAt: now,
+				updatedAt: now
+			});
+
+			// Insert localized data if needed
+			if (isLocalized && Object.keys(localizedData).length) {
+				await adapterUtil.insertTableRecord(db, tables, `${versionsTableName}Locales`, {
+					...localizedData,
+					ownerId: versionId,
+					locale: locale!
+				});
+			}
+
+			// Return both IDs for versioned collections
+			return {
+				id: docId,
+				versionId
+			};
+		} else {
+			
+			const tableLocales = `${slug}Locales`;
+
+			// Prepare data for insertion using the shared utility function
+			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
+				tables,
+				mainTableName: slug,
+				localesTableName: tableLocales,
+				locale,
+				fillNotNull: true
+			});
+
+			// Insert main record
+			const createId = await adapterUtil.insertTableRecord(db, tables, slug, {
+				...mainData
+			});
+
+			// Insert localized data if needed
+			if (isLocalized) {
+				await adapterUtil.insertTableRecord(db, tables, tableLocales, {
+					...localizedData,
+					ownerId: createId,
+					locale
+				});
+			}
 		}
 	};
 
-	const update: Update = async ({ slug, data, locale, versionId }) => {
+	const update: Update = async ({ slug, data, locale, versionId, newDraft }) => {
 		const now = new Date();
 		const areaConfig = configInterface.getArea(slug);
-		if (!areaConfig) throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
-		
+
 		const hasVersions = !!areaConfig.versions;
 		const rows = await db.select({ id: tables[slug].id }).from(tables[slug]);
 		const area = rows[0];
@@ -218,7 +262,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// For non-versioned areas, versionId is the same as id
 			return { id: area.id, versionId: area.id };
-		} else if (hasVersions && versionId) {
+		} else if (hasVersions && versionId && !newDraft) {
 			// Scenario 2: Update a specific version directly
 
 			// 1. First, update the root table's updatedAt
@@ -240,6 +284,13 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				locale
 			});
 
+			
+			// if draft is enabled on the collection
+			if(areaConfig.versions && areaConfig.versions.draft && mainData.status === 'published'){
+				// update all rows first to draft
+				await db.update(tables[versionsTable]).set({ status: 'draft' })
+			}
+			
 			// Update version directly
 			await adapterUtil.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
@@ -270,8 +321,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// 2. Create a new version entry
 			const versionsTable = schemaUtil.makeVersionsTableName(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
-			const createVersionId = adapterUtil.generatePK();
-
+			
 			// Prepare data for insertion using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -279,10 +329,9 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				localesTableName: versionsLocalesTable,
 				locale
 			});
-
+			
 			// Insert new version
-			await adapterUtil.insertTableRecord(db, tables, versionsTable, {
-				id: createVersionId,
+			const createVersionId = await adapterUtil.insertTableRecord(db, tables, versionsTable, {
 				...mainData,
 				ownerId: area.id,
 				createdAt: now,
@@ -318,13 +367,18 @@ export type AdapterAreaInterface = ReturnType<typeof createAdapterAreaInterface>
 // Types
 //////////////////////////////////////////////
 
-type Get = (args: { 
-	slug: PrototypeSlug; 
-	locale?: string; 
+type Get = (args: {
+	slug: PrototypeSlug;
+	locale?: string;
 	depth?: number;
 	select?: string[];
 	/** Optional parameter to get a specific version */
 	versionId?: string;
+	/** Optional parameter if versionId is not defined and draft=true
+	 * 	it will get the latest doc no matter its status
+	 * 	else the published document will be retrieved
+	 */
+	draft?: boolean;
 }) => Promise<RawDoc>;
 
 type Update = (args: {
@@ -333,4 +387,6 @@ type Update = (args: {
 	locale?: string;
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
+	/** Optional parameter if we should create a new draft */
+	newDraft?: boolean;
 }) => Promise<{ id: string; versionId: string }>;

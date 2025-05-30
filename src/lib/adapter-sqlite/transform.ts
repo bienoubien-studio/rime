@@ -65,14 +65,14 @@ export const databaseTransformInterface = ({
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
-		let docRizom;
+		let docAPI;
 		if (configInterface.isCollection(slug)) {
-			docRizom = rizom.collection(slug);
+			docAPI = rizom.collection(slug);
 		} else {
-			docRizom = rizom.area(slug);
+			docAPI = rizom.area(slug);
 		}
 
-		const blankDocument = docRizom.blank();
+		const blankDocument = docAPI.blank();
 
 		/** Add localized fields */
 		if (locale && tableNameLocales in tables && doc[tableNameLocales]) {

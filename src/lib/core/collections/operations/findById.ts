@@ -15,10 +15,11 @@ type Args = {
 	event: RequestEvent;
 	depth?: number;
 	select?: string[];
+	draft?: boolean
 };
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
-	const { config, event, id, versionId, locale, depth, select } = args;
+	const { config, event, id, versionId, locale, depth, select, draft } = args;
 	const { rizom } = event.locals
 
 	/////////////////////////////////////////////
@@ -34,7 +35,8 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		id,
 		versionId,
 		locale,
-		select
+		select,
+		draft
 	});
 
 	let document = await transformDocument<T>({

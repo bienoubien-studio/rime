@@ -10,7 +10,7 @@ import type { RawDoc } from '$lib/core/types/doc';
 import type { OperationQuery } from '$lib/core/types/index.js';
 
 type FindArgs = {
-	query: OperationQuery;
+	query?: OperationQuery;
 	locale?: string | undefined;
 	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
@@ -18,11 +18,12 @@ type FindArgs = {
 	depth?: number;
 	limit?: number;
 	offset?: number;
+	draft?: boolean;
 };
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> => {
 	//
-	const { config, event, locale, sort, limit, offset, depth, query } = args;
+	const { config, event, locale, sort, limit, offset, depth, query, draft } = args;
 	const { rizom } = event.locals
 
 	const authorized = config.access.read(event.locals.user, {});
@@ -30,13 +31,14 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
 	}
 	
-	const documentsRaw = await rizom.adapter.collection.query({
+	const documentsRaw = await rizom.adapter.collection.find({
 		slug: config.slug,
 		query,
 		sort,
 		limit,
 		offset,
-		locale
+		locale,
+		draft
 	});
 	
 	const processDocument = async (documentRaw: RawDoc) => {

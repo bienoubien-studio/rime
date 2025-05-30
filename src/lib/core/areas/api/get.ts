@@ -12,10 +12,12 @@ export default function (slug: AreaSlug) {
 		const paramLocale = event.url.searchParams.get('locale');
 		const paramDepth = event.url.searchParams.get('depth');
 		const paramSelect = event.url.searchParams.get('select');
+		const paramDraft = event.url.searchParams.get('draft');
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const params: Dic = {
 			locale: paramLocale || locale,
+			draft: paramDraft,
 			depth
 		};
 

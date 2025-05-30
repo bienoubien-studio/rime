@@ -16,26 +16,26 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 		const link = value
 
 		// Compare with the current document beign processed to prevent infinite loop
-		if( link.value !== documentId ){
+		if (link.value !== documentId) {
 			try {
 				let doc;
-				if ( event.locals.rizom.config.isCollection(link.type) ) {
+				if (event.locals.rizom.config.isCollection(link.type)) {
 					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`)
 						.then(r => r.json())
 						.then(r => r.docs[0])
-				} else if( event.locals.rizom.config.isArea(link.type) ) {
+				} else if (event.locals.rizom.config.isArea(link.type)) {
 					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
 						.then(r => r.json())
 						.then(r => r.doc)
-						
+
 				}
 				if (!doc) {
 					link.value = null;
 					return value;
 				}
 				if (doc.url) value.url = doc.url;
-			} catch (err:any) {
-				if(err.code === 'not_found'){
+			} catch (err: any) {
+				if (err.code === 'not_found') {
 					console.warn(`Link field : ${link.type} ${documentId} not found`)
 					return null
 				}
@@ -44,7 +44,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 			}
 		}
 	}
-	
+
 	return value;
 };
 
@@ -54,6 +54,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.isEmpty = (link: unknown) => !link || typeof link === 'object' && 'value' in link && !link.value;
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
+		this.field.types = ['url']
 		this.field.hooks = {
 			beforeRead: [populateRessourceURL],
 			beforeSave: [],
@@ -85,7 +86,7 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		return this;
 	}
 
-	defaultValue(value: string) {
+	defaultValue(value: Link) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -94,6 +95,14 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.types = values;
 		return this;
 	}
+
+	compile() {
+		if (!this.field.defaultValue) {
+			this.field.defaultValue = { value: '', target: '_self', type: this.field.types![0] };
+		}
+		return super.compile();
+	}
+	
 }
 
 export const link = (name: string) => new LinkFieldBuilder(name);
@@ -104,7 +113,7 @@ export const link = (name: string) => new LinkFieldBuilder(name);
 
 export type LinkField = FormField & {
 	type: 'link';
-	defaultValue?: string;
+	defaultValue?: Link;
 	layout: 'compact' | 'default';
 	unique?: boolean;
 	types?: LinkType[];

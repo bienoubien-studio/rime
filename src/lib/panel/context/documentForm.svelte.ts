@@ -16,7 +16,7 @@ import type { ActionResult } from '@sveltejs/kit';
 import type { FormField } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types';
 import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
-import type { AreaSlug, TreeBlock,GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
+import type { AreaSlug, TreeBlock, GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import { getAPIProxyContext } from './api-proxy.svelte.js';
 import { t__ } from '../../core/i18n/index.js';
@@ -64,7 +64,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const isDigit = /[\d]+/.test(last);
 		return isDigit ? parseInt(last) : 0;
 	}
-	
+
 	function initTitle() {
 		if (documentConfig.type === 'area') {
 			return documentConfig.label;
@@ -237,13 +237,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const getBlocks = (): GenericBlock[] => {
 			return cloneDeep(getValueAtPath(path, doc)) || [];
 		};
-		
+
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
 			blocks = rebuildPaths(blocks, path)
 			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
 		};
-		
+
 		const addBlock: AddBlock = (block) => {
 			const blockWithPath: GenericBlock = {
 				...block,
@@ -342,12 +342,12 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 
 	function useField(path: string, config?: FormField) {
-		
-		if(!config){
+
+		if (!config) {
 			config = getFieldConfigByPath(path, documentConfig.fields)
-			if(!config) throw new Error(`can't find config for field : ${path}`)
+			if (!config) throw new Error(`can't find config for field : ${path}`)
 		}
-		
+
 		path = path || config.name;
 
 		const parts = $derived(path.split('.'));
@@ -390,10 +390,10 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 		const setValueFromDefaultLocale = async () => {
 			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`
-			let fetchURL:string = BASE_API_URL
-			if(isCollection){
+			let fetchURL: string = BASE_API_URL
+			if (isCollection) {
 				fetchURL += `?where[id][equals]=${doc.id}&select=${path}&locale=${locale.defaultCode}`
-			}else{
+			} else {
 				fetchURL += `?select=${path}&locale=${locale.defaultCode}`
 			}
 			// Fetch data
@@ -433,41 +433,41 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 					// Return primitive values as is
 					return data;
 				};
-				
+
 				// Remove ids from blocks before setting the value
 				setFieldValue(removeIds(defaultLocaleValue));
 			}
 		}
 
-		const setFieldValue = (value:any) => {
+		const setFieldValue = (value: any) => {
 			const valid = validate(value);
-				if (operation === 'update' && !config.access.update(user.attributes)) {
-					return;
-				}
-				if (valid) {
-					setValue(path, value);
-					if(Array.isArray(config.hooks?.onChange)){
-						for(const hook of config.hooks?.onChange || []){
-							hook( value, {
-								siblings: getSiblings(),
-								useField, 
-								useBlocks, 
-								useTree
-							})
-						}
+			if (operation === 'update' && !config.access.update(user.attributes)) {
+				return;
+			}
+			if (valid) {
+				setValue(path, value);
+				if (Array.isArray(config.hooks?.onChange)) {
+					for (const hook of config.hooks?.onChange || []) {
+						hook(value, {
+							siblings: getSiblings(),
+							useField,
+							useBlocks,
+							useTree
+						})
 					}
 				}
+			}
 		}
 
 		return {
-			
+
 			path,
 			setValueFromDefaultLocale,
 
 			get value() {
 				return getValueAtPath(path, doc) || config.defaultValue;
 			},
-			
+
 			set value(value: any) {
 				setFieldValue(value)
 			},
@@ -509,9 +509,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const submit = async (action: string) => {
 		if (processing) return;
 		processing = true;
-		
+
 		const data: Dic = {};
-		
+
 		for (const key of Object.keys(changes)) {
 			data[key] = doc[key];
 		}
@@ -523,7 +523,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		for (const key of Object.keys(flatData)) {
 			formData.set(key, flatData[key]);
 		}
-		
+
 		const response = await fetch(action, {
 			method: 'POST',
 			body: formData
@@ -568,11 +568,17 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		element = formElement;
 		const listener = (event: SubmitEvent) => {
 			event.preventDefault();
-			const saveDraft = !!event.submitter?.dataset.draft
-			const versionId = event.submitter?.dataset.version
-			let action = saveDraft ? `${formElement.action}&draft=true` : formElement.action
-			if(versionId){
-				action += `&versionId=${versionId}`
+			// Set status if needed
+			const status = !!event.submitter?.dataset.status
+			if(status && documentConfig.versions && documentConfig.versions.draft){
+				setValue('status', event.submitter?.dataset.status)
+			}
+			console.log(event.submitter?.dataset)
+			// As new draft ?
+			let action = formElement.action
+			const newDraft = !!event.submitter?.dataset.newDraft
+			if (newDraft) {
+				action += `&newDraft=true`
 			}
 			submit(action);
 		};
@@ -598,13 +604,15 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		} else {
 			actionSuffix = '?/update';
 		}
+
+		let versionsSuffix = documentConfig.versions && doc.versionId ? `&versionId=${doc.versionId}` : ''
 		// Add a redirect parameter if we're in a nested form ex: relation creation
 		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
-		
+
 		// Combine all parts to form the final action URL
-		return `${panelUri}${actionSuffix}${redirectParam}`;
+		return `${panelUri}${actionSuffix}${redirectParam}${versionsSuffix}`;
 	};
-	
+
 	return {
 		key,
 		setValue,

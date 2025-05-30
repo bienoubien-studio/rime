@@ -1,4 +1,5 @@
 import CollectionVersionsDoc from './collection-document/CollectionVersionsDoc.svelte';
+import AreaVersionsDoc from './area/AreaVersionsDoc.svelte';
 import CollectionDocument from './collection-document/CollectionDocument.svelte';
 import CollectionLayout from './collection-layout/CollectionLayout.svelte';
 import ForgotPassword from './forgot-password/ForgotPassword.svelte';
@@ -15,6 +16,7 @@ export {
 	CollectionLayout,
 	ForgotPassword,
 	Area,
+	AreaVersionsDoc,
 	Init,
 	Live,
 	Locked,

@@ -8,7 +8,8 @@ import type {
 	BuiltConfig,
 	BuiltArea,
 	CompiledConfig,
-	Config
+	Config,
+	CompiledCollection
 } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { Dic } from '$lib/util/types.js';
@@ -21,6 +22,9 @@ import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
 import { BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
+import { makeVersionsTableName } from '$lib/util/schema.js';
+import type { CollectionSlug } from '../../../types.js';
+import { makeVersionsCollectionsAliases } from './versions-alias.js';
 
 
 const dev = process.env.NODE_ENV === 'development';
@@ -29,12 +33,11 @@ const dev = process.env.NODE_ENV === 'development';
  * Add extra configuration to Areas and Collections
  */
 
-const buildConfig = async <C extends boolean = true>(
+const buildConfig = async (
 	config: Config,
-	options: { generateFiles?: boolean; compiled?: C }
-): Promise<C extends true ? CompiledConfig : BuiltConfig> => {
+	options: { generateFiles?: boolean; }
+): Promise<CompiledConfig> => {
 	const generateFiles = options?.generateFiles || false;
-	const compiled = options?.compiled || true;
 
 	let collections: BuiltCollection[] = [];
 	let areas: BuiltArea[] = [];
@@ -48,13 +51,13 @@ const buildConfig = async <C extends boolean = true>(
 		...config.collections.filter((c) => c.slug !== PANEL_USERS),
 		panelUsersCollection
 	];
-
+	
 	/////////////////////////////////////////////
 	// Build Collections
 	//////////////////////////////////////////////
 	for (const collection of [...config.collections]) {
-		const buildedCollection = await buildCollection(collection);
-		collections = [...collections, buildedCollection];
+		const buildtCollection = await buildCollection(collection);
+		collections = [...collections, buildtCollection];
 		// add icon to iconMap
 		if (collection.icon) icons[collection.slug] = collection.icon;
 	}
@@ -107,7 +110,7 @@ const buildConfig = async <C extends boolean = true>(
 		trustedOrigins,
 		icons
 	};
-	
+
 	const collectionFields = builtConfig.collections.flatMap((collection) => collection.fields);
 	const areaFields = builtConfig.areas.flatMap((area) => area.fields);
 
@@ -116,7 +119,7 @@ const buildConfig = async <C extends boolean = true>(
 	/////////////////////////////////////////////
 	// Plugins
 	//////////////////////////////////////////////
-	
+
 	// IMPORTANT !
 	// Core plugins that includes handlers should be added also here :
 	// src/lib/handlers/plugins.server.ts
@@ -143,14 +146,8 @@ const buildConfig = async <C extends boolean = true>(
 	// Generate files
 	//////////////////////////////////////////////
 
-	let genCache;
-	if(dev){
-		genCache = await import( '../../dev/cache/index.js').then(m => m.default)
-		genCache.set('.gen', '');
-	}
-
-	const compiledConfig = compileConfig(builtConfig);
-
+	let compiledConfig = compileConfig(builtConfig);
+	
 	if (dev || generateFiles) {
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
@@ -185,16 +182,10 @@ const buildConfig = async <C extends boolean = true>(
 			}
 		}
 	}
+	
+	compiledConfig = makeVersionsCollectionsAliases(compiledConfig)
 
-	if(genCache){
-		genCache.delete('.gen');
-	}
-
-	if (!compiled) {
-		return builtConfig as C extends true ? CompiledConfig : BuiltConfig;
-	}
-
-	return compiledConfig as C extends true ? CompiledConfig : BuiltConfig;
+	return compiledConfig;
 };
 
 export { buildConfig };

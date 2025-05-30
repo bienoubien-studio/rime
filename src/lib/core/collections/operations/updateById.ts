@@ -18,11 +18,13 @@ import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
+import { filePathToFile } from '../upload/util/converter.js';
+import path from 'node:path';
 
 type Args<T> = {
 	id: string;
 	versionId?: string;
-	draft?: boolean;
+	newDraft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
@@ -31,7 +33,7 @@ type Args<T> = {
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, locale, id, versionId, draft, isFallbackLocale } = args;
+	const { config, event, locale, id, versionId, newDraft, isFallbackLocale } = args;
 	const { rizom } = event.locals
 
 	let data = args.data;
@@ -41,22 +43,34 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId })) as T;
+	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId, draft: true })) as T;
 	
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
-	const configMap = buildConfigMap(data, config.fields);
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
 	// If we are not updating a specific existing versions
 	// add fields from the original, that way required field values will be present
-	if(config.versions && !versionId){
+	if(config.versions && newDraft){
+		if(config.upload && !data.file && original.filename){
+			// Create a File object from the existing file path
+			const filePath = path.resolve(process.cwd(), 'static', 'medias', original.filename);
+			try {
+				//@ts-expect-error I don't care it exists on DeepPartial<T>
+				data.file = await filePathToFile(filePath);
+			} catch (err) {
+				console.error(`Failed to create file from path: ${filePath}`, err);
+			}
+		}
+
 		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
 	}
 
+	const configMap = buildConfigMap(data, config.fields);
+	
 	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
 	
 	data = await validateFields({
@@ -69,6 +83,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		operation: 'update'
 	});
 	
+
 	// We do not re-run hooks on locale fallbackCreation
 	if(!isFallbackLocale){
 		for (const hook of config.hooks?.beforeUpdate || []) {
@@ -94,7 +109,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	const updateResult = await rizom.adapter.collection.update({
 		id,
 		versionId,
-		draft,
+		newDraft,
 		slug: config.slug,
 		data: data,
 		locale: locale
@@ -170,4 +185,3 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	return document as T;
 };
-

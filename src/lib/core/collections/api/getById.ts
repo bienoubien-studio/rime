@@ -11,10 +11,17 @@ export default function (slug: CollectionSlug) {
 
 		const paramLocale = event.url.searchParams.get('locale');
 		const paramDepth = event.url.searchParams.get('depth');
+		const paramDraft = event.url.searchParams.get('draft')
+		const draft =  paramDraft ? paramDraft === 'true' : undefined
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
-
+		
 		const [error, doc] = await safe(
-			rizom.collection(slug).findById({ id, locale: paramLocale || locale, depth })
+			rizom.collection(slug).findById({ 
+				id, 
+				locale: paramLocale || locale, 
+				depth,
+				draft
+			})
 		);
 		
 		if (error) {

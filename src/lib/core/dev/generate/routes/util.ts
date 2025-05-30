@@ -21,9 +21,12 @@ export type Routes = Record<string, RouteDefinition>;
  * // If the config has changed since last run, needsRegeneration will be true
  */
 export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
+  const versionsSuffix = (document: any) => document.versions ? '.v' : ''
+  const authSuffix = (collection: typeof config.collections[number]) => collection.auth ? '.auth' : ''
+  
   const memo = `
-    areas:${config.areas.map((g) => `${g.slug}`).join(',')}
-    collections:${config.collections.map((c) => `${c.slug}${c.auth ? '.auth' : ''}`).join(',')}
+    areas:${config.areas.map((area) => `${area.slug}${versionsSuffix(area)}`).join(',')}
+    collections:${config.collections.map((collection) => `${collection.slug}${authSuffix(collection)}${versionsSuffix(collection)}`).join(',')}
     custom:${
       config.panel?.routes
         ? Object.entries(config.panel.routes)

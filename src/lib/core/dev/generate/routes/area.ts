@@ -30,9 +30,21 @@ export const actions = pagesActions.area('${slug}')
 const apiAreaServer = (slug: string): string => `
 import * as api from '${PACKAGE_NAME}/api';
 
-export const GET = api.area.get('${TScastVersionSlug(slug)}')
-export const POST = api.area.update('${TScastVersionSlug(slug)}')
+export const GET = api.area.get(${TScastVersionSlug(slug)})
+export const POST = api.area.update(${TScastVersionSlug(slug)})
 `
+
+/**
+ * Document page versions template
+ * (rizom)/panel/{collection.slug}/[id]/versions/+page.svelte
+ */
+const pageVersions = (slug: string) => `
+<script lang="ts">
+  import { AreaVersionsDoc, type AreaVersionsDocProps } from '${PACKAGE_NAME}/panel'
+  const { data }: AreaVersionsDocProps = $props()
+</script>
+<AreaVersionsDoc {data} slug='${slug}' />`;
+
 
 /**
  * Area routes dictionary defining route patterns and their corresponding templates
@@ -40,6 +52,13 @@ export const POST = api.area.update('${TScastVersionSlug(slug)}')
 export const areaRoutes: Routes = {
   '(rizom)/panel/{area.slug}/': {
     page: pageTemplate,
+    pageServer: pageServerTemplate
+  },
+};
+
+export const areaVersionsPanelRoutes: Routes = {
+  '(rizom)/panel/{area.slug}/versions': {
+    page: pageVersions,
     pageServer: pageServerTemplate
   },
 };

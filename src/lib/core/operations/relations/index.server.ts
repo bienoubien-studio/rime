@@ -49,7 +49,7 @@ export const saveRelations = async (args: {
 		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
 	});
-
+	
 	/** Get relations in data */
 	const incomingRelations = extractRelations({
 		ownerId,
@@ -57,7 +57,7 @@ export const saveRelations = async (args: {
 		configMap,
 		locale
 	});
-
+	
 	// get existing relations filtered by path
 	// if not present in incoming paths don't keep it.
 	const existingRelations = await adapter.relations

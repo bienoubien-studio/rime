@@ -13,12 +13,14 @@ export const setValuesFromOriginal = async <T extends Dic>(args: {
   for (const [key, config] of Object.entries(configMap)) {
     let value = getValueAtPath(key, output);
     let isEmpty;
+    
     try {
       isEmpty = config.isEmpty(value);
     } catch {
       isEmpty = false;
       logger.warn(`Error while checking if field ${key} is empty`);
     }
+
     if (isEmpty) {
       value = await getValueAtPath(key, original)
       output = setValueAtPath(output, key, value);

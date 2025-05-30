@@ -1,7 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { AreaSlug } from '$lib/types.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
@@ -13,6 +11,8 @@ import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import type { RegisterArea } from '$lib/index.js';
+import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
+import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -20,11 +20,12 @@ type UpdateArgs<T> = {
 	config: CompiledArea;
 	event: RequestEvent;
 	versionId?: string;
+	newDraft?: boolean;
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, locale, versionId } = args;
+	const { config, event, locale, versionId, newDraft } = args;
 	const { rizom } = event.locals
 	let data = args.data;
 
@@ -33,9 +34,19 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const original = (await rizom.area(config.slug).find({ locale, versionId })) as unknown as T;
+	const original = (await rizom.area(config.slug).find({ locale, versionId, draft: true })) as unknown as T;
 	const originalConfigMap = buildConfigMap(original, config.fields);
+
+	// If we are not updating a specific existing versions
+	// add fields from the original doc in data, that way required field values will be present
+	// when creating the new version
+	if (config.versions && newDraft) {
+		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
+	}
+
 	const configMap = buildConfigMap(data, config.fields);
+
+	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
 
 	data = await validateFields({
 		data,
@@ -46,7 +57,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		original,
 		operation: 'update',
 	});
-	
+
 	for (const hook of config.hooks?.beforeUpdate || []) {
 		/**
 		 * TS is expecting a more specific types, 
@@ -70,10 +81,10 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		slug: config.slug,
 		data,
 		locale,
-		versionId
+		versionId,
+		newDraft
 	});
 
-	
 	// Use the versionId from the update result for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
 		ownerId: updateResult.versionId,
@@ -111,19 +122,19 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		treeDiff
 	});
 
-	
+
 	// Get the updated area with the correct version ID
-	let document = await  rizom.area(config.slug).find({ locale, versionId: updateResult.versionId });
-	
+	let document = await rizom.area(config.slug).find({ locale, versionId: updateResult.versionId, draft: true });
+
 	// Populate URL
 	document = await populateURL(document, { config, event, locale })
 
 	// Handle localized URLs if needed
 	const locales = event.locals.rizom.config.getLocalesCodes();
 	if (locales.length) {
-		for(const otherLocale of locales){
+		for (const otherLocale of locales) {
 			if (otherLocale !== locale) {
-				const documentLocale = await  rizom.area(config.slug).find({ locale: otherLocale, versionId: updateResult.versionId });
+				const documentLocale = await rizom.area(config.slug).find({ locale: otherLocale, versionId: updateResult.versionId, draft: true });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}
@@ -139,6 +150,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		});
 	}
 
-	
+
 	return document as unknown as T;
 };

@@ -4,6 +4,6 @@ export type LinkType = 'url' | 'email' | 'tel' | 'anchor' | GetRegisterType<'Pro
 export type Link = {
 	type: LinkType;
 	value: string | null;
-	target: string;
+	target: '_self' | '_blank';
 	url?: string;
 };

@@ -11,7 +11,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		user && collection.access.read(user, {})
 			? rizom
 					.collection(collection.slug)
-					.findAll({
+					.find({
 						limit: 4,
 						sort: '-updatedAt',
 						locale

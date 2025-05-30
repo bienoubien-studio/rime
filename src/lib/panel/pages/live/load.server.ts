@@ -8,12 +8,11 @@ export async function liveLoad(event: ServerLoadEvent) {
 	const params = event.url.searchParams;
 
 	const id = params.get('id');
+	const versionId = params.get('versionId') || undefined;
 	const locale = params.get('locale') || undefined;
 	const slug = params.get('slug') as PrototypeSlug;
 	const src = params.get('src');
-
-	// const pathToBrowserConfig = '../../../lib/rizom.config.browser.js';
-
+	
 	if(!user){
 		error(404, 'Not found')
 	}
@@ -21,10 +20,10 @@ export async function liveLoad(event: ServerLoadEvent) {
 		const output = { user, src: src, slug, locale };
 
 		if (rizom.config.isCollection(slug)) {
-			const doc = await rizom.collection(slug).findById({ id, locale });
+			const doc = await rizom.collection(slug).findById({ id, locale, versionId });
 			return { ...output, doc };
 		} else {
-			const doc = await rizom.area(slug).find({ locale });
+			const doc = await rizom.area(slug).find({ locale, versionId });
 			return { ...output, doc };
 		}
 	} else {

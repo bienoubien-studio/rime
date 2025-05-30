@@ -11,6 +11,7 @@ export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Are
 	const fields: typeof config.fields = [
 		...config.fields,
 		text('editedBy').hidden(),
+		date('createdAt').hidden(),
 		date('updatedAt').hidden()
 	];
 
@@ -27,12 +28,12 @@ export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Are
 				maxVersions: 4
 			};
 		} else if (config.versions.draft) {
-			fields.push(select('status').options('draft', 'published').defaultValue('draft').hidden());
+			fields.push(text('status').defaultValue('draft').hidden());
 		}
 	} else {
 		config.versions = false;
 	}
-
+	
 	return {
 		...config,
 		slug,

@@ -39,9 +39,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.#rizom = event.locals.rizom;
 		this.create = this.create.bind(this);
 		this.find = this.find.bind(this);
-		this.findAll = this.findAll.bind(this);
+		// this.findAll = this.findAll.bind(this);
 		this.findById = this.findById.bind(this);
-		this.select = this.select.bind(this);
+		// this.select = this.select.bind(this);
 	}
 
 	#fallbackLocale(locale?: string) {
@@ -75,40 +75,40 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	find({ query, locale, sort = '-createdAt', depth = 0, limit, offset }: FindArgs): Promise<Doc[]> {
+	// find({ query, locale, sort = '-createdAt', depth = 0, limit, offset }: FindArgs): Promise<Doc[]> {
 		
-		this.#rizom.preventOperationLoop()
+	// 	this.#rizom.preventOperationLoop()
 		
-		const params = {
-			query,
-			locale: this.#fallbackLocale(locale),
-			config: this.config,
-			event: this.#event,
-			sort,
-			depth,
-			limit,
-			offset
-		};
+	// 	const params = {
+	// 		query,
+	// 		locale: this.#fallbackLocale(locale),
+	// 		config: this.config,
+	// 		event: this.#event,
+	// 		sort,
+	// 		depth,
+	// 		limit,
+	// 		offset
+	// 	};
 
-		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.cache.toHashKey(
-				'find',
-				this.config.slug,
-				this.#event.locals.user?.roles.join(',') || 'no-user',
-				sort,
-				depth,
-				limit,
-				offset,
-				locale,
-				query
-			);
-			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
-		}
+	// 	if (this.#event.locals.cacheEnabled) {
+	// 		const key = this.#event.locals.rizom.cache.toHashKey(
+	// 			'find',
+	// 			this.config.slug,
+	// 			this.#event.locals.user?.roles.join(',') || 'no-user',
+	// 			sort,
+	// 			depth,
+	// 			limit,
+	// 			offset,
+	// 			locale,
+	// 			query
+	// 		);
+	// 		return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
+	// 	}
 
-		return find<Doc>(params);
-	}
+	// 	return find<Doc>(params);
+	// }
 
-	select({ select: selectArray, query, locale, sort = '-createdAt', depth = 0, limit, offset }: SelectArgs): Promise<Doc[]> {
+	find({ select: selectArray, query, locale, sort = '-createdAt', depth = 0, limit, offset, draft }: FindArgs): Promise<Doc[]> {
 		
 		this.#rizom.preventOperationLoop()
 
@@ -121,13 +121,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			sort,
 			depth,
 			limit,
+			draft,
 			offset
 		};
 		
 		if (this.#event.locals.cacheEnabled) {
 			const key = this.#event.locals.rizom.cache.toHashKey(
-				'select',
-				selectArray.join(','),
+				'find',
+				(selectArray || []).join(','),
 				this.config.slug,
 				this.#event.locals.user?.roles.join(',') || 'no-user',
 				sort,
@@ -135,46 +136,47 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				limit,
 				offset,
 				locale,
-				query
+				draft,
+				JSON.stringify(query)
 			);
 			return this.#event.locals.rizom.cache.get(key, () => select<Doc>(params));
 		}
 
-		return select<Doc>(params);
+		return find<Doc>(params);
 	}
 
-	findAll({ locale, sort = '-createdAt', depth = 0, limit, offset }: FindAllArgs = {}): Promise<Doc[]> {
+	// findAll({ locale, sort = '-createdAt', depth = 0, limit, offset }: FindAllArgs = {}): Promise<Doc[]> {
 		
-		this.#rizom.preventOperationLoop()
+	// 	this.#rizom.preventOperationLoop()
 
-		const params = {
-			locale: this.#fallbackLocale(locale),
-			config: this.config,
-			event: this.#event,
-			sort,
-			depth,
-			limit,
-			offset,
-		};
+	// 	const params = {
+	// 		locale: this.#fallbackLocale(locale),
+	// 		config: this.config,
+	// 		event: this.#event,
+	// 		sort,
+	// 		depth,
+	// 		limit,
+	// 		offset,
+	// 	};
 
-		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.cache.toHashKey(
-				'findAll',
-				this.config.slug,
-				this.#event.locals.user?.roles.join(',') || 'no-user',
-				sort,
-				depth,
-				limit,
-				offset,
-				locale
-			);
-			return this.#event.locals.rizom.cache.get(key, () => findAll<Doc>(params));
-		}
+	// 	if (this.#event.locals.cacheEnabled) {
+	// 		const key = this.#event.locals.rizom.cache.toHashKey(
+	// 			'findAll',
+	// 			this.config.slug,
+	// 			this.#event.locals.user?.roles.join(',') || 'no-user',
+	// 			sort,
+	// 			depth,
+	// 			limit,
+	// 			offset,
+	// 			locale
+	// 		);
+	// 		return this.#event.locals.rizom.cache.get(key, () => findAll<Doc>(params));
+	// 	}
 
-		return findAll<Doc>(params);
-	}
+	// 	return findAll<Doc>(params);
+	// }
 
-	findById({ id, versionId, locale, depth = 0 }: FindByIdArgs): Promise<Doc> {
+	findById({ id, versionId, locale, draft, depth = 0 }: FindByIdArgs): Promise<Doc> {
 		
 		this.#rizom.preventOperationLoop()
 
@@ -187,6 +189,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
 			event: this.#event,
+			draft,
 			depth
 		};
 		
@@ -198,6 +201,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				id,
 				versionId || 'latest',
 				depth,
+				draft ? 'draft' : 'latest',
 				locale
 			);
 			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
@@ -206,14 +210,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, versionId, data, locale, draft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
+	updateById({ id, versionId, data, locale, newDraft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
 		
 		this.#rizom.preventOperationLoop()
 
 		return updateById<Doc>({
 			id,
 			versionId,
-			draft,
+			newDraft,
 			data,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -242,23 +246,24 @@ export { CollectionInterface };
 
 type DeleteByIdArgs = { id: string };
 
-type FindArgs = {
-	query: OperationQuery;
-	locale?: string;
-	sort?: string;
-	depth?: number;
-	limit?: number;
-	offset?: number;
-};
+// type FindArgs = {
+// 	query: OperationQuery;
+// 	locale?: string;
+// 	sort?: string;
+// 	depth?: number;
+// 	limit?: number;
+// 	offset?: number;
+// };
 
-type SelectArgs = {
-	select: string[];
+type FindArgs = {
+	select?: string[];
 	query?: OperationQuery;
 	locale?: string;
 	sort?: string;
 	depth?: number;
 	limit?: number;
 	offset?: number;
+	draft?: boolean;
 };
 
 type FindAllArgs = {
@@ -274,12 +279,13 @@ type FindByIdArgs = {
 	versionId?: string;
 	locale?: string;
 	depth?: number;
+	draft?: boolean
 };
 
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
 	versionId?: string;
-	draft?: boolean;
+	newDraft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string;
 	isFallbackLocale?: boolean;

@@ -18,7 +18,7 @@
 		if (doc._prototype === 'collection') {
 			return `${env.PUBLIC_RIZOM_URL}/api/${doc._type}_versions?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
 		} else {
-			return `${env.PUBLIC_RIZOM_URL}/api/${doc._type}_versions`;
+			return `${env.PUBLIC_RIZOM_URL}/api/${doc._type}_versions?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
 		}
 	});
 
@@ -30,6 +30,14 @@
 		}
 	});
 
+	const makeVersionUrl = (version:GenericDoc) => {
+		if( doc._prototype === 'collection' ){
+			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/${doc.id}/versions?versionId=${version.id}`
+		}else {
+			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/versions?versionId=${version.id}`
+		}
+	}
+
 	onMount(async () => {
 		versions = await fetch(url)
 			.then((r) => r.json())
@@ -39,7 +47,7 @@
 
 <section class="rz-document-versions">
 	<PageHeader>
-    <div class="rz-document-versions__header">
+		<div class="rz-document-versions__header">
       <Button href={backUrl} variant="ghost" size="icon-sm">
         <X class="rz-page-header__close" size="17" />
       </Button>
@@ -48,9 +56,9 @@
 	</PageHeader>
 	<div class="rz-document-versions__list">
 		{#each versions as version}
-			<a class="rz-document-versions__list-item" class:rz-document-versions__list--active={doc.versionId === version.id} href="{env.PUBLIC_RIZOM_URL}/panel/{doc._type}/{doc.id}/versions?versionId={version.id}">
-				{locale.dateFormat(version.updatedAt!, { withTime: true })}
-        {version.status}
+			<a class="rz-document-versions__list-item" class:rz-document-versions__list--active={doc.versionId === version.id} href={makeVersionUrl(version)}>
+				<span>{locale.dateFormat(version.updatedAt!, { withTime: true })}</span>
+        <span>{version.status}</span>
       </a>
 		{/each}
 	</div>
@@ -68,6 +76,7 @@
     display: flex;
     border-bottom: var(--rz-border);
     align-items: center;
+    justify-content: space-between;
   }
 
   .rz-document-versions__list{

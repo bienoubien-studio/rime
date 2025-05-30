@@ -37,7 +37,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return createBlankDocument(this.config) as Doc;
 	}
 
-	find({ locale, select = [], depth = 0, versionId }: FindArgs): Promise<Doc> {
+	find({ locale, select = [], depth = 0, versionId, draft }: FindArgs): Promise<Doc> {
 
 		this.#rizom.preventOperationLoop()
 
@@ -48,7 +48,8 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			config: this.config,
 			event: this.#event,
 			rizom: this.#rizom,
-			depth
+			depth,
+			draft
 		};
 
 		if (this.#event.locals.cacheEnabled) {
@@ -59,6 +60,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 				versionId || 'latest',
 				this.#event.locals.user?.roles.join(',') || 'no-user',
 				depth,
+				draft ? 'draft' : 'latest',
 				locale
 			);
 			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
@@ -67,14 +69,15 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		return find<Doc>(params);
 	}
 
-	update(args: { data: DeepPartial<Doc>; locale?: string, versionId?:string }): Promise<Doc> {
+	update(args: { data: DeepPartial<Doc>; locale?: string, versionId?:string, newDraft?: boolean }): Promise<Doc> {
 
 		this.#rizom.preventOperationLoop()
-
+		
 		return update<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
 			versionId: args.versionId,
+			newDraft: args.newDraft,
 			config: this.config,
 			event: this.#event
 		});
@@ -86,6 +89,7 @@ export { AreaInterface };
 type FindArgs = {
 	locale?: string;
 	versionId?: string;
+	draft?: boolean;
 	depth?: number, 
 	select?: string[]
 };

@@ -1,8 +1,12 @@
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, desc, eq, getTableColumns } from "drizzle-orm";
+import qs, { type ParsedQs } from 'qs';
 import { RizomError } from "$lib/core/errors";
 import type { RawDoc } from "$lib/core/types/doc";
-import { omit } from "$lib/util/object";
+import { isObjectLiteral, omit } from "$lib/util/object";
 import { transformDataToSchema } from "$lib/util/schema";
+import type { BuiltArea, BuiltCollection } from "../types.js";
+import type { OperationQuery, ParsedOperationQuery } from "$lib/core/types/index.js";
+import { logger } from "$lib/core/logger/index.server.js";
 
 /**
  * Main function to generated primaryKeys
@@ -86,7 +90,7 @@ export function prepareSchemaData(data: any, options: {
   fillNotNull?: boolean;
 }) {
   const { mainTableName, localesTableName, locale, tables, fillNotNull } = options;
-  
+
   if (locale && localesTableName in tables) {
     // Handle localized fields
     const unlocalizedColumns = getTableColumns(tables[mainTableName]);
@@ -108,17 +112,53 @@ export function prepareSchemaData(data: any, options: {
   }
 }
 
-export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string ) {
+export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string) {
   // Check if we have version data
   if (!doc[versionTableName] || doc[versionTableName].length === 0) {
-    throw new RizomError(RizomError.NOT_FOUND, 'area found but without version, should never happen');
+    throw new RizomError(RizomError.NOT_FOUND, 'document found but without version, should never happen');
   }
 
   const versionData = doc[versionTableName][0];
-  
+
   return {
     ...omit([versionTableName], doc),
     ...omit(['id', 'ownerId', 'createdAt', 'updatedAt'], versionData),
     versionId: versionData.id
   }
+}
+
+/**
+ * Build the query params to get either the latest updated document
+ * or the published one if version.draft is enabled
+ */
+export function buildPublishedOrLatestVersionParams( args: { draft?: boolean, config: BuiltArea | BuiltCollection, table: any }) {
+  const { config, table, draft } = args
+  const hasStatus = config.versions && config.versions.draft
+  return hasStatus && !draft ? {
+    where: eq(table.status, 'published'),
+    limit:1
+  } : {
+    orderBy: [desc(table.updatedAt)],
+    limit: 1
+  }
+}
+
+export function normalizeQuery (incomingQuery: OperationQuery): ParsedOperationQuery {
+  let query
+  if (typeof incomingQuery === 'string') {
+		try {
+			query = qs.parse(incomingQuery);
+		} catch (err: any) {
+			throw new RizomError(RizomError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
+		}
+	} else {
+		if (!isObjectLiteral(incomingQuery)) {
+			throw new RizomError(RizomError.INVALID_DATA, 'Query is not an object');
+		}
+		query = incomingQuery;
+	}
+  if (!query.where) {
+    throw new RizomError(RizomError.INVALID_DATA, 'Query must have a root where property')
+  }
+  return query as ParsedOperationQuery
 }

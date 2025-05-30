@@ -1,5 +1,9 @@
+import type { Dic } from "$lib/util/types.js";
+
 export type OperationQuery =
 | string
-| {
-    [key: string]: undefined | string | string[] | OperationQuery | OperationQuery[] | boolean;
-  };
+| ParsedOperationQuery;
+
+export type ParsedOperationQuery = {
+  where: Dic
+}

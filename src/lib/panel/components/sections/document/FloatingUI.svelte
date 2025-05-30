@@ -7,39 +7,61 @@
 	import { env } from '$env/dynamic/public';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { toast } from 'svelte-sonner';
+	import { t__ } from '../../../../core/i18n/index.js';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
 
-	function onLocaleClick (code:string) {
-		fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
-				.then((response) => response.json())
-				.then((data: { docs: GenericDoc[] }) => {
-						if(Array.isArray(data.docs) && data.docs.length){
-							const url = data.docs[0].url
-							window.location.href = url + '?live=1'
-						}
-					}
-				).catch(err => {
-					toast.error(`an error occured getting ${code} url`)
-					console.error(err)
-				})
+	function onLocaleClick(code: string) {
+		fetch(
+			`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`
+		)
+			.then((response) => response.json())
+			.then((data: { docs: GenericDoc[] }) => {
+				if (Array.isArray(data.docs) && data.docs.length) {
+					const url = data.docs[0].url;
+					window.location.href = url + '?live=1';
+				}
+			})
+			.catch((err) => {
+				toast.error(`an error occured getting ${code} url`);
+				console.error(err);
+			});
 	}
-
 </script>
 
 <div class="rz-floating-ui">
 	<Button icon={ChevronLeft} onclick={onClose} variant="secondary" size="icon"></Button>
-	<ButtonSave
-		class="rz-floating-ui__save"
-		disabled={!form.canSubmit}
-		processing={form.processing}
-	/>
+	{#if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
+		<ButtonSave
+			label={t__('common.save')}
+			class="rz-floating-ui__save"
+			disabled={!form.canSubmit}
+			processing={form.processing}
+			data-version={form.doc.versionId || null}
+		/>
+	{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
+		<ButtonSave
+			label={t__('common.save_draft')}
+			class="rz-floating-ui__save"
+			disabled={!form.canSubmit}
+			processing={form.processing}
+			data-version={form.doc.versionId || null}
+			data-draft
+		/>
+	{:else}
+		<ButtonSave
+			label={t__('common.save')}
+			class="rz-floating-ui__save"
+			disabled={!form.canSubmit}
+			processing={form.processing}
+			data-version={form.doc.versionId || null}
+		/>
+	{/if}
 	
 	{#if form.config.url}
-		<LanguageSwitcher onLocalClick={onLocaleClick}  />
+		<LanguageSwitcher onLocalClick={onLocaleClick} />
 	{/if}
-
 </div>
 
 <style>

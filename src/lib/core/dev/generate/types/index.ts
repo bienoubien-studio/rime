@@ -13,17 +13,45 @@ import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.js';
 import { taskLogger } from '$lib/core/logger/index.server.js';
 
-/* -------------------------------------------------------------------------- */
-/*                              Schema Templates                              */
-/* -------------------------------------------------------------------------- */
+// Relation  type
+const relationValueType = `
+export type RelationValue<T> =
+	| T[] // When depth > 0, fully populated docs
+	| { id?: string; relationTo: string; documentId: string }[] // When depth = 0, relation objects
+	| string[]
+	| string; // When sending data to update`;
 
+/**
+ * Generate document's type name
+ * @param slug the slug of the area/collection 
+ * @returns the type name for this document
+ * @example
+ * makeDocTypeName('pages')
+ * // return PagesDoc
+ */
 const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 
+/**
+ * Generate the document's type definition
+ * @param slug the collection/area slug
+ * @param content a string of all types properties 
+ * @param upload a boolean flag for upload colections
+ * @returns the full document type
+ */
 const templateDocType = (slug: string, content: string, upload?: boolean): string => `
 export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
   ${content}
 }`;
 
+/**
+ * Generates a type for a block with the given slug and content
+ * @param slug The unique identifier for the block
+ * @param content The string representation of the block's properties
+ * @returns A string containing the block type definition
+ * @example
+ * makeBlockType('hero', 'title: string\nimage: string')
+ * // returns a type definition for BlockHero
+ */
 const makeBlockType = (slug: string, content: string): string => `
 export type Block${toPascalCase(slug)} = {
   id: string
@@ -31,6 +59,11 @@ export type Block${toPascalCase(slug)} = {
   ${content}
 }`;
 
+/**
+ * Generates the module declaration for registering document types
+ * @param config The built configuration containing collections and areas
+ * @returns A string containing the module declaration for type registration
+ */
 const templateRegister = (config:BuiltConfig): string => {
 	const registerCollections = config.collections.length
 		? [
@@ -50,9 +83,6 @@ const templateRegister = (config:BuiltConfig): string => {
 				'\tinterface RegisterArea {',
 				`${config.areas.map((area) => {
 					let areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`
-					if(area.versions){
-						areaRegister += `\n\t\t'${makeVersionsTableName(area.slug)}': ${makeDocTypeName(area.slug)}`
-					}
 					return areaRegister
 				}).join('\n')};`,
 				'\t}'
@@ -61,6 +91,12 @@ const templateRegister = (config:BuiltConfig): string => {
 	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
 
+
+/**
+ * Generates type definitions for image sizes
+ * @param sizes Array of image size configurations
+ * @returns A string containing the type definition for image sizes
+ */
 function generateImageSizesType(sizes: ImageSizesConfig[]) {
 	const sizesTypes = sizes
 		.map((size) => {
@@ -73,27 +109,37 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 		.join(', ');
 	return `\n\t\tsizes:{${sizesTypes}}`;
 }
+
+/**
+ * Generates fields type definitions string based on a list of field
+ * @param fields A fields configurations list
+ * @returns An array of string containing fields type definitions
+ */
+const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
+	const strFields: string[] = [];
+
+	for (const field of fields) {
+		if (field instanceof FormFieldBuilder) {
+			strFields.push(field.toType());
+		} else if (field instanceof TabsBuilder) {
+			strFields.push(field.toType());
+		}
+	}
+	return strFields;
+};
+
+/**
+ * Generates the complete TypeScript type definitions string based on the built configuration
+ * @param config The built configuration containing collections, areas, and fields
+ * @returns A string containing all type definitions
+ */
 export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
-	let imports = new Set<string>(['BaseDoc', 'Rizom', 'Navigation', 'User', 'Rizom']);
+	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rizom']);
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
-	};
-
-	const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
-		const strFields: string[] = [];
-
-		for (const field of fields) {
-			if (field instanceof FormFieldBuilder) {
-				strFields.push(field.toType());
-			} else if (field instanceof TabsBuilder) {
-				strFields.push(field.toType());
-			}
-		}
-
-		return strFields;
 	};
 
 	const buildblocksTypes = (fields: FieldBuilder<Field>[]) => {
@@ -121,23 +167,19 @@ export function generateTypesString(config: BuiltConfig) {
 			}
 		}
 	};
-
-	const relationValueType = `
-export type RelationValue<T> =
-	| T[] // When depth > 0, fully populated docs
-	| { id?: string; relationTo: string; documentId: string }[] // When depth = 0, relation objects
-	| string[]
-	| string; // When sending data to updateById`;
-
-	const collectionsTypes = config.collections
-		.map((collection) => {
-			let fields = collection.fields;
+	
+	const processCollection = (collection: typeof config.collections[number]) => {
+		let fields = collection.fields;
 			if (isUploadConfig(collection) && collection.imageSizes?.length) {
 				fields = collection.fields
 					.filter((f) => f instanceof FormFieldBuilder)
 					.filter((field) => !collection.imageSizes!.some((size) => size.name === field.raw.name));
 			}
-			let fieldsContent = buildFieldsTypes(fields).join('\n\t');
+			let fieldsTypesList = buildFieldsTypes(fields);
+			if(collection.versions){
+				fieldsTypesList.push('versionId: string')
+			}
+			let fieldsContent = fieldsTypesList.join('\n\t')
 			buildblocksTypes(fields);
 			if (isUploadConfig(collection)) {
 				addImport('UploadDoc');
@@ -146,20 +188,20 @@ export type RelationValue<T> =
 				}
 			}
 			return templateDocType(collection.slug, fieldsContent, collection.upload);
-		})
-		.join('\n');
+	}
 
-	const areasTypes = config.areas
-		.map((area) => {
-			const fieldsContent = buildFieldsTypes(area.fields);
+	const processArea = (area: typeof config.areas[number]) => {
+		const fieldsTypesList = buildFieldsTypes(area.fields);
+			if(area.versions){
+				fieldsTypesList.push('versionId: string')
+			}
 			buildblocksTypes(area.fields);
-			return templateDocType(area.slug, fieldsContent.join('\n\t'));
-		})
-		.join('\n');
+			return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
+	}
 
-	// const docType = templateAnyDoc(prototypeSlugs);
 	const register = templateRegister(config);
-
+	const collectionsTypes = config.collections.map(processCollection).join('\n');
+	const areasTypes = config.areas.map(processArea).join('\n');
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
 	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
@@ -171,7 +213,6 @@ export type RelationValue<T> =
       session: Session | undefined;
       user: User | undefined;
       rizom: Rizom;
-      api: Rizom;
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;
@@ -199,6 +240,10 @@ export type RelationValue<T> =
 	return content;
 }
 
+/**
+ * Writes the generated types to the app.generated.d.ts file
+ * @param content The string containing all type definitions
+ */
 function write(content: string) {
 	const cachedTypes = cache.get('types');
 
@@ -217,6 +262,10 @@ function write(content: string) {
 	});
 }
 
+/**
+ * Generates and writes TypeScript type definitions based on the built configuration
+ * @param config The built configuration containing collections, areas, and fields
+ */
 function generateTypes(config: BuiltConfig) {
 	write(generateTypesString(config));
 }

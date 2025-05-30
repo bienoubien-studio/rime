@@ -48,6 +48,8 @@ const docPage = (slug: string) => `
 /**
  * Document page server template
  * (rizom)/panel/{collection.slug}/[id]/+page.server.ts
+ * (rizom)/panel/{collection.slug}/[id]/versions/+page.server.ts
+ * Same actions / load for /versions page
  */
 const docPageServer = (slug: string) => `
 import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
@@ -57,7 +59,7 @@ export const actions = pagesActions.collection.doc('${slug}')`;
 
 /**
  * Document page versions template
- * (rizom)/panel/{collection.slug}/[id]/+page.svelte
+ * (rizom)/panel/{collection.slug}/[id]/versions/+page.svelte
  */
 const docPageVersions = (slug: string) => `
 <script lang="ts">
@@ -65,16 +67,6 @@ const docPageVersions = (slug: string) => `
   const { data }: CollectionVersionsDocProps = $props()
 </script>
 <CollectionVersionsDoc {data} slug='${slug}' />`;
-
-/**
- * Document page server template
- * (rizom)/panel/{collection.slug}/[id]/+page.server.ts
- */
-const docPageVersionsServer = (slug: string) => `
-import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
-
-export const load = pagesLoad.collection.doc('${slug}')
-export const actions = pagesActions.collection.doc('${slug}')`;
 
 /**
  * API collection list operations
@@ -138,7 +130,7 @@ export const collectionPanelRoutes: Routes = {
 export const collectionVersionsPanelRoutes: Routes = {
   '(rizom)/panel/{collection.slug}/[id]/versions': {
     page: docPageVersions,
-    pageServer: docPageVersionsServer
+    pageServer: docPageServer
   }
 };
 

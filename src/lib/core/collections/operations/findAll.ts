@@ -24,7 +24,7 @@ export const findAll = async <T extends GenericDoc>(args: Args): Promise<T[]> =>
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
 	}
 	
-	const documentsRaw = await rizom.adapter.collection.findAll({
+	const documentsRaw = await rizom.adapter.collection.find({
 		slug: config.slug,
 		sort,
 		limit,

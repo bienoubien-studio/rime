@@ -10,7 +10,8 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
-import type { BuiltCollection, CompiledCollection } from '../types.js';
+import type { ParsedQs } from 'qs';
+
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -24,55 +25,56 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	// Find All documents in a collection
 	//////////////////////////////////////////////
 
-	const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
-		const config = configInterface.getCollection(slug);
-		const isVersioned = !!config.versions;
+	// const findAll: FindAll = async ({ slug, sort, limit, offset, locale }) => {
+	// 	return find({ slug, sort, limit, offset, locale })
+	// 	// const config = configInterface.getCollection(slug);
+	// 	// const isVersioned = !!config.versions;
 
-		if (!isVersioned) {
-			// Original implementation for non-versioned collections
-			const withParam = buildWithParam({ slug, locale, tables, configInterface });
-			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
+	// 	// if (!isVersioned) {
+	// 	// 	// Original implementation for non-versioned collections
+	// 	// 	const withParam = buildWithParam({ slug, locale, tables, configInterface });
+	// 	// 	const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
 
-			// @ts-expect-error todo
-			const rawDocs = await db.query[slug].findMany({
-				with: withParam,
-				limit: limit || undefined,
-				offset: offset || undefined,
-				orderBy
-			});
+	// 	// 	// @ts-expect-error todo
+	// 	// 	const rawDocs = await db.query[slug].findMany({
+	// 	// 		with: withParam,
+	// 	// 		limit: limit || undefined,
+	// 	// 		offset: offset || undefined,
+	// 	// 		orderBy
+	// 	// 	});
 
-			return rawDocs;
-		} else {
-			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
-			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
-			const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
+	// 	// 	return rawDocs;
+	// 	// } else {
+	// 	// 	// Implementation for versioned collections
+	// 	// 	const versionsTable = schemaUtil.makeVersionsTableName(slug);
+	// 	// 	const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
+	// 	// 	const orderBy = buildOrderByParam({ slug, locale, tables, configInterface, by: sort });
 
-			// @ts-expect-error todo
-			const rawDocs = await db.query[slug].findMany({
-				with: {
-					[versionsTable]: {
-						with: withParam,
-						orderBy: [desc(tables[versionsTable].updatedAt)],
-						limit: 1
-					}
-				},
-				limit: limit || undefined,
-				offset: offset || undefined,
-				orderBy
-			});
+	// 	// 	// @ts-expect-error todo
+	// 	// 	const rawDocs = await db.query[slug].findMany({
+	// 	// 		with: {
+	// 	// 			[versionsTable]: {
+	// 	// 				with: withParam,
+	// 	// 				orderBy: [desc(tables[versionsTable].updatedAt)],
+	// 	// 				limit: 1
+	// 	// 			}
+	// 	// 		},
+	// 	// 		limit: limit || undefined,
+	// 	// 		offset: offset || undefined,
+	// 	// 		orderBy
+	// 	// 	});
 
-			// Transform the result to combine root and version data
-			return rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
+	// 	// 	// Transform the result to combine root and version data
+	// 	// 	return rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
 
-		}
-	};
+	// 	// }
+	// };
 
 	//////////////////////////////////////////////
 	// Find a document by id
 	//////////////////////////////////////////////
 
-	const findById: FindById = async ({ slug, id, versionId, locale }) => {
+	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
 
@@ -112,8 +114,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					with: {
 						[versionsTable]: {
 							with: withParam,
-							orderBy: [desc(tables[versionsTable].updatedAt)],
-							limit: 1
+							...adapterUtil.buildPublishedOrLatestVersionParams({ draft, config, table: tables[versionsTable] })
 						}
 					}
 				}
@@ -174,10 +175,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				locale
 			});
 
-			if(config.versions && config.versions.draft){
+			if (config.versions && config.versions.draft) {
 				mainData.status = draft ? 'draft' : 'published'
 			}
-			
+
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -238,8 +239,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			};
 		}
 	};
-	
-	const update: Update = async ({ slug, id, versionId, data, locale, draft }) => {
+
+	const update: Update = async ({ slug, id, versionId, data, locale, newDraft }) => {
 
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
@@ -275,7 +276,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// For non-versioned collections, versionId is the same as id
 			// it is used for saving blocks/relations/tree with cirrect ownerId
 			return { id, versionId: id };
-		} else if (isVersioned && versionId) {
+		} else if (isVersioned && versionId && !newDraft) {
 
 			// Scenario 1: Update a specific version directly
 
@@ -296,17 +297,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// if draft is enabled on the collection
-			if(config.versions && config.versions.draft){
-				// if it's a draft save only set the status
-				if(draft){
-					mainData.status = 'draft'
-				}else{
-					// if it's a publishing save
-					// set the status to published
-					mainData.status = 'published'
-					// update all rows first to draft
-					await db.update(tables[versionsTable]).set({ status: 'draft' })
-				}
+			if (config.versions && config.versions.draft && mainData.status === 'published') {
+				// update all rows first to draft
+				await db.update(tables[versionsTable]).set({ status: 'draft' })
 			}
 
 			// Update version directly
@@ -348,19 +341,11 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// if draft is enabled on the collection
-			if(config.versions && config.versions.draft){
-				// if it's a draft save only set the status
-				if(draft){
-					mainData.status = 'draft'
-				}else{
-					// if it's a publishing save
-					// set the status to published
-					mainData.status = 'published'
-					// update all rows first to draft
-					await db.update(tables[versionsTable]).set({ status: 'draft' })
-				}
+			if (config.versions && config.versions.draft && mainData.status === 'published') {
+				// update all rows first to draft
+				await db.update(tables[versionsTable]).set({ status: 'draft' })
 			}
-			
+
 			// Insert new version
 			await adapterUtil.insertTableRecord(db, tables, versionsTable, {
 				id: createVersionId,
@@ -384,71 +369,74 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	//////////////////////////////////////////////
-	// Query documents with a qsQuery
-	//////////////////////////////////////////////
-	const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
-		const config = configInterface.getCollection(slug);
-		const isVersioned = config.versions;
-		
-		if (!isVersioned) {
-			// Original implementation for non-versioned collections
-			const params: Dic = {
-				with: buildWithParam({ slug, locale, tables, configInterface }),
-				where: buildWhereParam({ query, slug, locale, db }),
-				orderBy: sort ? buildOrderByParam({ slug, locale, tables, configInterface, by: sort }) : undefined,
-				limit: limit || undefined,
-				offset: offset || undefined
-			};
+	// //////////////////////////////////////////////
+	// // Query documents with a qsQuery
+	// //////////////////////////////////////////////
+	// const query: QueryDocuments = async ({ slug, query, sort, limit, offset, locale }) => {
+	// 	return find({ slug, query, sort, limit, offset, locale })
+	// 	// const config = configInterface.getCollection(slug);
+	// 	// const isVersioned = config.versions;
 
-			// Remove undefined properties
-			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+	// 	// if (!isVersioned) {
+	// 	// 	// Original implementation for non-versioned collections
+	// 	// 	const params: Dic = {
+	// 	// 		with: buildWithParam({ slug, locale, tables, configInterface }),
+	// 	// 		where: buildWhereParam({ query, slug, locale, db }),
+	// 	// 		orderBy: sort ? buildOrderByParam({ slug, locale, tables, configInterface, by: sort }) : undefined,
+	// 	// 		limit: limit || undefined,
+	// 	// 		offset: offset || undefined
+	// 	// 	};
 
-			// @ts-expect-error todo
-			const result = await db.query[slug].findMany(params);
+	// 	// 	// Remove undefined properties
+	// 	// 	Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
-			return result;
-		} else {
-			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
-			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
-			const whereParam = buildWhereParam({ query, slug: versionsTable, locale, db });
+	// 	// 	// @ts-expect-error todo
+	// 	// 	const result = await db.query[slug].findMany(params);
 
-			// Build the query parameters for pagination and sorting of the root table
-			const params: Dic = {
-				limit: limit,
-				offset: offset
-			};
+	// 	// 	return result;
+	// 	// } else {
+	// 	// 	// Implementation for versioned collections
+	// 	// 	const versionsTable = schemaUtil.makeVersionsTableName(slug);
+	// 	// 	const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
+	// 	// 	const whereParam = buildWhereParam({ query, slug: versionsTable, locale, db });
 
-			// Remove undefined properties
-			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+	// 	// 	// Build the query parameters for pagination and sorting of the root table
+	// 	// 	const params: Dic = {
+	// 	// 		limit: limit,
+	// 	// 		offset: offset
+	// 	// 	};
 
-			// @ts-expect-error todo
-			const rawDocs = await db.query[slug].findMany({
-				...params,
-				with: {
-					[versionsTable]: {
-						with: withParam,
-						where: whereParam,
-						orderBy: [desc(tables[versionsTable].updatedAt)],
-						limit: 1
-					}
-				}
-			});
+	// 	// 	// Remove undefined properties
+	// 	// 	Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
-			// Transform the results to include version data
-			const result = rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
+	// 	// 	// @ts-expect-error todo
+	// 	// 	const rawDocs = await db.query[slug].findMany({
+	// 	// 		...params,
+	// 	// 		with: {
+	// 	// 			[versionsTable]: {
+	// 	// 				with: withParam,
+	// 	// 				where: whereParam,
+	// 	// 				orderBy: [desc(tables[versionsTable].updatedAt)],
+	// 	// 				limit: 1
+	// 	// 			}
+	// 	// 		}
+	// 	// 	});
 
-			return result;
-		}
-	};
+	// 	// 	// Transform the results to include version data
+	// 	// 	const result = rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
+
+	// 	// 	return result;
+	// 	// }
+	// };
 
 	//////////////////////////////////////////////
 	// Select
 	//////////////////////////////////////////////
-	const select: SelectDocuments = async ({ slug, select, query, sort, limit, offset, locale }) => {
+	const find: FindDocuments = async ({ slug, select, query: incomingQuery, sort, limit, offset, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
+
+		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined
 
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
@@ -504,6 +492,37 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Implementation for versioned collections
 			const versionsTable = schemaUtil.makeVersionsTableName(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, tables, configInterface, locale }) || undefined;
+
+			// If draft is falsy and versions.draft enabled
+			// Then we adjust the query to get the published document
+			if (!draft && config.versions && config.versions.draft) {
+				if (!query) {
+					query = { where: { status: { equals: 'published' } } }
+				} else {
+					const originalWhere = { ...query.where as Record<string, any> };
+					if ('and' in originalWhere && Array.isArray(originalWhere.and)) {
+						query = {
+							where: {
+								...originalWhere,
+								and: [
+									...originalWhere.and,
+									{ status: { equals: 'published' } }
+								]
+							}
+						}
+					} else {
+						query = {
+							where: {
+								and: [
+									originalWhere,
+									{ status: { equals: 'published' } }
+								]
+							}
+						}
+					}
+				}
+			}
+
 			const whereParam = query ? buildWhereParam({ query, slug: versionsTable, locale, db }) : undefined;
 
 			// Build the query parameters for pagination and sorting of the root table
@@ -561,13 +580,13 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	};
 
 	return {
-		findAll,
+		// findAll,
 		findById,
 		deleteById,
 		insert,
 		update,
-		select,
-		query
+		find,
+		// query
 	};
 };
 
@@ -596,14 +615,16 @@ type QueryDocuments = (args: {
 	locale?: string;
 }) => Promise<RawDoc[]>;
 
-type SelectDocuments = (args: {
+type FindDocuments = (args: {
 	slug: PrototypeSlug;
-	select: string[];
+	select?: string[];
 	query?: OperationQuery;
 	sort?: string;
 	limit?: number;
 	offset?: number;
 	locale?: string;
+	// Allow draft document
+	draft?: boolean;
 }) => Promise<RawDoc[]>;
 
 type FindById = (args: {
@@ -613,6 +634,8 @@ type FindById = (args: {
 	versionId?: string;
 	locale?: string;
 	select?: string[];
+	// Allow draft document
+	draft?: boolean;
 }) => Promise<RawDoc>;
 
 type DeleteById = (args: { slug: PrototypeSlug; id: string }) => Promise<string | undefined>;
@@ -629,8 +652,8 @@ type Update = (args: {
 	id: string;
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
-	/** Optional parameter to specify if should save as draft or published */
-	draft?: boolean;
+	/** Optional parameter to specify if should save as new draft */
+	newDraft?: boolean;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<{ id: string; versionId: string }>;
