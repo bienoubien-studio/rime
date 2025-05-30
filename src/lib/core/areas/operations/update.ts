@@ -46,7 +46,12 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 
 	const configMap = buildConfigMap(data, config.fields);
 
-	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
+	data = await setDefaultValues({ 
+		data, 
+		adapter: rizom.adapter, 
+		configMap,
+		mode: "required"
+	});
 
 	data = await validateFields({
 		data,

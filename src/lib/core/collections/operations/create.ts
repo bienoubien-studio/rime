@@ -54,7 +54,13 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	// throw new Error('thats an error');
 
-	data = await setDefaultValues({ data, adapter: rizom.adapter, configMap });
+	data = await setDefaultValues({ 
+		data, 
+		adapter: rizom.adapter, 
+		configMap,
+		mode: "always"
+	});
+	
 	data = await validateFields({
 		data,
 		event,

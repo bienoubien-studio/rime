@@ -12,19 +12,23 @@ export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;
 	configMap: ConfigMap;
 	adapter: Adapter;
+	mode?: "always" | "required"
 }) => {
 	const { adapter, configMap } = args;
+	const mode = args.mode || "required";
+
 	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
 		let value = getValueAtPath(key, output);
 		let isEmpty;
+		const shouldAddDefault = mode === "always" || (mode === "required" && config.required)
 		try {
 			isEmpty = config.isEmpty(value);
 		} catch {
 			isEmpty = false;
-			logger.warn(`Error while checking if field ${key} is empty`);
+			logger.warn(`Error in config.isEmpty for field ${key}`);
 		}
-		if (isEmpty && hasProp('defaultValue', config)) {
+		if (shouldAddDefault && isEmpty && hasProp('defaultValue', config)) {
 			value = await getDefaultValue({ key, config, adapter });
 			output = setValueAtPath(output, key, value);
 		}
@@ -39,16 +43,12 @@ type GetDefaultValue = (args: {
 	adapter: Adapter;
 }) => Promise<any>;
 
-//@TODO put this in the select field directly
-const defaultSelectValue = (config: SelectField) =>
-	typeof config.defaultValue === 'string' ? [config.defaultValue] : config.defaultValue;
-
 /**
- * This function is trying to set the default value
- * form an existing relation record
+ * This function convert any default value string | string[] of ids
+ * to a RelationValue from an existing relation record
  */
 const defaultRelationValue = async (config: RelationField, key: string, adapter: Adapter) => {
-	
+
 	const buildRelation = async (defaultValue: any) => {
 		let condition;
 		//@TODO encapsulate this into adapter.relation.something
@@ -76,9 +76,7 @@ const defaultRelationValue = async (config: RelationField, key: string, adapter:
 };
 
 export const getDefaultValue: GetDefaultValue = async ({ key, config, adapter }) => {
-	if (isSelectField(config)) {
-		return defaultSelectValue(config);
-	} else if (isRelationField(config)) {
+	if (isRelationField(config)) {
 		return await defaultRelationValue(config, key, adapter);
 	} else {
 		if (typeof config.defaultValue === 'function') {
