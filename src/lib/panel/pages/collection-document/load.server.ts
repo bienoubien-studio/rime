@@ -30,7 +30,12 @@ export function docLoad(slug: CollectionSlug) {
 			/** Make blank document */
 			const blankDocument = collection.blank();
 			const configMap = buildConfigMap(blankDocument, collection.config.fields);
-			doc = await setDefaultValues({ data: blankDocument, adapter: rizom.adapter, configMap });
+			doc = await setDefaultValues({ 
+				data: blankDocument, 
+				adapter: rizom.adapter, 
+				configMap,
+				mode: "always"
+			});
 		} else {
 			/** Check for authorizations */
 			const authorizedRead = collection.config.access.read(user, { id });
