@@ -11,59 +11,64 @@ import type { Config } from '$lib/core/config/types/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
+/**
+ * Creates a configuration interface that provides access to the compiled Rizom configuration
+ * @param rawConfig The raw configuration object defined by the user
+ * @returns A configuration interface with methods to access different parts of the configuration
+ * @example
+ * const config = await createConfigInterface(rawConfig);
+ * const pagesCollection = config.getCollection('pages');
+ */
 export async function createConfigInterface(rawConfig: Config) {
 	const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });
-
+	
+	/**
+	 * Flattens the configuration object for easier access to nested properties
+	 * @param config The compiled configuration object
+	 * @returns A flattened dictionary of configuration values
+	 */
 	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {
 			shouldFlat: ([key]) =>
 				!['cors', 'plugins', 'routes', 'locales', 'areas', 'collections'].includes(key)
 		});
 	};
-
+	
 	const flatConfig: Dic = flattenConfig(config);
-
-	// Initialize required upload folder
-	const hasUpload = config.collections.some((collection) => !!collection.upload);
-	if (hasUpload) {
-		const staticDirectory = path.resolve(process.cwd(), 'static');
-		if (!existsSync(staticDirectory)) {
-			mkdirSync(staticDirectory);
-		}
-		const mediasDirectory = path.resolve(staticDirectory, 'medias');
-		if (!existsSync(mediasDirectory)) {
-			mkdirSync(mediasDirectory);
-		}
-	}
-
+	
+	/**
+	 * Retrieves an area configuration by its slug
+	 * @param slug The slug of the area to retrieve
+	 * @returns The compiled area configuration
+	 * @throws {RizomError} If the area does not exist
+	 */
 	const getArea = (slug: string): CompiledArea => {
-		const isVersionArea = slug.includes('_versions')
-		slug = isVersionArea ? slug.replace('_versions', '') : slug
-		
 		const areaConfig = config.areas.find((g) => g.slug === slug);
 		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`)
-
-		if (isVersionArea) {
-			return { ...areaConfig, slug: slug + '_versions', versions: false } as CompiledArea
-		}
-
+			
 		return areaConfig
 	};
 
+	/**
+	 * Retrieves a collection configuration by its slug
+	 * @param slug The slug of the collection to retrieve
+	 * @returns The compiled collection configuration
+	 * @throws {RizomError} If the collection does not exist
+	 */
 	const getCollection = (slug: string): CompiledCollection => {
-		const isVersionCollection = slug.includes('_versions')
-		slug = isVersionCollection ? slug.replace('_versions', '') : slug
-
+		
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
 		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`)
-
-		if (isVersionCollection) {
-			return { ...collectionConfig, slug: slug + '_versions', versions: false } as CompiledCollection
-		}
-
+			
 		return collectionConfig
 	};
 
+	/**
+	 * Retrieves either an area or collection configuration by its slug
+	 * @param slug The slug to search for in both areas and collections
+	 * @returns The compiled area or collection configuration
+	 * @throws {RizomError} If the slug does not match any area or collection
+	 */
 	const getBySlug = (slug: string) => {
 		// Try to find in collections
 		try {
@@ -79,16 +84,30 @@ export async function createConfigInterface(rawConfig: Config) {
 		}
 	};
 
+	/**
+	 * Checks if a slug represents a collection
+	 * @param slug The slug to check
+	 * @returns True if the slug represents a collection, false otherwise
+	 */
 	const isCollection = (slug: string): slug is CollectionSlug => {
-		slug = slug.includes('_versions') ? slug.replace('_versions', '') : slug
 		return !!config.collections.find((c) => c.slug === slug);
 	};
 
+	/**
+	 * Checks if a slug represents an area
+	 * @param slug The slug to check
+	 * @returns True if the slug represents an area, false otherwise
+	 */
 	const isArea = (slug: string): slug is AreaSlug => {
-		slug = slug.includes('_versions') ? slug.replace('_versions', '') : slug
 		return !!config.areas.find((g) => g.slug === slug);
 	};
 
+	/**
+	 * Determines the prototype (collection or area) of a document by its slug
+	 * @param slug The slug to check
+	 * @returns 'collection' or 'area' depending on the document type
+	 * @throws {RizomError} If the slug does not match any area or collection
+	 */
 	const getDocumentPrototype = (slug: PrototypeSlug) => {
 		if (isCollection(slug)) {
 			return 'collection';
@@ -99,7 +118,10 @@ export async function createConfigInterface(rawConfig: Config) {
 	};
 
 	return {
-		//
+		/**
+		 * Gets the raw compiled configuration object
+		 * @throws {RizomError} If the configuration is not loaded
+		 */
 		get raw() {
 			if (!config) {
 				throw new RizomError('config not loaded yet');
@@ -107,6 +129,12 @@ export async function createConfigInterface(rawConfig: Config) {
 			return config;
 		},
 
+		/**
+		 * Gets a configuration value by its path
+		 * @param path Optional path to a specific configuration value
+		 * @returns The configuration value at the specified path, or the entire configuration if no path is provided
+		 * @throws {RizomError} If the configuration is not loaded
+		 */
 		get(path?: string) {
 			if (!config) {
 				throw new RizomError('config not loaded yet');
@@ -116,22 +144,43 @@ export async function createConfigInterface(rawConfig: Config) {
 			return path in flatConfig ? flatConfig[path] : null;
 		},
 
+		/**
+		 * Gets all collection configurations
+		 * @returns Array of compiled collection configurations
+		 */
 		get collections() {
 			return config.collections;
 		},
 
+		/**
+		 * Gets all area configurations
+		 * @returns Array of compiled area configurations
+		 */
 		get areas() {
 			return config.areas;
 		},
 
+		/**
+		 * Gets the default locale from the configuration
+		 * @returns The default locale code or undefined if no localization is configured
+		 */
 		getDefaultLocale() {
 			return config.localization?.default || undefined;
 		},
 
+		/**
+		 * Gets all configured locale codes
+		 * @returns Array of locale codes or an empty array if no localization is configured
+		 */
 		getLocalesCodes() {
 			return config.localization ? config.localization.locales.map((locale) => locale.code) : [];
 		},
 
+		/**
+		 * Checks if a locale code is valid according to the configuration
+		 * @param locale The locale code to check
+		 * @returns True if the locale is valid, false otherwise
+		 */
 		isValidLocale(locale: any) {
 			const locales = config.localization
 				? config.localization.locales.map((locale) => locale.code)
@@ -148,4 +197,7 @@ export async function createConfigInterface(rawConfig: Config) {
 	};
 }
 
+/**
+ * Type representing the configuration interface returned by createConfigInterface
+ */
 export type ConfigInterface = AsyncReturnType<typeof createConfigInterface>;

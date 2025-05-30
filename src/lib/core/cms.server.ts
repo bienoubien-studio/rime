@@ -7,67 +7,112 @@ import { hasRunInitCommand } from './dev/cli/util.server.js';
 import { logger } from './logger/index.server.js';
 import i18n from './i18n/index.js';
 import type { AsyncReturnType } from '../util/types.js';
-import type { Config } from '$lib/core/config/types/index.js';
-import type { Plugins } from '$lib/core/types/plugins.js';
+import type { CompiledConfig, Config } from '$lib/core/config/types/index.js';
+import path from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 const dev = process.env.NODE_ENV === 'development';
 
+/**
+ * Creates a CMS instance with configuration, database adapter, and utility methods
+ * @returns A CMS instance with initialization and access methods
+ */
 function createCMS() {
-	//
 	let initialized = false;
 	let adapter: ReturnType<typeof createAdapter>;
 	let config: AsyncReturnType<typeof createConfigInterface>;
 	const key: string = randomId(12);
 	
-	//////////////////////////////////////////////
-	// Init
-	//////////////////////////////////////////////
-
+	/**
+	 * Ensures that the media directory exists for upload collections
+	 * @param config The compiled configuration
+	 */
+	const ensureMediasDirectory = (config: CompiledConfig) => {
+		const hasUpload = config.collections.some((collection) => !!collection.upload);
+		if (hasUpload) {
+			const mediasDirectory = path.resolve(process.cwd(), 'static/medias');
+			if (!existsSync(mediasDirectory)) {
+				mkdirSync(mediasDirectory, { recursive: true });
+			}
+		}
+	}
+	
+	/**
+	 * Initializes the CMS with configuration and database schema
+	 * @param options Initialization options containing config and schema
+	 * @throws {RizomError} If required files are missing in development mode
+	 */
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
+		
 		initialized = false;
+		
 		if (dev && !hasRunInitCommand()) {
 			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
 		}
+
 		// Initialize config
 		config = await createConfigInterface(rawConfig);
-		
+
+		// Ensure media directory exists or create it
+		ensureMediasDirectory(config.raw)
+
 		// Initialize DB
 		adapter = createAdapter({ schema, configInterface: config });
 
-		// Panel Language
+		// Register dictionaries for panel Language
 		const dictionnaries = await registerTranslation(config.raw.panel.language);
 		i18n.init(dictionnaries);
-
-		// Done
+		
 		initialized = true;
 	};
-	
+
 	return {
+		/**
+		 * Unique identifier for this CMS instance
+		 */
 		key,
+		
+		/**
+		 * Initializes the CMS with configuration and database schema
+		 */
 		init,
 
+		/**
+		 * Indicates whether the CMS has been initialized
+		 * @returns True if the CMS is initialized, false otherwise
+		 */
 		get initialized() {
 			return initialized;
 		},
-		
+
+		/**
+		 * Gets the database adapter for this CMS instance
+		 * @returns The database adapter
+		 */
 		get adapter() {
 			return adapter;
 		},
 
+		/**
+		 * Gets the configuration interface for this CMS instance
+		 * @returns The configuration interface
+		 */
 		get config() {
 			return config;
 		},
-
 	};
-
 }
 
-//////////////////////////////////////////////
-// Singleton pattern
-//////////////////////////////////////////////
-
+/**
+ * Singleton pattern implementation for the CMS
+ * Ensures only one instance of the CMS exists throughout the application
+ */
 let instance: CMS;
 
+/**
+ * Gets the singleton instance of the CMS
+ * @returns The CMS instance
+ */
 const getInstance = () => {
 	if (instance) {
 		logger.info('import rizom instance ' + instance.key);
@@ -81,5 +126,12 @@ const getInstance = () => {
 
 export default getInstance();
 
+/**
+ * Type representing a CMS instance
+ */
 export type CMS = ReturnType<typeof createCMS>;
+
+/**
+ * Type for the initialization arguments
+ */
 type InitArgs = { config: Config; schema: any };
