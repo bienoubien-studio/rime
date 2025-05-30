@@ -465,7 +465,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			setValueFromDefaultLocale,
 
 			get value() {
-				return getValueAtPath(path, doc) || config.defaultValue;
+				// if(config.required){
+				// 	const defaultValue = typeof config.defaultValue === 'function' ? config.defaultValue() : config.defaultValue
+				// 	return getValueAtPath(path, doc) || defaultValue
+				// }
+				return getValueAtPath(path, doc);
 			},
 
 			set value(value: any) {
@@ -523,7 +527,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		for (const key of Object.keys(flatData)) {
 			formData.set(key, flatData[key]);
 		}
-
+		
 		const response = await fetch(action, {
 			method: 'POST',
 			body: formData
@@ -573,7 +577,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			if(status && documentConfig.versions && documentConfig.versions.draft){
 				setValue('status', event.submitter?.dataset.status)
 			}
-			console.log(event.submitter?.dataset)
 			// As new draft ?
 			let action = formElement.action
 			const newDraft = !!event.submitter?.dataset.newDraft
