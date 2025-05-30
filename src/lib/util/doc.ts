@@ -1,31 +1,49 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
-import type { Link } from '../fields/link/types.js';
 import type { Dic } from '$lib/util/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { snapshot } from './state.js';
 import cloneDeep from 'clone-deep';
 
+
+/**
+ * Creates a blank document based on a collection or area configuration.
+ * Initializes all fields with appropriate default values based on their type.
+ * 
+ * @param config - The compiled collection or area configuration containing field definitions
+ * @returns A new blank document with default values for all fields
+ * 
+ * @example
+ * // Create a blank document for the 'pages' collection
+ * const blankPage = createBlankDocument(config.getCollection('pages'));
+ */
 export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollection | CompiledArea
 ): T => {
+	/**
+	 * Recursively processes field definitions to create a blank document structure.
+	 * Handles special field types like tabs, blocks, relations, and nested fields.
+	 */
 	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
 		try {
 			if (curr.type === 'tabs') {
 				curr.tabs.forEach((tab: any) => {
 					prev[tab.name] = tab.fields.reduce(reduceFieldsToBlankDocument, {});
 				});
-			} else if (curr.type === 'group') {
-				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
-			} else if (curr.type === 'link') {
-				const emptyLink: Link = { value: '', target: '_self', type: 'url' };
-				prev[curr.name] = emptyLink;
-			} else if (['blocks', 'relation', 'select', 'tree'].includes(curr.type)) {
+			} else if (['blocks', 'relation', 'tree'].includes(curr.type)) {
 				prev[curr.name] = [];
 			} else if ('fields' in curr) {
 				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
 			} else {
-				prev[curr.name] = null;
+				if(curr.defaultValue !== undefined){
+					if(typeof curr.defaultValue === 'function'){
+						prev[curr.name] = curr.defaultValue();	
+					}else{
+						prev[curr.name] = curr.defaultValue;	
+					}
+				}else{
+					prev[curr.name] = null;
+				}
 			}
 		} catch (err) {
 			console.error(curr);
@@ -54,9 +72,16 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 };
 
 /**
- * Convert flat documents array to a nested tree structure
- * @param documents Array of documents to convert to tree structure
- * @returns Nested tree structure of documents
+ * Converts a flat array of documents into a nested tree structure based on parent-child relationships.
+ * Documents are organized hierarchically with each document containing its children in the _children property.
+ * 
+ * @param documents - Array of documents with parent properties indicating their relationships
+ * @returns A nested tree structure where each document contains its children
+ * 
+ * @example
+ * // Convert a flat list of pages into a hierarchical structure
+ * const pageTree = toNestedStructure(pagesList);
+ * // Result: [{ id: 'home', _children: [{ id: 'about', _children: [] }] }]
  */
 export const toNestedStructure = (documents: GenericDoc[]) => {
 	const clones = cloneDeep(snapshot(documents));
@@ -97,8 +122,10 @@ export const toNestedStructure = (documents: GenericDoc[]) => {
 			return posA - posB;
 		});
 	});
-
-	// Step 3: Build the tree recursively
+	
+	/**
+	 * Recursively builds a tree structure starting from a specific parent ID.
+	 */
 	const buildTree = (parentId: string | null): GenericDoc[] => {
 		const children = docsByParent.get(parentId) || [];
 		return children.map((doc: GenericDoc) => {

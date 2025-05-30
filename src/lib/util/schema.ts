@@ -1,10 +1,44 @@
-
+/**
+ * Gets all tree table names for a specific collection in the database schema.
+ * Tree tables store hierarchical document relationships.
+ * 
+ * @param slug - The collection slug to find tree tables for
+ * @param tables - The database schema tables object
+ * @returns An array of table names that store tree data for the collection
+ * 
+ * @example
+ * // Returns ['pagesTree', 'pagesTreeRelations']
+ * getTreeTableNames('pages', dbSchema.tables);
+ */
 export const getTreeTableNames = (slug: string, tables: Record<string, any>): string[] =>
   Object.keys(tables).filter((key) => key.startsWith(`${slug}Tree`) && !key.endsWith('Locales'));
 
+/**
+ * Gets all blocks table names for a specific collection in the database schema.
+ * Blocks tables store flexible content blocks data.
+ * 
+ * @param slug - The collection slug to find blocks tables for
+ * @param tables - The database schema tables object
+ * @returns An array of table names that store blocks data for the collection
+ * 
+ * @example
+ * // Returns ['pagesBlocks', 'pagesBlocksContent']
+ * getBlocksTableNames('pages', dbSchema.tables);
+ */
 export const getBlocksTableNames = (slug: string, tables: Record<string, any>): string[] =>
   Object.keys(tables).filter((key) => key.startsWith(`${slug}Blocks`) && !key.endsWith('Locales'));
 
+/**
+ * Creates a versions table name for a given table.
+ * Used for document versioning in the database.
+ * 
+ * @param tableName - The base table name
+ * @returns The name of the versions table
+ * 
+ * @example
+ * // Returns 'pages_versions'
+ * makeVersionsTableName('pages');
+ */
 export const makeVersionsTableName = (tableName:string) => `${tableName}_versions`
 
 /**
@@ -13,16 +47,28 @@ export const makeVersionsTableName = (tableName:string) => `${tableName}_version
  */
 
 /**
- * Convert a document path using dot notation to a database schema path using double underscores
+ * Convert a document path using dot notation to a database schema path using double underscores.
+ * This transformation is needed because SQL databases don't support dots in column names.
+ * 
+ * @param path - The document path with dot notation
+ * @returns The database column path with double underscore notation
+ * 
  * @example
- * toSchemaPath('attributes.hero.title') // returns 'attributes__hero__title'
+ * // Returns 'attributes__hero__title'
+ * pathToDatabaseColumn('attributes.hero.title');
  */
 export const pathToDatabaseColumn = (path: string): string => path.replace(/\./g, '__');
 
 /**
- * Convert a database schema path using double underscores to a document path using dot notation
+ * Convert a database schema path using double underscores to a document path using dot notation.
+ * This transforms database column names back to document property paths.
+ * 
+ * @param path - The database column path with double underscore notation
+ * @returns The document path with dot notation
+ * 
  * @example
- * databaseColumnToPath('attributes__hero__title') // returns 'attributes.hero.title'
+ * // Returns 'attributes.hero.title'
+ * databaseColumnToPath('attributes__hero__title');
  */
 export const databaseColumnToPath = (path: string): string => path.replace(/__/g, '.');
 
@@ -32,8 +78,12 @@ export const databaseColumnToPath = (path: string): string => path.replace(/__/g
  * This function takes an object with keys using database column naming (e.g., 'attributes__title')
  * and transforms them to document path format (e.g., 'attributes.title') while preserving the values.
  * 
+ * @param obj - The object with database column keys
+ * @returns A new object with keys converted to document paths
+ * 
  * @example
- * transformDatabaseColumnsToPaths({ 'attributes__title': 'Home' }) // returns { 'attributes.title': 'Home' }
+ * // Returns { 'attributes.title': 'Home' }
+ * transformDatabaseColumnsToPaths({ 'attributes__title': 'Home' });
  */
 export const transformDatabaseColumnsToPaths = (obj: Record<string, any>): Record<string, any> => {
   const result: Record<string, any> = {};
@@ -50,10 +100,25 @@ export const transformDatabaseColumnsToPaths = (obj: Record<string, any>): Recor
  * into a flat object with keys that match the database schema (using double underscore notation).
  * It only includes fields that exist in the provided columns schema.
  * 
- * For example, if the database schema has a column 'attributes__title', this function will:
- * - Look for data.attributes.title in a nested object structure
- * - OR look for data['attributes.title'] in a flat object structure
- * - Then map the found value to result['attributes__title']
+ * @param data - The document data object (may be nested)
+ * @param columns - The database schema columns definition
+ * @param params - Optional parameters for transformation
+ * @param params.fillNotNull - If true, adds default values for NOT NULL columns
+ * @returns A flat object with database column names and values
+ * 
+ * @example
+ * // Returns { 'attributes__title': 'Home' }
+ * transformDataToSchema(
+ *   { attributes: { title: 'Home' } },
+ *   { 'attributes__title': { dataType: 'string', notNull: true } }
+ * );
+ * 
+ * // With fillNotNull, provides defaults for missing NOT NULL columns
+ * transformDataToSchema(
+ *   { attributes: {} },
+ *   { 'attributes__title': { dataType: 'string', notNull: true } },
+ *   { fillNotNull: true }
+ * ); // Returns { 'attributes__title': '' }
  */
 export const transformDataToSchema = (
   data: Record<string, any>,

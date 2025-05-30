@@ -1,5 +1,19 @@
 import { RizomFormError } from '$lib/core/errors/index.js';
 
+/**
+ * Validates a password string against security requirements.
+ * Checks for minimum length, lowercase, uppercase, numbers, and special characters.
+ * 
+ * @param value - The password string to validate
+ * @returns True if valid, or a specific RizomFormError code if invalid
+ * 
+ * @example
+ * // Returns true for a valid password
+ * password("Secure1Password!");
+ * 
+ * // Returns an error code for an invalid password
+ * password("weak"); // Returns RizomFormError.PASSWORD_MIN_8
+ */
 export const password = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
@@ -18,6 +32,20 @@ export const password = (value: unknown) => {
 	return true;
 };
 
+/**
+ * Validates an email address string.
+ * Ensures the email follows standard format with proper characters and domain structure.
+ * 
+ * @param value - The email string to validate
+ * @returns True if valid, or a specific RizomFormError code if invalid
+ * 
+ * @example
+ * // Returns true for a valid email
+ * email("user@example.com");
+ * 
+ * // Returns an error code for an invalid email
+ * email("invalid-email"); // Returns RizomFormError.INVALID_EMAIL
+ */
 export const email = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
@@ -33,6 +61,20 @@ export const email = (value: unknown) => {
 	return true;
 };
 
+/**
+ * Validates a telephone number string.
+ * Ensures the phone number contains only digits, spaces, and the plus sign.
+ * 
+ * @param value - The telephone number string to validate
+ * @returns True if valid, or a specific RizomFormError code if invalid
+ * 
+ * @example
+ * // Returns true for a valid phone number
+ * tel("+1 555 123 4567");
+ * 
+ * // Returns an error code for an invalid phone number
+ * tel("abc123"); // Returns RizomFormError.INVALID_PHONE
+ */
 export const tel = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
@@ -43,6 +85,20 @@ export const tel = (value: unknown) => {
 	return true;
 };
 
+/**
+ * Validates a URL string.
+ * Ensures the URL follows standard HTTP/HTTPS format with proper domain structure.
+ * 
+ * @param value - The URL string to validate
+ * @returns True if valid, or a specific RizomFormError code if invalid
+ * 
+ * @example
+ * // Returns true for a valid URL
+ * url("https://example.com/page");
+ * 
+ * // Returns an error code for an invalid URL
+ * url("not-a-url"); // Returns RizomFormError.INVALID_URL
+ */
 export const url = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
@@ -57,6 +113,20 @@ export const url = (value: unknown) => {
 	return true;
 };
 
+/**
+ * Validates a slug string.
+ * Ensures the slug contains only lowercase letters, numbers, and hyphens.
+ * 
+ * @param value - The slug string to validate
+ * @returns True if valid, or a specific RizomFormError code if invalid
+ * 
+ * @example
+ * // Returns true for a valid slug
+ * slug("my-page-slug-123");
+ * 
+ * // Returns an error code for an invalid slug
+ * slug("Invalid Slug!"); // Returns RizomFormError.INVALID_SLUG
+ */
 export const slug = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RizomFormError.NOT_A_STRING;
@@ -67,6 +137,20 @@ export const slug = (value: unknown) => {
 	return true;
 };
 
+/**
+ * Validates a link object with different validation based on link type.
+ * Supports tel, email, url, and anchor link types.
+ * 
+ * @param link - The link object with type and value properties
+ * @returns True if valid, or a string with the error type and message if invalid
+ * 
+ * @example
+ * // Returns true for a valid email link
+ * link({ type: 'email', value: 'user@example.com' });
+ * 
+ * // Returns an error string for an invalid URL link
+ * link({ type: 'url', value: 'invalid-url' }); // Returns "url::INVALID_URL"
+ */
 export const link = (link: any) => {
 	const { type, value } = link;
 	
@@ -89,6 +173,10 @@ export const link = (link: any) => {
 	return true;
 };
 
+/**
+ * Collection of validation utility functions for common data types.
+ * Each function returns true if the value is valid, or an error code/message if invalid.
+ */
 const validate = {
 	password,
 	email,
