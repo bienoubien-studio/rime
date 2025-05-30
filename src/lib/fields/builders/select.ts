@@ -28,7 +28,6 @@ type FieldWithOptions = FormField & {
 export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBuilder<T> {
 	constructor(name: string, type: FieldsType) {
 		super(name, type);
-		this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
 		this.field.validate = ensureSelectIsOption;
 	}
 	
@@ -63,6 +62,13 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 		if (!this.field.defaultValue) {
 			const defaultOption = this.field.options[0].value
 			this.field.defaultValue = this.field.many ? [defaultOption] : defaultOption
+		}
+		if(!this.field.isEmpty){
+			if(this.field.many){
+				this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
+			}else{
+				this.field.isEmpty = (value) => !value;
+			}
 		}
 		return super.compile();
 	}

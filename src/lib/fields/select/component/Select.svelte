@@ -15,11 +15,11 @@
 	let initialized = false;
 
 	const field = $derived(form.useField(path, config));
-
+	
 	let options = $state(config.options);
 	let isFull = $derived.by(() => {
 		if (!field.value) return false;
-		const notManyAndOneSelected = !config.many && field.value.length === 1;
+		const notManyAndOneSelected = !config.many && typeof field.value === 'string';
 		const manyAndAllSelected = config.many && field.value.length === config.options.length;
 		return notManyAndOneSelected || manyAndAllSelected;
 	});
@@ -36,7 +36,7 @@
 			}
 		}
 	});
-
+	
 	$effect(() => {
 		if (config.many) {
 			sortable(listHTMLElement);
@@ -44,32 +44,49 @@
 	});
 
 	$effect(() => {
-		if (field.value && Array.isArray(field.value) && !initialized) {
-			field.value = field.value.filter((val: string) => validValues.includes(val));
-			initialized = true;
+		if (config.many) {
+			if (field.value && Array.isArray(field.value) && !initialized) {
+				field.value = field.value.filter((val: string) => validValues.includes(val));
+			}
+		} else {
+			if (field.value && !initialized) {
+				field.value = validValues.includes(field.value) ? field.value : null;
+			}
 		}
+		initialized = true;
 	});
 
 	$effect(() => {
-		if (!field.value) {
-			options = config.options;
-		} else {
-			options = config.options.filter((option) => !field.value.includes(option.value));
+		if (config.many) {
+			if (!field.value) {
+				options = config.options;
+			} else {
+				options = config.options.filter((option) => !field.value.includes(option.value));
+			}
 		}
 	});
-
+	
 	const onOrderChange = (oldIndex: number, newIndex: number) => {
 		field.value = moveItem(field.value, oldIndex, newIndex);
 	};
 
 	const addValue = (val: string) => {
 		if (isFull) return;
-		field.value = [...(field.value || []), val];
+		if (config.many) {
+			field.value = [...(field.value || []), val];
+		} else {
+			field.value = val;
+		}
 	};
 
-	const removeValue = (val: string) => {
-		field.value = [...(field.value || [])].filter((v) => v !== val);
+	const removeValue = (val?: string) => {
+		if (config.many) {
+			field.value = [...(field.value || [])].filter((v) => v !== val);
+		} else {
+			field.value = null;
+		}
 	};
+
 </script>
 
 <fieldset class="rz-field-select {config.className || ''}" use:root={field}>
@@ -85,13 +102,22 @@
 				data-focused={inputFocused ? '' : null}
 				data-error={field.error ? '' : null}
 			>
-				{#each field.value as val (val)}
-					{@const option = config.options.filter((o) => o.value === val)[0]}
-					<Tag onRemove={() => removeValue(option.value)} readOnly={form.readOnly}>
-						{option.label}
-					</Tag>
-				{/each}
-
+				{#if config.many}
+					{#each field.value as val (val)}
+						{@const option = config.options.filter((o) => o.value === val)[0]}
+						<Tag onRemove={() => removeValue(option.value)} readOnly={form.readOnly}>
+							{option.label}
+						</Tag>
+					{/each}
+				{:else if field.value}
+					{@const option = config.options.filter((o) => o.value === field.value)[0]}
+					{#if option}
+						<Tag onRemove={() => removeValue()} readOnly={form.readOnly}>
+							{option.label}
+						</Tag>
+					{/if}
+				{/if}
+				
 				{#if !form.readOnly && !isFull}
 					<Command.InputSelect
 						onfocus={() => (inputFocused = true)}
