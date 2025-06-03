@@ -234,12 +234,12 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 
 ## ROADMAP
 
-- [√] switch from lucia to better-auth
-- [√] Document locked while being edited by another user
-- [√] Panel i18n
-- [√] Document status
-- [√] Tree field
-- [√] more tiptap integration
+- [x] switch from lucia to better-auth
+- [x] Document locked while being edited by another user
+- [x] Panel i18n
+- [x] Document status
+- [x] Tree field
+- [x] more tiptap integration
 - [ ] Live Edit system in practice
 - [ ] Documentation
 
@@ -247,7 +247,7 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 
 - [ ] Document version
 - [ ] Put bin commands in a separate package ex: @rizom/kit
-- [√] collection nested
+- [x] collection nested
 - [ ] page version and auto-saved draft
 - [ ] more better-auth integration
 - [ ] configurable medias/config path
