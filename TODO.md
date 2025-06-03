@@ -34,6 +34,7 @@
 [ ] Add select feature to findById collection
 [√] Check that url encoded string queries are well handled
 [ ] Better junction table naming
+[ ] Remove locales bcp47
 
 # V1
 [√] collection nested

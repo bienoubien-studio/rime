@@ -196,15 +196,15 @@ export default defineConfig({
 
 ```ts
 export const load = async (event: LayoutServerLoadEvent) => {
-  const { api, rizom } = event.locals;
+  const { rizom } = event.locals;
   // Get an Area document
-  const menu = await api.area('menu').find();
+  const menu = await rizom.area('menu').find();
   // Get all pages documents
-  const pages = await api.collection('pages').findAll({ locale: 'en' });
+  const pages = await rizom.collection('pages').findAll({ locale: 'en' });
   // Get a page byId
-  const home = await api.collection('pages').findById({ locale: 'en', id: 'some-id' });
+  const home = await rizom.collection('pages').findById({ locale: 'en', id: 'some-id' });
   // Get a user with a query
-  const [user] = await api.collection('users').find({
+  const [user] = await rizom.collection('users').find({
     query: `where[email][equals]=some@email.com` // qs query or ParsedQsQuery
   });
   // Get some config values
@@ -234,12 +234,12 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 
 ## ROADMAP
 
-- [v] switch from lucia to better-auth
-- [v] Document locked while being edited by another user
-- [v] Panel i18n
-- [v] Document status
-- [v] Tree field
-- [v] more tiptap integration
+- [√] switch from lucia to better-auth
+- [√] Document locked while being edited by another user
+- [√] Panel i18n
+- [√] Document status
+- [√] Tree field
+- [√] more tiptap integration
 - [ ] Live Edit system in practice
 - [ ] Documentation
 
@@ -247,7 +247,7 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 
 - [ ] Document version
 - [ ] Put bin commands in a separate package ex: @rizom/kit
-- [ ] collection nested
+- [√] collection nested
 - [ ] page version and auto-saved draft
 - [ ] more better-auth integration
 - [ ] configurable medias/config path
