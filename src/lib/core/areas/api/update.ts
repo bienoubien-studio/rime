@@ -3,15 +3,16 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
 import { safe } from '$lib/util/safe.js';
+import { PARAMS } from '$lib/core/constant.js';
 
 export default function (slug: AreaSlug) {
 	//
 	async function POST(event: RequestEvent) {
 		const { rizom, locale } = event.locals;
 
-		const paramLocale = event.url.searchParams.get('locale');
-		const versionId = event.url.searchParams.get('versionId') || undefined;
-		const draft = event.url.searchParams.get('draft') ? event.url.searchParams.get('draft') === 'true' : undefined;
+		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
+		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
+		const draft = event.url.searchParams.get(PARAMS.DRAFT) ? event.url.searchParams.get(PARAMS.DRAFT) === 'true' : undefined;
 		const data = await extractData(event.request);
 		
 		const [error, doc] = await safe(

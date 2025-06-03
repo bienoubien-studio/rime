@@ -91,19 +91,18 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 		
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.cache.toHashKey(
-				'find',
-				(selectArray || []).join(','),
-				this.config.slug,
-				this.#event.locals.user?.roles.join(',') || 'no-user',
+			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
+				slug: this.config.slug,
+				select: selectArray,
+				userRoles: this.#event.locals.user?.roles,
 				sort,
 				depth,
 				limit,
 				offset,
 				locale,
 				draft,
-				JSON.stringify(query)
-			);
+				query
+			});
 			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
 		}
 
@@ -128,16 +127,15 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 		
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.cache.toHashKey(
-				'findById',
-				this.config.slug,
-				this.#event.locals.user?.roles.join(',') || 'no-user',
+			const key = this.#event.locals.rizom.cache.createKey('collection.findById', {
+				slug: this.config.slug,
+				userRoles: this.#event.locals.user?.roles,
 				id,
-				versionId || 'latest',
+				versionId,
 				depth,
-				draft ? 'draft' : 'latest',
+				draft,
 				locale
-			);
+			});
 			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
 		}
 

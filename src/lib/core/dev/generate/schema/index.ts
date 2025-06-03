@@ -16,7 +16,7 @@ import type { Dic } from '$lib/util/types.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
 import { toCamelCase, toPascalCase } from '$lib/util/string.js';
-import { makeVersionsTableName } from '../../../../util/schema.js';
+import { makeVersionsSlug } from '../../../../util/schema.js';
 
 
 export function generateSchemaString(config: BuiltConfig) {
@@ -35,7 +35,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(collection.slug))
 
 		if (collection.versions) {
-			rootTableName = makeVersionsTableName(collectionSlug)
+			rootTableName = makeVersionsSlug(collectionSlug)
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
 			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
 			
@@ -117,7 +117,7 @@ export function generateSchemaString(config: BuiltConfig) {
 		schema.push(templateHead(area.slug))
 
 		if (area.versions) {
-			rootTableName = makeVersionsTableName(areaSlug)
+			rootTableName = makeVersionsSlug(areaSlug)
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
 			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
 			

@@ -3,14 +3,15 @@ import { extractData } from '$lib/core/operations/shared/data.server.js';
 import type { AreaSlug } from '$lib/core/types/doc';
 import { safe } from '$lib/util/safe';
 import { handleError } from '$lib/core/errors/handler.server';
+import { PARAMS } from '$lib/core/constant.js';
 
 export default function (slug: AreaSlug) {
 	const actions = {
 		update: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
 			
-			const versionId = event.url.searchParams.get('versionId') || undefined
-			const draft = event.url.searchParams.get('draft') === 'true';
+			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
+			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 			
 			const [error, doc] = await safe(
 				rizom.area(slug).update({

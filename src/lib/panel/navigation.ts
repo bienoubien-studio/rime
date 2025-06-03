@@ -1,5 +1,6 @@
 import type { User } from '$lib/core/collections/auth/types';
 import type { CompiledConfig } from '$lib/core/config/types';
+import { isVersionsSlug } from '$lib/util/schema.js';
 import type { Dic } from '$lib/util/types';
 
 interface Route {
@@ -34,7 +35,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 	};
 
 	// Process collections
-	config.collections.filter(collection => !collection.slug.endsWith('_versions')).forEach((collection) => {
+	config.collections.filter(collection => !isVersionsSlug(collection.slug)).forEach((collection) => {
 		if (user && collection.access.read(user, {})) {
 			const route: Route = {
 				title: collection.label.plural,

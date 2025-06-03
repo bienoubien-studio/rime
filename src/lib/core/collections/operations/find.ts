@@ -30,6 +30,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
     throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
   }
 
+  
   const documentsRaw = await rizom.adapter.collection.find({
     slug: config.slug,
     query,

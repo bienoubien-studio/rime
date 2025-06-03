@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import { Button } from '../../ui/button';
 	import { X, PencilRuler, Eye, History } from '@lucide/svelte';
-	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import ButtonSave from './ButtonSave.svelte';
-	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
-
+	import PageHeader from '../../ui/page-header/PageHeader.svelte';
+	import ButtonSave from './ButtonSave.svelte';
+	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
+	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	
 	// Props
 	type Props = {
 		onClose?: any;
@@ -102,7 +102,7 @@
 				data-status="draft"
 				data-draft
 			/>
-
+			
 			<!-- PUBLISH -->
 			<!-- data-version : current published doc updated -->
 			<!-- no data-draft : keep it published -->

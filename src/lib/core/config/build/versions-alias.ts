@@ -1,4 +1,4 @@
-import { makeVersionsTableName } from "$lib/util/schema.js";
+import { makeVersionsSlug } from "$lib/util/schema.js";
 import type { CollectionSlug } from "../../../types.js";
 import type { CompiledCollection, CompiledConfig } from "../types/index.js";
 
@@ -16,7 +16,7 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
   for (const collection of config.collections) {
     if (collection.versions) {
       const versionedCollection: CompiledCollection = {
-        slug: makeVersionsTableName(collection.slug) as CollectionSlug,
+        slug: makeVersionsSlug(collection.slug) as CollectionSlug,
         versions: false,
         access: collection.access,
         fields: collection.fields,
@@ -33,7 +33,7 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
   for (const area of config.areas) {
     if (area.versions) {
       const versionedCollection: CompiledCollection = {
-        slug: makeVersionsTableName(area.slug) as CollectionSlug,
+        slug: makeVersionsSlug(area.slug) as CollectionSlug,
         versions: false,
         access: area.access,
         fields: area.fields,

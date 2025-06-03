@@ -2,10 +2,11 @@ import { and, desc, eq, getTableColumns } from "drizzle-orm";
 import qs, { type ParsedQs } from 'qs';
 import { RizomError } from "$lib/core/errors";
 import type { RawDoc } from "$lib/core/types/doc";
-import { isObjectLiteral, omit } from "$lib/util/object";
+import { isObjectLiteral, omit, pick } from "$lib/util/object";
 import { transformDataToSchema } from "$lib/util/schema";
 import type { BuiltArea, BuiltCollection } from "../types.js";
 import type { OperationQuery, ParsedOperationQuery } from "$lib/core/types/index.js";
+import type { Dic } from "$lib/util/types.js";
 
 /**
  * Main function to generated primaryKeys
@@ -111,14 +112,38 @@ export function prepareSchemaData(data: any, options: {
   }
 }
 
-export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string) {
+export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
   // Check if we have version data
   if (!doc[versionTableName] || doc[versionTableName].length === 0) {
-    throw new RizomError(RizomError.NOT_FOUND, 'document found but without version, should never happen');
+    throw new RizomError(RizomError.NOT_FOUND);
   }
-
+  
   const versionData = doc[versionTableName][0];
 
+  if (select && Array.isArray(select) && select.length) {
+    const rootProps = ['createdAt', 'updatedAt', 'id'] as const
+    const hasRootSelectColumn = rootProps.some(column => select.includes(column))
+
+    // Pick only selected fields from both document and version data
+    const docFields = hasRootSelectColumn
+      ? pick([...select.filter(field => rootProps.includes(field as any)), 'id'], doc)
+      : pick(['id'], doc);
+
+    // Pick selected fields from version data
+    // Filter out root props as they should come from the doc
+    const versionFields = pick(
+      select.filter(field => !rootProps.includes(field as any)),
+      versionData
+    );
+
+    return {
+      ...docFields,
+      ...versionFields,
+      versionId: versionData.id
+    };
+  }
+
+  // Default case - return all fields
   return {
     ...omit([versionTableName], doc),
     ...omit(['id', 'ownerId', 'createdAt', 'updatedAt'], versionData),
@@ -130,34 +155,55 @@ export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string) 
  * Build the query params to get either the latest updated document
  * or the published one if version.draft is enabled and draft is true
  */
-export function buildPublishedOrLatestVersionParams( args: { draft?: boolean, config: BuiltArea | BuiltCollection, table: any }) {
+export function buildPublishedOrLatestVersionParams(args: { draft?: boolean, config: BuiltArea | BuiltCollection, table: any }) {
   const { config, table, draft } = args
   const hasStatus = config.versions && config.versions.draft
   return hasStatus && !draft ? {
     where: eq(table.status, 'published'),
-    limit:1
+    limit: 1
   } : {
     orderBy: [desc(table.updatedAt)],
     limit: 1
   }
 }
 
-export function normalizeQuery (incomingQuery: OperationQuery): ParsedOperationQuery {
+export function normalizeQuery(incomingQuery: OperationQuery): ParsedOperationQuery {
   let query
   if (typeof incomingQuery === 'string') {
-		try {
-			query = qs.parse(incomingQuery);
-		} catch (err: any) {
-			throw new RizomError(RizomError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
-		}
-	} else {
-		if (!isObjectLiteral(incomingQuery)) {
-			throw new RizomError(RizomError.INVALID_DATA, 'Query is not an object');
-		}
-		query = incomingQuery;
-	}
+    try {
+      query = qs.parse(incomingQuery);
+    } catch (err: any) {
+      throw new RizomError(RizomError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
+    }
+  } else {
+    if (!isObjectLiteral(incomingQuery)) {
+      throw new RizomError(RizomError.INVALID_DATA, 'Query is not an object');
+    }
+    query = incomingQuery;
+  }
   if (!query.where) {
     throw new RizomError(RizomError.INVALID_DATA, 'Query must have a root where property')
   }
   return query as ParsedOperationQuery
+}
+
+export function columnsParams({ table, select }: { table: Dic, select?: string[]  }) {
+  // Create an object to hold the columns we want to select
+  const selectColumns: Dic = {};
+  // If select fields are specified, build the select columns object
+  if (select && select.length > 0) {
+    // Always include the ID column for the version
+    selectColumns.id = true;
+    // Process each requested field
+    for (const path of select) {
+      // Convert nested paths (dot notation) to SQL format (double underscore)
+      // Example: 'attributes.slug' becomes 'attributes__slug'
+      const sqlPath = path.replace(/\./g, '__');
+      // If this column exists on the versions table, add it to our select
+      if (sqlPath in table) {
+        selectColumns[sqlPath] = true;
+      }
+    }
+  }
+  return Object.keys(selectColumns).length ? selectColumns : undefined
 }

@@ -3,7 +3,7 @@ import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import { PANEL_USERS } from 'rizom/core/constant';
 
-const BASE_URL = 'http://rizom.test:5173';
+const BASE_URL = process.env.PUBLIC_RIZOM_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
 
 let editorId: string;
@@ -61,8 +61,8 @@ test('Superadmin login should be successfull', async ({ request }) => {
 	superAdminId = json.user.id;
 });
 
-/****************************************************//
-// Collection create / update / delete / read
+/****************************************************/
+/* Collection create / update / delete / read
 /****************************************************/
 
 let homeId: string;
@@ -175,8 +175,6 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 	expect(response.docs[1].attributes.template).toBeUndefined();
 	expect(response.docs[1].parent).toBeUndefined();
 });
-
-/** ---------------- QUERIES ---------------- */
 
 test('Should return page (query)', async ({ request }) => {
 	const url = `${API_BASE_URL}/pages?where[parent][in_array]=${homeId}`;

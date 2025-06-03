@@ -18,7 +18,7 @@ import { privateFieldNames } from '../core/collections/auth/config/privateFields
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Rizom } from '../core/rizom.server.js';
 import { logger } from '../core/logger/index.server.js';
-import { getBlocksTableNames, getTreeTableNames, makeVersionsTableName, transformDatabaseColumnsToPaths } from '../util/schema.js';
+import { getBlocksTableNames, getTreeTableNames, makeVersionsSlug, transformDatabaseColumnsToPaths } from '../util/schema.js';
 
 /****************************************************/
 /* Types
@@ -59,7 +59,7 @@ export const databaseTransformInterface = ({
 
 		const config = configInterface.getBySlug(slug)
 		const isVersioned = !!config.versions
-		const tableName = isVersioned ? makeVersionsTableName(slug) : slug;
+		const tableName = isVersioned ? makeVersionsSlug(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
 		const tableNameLocales = `${tableName}Locales`;
 		const isLive = event.url.pathname.startsWith('/live');

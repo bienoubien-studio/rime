@@ -22,7 +22,7 @@ import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
 import { BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
-import { makeVersionsTableName } from '$lib/util/schema.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { CollectionSlug } from '../../../types.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 

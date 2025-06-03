@@ -9,14 +9,10 @@ import {
 	date
 } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
-import { Images, Settings2, NotebookText } from '@lucide/svelte';
 import { collection, area, defineConfig } from '$lib/index.js';
 import { apiInit } from './api-init/index.js';
 
 const Settings = area('settings', {
-	icon: Settings2,
-	group: 'system',
-	description: "System settings, maintenance and more",
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -25,10 +21,7 @@ const Settings = area('settings', {
 });
 
 const Infos = area('infos', {
-	icon: Settings2,
-	group: 'system',
-	description: "System settings, maintenance and more",
-	fields: [text('title')],
+	fields: [text('title'), text('email')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
 	},
@@ -47,14 +40,12 @@ const tabNewsAttributes = tab('attributes').fields(
 		.table({ position: 3, sort: true })
 		.localized()
 		.required(),
+	relation('image').to('medias'),
 	richText('intro').features('bold', 'link'),
 	date('published')
 );
 
 const News = collection('news', {
-	icon: NotebookText,
-	group: 'content',
-	description: "Create article for your readers",
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
 	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
@@ -67,10 +58,7 @@ const News = collection('news', {
 })
 
 const Medias = collection('medias', {
-	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
-	description: "Manage images, video, audio, documents,...",
 	upload: true,
-	icon: Images,
 	group: 'content',
 	imageSizes: [
 		{ name: 'sm', width: 640, out: ['webp'] },
@@ -85,9 +73,19 @@ const Medias = collection('medias', {
 	versions: true
 });
 
+const Pdf = collection('pdf', {
+	upload: true,
+	group: 'content',
+	fields: [text('alt').required()],
+	access: {
+		read: () => true
+	},
+	versions: { draft: true }
+});
+
 export default defineConfig({
 	database: 'versions.sqlite',
-	collections: [News, Medias],
+	collections: [News, Medias, Pdf],
 	areas: [Settings, Infos],
 	plugins: [apiInit()],
 	panel: {

@@ -2,6 +2,7 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { safe } from '$lib/util/safe.js';
+import { PARAMS } from '$lib/core/constant.js';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -9,9 +10,10 @@ export default function (slug: CollectionSlug) {
 		const { rizom, locale } = event.locals;
 		const { id } = event.params;
 
-		const paramLocale = event.url.searchParams.get('locale');
-		const paramDepth = event.url.searchParams.get('depth');
-		const paramDraft = event.url.searchParams.get('draft')
+		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
+		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
+		const paramDraft = event.url.searchParams.get(PARAMS.DRAFT)
+		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft =  paramDraft ? paramDraft === 'true' : undefined
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 		
@@ -20,7 +22,8 @@ export default function (slug: CollectionSlug) {
 				id, 
 				locale: paramLocale || locale, 
 				depth,
-				draft
+				draft,
+				versionId
 			})
 		);
 		

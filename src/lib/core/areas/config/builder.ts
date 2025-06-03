@@ -1,9 +1,9 @@
 import { text } from '$lib/fields/text/index.js';
 import { date } from '$lib/fields/date/index.js';
-import { select } from '$lib/fields/select/index.js';
 import type { Area } from '$lib/core/config/types/index.js';
 import type { OmitPreservingDiscrimination } from '$lib/util/types.js';
 import { capitalize } from '$lib/util/string.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
 
 type AreaWithoutSlug<S> = OmitPreservingDiscrimination<Area<S>, 'slug'>;
 
@@ -28,7 +28,7 @@ export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Are
 				maxVersions: 4
 			};
 		} else if (config.versions.draft) {
-			fields.push(text('status').defaultValue('draft').hidden());
+			fields.push(text('status').defaultValue(VERSIONS_STATUS.DRAFT).hidden());
 		}
 	} else {
 		config.versions = false;

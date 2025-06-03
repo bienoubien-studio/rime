@@ -98,21 +98,20 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			depth,
 			draft
 		};
-
+		
 		if (this.#event.locals.cacheEnabled) {
-			const key = this.#event.locals.rizom.cache.toHashKey(
-				'find',
-				select.join(','),
-				this.config.slug,
-				versionId || 'latest',
-				this.#event.locals.user?.roles.join(',') || 'no-user',
+			const key = this.#event.locals.rizom.cache.createKey('area.find', {
+				slug: this.config.slug,
+				select,
+				versionId,
+				userRoles: this.#event.locals.user?.roles,
 				depth,
-				draft ? 'draft' : 'latest',
+				draft,
 				locale
-			);
+			});
 			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
 		}
-
+		
 		return find<Doc>(params);
 	}
 	

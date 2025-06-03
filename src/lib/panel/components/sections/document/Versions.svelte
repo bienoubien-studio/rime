@@ -1,24 +1,25 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import type { DocPrototype, GenericDoc, PrototypeSlug } from '$lib/core/types/doc.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { onMount } from 'svelte';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import { X } from '@lucide/svelte';
+	import { makeVersionsSlug } from '$lib/util/schema.js';
 
 	type Props = { doc: GenericDoc };
 	const { doc }: Props = $props();
 
 	const locale = getLocaleContext();
 	let versions = $state<GenericDoc[]>([]);
-
+	
 	const url = $derived.by(() => {
 		if (doc._prototype === 'collection') {
-			return `${env.PUBLIC_RIZOM_URL}/api/${doc._type}_versions?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
+			return `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
 		} else {
-			return `${env.PUBLIC_RIZOM_URL}/api/${doc._type}_versions?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
+			return `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt`;
 		}
 	});
 

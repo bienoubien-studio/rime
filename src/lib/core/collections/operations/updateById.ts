@@ -1,11 +1,4 @@
-import { type RequestEvent } from '@sveltejs/kit';
-import type {
-	Adapter,
-	Rizom,
-	GenericDoc,
-	CompiledCollection,
-	CollectionSlug
-} from '$lib/types';
+import path from 'node:path';
 import { RizomError } from '$lib/core/errors/index.js';
 import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 import { buildConfigMap } from '../../operations/configMap/index.server.js';
@@ -14,12 +7,16 @@ import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.j
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
-import type { RegisterCollection } from '$lib/index.js';
-import type { DeepPartial } from '$lib/util/types.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { filePathToFile } from '../upload/util/converter.js';
-import path from 'node:path';
+import { getVersionUpdateOperation, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { type RequestEvent } from '@sveltejs/kit';
+import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
+import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { RegisterCollection } from '$lib/index.js';
+import type { DeepPartial } from '$lib/util/types.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
 
 type Args<T> = {
 	id: string;
@@ -33,43 +30,44 @@ type Args<T> = {
 };
 
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, locale, id, versionId, isFallbackLocale } = args;
+	const { config, event, locale, id, isFallbackLocale } = args;
 	const { rizom } = event.locals
+	let versionId = args.versionId
 	let data = args.data;
-	let draft: boolean | undefined
-
+	
+	// Check for authorization
 	const authorized = config.access.update(event.locals.user, { id });
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
-
-	// scenario 1 : no versions
 	
-	// scenario 2 : versions but no draft
-	// a. if versionId update the versionId
-	// b. if no versionId create a new version
-	if(config.versions && !config.versions.draft && !versionId){
-		draft = true
-	}
+	// Define the kind of update operation depending on versions config
+	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
 
-	// scenario 3 : versions with drafts
-	// a. if versionId update the versionId
-	// b. if no versionId and draft is not true update the published
-	// c. if no versionId and draft is true update the latest
-
-	const original = (await rizom.collection(config.slug).findById({ locale, id, versionId, draft })) as T;
+	const original = (await rizom.collection(config.slug).findById({ 
+		locale, 
+		id, 
+		versionId, 
+		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
+	})) as T;
 
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 	
+	// set the versionId from the original to update the proper version if none provided
+	if (config.versions && !versionId) {
+		versionId = original.versionId
+	}
+
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
-	// For scenario 2.b and 3.c a new version is created
-	// so add fields from the original, that way required field values will be present
-	// also get the original file if we are on an upload collection
-	if (config.versions && draft) {
+	// For new versions creation scenario, add data from the original doc
+	// This ensures required field values will be present when creating the new version
+	// Also get the original file if we are on an upload collection
+	if (config.versions && VersionOperations.isNewVersionCreation(versionOperation)) {
+		// Check if you should add the original file if exists and if data hasn't a file prop
 		if (config.upload && !data.file && original.filename) {
 			// Create a File object from the existing file path
 			const filePath = path.resolve(process.cwd(), 'static', 'medias', original.filename);
@@ -81,17 +79,24 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 			}
 		}
 		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
+		if (config.versions.draft && !data.status) {
+			//@ts-ignore will fix this
+			data.status = VERSIONS_STATUS.DRAFT
+		}
 	}
 
+	// build the config map according to the augmented data
 	const configMap = buildConfigMap(data, config.fields);
-	
+
 	data = await setDefaultValues({ 
 		data, 
 		adapter: rizom.adapter, 
 		configMap,
-		mode: "required"
+		mode: VersionOperations.isNewVersionCreation(versionOperation) ? "always" : "required"
 	});
 	
+	// For versions creation set default values for all empty fields
+	// in all other case set only for required and empties
 	data = await validateFields({
 		data,
 		event,
@@ -101,7 +106,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		configMap,
 		operation: 'update'
 	});
-
 
 	// We do not re-run hooks on locale fallbackCreation
 	if (!isFallbackLocale) {
@@ -128,10 +132,10 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	const updateResult = await rizom.adapter.collection.update({
 		id,
 		versionId,
-		draft,
 		slug: config.slug,
 		data: data,
-		locale: locale
+		locale: locale,
+		versionOperation
 	});
 
 	const blocksDiff = await saveBlocks({

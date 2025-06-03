@@ -3,6 +3,7 @@ import { extractData } from '$lib/core/operations/shared/data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc';
 import { handleError } from '$lib/core/errors/handler.server';
 import { safe } from '$lib/util/safe';
+import { PARAMS } from '$lib/core/constant.js';
 
 export default function (slug: CollectionSlug) {
 	const actions: Actions = {
@@ -15,8 +16,8 @@ export default function (slug: CollectionSlug) {
 			// A redirect parameter equals to 0 can be present if we're in a nested form
 			// to prevent redirection after entry creation
 			// ex: for relation creation
-			const withoutRedirect = event.url.searchParams.get('redirect') === '0';
-			const draft = event.url.searchParams.get('draft') === 'true';
+			const withoutRedirect = event.url.searchParams.get(PARAMS.REDIRECT) === '0';
+			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 
 			const [error, result] = await safe(
 				rizom.collection(slug).create({
@@ -36,15 +37,15 @@ export default function (slug: CollectionSlug) {
 
 			return redirect(303, `/panel/${slug}/${result.doc.id}`);
 		},
-
+		
 		/****************************************************/
 		// Update
 		/****************************************************/
 		update: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
 			const id = event.params.id || '';
-			const versionId = event.url.searchParams.get('versionId') || undefined
-			const draft = event.url.searchParams.get('draft') === 'true';
+			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
+			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 			
 			const [error, doc] = await safe(
 				rizom.collection(slug).updateById({

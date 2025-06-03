@@ -4,7 +4,6 @@ import type { FormErrors } from '$lib/panel/types.js';
 class RizomError extends Error {
 	static BAD_REQUEST = 'bad_request';
 	static CONFIG_ERROR = 'config_error';
-	static DATA_BASE_ERROR = 'database error';
 	static FIRST_USER_DEV = 'first_user_dev';
 	static FORM_ERROR = 'form_error';
 	static HOOK = 'hook_error';

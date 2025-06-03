@@ -6,7 +6,7 @@ import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/in
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types';
 import type { TreeBlocksDiff } from '../tree/diff.server.js';
-import { makeVersionsTableName } from '$lib/util/schema.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
 
 type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };
 export const saveRelations = async (args: {
@@ -32,7 +32,7 @@ export const saveRelations = async (args: {
 		data
 	} = args;
 
-	const parentTable = config.versions ? makeVersionsTableName(config.slug) : config.slug
+	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({

@@ -1,8 +1,9 @@
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { AreaSlug, CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { getValueAtPath } from '$lib/util/object';
 import { logger } from '$lib/core/logger/index.server';
+import { VERSIONS_OPERATIONS } from './versions.js';
 
 export const populateURL = async <T extends GenericDoc>(
   document: T,
@@ -87,16 +88,18 @@ export const populateURL = async <T extends GenericDoc>(
       document.url = url
       if (document._prototype === 'collection') {
         await event.locals.rizom.adapter.collection.update({
-          slug: config.slug,
+          slug: config.slug as CollectionSlug,
           id: document.id,
           versionId: document.versionId,
+          versionOperation: config.versions ? VERSIONS_OPERATIONS.UPDATE_VERSION : VERSIONS_OPERATIONS.UPDATE,
           locale,
           data: { url }
         })
       } else {
         await event.locals.rizom.adapter.area.update({
-          slug: config.slug,
+          slug: config.slug as AreaSlug,
           versionId: document.versionId,
+          versionOperation: config.versions ? VERSIONS_OPERATIONS.UPDATE_VERSION : VERSIONS_OPERATIONS.UPDATE,
           locale,
           data: { url }
         })

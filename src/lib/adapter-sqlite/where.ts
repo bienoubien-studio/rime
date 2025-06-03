@@ -8,6 +8,7 @@ import { isRelationField } from '$lib/util/field.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import type { ParsedQs } from 'qs';
 import { RizomError } from '$lib/core/errors/index.js';
+import { isVersionsSlug } from '$lib/util/schema.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
@@ -49,7 +50,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// Handle id field for versioned collections
 		// if "id" inside the query it should refer to the root table
 		// record id not from the versions table
-    if (slug.endsWith('_versions') && 'id' in conditionObject) {
+    if (isVersionsSlug(slug) && 'id' in conditionObject) {
 			// Replace id with ownerId and keep the same operator and value
 			const idOperator = conditionObject.id;
 			delete conditionObject.id;

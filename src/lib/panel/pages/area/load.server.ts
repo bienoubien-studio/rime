@@ -1,6 +1,7 @@
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { AreaSlug } from '$lib/core/types/doc';
 import type { AreaData } from './props';
+import { PARAMS } from '$lib/core/constant.js';
 
 export default function (slug: AreaSlug) {
 	const load = async ({ locals, url }: ServerLoadEvent): Promise<AreaData> => {
@@ -13,9 +14,9 @@ export default function (slug: AreaSlug) {
 		if (!authorizedRead) {
 			return { doc: {}, operation: 'update', status: 401 };
 		}
-
-		const versionId = url.searchParams.get('versionId') || undefined
-		const draft = url.searchParams.get('draft') ? url.searchParams.get('draft') === 'true' : undefined
+		
+		const versionId = url.searchParams.get(PARAMS.VERSION_ID) || undefined
+		const draft = url.searchParams.get(PARAMS.DRAFT) ? url.searchParams.get(PARAMS.DRAFT) === 'true' : undefined
 		const doc = await areaAPI.find({ locale, versionId, draft });
 
 		if (!authorizedUpdate) {

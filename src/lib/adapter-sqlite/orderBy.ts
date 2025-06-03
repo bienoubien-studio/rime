@@ -3,7 +3,7 @@ import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import { makeVersionsTableName, pathToDatabaseColumn } from '../util/schema.js';
+import { makeVersionsSlug, pathToDatabaseColumn } from '../util/schema.js';
 
 type Args = {
 	slug: PrototypeSlug;
@@ -75,7 +75,7 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 			}
 		}
 	} else {
-		const versionTableName = makeVersionsTableName(slug)
+		const versionTableName = makeVersionsSlug(slug)
 		const versionsTable = tables[ versionTableName ];
 		const versionsTableColumns = Object.keys(getTableColumns(versionsTable));
 		

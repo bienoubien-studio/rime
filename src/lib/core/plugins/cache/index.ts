@@ -8,12 +8,12 @@ import HeaderButton from './HeaderButton.svelte';
 export type CacheActions = {
 	get: <T>(name: string, get: () => Promise<T>) => Promise<T>;
 	clear: () => ReturnType<RequestHandler>;
-	isEnabled: Enabled;
+	isEnabled: (event: RequestEvent) => boolean;
 	toHashKey: (...params: unknown[]) => string;
+	createKey: (namespace: string, params: Record<string, unknown>) => string;
 };
 
-type Enabled = (event: RequestEvent) => boolean;
-type CacheOptions = { isEnabled?: Enabled };
+type CacheOptions = { isEnabled?: (event: RequestEvent) => boolean };
 
 export const cache: Plugin<CacheOptions> = (options) => {
 	async function getAction<T>(key: string, get: () => Promise<T>): Promise<T> {
@@ -25,11 +25,37 @@ export const cache: Plugin<CacheOptions> = (options) => {
 		return json({ message: 'Cache cleared' });
 	};
 
+	/**
+	 * Helper to convert any value to a string representation for cache keys
+	 */
+	const valueToString = (value: unknown): string => {
+		if (value === undefined || value === null) {
+			return '0';
+		}
+		if (Array.isArray(value)) {
+			return value.map(valueToString).join(',');
+		}
+		return String(value);
+	};
+
 	const actions: CacheActions = {
 		get: getAction,
 		clear: clearCache,
-		toHashKey: (...params) =>
-			toHash(params.map((param) => (param ? param.toString() : '')).join('-')),
+		toHashKey: (...params) => {
+			return toHash(params.map(valueToString).join('-'));
+		},
+		createKey: (namespace: string, params: Record<string, unknown>) => {
+			// Start with the namespace
+			const values = [namespace];
+			// Add all parameter values in a consistent order (sort keys)
+			Object.keys(params)
+				.sort()
+				.forEach(key => {
+					values.push(`${key}:${valueToString(params[key])}`);
+				});
+			
+			return toHash(values.join('-'));
+		},
 		isEnabled: options?.isEnabled || ((event) => !event.locals.user)
 	};
 

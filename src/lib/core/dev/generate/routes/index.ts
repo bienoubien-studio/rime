@@ -8,6 +8,7 @@ import { injectCustomCSS, removeCustomCSS } from './custom-css.js';
 import { taskLogger } from '$lib/core/logger/index.server.js';
 import type { BuiltConfig } from '$lib/core/config/types/index.js';
 import type { Dic } from '$lib/util/types.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
 
 const projectRoot = process.cwd();
 
@@ -61,7 +62,7 @@ function generateRoutes(config: BuiltConfig): void {
     if (area.versions) {
       processRoutes(area.slug, areaVersionsPanelRoutes)
       // Use collections API route as area_versions is a collection
-      processRoutes(area.slug + '_versions', collectionAPIRoutes)
+      processRoutes(makeVersionsSlug(area.slug), collectionAPIRoutes)
     }
 
   }
@@ -87,7 +88,7 @@ function generateRoutes(config: BuiltConfig): void {
 
     if (collection.versions) {
       processRoutes(collection.slug, collectionVersionsPanelRoutes)
-      processRoutes(collection.slug + '_versions', collectionAPIRoutes)
+      processRoutes(makeVersionsSlug(collection.slug), collectionAPIRoutes)
     }
 
   }

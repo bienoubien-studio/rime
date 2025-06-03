@@ -2,7 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
-import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
+import type { GenericDoc, CollectionSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
@@ -10,6 +10,9 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
+import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import { safe } from '$lib/util/safe.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -17,12 +20,41 @@ type Args = {
 	configInterface: ConfigInterface;
 };
 
+/**
+ * Creates a collection interface for SQLite adapter operations with CRUD functionality.
+ * Handles both versioned and non-versioned collections with support for localization.
+ * 
+ * @example
+ * const collectionInterface = createAdapterCollectionInterface({
+ *   db: sqliteDb,
+ *   tables: schema,
+ *   configInterface: config
+ * });
+ * 
+ * // Use the interface to perform operations
+ * await collectionInterface.findById({ slug: 'posts', id: '123' });
+ */
 const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
-
-	/****************************************************/
-	/* Find by Id
-	/****************************************************/
-
+	
+	/**
+	 * Retrieves a document by its ID from a collection. For versioned collections,
+	 * returns either a specific version (if versionId is provided) or the latest/published version.
+	 * 
+	 * @example
+	 * // Get a document by ID
+	 * const doc = await findById({ slug: 'posts', id: '123' });
+	 * 
+	 * // Get a specific version of a document
+	 * const docVersion = await findById({ 
+	 *   slug: 'posts', 
+	 *   id: '123', 
+	 *   versionId: 'v456',
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * @returns The found document with all its fields and relations
+	 * @throws RizomError when document is not found
+	 */
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
@@ -30,7 +62,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
-			// @ts-expect-error foo
+			//@ts-ignore
 			const doc = await db.query[slug].findFirst({
 				where: eq(tables[slug].id, id),
 				with: withParam
@@ -43,7 +75,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			return doc;
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
+			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
 
 			let params
@@ -68,26 +100,33 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					}
 				}
 			}
-			// @ts-expect-error foo
+			//@ts-ignore
 			const doc = await db.query[slug].findFirst(params);
-
+			
 			if (!doc) {
 				throw new RizomError(RizomError.NOT_FOUND);
 			}
 
 			// If we found the document but there are no versions, that's also a 404
 			if (!doc[versionsTable] || doc[versionsTable].length === 0) {
-				throw new RizomError(RizomError.NOT_FOUND, 'document found but without version, should never happend');
+				throw new RizomError(RizomError.NOT_FOUND);
 			}
 
 			return adapterUtil.mergeDocumentWithVersion(doc, versionsTable)
 		}
 	};
 
-	/****************************************************/
-	// Delete a document by ID
-	/****************************************************/
-
+	/**
+	 * Deletes a document by its ID from a collection. For versioned collections,
+	 * removes the root document and all its versions.
+	 * 
+	 * @example
+	 * // Delete a document
+	 * const deletedId = await deleteById({ slug: 'posts', id: '123' });
+	 * 
+	 * @returns The ID of the deleted document
+	 * @throws RizomError when document is not found
+	 */
 	const deleteById: DeleteById = async ({ slug, id }) => {
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
@@ -95,11 +134,29 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 		return docs[0].id;
 	};
-
-	/****************************************************/
-	// Create a new document
-	/****************************************************/
-
+	
+	/**
+	 * Creates a new document in a collection. For versioned collections, creates both
+	 * the root document and its first version. For non-versioned collections, creates
+	 * a single document with the provided data.
+	 * 
+	 * @example
+	 * // Create a new document
+	 * const { id, versionId } = await insert({
+	 *   slug: 'posts',
+	 *   data: { title: 'Hello World', content: 'This is my first post' },
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * // Create a draft document in a versioned collection
+	 * const { id, versionId } = await insert({
+	 *   slug: 'posts',
+	 *   data: { title: 'Draft Post' },
+	 *   draft: true
+	 * });
+	 * 
+	 * @returns Object containing the IDs of the created document and version
+	 */
 	const insert: Insert = async ({ slug, data, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
@@ -114,7 +171,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Generate version ID
 			const versionId = adapterUtil.generatePK();
-			const versionsTableName = schemaUtil.makeVersionsTableName(slug)
+			const versionsTableName = schemaUtil.makeVersionsSlug(slug)
 
 			// Prepare data for versions table
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
@@ -125,7 +182,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			if (config.versions && config.versions.draft) {
-				mainData.status = draft ? 'draft' : 'published'
+				mainData.status = draft ? VERSIONS_STATUS.DRAFT : VERSIONS_STATUS.PUBLISHED
 			}
 
 			// Insert version record
@@ -189,13 +246,49 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 	};
 
-	const update: Update = async ({ slug, id, versionId, data, locale, draft }) => {
-
+	/**
+	 * Updates a document in a collection using different versioning strategies.
+	 * Supports multiple update patterns:
+	 * - Simple update for non-versioned collections
+	 * - Direct version update for versioned collections
+	 * - Creating new versions from existing ones
+	 * - Publishing draft versions
+	 * 
+	 * @example
+	 * // Update a non-versioned document
+	 * const { id, versionId } = await update({
+	 *   slug: 'posts',
+	 *   id: '123',
+	 *   data: { title: 'Updated Title' },
+	 *   versionOperation: VERSIONS_OPERATIONS.UPDATE
+	 * });
+	 * 
+	 * // Update a specific version
+	 * const { id, versionId } = await update({
+	 *   slug: 'posts',
+	 *   id: '123',
+	 *   versionId: 'v456',
+	 *   data: { title: 'Updated Version' },
+	 *   versionOperation: VERSIONS_OPERATIONS.UPDATE_VERSION
+	 * });
+	 * 
+	 * // Create a new draft from published version
+	 * const { id, versionId } = await update({
+	 *   slug: 'posts',
+	 *   id: '123',
+	 *   data: { title: 'New Draft' },
+	 *   versionOperation: VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED
+	 * });
+	 * 
+	 * @returns Object containing the IDs of the updated document and version
+	 * @throws RizomError when document is not found or operation fails
+	 */
+	const update: Update = async ({ slug, id, versionId, data, locale, versionOperation }) => {
+		
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
-		const isVersioned = !!config.versions;
 
-		if (!isVersioned) {
+		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
 			const tableName = slug;
 			const tableLocalesName = `${slug}Locales`;
@@ -221,13 +314,17 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					locale: locale!
 				});
 			}
-
+			
 			// For non-versioned collections, versionId is the same as id
 			// it is used for saving blocks/relations/tree with cirrect ownerId
 			return { id, versionId: id };
-		} else if (isVersioned && versionId && !draft) {
+			// 
+		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation) || 
+		           VersionOperations.isPublishedUpdate(versionOperation)) {
 
-			// Scenario 1: Update a specific version directly
+			if (!versionId) {
+				throw new RizomError(RizomError.OPERATION_ERROR, "missing versionId")
+			}
 
 			// First, update the root table's updatedAt
 			await adapterUtil.updateTableRecord(db, tables, slug, {
@@ -235,7 +332,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				data: { updatedAt: now }
 			});
 
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
+			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
 
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
@@ -248,7 +345,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// if draft is enabled on the collection
 			if (config.versions && config.versions.draft && mainData.status === 'published') {
 				// update all rows first to draft
-				await db.update(tables[versionsTable]).set({ status: 'draft' })
+				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT })
 			}
 
 			// Update version directly
@@ -268,7 +365,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// For direct version updates, return both the document id and the version id
 			return { id, versionId };
-		} else {
+		} else if (VersionOperations.isNewVersionCreation(versionOperation)) {
+
 			// Scenario 2: Update root and create a new version
 
 			// 1. First, update the root table's updatedAt
@@ -278,7 +376,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			// 2. Create a new version entry
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
+			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
 			const createVersionId = adapterUtil.generatePK();
 
@@ -288,12 +386,6 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: versionsLocalesTable,
 				locale
 			});
-
-			// if draft is enabled on the collection
-			if (config.versions && config.versions.draft && mainData.status === 'published') {
-				// update all rows first to draft
-				await db.update(tables[versionsTable]).set({ status: 'draft' })
-			}
 
 			// Insert new version
 			await adapterUtil.insertTableRecord(db, tables, versionsTable, {
@@ -315,13 +407,44 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Return both the document id and the new version id
 			return { id, versionId: createVersionId };
+		} else {
+			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation')
 		}
 	};
-
-	/****************************************************/
-	// Find documents
-	/****************************************************/
-
+	
+	/**
+	 * Finds documents in a collection with support for filtering, sorting, pagination,
+	 * field selection, and localization. For versioned collections, returns the latest
+	 * or published version of each document.
+	 * 
+	 * @example
+	 * // Find all published posts
+	 * const posts = await find({ slug: 'posts' });
+	 * 
+	 * // Find posts with filtering and sorting
+	 * const filteredPosts = await find({
+	 *   slug: 'posts',
+	 *   query: { where: { category: { equals: 'technology' } } },
+	 *   sort: 'publishedAt:desc',
+	 *   limit: 10,
+	 *   offset: 0,
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * // Find posts with specific fields
+	 * const postsWithFields = await find({
+	 *   slug: 'posts',
+	 *   select: ['title', 'publishedAt', 'attributes.slug']
+	 * });
+	 * 
+	 * // Include draft documents in a versioned collection
+	 * const allPosts = await find({
+	 *   slug: 'posts',
+	 *   draft: true
+	 * });
+	 * 
+	 * @returns Array of documents matching the query criteria
+	 */
 	const find: FindDocuments = async ({ slug, select, query: incomingQuery, sort, limit, offset, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
@@ -336,7 +459,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				limit: limit || undefined,
 				offset: offset || undefined
 			};
-			
+
 			if (query) {
 				params.where = buildWhereParam({ query, slug, locale, db })
 			}
@@ -369,7 +492,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 
 			if (Object.keys(selectColumns).length > 0) {
-				// @ts-expect-error todo
+				//@ts-ignore
 				return await db.query[slug].findMany({
 					columns: selectColumns,
 					...params
@@ -380,7 +503,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsTableName(slug);
+			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, tables, configInterface, locale }) || undefined;
 
 			// If draft is falsy and versions.draft enabled
@@ -424,47 +547,37 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
-			// Get the versions table for column selection
-			const versionsTableObj = tables[versionsTable];
-
-			// Create an object to hold the columns we want to select
-			const selectColumns: Dic = {};
-
-			// If select fields are specified, build the select columns object
-			if (select && select.length > 0) {
-				// Always include the ID column for the version
-				selectColumns.id = true;
-
-				// Process each requested field
-				for (const path of select) {
-					// Convert nested paths (dot notation) to SQL format (double underscore)
-					// Example: 'attributes.slug' becomes 'attributes__slug'
-					const sqlPath = path.replace(/\./g, '__');
-
-					// If this column exists on the versions table, add it to our select
-					if (sqlPath in versionsTableObj) {
-						selectColumns[sqlPath] = true;
-					}
-				}
-			}
-
-			// @ts-expect-error todo
+			// Handle select columns for version table
+			const versionSelectColumns = adapterUtil.columnsParams({ table: tables[versionsTable], select })
+			// Handle select columns for root table
+			const rootSelectColumns  = adapterUtil.columnsParams({ table: tables[slug], select })
+			
+			//@ts-ignore
 			const rawDocs = await db.query[slug].findMany({
 				...params,
+				columns: rootSelectColumns,
 				with: {
 					[versionsTable]: {
 						with: withParam,
 						where: whereParam,
 						orderBy: [desc(tables[versionsTable].updatedAt)],
 						limit: 1,
-						...(Object.keys(selectColumns).length > 0 ? { columns: selectColumns } : {})
+						columns: versionSelectColumns
 					}
 				}
 			});
 
-			// Transform the results to include version data
-			const result = rawDocs.map((doc: RawDoc) => adapterUtil.mergeDocumentWithVersion(doc, versionsTable))
-
+			// Transform the results to include version data for eaach document
+			const result = rawDocs.map((doc: RawDoc) => {
+				// for documents that have no version try/catch the 404 and return false
+				try {
+					return adapterUtil.mergeDocumentWithVersion(doc, versionsTable, select)
+				} catch (err){
+					return false
+				}
+			// filter to get only retrieved docs with version
+			}).filter(Boolean)
+			
 			return result;
 		}
 	};
@@ -482,49 +595,46 @@ export default createAdapterCollectionInterface;
 
 export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollectionInterface>;
 
-/****************************************************/
-/* Types
-/****************************************************/
 
 type FindDocuments = (args: {
-	slug: PrototypeSlug;
+	slug: CollectionSlug;
+	
 	select?: string[];
 	query?: OperationQuery;
 	sort?: string;
 	limit?: number;
 	offset?: number;
 	locale?: string;
-	// Allow draft documents
+	/** Allow draft documents to be retrieved */
 	draft?: boolean;
 }) => Promise<RawDoc[]>;
 
 type FindById = (args: {
-	slug: PrototypeSlug;
+	slug: CollectionSlug;
 	id: string;
 	/** Optional parameter to get a specific version */
 	versionId?: string;
 	locale?: string;
 	select?: string[];
-	// Allow draft document
+	/** Allow draft documents to be retrieved */
 	draft?: boolean;
 }) => Promise<RawDoc>;
 
-type DeleteById = (args: { slug: PrototypeSlug; id: string }) => Promise<string | undefined>;
+type DeleteById = (args: { slug: CollectionSlug; id: string }) => Promise<string | undefined>;
 
 type Insert = (args: {
-	slug: PrototypeSlug;
+	slug: CollectionSlug;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 	draft?: boolean;
 }) => Promise<{ id: string; versionId: string }>;
 
 type Update = (args: {
-	slug: PrototypeSlug;
+	slug: CollectionSlug;
 	id: string;
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
-	/** Optional parameter to specify if should save as new draft */
-	draft?: boolean;
+	versionOperation: typeof VERSIONS_OPERATIONS[keyof typeof VERSIONS_OPERATIONS];
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 }) => Promise<{ id: string; versionId: string }>;

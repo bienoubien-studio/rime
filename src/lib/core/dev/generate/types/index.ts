@@ -7,7 +7,7 @@ import { isUploadConfig } from '$lib/util/config.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
-import { makeVersionsTableName } from '../../../../util/schema.js';
+import { makeVersionsSlug } from '../../../../util/schema.js';
 import { BlocksBuilder } from '$lib/fields/blocks/index.js';
 import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.js';
@@ -71,7 +71,7 @@ const templateRegister = (config:BuiltConfig): string => {
 				`${config.collections.map((collection) => {
 					let collectionRegister = `\t\t'${collection.slug}': ${makeDocTypeName(collection.slug)}`
 					if(collection.versions){
-						collectionRegister += `\n\t\t'${makeVersionsTableName(collection.slug)}': ${makeDocTypeName(collection.slug)}`
+						collectionRegister += `\n\t\t'${makeVersionsSlug(collection.slug)}': ${makeDocTypeName(collection.slug)}`
 					}
 					return collectionRegister
 				}).join('\n')};`,

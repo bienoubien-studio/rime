@@ -3,6 +3,7 @@ import path from 'path';
 import cache from '../../cache/index.js';
 import { slugify } from '$lib/util/string.js';
 import type { BuiltConfig } from '$lib/core/config/types/index.js';
+import { isVersionsSlug } from '$lib/util/schema.js';
 
 /**
  * Types for route definitions
@@ -106,8 +107,8 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
  * 
  * @example 
  * castVersionSlug('pages_versions')
- * // output : 'pages_versions' as 'pages'
- * export const GET = api.collection.get('pages_versions' as 'pages') 
+ * // output : 'pages_versions' as any
+ * export const GET = api.collection.get('pages_versions' as any) 
  */
 export const TScastVersionSlug = (slug:string) => 
-  slug.includes('_versions') ? `'${slug}' as '${slug.replace('_versions', '')}'` : `'${slug}'`
+  isVersionsSlug(slug) ? `'${slug}' as any` : `'${slug}'`

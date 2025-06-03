@@ -32,14 +32,20 @@ export const getBlocksTableNames = (slug: string, tables: Record<string, any>): 
  * Creates a versions table name for a given table.
  * Used for document versioning in the database.
  * 
- * @param tableName - The base table name
- * @returns The name of the versions table
- * 
  * @example
  * // Returns 'pages_versions'
- * makeVersionsTableName('pages');
+ * makeVersionsSlug('pages');
  */
-export const makeVersionsTableName = (tableName:string) => `${tableName}_versions`
+export const makeVersionsSlug = (tableName:string) => `${tableName}_versions`
+
+/**
+ * Check is a slug is a verioned collection slug
+ *  * @example
+ * // Returns true
+ * isVersionsSlug('pages_versions');
+ * 
+ */
+export const isVersionsSlug = (slug:string) => slug.endsWith('_versions')
 
 /**
  * Utility functions for handling path transformations between document paths (dot notation)

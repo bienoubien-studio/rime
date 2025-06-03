@@ -2,17 +2,15 @@ import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import path from 'path';
 import { PANEL_USERS } from 'rizom/core/constant';
-import { bearer } from 'better-auth/plugins';
 
-const API_BASE_URL = 'http://rizom.test:5173/api';
+const API_BASE_URL = `${process.env.PUBLIC_RIZOM_URL}/api`;
 
 let token: string;
 
-
-
-/****************************************************/
+/****************************************************
 /* Init
 /****************************************************/
+
 test('Second init should return 404', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/init`, {
 		data: {
@@ -24,7 +22,7 @@ test('Second init should return 404', async ({ request }) => {
 	expect(response.status()).toBe(404);
 });
 
-/****************************************************/
+/****************************************************
 /* Login
 /****************************************************/
 
@@ -62,8 +60,8 @@ test('Login should be successfull', async ({ request }) => {
 	adminUserId = json.user.id;
 });
 
-/****************************************************//
-// Collections
+/****************************************************
+/* Collections
 /****************************************************/
 
 let homeId: string;
@@ -77,10 +75,10 @@ test('Should get correct offset / limit', async ({ request }) => {
 		Authorization: `Bearer ${token}`
 	}
 
-	const to3digits = (n:number) => n.toString().padStart(3, '0')
-	
+	const to3digits = (n: number) => n.toString().padStart(3, '0')
+
 	// Create 100 pages 
-	for(let i = 1; i < 100; i++){
+	for (let i = 1; i < 100; i++) {
 		await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
@@ -91,9 +89,9 @@ test('Should get correct offset / limit', async ({ request }) => {
 			}
 		});
 	}
-	
+
 	// Check findAll
-	for(let i = 1; i < 10; i++){
+	for (let i = 1; i < 10; i++) {
 		const pagination = i
 		const offset = (pagination - 1) * 10
 		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=attributes.title`).then((response) => {
@@ -106,7 +104,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Create 100 other pages 
-	for(let i = 1; i < 100; i++){
+	for (let i = 1; i < 100; i++) {
 		const { doc } = await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
@@ -116,7 +114,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 				}
 			}
 		}).then(r => r.json());
-		
+
 		await request.patch(`${API_BASE_URL}/pages/${doc.id}`, {
 			headers,
 			data: {
@@ -127,7 +125,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Check with query
-	for(let i = 1; i < 10; i++){
+	for (let i = 1; i < 10; i++) {
 		const pagination = i
 		const offset = (pagination - 1) * 10
 		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`).then((response) => {
@@ -147,12 +145,12 @@ test('Should get correct offset / limit', async ({ request }) => {
 			console.log(err)
 			expect(false).toBe(true)
 		})
-	
+
 	expect(allPages.toBeDefined)
 	expect(allPages.length).toBe(198)
 
 	await Promise.all(
-		allPages.map((doc:any) => request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
+		allPages.map((doc: any) => request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			},
@@ -162,7 +160,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 		expect(false).toBe(true)
 	})
 
-	allPages =  await request.get(`${API_BASE_URL}/pages`).then(r => r.json()).then(r => r.docs)
+	allPages = await request.get(`${API_BASE_URL}/pages`).then(r => r.json()).then(r => r.docs)
 	expect(allPages).toBeDefined()
 	expect(allPages.length).toBe(0)
 
@@ -369,9 +367,9 @@ test('Should return home FR (query) with select', async ({ request }) => {
 	expect(Object.keys(response.docs[0]).length).toBe(2);
 });
 
-// /****************************************************/
-/* // Upload Collection
-// /****************************************************/
+/****************************************************
+/*  Upload Collection
+/****************************************************/
 
 let imageID: string
 test('Should create a Media', async ({ request }) => {
@@ -498,9 +496,10 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 });
 
 
-/****************************************************/
+/****************************************************
 /* BLOCKS Localized
 /****************************************************/
+
 let pageWithBlockID: string
 test('Should create a page with blocks', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
@@ -607,9 +606,10 @@ test('Should still get the FR content of page with blocks', async ({ request }) 
 	expect(doc.locale).toBe('fr');
 })
 
-/****************************************************/
+/****************************************************
 /* TREE Localized
 /****************************************************/
+
 test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/menu?locale=en`, {
 		headers: {
@@ -699,7 +699,7 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 	expect(doc.locale).toBe('fr');
 })
 
-/****************************************************/
+/****************************************************
 /* AUTH Collection
 /****************************************************/
 
@@ -718,7 +718,7 @@ test('Should create a user editor', async ({ request }) => {
 		}
 	});
 	const data = await response.json();
-	
+
 	expect(response.status()).toBe(200);
 	expect(data.doc).toBeDefined();
 	expect(data.doc.id).toBeDefined();
@@ -776,7 +776,7 @@ test('Should not create a page', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-/****************************************************/
+/****************************************************
 /* Area
 /****************************************************/
 
@@ -909,7 +909,7 @@ test('Should get informations', async ({ request }) => {
 	expect(response.doc.instagram).toBe('@fooo');
 });
 
-/****************************************************/
+/****************************************************
 /* Relations
 /****************************************************/
 
@@ -1141,7 +1141,7 @@ test('Should delete test page', async ({ request }) => {
 	expect(response.status()).toBe(200);
 });
 
-/****************************************************/
+/****************************************************
 /* Editor access
 /****************************************************/
 
@@ -1215,7 +1215,7 @@ test('Editor should update home', async ({ request }) => {
 	expect(data.doc.attributes.title).toBe('Home edited by editor');
 });
 
-/****************************************************/
+/****************************************************
 /* Auth Lock
 /****************************************************/
 

@@ -13,7 +13,8 @@ import type { DeepPartial } from '$lib/util/types.js';
 import type { RegisterArea } from '$lib/index.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
-import { getVersionUpdateOperation, VERSIONS_OPERATIONS } from '$lib/core/operations/shared/get-versions-operation.js';
+import { getVersionUpdateOperation, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -30,66 +31,51 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	const { rizom } = event.locals
 	let data = args.data;
 	let versionId = args.versionId
-
-	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
-
-	// Version OUTCOMES : 
-	// a - update_latest
-	// b - update_published
-	// c - create_draft_from_published
-	// d - create_version_from_latest
-
-	// scenario 1 : no versions
-
-	// scenario 2 : versions but no draft
-	// a. if versionId update the versionId
-	// b. if no versionId create a new version
-
-	// scenario 3 : versions with drafts
-	// a. if versionId update the versionId
-	// b. if no versionId and draft is falsy update the published
-	// c. if no versionId and draft is true create a new draft from the published version
-
+	
+	// Check authorization
 	const authorized = config.access.update(event.locals.user, {});
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	// Allow draft version to retrieve the latest
+	// Define the kind of update operation depending on versions config
+	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
+	
+	// Allow draft version to be retrieved in specific scenarios
+	// In all other cases the "published" document is used
 	const original = (await rizom.area(config.slug).find({
 		locale,
 		versionId,
-		draft: [ VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST, VERSIONS_OPERATIONS.UPDATE_VERSION ].includes(versionOperation)
+		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
 	})) as unknown as T;
-
-	// // 3.b, 3.c, 2.b : when no versionId provided, get either : 
-	// // - the latest if draft is true
-	// // - the published if draft is false
-	// // set the versionId from the original to update the proper version
+	
+	// set the versionId from the original to update the proper version if none provided
 	if (config.versions && !versionId) {
 		versionId = original.versionId
 	}
 	
 	const originalConfigMap = buildConfigMap(original, config.fields);
 
-	// For scenario 2.b and 3.c a new version is created
-	// So add fields from the original doc in data, that way required field values will be present
-	// when creating the new version
-	if (config.versions && [ VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED, VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST ].includes(versionOperation)) {
+	// For new versions creation scenario, add data from the original doc
+	// This ensures required field values will be present when creating the new version
+	if (config.versions && VersionOperations.isNewVersionCreation(versionOperation)) {
 		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
 		if (config.versions.draft && !data.status) {
 			//@ts-ignore will fix this
-			data.status = "draft"
+			data.status = VERSIONS_STATUS.DRAFT
 		}
 	}
 	
+	// build the config map according to the augmented data
 	const configMap = buildConfigMap(data, config.fields);
 
+	// For versions creation set default values for all empty fields
+	// in all other cases set only for required and empties
 	data = await setDefaultValues({
 		data,
 		adapter: rizom.adapter,
 		configMap,
-		mode: [ VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED, VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST ].includes(versionOperation) ? "always" : "required"
+		mode: VersionOperations.isNewVersionCreation(versionOperation) ? "always" : "required"
 	});
 
 	data = await validateFields({

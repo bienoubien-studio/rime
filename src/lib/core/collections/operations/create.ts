@@ -129,7 +129,6 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	document = await populateURL(document, { config, event, locale })
 	
-	
 	if (locale) {
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		

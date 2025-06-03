@@ -35,14 +35,15 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		draft
 	});
 	
+	const hasSelect = select && Array.isArray(select) && select.length
 	let document = await transformDocument<T>({
 		raw: documentRaw,
 		config,
 		locale,
 		depth,
 		event,
-		augment: Array.isArray(select) && select.length ? false : true,
-		withBlank: Array.isArray(select) && select.length ? false : true,
+		augment: !hasSelect,
+		withBlank: !hasSelect,
 	});
 	
 	for (const hook of config.hooks?.beforeRead || []) {

@@ -8,10 +8,9 @@ import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 import type { Collection, ImageSizesConfig } from '$lib/core/config/types/index.js';
 import type { User } from '$lib/core/collections/auth/types.js';
 import type { CollectionWithoutSlug } from './types.js';
-import { PANEL_USERS } from '$lib/core/constant.js';
+import { PANEL_USERS, VERSIONS_STATUS } from '$lib/core/constant.js';
 import { relation } from '$lib/fields/relation/index.js';
 import { number } from '$lib/fields/number/index.js';
-import { select } from '$lib/fields/select/index.js';
 import type { CollectionSlug } from '$lib/types.js';
 
 export function collection<S extends string>(
@@ -69,7 +68,7 @@ export function collection<S extends string>(
 				draft: false, autoSave: false, maxVersions: 4
 			};
 		}else if(config.versions.draft){
-			fields.push(text('status').defaultValue('draft').hidden());
+			fields.push(text('status').defaultValue(VERSIONS_STATUS.DRAFT).hidden());
 		}
 	}else{
 		config.versions = false

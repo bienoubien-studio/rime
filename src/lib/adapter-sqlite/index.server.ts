@@ -4,10 +4,11 @@ import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blo
 import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
 import createAdapterAuthInterface from './auth.server.js';
 import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
 import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
+import type { Schema } from '$lib/server/schema.js';
 
 type CreateAdapterArgs = {
 	schema: any;
@@ -17,7 +18,7 @@ type CreateAdapterArgs = {
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
 	
-	const db = drizzle(sqlite, { schema: schema.default });
+	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
 	
 	const auth = createAdapterAuthInterface({
@@ -53,12 +54,15 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		auth,
 		db,
 		tables,
+		
 		get schema() {
 			return schema.default;
 		},
+
 		get relationFieldsMap() {
 			return schema.relationFieldsMap;
 		}
+
 	};
 };
 

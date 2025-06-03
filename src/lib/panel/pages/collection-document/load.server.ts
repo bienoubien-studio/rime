@@ -4,6 +4,7 @@ import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
 import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
 import { safe } from '$lib/util/safe';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import { PARAMS } from '$lib/core/constant.js';
 
 /****************************************************/
 /* Document Load
@@ -44,7 +45,7 @@ export function docLoad(slug: CollectionSlug) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			const versionId = event.url.searchParams.get('versionId') || undefined
+			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
 
 			/** Get doc */
 			const [error, document] = await safe(collection.findById({ id, locale, versionId }));
