@@ -12,7 +12,6 @@ import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { safe } from '$lib/util/safe.js';
 
 type Args = {
 	db: BetterSQLite3Database<any>;
@@ -537,9 +536,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Build the query parameters for pagination and sorting of the root table
 			const params: Dic = {
 				limit: limit,
-				offset: offset
+				offset: offset,
+				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort }),
 			};
-
+			
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
