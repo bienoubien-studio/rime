@@ -7,14 +7,7 @@ import type { User } from '$lib/core/collections/auth/types.js';
 import type { CorePlugins } from '$lib/core/types/plugins.js';
 
 declare global {
-	//
-	// type AtMostOne<T> = Explode<Partial<T>>;
-	// type ExactlyOne<T> = AtMostOne<T> & AtLeastOne<T>;
-	// type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
-
 	namespace App {
-		// interface Error {}
-
 		interface Locals {
 			session: Session | undefined;
 			user: User | undefined;
@@ -22,10 +15,6 @@ declare global {
 			routes: Navigation;
 			locale: string | undefined;
 		}
-		
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
 	}
 }
 
