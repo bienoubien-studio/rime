@@ -1,3 +1,5 @@
+import type { CollectionSlug } from "../types.js";
+
 /**
  * Gets all tree table names for a specific collection in the database schema.
  * Tree tables store hierarchical document relationships.
@@ -36,7 +38,7 @@ export const getBlocksTableNames = (slug: string, tables: Record<string, any>): 
  * // Returns 'pages_versions'
  * makeVersionsSlug('pages');
  */
-export const makeVersionsSlug = (tableName:string) => `${tableName}_versions`
+export const makeVersionsSlug = (tableName:string) => `${tableName}_versions` as CollectionSlug
 
 /**
  * Check is a slug is a verioned collection slug
