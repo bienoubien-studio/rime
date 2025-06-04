@@ -1,0 +1,104 @@
+import {
+	relation,
+	richText,
+	text,
+	toggle,
+	slug,
+	tabs,
+	tab,
+	date
+} from '$lib/fields/index.js';
+import { access } from '$lib/util/access/index.js';
+import { collection, area, defineConfig } from '$lib/index.js';
+import { apiInit } from './api-init/index.js';
+
+const Settings = area('settings', {
+	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
+	access: {
+		read: (user) => access.hasRoles(user, 'admin')
+	},
+	versions: { draft: true }
+});
+
+const Infos = area('infos', {
+	fields: [text('title'), text('email')],
+	access: {
+		read: (user) => access.hasRoles(user, 'admin')
+	},
+	versions: true
+});
+
+const tabWriter = tab('writer').fields(
+	richText('text').features('bold', 'italic', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
+)
+
+const tabNewsAttributes = tab('attributes').fields(
+	text('title').isTitle().localized().required(),
+	slug('slug')
+		.slugify('attributes.title')
+		.live(false)
+		.table({ position: 3, sort: true })
+		.localized()
+		.required(),
+	relation('image').to('medias'),
+	richText('intro').features('bold', 'link'),
+	date('published')
+);
+
+const News = collection('news', {
+	fields: [tabs(tabNewsAttributes, tabWriter)],
+	live: true,
+	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	access: {
+		read: () => true,
+		create: (user) => access.isAdmin(user),
+		update: (user) => access.hasRoles(user, 'admin', 'editor')
+	},
+	versions: { draft: true }
+})
+
+const Medias = collection('medias', {
+	upload: true,
+	group: 'content',
+	imageSizes: [
+		{ name: 'sm', width: 640, out: ['webp'] },
+		{ name: 'md', width: 1024, out: ['webp'] },
+		{ name: 'lg', width: 1536, out: ['webp'] },
+		{ name: 'xl', width: 2048, out: ['webp'] }
+	],
+	fields: [text('alt').localized().required()],
+	access: {
+		read: () => true
+	},
+	versions: true
+});
+
+const Pdf = collection('pdf', {
+	upload: true,
+	group: 'content',
+	fields: [text('alt').required()],
+	access: {
+		read: () => true
+	},
+	versions: { draft: true }
+});
+
+export default defineConfig({
+	database: 'versions-multilang.sqlite',
+	collections: [News, Medias, Pdf],
+	areas: [Settings, Infos],
+	plugins: [apiInit()],
+	localization: {
+		locales: [
+			{ code: 'fr', label: 'Français', bcp47: 'fr-FR'},
+			{ code: 'en', label: 'English', bcp47: 'en-US'},
+			{ code: 'de', label: 'German', bcp47: 'de-DE'},
+		],
+		default: 'en',
+	},
+	panel: {
+		users: {
+			roles: [{ value: 'editor' }]
+		}
+	}
+});
