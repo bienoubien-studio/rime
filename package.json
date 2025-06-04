@@ -18,6 +18,7 @@
 		"test:basic": "playwright test -c ./tests/basic/playwright.config.basic.ts",
 		"test:empty": "playwright test -c ./tests/empty/playwright.config.empty.ts",
 		"test:versions": "playwright test -c ./tests/versions/playwright.config.versions.ts",
+		"test:versions-multilang": "playwright test -c ./tests/versions-multilang/playwright.config.versions.ts",
 		"test": "pnpm test:empty && pnpm test:multilang && pnpm test:basic && pnpm test:versions",
 		"check:circular-deps": "pnpm dlx madge -c --extensions ts ./src/",
 		"local-pack": "npm run build && npm pack && echo \"Package created at: $(pwd)/$(npm pack | tail -1)\""
