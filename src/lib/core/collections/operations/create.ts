@@ -21,14 +21,13 @@ type Args<T> = {
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
-	draft?: boolean;
 	event: RequestEvent & {
 		locals: App.Locals;
 	};
 };
 
 export const create = async <T extends GenericDoc>(args: Args<T>) => {
-	const { config, event, locale, draft } = args;
+	const { config, event, locale } = args;
 	const { rizom } = event.locals
 
 	let data = args.data;
@@ -83,12 +82,11 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	}
 
 	const incomingPaths = Object.keys(configMap);
-
+	
 	const created = await rizom.adapter.collection.insert({
 		slug: config.slug,
 		data,
-		locale,
-		draft
+		locale
 	});
 
 	// Use the versionId for blocks, trees, and relations

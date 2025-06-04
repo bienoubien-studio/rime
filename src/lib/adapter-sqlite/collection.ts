@@ -157,7 +157,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 * 
 	 * @returns Object containing the IDs of the created document and version
 	 */
-	const insert: Insert = async ({ slug, data, locale, draft }) => {
+	const insert: Insert = async ({ slug, data, locale }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
 		const now = new Date();
@@ -180,11 +180,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${versionsTableName}Locales`,
 				locale
 			});
-
-			if (config.versions && config.versions.draft) {
-				mainData.status = draft ? VERSIONS_STATUS.DRAFT : VERSIONS_STATUS.PUBLISHED
-			}
-
+			
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -626,7 +622,6 @@ type Insert = (args: {
 	slug: CollectionSlug;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
-	draft?: boolean;
 }) => Promise<{ id: string; versionId: string }>;
 
 type Update = (args: {
