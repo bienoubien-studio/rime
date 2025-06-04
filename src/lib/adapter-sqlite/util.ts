@@ -112,7 +112,7 @@ export function prepareSchemaData(data: any, options: {
   }
 }
 
-export function mergeDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
+export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
   // Check if we have version data
   if (!doc[versionTableName] || doc[versionTableName].length === 0) {
     throw new RizomError(RizomError.NOT_FOUND);

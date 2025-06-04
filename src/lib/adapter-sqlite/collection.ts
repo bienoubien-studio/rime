@@ -112,7 +112,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				throw new RizomError(RizomError.NOT_FOUND);
 			}
 
-			return adapterUtil.mergeDocumentWithVersion(doc, versionsTable)
+			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable)
 		}
 	};
 
@@ -567,7 +567,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const result = rawDocs.map((doc: RawDoc) => {
 				// for documents that have no version try/catch the 404 and return false
 				try {
-					return adapterUtil.mergeDocumentWithVersion(doc, versionsTable, select)
+					return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select)
 				} catch (err){
 					return false
 				}
