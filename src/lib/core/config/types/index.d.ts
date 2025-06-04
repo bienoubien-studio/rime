@@ -3,14 +3,14 @@ import type { Access, User } from '../../collections/auth/types.js';
 import type { Field, FieldsType, Option } from '$lib/fields/types.js';
 import type { AreaSlug, CollectionSlug } from '../../types/doc.js';
 import type { CollectionHooks, AreaHooks } from './hooks.js';
-import type { AtLeastOne, WithoutBuilders, WithRequired } from '$lib/util/types.js';
+import type { AtLeastOne, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { FieldBuilder } from '$lib/fields/builders/field.js';
 import type { FieldsComponents } from '../../../panel/types.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
 import type { Plugin } from '$lib/core/types/plugins.js';
-import type { IconProps } from '@lucide/svelte';
+import type { IconProps, Upload } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
 
@@ -134,7 +134,40 @@ type BaseDocConfig<S extends string = string> = {
 	live?: boolean;
 };
 
-export type BaseCollection<S> = {
+type UploadConfig = {
+	/**
+	 * Define image sizes that will be generated when an image is uploaded.
+	 * A 'thumbnail' size will be added, if none provided with this name.
+	 * @example
+	 * ```typescript
+	 * imageSizes: [
+	 *   {
+	 *     name: 'thumbnail',
+	 *     width: 200,
+	 *     height: 200,
+	 *     out: ['jpg', 'webp'],
+	 *     compression: 80
+	 *   },
+	 *   {
+	 *     name: 'medium',
+	 *     width: 800,
+	 *     compression: 85
+	 *   }
+	 * ]
+	 * ```
+	 */
+	imageSizes?: ImageSizesConfig[];
+	/**
+	 * Allowed mimeTypes
+	 * @example
+	 * ```typescript
+	 * accept: ['image/jpeg', 'image/svg']
+	 * ```
+	 */
+	accept?: string[];
+}
+
+export type Collection<S> = {
 	slug: S;
 	/** The collection label */
 	label?: CollectionLabel;
@@ -143,45 +176,8 @@ export type BaseCollection<S> = {
 	/** A function to generate the document URL */
 	url?: (doc: RegisterCollection[S]) => string;
 	nested?: boolean;
+	upload?: true | UploadConfig
 } & BaseDocConfig;
-
-export type Collection<S> = BaseCollection<S> &
-	(
-		| { upload?: false | undefined }
-		| {
-				upload: true;
-				/**
-				 * Define image sizes that will be generated when an image is uploaded.
-				 * A 'thumbnail' size will be added, if none provided with this name.
-				 * @example
-				 * ```typescript
-				 * imageSizes: [
-				 *   {
-				 *     name: 'thumbnail',
-				 *     width: 200,
-				 *     height: 200,
-				 *     out: ['jpg', 'webp'],
-				 *     compression: 80
-				 *   },
-				 *   {
-				 *     name: 'medium',
-				 *     width: 800,
-				 *     compression: 85
-				 *   }
-				 * ]
-				 * ```
-				 */
-				imageSizes?: ImageSizesConfig[];
-				/**
-				 * Allowed mimeTypes
-				 * @example
-				 * ```typescript
-				 * accept: ['image/jpeg', 'image/svg']
-				 * ```
-				 */
-				accept?: string[];
-		  }
-	);
 
 export type Area<S> = BaseDocConfig & {
 	/** A function to generate the document URL */
@@ -249,12 +245,13 @@ export type CustomPanelRoute = {
 	component: Component;
 };
 
-export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions'> & {
+export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions' | 'upload'> & {
 	type: 'collection';
 	label: CollectionLabel;
 	slug: CollectionSlug;
 	asTitle: string;
 	versions: false | Required<VersionsConfig>;
+	upload?: UploadConfig;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
@@ -279,9 +276,9 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
-type CompiledCollection = WithoutBuilders<BuiltCollection>;
-type CompiledArea = WithoutBuilders<BuiltArea>;
-type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
+type CompiledCollection = Pretty<WithoutBuilders<BuiltCollection>>;
+type CompiledArea = Pretty<WithoutBuilders<BuiltArea>>;
+type CompiledConfig = Pretty<Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
 	collections: Array<CompiledCollection>;
 	areas: Array<CompiledArea>;
-};
+}>;

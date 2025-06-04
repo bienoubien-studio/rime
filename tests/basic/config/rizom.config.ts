@@ -225,15 +225,16 @@ const News = collection('news', {
 const Medias = collection('medias', {
 	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
 	description: "Manage images, video, audio, documents,...",
-	upload: true,
+	upload: {
+		imageSizes: [
+			{ name: 'sm', width: 640, out: ['webp'] },
+			{ name: 'md', width: 1024, out: ['webp'] },
+			{ name: 'lg', width: 1536, out: ['webp'] },
+			{ name: 'xl', width: 2048, out: ['webp'] }
+		]
+	},
 	icon: Images,
 	group: 'content',
-	imageSizes: [
-		{ name: 'sm', width: 640, out: ['webp'] },
-		{ name: 'md', width: 1024, out: ['webp'] },
-		{ name: 'lg', width: 1536, out: ['webp'] },
-		{ name: 'xl', width: 2048, out: ['webp'] }
-	],
 	fields: [text('alt').required()],
 	access: {
 		read: () => true

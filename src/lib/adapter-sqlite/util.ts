@@ -3,7 +3,7 @@ import qs, { type ParsedQs } from 'qs';
 import { RizomError } from "$lib/core/errors";
 import type { RawDoc } from "$lib/core/types/doc";
 import { isObjectLiteral, omit, pick } from "$lib/util/object";
-import { transformDataToSchema } from "$lib/util/schema";
+import { getBlocksTableNames, transformDataToSchema } from "$lib/util/schema";
 import type { BuiltArea, BuiltCollection } from "../types.js";
 import type { OperationQuery, ParsedOperationQuery } from "$lib/core/types/index.js";
 import type { Dic } from "$lib/util/types.js";
@@ -124,18 +124,15 @@ export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: strin
     const rootProps = ['createdAt', 'updatedAt', 'id'] as const
     const hasRootSelectColumn = rootProps.some(column => select.includes(column))
 
-    // Pick only selected fields from both document and version data
+    // Pick "createdAt" and "updatedAt" on doc if they are in select, or only the "id"
     const docFields = hasRootSelectColumn
       ? pick([...select.filter(field => rootProps.includes(field as any)), 'id'], doc)
       : pick(['id'], doc);
-
-    // Pick selected fields from version data
-    // Filter out root props as they should come from the doc
-    const versionFields = pick(
-      select.filter(field => !rootProps.includes(field as any)),
-      versionData
-    );
-
+    
+    // Filter out root props as they should come from the doc, 
+    // plus the ownerId wich is equals to doc.id
+    const versionFields = omit([...rootProps, 'ownerId'], versionData)
+    
     return {
       ...docFields,
       ...versionFields,

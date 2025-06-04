@@ -125,42 +125,46 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, locale, tables, configInterface });
 
+			// Handle select columns for version table
+			const versionSelectColumns = adapterUtil.columnsParams({ table: tables[versionsTable], select })
+			// Handle select columns for root table
+			const rootSelectColumns = adapterUtil.columnsParams({ table: tables[slug], select })
+			
 			// Configure the query based on whether we want a specific version or the latest
 			// For the "save in a new draft" action we need to get the published version
 			let params: Dic;
-
+			
 			if (versionId) {
 				// If versionId is provided, get that specific version
 				params = {
+					columns: rootSelectColumns,
 					with: {
 						[versionsTable]: {
+							columns: versionSelectColumns,
 							with: withParam,
 							where: eq(tables[versionsTable].id, versionId)
 						}
 					}
 				};
 			} else {
-				// If versions.draft enabled and draft is not true 
+				// If no versionId
 				// then get the published document
 				// else get the latest
 				params = {
+					columns: rootSelectColumns,
 					with: {
 						[versionsTable]: {
+							columns: versionSelectColumns,
 							with: withParam,
 							...adapterUtil.buildPublishedOrLatestVersionParams({ draft, config: areaConfig, table: tables[versionsTable] })
 						}
 					}
 				};
 			}
-
-			// Handle select columns for version table
-			params.with[versionsTable].columns = adapterUtil.columnsParams({ table: tables[versionsTable], select })
-			// Handle select columns for root table
-			params.columns = adapterUtil.columnsParams({ table: tables[slug], select })
-
+			
 			// @ts-expect-error suck
 			let doc = await db.query[slug].findFirst(params);
-
+			
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}

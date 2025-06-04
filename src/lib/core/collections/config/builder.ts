@@ -18,21 +18,23 @@ export function collection<S extends string>(
 	config: CollectionWithoutSlug<S>
 ): Collection<S> {
 	let fields: typeof config.fields = [...config.fields];
-
+	
 	// Augment Upload fields
-	if (isUploadConfig(config)) {
+	if (config.upload) {
+		// set an empty object for config.upload if it's true
+		config.upload = config.upload === true ? {} : config.upload
 		// Add panel thumbnail size if not already present
 		const isPanelThumbnailInSizes =
-			config.imageSizes &&
-			config.imageSizes.some((size: ImageSizesConfig) => size.name === 'thumbnail');
+			config.upload.imageSizes &&
+			config.upload.imageSizes.some((size: ImageSizesConfig) => size.name === 'thumbnail');
 		if (!isPanelThumbnailInSizes) {
 			const thumbnailSize = { name: 'thumbnail', width: 400, compression: 60 };
-			config.imageSizes = [thumbnailSize, ...(config.imageSizes || [])];
+			config.upload.imageSizes = [thumbnailSize, ...(config.upload.imageSizes || [])];
 		}
 
 		// Add image size fields
-		if ('imageSizes' in config && config.imageSizes?.length) {
-			const sizesFields = config.imageSizes.map((size: ImageSizesConfig) =>
+		if ('imageSizes' in config && config.upload.imageSizes?.length) {
+			const sizesFields = config.upload.imageSizes.map((size: ImageSizesConfig) =>
 				text(toCamelCase(size.name)).hidden()
 			);
 			fields = [...fields, ...sizesFields];
@@ -42,8 +44,8 @@ export function collection<S extends string>(
 		const mimeType = text('mimeType').table({ sort: true, position: 99 }).hidden();
 
 		// Add validation if accept is defined
-		if ('accept' in config) {
-			const allowedMimeTypes = config.accept;
+		if ('accept' in config.upload && Array.isArray(config.upload.accept)) {
+			const allowedMimeTypes = config.upload.accept;
 			mimeType.raw.validate = (value) => {
 				return (
 					(typeof value === 'string' && allowedMimeTypes.includes(value)) ||

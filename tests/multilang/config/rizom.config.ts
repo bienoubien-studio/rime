@@ -222,14 +222,14 @@ const Pages = collection('pages', {
 const Medias = collection('medias', {
 	icon: Images,
 	group: 'Medias',
-	upload: true,
-	imageSizes: [
-		{ name: 'thumbnail', width: 400, out: ['webp'] },
-		{ name: 'small', width: 720, out: ['webp'] },
-		{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
-		{ name: 'large', width: 1080, out: ['webp'] }
-	],
-
+	upload: {
+		imageSizes: [
+			{ name: 'thumbnail', width: 400, out: ['webp'] },
+			{ name: 'small', width: 720, out: ['webp'] },
+			{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
+			{ name: 'large', width: 1080, out: ['webp'] }
+		],
+	},
 	fields: [text('alt').required()],
 	access: {
 		read: () => true

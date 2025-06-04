@@ -1,6 +1,7 @@
 import type { FieldBuilder } from '$lib/fields/builders';
 import type { Field } from './fields';
 import type { GenericDoc, ImageSizesConfig, RelationValue } from '$lib/types';
+import type { UploadConfig } from '$lib/core/config/types/index.js';
 
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
@@ -18,12 +19,9 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 
 type AnyFunction = (...args: any[]) => any;
 
-type WithUpload<T extends { upload?: boolean }> = T & {
-  upload: true;
-  imageSizes?: ImageSizesConfig[];
-  accept: string[];
-  out: 'jpeg' | 'webp';
-};
+type WithUpload<T extends { upload?: UploadConfig }> = T & {
+  upload: UploadConfig;
+}
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<Required<T>[P]> : T[P];

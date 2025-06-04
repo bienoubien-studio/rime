@@ -58,14 +58,15 @@ const News = collection('news', {
 })
 
 const Medias = collection('medias', {
-	upload: true,
 	group: 'content',
-	imageSizes: [
-		{ name: 'sm', width: 640, out: ['webp'] },
-		{ name: 'md', width: 1024, out: ['webp'] },
-		{ name: 'lg', width: 1536, out: ['webp'] },
-		{ name: 'xl', width: 2048, out: ['webp'] }
-	],
+	upload: {
+		imageSizes: [
+			{ name: 'thumbnail', width: 400, out: ['webp'] },
+			{ name: 'small', width: 720, out: ['webp'] },
+			{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
+			{ name: 'large', width: 1080, out: ['webp'] }
+		],
+	},
 	fields: [text('alt').required()],
 	access: {
 		read: () => true

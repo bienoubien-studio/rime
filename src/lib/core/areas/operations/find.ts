@@ -35,7 +35,8 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		draft
 	});
 	
-	const hasSelect = select && Array.isArray(select) && select.length
+	const hasSelect = select && Array.isArray(select) && !!select.length
+	
 	let document = await transformDocument<T>({
 		raw: documentRaw,
 		config,

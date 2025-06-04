@@ -2,7 +2,6 @@ import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import { PANEL_USERS, PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
-import { clearLog, logToFile } from '../../src/log.js';
 
 const BASE_URL = process.env.PUBLIC_RIZOM_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -177,7 +176,6 @@ test('Should create an other Media', async ({ request }) => {
 let infoVersionId: string
 let infosId: string
 test('Should get infos', async ({ request }) => {
-	clearLog()
 	const response = await request.get(`${API_BASE_URL}/infos`, {
 		headers: superAdminHeaders
 	});
@@ -354,7 +352,6 @@ test('Should update the settings and create a second settings version', async ({
 	expect(responseData.doc.status).toBe(VERSIONS_STATUS.DRAFT)
 	expect(responseData.doc.versionId).toBeDefined()
 	expect(responseData.doc.versionId).not.toBe(settingVersionId)
-	logToFile(responseData.doc)
 	expect(responseData.doc.logo).toBeDefined()
 })
 

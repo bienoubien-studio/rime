@@ -43,6 +43,7 @@ export const buildWithParam = ({
 		const sqlPath = path.replace(/\./g, '__');
 		
 		const fieldConfig = getFieldConfigByPath(path, documentConfig.fields);
+		
 		if (fieldConfig && isRelationField(fieldConfig)) {
 			// Handle relation fields
 			directRelationPaths.push(path);

@@ -2,7 +2,6 @@ import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import { PANEL_USERS, PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
-import { clearLog, logToFile } from '../../src/log.js';
 
 const BASE_URL = process.env.PUBLIC_RIZOM_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -192,8 +191,6 @@ test('Should get 2 docs FR', async ({ request }) => {
 	const status = response.status();
 	expect(status).toBe(200);
 	const { docs } = await response.json();
-	clearLog()
-	logToFile(docs)
 	expect(docs).toBeDefined()
 	expect(docs).toHaveLength(2)
 	expect(docs.at(0).alt).toBe('alt-2.1 en')
@@ -295,6 +292,9 @@ test('Should get 3 versions of 1st media (EN)', async ({ request }) => {
 	expect(docs.at(0).alt).toBe('alt-1.1 en')
 	expect(docs.at(1).alt).toBe('alt-1.3 en')
 	expect(docs.at(2).alt).toBe('alt-1.2 en')
+	expect(docs.at(0).filename).toBe('landscape-3.jpg')
+	expect(docs.at(1).filename).toBe('landscape-3.jpg')
+	expect(docs.at(2).filename).toBe('landscape-3.jpg')
 });
 
 test('Should get 3 versions of 1st media (FR)', async ({ request }) => {
@@ -307,8 +307,11 @@ test('Should get 3 versions of 1st media (FR)', async ({ request }) => {
 	expect(docs).toBeDefined();
 	expect(docs).toHaveLength(3);
 	expect(docs.at(0).alt).toBe('alt-1.1 fr')
-	expect(docs.at(1).alt).toBe('alt-1.3 en') // initial alt
-	expect(docs.at(2).alt).toBe('alt-1.2 en') // initial alt
+	expect(docs.at(1).alt).toBe('alt-1.3 en')
+	expect(docs.at(2).alt).toBe('alt-1.2 en')
+	expect(docs.at(0).filename).toBe('landscape-3.jpg')
+	expect(docs.at(1).filename).toBe('landscape-3.jpg')
+	expect(docs.at(2).filename).toBe('landscape-3.jpg')
 });
 
 /****************************************************
@@ -318,7 +321,6 @@ test('Should get 3 versions of 1st media (FR)', async ({ request }) => {
 let infoVersionId: string
 let infosId: string
 test('Should get infos', async ({ request }) => {
-	clearLog()
 	const response = await request.get(`${API_BASE_URL}/infos`, {
 		headers: superAdminHeaders
 	});
@@ -371,17 +373,18 @@ test('Should get the first infos version', async ({ request }) => {
 	expect(data.doc.title).toBe(null)
 });
 
-test('Should update a specific infos version', async ({ request }) => {
+test('Should update the 1st infos version (FR)', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
 		headers: superAdminHeaders,
 		data: {
-			title: 'newer than latest',
-			email: 'hello@gmail.com'
+			title: 'newer than latest (FR)',
+			email: 'hello@gmail.fr',
+			locale: 'fr'
 		}
 	});
 	expect(response.status()).toBe(200);
 
-	const verify = await request.get(`${API_BASE_URL}/infos`, {
+	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
 		headers: superAdminHeaders
 	});
 	expect(verify.status()).toBe(200);
@@ -389,11 +392,34 @@ test('Should update a specific infos version', async ({ request }) => {
 	expect(data.doc).toBeDefined()
 	expect(data.doc.versionId).toBeDefined()
 	expect(data.doc.versionId).toBe(infoVersionId)
-	expect(data.doc.title).toBe('newer than latest')
+	expect(data.doc.title).toBe('newer than latest (FR)')
 	expect(data.doc.id).toBe(infosId)
 });
 
-test('Should return 2 versions of infos', async ({ request }) => {
+test('Should update the 1st infos version (DE)', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
+		headers: superAdminHeaders,
+		data: {
+			title: 'newer than latest (DE)',
+			email: 'hello@gmail.de',
+			locale: 'de'
+		}
+	});
+	expect(response.status()).toBe(200);
+
+	const verify = await request.get(`${API_BASE_URL}/infos?locale=de`, {
+		headers: superAdminHeaders
+	});
+	expect(verify.status()).toBe(200);
+	const data = await verify.json()
+	expect(data.doc).toBeDefined()
+	expect(data.doc.versionId).toBeDefined()
+	expect(data.doc.versionId).toBe(infoVersionId)
+	expect(data.doc.title).toBe('newer than latest (DE)')
+	expect(data.doc.id).toBe(infosId)
+});
+
+test('Should return 2 versions of infos (EN)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos_versions`, {
 		headers: superAdminHeaders
 	});
@@ -401,8 +427,56 @@ test('Should return 2 versions of infos', async ({ request }) => {
 	const data = await response.json()
 	expect(data.docs).toBeDefined()
 	expect(data.docs).toHaveLength(2)
-	expect(data.docs.at(0).title).toBe('newer than latest')
+	expect(data.docs.at(0).title).toBe(null)
 	expect(data.docs.at(1).title).toBe('latest')
+});
+
+test('Should return 2 versions of infos (FR)', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/infos_versions?locale=fr`, {
+		headers: superAdminHeaders
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json()
+	expect(data.docs).toBeDefined()
+	expect(data.docs).toHaveLength(2)
+	expect(data.docs.at(0).title).toBe('newer than latest (FR)')
+	expect(data.docs.at(0).email).toBe('hello@gmail.fr')
+	expect(data.docs.at(1).title).toBe('latest')
+});
+
+test('Should return 2 versions of infos (DE)', async ({ request }) => {
+	const response = await request.get(`${API_BASE_URL}/infos_versions?locale=de`, {
+		headers: superAdminHeaders
+	});
+	expect(response.status()).toBe(200);
+	const data = await response.json()
+	expect(data.docs).toBeDefined()
+	expect(data.docs).toHaveLength(2)
+	expect(data.docs.at(0).title).toBe('newer than latest (DE)')
+	expect(data.docs.at(0).email).toBe('hello@gmail.de')
+	expect(data.docs.at(1).title).toBe('latest')
+});
+
+test('Should update the 1st infos version (EN)', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
+		headers: superAdminHeaders,
+		data: {
+			title: 'newer than latest (EN)',
+			email: 'hello@gmail.com'
+		}
+	});
+	expect(response.status()).toBe(200);
+
+	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
+		headers: superAdminHeaders
+	});
+	expect(verify.status()).toBe(200);
+	const data = await verify.json()
+	expect(data.doc).toBeDefined()
+	expect(data.doc.versionId).toBeDefined()
+	expect(data.doc.versionId).toBe(infoVersionId)
+	expect(data.doc.title).toBe('newer than latest (FR)')
+	expect(data.doc.id).toBe(infosId)
 });
 
 test('Should not return infos versions without credentials', async ({ request }) => {
@@ -429,6 +503,33 @@ test('Should get a 404 when fetching a wrong Infos version', async ({ request })
 	});
 	const status = response.status();
 	expect(status).toBe(404);
+});
+
+test('Should update infos (creating a new version) (FR)', async ({ request }) => {
+	const response = await request.post(`${API_BASE_URL}/infos`, {
+		headers: superAdminHeaders,
+		data: {
+			title: 'newer than newer'
+		}
+	});
+
+	expect(response.status()).toBe(200);
+	const responseData = await response.json()
+	expect(responseData.doc).toBeDefined()
+	expect(responseData.doc.title).toBe('newer than newer')
+
+	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
+		headers: superAdminHeaders
+	});
+	expect(verify.status()).toBe(200);
+	const verifyData = await verify.json()
+
+	expect(verifyData.doc).toBeDefined()
+	expect(verifyData.doc.id).toBe(infosId)
+	expect(verifyData.doc.versionId).toBeDefined()
+	expect(verifyData.doc.versionId).not.toBe(infoVersionId)
+	expect(verifyData.doc.title).toBeDefined()
+	expect(verifyData.doc.title).toBe('newer than newer')
 });
 
 /****************************************************
@@ -495,7 +596,6 @@ test('Should update the settings and create a second settings version', async ({
 	expect(responseData.doc.status).toBe(VERSIONS_STATUS.DRAFT)
 	expect(responseData.doc.versionId).toBeDefined()
 	expect(responseData.doc.versionId).not.toBe(settingVersionId)
-	logToFile(responseData.doc)
 	expect(responseData.doc.logo).toBeDefined()
 })
 

@@ -170,10 +170,10 @@ export function generateTypesString(config: BuiltConfig) {
 	
 	const processCollection = (collection: typeof config.collections[number]) => {
 		let fields = collection.fields;
-			if (isUploadConfig(collection) && collection.imageSizes?.length) {
+			if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
 				fields = collection.fields
 					.filter((f) => f instanceof FormFieldBuilder)
-					.filter((field) => !collection.imageSizes!.some((size) => size.name === field.raw.name));
+					.filter((field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name));
 			}
 			let fieldsTypesList = buildFieldsTypes(fields);
 			if(collection.versions){
@@ -183,11 +183,11 @@ export function generateTypesString(config: BuiltConfig) {
 			buildblocksTypes(fields);
 			if (isUploadConfig(collection)) {
 				addImport('UploadDoc');
-				if (collection.imageSizes?.length) {
-					fieldsContent += generateImageSizesType(collection.imageSizes);
+				if (collection.upload.imageSizes?.length) {
+					fieldsContent += generateImageSizesType(collection.upload.imageSizes);
 				}
 			}
-			return templateDocType(collection.slug, fieldsContent, collection.upload);
+			return templateDocType(collection.slug, fieldsContent, !!collection.upload);
 	}
 
 	const processArea = (area: typeof config.areas[number]) => {

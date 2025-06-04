@@ -111,7 +111,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			});
 			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
 		}
-		
+
 		return find<Doc>(params);
 	}
 	
@@ -150,6 +150,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			event: this.#event
 		});
 	}
+
 }
 
 export { AreaInterface };

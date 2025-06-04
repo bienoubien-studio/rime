@@ -30,12 +30,13 @@ export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (
 	if (!isUploadConfig(config)) throw new Error('Should never throw');
 
 	let data = args.data || {};
-	const hasSizeConfig = 'imageSizes' in config && Array.isArray(config.imageSizes);
-	const sizesConfig = hasSizeConfig ? config.imageSizes : [];
-
+	const hasSizeConfig = 'imageSizes' in config.upload && Array.isArray(config.upload.imageSizes);
+	const sizesConfig = hasSizeConfig ? config.upload.imageSizes : [];
+	
 	if (data.file) {
 		if (operation === 'update') await cleanupStoredFiles({ config, rizom, id: args.originalDoc.id });
 		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
+		console.log({ filename, imageSizes })
 		data = {
 			...omit(['file'], data),
 			filename,

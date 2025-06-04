@@ -153,7 +153,7 @@ test.describe('Admin panel', () => {
 		// Submit the form
 		await submitButton.click();
 		await page.waitForNavigation();
-		
+
 		const globals = [{ slug: 'settings', label: 'Settings' }];
 
 		for (const { slug, label } of globals) {
@@ -184,7 +184,6 @@ test.describe('Admin panel', () => {
 		expect(page.url()).toBe(`${BASE_URL}/login`);
 	});
 });
-
 
 test.describe('Live Edit', () => {
 	test('Should go to Live Panel', async ({ page }) => {
@@ -221,10 +220,10 @@ test.describe('Live Edit', () => {
 		await tabAttribute.click();
 		const inputTitle = page.locator(`input.rz-input[name="attributes.title"]`);
 		await inputTitle.pressSequentially('Live test', { delay: 100 });
-		
+
 		const inputSlug = page.locator(`input.rz-input[name="attributes.slug"]`);
 		await inputSlug.pressSequentially('live-test', { delay: 100 });
-		
+
 		await expect(saveButton).toBeEnabled();
 		await saveButton.click();
 		await page.waitForLoadState('networkidle');
@@ -261,7 +260,19 @@ test.describe('Lock user', () => {
 			await submitButton.click();
 		}
 		// Wait for navigation after successive login failed
-		await page.waitForURL(`${BASE_URL}/locked`);
-		expect(page.url()).toBe(`${BASE_URL}/locked`);
+		try {
+			// Use Promise.race to handle potential timing issues
+			await Promise.race([
+				page.waitForURL(`${BASE_URL}/locked`, { timeout: 5000 }),
+				page.waitForSelector('.rz-locked', { timeout: 5000 })
+			]);
+		} catch (error) {
+			// If timeout occurs, continue and check URL directly
+			console.log('Navigation timeout, checking URL directly');
+		}
+
+		// Verify we're on the locked page regardless of how we got there
+		await expect(page).toHaveURL(`${BASE_URL}/locked`, { timeout: 5000 });
+
 	});
 });

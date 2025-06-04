@@ -3,13 +3,13 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionHookBeforeRead } from '$lib/core/config/types/hooks.js';
 import type { WithUpload } from '$lib/util/types.js';
 
+
 export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const doc = args.doc;
-
-	if ('imageSizes' in config && config.imageSizes) {
+	if ('imageSizes' in config.upload && config.upload.imageSizes) {
 		doc.sizes = {};
-		for (const size of config.imageSizes) {
+		for (const size of config.upload.imageSizes) {
 			if (doc[size.name]) {
 				// Handle multiple formats
 				const formats = doc[size.name].split('|') as string[];

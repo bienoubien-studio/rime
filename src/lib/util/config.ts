@@ -1,4 +1,4 @@
-import type { BuiltCollection, Collection, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { BuiltCollection, Collection, CompiledCollection, UploadConfig } from '$lib/core/config/types/index.js';
 import type { WithUpload } from '$lib/util/types.js';
 import type { Field, FormField } from '$lib/fields/types.js';
 import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from './field';
@@ -12,8 +12,8 @@ import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeF
  *   // Handle upload-specific functionality
  * }
  */
-export function isUploadConfig(config: { upload?: boolean }): config is WithUpload<typeof config> {
-	return 'upload' in config && config.upload === true;
+export function isUploadConfig(config: { upload?: UploadConfig }): config is WithUpload<typeof config> {
+	return 'upload' in config;
 }
 
 /**
