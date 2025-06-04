@@ -28,7 +28,7 @@ export const VersionOperations = {
    */
   isNewVersionCreation: (operation: VersionOperation) => {
     return operation === VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED ||
-           operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST;
+      operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST;
   },
 
   /**
@@ -39,7 +39,8 @@ export const VersionOperations = {
    * }
    */
   isSpecificVersionUpdate: (operation: VersionOperation) => {
-    return operation === VERSIONS_OPERATIONS.UPDATE_VERSION;
+    return operation === VERSIONS_OPERATIONS.UPDATE_VERSION ||
+      operation === VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
   },
 
   /**
@@ -74,7 +75,7 @@ export const VersionOperations = {
   isPublishedUpdate: (operation: VersionOperation) => {
     return operation === VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
   },
-  
+
   /**
    * Checks if the operation requires retrieving draft versions
    * Used for determining which version to fetch (draft or published)
@@ -85,8 +86,8 @@ export const VersionOperations = {
    * });
    */
   shouldRetrieveDraft: (operation: VersionOperation) => {
-    return operation === VERSIONS_OPERATIONS.UPDATE_VERSION || 
-           operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST;
+    return operation === VERSIONS_OPERATIONS.UPDATE_VERSION ||
+      operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST;
   }
 };
 
@@ -119,19 +120,19 @@ export function getVersionUpdateOperation({ draft, versionId, config }: Args): V
   if (!config.versions) {
     return VERSIONS_OPERATIONS.UPDATE;
   }
-  
+
   // If a specific version ID is provided, update that version
   if (versionId) {
     return VERSIONS_OPERATIONS.UPDATE_VERSION;
   }
-  
+
   // For versioned documents without draft support, create a new version
   if (!config.versions.draft) {
     return VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST;
   }
-  
+
   // For versioned documents with draft support
-  return draft 
-    ? VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED 
+  return draft
+    ? VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED
     : VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
 }

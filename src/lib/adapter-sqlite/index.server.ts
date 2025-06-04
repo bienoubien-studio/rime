@@ -9,6 +9,9 @@ import { databaseTransformInterface, type AdapterTransformInterface } from './tr
 import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import type { Schema } from '$lib/server/schema.js';
+import { updateTableRecord } from './util.js';
+import type { Dic } from '$lib/util/types.js';
+import type { PrototypeSlug } from '../types.js';
 
 type CreateAdapterArgs = {
 	schema: any;
@@ -55,6 +58,10 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		db,
 		tables,
 		
+		async updateRecord(id:string, tableName:string, data:Dic){
+			return await updateTableRecord( db, tables, tableName, { recordId: id, data })
+		},
+
 		get schema() {
 			return schema.default;
 		},

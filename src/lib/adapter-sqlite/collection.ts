@@ -34,7 +34,7 @@ type Args = {
  * await collectionInterface.findById({ slug: 'posts', id: '123' });
  */
 const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
-	
+
 	/**
 	 * Retrieves a document by its ID from a collection. For versioned collections,
 	 * returns either a specific version (if versionId is provided) or the latest/published version.
@@ -101,7 +101,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 			//@ts-ignore
 			const doc = await db.query[slug].findFirst(params);
-			
+
 			if (!doc) {
 				throw new RizomError(RizomError.NOT_FOUND);
 			}
@@ -133,7 +133,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		}
 		return docs[0].id;
 	};
-	
+
 	/**
 	 * Creates a new document in a collection. For versioned collections, creates both
 	 * the root document and its first version. For non-versioned collections, creates
@@ -179,7 +179,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${versionsTableName}Locales`,
 				locale
 			});
-			
+
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -275,11 +275,9 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 *   versionOperation: VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED
 	 * });
 	 * 
-	 * @returns Object containing the IDs of the updated document and version
-	 * @throws RizomError when document is not found or operation fails
 	 */
 	const update: Update = async ({ slug, id, versionId, data, locale, versionOperation }) => {
-		
+
 		const now = new Date();
 		const config = configInterface.getCollection(slug);
 
@@ -309,14 +307,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					locale: locale!
 				});
 			}
-			
-			// For non-versioned collections, versionId is the same as id
-			// it is used for saving blocks/relations/tree with cirrect ownerId
-			return { id, versionId: id };
-			// 
-		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation) || 
-		           VersionOperations.isPublishedUpdate(versionOperation)) {
+			return { id }
 
+		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
+			// Scenario 1: Upadte specific version
 			if (!versionId) {
 				throw new RizomError(RizomError.OPERATION_ERROR, "missing versionId")
 			}
@@ -358,55 +352,27 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				});
 			}
 
-			// For direct version updates, return both the document id and the version id
-			return { id, versionId };
+			return { id }
+
 		} else if (VersionOperations.isNewVersionCreation(versionOperation)) {
+			// Scenario 2: Version creation
+			
+			// The creation is handled by the caller operation updateById
+			// so only update the the root table
 
-			// Scenario 2: Update root and create a new version
-
-			// 1. First, update the root table's updatedAt
+			// 1. Update only the root table's updatedAt
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: id,
 				data: { updatedAt: now }
 			});
+			
+			return { id }
 
-			// 2. Create a new version entry
-			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const versionsLocalesTable = `${versionsTable}Locales`;
-			const createVersionId = adapterUtil.generatePK();
-
-			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
-				tables,
-				mainTableName: versionsTable,
-				localesTableName: versionsLocalesTable,
-				locale
-			});
-
-			// Insert new version
-			await adapterUtil.insertTableRecord(db, tables, versionsTable, {
-				id: createVersionId,
-				...mainData,
-				ownerId: id,
-				createdAt: now,
-				updatedAt: now
-			});
-
-			// Insert localized data if needed
-			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, versionsLocalesTable, {
-					...localizedData,
-					ownerId: createVersionId,
-					locale: locale!
-				});
-			}
-
-			// Return both the document id and the new version id
-			return { id, versionId: createVersionId };
 		} else {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation')
 		}
 	};
-	
+
 	/**
 	 * Finds documents in a collection with support for filtering, sorting, pagination,
 	 * field selection, and localization. For versioned collections, returns the latest
@@ -539,15 +505,15 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				offset: offset,
 				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort }),
 			};
-			
+
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 
 			// Handle select columns for version table
 			const versionSelectColumns = adapterUtil.columnsParams({ table: tables[versionsTable], select })
 			// Handle select columns for root table
-			const rootSelectColumns  = adapterUtil.columnsParams({ table: tables[slug], select })
-			
+			const rootSelectColumns = adapterUtil.columnsParams({ table: tables[slug], select })
+
 			//@ts-ignore
 			const rawDocs = await db.query[slug].findMany({
 				...params,
@@ -568,12 +534,12 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				// for documents that have no version try/catch the 404 and return false
 				try {
 					return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select)
-				} catch (err){
+				} catch (err) {
 					return false
 				}
-			// filter to get only retrieved docs with version
+				// filter to get only retrieved docs with version
 			}).filter(Boolean)
-			
+
 			return result;
 		}
 	};
@@ -594,7 +560,7 @@ export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollecti
 
 type FindDocuments = (args: {
 	slug: CollectionSlug;
-	
+
 	select?: string[];
 	query?: OperationQuery;
 	sort?: string;
@@ -632,4 +598,4 @@ type Update = (args: {
 	versionOperation: typeof VERSIONS_OPERATIONS[keyof typeof VERSIONS_OPERATIONS];
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
-}) => Promise<{ id: string; versionId: string }>;
+}) => Promise<{ id: string }>;

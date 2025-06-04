@@ -1,6 +1,6 @@
 import type { FieldBuilder } from '$lib/fields/builders';
 import type { Field } from './fields';
-import type { ImageSizesConfig, RelationValue } from '$lib/types';
+import type { GenericDoc, ImageSizesConfig, RelationValue } from '$lib/types';
 
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
@@ -18,10 +18,6 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 
 type AnyFunction = (...args: any[]) => any;
 
-type AsTuple<T> = {
-  [K in keyof T]: T[K];
-}[keyof T][];
-
 type WithUpload<T extends { upload?: boolean }> = T & {
   upload: true;
   imageSizes?: ImageSizesConfig[];
@@ -30,7 +26,7 @@ type WithUpload<T extends { upload?: boolean }> = T & {
 };
 
 export type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+  [P in keyof T]?: T[P] extends object ? DeepPartial<Required<T>[P]> : T[P];
 };
 
 export type WithRelationPopulated<T> = {

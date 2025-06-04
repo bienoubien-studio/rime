@@ -10,13 +10,14 @@ import { saveRelations } from '../../operations/relations/index.server.js';
 import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { filePathToFile } from '../upload/util/converter.js';
-import { getVersionUpdateOperation, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { getVersionUpdateOperation, VersionOperations, type VersionOperation } from '$lib/core/operations/shared/versions.js';
 import { type RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
 
 type Args<T> = {
 	id: string;
@@ -29,45 +30,35 @@ type Args<T> = {
 	isFallbackLocale: boolean;
 };
 
-export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
-	const { config, event, locale, id, isFallbackLocale } = args;
-	const { rizom } = event.locals
-	let versionId = args.versionId
-	let data = args.data;
-	
-	// Check for authorization
-	const authorized = config.access.update(event.locals.user, { id });
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
-	}
-	
-	// Define the kind of update operation depending on versions config
-	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
-
-	const original = (await rizom.collection(config.slug).findById({ 
-		locale, 
-		id, 
-		versionId, 
-		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
-	})) as T;
-
-	if (config.auth) {
-		/** Add auth fields into validation process */
-		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
-	}
-	
-	// set the versionId from the original to update the proper version if none provided
-	if (config.versions && !versionId) {
-		versionId = original.versionId
+/**
+ * Handles version-related operations for document updates
+ * Manages specific version updates and new version creation
+ */
+async function handleVersionCreation<T extends GenericDoc>({
+	versionOperation,
+	original,
+	data,
+	config,
+	rizom,
+	locale,
+	originalConfigMap
+}: {
+	versionOperation: VersionOperation;
+	original: T;
+	data: DeepPartial<T>;
+	config: CompiledCollection;
+	rizom: any;
+	locale?: string;
+	originalConfigMap: Record<string, any>;
+}): Promise<string> {
+	// Handle specific version updates
+	if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
+		return original.versionId;
 	}
 
-	const originalConfigMap = buildConfigMap(original, config.fields);
-
-	// For new versions creation scenario, add data from the original doc
-	// This ensures required field values will be present when creating the new version
-	// Also get the original file if we are on an upload collection
-	if (config.versions && VersionOperations.isNewVersionCreation(versionOperation)) {
-		// Check if you should add the original file if exists and if data hasn't a file prop
+	// Handle new version creation
+	if (VersionOperations.isNewVersionCreation(versionOperation)) {
+		// Add the original file if we are on an upload collection
 		if (config.upload && !data.file && original.filename) {
 			// Create a File object from the existing file path
 			const filePath = path.resolve(process.cwd(), 'static', 'medias', original.filename);
@@ -78,25 +69,101 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 				console.error(`Failed to create file from path: ${filePath}`, err);
 			}
 		}
-		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
-		if (config.versions.draft && !data.status) {
+
+		// Use missing data from original version
+		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap });
+
+		// Set default status to "draft" if no data.status
+		if (!data.status) {
 			//@ts-ignore will fix this
-			data.status = VERSIONS_STATUS.DRAFT
+			data.status = VERSIONS_STATUS.DRAFT;
 		}
+
+		//@ts-ignore
+		// Add the root document "id" as "ownerId" for the new version
+		data.ownerId = original.id;
+		delete data.id;
+
+		const { doc } = await rizom.collection(`${makeVersionsSlug(config.slug)}`).create({
+			//@ts-ignore
+			data,
+			locale
+		});
+		
+		return doc.id;
 	}
+
+	// Handle simple update (no version)
+	return original.id;
+}
+
+/**
+ * Updates a document by ID with version handling support
+ * 
+ * Handles different version operations including:
+ * - Regular updates to the current version
+ * - Updates to specific versions
+ * - Creation of new versions
+ * 
+ * Performs validation, saves related blocks and relations,
+ * and returns the updated document with populated URLs
+ */
+export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
+	const { config, event, locale, id, isFallbackLocale } = args;
+	const { rizom } = event.locals
+	let versionId = args.versionId
+	let data = args.data;
+
+	// Check for authorization
+	const authorized = config.access.update(event.locals.user, { id });
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED);
+	}
+
+	// Define the kind of update operation depending on versions config
+	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
+
+	// Get original document, we need it for hooks and possible version creation
+	const original = (await rizom.collection(config.slug).findById({
+		locale,
+		id,
+		versionId,
+		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
+	})) as T;
+
+	// Add auth fields into validation process
+	if (config.auth) {
+		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
+	}
+
+	// Build the original ConfigMap needed for :
+	// - merging with original document for version creation
+	// - Blocks & Tree diff
+	const originalConfigMap = buildConfigMap(original, config.fields);
+
+	// Handle version-specific operations and get the versionId
+	versionId = await handleVersionCreation({
+		versionOperation,
+		original,
+		data,
+		config,
+		rizom,
+		locale,
+		originalConfigMap
+	});
 
 	// build the config map according to the augmented data
 	const configMap = buildConfigMap(data, config.fields);
 
-	data = await setDefaultValues({ 
-		data, 
-		adapter: rizom.adapter, 
+	// Set default values for missings ones
+	// for example if a field has been deleted but is required
+	data = await setDefaultValues({
+		data,
+		adapter: rizom.adapter,
 		configMap,
-		mode: VersionOperations.isNewVersionCreation(versionOperation) ? "always" : "required"
+		mode: "required"
 	});
-	
-	// For versions creation set default values for all empty fields
-	// in all other case set only for required and empties
+
 	data = await validateFields({
 		data,
 		event,
@@ -128,8 +195,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	}
 
 	const incomingPaths = Object.keys(configMap);
-
-	const updateResult = await rizom.adapter.collection.update({
+	
+	await rizom.adapter.collection.update({
 		id,
 		versionId,
 		slug: config.slug,
@@ -139,7 +206,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	const blocksDiff = await saveBlocks({
-		ownerId: updateResult.versionId,
+		ownerId: versionId,
 		configMap,
 		originalConfigMap,
 		data,
@@ -151,7 +218,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		ownerId: updateResult.versionId,
+		ownerId: versionId,
 		configMap,
 		originalConfigMap,
 		data,
@@ -163,7 +230,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	await saveRelations({
-		ownerId: updateResult.versionId,
+		ownerId: versionId,
 		configMap,
 		data,
 		incomingPaths,
@@ -174,7 +241,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		treeDiff
 	});
 
-	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: updateResult.versionId });
+	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: versionId });
 
 	/**
 	 * @TODO handle url generation over all versions ??
@@ -190,7 +257,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		const locales = event.locals.rizom.config.getLocalesCodes();
 		if (locales.length) {
 			for (const otherLocale of locales) {
-				const documentLocale = await rizom.collection(config.slug).findById({ id, locale: otherLocale, versionId: updateResult.versionId });
+				const documentLocale = await rizom.collection(config.slug).findById({ id, locale: otherLocale, versionId: versionId });
 				await populateURL(documentLocale, { config, event, locale: otherLocale })
 			}
 		}

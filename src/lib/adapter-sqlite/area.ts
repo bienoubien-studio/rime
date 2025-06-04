@@ -160,7 +160,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// @ts-expect-error suck
 			let doc = await db.query[slug].findFirst(params);
-			
+
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}
@@ -332,16 +332,14 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			}
 
 			// For non-versioned areas, versionId is the same as id
-			return { id: area.id, versionId: area.id };
+			return { id: area.id };
 
-		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation) ||
-			VersionOperations.isPublishedUpdate(versionOperation)) {
-
+		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
+			// Scenario 1: Update a specific version directly
 			if (!versionId) {
 				throw new RizomError(RizomError.OPERATION_ERROR, "missing versionId")
 			}
-			// Update a specific version directly
-			// 1. First, update the root table's updatedAt
+			// First, update the root table's updatedAt
 			await db
 				.update(tables[slug])
 				.set({
@@ -351,7 +349,6 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const versionsLocalesTable = `${versionsTable}Locales`;
-
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -359,20 +356,16 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				localesTableName: versionsLocalesTable,
 				locale
 			});
-
-
 			// if draft is enabled on the collection
 			if (areaConfig.versions && areaConfig.versions.draft && mainData.status === 'published') {
 				// update all rows first to draft
 				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT })
 			}
-
 			// Update version directly
 			await adapterUtil.updateTableRecord(db, tables, versionsTable, {
 				recordId: versionId,
 				data: { ...mainData, updatedAt: now }
 			});
-
 			// Update localized data if needed
 			if (isLocalized) {
 				await adapterUtil.upsertLocalizedData(db, tables, versionsLocalesTable, {
@@ -382,13 +375,12 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				});
 			}
 
-			// Return both the area id and the version id
-			return { id: area.id, versionId };
+			return { id: area.id };
 
 		} else if (VersionOperations.isNewVersionCreation(versionOperation)) {
 
-			// Scenario 1: Update root and create a new version
-			// 1. First, update the root table's updatedAt
+			// Scenario 2: version creation, update only main table
+			// the creation is handled by the caller update operation
 			await db
 				.update(tables[slug])
 				.set({
@@ -396,41 +388,10 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				})
 				.where(eq(tables[slug].id, area.id));
 
-			// 2. Create a new version entry
-			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const versionsLocalesTable = `${versionsTable}Locales`;
-
-			// Prepare data for insertion using the shared utility function
-			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
-				tables,
-				mainTableName: versionsTable,
-				localesTableName: versionsLocalesTable,
-				locale
-			});
-
-			// Insert new version
-			const createVersionId = await adapterUtil.insertTableRecord(db, tables, versionsTable, {
-				...mainData,
-				ownerId: area.id,
-				createdAt: now,
-				updatedAt: now
-			});
-
-			// Insert localized data if needed
-			if (isLocalized) {
-				await adapterUtil.insertTableRecord(db, tables, versionsLocalesTable, {
-					...localizedData,
-					ownerId: createVersionId,
-					locale
-				});
-			}
-
-			// Return both the area id and the new version id
-			return { id: area.id, versionId: createVersionId };
+			return { id: area.id };
 		} else {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation')
 		}
-
 	};
 
 	return {
@@ -462,8 +423,6 @@ type Get = (args: {
 	draft?: boolean;
 }) => Promise<RawDoc>;
 
-
-
 type Update = (args: {
 	slug: PrototypeSlug;
 	data: DeepPartial<GenericDoc>;
@@ -471,4 +430,4 @@ type Update = (args: {
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
 	versionOperation: typeof VERSIONS_OPERATIONS[keyof typeof VERSIONS_OPERATIONS];
-}) => Promise<{ id: string; versionId: string }>;
+}) => Promise<{ id: string; }>;

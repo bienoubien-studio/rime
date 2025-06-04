@@ -4,7 +4,7 @@ export type CollectionSlug = GetRegisterType<'CollectionSlug'>;
 export type AreaSlug = GetRegisterType<'AreaSlug'>;
 export type PrototypeSlug = CollectionSlug | AreaSlug;
 
-import type { Dic } from '$lib/util/types.js';
+import type { Dic, Pretty } from '$lib/util/types.js';
 
 export type DocPrototype = 'area' | 'collection';
 
@@ -22,7 +22,7 @@ type BaseDoc = {
   _live?: string;
 };
 
-export type GenericDoc = BaseDoc & Dic;
+export type GenericDoc = Pretty<BaseDoc & Dic>;
 
 export type TreeBlock = {
   id: string;
