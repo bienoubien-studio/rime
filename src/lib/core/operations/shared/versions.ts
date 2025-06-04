@@ -4,11 +4,11 @@ import type { CompiledArea, CompiledCollection } from "../../../types.js";
  * Defines the different version operation strategies for document updates.
  */
 export const VERSIONS_OPERATIONS = {
-  UPDATE: 0,
-  UPDATE_PUBLISHED: 1,
-  UPDATE_VERSION: 2,
-  NEW_VERSION_FROM_LATEST: 3,
-  NEW_DRAFT_FROM_PUBLISHED: 4
+  UPDATE: "update",
+  UPDATE_PUBLISHED: "update_published",
+  UPDATE_VERSION: "update_version",
+  NEW_VERSION_FROM_LATEST: "new_version_from_latest",
+  NEW_DRAFT_FROM_PUBLISHED: "new_version_from_published"
 } as const;
 
 // Create a type from the object values
