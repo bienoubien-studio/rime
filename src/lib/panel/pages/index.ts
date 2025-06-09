@@ -1,7 +1,7 @@
-import CollectionVersionsDoc from './collection-document/CollectionVersionsDoc.svelte';
+import CollectionDocVersions from './collection-document/CollectionDocVersions.svelte';
 import AreaVersionsDoc from './area/AreaVersionsDoc.svelte';
 import CollectionDocument from './collection-document/CollectionDocument.svelte';
-import CollectionLayout from './collection-layout/CollectionLayout.svelte';
+import CollectionList from './collection-list/CollectionList.svelte';
 import ForgotPassword from './forgot-password/ForgotPassword.svelte';
 import Area from './area/Area.svelte';
 import Init from './init/Init.svelte';
@@ -11,9 +11,9 @@ import Login from './login/Login.svelte';
 import ResetPassword from './reset-password/ResetPassword.svelte';
 
 export {
-	CollectionVersionsDoc,
+	CollectionDocVersions,
 	CollectionDocument,
-	CollectionLayout,
+	CollectionList,
 	ForgotPassword,
 	Area,
 	AreaVersionsDoc,

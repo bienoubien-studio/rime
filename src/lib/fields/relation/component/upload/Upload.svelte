@@ -11,8 +11,9 @@
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
+	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
+	import { Plus } from '@lucide/svelte';
 	import './upload.css';
-	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte'
 
 	const {
 		isFull,
@@ -76,7 +77,7 @@
 
 {#snippet card(item: RelationFieldItem)}
 	{@const resource = { ...item, id: item.documentId }}
-	<CardResource resource={resource} onCloseClick={() => removeValue(item.documentId)} />
+	<CardResource {resource} onCloseClick={() => removeValue(item.documentId)} />
 {/snippet}
 
 {#snippet commandItem(item: RelationFieldItem)}
@@ -105,12 +106,17 @@
 	</div>
 {/key}
 
-<div class="rz-relation-upload__actions">
-	{#if !isFull && availableItems.length > 0}
-		<Button onclick={() => (open = true)} variant="outline">
-			Select a {relationConfig.label.singular || relationConfig.slug}
-		</Button>
-	{/if}
+<div
+	class="rz-relation-upload__actions"
+	class:rz-relation-upload__actions--list-empty={selectedItems.length === 0}
+>
+	<Button
+		disabled={isFull || availableItems.length === 0}
+		onclick={() => (open = true)}
+		variant="outline"
+	>
+		Select a {relationConfig.label.singular || relationConfig.slug}
+	</Button>
 
 	{#if !isFull}
 		{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {})}
@@ -119,9 +125,9 @@
 					create = true;
 					onRelationCreation();
 				}}
-				variant="secondary"
+				variant="outline"
 			>
-				Create new {relationConfig.label.singular || relationConfig.slug}
+				<Plus size="14" />
 			</Button>
 		{/if}
 	{/if}

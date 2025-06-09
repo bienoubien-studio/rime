@@ -18,3 +18,5 @@ export const PARAMS = {
   SORT: 'sort',
   VERSION_ID: 'versionId',
 } as const
+
+export type VersionsStatus = typeof VERSIONS_STATUS[keyof typeof VERSIONS_STATUS]

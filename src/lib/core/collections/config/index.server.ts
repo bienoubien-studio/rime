@@ -46,7 +46,7 @@ export const mergePanelUsersCollectionWithDefault = ({
 	roles,
 	fields,
 	access,
-	group,
+	panel,
 	label
 }: PanelUsersConfig = {}) => {
 	const collection = { ...panelUsersCollection };
@@ -82,8 +82,8 @@ export const mergePanelUsersCollectionWithDefault = ({
 			...access
 		};
 	}
-	if (group) {
-		collection.group = group;
+	if (panel?.group) {
+		collection.panel = { ...collection.panel, group: panel?.group };
 	}
 	if (label) {
 		collection.label = label;

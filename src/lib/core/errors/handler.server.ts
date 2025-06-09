@@ -2,7 +2,13 @@ import { error, fail, isRedirect, redirect } from '@sveltejs/kit';
 import { RizomError, RizomFormError } from './index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 
-export type ErrorContext = 'action' | 'api' | 'load';
+export const ERROR_CONTEXT = {
+  ACTION: "action",
+  API: "api",
+  load: "load"
+} as const;
+
+export type ErrorContext = typeof ERROR_CONTEXT[keyof typeof ERROR_CONTEXT];
 
 type ErrorHandlerOptions = {
 	context: ErrorContext;

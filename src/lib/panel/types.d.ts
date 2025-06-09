@@ -1,10 +1,11 @@
 import type { Component, Snippet } from 'svelte';
 import type { GenericDoc } from '../core/types/doc.js';
-import type { Dic } from '$lib/util/types.js';
+import type { Dic, Pretty } from '$lib/util/types.js';
+import type { WithRequired } from 'better-auth/svelte';
 
 export type Route = {
 	title: string;
-	icon: any;
+	icon?: any;
 	path: string;
 };
 
@@ -19,7 +20,7 @@ export type FieldPanelTableConfig = {
 	position: number;
 };
 
-export type CollectionLayoutProps = {
+export type CollectionListProps = {
 	data: {
 		docs: GenericDoc[];
 		status: number;
@@ -34,5 +35,7 @@ export type PanelActionFailure<T extends Dic = Dic> = {
 	};
 	errors?: Partial<FormErrors<keyof T>>;
 };
+
+export type Aria = Pretty<WithRequired<Partial<Route>, 'title'>>[];
 
 export type FormErrors<T extends string = string> = Record<T, string>;

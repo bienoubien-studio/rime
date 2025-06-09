@@ -5,42 +5,42 @@
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import StatusDot from '../StatusDot.svelte';
 	import { getValueAtPath } from '$lib/util/object';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import type { FieldsType } from '$lib/fields/types.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import StatusDot from '../StatusDot.svelte';
 
 	type Props = {
 		checked: boolean;
 		doc: GenericDoc;
-		active: boolean;
-		compact: boolean;
 	};
 
-	const { checked, doc, active, compact }: Props = $props();
+	const { checked, doc }: Props = $props();
 	const collection = getContext<CollectionContext>('rizom.collectionList');
+
 	const locale = getLocaleContext();
 	const config = getConfigContext();
 
 	const getCellComponent = (fieldType: FieldsType) => {
 		return config.raw.blueprints[fieldType].cell || null;
 	};
-
+	
 	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
-		gridTemplateColumn = `grid-template-columns: 2fr repeat(${compact ? 1 : columnLength - 1}, minmax(0, 1fr));`;
+		gridTemplateColumn = `grid-template-columns: 2fr repeat(${columnLength - 1}, minmax(0, 1fr));`;
 	});
 
 	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, {short: true}) : '');
 </script>
 
-<div style={gridTemplateColumn} class="rz-list-row" class:rz-list-row--active={active}>
+<div style={gridTemplateColumn} class="rz-list-row">
 	<div class="rz-list-row__main">
+		
 		{#if collection.selectMode}
-			<Checkbox {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
+			<Checkbox class="rz-list-row__checkbox" {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
 				{#key doc.filename}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
@@ -51,20 +51,20 @@
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
+				{:else}
+					{@const Icon = collection.config.icon}
+					<div class="rz-list-row__icon"><Icon size="13" /></div>
 				{/if}
 				
 				<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
-				<!-- {#if collection.statusList }
-					{@const docStatus =
-						collection.statusList.find((status) => doc.status === status.value) ||
-						collection.statusList[0]}
-					<StatusDot --rz-dot-size="0.28rem" color={docStatus.color} />
-				{/if} -->
+				{#if collection.hasDraft }
+					<StatusDot --rz-dot-size="0.28rem" status={doc.status} />
+				{/if}
 			</a>
 		{/if}
 	</div>
 
-	{#if !compact}
+	
 		{#each collection.columns as column, index (index)}
 			
 			<div class="rz-list-row__cell">
@@ -83,37 +83,45 @@
 		<div class="rz-list-row__cell">
 			{formattedDate}
 		</div>
-	{/if}
+	
 </div>
 
-<style type="postcss" global>
+<style type="postcss">
 	.rz-list-row {
 		display: grid;
 		height: var(--rz-size-14);
 		align-items: center;
-		border-bottom: 1px solid hsl(var(--rz-ground-4) / 1);
-	}
-
-	.rz-list-row--active {
-		.rz-list-row__link {
-			text-decoration: underline;
+		border: var(--rz-border);
+		border-radius: var(--rz-radius-md);
+		background-color: hsl(var(--rz-ground-6));
+		.rz-list-row__icon{
+			height: var(--rz-size-10);
+			width: var(--rz-size-10);
+			border-radius: var(--rz-radius-md);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: hsl(var(--rz-ground-4));
 		}
-		/* background-color: hsl(var(--rz-ground-6)); */
+		:global{
+			.rz-list-row__checkbox{
+				margin-left: var(--rz-size-2)
+			}
+		}
 	}
 
 	.rz-list-row__main {
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
-		padding-left: var(--rz-size-3);
-		padding-right: var(--rz-size-3);
+		padding-left: var(--rz-size-2);
+		padding-right: var(--rz-size-5);
 	}
 
 	.rz-list-row__link {
 		display: flex;
 		align-items: center;
-		gap: var(--rz-size-2);
-		/* @mixin font-medium; */
+		gap: var(--rz-size-4);
 	}
 
 	.rz-list-row__title {
@@ -122,7 +130,6 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		word-break: break-all;
-		/* @mixin font-semibold; */
 	}
 
 	.rz-list-row__cell {

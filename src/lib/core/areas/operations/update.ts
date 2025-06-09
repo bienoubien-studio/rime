@@ -13,7 +13,11 @@ import type { DeepPartial, Dic, Pretty } from '$lib/util/types.js';
 import type { RegisterArea } from '$lib/index.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
-import { getVersionUpdateOperation, VersionOperations, type VersionOperation } from '$lib/core/operations/shared/versions.js';
+import {
+	getVersionUpdateOperation,
+	VersionOperations,
+	type VersionOperation
+} from '$lib/core/operations/shared/versions.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 
@@ -47,38 +51,47 @@ async function handleVersionCreation<T extends GenericDoc>({
 	locale?: string;
 	originalConfigMap: Record<string, any>;
 }): Promise<string> {
-
 	if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 		return original.versionId;
 	}
 
 	if (VersionOperations.isNewVersionCreation(versionOperation)) {
-		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap })
+		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap });
 		if (!data.status) {
-			data.status = VERSIONS_STATUS.DRAFT
+			data.status = VERSIONS_STATUS.DRAFT;
 		}
-		
+
 		data.ownerId = original.id;
 		delete data.id;
-		
-		const { doc } = await rizom.collection(`${makeVersionsSlug(config.slug)}`).create({
+
+		const versionsSlug = makeVersionsSlug(config.slug);
+
+		const { doc } = await rizom.collection(versionsSlug).create({
 			data,
 			locale
 		});
+		
+		if (config.versions && config.versions.maxVersions) {
+			await rizom.collection(versionsSlug).delete({
+				sort: '-updatedAt',
+				query: 'where[status][not_equals]=published',
+				offset: config.versions.maxVersions
+			});
+		}
 
 		return doc.id;
 	}
 
-	return original.id
+	return original.id;
 }
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
 	const { config, event, locale } = args;
-	const { rizom } = event.locals
+	const { rizom } = event.locals;
 	let data = args.data;
-	let versionId = args.versionId
-	
+	let versionId = args.versionId;
+
 	// Check authorization
 	const authorized = config.access.update(event.locals.user, {});
 	if (!authorized) {
@@ -86,8 +99,8 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	}
 
 	// Define the kind of update operation depending on versions config
-	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config })
-	
+	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config });
+
 	// Allow draft version to be retrieved in specific scenarios
 	// In all other cases the "published" document is used
 	const original = (await rizom.area(config.slug).find({
@@ -95,9 +108,9 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		versionId,
 		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
 	})) as unknown as T;
-	
+
 	const originalConfigMap = buildConfigMap(original, config.fields);
-	
+
 	versionId = await handleVersionCreation({
 		versionOperation,
 		original,
@@ -117,7 +130,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		data,
 		adapter: rizom.adapter,
 		configMap,
-		mode: "required"
+		mode: 'required'
 	});
 
 	data = await validateFields({
@@ -127,13 +140,13 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		config,
 		configMap,
 		original,
-		operation: 'update',
+		operation: 'update'
 	});
 
 	for (const hook of config.hooks?.beforeUpdate || []) {
 		/**
-		 * TS is expecting a more specific types, 
-		 * but with RegisterArea[AreaSlug] devs get their 
+		 * TS is expecting a more specific types,
+		 * but with RegisterArea[AreaSlug] devs get their
 		 * types in the hook definition arguments
 		 */
 		const result = await hook({
@@ -194,24 +207,25 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		treeDiff
 	});
 
-
 	// Get the updated area with the correct version ID
-	let document = await rizom.area(config.slug).find({ 
-		locale, 
-		versionId: versionId, 
+	let document = await rizom.area(config.slug).find({
+		locale,
+		versionId: versionId,
 		draft: true
 	});
 
 	// Populate URL
-	document = await populateURL(document, { config, event, locale })
+	document = await populateURL(document, { config, event, locale });
 
 	// Handle localized URLs if needed
 	const locales = event.locals.rizom.config.getLocalesCodes();
 	if (locales.length) {
 		for (const otherLocale of locales) {
 			if (otherLocale !== locale) {
-				const documentLocale = await rizom.area(config.slug).find({ locale: otherLocale, versionId: versionId, draft: true });
-				await populateURL(documentLocale, { config, event, locale: otherLocale })
+				const documentLocale = await rizom
+					.area(config.slug)
+					.find({ locale: otherLocale, versionId: versionId, draft: true });
+				await populateURL(documentLocale, { config, event, locale: otherLocale });
 			}
 		}
 	}
@@ -225,7 +239,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			event
 		});
 	}
-
 
 	return document as unknown as T;
 };

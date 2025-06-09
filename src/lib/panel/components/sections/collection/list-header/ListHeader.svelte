@@ -1,21 +1,18 @@
 <script lang="ts">
 	import { capitalize } from '$lib/util/string.js';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import { getContext } from 'svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
 	import type { FormField } from '$lib/fields/types.js';
+	import { getContext } from 'svelte';
 
 	type TableColumn = Partial<FormField> & { name: string; label?: string };
-	type Props = { compact: boolean };
-
-	const { compact }: Props = $props();
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {
 		const columnLength = collection.columns.length + 2;
-		gridTemplateColumn = `grid-template-columns: 2fr repeat(${compact ? 1 : columnLength - 1}, minmax(0, 1fr));`;
+		gridTemplateColumn = `grid-template-columns: 2fr repeat(${columnLength - 1}, minmax(0, 1fr));`;
 	});
 </script>
 
@@ -47,29 +44,25 @@
 <div style={gridTemplateColumn} class="rz-list-header">
 	{@render sortableColumnHeader({ name: collection.config.asTitle.split('.').at(-1) || 'title' })}
 
-	{#if !compact}
-		{#each collection.columns as column, index (index)}
-			{#if column.table.sort}
-				{@render sortableColumnHeader(column)}
-			{:else}
-				{@render columnHeader(column.label || column.name)}
-			{/if}
-		{/each}
+	{#each collection.columns as column, index (index)}
+		{#if column.table.sort}
+			{@render sortableColumnHeader(column)}
+		{:else}
+			{@render columnHeader(column.label || column.name)}
+		{/if}
+	{/each}
 
-		{@render sortableColumnHeader({ name: 'updatedAt' })}
-	{/if}
+	{@render sortableColumnHeader({ name: 'updatedAt' })}
 </div>
 
 <style type="postcss">
 	.rz-list-header {
 		display: grid;
 		height: var(--rz-size-14);
-		width: calc(100% - var(--rz-size-10));
+		/* width: calc(100% - var(--rz-size-10)); */
 		align-items: center;
 		border-bottom: var(--rz-border);
-		margin-left: var(--rz-size-5);
-		padding-left: var(--rz-size-3);
-		padding-right: var(--rz-size-6);
+		/* margin-left: var(--rz-size-5); */
 		font-size: var(--rz-text-sm);
 	}
 

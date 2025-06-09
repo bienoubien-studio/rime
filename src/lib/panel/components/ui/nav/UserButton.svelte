@@ -58,9 +58,9 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--rz-size-2);
-		border-radius: var(--radius-md);
+		border-radius: var(--rz-radius-md);
 		padding: var(--rz-size-2);
-		box-shadow: var(--rz-shadow-sm);
+		/* box-shadow: var(--rz-shadow-sm); */
 	}
 	.rz-user-button__left {
 		display: flex;
@@ -69,8 +69,8 @@
 		gap: var(--rz-size-2);
 	}
 	.rz-user-button__left a {
-		background-color: hsl(var(--rz-ground-0));
-		@mixin color ground-6;
+		background-color: hsl(var(--rz-ground-4));
+		@mixin color ground-0;
 		@mixin size var(--rz-size-8);
 		display: flex;
 		flex-shrink: 0;
@@ -82,7 +82,7 @@
 	}
 	.rz-user-button__name {
 		@mixin line-clamp 1;
-		font-size: var(--rz-text-xs);
+		/* font-size: var(--rz-text-sm); */
 		/* line-clamp-1 truncate text-xs */
 	}
 </style>

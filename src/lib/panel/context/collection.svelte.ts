@@ -32,6 +32,8 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	let selected = $state<string[]>([]);
 	let displayMode = $state<DisplayMode>('list');
 	let stamp = $state(Date.now()); // Add a timestamp to track changes
+	const hasVersions = $derived(!!config.versions);
+	const hasDraft = $derived(config.versions && config.versions.draft);
 	// const statusList = $derived(config.status && Array.isArray(config.status) ? config.status : null);
 
 	onMount(() => {
@@ -78,8 +80,8 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 
 	const columns = buildFieldColumns(config.fields)
 		.map((col) => {
-			// Set column position
 			// @TODO : do it when building config ?
+			// Set column position
 			let tableConfig: FieldPanelTableConfig = { position: 99 };
 			if (typeof col.table === 'number') {
 				tableConfig.position = col.table;
@@ -324,8 +326,6 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		// Step 10: Update the flat docs with the new structure
 		const [newFlatDocs, docsToUpdate] = updateFlatDocs(nestedDocs);
 
-		// console.log(docsToUpdate)
-
 		docs = newFlatDocs as T[];
 		initialDocs = docs;
 		stamp = Date.now();
@@ -429,6 +429,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		// Wait for all updates to complete
 		try {
 			const results = await Promise.all(updatePromises);
+
 			// Update local docs with the updated versions
 			results.forEach((updatedDoc) => {
 				if (updatedDoc) {
@@ -533,12 +534,15 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 			return stamp;
 		},
 		get title() {
-			return config.label.singular;
+			return config.label.plural;
 		},
-		// logCollectionStructure,
-		// get statusList() {
-		// 	return statusList;
-		// },
+
+		get hasDraft() {
+			return hasDraft;
+		},
+		get hasVersions() {
+			return hasVersions;
+		},
 		config,
 		canCreate,
 		isList,

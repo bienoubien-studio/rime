@@ -52,11 +52,16 @@
 <style type="postcss" global>
 	.rz-nav-group {
 		width: 100%;
-		/* margin-bottom: var(--rz-size-3); */
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		margin-bottom: var(--rz-size-2);
+		background-color: hsl(var(--rz-ground-6));
+		border-radius: var(--rz-radius-lg);
 	}
-	.rz-nav-group--collapsed {
+	/* .rz-nav-group--collapsed {
 		margin-bottom: 0;
-	}
+	} */
 	.rz-nav-group--nav-collapsed {
 		/* border-top: var(--rz-border); */
 		padding-top: var(--rz-size-2);
@@ -65,16 +70,17 @@
 
 	.rz-nav-group__content {
 		display: grid;
-		padding: 0 var(--rz-size-7);
-		border-bottom: var(--rz-border);
+		padding: 0 var(--rz-size-4);
+		/* border-bottom: var(--rz-border); */
 		background-color: hsl(var(--rz-ground-5) / 0.6);
 	}
 	.rz-nav-group--nav-collapsed .rz-nav-group__content {
 		background-color: transparent;
+		padding: 0 var(--rz-size-5);
 	}
 
 	.rz-nav-group__trigger {
-		padding: var(--rz-size-4);
+		padding: var(--rz-size-3);
 		display: flex;
 		width: 100%;
 		gap: var(--rz-size-2);

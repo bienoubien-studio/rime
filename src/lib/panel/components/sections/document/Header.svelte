@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { Button } from '../../ui/button';
-	import { X, PencilRuler, Eye, History } from '@lucide/svelte';
+	import { X, PencilRuler, History, ExternalLink } from '@lucide/svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
@@ -10,7 +10,12 @@
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	
+	import Settings from './Settings.svelte';
+	import ButtonStatus from './ButtonStatus.svelte';
+	import { page } from '$app/state';
+	import { PARAMS } from '$lib/core/constant.js';
+	import { doc } from '$lib/util/index.js';
+
 	// Props
 	type Props = {
 		onClose?: any;
@@ -20,149 +25,102 @@
 	const { form, onClose, config }: Props = $props();
 
 	const onCloseIsDefined = !!onClose;
-	const title = getContext<{ value: string }>('title');
+	const titleContext = getContext<{ value: string }>('title');
+
+	const isVersionPage = $derived(page.url.pathname.includes('/versions'));
 
 	const versionsUrl = $derived.by(() => {
-		if (form.doc._prototype === 'collection') {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}/${form.doc.id}/versions`;
+		const isCollection = form.doc._prototype === 'collection';
+		const basUrl = isCollection
+			? `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}/${form.doc.id}`
+			: `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`;
+		if (isVersionPage) {
+			// Close versions and go to edit the document version
+			return `${basUrl}?${PARAMS.VERSION_ID}=${form.doc.versionId}`;
 		} else {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}/versions`;
+			// Go to version page
+			return `${basUrl}/versions?${PARAMS.VERSION_ID}=${form.doc.versionId}`;
 		}
 	});
 </script>
 
-<PageHeader>
-	<div class:rz-page-header__left--with-close={onCloseIsDefined} class="rz-page-header__left">
-		{#if onCloseIsDefined}
-			<Button onclick={onClose} variant="ghost" size="icon-sm">
-				<X class="rz-page-header__close" size="17" />
-			</Button>
-		{/if}
-		<h1 class="rz-page-header__title">
-			{title.value}
-		</h1>
-		<!-- {#if config.type === 'collection' && config.status}
-			<ButtonStatus statusList={config.status} {form} />
-		{/if} -->
-	</div>
+{#snippet topLeft()}
+	<Button onclick={() => onClose()} icon={X} variant="text">{t__('common.close')}</Button>
+{/snippet}
 
-	<div class="rz-page-header__right">
+<PageHeader topLeft={onCloseIsDefined ? topLeft : undefined}>
+	{#snippet title()}
+		{titleContext.value}
+	{/snippet}
+
+	{#snippet bottomRight()}
 		{#if config.url && form.doc.url}
-			<Button icon={Eye} target="_blank" href={form.doc.url} variant="text">
-				{t__('common.view_page')}
-			</Button>
+			<Button
+				icon={ExternalLink}
+				target="_blank"
+				href={form.doc.url}
+				size="icon-sm"
+				variant="secondary"
+			/>
 		{/if}
 
 		{#if config.live && form.doc._live}
 			<Button
+				size="icon-sm"
+				variant="secondary"
 				disabled={form.readOnly}
 				class="rz-button-live"
 				icon={PencilRuler}
 				href={form.doc._live}
-				variant="text"
-			>
-				Live edit
-			</Button>
+			></Button>
 		{/if}
 
+		<Settings {form} />
+	
 		{#if !form.config.versions}
 			<!-- scenario 1: no versions -->
 			<ButtonSave
+				size="sm"
 				label={t__('common.save')}
 				disabled={!form.canSubmit}
 				processing={form.processing}
 			/>
 		{:else if form.config.versions && !form.config.versions.draft}
 			<!-- scenario 2: versions without draft -->
-
-			<!-- SAVE -->
-			<!-- if we are on /panel/{slug}/{id}/versions add the data-version id to update instead of creating a new version -->
-			<!-- data-version : update specific version -->
-			<!-- no data-version : new version created -->
 			<ButtonSave
+				size="sm"
 				label={t__('common.save')}
 				disabled={!form.canSubmit}
 				processing={form.processing}
+				data-draft
 				data-submit
-				data-draft
 			/>
-
-			<Button onclick={() => goto(versionsUrl)} variant="outline" icon={History} size="icon" />
 		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
+			<ButtonStatus {form} />
 			<!-- scenario 3: versions and draft, on a published doc -->
-
-			<!-- SAVE NEW DRAFT -->
-			<!-- data-as-new-draft : new draft created -->
-			<!-- data-draft : document as draft -->
 			<ButtonSave
-				variant="secondary"
-				disabled={form.readOnly}
-				processing={form.processing}
-				label={t__('common.save_new_draft')}
-				data-status="draft"
-				data-draft
-			/>
-			
-			<!-- PUBLISH -->
-			<!-- data-version : current published doc updated -->
-			<!-- no data-draft : keep it published -->
-			<ButtonSave
+				size="sm"
 				disabled={!form.canSubmit}
 				processing={form.processing}
 				label={t__('common.save')}
 				data-status="published"
 				data-submit
 			/>
-
-			<Button onclick={() => goto(versionsUrl)} variant="outline" icon={History} size="icon" />
 		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
+			<ButtonStatus {form} />
 			<!-- scenario 4: versions and draft, on a draft doc -->
 
-			<!-- SAVE DRAFT -->
-			<ButtonSave
-				variant="secondary"
-				disabled={!form.canSubmit}
-				processing={form.processing}
-				label={t__('common.save_draft')}
-				data-submit
-			/>
-
 			<!-- PUBLISH -->
 			<ButtonSave
+				size="sm"
 				disabled={form.readOnly}
 				processing={form.processing}
-				label={t__('common.publish')}
-				data-status="published"
+				label={t__('common.save')}
+				data-submit
 			/>
-
-			<Button onclick={() => goto(versionsUrl)} variant="outline" icon={History} size="icon" />
 		{/if}
-
+	{/snippet}
+	{#snippet topRight()}
 		<LanguageSwitcher onLocalClick={invalidateAll} />
-	</div>
+	{/snippet}
 </PageHeader>
-
-<style type="postcss">
-	.rz-page-header__left {
-		display: flex;
-		align-items: center;
-		gap: var(--rz-size-3);
-		margin-left: var(--rz-size-3);
-		&.rz-page-header__left--with-close {
-			margin-left: 0;
-		}
-		:global(.rz-button) {
-			flex-shrink: 0;
-		}
-	}
-	.rz-page-header__right {
-		display: flex;
-		align-items: center;
-		gap: var(--rz-size-4);
-	}
-	.rz-page-header__title {
-		word-break: break-all;
-		@mixin line-clamp 1;
-		@mixin font-bold;
-	}
-</style>

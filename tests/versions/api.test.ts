@@ -189,7 +189,7 @@ test('Should get infos', async ({ request }) => {
 })
 
 test('Should update infos (creating a new version)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos`, {
+	const response = await request.patch(`${API_BASE_URL}/infos`, {
 		headers: superAdminHeaders,
 		data: {
 			title: 'latest'
@@ -229,7 +229,7 @@ test('Should get the first infos version', async ({ request }) => {
 });
 
 test('Should update a specific infos version', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
+	const response = await request.patch(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
 		headers: superAdminHeaders,
 		data: {
 			title: 'newer than latest',
@@ -309,7 +309,7 @@ test('Should get settings', async ({ request }) => {
 })
 
 test('Should update the published settings', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings`, {
+	const response = await request.patch(`${API_BASE_URL}/settings`, {
 		headers: superAdminHeaders,
 		data: {
 			title: 'initial settings',
@@ -339,7 +339,7 @@ test('Should update the published settings', async ({ request }) => {
 });
 
 test('Should update the settings and create a second settings version', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings?${PARAMS.DRAFT}=true`, {
+	const response = await request.patch(`${API_BASE_URL}/settings?${PARAMS.DRAFT}=true`, {
 		headers: superAdminHeaders,
 		data: {
 			title: 'second settings version'
@@ -378,7 +378,7 @@ test('Should get the latest settings draft and publish it', async ({ request }) 
 	expect(responseData.doc.status).toBe(VERSIONS_STATUS.DRAFT)
 	expect(responseData.doc.versionId).not.toBe(settingVersionId)
 
-	const publishResponse = await request.post(`${API_BASE_URL}/settings?versionId=${responseData.doc.versionId}`, {
+	const publishResponse = await request.patch(`${API_BASE_URL}/settings?versionId=${responseData.doc.versionId}`, {
 		headers: superAdminHeaders,
 		data: {
 			status: VERSIONS_STATUS.PUBLISHED,

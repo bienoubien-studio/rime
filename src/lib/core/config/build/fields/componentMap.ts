@@ -29,7 +29,7 @@ export function buildComponentsMap(
 	for (const field of fields) {
 		// Add current field if it has component
 		addToMap(field);
-
+		
 		// Check in blocks
 		if (field instanceof BlocksBuilder && field.raw.blocks) {
 			for (const block of field.raw.blocks) {

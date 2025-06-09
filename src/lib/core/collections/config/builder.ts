@@ -69,7 +69,11 @@ export function collection<S extends string>(
 			config.versions = {
 				draft: false, autoSave: false, maxVersions: 4
 			};
-		}else if(config.versions.draft){
+		} 
+		if (!config.versions.maxVersions) {
+			config.versions.maxVersions = 4
+		}
+		if(config.versions.draft){
 			fields.push(text('status').defaultValue(VERSIONS_STATUS.DRAFT).hidden());
 		}
 	}else{

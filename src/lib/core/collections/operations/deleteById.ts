@@ -1,7 +1,5 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';

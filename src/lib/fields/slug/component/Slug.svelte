@@ -60,7 +60,7 @@
 	<Field.Label {config} />
 
 	<div class="rz-slug">
-		<Hash class="rz-slug__icon" size="12" />
+		<Hash class="rz-slug__icon" size="14" />
 
 		<Input
 			placeholder={config.placeholder}
@@ -86,20 +86,20 @@
 
 		:global(.rz-input) {
 			font-family: var(--rz-font-mono);
-			padding: 0 0 0 1.66rem;
+			padding: 0 0 0 2rem;
 		}
 
 		:global(.rz-button) {
 			position: absolute;
 			right: var(--rz-size-1-5);
-			top: var(--rz-size-1-5);
+			top: var(--rz-size-2);
 		}
 
 		:global(.rz-slug__icon) {
 			opacity: 0.37;
 			position: absolute;
 			left: 0.75rem;
-			top: 0.75rem;
+			top: 0.825rem;
 		}
 	}
 

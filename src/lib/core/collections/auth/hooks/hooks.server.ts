@@ -72,6 +72,11 @@ export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args)
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
+	// Prevent "admin" roles of superadmin to be deleted
+	if(isSuperAdminMutation && rolesChanged && !args.data.roles.includes('admin')){
+		args.data.roles.push('admin')
+	}
+
 	// Prevent superAdmin value to be changed
 	if ('isSuperAdmin' in args.data) {
 		throw new RizomError(RizomError.UNAUTHORIZED);

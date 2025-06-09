@@ -90,19 +90,18 @@
 
 <style type="postcss">
 	.rz-tabs :global {
-		.rz-tabs-trigger {
-			min-width: var(--rz-size-28);
-		}
-
+		
 		.rz-tabs-content {
 			margin-top: var(--rz-size-8);
 		}
 
 		.rz-tabs-list {
+			padding-left: var(--rz-fields-padding);
+			padding-right: var(--rz-fields-padding);
 			position: sticky;
-			top: 0;
+			top: var(--rz-size-14);
 			margin-bottom: 0;
-			z-index: 10;
+			z-index: 40;
 		}
 	}
 </style>

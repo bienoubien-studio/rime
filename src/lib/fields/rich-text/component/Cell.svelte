@@ -4,6 +4,7 @@
 	let { value }: { value: string } = $props();
 
 	let textValue: string = richTextJSONToText(value);
+
 </script>
 
 {#if textValue && textValue.length > 10}

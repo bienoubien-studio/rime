@@ -35,4 +35,6 @@
 	--rz-size-72: calc(var(--rz-spacing-scale) * 18rem);
 	--rz-size-80: calc(var(--rz-spacing-scale) * 20rem);
 	--rz-size-96: calc(var(--rz-spacing-scale) * 24rem);
+	--rz-size-112: calc(var(--rz-spacing-scale) * 28rem);
+	--rz-size-128: calc(var(--rz-spacing-scale) * 32rem);
 }

@@ -23,6 +23,13 @@ export const load = pagesLoad.area('${slug}')
 export const actions = pagesActions.area('${slug}')
 `;
 
+const pageServerTemplateVersions = (slug: string): string => `
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+
+export const load = pagesLoad.area('${slug}', true)
+export const actions = pagesActions.area('${slug}')
+`;
+
 /**
  * API collection list operations
  * (rizom)/api/{collection.slug}/+server.ts
@@ -31,7 +38,7 @@ const apiAreaServer = (slug: string): string => `
 import * as api from '${PACKAGE_NAME}/api';
 
 export const GET = api.area.get(${TScastVersionSlug(slug)})
-export const POST = api.area.update(${TScastVersionSlug(slug)})
+export const PATCH = api.area.update(${TScastVersionSlug(slug)})
 `
 
 /**
@@ -59,7 +66,7 @@ export const areaRoutes: Routes = {
 export const areaVersionsPanelRoutes: Routes = {
   '(rizom)/panel/{area.slug}/versions': {
     page: pageVersions,
-    pageServer: pageServerTemplate
+    pageServer: pageServerTemplateVersions
   },
 };
 

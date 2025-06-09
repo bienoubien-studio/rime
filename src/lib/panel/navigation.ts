@@ -42,7 +42,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 				icon: collection.slug,
 				path: `/panel/${collection.slug}`
 			};
-			addRouteToGroup(route, collection.group);
+			addRouteToGroup(route, collection.panel?.group || 'collections');
 		}
 	});
 	
@@ -54,10 +54,10 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 				icon: area.slug,
 				path: `/panel/${area.slug}`
 			};
-			addRouteToGroup(route, area.group);
+			addRouteToGroup(route, area.panel?.group || 'areas');
 		}
 	});
-
+	
 	// Process custom panel routes
 	Object.entries(config.panel.routes).forEach(([routePath, routeConfig]) => {
 		const route: Route = {
@@ -70,6 +70,8 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 
 	return groups;
 };
+
+
 
 export default buildNavigation;
 

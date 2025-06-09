@@ -5,13 +5,18 @@
 	import type { Snippet } from 'svelte';
 	import type { FormField } from '$lib/fields/types.js';
 	
-	type Props = { config?: FormField; children?: Snippet };
-	const { config, children }: Props = $props();
+	type Props = { config?: FormField; children?: Snippet; for?: string };
+	const { config, children, for: forAttribute, ...rest }: Props = $props();
 
 	const locale = getLocaleContext();
 </script>
 
-<Label class="rz-field-label" title={config?.label ? config.name : null}>
+<Label
+	class="rz-field-label"
+	title={config?.label ? config.name : null}
+	for={forAttribute || null}
+	{...rest}
+>
 	{#if config}
 		{config.label || capitalize(config.name)}
 		{#if config.localized}
@@ -24,12 +29,8 @@
 <style type="postcss">
 	:global {
 		.rz-field-label {
-			margin-bottom: var(--rz-size-3);
+			margin-bottom: var(--rz-size-2);
 			display: block;
-			font-size: var(--rz-text-sm);
-			color: hsl(var(--rz-ground-1));
-			@mixin font-semibold;
-			letter-spacing: 0.03em;
 		}
 		.rz-field-label sup {
 			font-size: var(--rz-text-2xs);

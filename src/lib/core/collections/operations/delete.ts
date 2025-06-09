@@ -1,0 +1,56 @@
+import type { RequestEvent } from '@sveltejs/kit';
+import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+
+type DeleteArgs = {
+	query?: OperationQuery;
+  locale?: string | undefined;
+  config: CompiledCollection;
+  event: RequestEvent & { locals: App.Locals };
+  sort?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
+	//
+	const { config, event, locale, limit, offset, sort, query } = args;
+	const { rizom } = event.locals;
+
+	const authorized = config.access.read(event.locals.user, {});
+	if (!authorized) {
+		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
+	}
+
+  console.log({
+		slug: config.slug,
+		query,
+		limit,
+    offset,
+    sort,
+		select: ['id'],
+		locale,
+    draft: true
+	})
+
+	const documentsToDelete = await rizom.adapter.collection.find({
+		slug: config.slug,
+		query,
+		limit,
+    offset,
+    sort,
+		select: ['id'],
+		locale,
+    draft: true
+	});
+  
+  console.log(documentsToDelete)
+	const promisesDelete = documentsToDelete.map(({ id }) => {
+		return rizom.collection(config.slug).deleteById({ id });
+	});
+  
+	const ids = await Promise.all(promisesDelete);
+
+	return ids;
+};

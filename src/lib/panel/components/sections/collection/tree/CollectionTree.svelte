@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
 	import CollectionTreeNode from './CollectionTreeNode.svelte';
 	import { toast } from 'svelte-sonner';
 	import { countRows } from './util';
 
-	type Props = { collection: CollectionContext };
-	const { collection }: Props = $props();
-
+	const collection = getContext<CollectionContext>('rizom.collectionList');
+		
 	// Track collection stamp for reactivity
 	const collectionStamp = $derived(collection.stamp);
 
@@ -106,19 +105,10 @@
 	
 	.rz-collection-sortable {
 		height:100%;
-		--dot-size: 1px;
-    --dot-space: 12px;
-    background-color: hsl(var(--rz-ground-5));
-    background-image: radial-gradient(hsl(var(--rz-ground-4)) var(--dot-size), transparent var(--dot-size));
-    background-size: var(--dot-space) var(--dot-space);
+		background-color: hsl(var(--rz-ground-5));
     background-position: 0 0;
-
-		/* display: grid; */
-		padding-left: var(--rz-size-20);
-		padding-top: var(--rz-size-20);
-		padding-right: var(--rz-size-20);
 		position: relative;
-
+		
 		& :global {
 			.rz-collection-sortable {
 				display: grid;

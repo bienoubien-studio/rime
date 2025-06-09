@@ -7,8 +7,8 @@
 
 <style>
 	.rz-separator {
-		margin-left: calc(-1 * var(--rz-fields-padding));
-		margin-right: calc(-1 * var(--rz-fields-padding));
+		/* margin-left: calc(-1 * var(--rz-fields-padding));
+		margin-right: calc(-1 * var(--rz-fields-padding)); */
 		margin-bottom: var(--rz-size-4);
 	}
 </style>

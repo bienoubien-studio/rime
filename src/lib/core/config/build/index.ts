@@ -20,7 +20,7 @@ import { buildComponentsMap } from './fields/componentMap.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
-import { BookType, SlidersVertical } from '@lucide/svelte';
+import { BookType, FileText, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { CollectionSlug } from '../../../types.js';
@@ -59,7 +59,11 @@ const buildConfig = async (
 		const buildtCollection = await buildCollection(collection);
 		collections = [...collections, buildtCollection];
 		// add icon to iconMap
-		if (collection.icon) icons[collection.slug] = collection.icon;
+		if (collection.icon) {
+			icons[collection.slug] = collection.icon;
+		}else{
+			icons[collection.slug] = FileText;
+		}
 	}
 
 	/****************************************************/
@@ -172,6 +176,7 @@ const buildConfig = async (
 				const generateBrowserConfig = await import('rizom/core/dev/generate/browser/index.js').then(
 					(m) => m.default
 				);
+				
 				generateBrowserConfig({
 					...compiledConfig,
 					blueprints: fieldsComponentsMap

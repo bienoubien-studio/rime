@@ -143,7 +143,7 @@
 		padding: var(--rz-size-2) var(--rz-size-4);
 		height: var(--rz-size-14);
 		flex-direction: row;
-		background-color: hsl(var(--rz-ground-7));
+		background-color: hsl(var(--rz-ground-6));
 		width: 100%;
 	}
 
@@ -168,7 +168,8 @@
 	}
 
 	.rz-tree-item__fields {
-		background-color: hsl(var(--rz-ground-7));
+		--rz-fields-padding: var(--rz-size-4);
+		background-color: hsl(var(--rz-ground-6));
 		border: var(--rz-border);
 		border-top: none;
 		border-radius: 0 0 var(--rz-radius-md) (--rz-radius-md);

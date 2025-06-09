@@ -6,11 +6,13 @@ import { PANEL_USERS } from '$lib/core/constant.js';
 
 export const panelUsersCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
-	description: "Manage who can access your admin panel",
+	panel: {
+		description: "Manage who can access your admin panel",
+		group: 'system',
+	},
 	auth: true,
 	icon: UsersRound,
 	fields: [usersFields.name, usersFields.email, usersFields.roles],
-	group: 'system',
 	access: {
 		read: (user) => !!user,
 		create: (user) => access.isAdmin(user),

@@ -4,13 +4,14 @@
 	cursor: pointer;
 	user-select: none;
 	align-items: center;
+	gap: var(--rz-size-2);
 	border-radius: var(--rz-radius-md);
-	font-size: var(--rz-text-sm);
 	outline: none;
+	color: hsl(var(--rz-ground-5));
 	@mixin py var(--rz-size-1-5);
 	@mixin px var(--rz-size-2);
 	&[data-highlighted] {
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-ground-1));
 	}
 	&[data-disabled] {
 		pointer-events: none;

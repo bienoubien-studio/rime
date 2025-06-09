@@ -1,8 +1,6 @@
-import path from 'path';
 import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../../util/object.js';
 import { buildConfig } from './build/index.js';
-import { existsSync, mkdirSync } from 'fs';
 import type { CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types/index.js';
 import type { AsyncReturnType, Dic } from '$lib/util/types.js';
 import type { CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';

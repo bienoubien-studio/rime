@@ -6,6 +6,7 @@ import { create } from './operations/create.js';
 import { deleteById } from './operations/deleteById.js';
 import { find } from './operations/find.js';
 import { findById } from './operations/findById.js';
+import { deleteDocs } from './operations/delete.js';
 import { updateById } from './operations/updateById.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -24,7 +25,6 @@ type Args = {
 };
 
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
-
 	#event: RequestEvent;
 	#rizom: Rizom;
 	defaultLocale: string | undefined;
@@ -68,13 +68,21 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
-			event: this.#event,
+			event: this.#event
 		});
 	}
-	
-	find({ select: selectArray, query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft }: FindArgs): Promise<Doc[]> {
 
-		this.#rizom.preventOperationLoop()
+	find({
+		select: selectArray,
+		query,
+		locale,
+		sort = '-updatedAt',
+		depth = 0,
+		limit,
+		offset,
+		draft
+	}: FindArgs): Promise<Doc[]> {
+		this.#rizom.preventOperationLoop();
 
 		const params = {
 			select: selectArray,
@@ -109,8 +117,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	}
 
 	findById({ id, versionId, locale, draft, depth = 0 }: FindByIdArgs): Promise<Doc> {
-
-		this.#rizom.preventOperationLoop()
+		this.#rizom.preventOperationLoop();
 
 		if (!id) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -141,30 +148,31 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById({ id, versionId, data, locale, draft, isFallbackLocale = false }: UpdateByIdArgs<Doc>): Promise<Doc> {
-
-		this.#rizom.preventOperationLoop()
-
+	updateById(args: UpdateByIdArgs<Doc>): Promise<Doc> {
+		this.#rizom.preventOperationLoop();
 		return updateById<Doc>({
-			id,
-			versionId,
-			draft,
-			data,
-			locale: this.#fallbackLocale(locale),
+			...args,
+			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
-			event: this.#event,
-			isFallbackLocale
+			event: this.#event
 		});
 	}
 
 	deleteById = ({ id }: DeleteByIdArgs) => {
-
-		this.#rizom.preventOperationLoop()
-
+		this.#rizom.preventOperationLoop();
 		return deleteById({
 			id,
 			config: this.config,
+			event: this.#event
+		});
+	};
+	
+	delete = (args: DeleteArgs) => {
+		this.#rizom.preventOperationLoop();
+		return deleteDocs({
+			config: this.config,
 			event: this.#event,
+			...args
 		});
 	};
 }
@@ -188,10 +196,10 @@ type FindArgs = {
 	draft?: boolean;
 };
 
-type FindAllArgs = {
+type DeleteArgs = {
+	query?: OperationQuery;
 	locale?: string;
 	sort?: string;
-	depth?: number;
 	limit?: number;
 	offset?: number;
 };
@@ -201,7 +209,7 @@ type FindByIdArgs = {
 	versionId?: string;
 	locale?: string;
 	depth?: number;
-	draft?: boolean
+	draft?: boolean;
 };
 
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
@@ -213,4 +221,4 @@ type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	isFallbackLocale?: boolean;
 };
 
-type CreateArgs<T> = { data: DeepPartial<T>; locale?: string, draft?: boolean }
+type CreateArgs<T> = { data: DeepPartial<T>; locale?: string; draft?: boolean };

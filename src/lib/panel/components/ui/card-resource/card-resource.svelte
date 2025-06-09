@@ -82,7 +82,7 @@
 	}
 
 	.rz-card-resource__title {
-		font-size: var(--rz-text-sm);
+		
 		@mixin font-semibold;
 		a {
 			display: inline-block;

@@ -27,7 +27,9 @@ import { apiInit } from './api-init/index.js';
 
 const Settings = area('settings', {
 	icon: Settings2,
-	group: 'informations',
+	panel: {
+		group: 'informations'
+	},
 	fields: [
 		toggle('minimalFooter').label('Minimal footer'),
 		toggle('maintenance').label('Sticky header'),
@@ -51,7 +53,9 @@ const nav = tree('nav').fields(linkField);
 const mainNav = tree('mainNav').fields(linkField).localized();
 
 const Menu = area('menu', {
-	group: 'Content',
+	panel: {
+		group: 'Content'
+	},
 	icon: ListTree,
 	access: {
 		read: () => true
@@ -65,7 +69,9 @@ const Menu = area('menu', {
 
 const Informations = area('infos', {
 	icon: ReceiptText,
-	group: 'informations',
+	panel: {
+		group: 'informations'
+	},
 	fields: [
 		richText('about').localized(),
 		text('email').required(),
@@ -75,7 +81,7 @@ const Informations = area('infos', {
 	access: {
 		read: () => true
 	},
-	url: (doc:any) => {
+	url: (doc: any) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: true
@@ -198,7 +204,9 @@ const tabFooter = tab('footer').fields(text('slider').localized());
 
 const Pages = collection('pages', {
 	icon: Newspaper,
-	group: 'Content',
+	panel: {
+		group: 'Content'
+	},
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
 	url: (doc) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
@@ -221,7 +229,9 @@ const Pages = collection('pages', {
 
 const Medias = collection('medias', {
 	icon: Images,
-	group: 'Medias',
+	panel: {
+		group: 'Medias'
+	},
 	upload: {
 		imageSizes: [
 			{ name: 'thumbnail', width: 400, out: ['webp'] },
@@ -260,7 +270,9 @@ export default defineConfig({
 		users: {
 			roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
 			fields: [text('website')],
-			group: 'administration',
+			panel: {
+				group: 'administration'
+			},
 			// TODO create an author collection for testing
 			// here users shouldn't be read
 			access: {

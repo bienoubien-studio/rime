@@ -23,7 +23,7 @@
 			</div>
 		{:else}
 			<div class="rz-button__icon">
-				<IconProp size="12" strokeWidth="2px" />
+				<IconProp size="14" strokeWidth="2px" />
 			</div>
 		{/if}
 	{/if}
@@ -58,7 +58,6 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: var(--rz-radius-md);
-		font-size: var(--rz-text-sm);
 		white-space: nowrap;
 		@mixin font-medium;
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color,
@@ -115,9 +114,10 @@
 	}
 
 	.rz-button--size-icon {
+		border-radius: var(--rz-radius-lg);
 		height: var(--rz-size-9);
 		width: var(--rz-size-9);
-		padding: var(--rz-size-2);
+		padding: var(--rz-size-1);
 	}
 
 	.rz-button--size-icon-sm {
@@ -145,7 +145,7 @@
 	.rz-button--outline {
 		border: 1px solid hsl(var(--rz-ground-3));
 		background-color: hsl(var(--rz-ground-5) / 0);
-		color: hsl(var(--rz-color-fg));
+		
 		&:hover {
 			background-color: hsl(var(--rz-ground-5) / 1);
 		}
@@ -153,7 +153,7 @@
 
 	.rz-button--ghost {
 		background-color: hsl(var(--rz-ground-4) / 0);
-		color: hsl(var(--rz-color-ground-0));
+		
 		&:hover {
 			background-color: hsl(var(--rz-ground-4) / 1);
 		}
@@ -161,28 +161,26 @@
 
 	.rz-button--secondary {
 		background-color: hsl(var(--rz-ground-4));
-		color: hsl(var(--rz-ground-0));
-		fill: hsl(var(--rz-ground-0));
 		&:hover {
-			background-color: hsl(var(--rz-color-secondary) / 0.7);
+			background-color: hsl(var(--rz-ground-3));
 		}
 	}
 
 	.rz-button--link {
-		/* color: hsl(var(--rz-color-primary)); */
 		background: none;
 		text-underline-offset: 4px;
 		&:hover {
 			text-decoration: underline;
 		}
 	}
-
+	
 	.rz-button--text {
-		--opacity: 0.1 padding-left: 0;
+		--opacity: 0.6;
+		padding-left: 0;
 		padding-right: 0;
 		background-color: transparent;
 		color: hsl(var(--rz-color-fg) / var(--opacity));
-		@mixin font-medium;
+		@mixin font-semibold;
 		gap: var(-rz-size-2);
 		&:hover {
 			--opacity: 1;
@@ -196,10 +194,6 @@
 	/* With Icon */
 	/**************************************/
 
-	.rz-button__icon {
-		/* color: hsl(var(--rz-color-primary)); */
-		/* translate: calc(-1 * var(--rz-size-1)); */
-	}
 	.rz-button__icon,
 	.rz-button--text__icon {
 		display: grid;

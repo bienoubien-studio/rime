@@ -491,7 +491,7 @@ test('Should not create a page', async ({ request }) => {
 });
 
 test('Should not update area', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings`, {
+	const response = await request.patch(`${API_BASE_URL}/settings`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},
@@ -626,7 +626,7 @@ test('Should get settings', async ({ request }) => {
 });
 
 test('Should update settings', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings`, {
+	const response = await request.patch(`${API_BASE_URL}/settings`, {
 		headers: {
 			Authorization: `Bearer ${superAdminToken}`
 		},

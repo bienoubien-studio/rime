@@ -5,8 +5,13 @@
 	import type { Route } from '$lib/panel/types';
 	import { PanelsTopLeft } from '@lucide/svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	
-	type Props = { isCollapsed: boolean; setCollapsed: (value: boolean) => void; routes: Record<string, Route[]> };
+	import ScrollArea from '../scroll-area/scroll-area.svelte';
+
+	type Props = {
+		isCollapsed: boolean;
+		setCollapsed: (value: boolean) => void;
+		routes: Record<string, Route[]>;
+	};
 	const { isCollapsed, setCollapsed, routes: routesGroups }: Props = $props();
 
 	const config = getConfigContext();
@@ -35,23 +40,25 @@
 		</div>
 
 		<div class="rz-nav__body">
+			<ScrollArea>
 			<nav class="rz-nav__nav">
-				{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
-					{#if groupName !== 'none'}
-						{@const icon = getGroupIcon(groupName)}
-						<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
-							{#each routes as route (route.path)}
-								<NavItem href={route.path} {isCollapsed} {route} />
-							{/each}
-						</NavGroup>
-					{/if}
-				{/each}
-				{#each routesGroups.none as route (route.path)}
-					<div class="rz-nav__group-none">
-						<NavItem href={route.path} {isCollapsed} {route} />
-					</div>
-				{/each}
-			</nav>
+					{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
+						{#if groupName !== 'none'}
+							{@const icon = getGroupIcon(groupName)}
+							<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
+								{#each routes as route (route.path)}
+									<NavItem href={route.path} {isCollapsed} {route} />
+								{/each}
+							</NavGroup>
+						{/if}
+					{/each}
+					{#each routesGroups.none as route (route.path)}
+						<div class="rz-nav__group-none">
+							<NavItem href={route.path} {isCollapsed} {route} />
+						</div>
+					{/each}
+				</nav>
+			</ScrollArea>
 
 			<div class="rz-nav__user">
 				<UserButton navCollapsed={isCollapsed} />
@@ -59,7 +66,11 @@
 		</div>
 	</div>
 
-	<button class="rz-nav__toggle" onclick={() => setCollapsed(!isCollapsed)} aria-label="Toggle navigation">
+	<button
+		class="rz-nav__toggle"
+		onclick={() => setCollapsed(!isCollapsed)}
+		aria-label="Toggle navigation"
+	>
 	</button>
 </div>
 
@@ -70,12 +81,14 @@
 		bottom: 0;
 		left: 0;
 		top: 0;
+		padding: var(--rz-size-2) var(--rz-size-5);
+		background-color: hsl(var(--rz-ground-4) / 0.5);
 		border-right: var(--rz-border);
 		width: var(--rz-size-72);
-		
+
 		.rz-nav__toggle {
 			position: absolute;
-			display:none;
+			display: none;
 			align-items: center;
 			justify-content: center;
 			width: var(--rz-size-6);
@@ -86,19 +99,20 @@
 			top: 0;
 			display: none;
 			cursor: w-resize;
+			padding: var(--rz-size-2);
 			@media (min-width: 1024px) {
 				display: flex;
 			}
 		}
-
 	}
 	.rz-nav--collapsed {
 		width: var(--rz-size-20);
+		padding: var(--rz-size-3);
 		:global(.rz-button-nav) {
 			justify-content: start;
 		}
-		.rz-nav__toggle{
-			cursor:e-resize;
+		.rz-nav__toggle {
+			cursor: e-resize;
 		}
 	}
 	.rz-nav__content {
@@ -114,8 +128,7 @@
 		justify-content: space-between;
 		padding-right: var(--rz-size-4);
 		padding-left: var(--rz-size-4);
-		border-bottom: var(--rz-border);
-
+		
 		&.rz-nav__header--collapsed {
 			justify-content: center;
 		}
@@ -133,15 +146,12 @@
 		gap: var(--rz-size-2);
 	}
 	.rz-nav__nav {
-		display: flex;
-		flex-direction: column;
-		background-color: hsl(var(--rz-ground-6));
+		border-radius: var(--rz-radius-lg);
 	}
 	.rz-nav--collapsed .rz-nav__nav {
 		align-items: center;
 	}
 	.rz-nav__user {
-		@mixin px var(--rz-size-4);
-		padding-bottom: var(--rz-size-6);
+		padding-bottom: var(--rz-size-2);
 	}
 </style>

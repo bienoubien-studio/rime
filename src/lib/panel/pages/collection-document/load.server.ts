@@ -5,11 +5,16 @@ import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
 import { safe } from '$lib/util/safe';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { PARAMS } from '$lib/core/constant.js';
+import type { Dic, WithRequired } from '$lib/util/types.js';
+import type { Route } from '$lib/panel/types.js';
+import { env } from '$env/dynamic/public';
+import { makeVersionsSlug } from '$lib/util/schema.js';
+import { RizomError } from '$lib/core/errors/index.js';
 
 /****************************************************/
 /* Document Load
 /****************************************************/
-export function docLoad(slug: CollectionSlug) {
+export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 	//
 	const load: ServerLoad = async (event) => {
 		const { locale, user, rizom } = event.locals;
@@ -48,7 +53,7 @@ export function docLoad(slug: CollectionSlug) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
 
 			/** Get doc */
-			const [error, document] = await safe(collection.findById({ id, locale, versionId }));
+			const [error, document] = await safe(collection.findById({ id, locale, versionId, draft: true }));
 			doc = document;
 			
 			if (error) {
@@ -61,12 +66,31 @@ export function docLoad(slug: CollectionSlug) {
 			}
 		}
 
-		return {
+		const aria: WithRequired<Partial<Route>, 'title'>[] = [
+			{ title: "Dashboard", icon: "dashboard", path: `/panel`  },
+			{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
+			{ title: doc.title },
+		]
+
+		let data:Dic = {
+			aria,
 			doc,
 			operation,
 			status: 200,
-			readOnly
+			readOnly,
 		};
+
+		if(withVersion){
+			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`
+			const promise = event.fetch(url).then(r => r.json())
+			const [error, result] = await safe(promise)
+			if(error || !Array.isArray(result.docs)){
+				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions')
+			}
+			data = { ...data, versions: result.docs}
+		}
+
+		return data
 	};
 	return load;
 }

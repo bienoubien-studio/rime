@@ -34,7 +34,7 @@ function createStore(initial?: string) {
 		if (withTime) {
 			options.hour = '2-digit';
 			options.minute = '2-digit';
-			options.second = '2-digit';
+			options.second = undefined;
 			options.hour12 = false; // Use 24-hour format
 		}
 		if (bcp47) {

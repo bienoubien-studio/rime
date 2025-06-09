@@ -20,7 +20,7 @@
 		user: User;
 	};
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();
-
+	
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
 
@@ -68,9 +68,11 @@
 <div class="rz-panel-root">
 	{#key page.url.pathname + locale.code}
 		<Nav {setCollapsed} {routes} {isCollapsed} />
+		
 		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}
 		</div>
+
 	{/key}
 </div>
 
@@ -79,7 +81,7 @@
 		container-type: inline-size;
 		container-name: rz-panel;
 		font-family: var(--rz-font-sans);
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-ground-5));
 		min-height: 100vh;
 	}
 

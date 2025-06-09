@@ -9,7 +9,6 @@
 	import type { TreeProps } from './props.js';
 	import type { Dic } from '$lib/util/types.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 
@@ -22,6 +21,7 @@
 	let sortingInitialized = $state(false);
 	let sorting = $state(false);
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
+
 	const hasBlocks = $derived(treeState.items && treeState.items.length);
 	const key = $state(new Date().getTime().toString());
 	const nested = $derived(path.split('.').length > 1);
@@ -98,12 +98,7 @@
 <fieldset class="rz-field-tree {config.className}" use:root={field}>
 	<Field.Error error={field.error} />
 
-	<h3 class="rz-tree__title" class:rz-blocks__title--nested={nested || form.isLive}>
-		{config.label ? config.label : capitalize(config.name)}
-		{#if config.localized}
-			<sup>{locale.code}</sup>
-		{/if}
-	</h3>
+	<Field.Label config={config} />
 
 	{#key treeState.stamp}
 		<div
@@ -147,30 +142,12 @@
 </fieldset>
 
 <style lang="postcss">
-	.rz-tree__title {
-		margin-bottom: var(--rz-size-4);
-		font-size: var(--rz-text-xl);
-		@mixin font-medium;
-	}
-
-	.rz-tree__title--nested {
-		font-size: var(--rz-text-sm);
-	}
-
-	.rz-tree__list :global(.rz-tree__list) {
-		margin-left: 2rem;
-	}
-
+	
 	.rz-tree__list {
 		display: grid;
 		margin-left: 1rem;
 	}
-
-	sup {
-		font-size: var(--rz-text-2xs);
-		text-transform: uppercase;
-	}
-
+	
 	.rz-tree__actions {
 		display: flex;
 		align-items: center;

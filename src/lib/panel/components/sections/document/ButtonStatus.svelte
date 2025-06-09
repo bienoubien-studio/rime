@@ -3,112 +3,90 @@
 	import Button from '../../ui/button/button.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import StatusDot from '../collection/StatusDot.svelte';
-	import type { MouseEventHandler } from 'svelte/elements';
+	import * as Radio from '$lib/panel/components/ui/radio-group/index.js';
+	import { PARAMS, VERSIONS_STATUS, type VersionsStatus } from '$lib/core/constant.js';
+	import { t__ } from '../../../../core/i18n/index.js';
+	import Label from '../../ui/label/label.svelte';
+	import { env } from '$env/dynamic/public';
+	import { doc } from '$lib/util/index.js';
+	import { toast } from 'svelte-sonner';
+	import { invalidateAll } from '$app/navigation';
+	type Props = { form: DocumentFormContext };
+	const { form }: Props = $props();
 
-	type Status = { value: string; color: string };
-	type Props = { form: DocumentFormContext; statusList: Status[] };
-	const { form, statusList }: Props = $props();
-
-	if (!(form.config.type === 'collection')) throw new Error('Expected collection config');
-	if (!form.config.status) throw new Error('Unexpected empty satus');
+	const statusList = Object.values(VERSIONS_STATUS);
 
 	let dialogOpen = $state(false);
-	// const statusList = config;
+	
+	async function handleValidateStatus() {
+		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/'
+		console.log(`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`)
+		await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`, {
+			method: 'PATCH',
+			body: JSON.stringify({
+				status: internalValue
+			})
+		}).then((r) => {
+			if( r.status === 200){
+				toast.success(t__('common.doc_updated'))
+				form.setValue('status', internalValue)
+				dialogOpen = false;
+				invalidateAll()
+			}else{
+				toast.error(t__('common.error_occured'))
+			}
+		}).catch((err) => {
+			toast.error(t__('common.error_occured'))
+		})
+	}
 
-	let currentStatus = $derived(
-		statusList.find((status) => status.value === form.doc.status) || statusList[0]
-	);
+	let initialValue = $state.snapshot(form.doc.status)
+	let internalValue = $state(initialValue)
+
 </script>
 
-{#snippet button(status: Status, onclick: MouseEventHandler<HTMLButtonElement>)}
-	<button type="button" class="rz-status" {onclick}>
-		<StatusDot color={status.color} />
-		<p class="rz-status__text">{status.value}</p>
-	</button>
-{/snippet}
-
-{#if statusList.length <= 2}
-	{@render button(currentStatus, () =>
-		form.setValue(
-			'status',
-			statusList.filter((status) => status.value !== form.doc.status)[0].value
-		)
-	)}
-{:else}
-	{@render button(currentStatus, () => (dialogOpen = true))}
-	<Dialog.Root bind:open={dialogOpen}>
-		<Dialog.Content class="rz-status-dialog">
-			<Dialog.Header>
-				<Dialog.Title></Dialog.Title>
-			</Dialog.Header>
-			<div class="rz-status-dialog__list">
-				{#each statusList as status, index (index)}
-					<Button
-						size="lg"
-						variant="outline"
-						onclick={() => {
-							form.doc.status = status.value;
-							dialogOpen = false;
-						}}
-					>
-						<StatusDot color={status.color} />
-						{status.value}
-					</Button>
-				{/each}
-			</div>
-		</Dialog.Content>
-	</Dialog.Root>
-{/if}
+<Dialog.Root bind:open={dialogOpen}>
+	<Dialog.Trigger>
+		{#snippet child(props)}
+			<Button size="sm" variant="secondary" onclick={() => (dialogOpen = true)} {...props}>
+				<StatusDot status={form.doc.status} />
+				<p class="rz-status__text">{t__(`common.${form.doc.status}`)}</p>
+			</Button>
+		{/snippet}
+	</Dialog.Trigger>
+	<Dialog.Content class="rz-status-dialog">
+		<Radio.Root bind:value={internalValue}>
+			{#each statusList as status, index (index)}
+				<div class="rz-radio__option">
+					<Radio.Item id="document.{status}" value={status} />
+					<Label for="document.{status}">
+						{t__(`common.${status}`)}<br />
+						<p>{t__(`common.${status}_infos`)}</p>
+					</Label>
+				</div>
+			{/each}
+		</Radio.Root>
+		<Dialog.Footer --rz-justify-content="space-between">
+			<Button onclick={handleValidateStatus} variant="outline">Validate</Button>
+			<Button onclick={() => dialogOpen = false} variant="secondary">Cancel</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
 
 <style lang="postcss">
-	.rz-status {
-		--x: 0;
-		--opacity: 0;
-		transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1);
-		flex: var(--x);
-		position: relative;
-		align-items: center;
+	.rz-radio__option {
 		display: flex;
-		min-width: 0.8rem;
-		gap: var(--rz-size-2);
-		text-transform: uppercase;
-		overflow: hidden;
-		font-size: var(--rz-text-xs);
-		letter-spacing: 0.2em;
+		gap: var(--rz-size-3);
+		padding: var(--rz-size-3);
+		border: var(--rz-border);
 	}
-
-	.rz-status:hover {
-		--x: 1;
-		--opacity: 1;
-	}
-
-	.rz-status__text {
-		opacity: var(--opacity);
-		transition: opacity 0.2s ease-in-out;
-		@mixin font-light;
-	}
-
-	:global(.rz-status-dialog) {
-		gap: 0;
-		:global(.rz-button:not(:first-child)) {
-			border-top: none;
+	:global{
+			.rz-dialog-footer button{
+				flex:1;
+			}
 		}
-		:global(.rz-button:not(:first-child)),
-		:global(.rz-button:not(:last-child)) {
-			border-radius: 0;
-		}
-		:global(.rz-button:first-child) {
-			border-bottom-left-radius: 0;
-			border-bottom-right-radius: 0;
-		}
-		:global(.rz-button:last-child) {
-			border-top-left-radius: 0;
-			border-top-right-radius: 0;
-		}
-	}
-
-	.rz-status-dialog__list {
-		display: grid;
-		margin-top: 1rem;
+	p{
+		color: hsl(var(--rz-color-fg) / 0.5);
+		@mixin font-normal
 	}
 </style>

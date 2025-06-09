@@ -115,7 +115,7 @@
 			{/each}
 		{/if}
 	</div>
-
+	
 	<div class="rz-blocks__actions-bottom">
 		<AddBlockButton
 			addBlock={add}
@@ -136,7 +136,6 @@
 <style lang="postcss">
 	.rz-blocks__title {
 		margin-bottom: var(--rz-size-4);
-		font-size: var(--rz-text-xl);
 		@mixin font-medium;
 	}
 
@@ -149,9 +148,9 @@
 		translate: 0 calc(-1 * var(--rz-size-2));
 	}
 
-	.rz-blocks__title--nested {
+	/* .rz-blocks__title--nested {
 		font-size: var(--rz-text-sm);
-	}
+	} */
 
 	.rz-blocks__list {
 		display: grid;

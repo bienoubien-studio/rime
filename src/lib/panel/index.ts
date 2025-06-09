@@ -2,9 +2,9 @@ import type { Snippet } from 'svelte';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc';
 import Area from './pages/area/Area.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
-import CollectionVersionsDoc from './pages/collection-document/CollectionVersionsDoc.svelte';
+import CollectionDocVersions from './pages/collection-document/CollectionDocVersions.svelte';
 import AreaVersionsDoc from './pages/area/AreaVersionsDoc.svelte';
-import CollectionLayout from './pages/collection-layout/CollectionLayout.svelte';
+import CollectionList from './pages/collection-list/CollectionList.svelte';
 import ForgotPassword from './pages/forgot-password/ForgotPassword.svelte';
 import Init from './pages/init/Init.svelte';
 import Live from './pages/live/Live.svelte';
@@ -13,16 +13,15 @@ import Login from './pages/login/Login.svelte';
 import Panel from './components/Root.svelte';
 import ResetPassword from './pages/reset-password/ResetPassword.svelte';
 import Dashboard from './pages/dashboard/Dashboard.svelte';
-import Collection from './components/sections/collection/Collection.svelte';
 import Doc from './components/sections/document/Document.svelte';
 import { Field } from './components/fields/index.js';
 
 export {
 	Area,
 	AreaVersionsDoc,
-	CollectionVersionsDoc,
+	CollectionDocVersions,
 	CollectionDoc,
-	CollectionLayout,
+	CollectionList,
 	ForgotPassword,
 	Init,
 	Live,
@@ -31,14 +30,13 @@ export {
 	Panel,
 	ResetPassword,
 	Dashboard,
-	Collection,
 	Doc,
 	Field
 };
 
 export type { DocumentFormContext } from './context/documentForm.svelte.js';
 
-export type CollectionLayoutProps = {
+export type CollectionListProps = {
 	slug: CollectionSlug;
 	data: {
 		docs: GenericDoc[];

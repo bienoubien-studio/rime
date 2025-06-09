@@ -18,11 +18,8 @@
     <div>
       {doc.title}
     </div>
-    {#if collection.statusList }
-        {@const docStatus =
-          collection.statusList.find((status) => doc.status === status.value) ||
-          collection.statusList[0]}
-        <StatusDot --rz-dot-size="0.3rem" color={docStatus.color} />
+    {#if collection.hasDraft }
+        <StatusDot --rz-dot-size="0.3rem" status={doc.status} />
       {/if}
   </a>
 	<div class="rz-collection-sortable" style="--data-rows-count:{countRows(doc._children)}" data-id={doc.id} >

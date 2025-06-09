@@ -3,7 +3,7 @@
 	import { CalendarDate, getLocalTimeZone, type DateValue } from '@internationalized/date';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Calendar } from '$lib/panel/components/ui/calendar/index.js';
-	import * as Popover from '$lib/panel/components/ui/popover/index.js';
+	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { Field } from '$lib/panel/components/fields/index.js';
@@ -15,26 +15,22 @@
 	const { path, config, form }: Props = $props();
 	const locale = getLocaleContext();
 	const timeZone = getLocalTimeZone();
-
+	let dialogOpen = $state(false);
 	const field = $derived(form.useField(path, config));
-	
+
 	// Derive date from field.value
 	const date = $derived.by(() => {
 		return field.value instanceof Date ? field.value : null;
 	});
-	
+
 	// Derive calendarDate from date
 	const calendarDate = $derived.by(() => {
 		if (date) {
-			return new CalendarDate(
-				date.getFullYear(),
-				date.getMonth() + 1,
-				date.getDate()
-			);
+			return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
 		}
 		return undefined;
 	});
-	
+
 	// Handle calendar selection changes
 	function handleCalendarChange(newCalendarDate: DateValue | undefined) {
 		if (newCalendarDate) {
@@ -52,39 +48,41 @@
 </script>
 
 <fieldset class="rz-date-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} />
-	<Popover.Root>
-		<Popover.Trigger>
-			{#snippet child({ props })}
-				<Button
-					variant="secondary"
-					data-empty={!calendarDate ? '' : null}
-					data-error={field.error ? '' : null}
-					class="rz-date__button"
-					disabled={!field.editable}
-					{...props}
-				>
-					<CalendarIcon class="rz-date__icon" />
-					{dateLabel}
-				</Button>
-			{/snippet}
-		</Popover.Trigger>
-		<Popover.Portal>
-			<Popover.Content align="start" class="rz-date__popover-content">
-				<Calendar 
-					type="single" 
-					value={calendarDate} 
-					onValueChange={handleCalendarChange}
-					initialFocus 
-				/>
-			</Popover.Content>
-		</Popover.Portal>
-	</Popover.Root>
+	<Field.Label {config} for="foo" />
+
+	<Button
+		id="foo"
+		variant="secondary"
+		data-empty={!calendarDate ? '' : null}
+		data-error={field.error ? '' : null}
+		class="rz-date__button"
+		disabled={!field.editable}
+		onclick={() => (dialogOpen = true)}
+	>
+		<CalendarIcon class="rz-date__icon" />
+		{dateLabel}
+	</Button>
+
+	<Dialog.Root bind:open={dialogOpen}>
+		<Dialog.Content class="rz-date__dialog-content">
+			<Calendar
+				type="single"
+				value={calendarDate}
+				onValueChange={handleCalendarChange}
+				initialFocus
+			/>
+		</Dialog.Content>
+	</Dialog.Root>
+
 	<Field.Error error={field.error} />
 </fieldset>
 
 <style lang="postcss">
 	.rz-date-field :global {
+		.rz-dialog-content.rz-date__dialog-content {
+			width:100px;
+			padding:12rem;
+		}
 		.rz-date__button.rz-button {
 			background-color: hsl(var(--rz-color-input));
 			height: var(--rz-size-11);
@@ -111,8 +109,5 @@
 			width: var(--rz-size-4);
 		}
 
-		.rz-date__popover-content {
-			padding: 0;
-		}
 	}
 </style>

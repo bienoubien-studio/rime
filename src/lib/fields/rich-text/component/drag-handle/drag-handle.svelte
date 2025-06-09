@@ -56,7 +56,7 @@
 	.rz-rich-text-grip :global {
 		position: absolute;
 		top: 0;
-		translate: 1.3rem 0;
+		translate: 0.6rem 0;
 		z-index: 10;
 		cursor: grab;
 		

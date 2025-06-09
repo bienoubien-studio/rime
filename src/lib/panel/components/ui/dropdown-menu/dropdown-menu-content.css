@@ -1,10 +1,10 @@
 .rz-dropdown-content {
-	background-color: hsl(var(--rz-ground-6));
-	z-index: 50;
+	background-color: hsl(var(--rz-ground-0));
+	z-index: 120;
 	min-width: var(--min-width, 8rem);
-	border-radius: var(--rz-radius-md);
+	border-radius: var(--rz-radius-lg);
 	border: var(--rz-border);
-	padding: var(--rz-size-1);
+	padding: var(--rz-size-1-5);
 	box-shadow: var(--rz-shadow-xl);
 }
 .rz-dropdown-content:focus {

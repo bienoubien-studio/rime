@@ -11,9 +11,6 @@
 			--rz-card-padding: var(--rz-size-2);
 			--rz-thumbnail-size: var(--rz-size-28);
 		}
-		@container relation-upload-list (min-width: 768px) {
-			--rz-thumbnail-size: var(--rz-size-40);
-		}
 		
 		.rz-card-resource__info {
 			display: none;
@@ -51,8 +48,17 @@
 
 .rz-relation-upload__actions {
 	display: flex;
-	gap: var(--rz-size-3);
 	margin-top: var(--rz-size-3);
+	:first-child{
+		border-radius: var(--rz-radius-md) 0 0 var(--rz-radius-md);
+		border-right:0;
+	}
+	:last-child{
+		border-radius: 0 var(--rz-radius-md) var(--rz-radius-md) 0;
+	}
+}
+.rz-relation-upload__actions.rz-relation-upload__actions--list-empty{
+	margin-top: 0;
 }
 
 .rz-relation-upload__search {
@@ -93,12 +99,6 @@
 	border-radius: var(--rz-radius-lg);
 }
 
-/* .rz-relation-upload__grid-image {
-	height: 100%;
-	width: 100%;
-	object-fit: cover;
-} */
-
 .rz-relation-upload__grid-filename {
 	margin-top: var(--rz-size-2);
 	display: -webkit-box;
@@ -107,18 +107,15 @@
 	overflow: hidden;
 	word-break: break-all;
 	text-align: left;
-	font-size: var(--rz-text-sm);
 	@mixin font-semibold;
 }
 
 .rz-relation-upload__grid-filesize,
 .rz-relation-upload__grid-mimetype {
 	text-align: left;
-	font-size: var(--rz-text-xs);
 }
 
 .rz-relation-upload__sheet {
-	background-color: hsl(var(--rz-ground-6));
 	width: 100%;
 	padding: 0;
 }

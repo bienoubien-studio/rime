@@ -1,38 +1,38 @@
 import { PACKAGE_NAME } from '$lib/core/constant.js';
 import { TScastVersionSlug, type Routes } from './util.js';
 
-/**
- * Collection layout template
- * (rizom)/panel/{collection.slug}/+layout.svelte
- */
-const layout = (slug: string) => `
-<script lang="ts">
-  import { CollectionLayout, type CollectionLayoutProps } from '${PACKAGE_NAME}/panel'
-  const { data, children }: CollectionLayoutProps = $props();
-</script>
-<CollectionLayout {data} slug='${slug}'>
-  {@render children()}
-</CollectionLayout>`;
+// /**
+//  * Collection layout template
+//  * (rizom)/panel/{collection.slug}/+layout.svelte
+//  */
+// const layout = (slug: string) => `
+// <script lang="ts">
+//   import { CollectionList, type CollectionListProps } from '${PACKAGE_NAME}/panel'
+//   const { data, children }: CollectionListProps = $props();
+// </script>
+// <CollectionList {data} slug='${slug}'>
+//   {@render children()}
+// </CollectionList>`;
 
 /**
  * Layout server template for collection
- * (rizom)/panel/{collection.slug}/+layout.server.ts
+ * (rizom)/panel/{collection.slug}/+page.server.ts
  */
-const layoutServer = (slug: string) => `
+const pageServer = (slug: string) => `
 import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
-export const load = pagesLoad.collection.layout('${slug}')
+export const load = pagesLoad.collection.list('${slug}')
 `;
 
 /**
  * Page template for collection list
  * (rizom)/panel/{collection.slug}/+page.svelte
  */
-const page = () => `
+const page = (slug:string) => `
 <script>
-  import { Collection } from '${PACKAGE_NAME}/panel'
+  import { CollectionList } from '${PACKAGE_NAME}/panel'
   const { data } = $props()
 </script>
-<Collection slug={data.slug} />`;
+<CollectionList {data} slug='${slug}' />`;
 
 /**
  * Document page template
@@ -57,16 +57,22 @@ import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
 export const load = pagesLoad.collection.doc('${slug}')
 export const actions = pagesActions.collection.doc('${slug}')`;
 
+const docPageServerVersions = (slug: string) => `
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+
+export const load = pagesLoad.collection.doc('${slug}', true)
+export const actions = pagesActions.collection.doc('${slug}')`;
+
 /**
  * Document page versions template
  * (rizom)/panel/{collection.slug}/[id]/versions/+page.svelte
  */
 const docPageVersions = (slug: string) => `
 <script lang="ts">
-  import { CollectionVersionsDoc, type CollectionVersionsDocProps } from '${PACKAGE_NAME}/panel'
-  const { data }: CollectionVersionsDocProps = $props()
+  import { CollectionDocVersions, type CollectionDocVersionsProps } from '${PACKAGE_NAME}/panel'
+  const { data }: CollectionDocVersionsProps = $props()
 </script>
-<CollectionVersionsDoc {data} slug='${slug}' />`;
+<CollectionDocVersions {data} slug='${slug}' />`;
 
 /**
  * API collection list operations
@@ -114,8 +120,7 @@ export const POST = api.collection.logout
  */
 export const collectionPanelRoutes: Routes = {
   '(rizom)/panel/{collection.slug}/': {
-    layout: layout,
-    layoutServer: layoutServer,
+    pageServer: pageServer,
     page: page
   },
   '(rizom)/panel/{collection.slug}/[id]': {
@@ -130,7 +135,7 @@ export const collectionPanelRoutes: Routes = {
 export const collectionVersionsPanelRoutes: Routes = {
   '(rizom)/panel/{collection.slug}/[id]/versions': {
     page: docPageVersions,
-    pageServer: docPageServer
+    pageServer: docPageServerVersions
   }
 };
 

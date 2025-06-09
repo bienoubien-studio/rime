@@ -527,7 +527,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		for (const key of Object.keys(flatData)) {
 			formData.set(key, flatData[key]);
 		}
-		
+
 		const response = await fetch(action, {
 			method: 'POST',
 			body: formData
@@ -552,7 +552,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		} else if (result.type === 'redirect') {
 			// handle redirect after document creation
 			toast.success(t__('common.doc_created'));
-			if (collection) collection.addDoc(doc as GenericDoc);
+			// if (collection) collection.addDoc(doc as GenericDoc);
 			applyAction(result);
 		} else if (result.type === 'failure') {
 			// Handle error
@@ -577,12 +577,18 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			if(status && documentConfig.versions && documentConfig.versions.draft){
 				setValue('status', event.submitter?.dataset.status)
 			}
-			// As new draft ?
 			let action = formElement.action
 			const draft = !!event.submitter?.dataset.draft
 			if (draft) {
 				action += `&draft=true`
 			}
+			if( documentConfig.versions ){
+				// let versionsSuffix = documentConfig.versions && doc.versionId ? `&versionId=${doc.versionId}` : ''
+				if(!draft){
+					action += `&versionId=${doc.versionId}`
+				}
+			}
+			console.log(action)
 			submit(action);
 		};
 		formElement.addEventListener('submit', listener);
@@ -608,12 +614,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			actionSuffix = '?/update';
 		}
 
-		let versionsSuffix = documentConfig.versions && doc.versionId ? `&versionId=${doc.versionId}` : ''
 		// Add a redirect parameter if we're in a nested form ex: relation creation
 		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
 
 		// Combine all parts to form the final action URL
-		return `${panelUri}${actionSuffix}${redirectParam}${versionsSuffix}`;
+		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};
 
 	return {

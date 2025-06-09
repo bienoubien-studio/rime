@@ -17,6 +17,7 @@ import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import type { GroupFieldRaw } from '$lib/fields/group/index.js';
 import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
 import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
+import type { JSONContent } from '@tiptap/core';
 
 /**
  * Checks if a field is a presentative field (currently only separator fields).
@@ -171,11 +172,12 @@ export const resolveRelation = async <T>(value: any): Promise<T> => {
  * // Returns "Hello world"
  * richTextJSONToText('{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Hello world"}]}]}');
  */
-export const richTextJSONToText = (value: string): string => {
+export const richTextJSONToText = (value: string | JSONContent): string => {
+	if(!value) return ''
 	let textValue: string;
 	const renderNodes = (nodes: { [k: string]: any }) => {
 		return nodes
-			.map((node: { text?: string; [k: string]: any }) => {
+			.map((node: { text?: string;[k: string]: any }) => {
 				if ('text' in node) {
 					return node.text;
 				} else if ('content' in node) {
@@ -186,10 +188,11 @@ export const richTextJSONToText = (value: string): string => {
 	};
 
 	try {
-		const doc = JSON.parse(value);
-		textValue = renderNodes(doc.content);
-	} catch {
-		textValue = value;
+		const jsonContent = typeof value === 'string' ? JSON.parse(value) : value
+		textValue = renderNodes(jsonContent.content);
+	} catch (err) {
+		console.error(err)
+		textValue = JSON.stringify(value);
 	}
 	return textValue;
 };

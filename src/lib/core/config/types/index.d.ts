@@ -85,7 +85,9 @@ export interface Config {
 
 export type PanelUsersConfig = {
 	roles?: Option[];
-	group?: string;
+	panel?: { 
+		group?: string 
+	};
 	access?: Access;
 	label?: CollectionLabel;
 	fields?: FieldBuilder<Field>[];
@@ -119,10 +121,6 @@ export type VersionsConfig = { draft?: boolean; autoSave?: boolean; maxVersions?
 
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
-	/** Description for the collection/area, basically displayed on the dashboard */
-	description?: string;
-	/** Sidebar navigation group */
-	group?: string;
 	/** Document fields definition */
 	fields: FieldBuilder<Field>[];
 	/** Optional icon */
@@ -132,6 +130,14 @@ type BaseDocConfig<S extends string = string> = {
 	access?: Access;
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
+	panel?: {
+		/** Description for the collection/area, basically displayed on the dashboard */
+		description?: string;
+		/** Sidebar navigation group */
+		group?: string;
+		/** Add the list of latest edited document */
+		dashboard?: boolean;
+	}
 };
 
 type UploadConfig = {

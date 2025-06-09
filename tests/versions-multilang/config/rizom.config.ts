@@ -58,7 +58,9 @@ const News = collection('news', {
 })
 
 const Medias = collection('medias', {
-	group: 'content',
+	panel: {
+		group: 'content'
+	},
 	upload: {
 		imageSizes: [
 			{ name: 'thumbnail', width: 400, out: ['webp'] },
@@ -76,7 +78,9 @@ const Medias = collection('medias', {
 
 const Pdf = collection('pdf', {
 	upload: true,
-	group: 'content',
+	panel: {
+		group: 'content'
+	},
 	fields: [text('alt').required()],
 	access: {
 		read: () => true
@@ -91,9 +95,9 @@ export default defineConfig({
 	plugins: [apiInit()],
 	localization: {
 		locales: [
-			{ code: 'fr', label: 'Français', bcp47: 'fr-FR'},
-			{ code: 'en', label: 'English', bcp47: 'en-US'},
-			{ code: 'de', label: 'German', bcp47: 'de-DE'},
+			{ code: 'fr', label: 'Français', bcp47: 'fr-FR' },
+			{ code: 'en', label: 'English', bcp47: 'en-US' },
+			{ code: 'de', label: 'German', bcp47: 'de-DE' },
 		],
 		default: 'en',
 	},

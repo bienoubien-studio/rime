@@ -62,12 +62,7 @@ export default function (slug: CollectionSlug) {
 			}
 			
 			if(draft && 'versionId' in doc){
-				const referer = event.request.headers.get('referer')
-				if(referer && referer.includes('/versions')){
-					return redirect(303, `/panel/${slug}/${doc.id}/versions?versionId=${doc.versionId}`)
-				}else{
-					return redirect(303, `/panel/${slug}/${doc.id}?versionId=${doc.versionId}`)
-				}
+				return redirect(303, `/panel/${slug}/${doc.id}/versions?versionId=${doc.versionId}`)
 			}
 
 			return { doc };

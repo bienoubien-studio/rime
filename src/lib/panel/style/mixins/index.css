@@ -14,7 +14,7 @@
 
 @define-mixin ring $color, $size: 1px {
 	box-shadow:
-		0 0 0 var(--rz-ring-offset, 0px) hsl(var(--rz-ring-offset-bg, var(--rz-color-bg)) / 1),
+		0 0 0 var(--rz-ring-offset, 0px) hsl(var(--rz-ring-offset-bg, var(--rz-ground-6)) / 1),
 		0 0 0 calc(var(--rz-ring-offset, 0px) + $(size)) hsl($(color) / var(--rz-ring-opacity, 1));
 }
 

@@ -4,7 +4,7 @@
 
 .rz-sheet-content {
 	position: fixed;
-	z-index: 50;
+	z-index: 1010;
 	gap: var(--rz-size-4);
 	background-color: hsl(var(--rz-ground-5));
 	padding: var(--rz-size-6);
@@ -13,7 +13,7 @@
 
 .rz-sheet-content__close {
 	position: absolute;
-	z-index: 1000;
+	z-index: 1010;
 	right: var(--rz-size-4);
 	top: var(--rz-size-4);
 }
@@ -104,11 +104,11 @@
 /**************************************/
 
 .rz-sheet-overlay {
-	@mixin bg color-bg, 0.7;
+	@mixin bg ground-4, 0.7;
 	position: fixed;
 	inset: 0;
-	z-index: 50;
-	backdrop-filter: blur(6px);
+	z-index: 100;
+	backdrop-filter: blur(3px);
 }
 
 /**************************************/

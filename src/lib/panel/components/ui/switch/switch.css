@@ -16,7 +16,7 @@
 	background-color: hsl(var(--rz-color-primary));
 }
 .rz-switch[data-state='unchecked'] {
-	background-color: hsl(var(--rz-ground-3));
+	background-color: hsl(var(--rz-ground-2));
 }
 
 .rz-switch[data-error] {

@@ -23,13 +23,13 @@
 <style type="postcss" global>
 	.rz-tag {
 		background-color: hsl(var(--rz-ground-0));
-		color: hsl(var(--rz-ground-4));
+		color: hsl(var(--rz-ground-6));
 		border-radius: var(--rz-radius-sm);
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-2);
 		font-size: var(--rz-text-xs);
-		padding: 0.18rem var(--rz-size-2);
+		padding: 0.2rem var(--rz-size-2);
 	}
 
 	.rz-tag--readonly {

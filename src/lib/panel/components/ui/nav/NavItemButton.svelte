@@ -30,7 +30,7 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		height: calc(var(--rz-size-14) - 1px);
+		height: calc(var(--rz-size-12) - 1px);
 		padding: var(--rz-size-2) var(--rz-size-0);
 		white-space: nowrap;
 		@mixin font-normal;
@@ -41,7 +41,7 @@
 		
 		gap: var(--rz-size-3);
 		&:not(:last-child) {
-			border-bottom: 1px solid hsl(var(--rz-color-border) / 0.5);
+			border-bottom: 1px solid hsl(var(--rz-ground-3));
 		}
 	}
 
@@ -49,11 +49,5 @@
 		text-decoration: underline;
 		position: relative;
 	}
-
-	.rz-button-nav__icon {
-		color: hsl(var(--rz-ground-1));
-	}
-	.rz-button-nav--active .rz-button-nav__icon {
-		color: hsl(var(--rz-ground-0));
-	}
+	
 </style>

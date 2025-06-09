@@ -19,11 +19,10 @@
 		border: var(--rz-border);
 		background-color: hsl(var(--rz-color-input));
 		display: flex;
-		height: var(--rz-size-11);
+		height: var(--rz-input-height);
 		width: 100%;
-		border-radius: var(--rz-radius-md);
+		border-radius: var(--rz-radius-lg);
 		transition: all 0.1s ease-in-out;
-		font-size: var(--rz-text-sm);
 		@mixin px var(--rz-size-3);
 		@mixin py var(--rz-size-1);
 	}

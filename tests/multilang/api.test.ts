@@ -611,7 +611,7 @@ test('Should still get the FR content of page with blocks', async ({ request }) 
 /****************************************************/
 
 test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/menu?locale=en`, {
+	const response = await request.patch(`${API_BASE_URL}/menu?locale=en`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -672,7 +672,7 @@ test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) 
 })
 
 test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/menu`, {
+	const response = await request.patch(`${API_BASE_URL}/menu`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -803,7 +803,7 @@ test('Should get settings', async ({ request }) => {
 });
 
 test('Should update settings', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings`, {
+	const response = await request.patch(`${API_BASE_URL}/settings`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -818,7 +818,7 @@ test('Should update settings', async ({ request }) => {
 });
 
 test('Should update settings EN', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/settings?locale=en`, {
+	const response = await request.patch(`${API_BASE_URL}/settings?locale=en`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -843,7 +843,7 @@ test('Should get settings FR with still FR data', async ({ request }) => {
 });
 
 test('Should update infos', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos`, {
+	const response = await request.patch(`${API_BASE_URL}/infos`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},
@@ -865,7 +865,7 @@ test('Should update infos', async ({ request }) => {
 });
 
 test('Should update infos EN', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/infos?locale=en`, {
+	const response = await request.patch(`${API_BASE_URL}/infos?locale=en`, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		},

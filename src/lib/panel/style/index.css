@@ -18,6 +18,7 @@
 	--rz-radius-xl: calc(var(--rz-base-radius) * 4);
 	--rz-radius-full: 999999px;
 	--rz-border: 1px solid hsl(var(--rz-color-border) / 1);
+	--rz-input-height: var(--rz-size-12);
 }
 
 body:has(.rz-root) {
@@ -26,7 +27,7 @@ body:has(.rz-root) {
 }
 
 .rz-root {
-	background-color: hsl(var(--rz-color-bg));
+	background-color: hsl(var(--rz-ground-6));
 	color: hsl(var(--rz-color-fg));
 	font-size: var(--rz-text-base);
 	min-height: 100vh;

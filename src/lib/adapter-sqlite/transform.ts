@@ -85,7 +85,7 @@ export const databaseTransformInterface = ({
 
 		// Transform flattened keys from database schema format to document format
 		flatDoc = transformDatabaseColumnsToPaths(flatDoc);
-		
+
 		/****************************************************/
 		// Blocks handling
 		/****************************************************/
@@ -214,18 +214,18 @@ export const databaseTransformInterface = ({
 			keysToDelete.push(tableNameRelationFields);
 		}
 
-		if (!isPanel || event.locals.user) {
+		if (!isPanel || !event.locals.user) {
 			keysToDelete.push('authUserId', 'editedBy');
 		}
 
 		keysToDelete.push(...privateFieldNames);
-
+		
 		if (withBlank) {
-			output = omit(keysToDelete, deepmerge(blankDocument, output));
+			output = omit(keysToDelete, deepmerge(blankDocument, output, { arrayMerge: (_, y) => y }));
 		} else {
 			output = omit(keysToDelete, output);
 		}
-
+		
 		return output as T;
 	};
 

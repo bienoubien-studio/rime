@@ -48,14 +48,13 @@
 	const user = getUserContext();
 	const title = getContext<{ value: string }>('title');
 	let formElement: HTMLFormElement;
-
+	
 	beforeNavigate(async () => {
 		// if (
 		// 	operation === 'update' &&
 		// 	form.doc.editedBy.length &&
 		// 	form.doc.editedBy[0].id === user.attributes.id
 		// ) {
-		
 		// 	await fetch(`/api/${config.slug}/${initial.id}`, {
 		// 		method: 'PATCH',
 		// 		body: JSON.stringify({
@@ -85,17 +84,16 @@
 	function handleKeyDown(event: KeyboardEvent) {
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
-			if (!form.canSubmit) return
+			if (!form.canSubmit) return;
 			const saveButton = formElement.querySelector('button[data-submit]');
 			if (saveButton) {
-					formElement.requestSubmit(saveButton as HTMLButtonElement);
-				} else {
-					// Fallback to default submit if no specific button found
-					formElement.requestSubmit();
-				}
+				formElement.requestSubmit(saveButton as HTMLButtonElement);
+			} else {
+				// Fallback to default submit if no specific button found
+				formElement.requestSubmit();
+			}
 		}
 	}
-
 </script>
 
 <svelte:window onkeydown={handleKeyDown} />
@@ -115,18 +113,19 @@
 	enctype="multipart/form-data"
 	method="post"
 >
-	<ScrollArea>
+	
+	{#if !liveEditing}
+		<Header {form} {config} {onClose}></Header>
+	{/if}
+	
+	<!-- <ScrollArea> -->
 		{#if form.doc.editedBy && form.doc.editedBy !== user.attributes.id}
 			<CurrentlyEdited by={form.doc.editedBy} doc={form.doc} user={user.attributes} />
 		{/if}
 
-		{#if !liveEditing}
-			<Header {form} {config} {onClose}></Header>
-		{/if}
-
 		<div class="rz-document__fields">
 			{#if config.type === 'collection' && isUploadConfig(config)}
-				<UploadHeader accept={config.accept} create={operation === 'create'} {form} />
+				<UploadHeader accept={config.upload.accept} create={operation === 'create'} {form} />
 			{/if}
 			<RenderFields fields={config.fields} {form} />
 			{#if config.type === 'collection' && isAuthConfig(config)}
@@ -149,13 +148,13 @@
 		{:else}
 			<FloatingUI {form} {onClose} />
 		{/if}
-	</ScrollArea>
+	<!-- </ScrollArea> -->
 </form>
 
 <style type="postcss">
 	.rz-document {
 		container: rz-document / inline-size;
-		background-color: hsl(var(--rz-ground-6));
+		--rz-document-gutter: var(--rz-size-5);
 		min-height: 100vh;
 		position: relative;
 		& :global(.rz-scroll-area) {
@@ -163,6 +162,9 @@
 		}
 		> :global(.rz-scroll-area) {
 			--rz-fields-padding: var(--rz-size-6);
+			margin: var(--rz-document-gutter);
+			background-color: hsl(var(--rz-ground-7));
+			border-radius: var(--rz-radius-md);
 			@container rz-document (min-width:640px) {
 				--rz-fields-padding: var(--rz-size-12);
 			}
@@ -171,13 +173,16 @@
 	.rz-document__fields {
 		display: grid;
 		gap: var(--rz-size-4);
-		padding-bottom: var(--rz-size-6);
-		background-color: hsl(var(--rz-ground-7) / 0.5);
+		/* background-color: hsl(var(--rz-ground-5)); */
+		/* padding-top: var(--rz-size-5); */
 		min-height: calc(100vh - var(--rz-size-14));
 		align-content: flex-start;
-		&:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
+		margin-left: calc(-1 * var(--rz-fields-padding));
+		margin-right: calc(-1 * var(--rz-fields-padding));
+		padding: var(--rz-size-5) var(--rz-page-gutter);
+		/* &:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
 			padding-top: var(--rz-size-8);
-		}
+		} */
 	}
 
 	.rz-document__infos {

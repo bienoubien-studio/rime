@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SquarePlus } from '@lucide/svelte';
+	import { CirclePlus, SquarePlus } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
@@ -20,7 +20,7 @@
 {#if collection.canCreate}
 	<Button variant={buttonVariant} size={buttonSize} href="/panel/{collection.config.slug}/create">
 		{#if isSmallSize}
-			<SquarePlus size={16} />
+			<CirclePlus size={16} />
 		{:else}
 			{buttonLabel}
 		{/if}

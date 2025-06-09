@@ -228,8 +228,6 @@ const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
 	const content = buildConfigString(config);
 	if (cache.get('config.browser') !== content) {
 		cache.set('config.browser', content);
-		// const browserConfigPath = path.resolve(process.cwd(), './rizom.config.browser.js');
-		// fs.writeFileSync(browserConfigPath, content);
 		taskLogger.done('Browser config built');
 	}
 };

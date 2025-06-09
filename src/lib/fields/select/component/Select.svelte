@@ -90,7 +90,7 @@
 </script>
 
 <fieldset class="rz-field-select {config.className || ''}" use:root={field}>
-	<Field.Label {config} />
+	<Field.Label for={path} {config} />
 	<Field.Error error={field.error} />
 
 	<div class="rz-select">

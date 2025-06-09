@@ -27,7 +27,7 @@ export const transformDocument = async <T>(args: {
 		depth,
 		withBlank
 	});
-
+	
 	const configMap = buildConfigMap(document, config.fields);
 
 	if (augment) {

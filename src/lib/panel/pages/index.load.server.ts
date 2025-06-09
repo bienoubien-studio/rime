@@ -1,5 +1,5 @@
 import area from './area/load.server.js';
-import { layoutLoad } from './collection-layout/load.server.js';
+import { collectionLoad } from './collection-list/load.server.js';
 import { docLoad } from './collection-document/load.server.js';
 import { forgotPasswordLoad as forgotPassword } from './forgot-password/load.server.js';
 import { resetPasswordLoad as resetPassword } from './reset-password/load.server.js';
@@ -9,7 +9,7 @@ import { liveLoad as live } from './live/load.server.js';
 import { dashboardLoad as dashboard } from './dashboard/load.server.js';
 
 const collection = {
-	layout: layoutLoad,
+	list: collectionLoad,
 	doc: docLoad
 };
 

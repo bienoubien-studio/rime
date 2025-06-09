@@ -25,9 +25,13 @@ export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Are
 			config.versions = {
 				draft: false,
 				autoSave: false,
-				maxVersions: 4
+				maxVersions: 20
 			};
-		} else if (config.versions.draft) {
+		}
+		if (!config.versions.maxVersions) {
+			config.versions.maxVersions = 20
+		}
+		if (config.versions.draft) {
 			fields.push(text('status').defaultValue(VERSIONS_STATUS.DRAFT).hidden());
 		}
 	} else {

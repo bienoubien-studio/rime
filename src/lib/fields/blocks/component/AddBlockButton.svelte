@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { Plus, ToyBrick } from '@lucide/svelte';
+	import { CirclePlus, Plus, ToyBrick } from '@lucide/svelte';
 	import { capitalize } from '$lib/util/string.js';
 	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
 	import { isFormField } from '$lib/util/field.js';
@@ -21,7 +21,7 @@
 	const { class: className, config, addBlock, size }: Props = $props();
 
 	let open = $state(false);
-	let ariaSelected = $state('')
+	let ariaSelected = $state('');
 
 	const add = (block: WithoutBuilders<BlocksFieldBlock>) => {
 		open = false;
@@ -34,25 +34,16 @@
 </script>
 
 {#if config.blocks.length === 1}
-	<Button
-		class="rz-add-block-button {className}"
-		onclick={() => add(config.blocks[0])}
-		variant="outline"
-		{size}
-	>
-		<Plus size={15} />
-		<span>
-			{t__('fields.add_block')}
-			{config.blocks[0].label || config.blocks[0].name}
-		</span>
-	</Button>
+	<Button onclick={() => add(config.blocks[0])} variant="ghost" icon={CirclePlus} size="icon" />
 {:else}
-	<Button class="rz-add-block-button {className}" onclick={() => (open = true)} variant="outline">
-		<Plus size={15} />
-		<span>{t__('fields.add_block')}</span>
-	</Button>
-
-	<Command.Dialog onStateChange={state => { ariaSelected = state.value }} bind:open>
+	<Button onclick={() => (open = true)} variant="ghost" icon={CirclePlus} size="icon" />
+	
+	<Command.Dialog
+		onStateChange={(state) => {
+			ariaSelected = state.value;
+		}}
+		bind:open
+	>
 		<Command.Input class="rz-add-block-button__search" placeholder={t__('common.search')} />
 		
 		<div class="rz-add-block-button__command-content">
@@ -83,7 +74,6 @@
 									</p>
 								{/if}
 							</div>
-
 						</Command.Item>
 					{/each}
 				</Command.Group>
@@ -91,7 +81,10 @@
 
 			<div class="rz-add-block-button__preview-wrap">
 				{#each config.blocks as block, index (index)}
-					<div class:rz-add-block-button__preview--active={ariaSelected === block.name} class="rz-add-block-button__preview">
+					<div
+						class:rz-add-block-button__preview--active={ariaSelected === block.name}
+						class="rz-add-block-button__preview"
+					>
 						{#if block.image}
 							<img src="{env.PUBLIC_RIZOM_URL}{block.image}" alt="preview" />
 						{:else}
@@ -101,8 +94,6 @@
 				{/each}
 			</div>
 		</div>
-		
-
 	</Command.Dialog>
 {/if}
 
@@ -111,8 +102,12 @@
 		.rz-add-block-button {
 			gap: var(--rz-size-2);
 		}
-		
-		.rz-add-block-button__command-content{
+
+		.rz-command-dialog-content{
+			width: 60vw;
+		}
+
+		.rz-add-block-button__command-content {
 			display: grid;
 			position: relative;
 			grid-template-columns: 3fr 2fr;
@@ -135,19 +130,19 @@
 			background-color: hsl(var(--rz-ground-5));
 		}
 
-		.rz-add-block-button__preview-wrap{
+		.rz-add-block-button__preview-wrap {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			img{
+			img {
 				width: 200px;
 				height: auto;
 			}
 		}
-		.rz-add-block-button__preview.rz-add-block-button__preview--active{
+		.rz-add-block-button__preview.rz-add-block-button__preview--active {
 			display: block;
 		}
-		.rz-add-block-button__preview{
+		.rz-add-block-button__preview {
 			display: none;
 		}
 	}

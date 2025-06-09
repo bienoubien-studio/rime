@@ -13,4 +13,4 @@
 	};
 </script>
 
-<Button variant="text" icon={DatabaseZapIcon} onclick={clearCache}>Clear Cache</Button>
+<Button variant="ghost" size="icon" icon={DatabaseZapIcon} onclick={clearCache}></Button>

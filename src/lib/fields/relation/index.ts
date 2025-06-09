@@ -8,6 +8,7 @@ import type { Relation } from '$lib/adapter-sqlite/relations';
 import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 import { RizomError } from '$lib/core/errors';
 import { logger } from '$lib/core/logger/index.server';
+import Cell from './component/Cell.svelte';
 
 type RelationValue = string | Array<Relation | string>;
 
@@ -64,6 +65,10 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 
 	get component() {
 		return RelationComponent;
+	}
+	
+	get cell() {
+		return Cell;
 	}
 
 	toType() {

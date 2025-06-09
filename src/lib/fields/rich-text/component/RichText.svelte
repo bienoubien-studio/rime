@@ -43,13 +43,10 @@
 				console.log(err);
 			}
 		}
-
+		
 		// Update field value when editor content changes
 		editor.on('update', ({ editor }) => {
-			field.value = {
-				...field.value,
-				content: editor.getJSON()
-			};
+			field.value = editor.getJSON()
 		});
 	});
 </script>
@@ -86,11 +83,13 @@
 <style type="postcss">
 	.rz-rich-text__editor-wrapper {
 		position: relative;
-		max-width: 720px;
 	}
 
 	.rz-field-rich-text--standalone {
 		margin-bottom: var(--rz-size-20);
+		.rz-rich-text__editor{
+			border: none;
+		}
 	}
 	.rz-field-rich-text--standalone :global {
 		.rz-field-label {

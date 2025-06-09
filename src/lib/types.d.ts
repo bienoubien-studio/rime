@@ -80,7 +80,7 @@ export type {
 
 // Panel types
 export type { 
-	CollectionLayoutProps, 
+	CollectionListProps, 
 	FieldPanelTableConfig, 
 	FormErrors, 
 	Route,

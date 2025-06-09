@@ -7,65 +7,65 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { createBlankDocument } from '$lib/util/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import * as adapterUtil from './util.js';
-import * as schemaUtil from '$lib/util/schema.js'
+import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<any>;
 	tables: any;
-	configInterface: ConfigInterface
+	configInterface: ConfigInterface;
 };
 
 /**
  * Creates an area interface for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned areas with support for localization.
- * 
+ *
  * @example
  * const areaInterface = createAdapterAreaInterface({
  *   db: sqliteDb,
  *   tables: schema,
  *   configInterface: config
  * });
- * 
+ *
  * // Use the interface to perform operations
  * await areaInterface.get({ slug: 'settings' });
  */
 const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfaceArgs) => {
-
 	/**
 	 * Retrieves an area document. If the area doesn't exist, it creates a blank one.
 	 * For versioned areas, returns either a specific version (if versionId is provided)
 	 * or the latest/published version.
-	 * 
+	 *
 	 * @example
 	 * // Get an area
 	 * const settings = await get({ slug: 'settings' });
-	 * 
+	 *
 	 * // Get an area with specific fields and locale
-	 * const siteInfo = await get({ 
-	 *   slug: 'site-info', 
+	 * const siteInfo = await get({
+	 *   slug: 'site-info',
 	 *   select: ['title', 'description'],
 	 *   locale: 'en'
 	 * });
-	 * 
+	 *
 	 * // Get a specific version of an area
-	 * const oldSettings = await get({ 
-	 *   slug: 'settings', 
+	 * const oldSettings = await get({
+	 *   slug: 'settings',
 	 *   versionId: 'v123'
 	 * });
-	 * 
+	 *
 	 * @returns The area document with all its fields and relations
 	 * @throws RizomError when the area configuration doesn't exist
 	 */
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
 		const areaConfig = configInterface.getArea(slug);
-		if (!areaConfig) throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
+		if (!areaConfig){
+			throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
+		}
 
 		const hasVersions = !!areaConfig.versions;
 
 		if (!hasVersions) {
-			// Original implementation for non-versioned areas
 			const params: Dic = {
 				with: buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
 			};
@@ -111,7 +111,6 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			}
 			return doc;
 		} else {
-
 			// First check for record presence
 			// @ts-expect-error suck
 			let area = await db.query[slug].findFirst({ id: true });
@@ -123,17 +122,26 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Implementation for versioned areas
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const withParam = buildWithParam({ slug: versionsTable, select, locale, tables, configInterface });
+			const withParam = buildWithParam({
+				slug: versionsTable,
+				select,
+				locale,
+				tables,
+				configInterface
+			});
 
 			// Handle select columns for version table
-			const versionSelectColumns = adapterUtil.columnsParams({ table: tables[versionsTable], select })
+			const versionSelectColumns = adapterUtil.columnsParams({
+				table: tables[versionsTable],
+				select
+			});
 			// Handle select columns for root table
-			const rootSelectColumns = adapterUtil.columnsParams({ table: tables[slug], select })
-			
+			const rootSelectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
+
 			// Configure the query based on whether we want a specific version or the latest
 			// For the "save in a new draft" action we need to get the published version
 			let params: Dic;
-			
+
 			if (versionId) {
 				// If versionId is provided, get that specific version
 				params = {
@@ -147,28 +155,31 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 					}
 				};
 			} else {
-				// If no versionId
-				// then get the published document
-				// else get the latest
+				// get the latest
 				params = {
 					columns: rootSelectColumns,
 					with: {
 						[versionsTable]: {
 							columns: versionSelectColumns,
 							with: withParam,
-							...adapterUtil.buildPublishedOrLatestVersionParams({ draft, config: areaConfig, table: tables[versionsTable] })
+							...adapterUtil.buildPublishedOrLatestVersionParams({
+								draft,
+								config: areaConfig,
+								table: tables[versionsTable]
+							})
 						}
 					}
 				};
 			}
-			
+
 			// @ts-expect-error suck
 			let doc = await db.query[slug].findFirst(params);
+
 			
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}
-
+			console.log(doc);
 			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
 		}
 	};
@@ -177,7 +188,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 * Creates a new area document. For versioned areas, creates both
 	 * the root document and its first version. For non-versioned areas,
 	 * creates a single document with the provided data.
-	 * 
+	 *
 	 * @example
 	 * // Create a new area
 	 * await createArea(
@@ -185,7 +196,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 *   { theme: 'light', notifications: true },
 	 *   'en'
 	 * );
-	 * 
+	 *
 	 * @returns For versioned areas, returns object with id and versionId
 	 */
 	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
@@ -202,7 +213,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			// Generate version ID
-			const versionsTableName = schemaUtil.makeVersionsSlug(slug)
+			const versionsTableName = schemaUtil.makeVersionsSlug(slug);
 
 			// Prepare data for versions table
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
@@ -213,7 +224,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			if (config.versions && config.versions.draft) {
-				mainData.status = 'published'
+				mainData.status = 'published';
 			}
 
 			// Insert version record
@@ -239,7 +250,6 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				versionId
 			};
 		} else {
-
 			const tableLocales = `${slug}Locales`;
 
 			// Prepare data for insertion using the shared utility function
@@ -274,7 +284,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 * - Direct version update for versioned areas
 	 * - Creating new versions from existing ones
 	 * - Publishing draft versions
-	 * 
+	 *
 	 * @example
 	 * // Update a non-versioned area
 	 * const { id, versionId } = await update({
@@ -282,7 +292,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 *   data: { theme: 'dark' },
 	 *   versionOperation: VERSIONS_OPERATIONS.UPDATE
 	 * });
-	 * 
+	 *
 	 * // Update a specific version
 	 * const { id, versionId } = await update({
 	 *   slug: 'site-info',
@@ -290,14 +300,14 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 *   versionId: 'v456',
 	 *   versionOperation: VERSIONS_OPERATIONS.UPDATE_VERSION
 	 * });
-	 * 
+	 *
 	 * // Create a new draft from published version
 	 * const { id, versionId } = await update({
 	 *   slug: 'settings',
 	 *   data: { theme: 'system' },
 	 *   versionOperation: VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED
 	 * });
-	 * 
+	 *
 	 * @returns Object containing the IDs of the updated area and version
 	 * @throws RizomError when operation fails or version ID is missing when required
 	 */
@@ -337,11 +347,10 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// For non-versioned areas, versionId is the same as id
 			return { id: area.id };
-
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Update a specific version directly
 			if (!versionId) {
-				throw new RizomError(RizomError.OPERATION_ERROR, "missing versionId")
+				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId');
 			}
 			// First, update the root table's updatedAt
 			await db
@@ -363,7 +372,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// if draft is enabled on the collection
 			if (areaConfig.versions && areaConfig.versions.draft && mainData.status === 'published') {
 				// update all rows first to draft
-				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT })
+				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT });
 			}
 			// Update version directly
 			await adapterUtil.updateTableRecord(db, tables, versionsTable, {
@@ -380,9 +389,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			}
 
 			return { id: area.id };
-
 		} else if (VersionOperations.isNewVersionCreation(versionOperation)) {
-
 			// Scenario 2: version creation, update only main table
 			// the creation is handled by the caller update operation
 			await db
@@ -394,7 +401,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			return { id: area.id };
 		} else {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation')
+			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation');
 		}
 	};
 
@@ -433,5 +440,5 @@ type Update = (args: {
 	locale?: string;
 	/** Optional parameter to specify direct version update */
 	versionId?: string;
-	versionOperation: typeof VERSIONS_OPERATIONS[keyof typeof VERSIONS_OPERATIONS];
-}) => Promise<{ id: string; }>;
+	versionOperation: (typeof VERSIONS_OPERATIONS)[keyof typeof VERSIONS_OPERATIONS];
+}) => Promise<{ id: string }>;

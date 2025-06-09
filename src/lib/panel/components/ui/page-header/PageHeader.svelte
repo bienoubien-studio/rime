@@ -1,34 +1,111 @@
 <script lang="ts">
 	import { type Snippet } from 'svelte';
+	import BreadCrumb from '../breadcrumb/BreadCrumb.svelte';
 
 	// Props
 	type Props = {
 		class?: string;
-		children: Snippet;
+		children?: Snippet;
+		title?: Snippet;
+		bottomRight?: Snippet;
+		bottomLeft?: Snippet;
+		topLeft?: Snippet;
+		topRight?: Snippet;
 	};
-	const { children, class: className }: Props = $props();
+	const {
+		children,
+		bottomRight,
+		bottomLeft,
+		topRight,
+		topLeft,
+		title,
+		class: className
+	}: Props = $props();
 
 	//
 </script>
 
-<div class="rz-page-header {className}">
+<!-- <div class="rz-page-header {className}"> -->
+{#if children}
 	{@render children()}
-</div>
+{:else}
+	<div class="rz-page-header__row rz-page-header__row-top">
+		<div>
+			{#if topLeft}
+				{@render topLeft()}
+			{:else}
+				<BreadCrumb />
+			{/if}
+		</div>
 
-<style type="postcss" global>
-	.rz-page-header {
-		position: sticky;
-		left: 0;
-		right: 0;
-		top: 0;
-		z-index: 20;
+		<div>
+			{#if topRight}
+				{@render topRight()}
+			{/if}
+		</div>
+	</div>
+
+	{#if title || bottomRight || bottomLeft}
+		<div class="rz-page-header__row rz-page-header__row-bottom">
+			<div class="rz-page-header__bottom-left">
+				<h1>
+					{@render title?.()}
+				</h1>
+				<div>
+					{@render bottomLeft?.()}
+				</div>
+			</div>
+
+			<div class="rz-page-header__bottom-right">
+				{#if bottomRight}
+					{@render bottomRight()}
+				{/if}
+			</div>
+		</div>
+	{/if}
+{/if}
+
+<!-- </div> -->
+
+<style type="postcss">
+	.rz-page-header__row {
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
 		gap: var(--rz-size-4);
+		align-items: center;
+		@mixin mx var(--rz-page-gutter, var(--rz-size-6));
+	}
+
+	.rz-page-header__row:first-child {
+		height: var(--rz-size-16);
+	}
+
+	h1 {
+		font-size: var(--rz-text-3xl);
+		@mixin font-semibold;
+	}
+
+	.rz-page-header__bottom-left,
+	.rz-page-header__bottom-left > div,
+	.rz-page-header__bottom-right {
+		display: flex;
+		align-items: center;
+		gap: var(--rz-size-2);
+	}
+
+	.rz-page-header__row-bottom {
+		position: sticky;
+		top: 0;
+		z-index: 100;
 		height: var(--rz-size-14);
+		background: hsl(var(--rz-ground-5));
+		align-items: flex-end;
 		border-bottom: var(--rz-border);
-		backdrop-filter: blur(8px);
-		@mixin px var(--rz-field-padding, var(--rz-size-6));
+		padding-bottom: var(--rz-size-2);
+	}
+	.rz-page-header__row-top {
+		height: var(--rz-size-14);
+		background: hsl(var(--rz-ground-5));
+		margin-bottom: var(--rz-size-16);
 	}
 </style>

@@ -260,8 +260,7 @@
 	}
 
 	:global(.rz-sheet-content) {
-		background-color: hsl(var(--rz-ground-6));
 		width: 50%;
-		padding: 0;
+		--rz-page-gutter: var(--rz-size-6);
 	}
 </style>

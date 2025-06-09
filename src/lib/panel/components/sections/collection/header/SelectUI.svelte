@@ -44,9 +44,16 @@
 	{/if}
 </div>
 
-<style type="postcss" global>
+<style type="postcss">
 	.rz-header-select {
 		display: flex;
+		gap: var(--rz-size-4);
 		align-items: center;
+		
+		:global{
+			.rz-header-select__icon--active{
+				color: hsl(var(--rz-color-primary));
+			}
+		}
 	}
 </style>

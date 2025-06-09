@@ -3,8 +3,8 @@
 	min-height: var(--rz-size-11);
 	width: 100%;
 	position: relative;
-	/* border: var(--rz-border); */
-	/* border-radius: var(--rz-radius-md); */
+	border: var(--rz-border);
+	border-radius: var(--rz-radius-lg);
 	padding: var(--rz-size-1) var(--rz-size-3);
 }
 
@@ -29,7 +29,7 @@
 }
 
 .rz-rich-text__editor:has(.ProseMirror-focused) {
-	@mixin ring var(--rz-color-border)
+	@mixin ring var(--rz-color-primary)
 	/* border: 1px solid hsl(var(--rz-color-fg)); */
 }
 
@@ -48,7 +48,7 @@
 
 .rz-rich-text__editor .ProseMirror .is-empty::before {
 	content: attr(data-placeholder);
-	color: hsl(var(--rz-ground-3));
+	color: hsl(var(--rz-ground-2));
 	float: left;
 	pointer-events: none;
 	height: 0;

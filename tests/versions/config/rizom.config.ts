@@ -58,7 +58,9 @@ const News = collection('news', {
 })
 
 const Medias = collection('medias', {
-	group: 'content',
+	panel: {
+		group: 'content'
+	},
 	upload: {
 		imageSizes: [
 			{ name: 'thumbnail', width: 400, out: ['webp'] },
@@ -76,8 +78,23 @@ const Medias = collection('medias', {
 
 const Pdf = collection('pdf', {
 	upload: true,
-	group: 'content',
+	panel: {
+		group: 'content'
+	},
 	fields: [text('alt').required()],
+	access: {
+		read: () => true
+	},
+	versions: { draft: true }
+});
+
+const Pages = collection('pages', {
+	panel: {
+		group: 'content'
+	},
+	fields: [text('alt').required().isTitle()],
+	url: (doc) => '/',
+	nested: true,
 	access: {
 		read: () => true
 	},
@@ -86,7 +103,7 @@ const Pdf = collection('pdf', {
 
 export default defineConfig({
 	database: 'versions.sqlite',
-	collections: [News, Medias, Pdf],
+	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
 	plugins: [apiInit()],
 	panel: {

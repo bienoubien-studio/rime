@@ -12,7 +12,7 @@
 	type Props = {
 		form: DocumentFormContext;
 		create: boolean;
-		accept: WithUpload<CompiledCollection>['accept'];
+		accept: WithUpload<CompiledCollection>['upload']['accept'];
 	};
 	const { form, create, accept }: Props = $props();
 
