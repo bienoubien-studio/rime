@@ -4,7 +4,7 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
 import { flatten, unflatten } from 'flat';
 import type { Dic } from '$lib/util/types';
 
-export const extractData = async (request: RequestEvent['request']) => {
+export const extractData = async <T extends Dic = GenericDoc>(request: RequestEvent['request']) => {
 	let data;
 	try {
 		const contentType = request.headers.get('content-type');
@@ -22,8 +22,8 @@ export const extractData = async (request: RequestEvent['request']) => {
 	} catch {
 		throw new RizomFormError({ _form: RizomFormError.CONTENT_LENGTH_LIMIT });
 	}
-
-	return data as Partial<GenericDoc>;
+	
+	return data as Partial<T>;
 };
 
 export const formDataToData = (formData: FormData) => {
