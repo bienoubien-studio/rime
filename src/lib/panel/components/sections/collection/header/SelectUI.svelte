@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';

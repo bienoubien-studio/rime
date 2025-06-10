@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { setCollectionContext } from '$lib/panel/context/collection.svelte';
+	import { setCollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { getContext, setContext, type Snippet } from 'svelte';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';

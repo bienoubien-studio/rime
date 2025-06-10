@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
 	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';

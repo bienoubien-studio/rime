@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { capitalize } from '$lib/util/string.js';
 	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import type { FormField } from '$lib/fields/types.js';
 	import { getContext } from 'svelte';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { type CollectionContext } from '$lib/panel/context/collection.svelte';
+	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { getContext } from 'svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import DisplayMode from './DisplayMode.svelte';
