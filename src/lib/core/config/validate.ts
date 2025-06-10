@@ -95,11 +95,11 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		function validateFieldName(name: string): boolean {
 			// Regular expression to match
 			// __group_foo__truc, fooBlablaBla, _hello_guys
-			const pattern = /^(__)?[a-zA-Z][a-zA-Z0-9_]*$/;
+			const pattern = /^(_+)?[a-zA-Z][a-zA-Z0-9_]*$/;
 			// Check if string matches pattern and doesn't contain spaces or hyphens
 			return pattern.test(name) && !name.includes('-') && !name.includes(' ');
 		}
-
+		
 		for (const field of fields) {
 			// Check for malformed field.name
 			if (!validateFieldName(field.name)) {
