@@ -85,15 +85,22 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	getSchemaName(parentPath?: string) {
 		const name = parentPath ? `${parentPath}__${this.field.name}` : this.field.name;
 
+		// Preserve leading underscore if present
+		const hasLeadingUnderscore = name.startsWith('_');
+		const processedName = hasLeadingUnderscore ? name.slice(1) : name;
+
+		const processParts = (parts: string[], formatter: (s: string) => string) => {
+		    const processed = parts
+		        .map((part) => formatter(part))
+		        .join('__');
+		    return hasLeadingUnderscore ? `_${processed}` : processed;
+		};
+
+		const parts = processedName.split('__');
+
 		return {
-			camel: name
-				.split('__')
-				.map((part) => toCamelCase(part))
-				.join('__'),
-			snake: name
-				.split('__')
-				.map((part) => toSnakeCase(part))
-				.join('__')
+		    camel: processParts(parts, toCamelCase),
+		    snake: processParts(parts, toSnakeCase)
 		};
 	}
 
