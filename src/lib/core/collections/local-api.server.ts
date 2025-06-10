@@ -81,7 +81,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		limit,
 		offset,
 		draft
-	}: FindArgs): Promise<Doc[]> {
+	}: APIMethodArgs<typeof find>): Promise<Doc[]> {
 		this.#rizom.preventOperationLoop();
 
 		const params = {
@@ -116,7 +116,13 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
-	findById({ id, versionId, locale, draft, depth = 0 }: FindByIdArgs): Promise<Doc> {
+	findById({
+		id,
+		versionId,
+		locale,
+		draft,
+		depth = 0
+	}: APIMethodArgs<typeof findById>): Promise<Doc> {
 		this.#rizom.preventOperationLoop();
 
 		if (!id) {
@@ -158,7 +164,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	deleteById = ({ id }: DeleteByIdArgs) => {
+	deleteById = ({ id }: APIMethodArgs<typeof deleteById>) => {
 		this.#rizom.preventOperationLoop();
 		return deleteById({
 			id,
@@ -166,8 +172,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			event: this.#event
 		});
 	};
-	
-	delete = (args: DeleteArgs) => {
+
+	delete = (args: APIMethodArgs<typeof deleteDocs>) => {
 		this.#rizom.preventOperationLoop();
 		return deleteDocs({
 			config: this.config,
@@ -183,35 +189,6 @@ export { CollectionInterface };
 /*                                    Types                                   */
 /* -------------------------------------------------------------------------- */
 
-type DeleteByIdArgs = { id: string };
-
-type FindArgs = {
-	select?: string[];
-	query?: OperationQuery;
-	locale?: string;
-	sort?: string;
-	depth?: number;
-	limit?: number;
-	offset?: number;
-	draft?: boolean;
-};
-
-type DeleteArgs = {
-	query?: OperationQuery;
-	locale?: string;
-	sort?: string;
-	limit?: number;
-	offset?: number;
-};
-
-type FindByIdArgs = {
-	id?: string;
-	versionId?: string;
-	locale?: string;
-	depth?: number;
-	draft?: boolean;
-};
-
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;
 	versionId?: string;
@@ -220,5 +197,9 @@ type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	locale?: string;
 	isFallbackLocale?: boolean;
 };
+
+type APIMethodArgs<T extends (...args: any) => any> = Pretty<
+	Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>
+>;
 
 type CreateArgs<T> = { data: DeepPartial<T>; locale?: string; draft?: boolean };
