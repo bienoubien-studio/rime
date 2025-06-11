@@ -29,7 +29,15 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 			beforeRead: [populateSizes, ...(hooks?.beforeRead || [])]
 		};
 	}
-	 
+	if (collection.nested) {
+		const hierarchyHooks = await import('$lib/core/collections/hierarchy/hooks/index.server.js');
+		const { addChildrenProperty } = hierarchyHooks;
+		hooks = {
+			...hooks,
+			beforeRead: [addChildrenProperty, ...(hooks?.beforeRead || [])]
+		};
+	}
+	
 	return hooks;
 };
 
