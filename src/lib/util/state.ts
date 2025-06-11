@@ -59,5 +59,5 @@ export const snapshot = <T>(state: T) => {
 		return output;
 	}
 
-	return step(state);
+	return step(state) as T;
 };
