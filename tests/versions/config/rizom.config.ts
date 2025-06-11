@@ -88,22 +88,9 @@ const Pdf = collection('pdf', {
 	versions: { draft: true }
 });
 
-const Pages = collection('pages', {
-	panel: {
-		group: 'content'
-	},
-	fields: [text('alt').required().isTitle()],
-	url: (doc) => '/',
-	nested: true,
-	access: {
-		read: () => true
-	},
-	versions: { draft: true }
-});
-
 export default defineConfig({
 	database: 'versions.sqlite',
-	collections: [News, Medias, Pdf, Pages],
+	collections: [News, Medias, Pdf],
 	areas: [Settings, Infos],
 	plugins: [apiInit()],
 	panel: {
