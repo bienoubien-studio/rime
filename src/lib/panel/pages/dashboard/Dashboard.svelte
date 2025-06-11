@@ -11,8 +11,8 @@
 	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
 	import type { Route } from '$lib/panel/types.js';
 	
-	type Props = { entries: DashboardEntry[]; user?: User, breadcrumb: Route[] };
-	const { entries, breadcrumb, user }: Props = $props();
+	type Props = { entries: DashboardEntry[]; user?: User };
+	const { entries, user }: Props = $props();
 
 	const config = getConfigContext();
 </script>
@@ -26,7 +26,7 @@
 				{#snippet title()}
 					{t__('common.welcome')} {user!.name}
 				{/snippet}
-
+				
 				{#snippet topRight()}
 					{#if config.raw.siteUrl}
 						<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>
@@ -124,14 +124,7 @@
 		opacity: 0.6;
 		font-size: var(--text-sm);
 	}
-
-	.rz-dashboard__header {
-		padding: var(--rz-size-8) var(--rz-size-32);
-		padding-bottom: 0;
-		@mixin font-medium;
-		font-size: var(--rz-text-3xl);
-	}
-
+	
 	.rz-dashboard__content {
 		display: grid;
 		gap: var(--rz-size-7);
