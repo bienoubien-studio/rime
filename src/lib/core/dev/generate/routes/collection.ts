@@ -49,7 +49,8 @@ const docPage = (slug: string) => `
  * Document page server template
  * (rizom)/panel/{collection.slug}/[id]/+page.server.ts
  * (rizom)/panel/{collection.slug}/[id]/versions/+page.server.ts
- * Same actions / load for /versions page
+ * Same actions / load for /versions page 
+ * except the withVersion param 
  */
 const docPageServer = (slug: string) => `
 import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
@@ -114,6 +115,10 @@ const apiCollectionDocLogoutServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
 export const POST = api.collection.logout
 `;
+
+/****************************************************/
+/* Routes 
+/****************************************************/
 
 /**
  * Collection panel routes
