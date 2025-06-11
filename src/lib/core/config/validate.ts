@@ -101,6 +101,11 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 		
 		for (const field of fields) {
+			// Check that a field wich has field._root = true is not localized
+			if('_root' in field && field._root && field.localized){
+				errors.push(`Field ${field.name} of ${config.type} ${config.slug} with _root = true, can't be localized`);
+			}
+			
 			// Check for malformed field.name
 			if (!validateFieldName(field.name)) {
 				errors.push(`Field ${field.name} of ${config.type} ${config.slug} should be camelCase`);

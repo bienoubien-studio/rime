@@ -8,10 +8,11 @@
 
 	type Props = { parentId: string; doc: GenericDoc, collection: CollectionContext };
 	const { parentId, doc, collection }: Props = $props();
+  
 </script>
 
 
-{#key `${parentId}-${doc.id}-${doc.nestedPosition}`}
+{#key `${parentId}-${doc.id}-${doc._position}`}
 <div data-parent={parentId} data-id={doc.id} class="rz-collection-node">
   <a href="/panel/{doc._type}/{doc.id}" class="rz-collection-node__row">
     <div class="rz-collection-node__grip"><GripVertical size="12"/></div>
@@ -19,8 +20,8 @@
       {doc.title}
     </div>
     {#if collection.hasDraft }
-        <StatusDot --rz-dot-size="0.3rem" status={doc.status} />
-      {/if}
+      <StatusDot --rz-dot-size="0.3rem" status={doc.status} />
+    {/if}
   </a>
 	<div class="rz-collection-sortable" style="--data-rows-count:{countRows(doc._children)}" data-id={doc.id} >
     {#if doc._children && doc._children.length > 0}

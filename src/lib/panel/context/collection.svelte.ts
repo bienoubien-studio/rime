@@ -19,11 +19,7 @@ import { toNestedStructure } from '$lib/util/doc.js';
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid' | 'nested';
 
-function createCollectionStore<T extends GenericDoc = GenericDoc>({
-	initial,
-	config,
-	canCreate
-}: Args<T>) {
+function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, config, canCreate }: Args<T>) {
 	let initialDocs = $state.raw(initial);
 	let docs = $state(initial);
 	let sortingOrder = $state<SortMode>('asc');
@@ -37,8 +33,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 	// const statusList = $derived(config.status && Array.isArray(config.status) ? config.status : null);
 
 	onMount(() => {
-		displayMode =
-			(localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list';
+		displayMode = (localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list';
 		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
 		sortingBy = localSortBy || 'updatedAt';
 		const localSortOrder = localStorage.getItem(`collection.${config.slug}.sortOrder`) as SortMode;
@@ -52,7 +47,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		if (!selectMode) selected = [];
 	});
 
-	const nested = $derived.by(() => toNestedStructure(docs));
+	const nested = $derived.by(() => {
+		return toNestedStructure(docs);
+	});
 
 	const buildFieldColumns = (fields: Field[], parentPath: string = '') => {
 		let columns: Array<{ path: string } & WithRequired<FormField, 'table'>> = [];
@@ -167,8 +164,8 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		const orderedDocs = documents.map((doc, index) => {
 			const clone = cloneDeep(doc);
 			// Update position if needed
-			if (clone.nestedPosition !== index) {
-				clone.nestedPosition = index;
+			if (clone._position !== index) {
+				clone._position = index;
 				docsToUpdate.push(clone);
 			}
 			// Process children recursively if they exist
@@ -195,251 +192,102 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({
 		from: { parent: string | null; index: number };
 		to: { parent: string | null; index: number };
 	}) => {
-		// console.log('move ' + documentId)
-		// console.log('from.parent', from.parent)
-		// console.log('from.index', from.index)
-		// console.log('to.parent', to.parent)
-		// console.log('to.index', to.index)
-
-		// Step 1: Get the document from the flat docs array
-		const docToMove = docs.find((d) => d.id === documentId) as GenericDoc;
+		// 1. Create a new array to track changes
+		const updatedDocs = [...docs];
+		const docToMove = updatedDocs.find((d) => d.id === documentId);
 		if (!docToMove) return;
 
-		// Step 2: Get a deep clone of the current nested structure
-		const nestedDocs = cloneDeep(snapshot(nested));
+		// 2. Track all documents that need updating
+		const docsToUpdate = new Map<string, GenericDoc>();
 
-		// Step 3: Find source parent array in nested structure
-		const findArrayInNested = (docs: any[], parentId: string | null): any[] => {
-			// If looking for root level
-			if (parentId === null) return docs;
-
-			// Create a helper function to search with a proper return value
-			const search = (docs: any[], targetId: string): { found: boolean; array: any[] } => {
-				// Check current level first
-				for (const doc of docs) {
-					if (doc.id === targetId) {
-						// Initialize _children if it doesn't exist
-						if (!doc._children) doc._children = [];
-						return { found: true, array: doc._children };
-					}
+		// 3. Remove from old parent's children
+		if (from.parent !== null) {
+			const oldParent = updatedDocs.find((d) => d.id === from.parent);
+			if (oldParent) {
+				const oldChildren = [...(oldParent._children || [])];
+				const childIndex = oldChildren.indexOf(documentId);
+				if (childIndex > -1) {
+					oldChildren.splice(childIndex, 1);
+					oldParent._children = oldChildren;
+					docsToUpdate.set(oldParent.id, oldParent);
 				}
+			}
+		}
 
-				// Then check children
-				for (const doc of docs) {
-					if (doc._children && doc._children.length > 0) {
-						const result = search(doc._children, targetId);
-						if (result.found) {
-							return result;
-						}
-					}
-				}
+		// 4. Add to new parent's children
+		if (to.parent !== null) {
+			const newParent = updatedDocs.find((d) => d.id === to.parent);
+			if (newParent) {
+				const newChildren = [...(newParent._children || [])];
+				newChildren.splice(to.index, 0, documentId);
+				newParent._children = newChildren;
+				docsToUpdate.set(newParent.id, newParent);
+			}
+		}
 
-				// Not found
-				return { found: false, array: [] };
-			};
+		// 5. Update the moved document
+		docToMove._parent = to.parent;
+		docToMove._position = to.index;
+		docsToUpdate.set(docToMove.id, docToMove);
 
-			// Run the search
-			const result = search(docs, parentId);
-			return result.array;
-		};
+		// 6. Update positions for all affected siblings
+		const siblings = updatedDocs
+			.filter((doc) => doc._parent === to.parent && doc.id !== documentId)
+			.sort((a, b) => (a._position || 0) - (b._position || 0));
 
-		// Step 4: Find source and target arrays
-		let sourceArray = findArrayInNested(nestedDocs, from.parent);
-		let targetArray = findArrayInNested(nestedDocs, to.parent);
+		let position = 0;
+		for (const sibling of siblings) {
+			if (position === to.index) position++;
+			if (sibling._position !== position) {
+				sibling._position = position;
+				docsToUpdate.set(sibling.id, sibling);
+			}
+			position++;
+		}
 
-		// console.log('sourceArray', sourceArray)
-		// console.log('targetArray', targetArray)
-
-		// Step 5: Find the document in the source array
-		const sourceIndex = sourceArray.findIndex((d) => d.id === documentId);
-		if (sourceIndex === -1) return; // Document not found in source
-
-		// Step 6: Create a simplified representation for the nested structure
-		const docForNested = {
-			id: docToMove.id,
-			title: docToMove.title,
-			nestedPosition: to.index,
-			_children: sourceArray[sourceIndex]._children || []
-		};
-
-		// Step 7: Remove from source array
-		sourceArray.splice(sourceIndex, 1);
-
-		// Step 8: Insert into target array
-		targetArray.splice(to.index, 0, docForNested);
-
-		sourceArray = sourceArray.map((element, index) => ({
-			...element,
-			nestedPosition: index
-		}));
-		targetArray = targetArray.map((element, index) => ({
-			...element,
-			nestedPosition: index
-		}));
-
-		// Step 9: Update the flat docs based on the new nested structure
-		const updateFlatDocs = (
-			nestedDocs: any[],
-			parentId: string | null = null
-		): [GenericDoc[], GenericDoc[]] => {
-			const updates: GenericDoc[] = [];
-			const newFlatDocs: GenericDoc[] = [];
-			const clones = cloneDeep(nestedDocs);
-
-			// // Process each document at this level
-			clones.forEach((nestedDoc, index) => {
-				// Find the corresponding document in the flat array
-				const flatDoc = docs.find((d) => d.id === nestedDoc.id) as GenericDoc;
-				if (!flatDoc) return;
-
-				// Create a clone of the flat doc to update
-				const updatedDoc = cloneDeep(flatDoc);
-
-				// Update parent and position
-				const newParent = parentId === null ? [] : [parentId];
-				const parentChanged = JSON.stringify(updatedDoc.parent) !== JSON.stringify(newParent);
-				const positionChanged = updatedDoc.nestedPosition !== index;
-
-				// Apply updates
-				updatedDoc.parent = newParent;
-				updatedDoc.nestedPosition = index;
-
-				// Add to new flat docs array
-				newFlatDocs.push(updatedDoc);
-
-				// If changed, add to updates array
-				if (parentChanged || positionChanged) {
-					updates.push(updatedDoc);
-				}
-
-				// Process children recursively
-				if (nestedDoc._children && nestedDoc._children.length > 0) {
-					const [childFlatDocs, childUpdates] = updateFlatDocs(nestedDoc._children, nestedDoc.id);
-					newFlatDocs.push(...childFlatDocs);
-					updates.push(...childUpdates);
-				}
-			});
-
-			return [newFlatDocs, updates];
-		};
-
-		// Step 10: Update the flat docs with the new structure
-		const [newFlatDocs, docsToUpdate] = updateFlatDocs(nestedDocs);
-
-		docs = newFlatDocs as T[];
-		initialDocs = docs;
+		// 7. Update local state optimistically
+		docs = updatedDocs;
 		stamp = Date.now();
 
-		// Step 11: Update the API
-		if (docsToUpdate.length > 0) {
-			return apiUpdateNestedStructure(docsToUpdate);
-		} else {
-			return new Promise((resolve) => resolve(true));
+		// 8. Send updates to API
+		try {
+			await apiUpdateNestedStructure(Array.from(docsToUpdate.values()));
+			return true;
+		} catch (error) {
+			console.error('Failed to update documents:', error);
+			// Revert to current database docs
+			docs = await fetch(`${env.PUBLIC_RIZOM_URL}/api/${config.slug}`)
+				.then((r) => r.json())
+				.then((r) => r.docs)
+			stamp = Date.now();
+			return false;
 		}
 	};
 
 	/**
-	 * Update the nested structure via API calls and regenerate URLs for documents and their children
+	 * Update the nested structure via API calls and regenerate URLs for documents
 	 * @param docsToUpdate Array of documents that need updating
 	 * @returns Promise that resolves to true if all updates succeeded
 	 */
-	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]): Promise<boolean> => {
-		if (!docsToUpdate.length) {
-			console.log('No documents to update');
-			return true;
-		}
-
-		/**
-		 * Recursively update a document and all its children
-		 * @param docId ID of the document to update
-		 * @param parentUpdate Whether this is a parent update (includes parent and nestedPosition) or just URL regeneration
-		 * @param processedIds Set of document IDs that have already been processed to prevent infinite loops
-		 */
-		const updateDocumentAndChildren = async (
-			doc: GenericDoc,
-			parentUpdate = true,
-			processedIds = new Set<string>()
-		): Promise<GenericDoc | null> => {
-			// Prevent infinite loops or duplicate processing
-			if (processedIds.has(doc.id)) {
-				return null;
-			}
-			processedIds.add(doc.id);
-
-			// Update the document
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
-			const body = JSON.stringify(
-				parentUpdate
-					? { parent: doc.parent, nestedPosition: doc.nestedPosition }
-					: { parent: doc.parent } // Just trigger URL regeneration
-			);
-
-			try {
-				const response = await fetch(url, {
-					method: 'PATCH',
-					body: body,
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				});
-
-				if (!response.ok) {
-					console.warn(`API error: ${response.status} for document ${doc.id}`);
-					return null;
-				}
-
-				// Get the updated document
-				const updatedDoc = await response.json();
-
-				// Now fetch all children of this document
-				const childrenResponse = await fetch(
-					`${env.PUBLIC_RIZOM_URL}/api/${config.slug}?where[parent][in_array]=${doc.id}&select=id,parent`
-				);
-
-				if (!childrenResponse.ok) {
-					console.warn(`Could not fetch children of document ${doc.id}`);
-					return updatedDoc;
-				}
-
-				const childrenData = await childrenResponse.json();
-				const children = childrenData.docs || [];
-
-				// If there are children, recursively update each one
-				if (children.length > 0) {
-					// Process each child recursively (these are just URL regenerations, not parent updates)
-					await Promise.all(
-						children.map((child: GenericDoc) =>
-							updateDocumentAndChildren(child, false, processedIds)
-						)
-					);
-				}
-
-				return updatedDoc;
-			} catch (error) {
-				console.error(`Error updating document ${doc.id}:`, error);
-				return null;
-			}
-		};
-
-		// Create API update promises for all documents that need updating
-		const updatePromises = docsToUpdate.map((docToUpdate) =>
-			updateDocumentAndChildren(docToUpdate)
-		);
-
-		// Wait for all updates to complete
+	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]) => {
 		try {
-			const results = await Promise.all(updatePromises);
-
-			// Update local docs with the updated versions
-			results.forEach((updatedDoc) => {
-				if (updatedDoc) {
-					updateDoc(updatedDoc as T);
-				}
-			});
+			// Send updates in parallel
+			await Promise.all(
+				docsToUpdate.map((doc) =>
+					fetch(`${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`, {
+						method: 'PATCH',
+						body: JSON.stringify({
+							_parent: doc._parent,
+							_position: doc._position
+						}),
+						headers: { 'Content-Type': 'application/json' }
+					})
+				)
+			);
 			return true;
 		} catch (error) {
-			console.error('Error updating nested structure:', error);
-			return false;
+			console.error('API update failed:', error);
+			throw error;
 		}
 	};
 

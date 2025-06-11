@@ -3,7 +3,6 @@ import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/in
 import type { Dic } from '$lib/util/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { snapshot } from './state.js';
-import cloneDeep from 'clone-deep';
 
 /**
  * Creates a blank document based on a collection or area configuration.
@@ -58,12 +57,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		_prototype: config.type
 	};
 
-	if (
-		config.type === 'collection' &&
-		isUploadConfig(config) &&
-		'imageSizes' in config &&
-		config.imageSizes
-	) {
+	if (config.type === 'collection' && isUploadConfig(config) && 'imageSizes' in config && config.imageSizes) {
 		empty.sizes = {};
 	}
 
@@ -80,49 +74,54 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
  * @example
  * // Convert a flat list of pages into a hierarchical structure
  * const pageTree = toNestedStructure(pagesList);
- * // Result: [{ id: 'home', _children: [{ id: 'about', _children: [] }] }]
+ * // Result: [{ id: '1', _children: [{ id: '2', _children: [] }] }]
  */
 /**
  * Converts a flat array of documents into a nested tree structure
  * based on _parent and _position fields
  */
 export const toNestedStructure = (documents: GenericDoc[]) => {
+	const incomingDocs = snapshot(documents);
+	
 	// Create a map for quick document lookup by ID
 	const docById = new Map<string, GenericDoc>();
-	documents.forEach((doc) => docById.set(doc.id, doc));
+	incomingDocs.forEach((doc) => docById.set(doc.id, doc));
 
-	// Track which documents are children of others
-	const childDocIds = new Set<string>();
+	// Track processed documents to prevent infinite recursion
+	const processed = new Set<string>();
 
-	// Sort documents by their position
-	const sortedDocuments = [...documents].sort((a, b) => (a._position || 0) - (b._position || 0));
+	// Process documents recursively
+	const processDocument = (doc: GenericDoc): GenericDoc => {
+		if (!doc || processed.has(doc.id)) {
+			return doc;
+		}
 
-	// First pass: build the tree structure
-	for (const doc of sortedDocuments) {
-		// Handle children arrays
-		if (Array.isArray(doc._children)) {
-			doc._children = doc._children
+		processed.add(doc.id);
+		const result = { ...doc };
+
+		// Process children first (depth-first)
+		if (Array.isArray(result._children)) {
+			result._children = result._children
 				.map((id: string) => {
 					const childDoc = docById.get(id);
-					if (childDoc) {
-						childDocIds.add(id); // Mark as child
-					}
-					return childDoc;
+					return childDoc ? processDocument(childDoc) : null;
 				})
 				.filter(Boolean);
 		}
 
-		// Handle parent references
-		if (doc._parent) {
-			const parentDoc = docById.get(doc._parent);
-			if (parentDoc) {
-				if (!parentDoc._children) parentDoc._children = [];
-				parentDoc._children.push(doc);
-				childDocIds.add(doc.id);
-			}
+		// Only set the parent ID, don't process it recursively
+		if (result._parent && typeof result._parent === 'string') {
+			result._parent = docById.get(result._parent)?.id || null;
 		}
-	}
 
-	// Return only root documents (those without a parent or not marked as children)
-	return sortedDocuments.filter((doc) => !doc._parent && !childDocIds.has(doc.id));
+		return result;
+	};
+
+	const output = incomingDocs
+		.filter((doc) => !doc._parent)
+		.map(processDocument)
+		.sort((a, b) => (a._position || 0) - (b._position || 0));
+	
+	// Filter to get root documents and process them
+	return output;
 };

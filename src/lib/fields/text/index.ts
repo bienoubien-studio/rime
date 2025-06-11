@@ -62,6 +62,12 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 
 		return super.compile();
 	}
+
+	_root(){
+		this.field._root = true
+		return this
+	}
+	
 }
 
 export const text = (name: string) => new TextFieldBuilder(name, 'text');
@@ -76,6 +82,13 @@ export type TextField = FormField & {
 	isTitle?: true;
 	placeholder: string;
 	layout: 'compact';
+	/**
+	 * Force the field to be on the root table
+	 * usefull for fields that should not be versioned
+	 * ex: _parent for nested structures should always be on the root table to prevent
+	 * different versions to have different parents
+	 */
+	_root?: boolean;
 };
 
 /****************************************************/

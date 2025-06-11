@@ -60,6 +60,12 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		}
 		return super.compile();
 	}
+	
+	_root(){
+		this.field._root = true
+		return this
+	}
+
 }
 
 /****************************************************/
@@ -71,6 +77,13 @@ export type NumberField = FormField & {
 	min?: number;
 	max?: number;
 	defaultValue?: number;
+	/**
+	 * Force the field to be on the root table
+	 * usefull for fields that should not be versioned
+	 * ex: _parent for nested structures should always be on the root table to prevent
+	 * different versions to have different parents
+	 */
+	_root?: boolean;
 };
 
 /****************************************************/

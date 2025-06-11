@@ -109,14 +109,14 @@ test('Should create a page', async ({ request }) => {
 				slug: 'page',
 				template: 'basic'
 			},
-			parent: homeId,
+			_parent: homeId,
 		}
 	});
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Page');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc.parent.at(0).documentId).toBe(homeId);
+	expect(doc._parent.at(0).documentId).toBe(homeId);
 	expect(doc.attributes.template).toBe('basic');
 	pageId = doc.id;
 });
@@ -150,12 +150,12 @@ test('Should return 2 pages with only attributes.slug and id prop', async ({ req
 	expect(response.docs[0].attributes.slug).toBeDefined();
 	expect(response.docs[0].attributes.title).toBeUndefined();
 	expect(response.docs[0].attributes.template).toBeUndefined();
-	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[0]._parent).toBeUndefined();
 	expect(response.docs[1].id).toBeDefined();
 	expect(response.docs[1].attributes.slug).toBeDefined();
 	expect(response.docs[1].attributes.title).toBeUndefined();
 	expect(response.docs[1].attributes.template).toBeUndefined();
-	expect(response.docs[1].parent).toBeUndefined();
+	expect(response.docs[1]._parent).toBeUndefined();
 });
 
 test('Should return 2 pages with only attributes slug, title and id prop', async ({ request }) => {
@@ -168,12 +168,12 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 	expect(response.docs[0].attributes.slug).toBeDefined();
 	expect(response.docs[0].attributes.title).toBeDefined();
 	expect(response.docs[0].attributes.template).toBeUndefined();
-	expect(response.docs[0].parent).toBeUndefined();
+	expect(response.docs[0]._parent).toBeUndefined();
 	expect(response.docs[1].id).toBeDefined();
 	expect(response.docs[1].attributes.slug).toBeDefined();
 	expect(response.docs[1].attributes.title).toBeDefined();
 	expect(response.docs[1].attributes.template).toBeUndefined();
-	expect(response.docs[1].parent).toBeUndefined();
+	expect(response.docs[1]._parent).toBeUndefined();
 });
 
 test('Should return page (query)', async ({ request }) => {

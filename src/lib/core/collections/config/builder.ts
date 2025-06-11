@@ -63,7 +63,16 @@ export function collection<S extends string>(
 		);
 	}
 
-	// Augment Status
+	// Augment Nested
+	if (config.nested) {
+		const _parentField = text('_parent')._root()
+		// @TODO For now overwrite the method is ugly but it works
+		_parentField.toSchema = () => `_parent: text('_parent').references((): any => pages.id, {onDelete: 'set null'})`
+		fields.push(_parentField)
+		fields.push(number('_position').defaultValue(0).hidden()._root())
+	}
+
+	// Augment Versions
 	if (config.versions) {
 		if (config.versions === true) {
 			config.versions = {
@@ -78,11 +87,6 @@ export function collection<S extends string>(
 		}
 	}else{
 		config.versions = false
-	}
-	
-	if(config.nested){
-		fields.push(number('nestedPosition').defaultValue(0).hidden());
-		fields.push(relation('parent').to(slug as CollectionSlug).hidden());
 	}
 	
 	if(config.url){

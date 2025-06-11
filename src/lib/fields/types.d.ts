@@ -28,7 +28,6 @@ export type { TimeField } from './time/index.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { ToggleField } from './toggle/index.js';
 
-
 export type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
 	value: unknown,
 	metas: {
@@ -71,7 +70,6 @@ export type FormField = Field & {
 	hooks?: FieldHooks;
 	defaultValue?: unknown;
 	isEmpty: (value: unknown) => boolean;
-
 };
 
 type FieldHookContext<T extends AnyFormField = AnyFormField> = {

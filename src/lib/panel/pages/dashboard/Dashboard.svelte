@@ -9,7 +9,6 @@
 	import { invalidateAll } from '$app/navigation';
 	import type { User } from '$lib/core/collections/auth/types.js';
 	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
-	import type { Route } from '$lib/panel/types.js';
 	
 	type Props = { entries: DashboardEntry[]; user?: User };
 	const { entries, user }: Props = $props();
@@ -26,7 +25,7 @@
 				{#snippet title()}
 					{t__('common.welcome')} {user!.name}
 				{/snippet}
-				
+
 				{#snippet topRight()}
 					{#if config.raw.siteUrl}
 						<Button variant="text" target="_blank" icon={Eye} href={config.raw.siteUrl}>

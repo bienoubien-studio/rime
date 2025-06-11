@@ -17,7 +17,8 @@ import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
 import { toCamelCase, toPascalCase } from '$lib/util/string.js';
 import { makeVersionsSlug } from '../../../../util/schema.js';
-
+import { date } from '$lib/fields/date/index.js';
+import type { Field, FormField } from '$lib/fields/types.js';
 
 export function generateSchemaString(config: BuiltConfig) {
 	const schema: string[] = [templateImports];
@@ -27,20 +28,54 @@ export function generateSchemaString(config: BuiltConfig) {
 	const blocksRegister: string[] = [];
 
 	for (const collection of config.collections) {
-
 		const collectionSlug = toCamelCase(collection.slug);
-		let rootTableName = collectionSlug
-		let versionsRelationsDefinitions: string[] = []
+		let rootTableName = collectionSlug;
+		let versionsRelationsDefinitions: string[] = [];
 
-		schema.push(templateHead(collection.slug))
+		schema.push(templateHead(collection.slug));
 
 		if (collection.versions) {
-			rootTableName = makeVersionsSlug(collectionSlug)
-			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`
-			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`
-			
-			schema.push(templateTable(collectionSlug, `createdAt: integer('created_at', { mode : 'timestamp_ms' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp_ms' })`))
-			
+			// Collection that have versions may need some fields forced on the root table and not root_versions
+			// process the root table with these fields first then, handle versions related tables creation
+
+			// utility function to filter out fields
+			const isRootField = (field: (typeof collection.fields)[number]) => '_root' in field.raw && field.raw._root;
+			const isNotRootField = (field: (typeof collection.fields)[number]) => !('_root' in field.raw) || !field.raw._root;
+
+			// 1. Process root table
+
+			// base root fields for versioned tables
+			const baseRootFields = [date('createdAt').hidden(), date('updatedAt').hidden()];
+
+			// Split fields that should be used on the root table
+			const rootFieldsFromConfig = [...collection.fields].filter(isRootField);
+			const rootFields = [...rootFieldsFromConfig, ...baseRootFields];
+
+			// Buiuld the main root buildRootTable with only _root fields and created/updatedAt
+			const { schema: rootCollectionSchema } = buildRootTable({
+				blocksRegister: [],
+				fields: rootFields,
+				rootName: rootTableName,
+				locales: [],
+				hasAuth: !!collection.auth,
+				versionsFrom: false,
+				tableName: rootTableName
+			});
+			// Ad the root table to the schema
+			schema.push(rootCollectionSchema);
+
+			// 2. Handle versions table rename and relation root <-> root_verions definition
+
+			// overwrite the collection name with the _versions one to generate all table
+			// eg. blocks, relation related to the _versions one
+			rootTableName = makeVersionsSlug(collectionSlug);
+			// Filter fields that should be processed, remove the _root ones
+			collection.fields = collection.fields.filter(isNotRootField);
+
+			// create specific relations between root <-> root_verions
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(collectionSlug)}`;
+			const oneToManyVersionsName = `rel_${collectionSlug}HasMany${toPascalCase(rootTableName)}`;
+
 			versionsRelationsDefinitions = [
 				templateRelationOne({
 					name: manyVersionsToOneName,
@@ -52,10 +87,14 @@ export function generateSchemaString(config: BuiltConfig) {
 					table: collectionSlug,
 					many: [rootTableName]
 				})
-			]
+			];
 
+			// add the root table to :
+			// export tables = { ... }
 			enumTables = [...enumTables, collectionSlug];
-			enumRelations = [ ...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
+			// add the root <-> root_versions relations to :
+			// export schema = { ... }
+			enumRelations = [...enumRelations, manyVersionsToOneName, oneToManyVersionsName];
 		}
 
 		const {
@@ -97,13 +136,7 @@ export function generateSchemaString(config: BuiltConfig) {
 			[rootTableName]: relationFieldsMap
 		};
 
-		schema.push(
-			collectionSchema,
-			junctionTable,
-			...versionsRelationsDefinitions,
-			relationsDefinitions
-		);
-
+		schema.push(collectionSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
 	}
 
 	/**
@@ -111,18 +144,29 @@ export function generateSchemaString(config: BuiltConfig) {
 	 */
 	for (const area of config.areas) {
 		const areaSlug = toCamelCase(area.slug);
-		let rootTableName = areaSlug
-		let versionsRelationsDefinitions: string[] = []
+		let rootTableName = areaSlug;
+		let versionsRelationsDefinitions: string[] = [];
 
-		schema.push(templateHead(area.slug))
+		schema.push(templateHead(area.slug));
 
 		if (area.versions) {
-			rootTableName = makeVersionsSlug(areaSlug)
-			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`
-			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`
-			
-			schema.push(templateTable(areaSlug, `createdAt: integer('created_at', { mode : 'timestamp_ms' }),\n\tupdatedAt: integer('updated_at', { mode : 'timestamp_ms' })`))
-			
+			// For now, areas don't need to filter out fields with or without _root
+			// as these fields would have no effect
+
+			// Overrite
+			rootTableName = makeVersionsSlug(areaSlug);
+			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`;
+			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`;
+
+			const baseRootFields = [date('createdAt').hidden(), date('updatedAt').hidden()];
+
+			schema.push(
+				templateTable(
+					areaSlug,
+					baseRootFields.map( field => field.toSchema() ).join(',\n')
+				)
+			);
+
 			versionsRelationsDefinitions = [
 				templateRelationOne({
 					name: manyVersionsToOneName,
@@ -134,10 +178,10 @@ export function generateSchemaString(config: BuiltConfig) {
 					table: areaSlug,
 					many: [rootTableName]
 				})
-			]
+			];
 
 			enumTables = [...enumTables, areaSlug];
-			enumRelations = [...enumRelations, manyVersionsToOneName, oneToManyVersionsName]
+			enumRelations = [...enumRelations, manyVersionsToOneName, oneToManyVersionsName];
 		}
 
 		const {
@@ -151,7 +195,7 @@ export function generateSchemaString(config: BuiltConfig) {
 			rootName: rootTableName,
 			locales: config.localization?.locales || [],
 			tableName: rootTableName,
-			versionsFrom: area.versions ? areaSlug : false,
+			versionsFrom: area.versions ? areaSlug : false
 		});
 
 		const { junctionTable, junctionTableName } = generateJunctionTableDefinition({
@@ -165,8 +209,9 @@ export function generateSchemaString(config: BuiltConfig) {
 			relationsDic[rootTableName].push(junctionTableName);
 		}
 
-
-		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({ relationsDic });
+		const { relationsDefinitions, relationsNames } = generateRelationshipDefinitions({
+			relationsDic
+		});
 
 		const relationsTableNames = Array.from(new Set(Object.values(relationsDic).flat()));
 
@@ -177,12 +222,7 @@ export function generateSchemaString(config: BuiltConfig) {
 			[rootTableName]: relationFieldsMap
 		};
 
-		schema.push(
-			areaSchema,
-			junctionTable,
-			...versionsRelationsDefinitions,
-			relationsDefinitions
-		);
+		schema.push(areaSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
 	}
 
 	schema.push(templateAuth);
