@@ -20,6 +20,7 @@
 		flex-direction: column;
 		gap: var(--rz-size-1-5);
 		text-align: center;
+		@mixin font-semibold;
 	}
 
 	@media (min-width: 640px) {

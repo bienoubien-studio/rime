@@ -23,7 +23,7 @@
 
 @media (min-width: 768px) {
 	.rz-dialog-content {
-		min-width: var(--rz-size-128);
+		min-width: var(--rz-size-114);
 	}
 }
 
