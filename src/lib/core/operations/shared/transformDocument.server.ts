@@ -31,7 +31,7 @@ export const transformDocument = async <T>(args: {
 	if (augment) {
 		document = await augmentDocument({ document, config, event, locale });
 	}
-
+	
 	document = await postprocessFields({
 		document,
 		configMap,

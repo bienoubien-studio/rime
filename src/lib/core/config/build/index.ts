@@ -1,34 +1,24 @@
-import { buildCollection, mergePanelUsersCollectionWithDefault } from '$lib/core/collections/config/index.server.js';
 import { access } from '$lib/util/access/index.js';
-import type {
-	BuiltCollection,
-	BuiltConfig,
-	BuiltArea,
-	CompiledConfig,
-	Config,
-	CompiledCollection
-} from '$lib/core/config/types/index.js';
+import type { BuiltCollection, BuiltConfig, BuiltArea, CompiledConfig, Config } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { Dic } from '$lib/util/types.js';
-import { buildArea } from '../../areas/config/index.server.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
 import { buildComponentsMap } from './fields/componentMap.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
-import { BookType, FileText, SlidersVertical } from '@lucide/svelte';
+import { BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
-import type { CollectionSlug } from '../../../types.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
+import { mergePanelUsersCollectionWithDefault } from '$lib/core/collections/auth/config/usersConfig.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
 /**
- * Add extra configuration to Areas and Collections
+ * - Build config
+ * - Optionnal generate schema / routes / types
  */
-
 const buildConfig = async (config: Config, options: { generateFiles?: boolean }): Promise<CompiledConfig> => {
 	const generateFiles = options?.generateFiles || false;
 
@@ -36,33 +26,16 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	let areas: BuiltArea[] = [];
 	const icons: Dic = {};
 
-	/****************************************************/
 	// Retrieve Default Users collection
-	/****************************************************/
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
 	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), panelUsersCollection];
 
-	/****************************************************/
-	// Build Collections
-	/****************************************************/
-	for (const collection of [...config.collections]) {
-		const buildtCollection = await buildCollection(collection);
-		collections = [...collections, buildtCollection];
-		// add icon to iconMap
-		if (collection.icon) {
-			icons[collection.slug] = collection.icon;
-		} else {
-			icons[collection.slug] = FileText;
-		}
+	// Add icons
+	for (const collection of config.collections) {
+		icons[collection.slug] = collection.icon;
 	}
-
-	/****************************************************/
-	// Build area
-	/****************************************************/
 	for (const area of config.areas) {
-		areas = [...areas, buildArea(area)];
-		// add icon to iconMap
-		if (area.icon) icons[area.slug] = area.icon;
+		icons[area.slug] = area.icon;
 	}
 
 	// Add Routes icon to iconMap
@@ -74,12 +47,15 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 		}
 	}
 
+	// Trusted origin used for CORS and Better-Auth
 	const trustedOrigins =
 		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
 			? config.trustedOrigins
 			: [process.env.PUBLIC_RIZOM_URL as string];
 
-	// Set base builtConfig
+	/****************************************************/
+	/* Base Config 
+	/****************************************************/
 	let builtConfig: BuiltConfig = {
 		...config,
 		panel: {
@@ -98,9 +74,9 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			},
 			css: config.panel?.css
 		},
-		collections,
+		collections: config.collections,
+		areas: config.areas,
 		plugins: {},
-		areas,
 		trustedOrigins,
 		icons
 	};
@@ -110,16 +86,14 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 
 	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...areaFields]);
 
-	/****************************************************/
-	// Plugins
-	/****************************************************/
-
-	// IMPORTANT !
-	// Core plugins that includes handlers should be added also here :
-	// src/lib/handlers/plugins.server.ts
-	// because the config is built from inside the first handler
-	// if a plugin includes a handler, the handler should be register there before
-	// that's a pain
+	/****************************************************
+	* Plugins
+	*
+	* IMPORTANT ! Core plugins that includes handlers should be added also here :
+	* src/lib/handlers/plugins.server.ts
+	* because the config is built from inside the first handler
+	* if a plugin includes a handler, the handler should be register there before...
+	*/
 	const corePlugins = [cache(config.cache || {})];
 	if (hasProp('smtp', config)) {
 		corePlugins.push(mailer(config.smtp));
@@ -136,8 +110,8 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 		...fieldsComponentsMap
 	};
 
-	/****************************************************/
-	// Generate files
+	/****************************************************
+	/* Generate files
 	/****************************************************/
 
 	let compiledConfig = compileConfig(builtConfig);

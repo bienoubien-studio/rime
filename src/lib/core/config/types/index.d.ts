@@ -23,7 +23,7 @@ export interface Config {
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
 	/** List of Collection  */
-	collections: Collection[];
+	collections: Collection<any>[];
 	/** List of Area  */
 	areas: Area[];
 	/** Define locales that will be enabled
@@ -192,11 +192,6 @@ export type Area<S> = BaseDocConfig & {
 	/** The area label */
 	label?: string;
 };
-
-export type DocConfig = Collection | Area;
-
-// Built versions of configs
-export type BuiltDocConfig = BuiltCollection | BuiltArea;
 
 export type BuiltConfig = {
 	/** Database location relative to the root project ex: ./db/my-app.sqlite */

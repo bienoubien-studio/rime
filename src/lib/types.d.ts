@@ -22,7 +22,6 @@ export type {
 	BuiltCollection,
 	CompiledCollection,
 	BuiltConfig,
-	BuiltDocConfig,
 	BuiltArea,
 	CompiledArea,
 	Collection,

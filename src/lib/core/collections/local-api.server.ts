@@ -13,7 +13,6 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug, GenericDoc } from '../types/doc.js';
 import type { CompiledCollection } from '../config/types/index.js';
 import type { FormField } from '$lib/fields/types.js';
-import type { OperationQuery } from '$lib/core/types/index.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { Rizom } from '../rizom.server.js';
 import type { DeepPartial, Pretty } from '$lib/util/types.js';
