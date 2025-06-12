@@ -20,90 +20,33 @@ type AreaInterfaceArgs = {
 /**
  * Creates an area interface for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned areas with support for localization.
- *
- * @example
- * const areaInterface = createAdapterAreaInterface({
- *   db: sqliteDb,
- *   tables: schema,
- *   configInterface: config
- * });
- *
- * // Use the interface to perform operations
- * await areaInterface.get({ slug: 'settings' });
  */
 const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfaceArgs) => {
 	/**
 	 * Retrieves an area document. If the area doesn't exist, it creates a blank one.
 	 * For versioned areas, returns either a specific version (if versionId is provided)
 	 * or the latest/published version.
-	 *
-	 * @example
-	 * // Get an area
-	 * const settings = await get({ slug: 'settings' });
-	 *
-	 * // Get an area with specific fields and locale
-	 * const siteInfo = await get({
-	 *   slug: 'site-info',
-	 *   select: ['title', 'description'],
-	 *   locale: 'en'
-	 * });
-	 *
-	 * // Get a specific version of an area
-	 * const oldSettings = await get({
-	 *   slug: 'settings',
-	 *   versionId: 'v123'
-	 * });
-	 *
-	 * @returns The area document with all its fields and relations
-	 * @throws RizomError when the area configuration doesn't exist
 	 */
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
 		const areaConfig = configInterface.getArea(slug);
-		if (!areaConfig){
+		if (!areaConfig) {
 			throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
 		}
 
 		const hasVersions = !!areaConfig.versions;
 
 		if (!hasVersions) {
-			const params: Dic = {
+			const params = {
+				columns: adapterUtil.columnsParams({ table: tables[slug], select }),
 				with: buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
 			};
-
-			// Get the table for this document type
-			const table = tables[slug];
-
-			// Create an object to hold the columns we want to select
-			const selectColumns: Dic = {};
-
-			// If select fields are specified, build the select columns object
-			if (select && select.length > 0) {
-				// Always include the ID column
-				selectColumns.id = true;
-
-				// Process each requested field
-				for (const path of select) {
-					// Convert nested paths (dot notation) to SQL format (double underscore)
-					// Example: 'attributes.slug' becomes 'attributes__slug'
-					const sqlPath = path.replace(/\./g, '__');
-
-					// If this column exists directly on the table, add it to our select
-					if (sqlPath in table) {
-						selectColumns[sqlPath] = true;
-					}
-				}
-
-				if (Object.keys(selectColumns).length) {
-					params.columns = selectColumns;
-				}
-			}
-
-			// @ts-expect-error suck
+			
+			// @ts-expect-error
 			let doc = await db.query[slug].findFirst(params);
 
 			if (!doc) {
 				await createArea(slug, createBlankDocument(areaConfig), locale);
-				// @ts-expect-error suck
+				// @ts-expect-error
 				doc = await db.query[slug].findFirst(params);
 			}
 			if (!doc) {
@@ -112,7 +55,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			return doc;
 		} else {
 			// First check for record presence
-			// @ts-expect-error suck
+			// @ts-expect-error
 			let area = await db.query[slug].findFirst({ id: true });
 
 			// If no area exists yet, create it
@@ -175,7 +118,6 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			// @ts-expect-error suck
 			let doc = await db.query[slug].findFirst(params);
 
-			
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}
