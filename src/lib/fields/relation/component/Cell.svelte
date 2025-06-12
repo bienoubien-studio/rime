@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { env } from "$env/dynamic/public";
+	import type { GenericDoc } from "$lib/core/types/doc.js";
 	import UploadThumbCell from "$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte";
 	import { getAPIProxyContext } from "$lib/panel/context/api-proxy.svelte.js";
-	import { getConfigContext } from "$lib/panel/context/config.svelte.js";
 	
   type Props = {
     value: {
@@ -26,7 +26,7 @@
   })
   
   const ressource = $derived.by(() => {
-    return APIUrl ? APIProxy.getRessource(APIUrl) : null;
+    return APIUrl ? APIProxy.getRessource<{ data: { doc: GenericDoc }}>(APIUrl) : null;
   })
   
 </script>

@@ -6,7 +6,7 @@ function createAPIProxy() {
   // Use $state to make the resources collection reactive
   const resources = $state(new Map());
   
-  function getRessource<T>(url:string) {
+  function getRessource<T extends any = any>(url:string) {
     // Check if we already have this resource
     if (!resources.has(url)) {
       // Create a new resource
