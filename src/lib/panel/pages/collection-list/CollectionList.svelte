@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setCollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import { getContext, setContext, type Snippet } from 'svelte';
+	import { getContext, setContext } from 'svelte';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
@@ -8,7 +8,6 @@
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { invalidateAll } from '$app/navigation';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { t__ } from '../../../core/i18n/index.js';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import CollectionTree from '$lib/panel/components/sections/collection/tree/CollectionTree.svelte';
@@ -30,8 +29,6 @@
 	const { data, slug }: Props = $props();
 	const config = getConfigContext();
 	const collectionConfig = config.getCollection(slug);
-	const user = getUserContext();
-	// const config = getCollection(slug)
 
 	const collection = setCollectionContext({
 		initial: data.docs,
@@ -75,18 +72,11 @@
 			</PageHeader>
 
 			<div class="rz-collection__docs">
-				<!-- {#if collection.isList()}
-					<ListHeader />
-				{/if} -->
-
 				{#if !collection.docs.length}
 					<div class="rz-page-collection__empty">
 						<div>
 							<span>
-								{t__(
-									`common.no_document|${collection.config.label.gender}`,
-									collection.config.label.singular
-								)}
+								{t__(`common.no_document|${collection.config.label.gender}`, collection.config.label.singular)}
 							</span>
 						</div>
 					</div>
@@ -133,8 +123,6 @@
 			height: calc(100vh - 3.5rem);
 			background-color: hsl(var(--rz-ground-6));
 		}
-
-		/* background-color: hsl(var(--rz-ground-5)); */
 	}
 
 	.rz-page-collection__grid {
