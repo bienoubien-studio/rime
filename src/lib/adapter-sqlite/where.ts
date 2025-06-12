@@ -23,6 +23,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 	const table = rizom.adapter.tables[slug];
 	const tableNameLocales = `${slug}Locales`;
 	const tableLocales = rizom.adapter.tables[tableNameLocales];
+	
 	const localizedColumns =
 		locale && tableNameLocales in rizom.adapter.tables
 			? Object.keys(getTableColumns(tableLocales))
@@ -60,7 +61,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// Handle regular field conditions
 		const [column, operatorObj] = Object.entries(conditionObject)[0];
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
-
+		
 		if (!isOperator(operator)) {
 			throw new RizomError(RizomError.INVALID_DATA, operator + 'is not supported')
 		}
@@ -74,11 +75,28 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// for fields included in groups or tabs
 		const sqlColumn = column.replace(/\./g, '__');
 
-		// Handle in18
+		// Handle hierarchy fields (_parent, _position) in versioned collections
+		if (isVersionsSlug(slug) && (sqlColumn === '_parent' || sqlColumn === '_position')) {
+			// Get the root table name by removing the '_versions' suffix
+			const rootSlug = slug.replace('_versions', '');
+			const rootTable = rizom.adapter.tables[rootSlug];
+			
+			// Query the root table for the hierarchy field
+			return inArray(
+				table.ownerId,
+				db
+					.select({ ownerId: rootTable.id })
+					.from(rootTable)
+					.where(fn(rootTable[sqlColumn], value))
+			);
+		}
+
+		// Handle regular fields
 		if (unlocalizedColumns.includes(sqlColumn)) {
 			return fn(table[sqlColumn], value);
 		}
 
+		// Handle localized fields
 		if (locale && localizedColumns.includes(sqlColumn)) {
 			return inArray(
 				table.id,
@@ -104,7 +122,9 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 			logger.warn(
 				`the query contains the field "${column}", not found for ${documentConfig.slug} document`
 			);
-			return false;
+			// Return a condition that will always be false instead of returning false
+			// This ensures no documents match when a non-existent field is queried
+			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
 		}
 
 		// Not a relation
@@ -112,9 +132,10 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 			logger.warn(
 				`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`
 			);
-			return false;
+			// Return a condition that will always be false
+			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
 		}
-
+		
 		// Only compare with the relation ID for now
 		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
