@@ -59,19 +59,14 @@
 		background-color: hsl(var(--rz-ground-6));
 		border-radius: var(--rz-radius-lg);
 	}
-	/* .rz-nav-group--collapsed {
-		margin-bottom: 0;
-	} */
+
 	.rz-nav-group--nav-collapsed {
-		/* border-top: var(--rz-border); */
 		padding-top: var(--rz-size-2);
-		margin-bottom: 0;
 	}
 
 	.rz-nav-group__content {
 		display: grid;
 		padding: 0 var(--rz-size-4);
-		/* border-bottom: var(--rz-border); */
 		background-color: hsl(var(--rz-ground-5) / 0.6);
 	}
 	.rz-nav-group--nav-collapsed .rz-nav-group__content {

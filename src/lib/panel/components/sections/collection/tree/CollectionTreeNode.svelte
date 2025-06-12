@@ -42,21 +42,21 @@
     display: flex;
 		border: var(--rz-border);
     border-radius: var(--rz-radius-lg);
-		height: var(--rz-size-16);
+		height: var(--rz-input-height);
 		align-items: center;
     gap: var(--rz-size-2);
 		padding: 0 1rem;
     justify-self: self-start;
-    min-width: 400px;
+    width: 100%;
     position: relative;
 	}
   .rz-collection-node:not([data-parent="root"]) .rz-collection-node__row::before{
     content: '';
     border-top: var(--rz-border);
-    translate: calc(-1 * var(--rz-size-6)) calc(var(--rz-size-8));
+    translate: calc(-1 * var(--rz-size-6)) calc(var(--rz-size-6));
     position: absolute;
     top: 0;
-    bottom: var(--rz-size-8);
+    bottom: var(--rz-size-6);
     left:0;
     width: var(--rz-size-6);
   }

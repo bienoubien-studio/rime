@@ -9,10 +9,9 @@
 	const { navCollapsed }: Props = $props();
 
 	const user = getUserContext();
-	// let form = $state<HTMLFormElement>();
 </script>
 
-<form class="rz-logout-form" action="/logout" method="POST">
+<form class="rz-logout-form" class:rz-logout-form--nav-collapsed={navCollapsed} action="/logout" method="POST">
 	{#if !navCollapsed}
 		<div class="rz-user-button">
 			<div class="rz-user-button__left">
@@ -22,7 +21,7 @@
 				<div class="rz-user-button__name">{user.attributes.name}</div>
 			</div>
 
-			<Button type="submit" variant="ghost" size="icon">
+			<Button type="submit" variant="ghost" size="icon-sm">
 				<LogOut size="12" />
 			</Button>
 		</div>
@@ -31,7 +30,7 @@
 			<Tooltip.Root>
 				<Tooltip.Trigger>
 					{#snippet child({ props })}
-						<Button {...props} type="submit" variant="ghost" size="icon">
+						<Button {...props} type="submit" variant="ghost" size="icon-sm">
 							<LogOut size="12" />
 						</Button>
 					{/snippet}
@@ -52,6 +51,11 @@
 			border-radius: var(--rz-radius-md);
 		}
 	}
+	.rz-logout-form--nav-collapsed {
+		display: flex;
+		justify-content: center;
+	}
+
 	.rz-user-button {
 		background-color: hsl(var(--rz-ground-6));
 		display: flex;
@@ -60,7 +64,7 @@
 		gap: var(--rz-size-2);
 		border-radius: var(--rz-radius-md);
 		padding: var(--rz-size-2);
-		/* box-shadow: var(--rz-shadow-sm); */
+		height: var(--rz-input-height);
 	}
 	.rz-user-button__left {
 		display: flex;
@@ -82,7 +86,5 @@
 	}
 	.rz-user-button__name {
 		@mixin line-clamp 1;
-		/* font-size: var(--rz-text-sm); */
-		/* line-clamp-1 truncate text-xs */
 	}
 </style>

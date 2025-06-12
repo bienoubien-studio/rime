@@ -122,7 +122,7 @@
 					translate: calc(-1 * var(--rz-size-6)) calc(-1 * var(--rz-size-4));
 					position: absolute;
 					top: 0;
-					height: calc( var(--rz-size-4) + var(--rz-size-8) + (var(--data-rows-count) - 1) * var(--rz-size-20));
+					height: calc( var(--rz-size-4) + var(--rz-size-6) + (var(--data-rows-count) - 1) * var(--rz-size-16));
 					left:0;
 				}
 				margin-top: var(--rz-size-4);
