@@ -3,19 +3,18 @@
 	import { getContext, setContext } from 'svelte';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
 	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { t__ } from '../../../core/i18n/index.js';
-	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import CollectionTree from '$lib/panel/components/sections/collection/tree/CollectionTree.svelte';
 	import ListRow from '$lib/panel/components/sections/collection/list-row/ListRow.svelte';
 	import GridItem from '$lib/panel/components/sections/collection/grid-item/GridItem.svelte';
 	import CollectionHeader from '$lib/panel/components/sections/collection/header/Header.svelte';
 	import SearchInput from '$lib/panel/components/sections/collection/header/SearchInput.svelte';
 	import ButtonCreate from '$lib/panel/components/sections/collection/header/ButtonCreate.svelte';
+	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
 
 	type Props = {
 		slug: PrototypeSlug;
