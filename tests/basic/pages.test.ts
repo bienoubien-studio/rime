@@ -107,7 +107,7 @@ test.describe('Admin panel', () => {
 			await page.waitForURL(`${BASE_URL}/panel/${slug}/create`);
 			await page.waitForLoadState('networkidle');
 
-			const saveButton = page.locator('.rz-page-header button[type="submit"]');
+			const saveButton = page.locator('.rz-page-header__row button[type="submit"]');
 			await expect(saveButton).toBeDisabled();
 
 			if (slug === 'pages') {
@@ -117,7 +117,7 @@ test.describe('Admin panel', () => {
 				await saveButton.click();
 				await page.waitForLoadState('networkidle');
 
-				const h1 = page.locator('.rz-page-header__title');
+				const h1 = page.locator('.rz-page-header__row h1');
 				expect(await h1.innerText()).toBe('Home');
 			}
 
@@ -136,7 +136,7 @@ test.describe('Admin panel', () => {
 				await saveButton.click();
 				await page.waitForLoadState('networkidle');
 
-				const h1 = page.locator('.rz-page-header__title');
+				const h1 = page.locator('.rz-page-header__row h1');
 				expect(await h1.innerText()).toBe('user@bienoubien.studio');
 			}
 		}
@@ -163,7 +163,7 @@ test.describe('Admin panel', () => {
 			const response = await page.goto(`/panel/${slug}`);
 			expect(response?.status()).toBe(200);
 
-			const saveButton = page.locator('.rz-page-header button[type="submit"]');
+			const saveButton = page.locator('.rz-page-header__row button[type="submit"]');
 			await expect(saveButton).toBeDisabled();
 
 			const maintenanceToggle = page.locator('.rz-field-label-for[for="settings_0-maintenance"]');
@@ -213,7 +213,7 @@ test.describe('Live Edit', () => {
 		const response = await page.goto(`/panel/pages/create`);
 		expect(response?.status()).toBe(200);
 
-		const saveButton = page.locator('.rz-page-header button[type="submit"]');
+		const saveButton = page.locator('.rz-page-header__row button[type="submit"]');
 		await expect(saveButton).toBeDisabled();
 
 		const tabAttribute = page.locator('.rz-tabs-trigger[data-value="attributes"]');

@@ -57,9 +57,7 @@
 
 	$effect(() => {
 		if (many) {
-			const list = document.querySelector(
-				`.rz-relation-upload__list[data-list="${stamp}"]`
-			) as HTMLDivElement;
+			const list = document.querySelector(`.rz-relation-upload__list[data-list="${stamp}"]`) as HTMLDivElement;
 			instance = Sortable.create(list, sortableOptions);
 		}
 	});
@@ -106,31 +104,22 @@
 	</div>
 {/key}
 
-<div
-	class="rz-relation-upload__actions"
-	class:rz-relation-upload__actions--list-empty={selectedItems.length === 0}
->
-	<Button
-		disabled={isFull || availableItems.length === 0}
-		onclick={() => (open = true)}
-		variant="outline"
-	>
+<div class="rz-relation-upload__actions" class:rz-relation-upload__actions--list-empty={selectedItems.length === 0}>
+	<Button disabled={isFull || availableItems.length === 0} onclick={() => (open = true)} variant="outline">
 		Select a {relationConfig.label.singular || relationConfig.slug}
 	</Button>
 
-	{#if !isFull}
-		{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {})}
-			<Button
-				onclick={() => {
-					create = true;
-					onRelationCreation();
-				}}
-				variant="outline"
-			>
-				<Plus size="14" />
-			</Button>
-		{/if}
-	{/if}
+	<Button
+		disabled={isFull || !(relationConfig.access.create && relationConfig.access.create(user.attributes, {}))}
+		onclick={() => {
+			create = true;
+			onRelationCreation();
+		}}
+		variant="outline"
+	>
+		<Plus size="14" />
+	</Button>
+	
 </div>
 
 <Command.Dialog bind:open onOpenChange={(val) => (open = val)}>

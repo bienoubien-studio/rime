@@ -9,6 +9,7 @@
 	import type { BrowserConfig } from '$lib/core/config/types/index.js';
 	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { goto } from '$app/navigation';
+	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 
 	type Props = {
 		doc: any;
@@ -44,11 +45,29 @@
 </script>
 
 <Toaster />
-<Document
-	onClose={() => goto(buildPanelURL())}
-	{onDataChange}
-	{onFieldFocus}
-	{doc}
-	readOnly={false}
-	operation="update"
-/>
+
+<ScrollArea>
+	<Document
+		onClose={() => goto(buildPanelURL())}
+		{onDataChange}
+		{onFieldFocus}
+		{doc}
+		readOnly={false}
+		operation="update"
+	/>
+</ScrollArea>
+
+<style>
+	:global {
+		.rz-scroll-area {
+			--rz-page-gutter: var(--rz-size-4);
+			--rz-tabs-list-top: 0;
+			height: 100vh;
+			background-color: hsl(var(--rz-ground-5));
+
+			.rz-document__fields:has(.rz-render-fields > .rz-render-fields__field[data-type='tabs']:first-child) {
+				padding-top: var(--rz-size-2);
+			}
+		}
+	}
+</style>

@@ -99,7 +99,7 @@
 			padding-left: var(--rz-fields-padding);
 			padding-right: var(--rz-fields-padding);
 			position: sticky;
-			top: var(--rz-size-14);
+			top: var(--rz-tabs-list-top, var(--rz-size-14));
 			margin-bottom: 0;
 			z-index: 40;
 		}

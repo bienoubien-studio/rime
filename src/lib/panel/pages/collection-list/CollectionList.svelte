@@ -88,14 +88,6 @@
 									collection.config.label.singular
 								)}
 							</span>
-							{#if collection.config.access.create(user.attributes, {})}
-								<Button href="/panel/{collection.config.slug}/create" variant="outline">
-									{t__(
-										`common.create_first|${collection.config.label.gender}`,
-										collection.config.label.singular
-									)}
-								</Button>
-							{/if}
 						</div>
 					</div>
 				{:else if collection.isNested()}
@@ -160,15 +152,12 @@
 		display: grid;
 	}
 	.rz-page-collection__empty {
-		place-content: center;
-		display: grid;
-		height: 100%;
-		@mixin font-medium;
-		& > div {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: var(--rz-size-3);
-		}
+		height: var(--rz-input-height);
+		background-color: hsl(var(--rz-ground-4));
+		display: flex;
+		align-items: center;
+		border-radius: var(--rz-radius-md);
+		padding: var(--rz-size-3);
+		border: var(--rz-border);
 	}
 </style>

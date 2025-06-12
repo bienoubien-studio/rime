@@ -25,7 +25,6 @@
 	//
 </script>
 
-<!-- <div class="rz-page-header {className}"> -->
 {#if children}
 	{@render children()}
 {:else}
@@ -65,7 +64,6 @@
 	{/if}
 {/if}
 
-<!-- </div> -->
 
 <style type="postcss">
 	.rz-page-header__row {

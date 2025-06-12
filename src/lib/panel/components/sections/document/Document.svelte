@@ -4,17 +4,16 @@
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
 	import { setDocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import type { GenericDoc } from '$lib/core/types/doc';
 	import CurrentlyEdited from './CurrentlyEdited.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
 	import FloatingUI from './FloatingUI.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import AuthFooter from './AuthFooter.svelte';
+	import type { GenericDoc } from '$lib/core/types/doc';
 
 	type Props = {
 		doc: GenericDoc;
@@ -48,7 +47,7 @@
 	const user = getUserContext();
 	const title = getContext<{ value: string }>('title');
 	let formElement: HTMLFormElement;
-	
+
 	beforeNavigate(async () => {
 		// if (
 		// 	operation === 'update' &&
@@ -113,78 +112,56 @@
 	enctype="multipart/form-data"
 	method="post"
 >
-	
 	{#if !liveEditing}
 		<Header {form} {config} {onClose}></Header>
 	{/if}
-	
-	<!-- <ScrollArea> -->
-		{#if form.doc.editedBy && form.doc.editedBy !== user.attributes.id}
-			<CurrentlyEdited by={form.doc.editedBy} doc={form.doc} user={user.attributes} />
-		{/if}
 
-		<div class="rz-document__fields">
-			{#if config.type === 'collection' && isUploadConfig(config)}
-				<UploadHeader accept={config.upload.accept} create={operation === 'create'} {form} />
+	{#if form.doc.editedBy && form.doc.editedBy !== user.attributes.id}
+		<CurrentlyEdited by={form.doc.editedBy} doc={form.doc} user={user.attributes} />
+	{/if}
+
+	<div class="rz-document__fields">
+		{#if config.type === 'collection' && isUploadConfig(config)}
+			<UploadHeader accept={config.upload.accept} create={operation === 'create'} {form} />
+		{/if}
+		<RenderFields fields={config.fields} {form} />
+		{#if config.type === 'collection' && isAuthConfig(config)}
+			<AuthFooter {operation} {form} />
+		{/if}
+	</div>
+
+	{#if !form.isLive}
+		<div class="rz-document__infos">
+			{#if form.doc.createdAt}
+				{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
 			{/if}
-			<RenderFields fields={config.fields} {form} />
-			{#if config.type === 'collection' && isAuthConfig(config)}
-				<AuthFooter {operation} {form} />
+			{#if form.doc.updatedAt}
+				{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
+			{/if}
+			{#if form.doc.id}
+				{@render meta('id', form.doc.id)}
 			{/if}
 		</div>
-
-		{#if !form.isLive}
-			<div class="rz-document__infos">
-				{#if form.doc.createdAt}
-					{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
-				{/if}
-				{#if form.doc.updatedAt}
-					{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
-				{/if}
-				{#if form.doc.id}
-					{@render meta('id', form.doc.id)}
-				{/if}
-			</div>
-		{:else}
-			<FloatingUI {form} {onClose} />
-		{/if}
-	<!-- </ScrollArea> -->
+	{:else}
+		<FloatingUI {form} {onClose} />
+	{/if}
 </form>
 
 <style type="postcss">
 	.rz-document {
 		container: rz-document / inline-size;
-		--rz-document-gutter: var(--rz-size-5);
 		min-height: 100vh;
 		position: relative;
-		& :global(.rz-scroll-area) {
-			height: 100vh;
-		}
-		> :global(.rz-scroll-area) {
-			--rz-fields-padding: var(--rz-size-6);
-			margin: var(--rz-document-gutter);
-			background-color: hsl(var(--rz-ground-7));
-			border-radius: var(--rz-radius-md);
-			@container rz-document (min-width:640px) {
-				--rz-fields-padding: var(--rz-size-12);
-			}
-		}
 	}
 	.rz-document__fields {
 		display: grid;
 		gap: var(--rz-size-4);
-		/* background-color: hsl(var(--rz-ground-5)); */
-		/* padding-top: var(--rz-size-5); */
 		min-height: calc(100vh - var(--rz-size-14));
 		align-content: flex-start;
 		margin-left: calc(-1 * var(--rz-fields-padding));
 		margin-right: calc(-1 * var(--rz-fields-padding));
 		padding: var(--rz-size-5) var(--rz-page-gutter);
-		/* &:not(:has(> .rz-render-fields > .rz-render-fields__field[data-type='tabs'])) {
-			padding-top: var(--rz-size-8);
-		} */
 	}
-
 	.rz-document__infos {
 		border-top: var(--rz-border);
 		@mixin px var(--rz-fields-padding);
