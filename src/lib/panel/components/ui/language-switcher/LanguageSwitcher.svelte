@@ -4,13 +4,12 @@
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import Cookies from 'js-cookie';
 
-	type Props = { onLocalClick : (code:string) => void }
-	const { onLocalClick }: Props = $props()
+	type Props = { onLocalClick: (code: string) => void };
+	const { onLocalClick }: Props = $props();
 
 	const locale = getLocaleContext();
 	const config = getConfigContext();
 	const locales = $state(config.raw.localization?.locales || []);
-	
 </script>
 
 {#if locales.length}
@@ -21,7 +20,7 @@
 				data-active={item.code === locale.code ? '' : null}
 				onclick={() => {
 					Cookies.set('Locale', item.code);
-					onLocalClick(item.code)
+					onLocalClick(item.code);
 				}}
 				variant="outline"
 				size="icon"

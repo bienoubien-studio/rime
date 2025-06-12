@@ -17,14 +17,12 @@
 {#if showDisplayMode}
 	<div class="rz-collection-header__separator"></div>
 	<DisplayMode />
-	{/if}
-	
+{/if}
+
 {#if showSelectUI}
 	<div class="rz-collection-header__separator"></div>
 	<SelectUI />
 {/if}
-
-
 
 <style type="postcss">
 	.rz-collection-header__separator {

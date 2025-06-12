@@ -1,11 +1,5 @@
 import type { Field } from '$lib/fields/types.js';
-import {
-	isBlocksFieldRaw,
-	isFormField,
-	isTreeFieldRaw,
-	isTabsFieldRaw,
-	isGroupFieldRaw
-} from '$lib/util/field.js';
+import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, isTabsFieldRaw, isGroupFieldRaw } from '$lib/util/field.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { buildTreeFieldsMap } from './buildTreeMap.server.js';

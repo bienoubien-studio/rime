@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { VERSIONS_STATUS, type VersionsStatus } from "$lib/core/constant.js";
+	import { VERSIONS_STATUS, type VersionsStatus } from '$lib/core/constant.js';
 
 	type Props = { status: VersionsStatus };
 
 	const { status }: Props = $props();
-	const colorDraft = 'hsl(14deg, 80%, 60%)'
-	const colorPublished = 'hsl(140deg, 40%, 60%)'
-	const color = $derived(status === VERSIONS_STATUS.DRAFT ? colorDraft : colorPublished )
+	const colorDraft = 'hsl(14deg, 80%, 60%)';
+	const colorPublished = 'hsl(140deg, 40%, 60%)';
+	const color = $derived(status === VERSIONS_STATUS.DRAFT ? colorDraft : colorPublished);
 </script>
 
 <div style="--rz-status-color:{color}" class="rz-status__dot"></div>

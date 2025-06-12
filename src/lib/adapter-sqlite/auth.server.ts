@@ -13,7 +13,6 @@ import { PANEL_USERS } from '$lib/core/constant.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import type { CorePlugins } from '$lib/core/types/plugins.js';
 
-
 const dev = process.env.NODE_ENV === 'development';
 
 /**
@@ -23,7 +22,7 @@ const dev = process.env.NODE_ENV === 'development';
  */
 const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, configInterface } = args;
-	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer']
+	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
 
 	const betterAuth = initBetterAuth({
 		plugins: [bearer(), admin()],
@@ -81,7 +80,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 */
 	const createFirstUser = async ({ name, email, password }: CreateFirstUserArgs) => {
 		const users = await getAuthUsers();
-		const panelUsersTable = schema[PANEL_USERS]
+		const panelUsersTable = schema[PANEL_USERS];
 
 		if (users.length || !dev) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -111,23 +110,20 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			updatedAt: now
 		};
 
-		const [user] = (await db
-			.insert(panelUsersTable)
-			.values(values)
-			.returning()) as User[];
+		const [user] = (await db.insert(panelUsersTable).values(values).returning()) as User[];
 
 		return user.id;
 	};
 
 	const isSuperAdmin = async (userId: string) => {
-		const panelUsersTable = schema[PANEL_USERS]
+		const panelUsersTable = schema[PANEL_USERS];
 		const [user] = await db
 			.select({ isSuperAdmin: panelUsersTable.isSuperAdmin })
 			.from(panelUsersTable)
 			.where(eq(panelUsersTable.id, userId));
-		if (!user) return false
-		return user.isSuperAdmin === true
-	}
+		if (!user) return false;
+		return user.isSuperAdmin === true;
+	};
 
 	/**
 	 * Retrieves the BetterAuth user ID from a collection row
@@ -167,7 +163,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 		});
 		return user.id;
 	};
-
 
 	/**
 	 * Deletes a BetterAuth user by ID
@@ -217,10 +212,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * Retrieves user attributes from an auth collection
 	 * @returns User object or undefined if not found
 	 */
-	const getUserAttributes = async ({
-		authUserId,
-		slug
-	}: GetUserAttributesArgs): Promise<User | undefined> => {
+	const getUserAttributes = async ({ authUserId, slug }: GetUserAttributesArgs): Promise<User | undefined> => {
 		const table = schema[slug];
 
 		const columns: Dic = {
@@ -228,16 +220,13 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			name: table.name,
 			roles: table.roles,
 			email: table.email
-		}
+		};
 
 		if (slug === PANEL_USERS) {
-			columns.isSuperAdmin = table.isSuperAdmin
+			columns.isSuperAdmin = table.isSuperAdmin;
 		}
 
-		const [user] = await db
-			.select(columns)
-			.from(table)
-			.where(eq(table.authUserId, authUserId));
+		const [user] = await db.select(columns).from(table).where(eq(table.authUserId, authUserId));
 
 		if (!user) return undefined;
 
@@ -260,12 +249,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * - Validates credentials
 	 * - Manages login attempts and user locking
 	 * - Handles authentication via BetterAuth
-	 * 
+	 *
 	 * @param params Login credentials and related auth collection slug
 	 * @returns Authentication token and user information
 	 */
 	const login = async ({ email, password, slug }: LoginArgs) => {
-
 		if (!email) {
 			throw new RizomFormError({ email: RizomFormError.REQUIRED_FIELD });
 		}

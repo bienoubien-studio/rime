@@ -3,12 +3,12 @@ import { RizomError, RizomFormError } from './index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 
 export const ERROR_CONTEXT = {
-  ACTION: "action",
-  API: "api",
-  load: "load"
+	ACTION: 'action',
+	API: 'api',
+	load: 'load'
 } as const;
 
-export type ErrorContext = typeof ERROR_CONTEXT[keyof typeof ERROR_CONTEXT];
+export type ErrorContext = (typeof ERROR_CONTEXT)[keyof typeof ERROR_CONTEXT];
 
 type ErrorHandlerOptions = {
 	context: ErrorContext;
@@ -51,7 +51,7 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	}
 
 	// Unknown errors
-	console.error(err)
+	console.error(err);
 	logger.error(`500 - ${err.message}`);
 
 	return error(500, 'Internal Server Error');

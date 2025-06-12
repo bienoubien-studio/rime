@@ -10,9 +10,4 @@
 	}: DropdownMenuPrimitive.ContentProps = $props();
 </script>
 
-<DropdownMenuPrimitive.Content
-	bind:ref
-	{sideOffset}
-	class="rz-dropdown-content {className}"
-	{...restProps}
-/>
+<DropdownMenuPrimitive.Content bind:ref {sideOffset} class="rz-dropdown-content {className}" {...restProps} />

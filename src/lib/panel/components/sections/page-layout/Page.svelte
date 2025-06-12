@@ -17,11 +17,10 @@
 		<aside>
 			{@render aside()}
 		</aside>
-{/if}
+	{/if}
 </div>
 
 <style>
-
 	main {
 		container: main / inline-size;
 		--rz-page-gutter: var(--rz-size-20);
@@ -31,9 +30,8 @@
 		margin-left: var(--rz-size-72);
 	} */
 
-	.rz-page-with-aside{
+	.rz-page-with-aside {
 		display: grid;
 		grid-template-columns: 1fr var(--rz-size-96);
 	}
-
 </style>

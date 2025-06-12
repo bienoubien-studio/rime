@@ -19,7 +19,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 }) => {
 	const errors: FormErrors = {};
 	const { event, locale, configMap, original, operation } = args;
-	const { user, rizom } = event.locals
+	const { user, rizom } = event.locals;
 
 	const slug = args.config.slug;
 	const isCollection = rizom.config.isCollection(slug);
@@ -27,7 +27,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 
 	for (const [key, config] of Object.entries(configMap)) {
 		let value: any = getValueAtPath(key, output);
-		
+
 		/****************************************************/
 		/* Validation
 		/****************************************************/
@@ -124,7 +124,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 			}
 		}
 	}
-	
+
 	if (Object.keys(errors).length) {
 		throw new RizomFormError(errors);
 	}

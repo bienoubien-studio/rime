@@ -80,10 +80,7 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		this.field.fields = this.field.fields.map((field) => {
 			// If it's a "position" or "path" field do not set as localized
 			// as it's a treeBlock property
-			if (
-				field instanceof FormFieldBuilder &&
-				['position', 'path', 'locale'].includes(field.raw.name)
-			) {
+			if (field instanceof FormFieldBuilder && ['position', 'path', 'locale'].includes(field.raw.name)) {
 				return field;
 			}
 			// For all others fields set as localized
@@ -116,10 +113,7 @@ export const treeToString = (blocks: TreeBlock[] | undefined | null) => {
 		}
 		const representation = {
 			path: `${curr.path} - ${curr.position} - ${curr.id}`,
-			_children:
-				curr._children && Array.isArray(curr._children)
-					? curr._children.reduce(reduceBlocks, [])
-					: []
+			_children: curr._children && Array.isArray(curr._children) ? curr._children.reduce(reduceBlocks, []) : []
 		};
 		prev.push(representation);
 		return prev;

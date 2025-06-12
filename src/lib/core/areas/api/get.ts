@@ -15,7 +15,9 @@ export default function (slug: AreaSlug) {
 		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
 		const paramSelect = event.url.searchParams.get(PARAMS.SELECT);
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
-		const draft = event.url.searchParams.get(PARAMS.DRAFT) ? event.url.searchParams.get(PARAMS.DRAFT) === 'true' : undefined;
+		const draft = event.url.searchParams.get(PARAMS.DRAFT)
+			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
+			: undefined;
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const params: Dic = {
@@ -24,11 +26,11 @@ export default function (slug: AreaSlug) {
 			versionId,
 			depth
 		};
-			
+
 		if (paramSelect) {
 			params.select = paramSelect.split(',');
 		}
-		
+
 		const [error, doc] = await safe(rizom.area(slug).find(params));
 
 		if (error) {

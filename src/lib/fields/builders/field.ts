@@ -90,17 +90,15 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		const processedName = hasLeadingUnderscore ? name.slice(1) : name;
 
 		const processParts = (parts: string[], formatter: (s: string) => string) => {
-		    const processed = parts
-		        .map((part) => formatter(part))
-		        .join('__');
-		    return hasLeadingUnderscore ? `_${processed}` : processed;
+			const processed = parts.map((part) => formatter(part)).join('__');
+			return hasLeadingUnderscore ? `_${processed}` : processed;
 		};
 
 		const parts = processedName.split('__');
 
 		return {
-		    camel: processParts(parts, toCamelCase),
-		    snake: processParts(parts, toSnakeCase)
+			camel: processParts(parts, toCamelCase),
+			snake: processParts(parts, toSnakeCase)
 		};
 	}
 

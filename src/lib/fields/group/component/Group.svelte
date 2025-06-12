@@ -71,7 +71,7 @@
 			@mixin ring var(--rz-color-error);
 		}
 	}
-	.rz-group-field__preview{
+	.rz-group-field__preview {
 		display: block;
 		width: 100%;
 		text-align: left;
@@ -101,7 +101,7 @@
 			display: flex;
 			align-items: center;
 		}
-		
+
 		&.open :global(.lucide-chevron-down) {
 			rotate: -180deg;
 		}

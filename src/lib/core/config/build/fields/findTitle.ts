@@ -7,9 +7,7 @@ import type { SlugField } from '$lib/fields/slug/index.js';
 import type { TextField } from '$lib/fields/text/index.js';
 import type { Field } from '$lib/fields/types.js';
 
-export const hasMaybeTitle = (
-	field: Field
-): field is TextField | DateField | SlugField | EmailField =>
+export const hasMaybeTitle = (field: Field): field is TextField | DateField | SlugField | EmailField =>
 	['text', 'date', 'slug', 'email'].includes(field.type);
 
 interface TitleFieldResult {
@@ -17,10 +15,7 @@ interface TitleFieldResult {
 	path: string;
 }
 
-export function findTitleField(
-	fields: FieldBuilder<Field>[],
-	basePath: string = ''
-): TitleFieldResult | null {
+export function findTitleField(fields: FieldBuilder<Field>[], basePath: string = ''): TitleFieldResult | null {
 	for (const field of fields) {
 		// Direct check for isTitle
 		if (hasMaybeTitle(field.raw) && 'isTitle' in field.raw && field.raw.isTitle === true) {

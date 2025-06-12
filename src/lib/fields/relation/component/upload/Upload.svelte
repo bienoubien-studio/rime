@@ -119,7 +119,6 @@
 	>
 		<Plus size="14" />
 	</Button>
-	
 </div>
 
 <Command.Dialog bind:open onOpenChange={(val) => (open = val)}>

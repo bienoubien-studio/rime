@@ -36,7 +36,6 @@ export const augmentDocument = async <T extends GenericDoc>(args: {
 		};
 	}
 
-
 	output = sortDocumentKeys(output);
 
 	return output as T;
@@ -44,17 +43,7 @@ export const augmentDocument = async <T extends GenericDoc>(args: {
 
 function sortDocumentKeys<T extends Dic>(obj: T): T {
 	const specificOrder = ['id', 'title', 'status'];
-	const endOrder = [
-		'locale',
-		'path',
-		'position',
-		'ownerId',
-		'createdAt',
-		'updatedAt',
-		'_type',
-		'_prototype',
-		'_live'
-	];
+	const endOrder = ['locale', 'path', 'position', 'ownerId', 'createdAt', 'updatedAt', '_type', '_prototype', '_live'];
 
 	function sortObjectKeys(obj: Dic): Dic {
 		// If not an object or is null, return the value as-is

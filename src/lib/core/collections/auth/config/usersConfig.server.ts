@@ -7,8 +7,8 @@ import { PANEL_USERS } from '$lib/core/constant.js';
 export const panelUsersCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
 	panel: {
-		description: "Manage who can access your admin panel",
-		group: 'system',
+		description: 'Manage who can access your admin panel',
+		group: 'system'
 	},
 	auth: true,
 	icon: UsersRound,

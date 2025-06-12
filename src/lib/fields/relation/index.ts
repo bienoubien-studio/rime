@@ -12,23 +12,19 @@ import Cell from './component/Cell.svelte';
 
 type RelationValue = string | Array<Relation | string>;
 
-const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (
-	value: RelationValue,
-	{ event, config }
-) => {
+const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (value: RelationValue, { event, config }) => {
 	const output = [];
-	
+
 	const retrieveRelation = async (id: string) => {
 		try {
 			return await event.locals.rizom.collection(config.relationTo).findById({ id });
 		} catch (err: any) {
 			logger.error('Error in relation beforValidate hook : ' + err.message);
-			throw new RizomError(RizomError.OPERATION_ERROR, err.message)
+			throw new RizomError(RizomError.OPERATION_ERROR, err.message);
 		}
 	};
 
 	if (value && Array.isArray(value)) {
-		
 		for (const relation of value) {
 			let documentId;
 			if (typeof relation === 'string') {
@@ -66,7 +62,7 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 	get component() {
 		return RelationComponent;
 	}
-	
+
 	get cell() {
 		return Cell;
 	}

@@ -17,32 +17,38 @@
 	const statusList = Object.values(VERSIONS_STATUS);
 
 	let dialogOpen = $state(false);
-	
+
 	async function handleValidateStatus() {
-		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/'
-		console.log(`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`)
-		await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`, {
-			method: 'PATCH',
-			body: JSON.stringify({
-				status: internalValue
-			})
-		}).then((r) => {
-			if( r.status === 200){
-				toast.success(t__('common.doc_updated'))
-				form.setValue('status', internalValue)
-				dialogOpen = false;
-				invalidateAll()
-			}else{
-				toast.error(t__('common.error_occured'))
+		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/';
+		console.log(
+			`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`
+		);
+		await fetch(
+			`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`,
+			{
+				method: 'PATCH',
+				body: JSON.stringify({
+					status: internalValue
+				})
 			}
-		}).catch((err) => {
-			toast.error(t__('common.error_occured'))
-		})
+		)
+			.then((r) => {
+				if (r.status === 200) {
+					toast.success(t__('common.doc_updated'));
+					form.setValue('status', internalValue);
+					dialogOpen = false;
+					invalidateAll();
+				} else {
+					toast.error(t__('common.error_occured'));
+				}
+			})
+			.catch((err) => {
+				toast.error(t__('common.error_occured'));
+			});
 	}
 
-	let initialValue = $state.snapshot(form.doc.status)
-	let internalValue = $state(initialValue)
-
+	let initialValue = $state.snapshot(form.doc.status);
+	let internalValue = $state(initialValue);
 </script>
 
 <Dialog.Root bind:open={dialogOpen}>
@@ -68,7 +74,7 @@
 		</Radio.Root>
 		<Dialog.Footer --rz-justify-content="space-between">
 			<Button onclick={handleValidateStatus} variant="outline">Validate</Button>
-			<Button onclick={() => dialogOpen = false} variant="secondary">Cancel</Button>
+			<Button onclick={() => (dialogOpen = false)} variant="secondary">Cancel</Button>
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
@@ -80,13 +86,13 @@
 		padding: var(--rz-size-3);
 		border: var(--rz-border);
 	}
-	:global{
-			.rz-dialog-footer button{
-				flex:1;
-			}
+	:global {
+		.rz-dialog-footer button {
+			flex: 1;
 		}
-	p{
+	}
+	p {
 		color: hsl(var(--rz-color-fg) / 0.5);
-		@mixin font-normal
+		@mixin font-normal;
 	}
 </style>

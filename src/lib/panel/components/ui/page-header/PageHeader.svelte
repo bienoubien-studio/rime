@@ -12,15 +12,7 @@
 		topLeft?: Snippet;
 		topRight?: Snippet;
 	};
-	const {
-		children,
-		bottomRight,
-		bottomLeft,
-		topRight,
-		topLeft,
-		title,
-		class: className
-	}: Props = $props();
+	const { children, bottomRight, bottomLeft, topRight, topLeft, title, class: className }: Props = $props();
 
 	//
 </script>
@@ -63,7 +55,6 @@
 		</div>
 	{/if}
 {/if}
-
 
 <style type="postcss">
 	.rz-page-header__row {

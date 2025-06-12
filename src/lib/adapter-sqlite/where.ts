@@ -19,51 +19,43 @@ type BuildWhereArgs = {
 };
 
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
-	
 	const table = rizom.adapter.tables[slug];
 	const tableNameLocales = `${slug}Locales`;
 	const tableLocales = rizom.adapter.tables[tableNameLocales];
-	
+
 	const localizedColumns =
-		locale && tableNameLocales in rizom.adapter.tables
-			? Object.keys(getTableColumns(tableLocales))
-			: [];
+		locale && tableNameLocales in rizom.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
-		
 		// Handle nested AND conditions
 		if ('and' in conditionObject && Array.isArray(conditionObject.and)) {
-			const subConditions = conditionObject.and
-				.map((condition) => buildCondition(condition as Dic))
-				.filter(Boolean);
+			const subConditions = conditionObject.and.map((condition) => buildCondition(condition as Dic)).filter(Boolean);
 			return subConditions.length ? and(...subConditions) : false;
 		}
 
 		// Handle nested OR conditions
 		if ('or' in conditionObject && Array.isArray(conditionObject.or)) {
-			const subConditions = conditionObject.or
-				.map((condition) => buildCondition(condition as Dic))
-				.filter(Boolean);
+			const subConditions = conditionObject.or.map((condition) => buildCondition(condition as Dic)).filter(Boolean);
 			return subConditions.length ? or(...subConditions) : false;
 		}
-		
+
 		// Handle id field for versioned collections
 		// if "id" inside the query it should refer to the root table
 		// record id not from the versions table
-    if (isVersionsSlug(slug) && 'id' in conditionObject) {
+		if (isVersionsSlug(slug) && 'id' in conditionObject) {
 			// Replace id with ownerId and keep the same operator and value
 			const idOperator = conditionObject.id;
 			delete conditionObject.id;
-			conditionObject.ownerId = idOperator;	
+			conditionObject.ownerId = idOperator;
 		}
 
 		// Handle regular field conditions
 		const [column, operatorObj] = Object.entries(conditionObject)[0];
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
-		
+
 		if (!isOperator(operator)) {
-			throw new RizomError(RizomError.INVALID_DATA, operator + 'is not supported')
+			throw new RizomError(RizomError.INVALID_DATA, operator + 'is not supported');
 		}
 
 		// get the correct Drizzle operator
@@ -80,14 +72,11 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
 			const rootTable = rizom.adapter.tables[rootSlug];
-			
+
 			// Query the root table for the hierarchy field
 			return inArray(
 				table.ownerId,
-				db
-					.select({ ownerId: rootTable.id })
-					.from(rootTable)
-					.where(fn(rootTable[sqlColumn], value))
+				db.select({ ownerId: rootTable.id }).from(rootTable).where(fn(rootTable[sqlColumn], value))
 			);
 		}
 
@@ -119,9 +108,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		if (!fieldConfig) {
 			// @TODO handle relation props ex: author.email
-			logger.warn(
-				`the query contains the field "${column}", not found for ${documentConfig.slug} document`
-			);
+			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
 			// Return a condition that will always be false instead of returning false
 			// This ensures no documents match when a non-existent field is queried
 			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
@@ -129,13 +116,11 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		// Not a relation
 		if (!isRelationField(fieldConfig)) {
-			logger.warn(
-				`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`
-			);
+			logger.warn(`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`);
 			// Return a condition that will always be false
 			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
 		}
-		
+
 		// Only compare with the relation ID for now
 		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];

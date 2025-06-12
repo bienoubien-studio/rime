@@ -69,7 +69,7 @@
 
 	$effect(() => {
 		if (!isPrimitiveType) {
-			if( (field.value && ressourceId !== field.value.value) || !field.value && ressourceId ){
+			if ((field.value && ressourceId !== field.value.value) || (!field.value && ressourceId)) {
 				linkValue = ressourceId;
 				setValue();
 			}
@@ -87,7 +87,7 @@
 			value: linkValue,
 			target: targetBlank ? '_blank' : '_self'
 		};
-		field.value = value
+		field.value = value;
 	};
 
 	$effect(() => {
@@ -106,41 +106,37 @@
 		class="rz-link-field"
 		data-error={field.error ? 'true' : 'false'}
 	>
-		<div
-			class="rz-link-field__bottom"
-			style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}"
-		>
-
+		<div class="rz-link-field__bottom" style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}">
 			<!-- Type -->
-			 {#if linkTypes.length === 1}
-					<Button class="rz-link__type-single" variant="secondary">
-						<Icon class="rz-link__type-icon" size={12} />
-						<p class="rz-link__type-text">{capitalize(linkType)}</p>
-					</Button>
-			 {:else}
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					{#snippet child({ props })}
-						<Button variant="secondary" {...props}>
-							<Icon class="rz-link__type-icon" size={12} />
-							<p class="rz-link__type-text">{capitalize(linkType)}</p>
-							<ChevronDown class="rz-link__type-icon" size={12} />
-						</Button>
-					{/snippet}
-				</DropdownMenu.Trigger>
+			{#if linkTypes.length === 1}
+				<Button class="rz-link__type-single" variant="secondary">
+					<Icon class="rz-link__type-icon" size={12} />
+					<p class="rz-link__type-text">{capitalize(linkType)}</p>
+				</Button>
+			{:else}
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button variant="secondary" {...props}>
+								<Icon class="rz-link__type-icon" size={12} />
+								<p class="rz-link__type-text">{capitalize(linkType)}</p>
+								<ChevronDown class="rz-link__type-icon" size={12} />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
 
-				<DropdownMenu.Portal>
-					<DropdownMenu.Content class="rz-link__type-content" align="start">
-						<DropdownMenu.RadioGroup onValueChange={onTypeChange} bind:value={linkType}>
-							{#each linkTypes as type, index (index)}
-								<DropdownMenu.RadioItem value={type}>
-									{capitalize(type)}
-								</DropdownMenu.RadioItem>
-							{/each}
-						</DropdownMenu.RadioGroup>
-					</DropdownMenu.Content>
-				</DropdownMenu.Portal>
-			</DropdownMenu.Root>
+					<DropdownMenu.Portal>
+						<DropdownMenu.Content class="rz-link__type-content" align="start">
+							<DropdownMenu.RadioGroup onValueChange={onTypeChange} bind:value={linkType}>
+								{#each linkTypes as type, index (index)}
+									<DropdownMenu.RadioItem value={type}>
+										{capitalize(type)}
+									</DropdownMenu.RadioItem>
+								{/each}
+							</DropdownMenu.RadioGroup>
+						</DropdownMenu.Content>
+					</DropdownMenu.Portal>
+				</DropdownMenu.Root>
 			{/if}
 			<!-- Value -->
 
@@ -154,12 +150,7 @@
 					oninput={onInput}
 				/>
 			{:else}
-				<RessourceInput
-					error={isLinkValueError}
-					type={linkType}
-					bind:ressourceId
-					readOnly={form.readOnly}
-				/>
+				<RessourceInput error={isLinkValueError} type={linkType} bind:ressourceId readOnly={form.readOnly} />
 			{/if}
 
 			<!-- Target -->
@@ -192,7 +183,6 @@
 		top: -1.3rem;
 	}
 
-	
 	.rz-link-field__bottom {
 		display: flex;
 		position: relative;
@@ -252,7 +242,7 @@
 		gap: var(--rz-size-4);
 		min-width: 140px;
 		padding: 0 var(--rz-size-4);
-		:global(.rz-label){
+		:global(.rz-label) {
 			text-wrap: nowrap;
 		}
 

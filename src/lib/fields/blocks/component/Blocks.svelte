@@ -75,7 +75,7 @@
 	function expandAll() {
 		blocksComponents.forEach((comp) => comp.setCollapse(false));
 	}
-	
+
 	onDestroy(() => {
 		if (sortableInstance) sortableInstance.destroy();
 	});
@@ -115,22 +115,16 @@
 			{/each}
 		{/if}
 	</div>
-	
+
 	<div class="rz-blocks__actions-bottom">
-		<AddBlockButton
-			addBlock={add}
-			class="rz-blocks__add-button"
-			size={nested ? 'sm' : 'default'}
-			{config}
-		/>
-		
+		<AddBlockButton addBlock={add} class="rz-blocks__add-button" size={nested ? 'sm' : 'default'} {config} />
+
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
 			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
 				Get <span class="uz-upper">{locale.defaultCode}</span> data
 			</Button>
 		{/if}
 	</div>
-
 </fieldset>
 
 <style lang="postcss">
@@ -165,10 +159,9 @@
 		display: flex;
 		justify-content: space-between;
 	}
-	.rz-blocks__actions-bottom{
+	.rz-blocks__actions-bottom {
 		display: flex;
 		gap: var(--rz-size-3);
 		align-items: center;
 	}
-
 </style>

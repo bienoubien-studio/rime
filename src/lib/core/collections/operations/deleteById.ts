@@ -12,7 +12,7 @@ type DeleteArgs = {
 
 export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promise<string> => {
 	const { event, id, config } = args;
-	const { rizom } = event.locals
+	const { rizom } = event.locals;
 
 	const authorized = config.access.delete(event.locals.user, { id });
 	if (!authorized) {
@@ -33,7 +33,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			event
 		});
 	}
-	
+
 	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
 
 	for (const hook of config.hooks?.afterDelete || []) {

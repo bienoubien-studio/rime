@@ -29,11 +29,7 @@
 		}
 	});
 
-	const passwordField = text('password')
-		.layout('compact')
-		.label(t__('fields.password'))
-		.required()
-		.compile();
+	const passwordField = text('password').layout('compact').label(t__('fields.password')).required().compile();
 
 	const emailField = email.layout('compact').compile();
 </script>

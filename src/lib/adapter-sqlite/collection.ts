@@ -327,13 +327,12 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
-			
+
 			//@ts-ignore
 			return await db.query[slug].findMany({
 				columns: selectColumns,
 				...params
 			});
-			
 		} else {
 			// Implementation for versioned collections
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);

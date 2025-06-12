@@ -1,4 +1,3 @@
-
 .rz-combobox__chevron {
 	margin-left: var(--rz-size-2);
 	height: var(--rz-size-4);
@@ -29,8 +28,8 @@
 	visibility: hidden;
 }
 
-.rz-combobox__option-label{
+.rz-combobox__option-label {
 	display: flex;
-	align-items:center;
+	align-items: center;
 	gap: var(--rz-size-3);
 }

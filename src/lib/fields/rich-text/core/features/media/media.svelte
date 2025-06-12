@@ -26,8 +26,8 @@
 	let selected = $state<Omit<NodeAttributes, 'legend'> | null>();
 	let legendElement = $state<HTMLParagraphElement>();
 	let legend = $state('');
-	let dialogLegendOpen = $state(false)
-	
+	let dialogLegendOpen = $state(false);
+
 	const handleClick = () => {
 		isDialogOpen = true;
 	};
@@ -116,7 +116,6 @@
 			legend
 		} as NodeAttributes);
 	}
-	
 </script>
 
 <NodeViewWrapper>
@@ -125,7 +124,7 @@
 			<Button variant="outline" onclick={handleClick}>Add a media</Button>
 		{:else}
 			<div class="rz-richtext-media__actions">
-				<button class="rz-richtext-media__button" type="button" onclick={() => dialogLegendOpen = true}>
+				<button class="rz-richtext-media__button" type="button" onclick={() => (dialogLegendOpen = true)}>
 					{legend || 'set legend'}
 				</button>
 				<button class="rz-richtext-media__button rz-richtext-media__button-remove" type="button" onclick={removeMedia}>
@@ -190,12 +189,11 @@
 
 <style lang="postcss">
 	:global(.ProseMirror-selectednode .rz-richtext-media) {
-		
-		&::after{
+		&::after {
 			content: '';
-			position:absolute;
-			inset:0;
-			mix-blend-mode:screen;
+			position: absolute;
+			inset: 0;
+			mix-blend-mode: screen;
 			background-color: hsl(var(--rz-color-primary) / 0.6);
 			pointer-events: none;
 		}
@@ -207,7 +205,7 @@
 	.rz-richtext-media {
 		position: relative;
 	}
-	
+
 	.rz-richtext-media__actions {
 		position: absolute;
 		font-size: var(--rz-text-sm);
@@ -230,7 +228,7 @@
 		align-items: center;
 		justify-content: center;
 	}
-	.rz-richtext-media__legend{
+	.rz-richtext-media__legend {
 		font-style: italic;
 		font-size: var(--rz-text-sm);
 		opacity: 0.5;

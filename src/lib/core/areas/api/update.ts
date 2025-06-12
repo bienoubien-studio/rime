@@ -12,18 +12,20 @@ export default function (slug: AreaSlug) {
 
 		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
-		const draft = event.url.searchParams.get(PARAMS.DRAFT) ? event.url.searchParams.get(PARAMS.DRAFT) === 'true' : undefined;
+		const draft = event.url.searchParams.get(PARAMS.DRAFT)
+			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
+			: undefined;
 		const data = await extractData(event.request);
-		
+
 		const [error, doc] = await safe(
-			rizom.area(slug).update({ 
+			rizom.area(slug).update({
 				data,
 				versionId,
 				draft,
-				locale: paramLocale || data.locale || locale 
+				locale: paramLocale || data.locale || locale
 			})
 		);
-			
+
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

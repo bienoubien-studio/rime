@@ -55,13 +55,7 @@
 
 	{#snippet bottomRight()}
 		{#if config.url && form.doc.url}
-			<Button
-				icon={ExternalLink}
-				target="_blank"
-				href={form.doc.url}
-				size="icon-sm"
-				variant="secondary"
-			/>
+			<Button icon={ExternalLink} target="_blank" href={form.doc.url} size="icon-sm" variant="secondary" />
 		{/if}
 
 		{#if config.live && form.doc._live}
@@ -76,15 +70,10 @@
 		{/if}
 
 		<Settings {form} />
-	
+
 		{#if !form.config.versions}
 			<!-- scenario 1: no versions -->
-			<ButtonSave
-				size="sm"
-				label={t__('common.save')}
-				disabled={!form.canSubmit}
-				processing={form.processing}
-			/>
+			<ButtonSave size="sm" label={t__('common.save')} disabled={!form.canSubmit} processing={form.processing} />
 		{:else if form.config.versions && !form.config.versions.draft}
 			<!-- scenario 2: versions without draft -->
 			<ButtonSave

@@ -4,12 +4,7 @@
 
 	type PrimitiveDivAttributes = WithElementRef<HTMLAttributes<HTMLDivElement>>;
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: PrimitiveDivAttributes = $props();
+	let { ref = $bindable(null), class: className, children, ...restProps }: PrimitiveDivAttributes = $props();
 </script>
 
 <div bind:this={ref} class="rz-sheet-footer {className}" {...restProps}>

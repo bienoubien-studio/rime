@@ -3,14 +3,7 @@ import { flatten, unflatten } from 'flat';
 import { toPascalCase } from '../util/string.js';
 import type { Relation } from './relations.js';
 import deepmerge from 'deepmerge';
-import type {
-	AreaSlug,
-	CollectionSlug,
-	GenericBlock,
-	GenericDoc,
-	PrototypeSlug,
-	RawDoc
-} from '$lib/core/types/doc.js';
+import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import type { Dic } from '$lib/util/types.js';
 import { extractFieldName } from '../fields/tree/util.js';
@@ -18,7 +11,12 @@ import { privateFieldNames } from '../core/collections/auth/config/privateFields
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Rizom } from '../core/rizom.server.js';
 import { logger } from '../core/logger/index.server.js';
-import { getBlocksTableNames, getTreeTableNames, makeVersionsSlug, transformDatabaseColumnsToPaths } from '../util/schema.js';
+import {
+	getBlocksTableNames,
+	getTreeTableNames,
+	makeVersionsSlug,
+	transformDatabaseColumnsToPaths
+} from '../util/schema.js';
 
 /****************************************************/
 /* Types
@@ -34,10 +32,7 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 /* Interface
 /****************************************************/
 
-export const databaseTransformInterface = ({
-	configInterface,
-	tables
-}: CreateTransformInterfaceArgs) => {
+export const databaseTransformInterface = ({ configInterface, tables }: CreateTransformInterfaceArgs) => {
 	type Transformed<T> = Omit<T, '_url' | '_type' | '_prototype'> & {
 		title?: string;
 	};
@@ -53,12 +48,12 @@ export const databaseTransformInterface = ({
 		//
 
 		const { slug, locale, event, withBlank = true, depth = 0 } = args;
-		const { rizom } = event.locals
+		const { rizom } = event.locals;
 
 		let doc = args.doc;
 
-		const config = configInterface.getBySlug(slug)
-		const isVersioned = !!config.versions
+		const config = configInterface.getBySlug(slug);
+		const isVersioned = !!config.versions;
 		const tableName = isVersioned ? makeVersionsSlug(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
 		const tableNameLocales = `${tableName}Locales`;
@@ -80,7 +75,7 @@ export const databaseTransformInterface = ({
 			delete doc[tableNameLocales];
 			delete doc.ownerId;
 		}
-		
+
 		let flatDoc: Dic = flatten(doc);
 
 		// Transform flattened keys from database schema format to document format
@@ -93,7 +88,6 @@ export const databaseTransformInterface = ({
 		/** Extract all blocks  */
 		const blocksTables = getBlocksTableNames(tableName, tables);
 		const blocks: Dic[] = blocksTables.flatMap((blockTable) => doc[blockTable] || []);
-
 
 		/** Place each block in its path */
 		for (let block of blocks) {
@@ -219,13 +213,13 @@ export const databaseTransformInterface = ({
 		}
 
 		keysToDelete.push(...privateFieldNames);
-		
+
 		if (withBlank) {
 			output = omit(keysToDelete, deepmerge(blankDocument, output, { arrayMerge: (_, y) => y }));
 		} else {
 			output = omit(keysToDelete, output);
 		}
-		
+
 		return output as T;
 	};
 

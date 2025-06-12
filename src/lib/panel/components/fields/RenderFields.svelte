@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		isComponentField,
-		isLiveField,
-		isNotHidden,
-		isPresentative,
-		isTabsField
-	} from '$lib/util/field.js';
+	import { isComponentField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { Field, FieldsType, FormField, AnyField } from '$lib/fields/types.js';
@@ -23,9 +17,7 @@
 	const user = getUserContext();
 	const config = getConfigContext();
 
-	const fieldComponent = (
-		type: FieldsType
-	): Component<{ path: string; config: Field; form: typeof form }> => {
+	const fieldComponent = (type: FieldsType): Component<{ path: string; config: Field; form: typeof form }> => {
 		return config.raw.blueprints[type].component || null;
 	};
 
@@ -41,8 +33,7 @@
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
 
-	const widthClassModifier = (field: FormField) =>
-		`rz-render-fields__field--${field.width || 'full'}`;
+	const widthClassModifier = (field: FormField) => `rz-render-fields__field--${field.width || 'full'}`;
 
 	//
 </script>
@@ -85,7 +76,7 @@
 		height: fit-content;
 		padding-left: var(--rz-fields-padding);
 		padding-right: var(--rz-fields-padding);
-		
+
 		& > * {
 			position: relative;
 		}

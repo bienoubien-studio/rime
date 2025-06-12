@@ -19,19 +19,9 @@ export const saveTreeBlocks = async (args: {
 	ownerId: string;
 	locale?: string;
 }) => {
-	const {
-		data,
-		configMap,
-		incomingPaths,
-		original,
-		originalConfigMap,
-		adapter,
-		config,
-		ownerId,
-		locale
-	} = args;
+	const { data, configMap, incomingPaths, original, originalConfigMap, adapter, config, ownerId, locale } = args;
 
-	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug
+	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
 
 	// Get incomings
 	const incomingTreeBlocks = extractTreeBlocks({
@@ -53,7 +43,6 @@ export const saveTreeBlocks = async (args: {
 			// in order to not delete unmodified blocks fields
 			return incomingPaths.some((path) => block.path?.startsWith(path));
 		});
-
 	}
 
 	const treeDiff = defineTreeBlocksDiff({
@@ -61,12 +50,9 @@ export const saveTreeBlocks = async (args: {
 		incomingBlocks: incomingTreeBlocks
 	});
 
-
 	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {
-		await Promise.all(
-			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block }))
-		);
+		await Promise.all(treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block })));
 	}
 
 	if (treeDiff.toAdd.length) {
@@ -84,9 +70,7 @@ export const saveTreeBlocks = async (args: {
 
 	if (treeDiff.toUpdate.length) {
 		await Promise.all(
-			treeDiff.toUpdate.map((block) =>
-				adapter.tree.update({ parentSlug: parentTable, block, locale: locale })
-			)
+			treeDiff.toUpdate.map((block) => adapter.tree.update({ parentSlug: parentTable, block, locale: locale }))
 		);
 	}
 

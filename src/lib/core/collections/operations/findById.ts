@@ -15,12 +15,12 @@ type Args = {
 	event: RequestEvent;
 	depth?: number;
 	select?: string[];
-	draft?: boolean
+	draft?: boolean;
 };
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, versionId, locale, depth, select, draft } = args;
-	const { rizom } = event.locals
+	const { rizom } = event.locals;
 
 	/****************************************************/
 	// Authorized
@@ -29,7 +29,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
 	}
-	
+
 	const documentRaw = await rizom.adapter.collection.findById({
 		slug: config.slug,
 		id,
@@ -46,7 +46,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		depth,
 		event
 	});
-	
+
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],

@@ -18,21 +18,21 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 	const config = configInterface.getBySlug(slug);
 	const hasVersions = !!config.versions;
 
-	const getOrderFunc = (str?:string) => {
-		if( typeof str !== 'string' ) return asc
-		return str.charAt(0) === '-' ? desc : asc
-	}
-	
+	const getOrderFunc = (str?: string) => {
+		if (typeof str !== 'string') return asc;
+		return str.charAt(0) === '-' ? desc : asc;
+	};
+
 	// Get the root table
 	const rootTable = tables[slug];
-	by = by ? pathToDatabaseColumn(by) : by
-	
+	by = by ? pathToDatabaseColumn(by) : by;
+
 	// Default case: no sort parameter provided
 	if (!by) {
 		// Default to sorting by updatedAt in descending order
 		return [desc(rootTable.updatedAt)];
 	}
-	
+
 	// Handle system fields (createdAt/updatedAt)
 	if (by === 'createdAt' || by === 'updatedAt' || by === '-createdAt' || by === '-updatedAt') {
 		// Determine sort direction (asc/desc) based on presence of '-' prefix
@@ -41,26 +41,26 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 		const columnStr = by.replace(/^-/, '');
 		return [orderFunc(rootTable[columnStr])];
 	}
-	
+
 	const orderFunc = getOrderFunc(by);
 	const columnStr = by.replace(/^-/, '');
 
 	// For non-versioned collections
 	if (!hasVersions) {
 		const rootTableColumns = Object.keys(getTableColumns(rootTable));
-		
+
 		// Check if the column exists in the root table
 		if (rootTableColumns.includes(columnStr)) {
 			return [orderFunc(rootTable[columnStr])];
 		}
-		
+
 		// Check if it's a localized field in a non-versioned collection
 		if (locale) {
 			const localeTableName = `${slug}Locales` as keyof typeof tables;
 			if (localeTableName in tables) {
 				const localeTable = tables[localeTableName];
 				const localizedColumns = getTableColumns(localeTable);
-				
+
 				if (Object.keys(localizedColumns).includes(columnStr)) {
 					const { name: sqlLocaleTableName } = getTableConfig(localeTable);
 					const { name: sqlTableName } = getTableConfig(rootTable);
@@ -75,15 +75,15 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 			}
 		}
 	} else {
-		const versionTableName = makeVersionsSlug(slug)
-		const versionsTable = tables[ versionTableName ];
+		const versionTableName = makeVersionsSlug(slug);
+		const versionsTable = tables[versionTableName];
 		const versionsTableColumns = Object.keys(getTableColumns(versionsTable));
-		
+
 		// Check if the column exists in the versions table and is not a system field
 		if (versionsTableColumns.includes(columnStr) && columnStr !== 'createdAt' && columnStr !== 'updatedAt') {
 			const { name: sqlVersionsTableName } = getTableConfig(versionsTable);
 			const { name: sqlRootTableName } = getTableConfig(rootTable);
-			
+
 			// Use a subquery to get the value from the latest version for ordering
 			return [
 				orderFunc(
@@ -93,19 +93,19 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 				)
 			];
 		}
-		
+
 		// Check if it's a localized field in a versioned collection
 		if (locale) {
 			const versionsLocaleTableName = `${versionTableName}Locales` as keyof typeof tables;
 			if (versionsLocaleTableName in tables) {
 				const localeTable = tables[versionsLocaleTableName];
 				const localizedColumns = getTableColumns(localeTable);
-				
+
 				if (Object.keys(localizedColumns).includes(columnStr)) {
 					const { name: sqlLocaleTableName } = getTableConfig(localeTable);
 					const { name: sqlVersionsTableName } = getTableConfig(versionsTable);
 					const { name: sqlRootTableName } = getTableConfig(rootTable);
-					
+
 					// Nested subquery: first get the latest version, then get the localized value
 					return [
 						orderFunc(
@@ -126,9 +126,9 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 			}
 		}
 	}
-	
+
 	logger.warn(`"${by}" is not a property of ${slug}`);
-	
+
 	// Fallback to ordering by createdAt on the root table
 	return [desc(rootTable.createdAt)];
 };

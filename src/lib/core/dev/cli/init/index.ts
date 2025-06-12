@@ -42,10 +42,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 
 				if (exists) {
 					if (config.replace) {
-						envContent = envContent.replace(
-							new RegExp(`^${key}=.*`, 'm'),
-							`${key}=${config.value}`
-						);
+						envContent = envContent.replace(new RegExp(`^${key}=.*`, 'm'), `${key}=${config.value}`);
 					}
 				} else {
 					// Add new value if doesn't exist
@@ -110,27 +107,21 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		const content = readFileSync(configPath, 'utf-8');
 		if (!content.includes('rizom()')) {
 			// Add import
-			const newContent = content.replace(
-				/(import .* from .*;\n?)/,
-				`$1import { rizom } from '${PACKAGE}/vite';\n`
-			);
+			const newContent = content.replace(/(import .* from .*;\n?)/, `$1import { rizom } from '${PACKAGE}/vite';\n`);
 
 			// Add plugin to the list - ensure it's after sveltekit()
-			const updatedContent = newContent.replace(
-				/plugins:\s*\[([\s\S]*?)\]/,
-				(match, plugins) => {
-					// Check if sveltekit() is in the plugins list
-					if (plugins.includes('sveltekit()')) {
-						// Add rizom() after sveltekit()
-						return plugins.includes('sveltekit()')
-							? match.replace('sveltekit()', 'sveltekit(), rizom()')
-							: `plugins: [${plugins}, rizom()]`;
-					} else {
-						// If sveltekit() isn't found, add rizom() at the end
-						return `plugins: [${plugins}, rizom()]`;
-					}
+			const updatedContent = newContent.replace(/plugins:\s*\[([\s\S]*?)\]/, (match, plugins) => {
+				// Check if sveltekit() is in the plugins list
+				if (plugins.includes('sveltekit()')) {
+					// Add rizom() after sveltekit()
+					return plugins.includes('sveltekit()')
+						? match.replace('sveltekit()', 'sveltekit(), rizom()')
+						: `plugins: [${plugins}, rizom()]`;
+				} else {
+					// If sveltekit() isn't found, add rizom() at the end
+					return `plugins: [${plugins}, rizom()]`;
 				}
-			);
+			});
 			writeFileSync(configPath, updatedContent);
 		}
 		log.info('Vite plugin added');
@@ -195,17 +186,15 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		try {
 			const currentDir = path.dirname(fileURLToPath(import.meta.url));
 			await mkdir(path.resolve(process.cwd(), 'static/panel/fonts'), { recursive: true });
-			await cp(
-				path.join(currentDir, '../../../../panel/fonts'),
-				path.resolve(process.cwd(), 'static/panel/fonts'),
-				{ recursive: true }
-			);
+			await cp(path.join(currentDir, '../../../../panel/fonts'), path.resolve(process.cwd(), 'static/panel/fonts'), {
+				recursive: true
+			});
 			log.info('copied assets');
 		} catch (err) {
 			console.error('Error copying fonts:', err);
 		}
 	}
-	
+
 	if (force || incomingName) {
 		const name = incomingName || packageName;
 		setEnv();

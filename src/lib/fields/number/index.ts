@@ -60,12 +60,11 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		}
 		return super.compile();
 	}
-	
-	_root(){
-		this.field._root = true
-		return this
-	}
 
+	_root() {
+		this.field._root = true;
+		return this;
+	}
 }
 
 /****************************************************/

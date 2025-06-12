@@ -43,7 +43,9 @@ body:has(.rz-root) {
 	}
 }
 
-.rz-sheet-content, .rz-dialog-content, [data-bits-floating-content-wrapper]{
+.rz-sheet-content,
+.rz-dialog-content,
+[data-bits-floating-content-wrapper] {
 	hr {
 		border-color: hsl(var(--rz-color-border));
 		margin-top: var(--rz-size-4);
@@ -65,7 +67,7 @@ body:has(.rz-root) {
 	border-width: 0;
 }
 
-.rz-field-root[disabled]{
+.rz-field-root[disabled] {
 	opacity: 0.5;
 	cursor: not-allowed;
 }

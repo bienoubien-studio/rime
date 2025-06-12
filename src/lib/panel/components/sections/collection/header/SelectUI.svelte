@@ -25,20 +25,13 @@
 
 	{#if collection.selectMode}
 		{#if isAllSelected}
-			<Button variant="text" icon={SquareMinus} onclick={() => (collection.selected = [])}>
-				Deselect All
-			</Button>
+			<Button variant="text" icon={SquareMinus} onclick={() => (collection.selected = [])}>Deselect All</Button>
 		{:else}
 			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>
 				{t__('common.select_all')}
 			</Button>
 		{/if}
-		<Button
-			disabled={selectedCount === 0}
-			icon={Trash}
-			variant="text"
-			onclick={collection.deleteSelection}
-		>
+		<Button disabled={selectedCount === 0} icon={Trash} variant="text" onclick={collection.deleteSelection}>
 			{t__('common.delete', `${selectedCount} doc${pluralSuffix}`)}
 		</Button>
 	{/if}
@@ -49,9 +42,9 @@
 		display: flex;
 		gap: var(--rz-size-4);
 		align-items: center;
-		
-		:global{
-			.rz-header-select__icon--active{
+
+		:global {
+			.rz-header-select__icon--active {
 				color: hsl(var(--rz-color-primary));
 			}
 		}

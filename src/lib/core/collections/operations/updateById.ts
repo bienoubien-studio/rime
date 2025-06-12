@@ -128,7 +128,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	// Define the kind of update operation depending on versions config
 	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config });
-	
+
 	// Get original document, we need it for hooks and possible version creation
 	const original = (await rizom.collection(config.slug).findById({
 		locale,
@@ -249,7 +249,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: versionId });
-	
+
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
 			doc: document,
@@ -260,6 +260,6 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 			metas: {}
 		});
 	}
-	
+
 	return document as T;
 };

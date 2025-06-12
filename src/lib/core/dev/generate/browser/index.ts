@@ -5,12 +5,7 @@ import { privateFieldNames } from '$lib/core/collections/auth/config/privateFiel
 import type { FieldsComponents } from '$lib/panel/types.js';
 import type { FieldsType } from '$lib/fields/types.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
-import {
-	normalizeFilePath,
-	normalizePnpmPath,
-	normalizeRizomImport,
-	removeLeadingSlash
-} from './normalize-path.js';
+import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.js';
 
 let functionRegistry = new Map<string, string>();
 let importRegistry = new Map<string, string>();
@@ -72,7 +67,6 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 
 // Handles import paths for components and modules
 function createImportStatement(pathInfo: string | { path: string; exportName: string }): string {
-	
 	let importPath: string;
 
 	let exportName: string | undefined;

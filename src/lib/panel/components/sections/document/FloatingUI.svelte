@@ -13,9 +13,7 @@
 	const { form, onClose }: Props = $props();
 
 	function onLocaleClick(code: string) {
-		fetch(
-			`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`
-		)
+		fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
 			.then((response) => response.json())
 			.then((data: { docs: GenericDoc[] }) => {
 				if (Array.isArray(data.docs) && data.docs.length) {

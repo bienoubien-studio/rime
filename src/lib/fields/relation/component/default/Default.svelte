@@ -67,9 +67,7 @@
 		search = '';
 	};
 
-	const inputWithItemsClass = $derived(
-		selectedItems.length === 0 ? '' : 'rz-command-input-select--with-items'
-	);
+	const inputWithItemsClass = $derived(selectedItems.length === 0 ? '' : 'rz-command-input-select--with-items');
 </script>
 
 <div class="rz-relation">
@@ -108,10 +106,7 @@
 					ref={commandInput}
 					class={inputWithItemsClass}
 					bind:value={search}
-					placeholder={t__(
-						`common.search_a|${relationConfig.label.gender}`,
-						relationConfig.label.singular
-					)}
+					placeholder={t__(`common.search_a|${relationConfig.label.gender}`, relationConfig.label.singular)}
 				/>
 
 				{#if inputFocused}
@@ -128,7 +123,6 @@
 		</div>
 	</Command.Root>
 
-	
 	{#if relationConfig.access.create && relationConfig.access.create(user.attributes, {}) && !isFull}
 		<Button
 			class="rz-relation__create-button"
@@ -139,10 +133,7 @@
 			variant="secondary"
 			size="sm"
 		>
-			{t__(
-				`common.create_new|${relationConfig.label.gender}`,
-				relationConfig.label.singular || relationConfig.slug
-			)}
+			{t__(`common.create_new|${relationConfig.label.gender}`, relationConfig.label.singular || relationConfig.slug)}
 		</Button>
 
 		<Sheet.Root

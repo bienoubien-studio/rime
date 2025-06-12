@@ -20,10 +20,10 @@ type CreateAdapterArgs = {
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const sqlite = new Database(`./db/${configInterface.raw.database}`);
-	
+
 	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
-	
+
 	const auth = createAdapterAuthInterface({
 		db,
 		schema,
@@ -36,10 +36,10 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		tables,
 		configInterface
 	});
-	const area: AdapterAreaInterface = createAdapterAreaInterface({ 
-		db, 
-		tables, 
-		configInterface 
+	const area: AdapterAreaInterface = createAdapterAreaInterface({
+		db,
+		tables,
+		configInterface
 	});
 	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
 	const transform: AdapterTransformInterface = databaseTransformInterface({
@@ -57,9 +57,9 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		auth,
 		db,
 		tables,
-		
-		async updateRecord(id:string, tableName:string, data:Dic){
-			return await updateTableRecord( db, tables, tableName, { recordId: id, data })
+
+		async updateRecord(id: string, tableName: string, data: Dic) {
+			return await updateTableRecord(db, tables, tableName, { recordId: id, data });
 		},
 
 		get schema() {
@@ -69,7 +69,6 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		get relationFieldsMap() {
 			return schema.relationFieldsMap;
 		}
-
 	};
 };
 

@@ -50,15 +50,7 @@ export type {
 } from './core/types/doc.js';
 
 // Fields types
-export type {
-	Field,
-	FormField,
-	AnyField,
-	AnyFormField,
-	FieldsType,
-	Option,
-	RelationValue
-} from '$lib/fields/types.js';
+export type { Field, FormField, AnyField, AnyFormField, FieldsType, Option, RelationValue } from '$lib/fields/types.js';
 
 // Hooks types
 export type {
@@ -79,23 +71,18 @@ export type {
 } from './core/config/types/hooks.js';
 
 // Panel types
-export type { 
-	CollectionListProps, 
-	FieldPanelTableConfig, 
-	FormErrors, 
-	Route,
-} from './panel/types.js';
+export type { CollectionListProps, FieldPanelTableConfig, FormErrors, Route } from './panel/types.js';
 
-export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js'
+export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 
 // Upload types
 export type { JsonFile } from './core/collections/upload/upload.js';
 export type { Link } from './fields/link/types.js';
 
 // Util
-export type { WithRelationPopulated } from '$lib/util/types.js'
+export type { WithRelationPopulated } from '$lib/util/types.js';
 
 export type { Plugin, Plugins } from './core/types/plugins.js';
 export type { Rizom } from './core/cms.server.js';
-export type { RichTextFeatureNode, RichTextFeatureMark, RichTextFeature } from './fields/rich-text/core/types.js'
-export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js'
+export type { RichTextFeatureNode, RichTextFeatureMark, RichTextFeature } from './fields/rich-text/core/types.js';
+export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js';

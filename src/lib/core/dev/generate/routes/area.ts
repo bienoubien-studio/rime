@@ -39,7 +39,7 @@ import * as api from '${PACKAGE_NAME}/api';
 
 export const GET = api.area.get(${TScastVersionSlug(slug)})
 export const PATCH = api.area.update(${TScastVersionSlug(slug)})
-`
+`;
 
 /**
  * Document page versions template
@@ -52,26 +52,25 @@ const pageVersions = (slug: string) => `
 </script>
 <AreaVersionsDoc {data} slug='${slug}' />`;
 
-
 /**
  * Area routes dictionary defining route patterns and their corresponding templates
  */
 export const areaRoutes: Routes = {
-  '(rizom)/panel/{area.slug}/': {
-    page: pageTemplate,
-    pageServer: pageServerTemplate
-  },
+	'(rizom)/panel/{area.slug}/': {
+		page: pageTemplate,
+		pageServer: pageServerTemplate
+	}
 };
 
 export const areaVersionsPanelRoutes: Routes = {
-  '(rizom)/panel/{area.slug}/versions': {
-    page: pageVersions,
-    pageServer: pageServerTemplateVersions
-  },
+	'(rizom)/panel/{area.slug}/versions': {
+		page: pageVersions,
+		pageServer: pageServerTemplateVersions
+	}
 };
 
 export const areaAPIRoutes: Routes = {
-  '(rizom)/api/{area.slug}/': {
-    server: apiAreaServer,
-  },
+	'(rizom)/api/{area.slug}/': {
+		server: apiAreaServer
+	}
 };

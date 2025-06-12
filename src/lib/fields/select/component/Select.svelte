@@ -15,7 +15,7 @@
 	let initialized = false;
 
 	const field = $derived(form.useField(path, config));
-	
+
 	let options = $state(config.options);
 	let isFull = $derived.by(() => {
 		if (!field.value) return false;
@@ -36,7 +36,7 @@
 			}
 		}
 	});
-	
+
 	$effect(() => {
 		if (config.many) {
 			sortable(listHTMLElement);
@@ -65,7 +65,7 @@
 			}
 		}
 	});
-	
+
 	const onOrderChange = (oldIndex: number, newIndex: number) => {
 		field.value = moveItem(field.value, oldIndex, newIndex);
 	};
@@ -86,7 +86,6 @@
 			field.value = null;
 		}
 	};
-
 </script>
 
 <fieldset class="rz-field-select {config.className || ''}" use:root={field}>
@@ -117,7 +116,7 @@
 						</Tag>
 					{/if}
 				{/if}
-				
+
 				{#if !form.readOnly && !isFull}
 					<Command.InputSelect
 						onfocus={() => (inputFocused = true)}

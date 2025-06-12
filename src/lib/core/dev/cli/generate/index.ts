@@ -3,7 +3,6 @@ import { existsSync, mkdirSync, rmSync } from 'fs';
 import { logger } from '$lib/core/logger/index.server.js';
 
 export const generate = async (force?: boolean) => {
-	
 	if (force) {
 		try {
 			rmSync(path.join(process.cwd(), '.rizom'), { recursive: true, force: true });
@@ -17,18 +16,18 @@ export const generate = async (force?: boolean) => {
 			logger.error(err.message);
 		}
 	}
-	
+
 	const configPath = path.join(process.cwd(), 'src', 'config', 'rizom.config.ts');
 	const configPathJS = path.join(process.cwd(), 'src', 'config', 'rizom.config.js');
 
 	if (!existsSync(configPath)) {
 		throw new Error('Unable to find config, did you run rizom init');
 	}
-	
+
 	try {
 		// Use Vite to load and process the config
 		const { createServer } = await import('vite');
-		
+
 		// Create a Vite server using the project's vite.config.ts
 		logger.info('Starting Vite server to handle module resolution...');
 		const vite = await createServer({
@@ -40,18 +39,18 @@ export const generate = async (force?: boolean) => {
 			appType: 'custom',
 			logLevel: 'error'
 		});
-		
+
 		try {
 			// Use Vite's SSR capabilities to load the module
 			logger.info('Loading config from:', configPathJS);
-			
+
 			const buildModule = await vite.ssrLoadModule('rizom/core/config/build/index.js');
 			const configModule = await vite.ssrLoadModule(configPathJS);
 			const config = configModule.default;
-			
+
 			// Build the config
 			await buildModule.buildConfig(config, { generateFiles: true });
-			
+
 			logger.info('Generation completed successfully');
 		} finally {
 			// Always close the Vite server

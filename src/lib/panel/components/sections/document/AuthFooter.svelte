@@ -43,12 +43,7 @@
 
 <div class="rz-document-auth">
 	{#if operation === 'create'}
-		<Text
-			{form}
-			type="password"
-			config={text('password').validate(validate.password).required().raw}
-			path="password"
-		/>
+		<Text {form} type="password" config={text('password').validate(validate.password).required().raw} path="password" />
 		<Text {form} type="password" config={usersFields.confirmPassword.raw} path="confirmPassword" />
 	{:else if user.attributes.roles.includes('admin')}
 		<div>

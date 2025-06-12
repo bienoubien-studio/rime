@@ -16,14 +16,14 @@
 		<List size={17} class="rz-header-display-mode__icon {listIconClass}" />
 	</Button>
 	{#if collection.config.upload}
-	<Button size="icon-sm" variant="ghost" onclick={() => collection.display('grid')}>
-		<LayoutGrid size={17} class="rz-header-display-mode__icon {gridIconClass}" />
-	</Button>
+		<Button size="icon-sm" variant="ghost" onclick={() => collection.display('grid')}>
+			<LayoutGrid size={17} class="rz-header-display-mode__icon {gridIconClass}" />
+		</Button>
 	{/if}
 	{#if collection.config.nested}
-	<Button size="icon-sm" variant="ghost" onclick={() => collection.display('nested')}>
-		<TextQuote size={17} class="rz-header-display-mode__icon {nestedIconClass}" />
-	</Button>
+		<Button size="icon-sm" variant="ghost" onclick={() => collection.display('nested')}>
+			<TextQuote size={17} class="rz-header-display-mode__icon {nestedIconClass}" />
+		</Button>
 	{/if}
 </div>
 

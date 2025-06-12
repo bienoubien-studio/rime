@@ -20,7 +20,7 @@
 		user: User;
 	};
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();
-	
+
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
 
@@ -68,11 +68,10 @@
 <div class="rz-panel-root">
 	{#key page.url.pathname + locale.code}
 		<Nav {setCollapsed} {routes} {isCollapsed} />
-		
+
 		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}
 		</div>
-
 	{/key}
 </div>
 

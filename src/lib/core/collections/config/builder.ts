@@ -61,7 +61,6 @@ export const setTitle = <T extends CollectionWithoutSlug<any>>(config: T) => {
 	};
 };
 
-
 /**
  * Add updatedAt createdAt editedBy fields
  */

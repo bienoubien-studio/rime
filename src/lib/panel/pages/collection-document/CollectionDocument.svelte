@@ -1,5 +1,4 @@
 <script lang="ts">
-	
 	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';

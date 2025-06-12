@@ -11,10 +11,4 @@
 	}: PopoverPrimitive.ContentProps = $props();
 </script>
 
-<PopoverPrimitive.Content
-	{sideOffset}
-	{align}
-	bind:ref
-	class="rz-popover {className}"
-	{...restProps}
-/>
+<PopoverPrimitive.Content {sideOffset} {align} bind:ref class="rz-popover {className}" {...restProps} />

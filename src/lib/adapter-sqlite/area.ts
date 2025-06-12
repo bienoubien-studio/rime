@@ -40,7 +40,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				columns: adapterUtil.columnsParams({ table: tables[slug], select }),
 				with: buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
 			};
-			
+
 			// @ts-expect-error
 			let doc = await db.query[slug].findFirst(params);
 

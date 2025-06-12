@@ -30,10 +30,7 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
 			const localizedColumns = getTableColumns(tableLocales);
-			const localizedValues = transformDataToSchema(
-				omit(['ownerId', 'id'], block),
-				localizedColumns
-			);
+			const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
 
 			if (!Object.keys(localizedValues).length) return true;
 
@@ -135,7 +132,4 @@ type CreateBlock = (args: {
 	locale?: string;
 }) => Promise<boolean>;
 
-type DeleteBlock = (args: {
-	parentSlug: string;
-	block: WithRequired<TreeBlock, 'path'>;
-}) => Promise<boolean>;
+type DeleteBlock = (args: { parentSlug: string; block: WithRequired<TreeBlock, 'path'> }) => Promise<boolean>;

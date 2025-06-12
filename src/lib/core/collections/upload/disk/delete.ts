@@ -14,7 +14,7 @@ type Args = {
 
 export const cleanupStoredFiles = async ({ config, rizom, id }: Args): Promise<GenericDoc> => {
 	const doc = await rizom.collection<any>(config.slug).findById({ id, draft: true });
-	
+
 	try {
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);
 

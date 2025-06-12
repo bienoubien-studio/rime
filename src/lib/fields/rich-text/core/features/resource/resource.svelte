@@ -11,19 +11,19 @@
 	type NodeAttributes = {
 		id: string | null;
 		title: string | null;
-		_type: string | null
+		_type: string | null;
 	};
 
 	type RequiredNodeAttributes = {
 		id: string;
 		title: string;
-		_type: string
+		_type: string;
 	};
 
 	let { node, updateAttributes, extension }: NodeViewProps = $props();
 	let isDialogOpen = $state(false);
 	let selected = $state<NodeAttributes | null>();
-	
+
 	const handleClick = () => {
 		isDialogOpen = true;
 	};
@@ -52,8 +52,8 @@
 		if (ressource.data) {
 			docs = ressource.data.docs;
 			// Update atttributes if document title has changed
-			if( node.attrs.id){
-				selected = docs.find(doc => doc.id === node.attrs.id)
+			if (node.attrs.id) {
+				selected = docs.find((doc) => doc.id === node.attrs.id);
 			}
 		}
 	});
@@ -65,7 +65,7 @@
 
 		// Update the selected resource
 		selected = doc;
-		
+
 		// Update node attributes
 		updateNodeAttributes();
 	}
@@ -73,7 +73,7 @@
 	// Handle removing resource
 	function removeResource() {
 		selected = null;
-		
+
 		// Update node attributes with empty values
 		updateAttributes({
 			id: null,
@@ -92,7 +92,6 @@
 			_type: extension.options.slug
 		} as NodeAttributes);
 	}
-	
 </script>
 
 <NodeViewWrapper>
@@ -125,12 +124,11 @@
 
 <style lang="postcss">
 	:global(.ProseMirror-selectednode .rz-richtext-media) {
-		
-		&::after{
+		&::after {
 			content: '';
-			position:absolute;
-			inset:0;
-			mix-blend-mode:screen;
+			position: absolute;
+			inset: 0;
+			mix-blend-mode: screen;
 			background-color: hsl(var(--rz-color-primary) / 0.6);
 			pointer-events: none;
 		}
@@ -138,5 +136,4 @@
 	.rz-richtext-media {
 		position: relative;
 	}
-	
 </style>

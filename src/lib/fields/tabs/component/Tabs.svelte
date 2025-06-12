@@ -27,9 +27,7 @@
 	});
 
 	let tabErrors = $state<string[]>([]);
-	const tabIds = $derived(
-		config.tabs.map((tab) => `${tab.name}-${new Date().getTime().toString()}`)
-	);
+	const tabIds = $derived(config.tabs.map((tab) => `${tab.name}-${new Date().getTime().toString()}`));
 
 	function onActiveTabChange(value: string | undefined): void {
 		value = value || config.tabs[0].name;
@@ -40,9 +38,7 @@
 	// Emphasize tabs that includes errors
 	$effect(() => {
 		if (form.errors.length) {
-			const errorsTabs = document.querySelectorAll<HTMLElement>(
-				'.rz-tabs-content:has(*[data-error])'
-			);
+			const errorsTabs = document.querySelectorAll<HTMLElement>('.rz-tabs-content:has(*[data-error])');
 			if (errorsTabs) {
 				tabErrors = Array.from(errorsTabs)
 					.map((el: HTMLElement) => (el.dataset.tabId ? el.dataset.tabId : false))
@@ -64,10 +60,7 @@
 	<Tabs.Root onValueChange={onActiveTabChange} value={activeTabName}>
 		<Tabs.List>
 			{#each config.tabs.filter(isTabVisible) as tab, index (index)}
-				<Tabs.Trigger
-					data-error={tabErrors.includes(tabIds[index]) ? 'true' : null}
-					value={tab.name}
-				>
+				<Tabs.Trigger data-error={tabErrors.includes(tabIds[index]) ? 'true' : null} value={tab.name}>
 					{tab.label || tab.name}
 				</Tabs.Trigger>
 			{/each}
@@ -90,7 +83,6 @@
 
 <style type="postcss">
 	.rz-tabs :global {
-		
 		.rz-tabs-content {
 			margin-top: var(--rz-size-8);
 		}

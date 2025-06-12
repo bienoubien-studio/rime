@@ -4,19 +4,14 @@
 	import { Label } from '../ui/label/index.js';
 	import type { Snippet } from 'svelte';
 	import type { FormField } from '$lib/fields/types.js';
-	
+
 	type Props = { config?: FormField; children?: Snippet; for?: string };
 	const { config, children, for: forAttribute, ...rest }: Props = $props();
 
 	const locale = getLocaleContext();
 </script>
 
-<Label
-	class="rz-field-label"
-	title={config?.label ? config.name : null}
-	for={forAttribute || null}
-	{...rest}
->
+<Label class="rz-field-label" title={config?.label ? config.name : null} for={forAttribute || null} {...rest}>
 	{#if config}
 		{config.label || capitalize(config.name)}
 		{#if config.localized}

@@ -28,8 +28,7 @@ const p = toPascalCase;
  * }
  */
 export function generateRelationshipDefinitions({ relationsDic }: Args): Return {
-	if (Object.keys(relationsDic).length === 0)
-		return { relationsDefinitions: '', relationsNames: [] };
+	if (Object.keys(relationsDic).length === 0) return { relationsDefinitions: '', relationsNames: [] };
 
 	const relationsNames: string[] = [];
 

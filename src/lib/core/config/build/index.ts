@@ -1,7 +1,4 @@
-import {
-	buildCollection,
-	mergePanelUsersCollectionWithDefault
-} from '$lib/core/collections/config/index.server.js';
+import { buildCollection, mergePanelUsersCollectionWithDefault } from '$lib/core/collections/config/index.server.js';
 import { access } from '$lib/util/access/index.js';
 import type {
 	BuiltCollection,
@@ -26,17 +23,13 @@ import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { CollectionSlug } from '../../../types.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 
-
 const dev = process.env.NODE_ENV === 'development';
 
 /**
  * Add extra configuration to Areas and Collections
  */
 
-const buildConfig = async (
-	config: Config,
-	options: { generateFiles?: boolean; }
-): Promise<CompiledConfig> => {
+const buildConfig = async (config: Config, options: { generateFiles?: boolean }): Promise<CompiledConfig> => {
 	const generateFiles = options?.generateFiles || false;
 
 	let collections: BuiltCollection[] = [];
@@ -47,11 +40,8 @@ const buildConfig = async (
 	// Retrieve Default Users collection
 	/****************************************************/
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
-	config.collections = [
-		...config.collections.filter((c) => c.slug !== PANEL_USERS),
-		panelUsersCollection
-	];
-	
+	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), panelUsersCollection];
+
 	/****************************************************/
 	// Build Collections
 	/****************************************************/
@@ -61,7 +51,7 @@ const buildConfig = async (
 		// add icon to iconMap
 		if (collection.icon) {
 			icons[collection.slug] = collection.icon;
-		}else{
+		} else {
 			icons[collection.slug] = FileText;
 		}
 	}
@@ -151,7 +141,7 @@ const buildConfig = async (
 	/****************************************************/
 
 	let compiledConfig = compileConfig(builtConfig);
-	
+
 	if (dev || generateFiles) {
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
@@ -164,19 +154,11 @@ const buildConfig = async (
 			}
 
 			if (generateFiles) {
-				const generateSchema = await import('rizom/core/dev/generate/schema/index.js').then(
-					(m) => m.default
-				);
-				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then(
-					(m) => m.default
-				);
-				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then(
-					(m) => m.default
-				);
-				const generateBrowserConfig = await import('rizom/core/dev/generate/browser/index.js').then(
-					(m) => m.default
-				);
-				
+				const generateSchema = await import('rizom/core/dev/generate/schema/index.js').then((m) => m.default);
+				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then((m) => m.default);
+				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then((m) => m.default);
+				const generateBrowserConfig = await import('rizom/core/dev/generate/browser/index.js').then((m) => m.default);
+
 				generateBrowserConfig({
 					...compiledConfig,
 					blueprints: fieldsComponentsMap
@@ -187,12 +169,10 @@ const buildConfig = async (
 			}
 		}
 	}
-	
-	compiledConfig = makeVersionsCollectionsAliases(compiledConfig)
+
+	compiledConfig = makeVersionsCollectionsAliases(compiledConfig);
 
 	return compiledConfig;
 };
 
 export { buildConfig };
-
-

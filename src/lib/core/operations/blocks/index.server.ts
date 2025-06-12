@@ -19,25 +19,15 @@ export const saveBlocks = async (args: {
 	ownerId: string;
 	locale?: string;
 }) => {
-	const {
-		data,
-		configMap,
-		incomingPaths,
-		original,
-		originalConfigMap,
-		adapter,
-		config,
-		ownerId,
-		locale
-	} = args;
+	const { data, configMap, incomingPaths, original, originalConfigMap, adapter, config, ownerId, locale } = args;
 
-	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug
-	
+	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
+
 	const incomingBlocks = extractBlocks({
 		data,
 		configMap
 	});
-	
+
 	let existingBlocks: GenericBlock[] = [];
 	if (original) {
 		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
@@ -59,9 +49,7 @@ export const saveBlocks = async (args: {
 	});
 
 	if (blocksDiff.toDelete.length) {
-		await Promise.all(
-			blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: parentTable, block }))
-		);
+		await Promise.all(blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: parentTable, block })));
 	}
 
 	if (blocksDiff.toAdd.length) {
@@ -79,9 +67,7 @@ export const saveBlocks = async (args: {
 
 	if (blocksDiff.toUpdate.length) {
 		await Promise.all(
-			blocksDiff.toUpdate.map((block) =>
-				adapter.blocks.update({ parentSlug: parentTable, block, locale: locale })
-			)
+			blocksDiff.toUpdate.map((block) => adapter.blocks.update({ parentSlug: parentTable, block, locale: locale }))
 		);
 	}
 

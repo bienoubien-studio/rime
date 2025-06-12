@@ -12,7 +12,7 @@ export default function (slug: CollectionSlug) {
 		/****************************************************/
 		create: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
-			
+
 			// A redirect parameter equals to 0 can be present if we're in a nested form
 			// to prevent redirection after entry creation
 			// ex: for relation creation
@@ -37,16 +37,16 @@ export default function (slug: CollectionSlug) {
 
 			return redirect(303, `/panel/${slug}/${result.doc.id}`);
 		},
-		
+
 		/****************************************************/
 		// Update
 		/****************************************************/
 		update: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
 			const id = event.params.id || '';
-			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
+			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
-			
+
 			const [error, doc] = await safe(
 				rizom.collection(slug).updateById({
 					id,
@@ -56,13 +56,13 @@ export default function (slug: CollectionSlug) {
 					locale
 				})
 			);
-			
+
 			if (error) {
 				return handleError(error, { context: 'action' });
 			}
-			
-			if(draft && 'versionId' in doc){
-				return redirect(303, `/panel/${slug}/${doc.id}/versions?versionId=${doc.versionId}`)
+
+			if (draft && 'versionId' in doc) {
+				return redirect(303, `/panel/${slug}/${doc.id}/versions?versionId=${doc.versionId}`);
 			}
 
 			return { doc };

@@ -65,12 +65,7 @@
 
 	<Dialog.Root bind:open={dialogOpen}>
 		<Dialog.Content class="rz-date__dialog-content">
-			<Calendar
-				type="single"
-				value={calendarDate}
-				onValueChange={handleCalendarChange}
-				initialFocus
-			/>
+			<Calendar type="single" value={calendarDate} onValueChange={handleCalendarChange} initialFocus />
 		</Dialog.Content>
 	</Dialog.Root>
 
@@ -80,8 +75,8 @@
 <style lang="postcss">
 	.rz-date-field :global {
 		.rz-dialog-content.rz-date__dialog-content {
-			width:100px;
-			padding:12rem;
+			width: 100px;
+			padding: 12rem;
 		}
 		.rz-date__button.rz-button {
 			background-color: hsl(var(--rz-color-input));
@@ -108,6 +103,5 @@
 			height: var(--rz-size-4);
 			width: var(--rz-size-4);
 		}
-
 	}
 </style>

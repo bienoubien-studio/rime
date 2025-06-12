@@ -85,8 +85,8 @@ export interface Config {
 
 export type PanelUsersConfig = {
 	roles?: Option[];
-	panel?: { 
-		group?: string 
+	panel?: {
+		group?: string;
 	};
 	access?: Access;
 	label?: CollectionLabel;
@@ -137,7 +137,7 @@ type BaseDocConfig<S extends string = string> = {
 		group?: string;
 		/** Add the list of latest edited document */
 		dashboard?: boolean;
-	}
+	};
 };
 
 type UploadConfig = {
@@ -171,7 +171,7 @@ type UploadConfig = {
 	 * ```
 	 */
 	accept?: string[];
-}
+};
 
 export type Collection<S> = {
 	slug: S;
@@ -182,7 +182,7 @@ export type Collection<S> = {
 	/** A function to generate the document URL */
 	url?: (doc: RegisterCollection[S]) => string;
 	nested?: boolean;
-	upload?: true | UploadConfig
+	upload?: true | UploadConfig;
 } & BaseDocConfig;
 
 export type Area<S> = BaseDocConfig & {
@@ -284,7 +284,9 @@ export type ImageSizesConfig = {
 
 type CompiledCollection = Pretty<WithoutBuilders<BuiltCollection>>;
 type CompiledArea = Pretty<WithoutBuilders<BuiltArea>>;
-type CompiledConfig = Pretty<Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
-	collections: Array<CompiledCollection>;
-	areas: Array<CompiledArea>;
-}>;
+type CompiledConfig = Pretty<
+	Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
+		collections: Array<CompiledCollection>;
+		areas: Array<CompiledArea>;
+	}
+>;

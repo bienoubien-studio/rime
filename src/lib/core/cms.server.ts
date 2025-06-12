@@ -22,7 +22,7 @@ function createCMS() {
 	let adapter: ReturnType<typeof createAdapter>;
 	let config: AsyncReturnType<typeof createConfigInterface>;
 	const key: string = randomId(12);
-	
+
 	/**
 	 * Ensures that the media directory exists for upload collections
 	 * @param config The compiled configuration
@@ -35,17 +35,16 @@ function createCMS() {
 				mkdirSync(mediasDirectory, { recursive: true });
 			}
 		}
-	}
-	
+	};
+
 	/**
 	 * Initializes the CMS with configuration and database schema
 	 * @param options Initialization options containing config and schema
 	 * @throws {RizomError} If required files are missing in development mode
 	 */
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
-		
 		initialized = false;
-		
+
 		if (dev && !hasRunInitCommand()) {
 			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
 		}
@@ -54,7 +53,7 @@ function createCMS() {
 		config = await createConfigInterface(rawConfig);
 
 		// Ensure media directory exists or create it
-		ensureMediasDirectory(config.raw)
+		ensureMediasDirectory(config.raw);
 
 		// Initialize DB
 		adapter = createAdapter({ schema, configInterface: config });
@@ -62,7 +61,7 @@ function createCMS() {
 		// Register dictionaries for panel Language
 		const dictionnaries = await registerTranslation(config.raw.panel.language);
 		i18n.init(dictionnaries);
-		
+
 		initialized = true;
 	};
 
@@ -71,7 +70,7 @@ function createCMS() {
 		 * Unique identifier for this CMS instance
 		 */
 		key,
-		
+
 		/**
 		 * Initializes the CMS with configuration and database schema
 		 */
@@ -99,7 +98,7 @@ function createCMS() {
 		 */
 		get config() {
 			return config;
-		},
+		}
 	};
 }
 
@@ -118,7 +117,7 @@ const getInstance = () => {
 		logger.info('import rizom instance ' + instance.key);
 		return instance;
 	}
-	console.log('')
+	console.log('');
 	logger.info('create rizom instance');
 	instance = createCMS();
 	return instance;

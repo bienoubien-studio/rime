@@ -29,8 +29,7 @@
 }
 
 .rz-rich-text__editor:has(.ProseMirror-focused) {
-	@mixin ring var(--rz-color-primary)
-	/* border: 1px solid hsl(var(--rz-color-fg)); */
+	@mixin ring var(--rz-color-primary) /* border: 1px solid hsl(var(--rz-color-fg)); */;
 }
 
 .rz-rich-text__editor[data-error]:has(.ProseMirror-focused) {
@@ -54,20 +53,18 @@
 	height: 0;
 }
 .rz-rich-text__editor .ProseMirror ul.is-empty::before,
-.rz-rich-text__editor .ProseMirror blockquote.is-empty::before{
+.rz-rich-text__editor .ProseMirror blockquote.is-empty::before {
 	margin-left: var(--rz-size-6);
 }
 
 .rz-rich-text__editor .ProseMirror {
-	
-	
 	@container rz-document (min-width:620px) {
 		font-size: var(--rz-text-lg);
 	}
 	@container rz-document (min-width:960px) {
 		font-size: var(--rz-text-xl);
 	}
-	
+
 	& > * + * {
 		margin-top: var(--rz-size-4);
 	}

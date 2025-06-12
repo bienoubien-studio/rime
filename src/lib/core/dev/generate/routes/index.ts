@@ -1,11 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import {
-	writeRouteFile,
-	ensureDir,
-	shouldRegenerateRoutes,
-	type Routes
-} from './util.js';
+import { writeRouteFile, ensureDir, shouldRegenerateRoutes, type Routes } from './util.js';
 import {
 	collectionAPIAuthRoutes,
 	collectionAPIRoutes,

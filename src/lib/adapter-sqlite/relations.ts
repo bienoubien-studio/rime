@@ -92,9 +92,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 		if (relations.length === 0) return true;
 
-		const documentIds = relations
-			.map((rel) => rel.id)
-			.filter((id): id is string => id !== undefined);
+		const documentIds = relations.map((rel) => rel.id).filter((id): id is string => id !== undefined);
 		if (documentIds.length === 0) return true;
 
 		try {
@@ -122,10 +120,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 		let conditions;
 		if (locale && columns.includes('locale')) {
-			conditions = [
-				eq(table.ownerId, ownerId),
-				or(eq(table.locale, locale), isNull(table.locale))
-			];
+			conditions = [eq(table.ownerId, ownerId), or(eq(table.locale, locale), isNull(table.locale))];
 		} else {
 			conditions = [eq(table.ownerId, ownerId)];
 		}
@@ -173,14 +168,6 @@ type DeleteFromPaths = (args: {
 
 type Delete = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
 type Update = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
-type Create = (args: {
-	parentSlug: string;
-	ownerId: string;
-	relations: BeforeOperationRelation[];
-}) => Promise<boolean>;
+type Create = (args: { parentSlug: string; ownerId: string; relations: BeforeOperationRelation[] }) => Promise<boolean>;
 
-type GetAllRelations = (args: {
-	parentSlug: string;
-	ownerId: string;
-	locale?: string;
-}) => Promise<Relation[]>;
+type GetAllRelations = (args: { parentSlug: string; ownerId: string; locale?: string }) => Promise<Relation[]>;

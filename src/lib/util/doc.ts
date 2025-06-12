@@ -82,7 +82,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
  */
 export const toNestedStructure = (documents: GenericDoc[]) => {
 	const incomingDocs = snapshot(documents);
-	
+
 	// Create a map for quick document lookup by ID
 	const docById = new Map<string, GenericDoc>();
 	incomingDocs.forEach((doc) => docById.set(doc.id, doc));
@@ -121,7 +121,7 @@ export const toNestedStructure = (documents: GenericDoc[]) => {
 		.filter((doc) => !doc._parent)
 		.map(processDocument)
 		.sort((a, b) => (a._position || 0) - (b._position || 0));
-	
+
 	// Filter to get root documents and process them
 	return output;
 };

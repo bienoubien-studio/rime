@@ -13,17 +13,17 @@ export function collectionLoad(slug: CollectionSlug) {
 
 		const collection = rizom.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
-		
-		const docs = await collection.find({ 
+
+		const docs = await collection.find({
 			locale,
 			draft: true
 		});
 
 		const aria: WithRequired<Partial<Route>, 'title'>[] = [
-			{ title: "Dashboard", icon: "dashboard", path: `/panel`  },
-			{ title: collection.config.label.plural },
-		]
-		
+			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
+			{ title: collection.config.label.plural }
+		];
+
 		return {
 			aria,
 			docs,

@@ -17,11 +17,14 @@ function createStore(initial?: string) {
 
 	setValue(initial);
 
-	const dateFormat = (date: Date | string, args: { short?:boolean, withTime?:boolean } = { short: false, withTime: false }) => {
-		const { short, withTime } = args
-		
-		if(typeof date === 'string'){
-			date = new Date(date)
+	const dateFormat = (
+		date: Date | string,
+		args: { short?: boolean; withTime?: boolean } = { short: false, withTime: false }
+	) => {
+		const { short, withTime } = args;
+
+		if (typeof date === 'string') {
+			date = new Date(date);
 		}
 
 		const options: Intl.DateTimeFormatOptions = {
@@ -46,8 +49,8 @@ function createStore(initial?: string) {
 
 	return {
 		dateFormat,
-		get defaultCode(){
-			return config.raw.localization?.default
+		get defaultCode() {
+			return config.raw.localization?.default;
 		},
 		get code() {
 			return code;

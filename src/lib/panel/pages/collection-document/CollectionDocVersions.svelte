@@ -13,14 +13,13 @@
 			status: number;
 			readOnly: boolean;
 			operation: 'create' | 'update';
-			versions: Version[]
+			versions: Version[];
 		};
 	};
-	
+
 	const { data }: Props = $props();
-	
+
 	setAPIProxyContext('document');
-	
 </script>
 
 {#if data.status === 200}

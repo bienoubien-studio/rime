@@ -46,11 +46,10 @@
 		await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}/${form.doc.id}`, {
 			method: 'DELETE'
 		}).then(() => {
-			toast.success(t__('common.doc_deleted'))
-			goto(`${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`)
-		})
+			toast.success(t__('common.doc_deleted'));
+			goto(`${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`);
+		});
 	}
-
 </script>
 
 <DropdownMenu.Root>
@@ -62,19 +61,18 @@
 
 	<DropdownMenu.Portal>
 		<DropdownMenu.Content class="rz-link__type-content" align="end">
-
 			{#if form.config.versions}
-			<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
-				<History size="12" />
-				{t__('common.view_versions')}
-			</DropdownMenu.Item>
+				<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
+					<History size="12" />
+					{t__('common.view_versions')}
+				</DropdownMenu.Item>
 			{/if}
 
 			{#if form.config.versions && form.config.versions.draft}
-			<DropdownMenu.Item onclick={() => handleNewDraft()}>
-				<Pickaxe size="12" />
-				{t__('common.save_new_draft')}
-			</DropdownMenu.Item>
+				<DropdownMenu.Item onclick={() => handleNewDraft()}>
+					<Pickaxe size="12" />
+					{t__('common.save_new_draft')}
+				</DropdownMenu.Item>
 			{/if}
 
 			{#if isCollection}
@@ -83,7 +81,6 @@
 					{t__('common.delete')}
 				</DropdownMenu.Item>
 			{/if}
-
 		</DropdownMenu.Content>
 	</DropdownMenu.Portal>
 </DropdownMenu.Root>

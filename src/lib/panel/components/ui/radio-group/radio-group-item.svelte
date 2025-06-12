@@ -8,5 +8,4 @@
 	}: WithoutChildrenOrChild<RadioGroupPrimitive.ItemProps> = $props();
 </script>
 
-<RadioGroupPrimitive.Item bind:ref class="rz-radio-group-item {className}" {...restProps}
-></RadioGroupPrimitive.Item>
+<RadioGroupPrimitive.Item bind:ref class="rz-radio-group-item {className}" {...restProps}></RadioGroupPrimitive.Item>

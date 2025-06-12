@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tooltip as TooltipPrimitive } from 'bits-ui';
-	import { fly } from "svelte/transition";
+	import { fly } from 'svelte/transition';
 	import './tooltip.css';
 
 	let {
@@ -12,14 +12,14 @@
 	}: TooltipPrimitive.ContentProps = $props();
 </script>
 
-<TooltipPrimitive.Content bind:ref forceMount   {sideOffset} {...restProps} >
+<TooltipPrimitive.Content bind:ref forceMount {sideOffset} {...restProps}>
 	{#snippet child({ wrapperProps, props, open })}
-	{#if open}
-				<div {...wrapperProps}>
-					<div {...props} class="rz-tooltip {className}" transition:fly={{duration: 300}}>
-						{@render children?.()}
-					</div>
+		{#if open}
+			<div {...wrapperProps}>
+				<div {...props} class="rz-tooltip {className}" transition:fly={{ duration: 300 }}>
+					{@render children?.()}
 				</div>
-			{/if}
+			</div>
+		{/if}
 	{/snippet}
-	</TooltipPrimitive.Content>
+</TooltipPrimitive.Content>

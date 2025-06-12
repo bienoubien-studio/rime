@@ -73,8 +73,8 @@ export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args)
 	}
 
 	// Prevent "admin" roles of superadmin to be deleted
-	if(isSuperAdminMutation && rolesChanged && !args.data.roles.includes('admin')){
-		args.data.roles.push('admin')
+	if (isSuperAdminMutation && rolesChanged && !args.data.roles.includes('admin')) {
+		args.data.roles.push('admin');
 	}
 
 	// Prevent superAdmin value to be changed

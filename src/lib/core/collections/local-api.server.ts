@@ -116,13 +116,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
-	findById({
-		id,
-		versionId,
-		locale,
-		draft,
-		depth = 0
-	}: APIMethodArgs<typeof findById>): Promise<Doc> {
+	findById({ id, versionId, locale, draft, depth = 0 }: APIMethodArgs<typeof findById>): Promise<Doc> {
 		this.#rizom.preventOperationLoop();
 
 		if (!id) {
@@ -185,9 +179,9 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 export { CollectionInterface };
 
-/* -------------------------------------------------------------------------- */
-/*                                    Types                                   */
-/* -------------------------------------------------------------------------- */
+/****************************************************/
+/* Types 
+/****************************************************/
 
 type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
 	id: string;

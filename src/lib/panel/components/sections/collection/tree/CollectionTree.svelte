@@ -7,12 +7,12 @@
 	import { countRows } from './util';
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
-		
+
 	// Track collection stamp for reactivity
 	const collectionStamp = $derived(collection.stamp);
 
 	let sortingInitialized = $state(false);
-	
+
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
 	const shouldInit = $derived(!sortingInitialized && collection.docs.length > 0);
 
@@ -25,32 +25,34 @@
 		},
 		onEnd: function (evt) {
 			const { newIndex, oldIndex } = evt;
-			
+
 			//@ts-expect-error boring
 			const fromParentId = evt.item.getAttribute('data-parent') || evt.item.__attributes?.['data-parent'];
 			//@ts-expect-error boring
 			const toParentId = evt.to.getAttribute('data-id') || evt.to.__attributes?.['data-id'];
 			//@ts-expect-error boring
-			const nodeId = evt.item.getAttribute('data-id') || evt.item.__attributes?.['data-id']
+			const nodeId = evt.item.getAttribute('data-id') || evt.item.__attributes?.['data-id'];
 
-			collection.handleNestedDocumentMove({
-				documentId: nodeId,
-				from: {
-					parent: fromParentId === 'root' ? null : fromParentId,
-					index: oldIndex || 0
-				},
-				to: {
-					parent: toParentId === 'root' ? null : toParentId,
-					index: newIndex || 0
-				}
-			}).then(success => {
-				if(success){
-					toast.success('Order updated')
-					resetSortable();
-				}else{
-					toast.error('An error occured')
-				}
-			});
+			collection
+				.handleNestedDocumentMove({
+					documentId: nodeId,
+					from: {
+						parent: fromParentId === 'root' ? null : fromParentId,
+						index: oldIndex || 0
+					},
+					to: {
+						parent: toParentId === 'root' ? null : toParentId,
+						index: newIndex || 0
+					}
+				})
+				.then((success) => {
+					if (success) {
+						toast.success('Order updated');
+						resetSortable();
+					} else {
+						toast.error('An error occured');
+					}
+				});
 		}
 	};
 
@@ -75,7 +77,6 @@
 		sortableInstances = [];
 	};
 
-	
 	$effect(() => {
 		if (shouldInit) {
 			initSortable();
@@ -102,13 +103,12 @@
 {/key}
 
 <style lang="postcss">
-	
 	.rz-collection-sortable {
-		height:100%;
+		height: 100%;
 		background-color: hsl(var(--rz-ground-5));
-    background-position: 0 0;
+		background-position: 0 0;
 		position: relative;
-		
+
 		& :global {
 			.rz-collection-sortable {
 				display: grid;
@@ -116,14 +116,14 @@
 				min-height: var(--rz-size-4);
 			}
 			.rz-collection-sortable:has(.rz-collection-node) {
-				&::before{
+				&::before {
 					content: '';
 					border-left: var(--rz-border);
 					translate: calc(-1 * var(--rz-size-6)) calc(-1 * var(--rz-size-4));
 					position: absolute;
 					top: 0;
-					height: calc( var(--rz-size-4) + var(--rz-size-6) + (var(--data-rows-count) - 1) * var(--rz-size-16));
-					left:0;
+					height: calc(var(--rz-size-4) + var(--rz-size-6) + (var(--data-rows-count) - 1) * var(--rz-size-16));
+					left: 0;
 				}
 				margin-top: var(--rz-size-4);
 				position: relative;

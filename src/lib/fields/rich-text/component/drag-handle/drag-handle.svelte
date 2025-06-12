@@ -30,7 +30,7 @@
 	});
 </script>
 
-<div id={pluginKey} bind:this={element} class="rz-rich-text-grip ">
+<div id={pluginKey} bind:this={element} class="rz-rich-text-grip">
 	<GripVertical size="14" />
 </div>
 
@@ -43,13 +43,13 @@
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
-	:global(.rz-rich-text__wrapper){
-		.rz-rich-text-grip{
+	:global(.rz-rich-text__wrapper) {
+		.rz-rich-text-grip {
 			opacity: 0;
 		}
 	}
-	:global(.rz-rich-text__wrapper:hover){
-		.rz-rich-text-grip{
+	:global(.rz-rich-text__wrapper:hover) {
+		.rz-rich-text-grip {
 			opacity: 1;
 		}
 	}
@@ -59,11 +59,10 @@
 		translate: 0.6rem 0;
 		z-index: 10;
 		cursor: grab;
-		
+
 		&.hide {
 			opacity: 0;
 			pointer-events: none;
 		}
-
 	}
 </style>

@@ -8,20 +8,19 @@
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { ComboBoxProps } from './props';
 	import type { OptionWithIcon } from '$lib/fields/types.js';
-	import './combobox.css'
-	
+	import './combobox.css';
+
 	const { path, config, form }: ComboBoxProps = $props();
 
 	const field = $derived(form.useField(path, config));
 	const options = config.options;
-	
+
 	let search = $state('');
 	let open = $state(false);
 	let selected = $derived<OptionWithIcon | undefined>(options.find((o) => o.value === field.value));
-
 </script>
 
-{#snippet label(option:OptionWithIcon)}
+{#snippet label(option: OptionWithIcon)}
 	<span class="rz-combobox__option-label">
 		{#if option.icon}
 			{@const Icon = option.icon}
@@ -36,13 +35,7 @@
 	<Popover.Root bind:open>
 		<Popover.Trigger>
 			{#snippet child({ props })}
-				<Button
-					variant="outline"
-					role="combobox"
-					aria-expanded={open}
-					class="rz-combobox__trigger"
-					{...props}
-				>
+				<Button variant="outline" role="combobox" aria-expanded={open} class="rz-combobox__trigger" {...props}>
 					{#if selected}
 						{@render label(selected)}
 					{:else}
@@ -56,11 +49,7 @@
 			<Popover.Content class="rz-combobox__content">
 				<Command.Root>
 					{#if options.length > 4}
-						<Command.Input
-							bind:value={search}
-							placeholder={t__('common.search')}
-							class="rz-combobox__search"
-						/>
+						<Command.Input bind:value={search} placeholder={t__('common.search')} class="rz-combobox__search" />
 					{/if}
 					<Command.Empty>Nothing found.</Command.Empty>
 					<Command.Group>
@@ -70,7 +59,7 @@
 								value={option.value}
 								onSelect={() => {
 									selected = option;
-									field.value = option.value
+									field.value = option.value;
 									search = '';
 									open = false;
 								}}

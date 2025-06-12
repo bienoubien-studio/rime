@@ -18,7 +18,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 	if (event.locals.user) {
 		return await resolve(event);
 	}
-	
+
 	if (!rizom.cache.isEnabled(event)) {
 		return await resolve(event);
 	}

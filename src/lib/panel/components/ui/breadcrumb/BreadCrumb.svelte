@@ -14,12 +14,12 @@
 	{#each page.data.aria as route}
 		{@const Icon = config.raw.icons[route.icon]}
 		{#if route.path}
-      <Button variant="text" icon={Icon} href={route.path}>
+			<Button variant="text" icon={Icon} href={route.path}>
 				{route.title}
 			</Button>
 			<span>/</span>
 		{:else}
-      <span class="rz-aria__last">{titleContext.value}</span>
+			<span class="rz-aria__last">{titleContext.value}</span>
 		{/if}
 	{/each}
 </div>
@@ -29,15 +29,17 @@
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
-    > *, > :global(.rz-button) { 
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
-    }
-    > *:hover, > :global(.rz-button:hover) { 
-      opacity: 1;
-    }
+		> *,
+		> :global(.rz-button) {
+			opacity: 0.5;
+			transition: opacity 0.3s ease;
+		}
+		> *:hover,
+		> :global(.rz-button:hover) {
+			opacity: 1;
+		}
 	}
-  .rz-aria__last{
-    opacity: 1;
-  }
+	.rz-aria__last {
+		opacity: 1;
+	}
 </style>

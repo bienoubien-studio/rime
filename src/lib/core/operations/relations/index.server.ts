@@ -20,19 +20,9 @@ export const saveRelations = async (args: {
 	config: CompiledArea | CompiledCollection;
 	ownerId: string;
 }) => {
-	const {
-		configMap,
-		incomingPaths,
-		blocksDiff,
-		treeDiff,
-		adapter,
-		locale,
-		config,
-		ownerId,
-		data
-	} = args;
+	const { configMap, incomingPaths, blocksDiff, treeDiff, adapter, locale, config, ownerId, data } = args;
 
-	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug
+	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({
@@ -49,7 +39,7 @@ export const saveRelations = async (args: {
 		paths: treeDiff.toDelete.map((block) => `${block.path}.${block.position}`),
 		locale
 	});
-	
+
 	/** Get relations in data */
 	const incomingRelations = extractRelations({
 		ownerId,
@@ -57,7 +47,7 @@ export const saveRelations = async (args: {
 		configMap,
 		locale
 	});
-	
+
 	// get existing relations filtered by path
 	// if not present in incoming paths don't keep it.
 	const existingRelations = await adapter.relations
@@ -86,7 +76,7 @@ export const saveRelations = async (args: {
 			relations: relationsDiff.toDelete
 		});
 	}
-	
+
 	if (relationsDiff.toUpdate.length) {
 		await adapter.relations.update({
 			parentSlug: parentTable,

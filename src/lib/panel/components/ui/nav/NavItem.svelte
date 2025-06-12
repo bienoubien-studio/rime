@@ -5,7 +5,7 @@
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
 	import NavItemButton from './NavItemButton.svelte';
 	import type { Route } from '$lib/panel/types';
-	
+
 	type Props = {
 		isCollapsed: boolean;
 		route: Route;
@@ -15,8 +15,7 @@
 
 	const config = getConfigContext();
 
-	const RouteIcon =
-		typeof route.icon === 'function' ? route.icon : config.raw.icons[route.icon] || File;
+	const RouteIcon = typeof route.icon === 'function' ? route.icon : config.raw.icons[route.icon] || File;
 
 	let pathname = page.url.pathname;
 

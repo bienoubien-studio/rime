@@ -10,7 +10,7 @@ type HookContext = {
 	rizom: Rizom;
 	event: RequestEvent & { locals: App.Locals };
 	config: CompiledCollection;
-	metas: Dic
+	metas: Dic;
 };
 
 // Collection Hooks

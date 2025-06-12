@@ -79,7 +79,7 @@
 		grid-template-columns: minmax(var(--rz-size-24), var(--rz-size-32)) 1fr;
 		padding-right: 0 var(--rz-size-4);
 	}
-	.rz-render-fields-preview__row:not(:last-child){
+	.rz-render-fields-preview__row:not(:last-child) {
 		border-bottom: var(--rz-border);
 	}
 	.rz-render-fields-preview__name {
@@ -98,7 +98,7 @@
 		padding: 0 var(--rz-size-4);
 		align-items: center;
 		display: flex;
-		span{
+		span {
 			@mixin line-clamp 1;
 		}
 	}

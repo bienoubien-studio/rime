@@ -39,8 +39,7 @@
 
 	$effect(() => {
 		if (file) {
-			const validMimeType =
-				!hasAccept || (allowedMimeTypes.length && allowedMimeTypes.includes(file.type));
+			const validMimeType = !hasAccept || (allowedMimeTypes.length && allowedMimeTypes.includes(file.type));
 			if (!validMimeType) {
 				const error = `File should be type of ${allowedMimeTypes.join(' | ')}, received ${file.type}`;
 				form.errors.set('mimeType', error);
@@ -146,38 +145,11 @@
 		--size: 16px;
 		--half-size: calc(var(--size) / 2);
 		background-size: var(--size) var(--size);
-		background-image: linear-gradient(
-				45deg,
-				var(--dark) 25%,
-				transparent 25%,
-				transparent 75%,
-				var(--dark) 75%,
-				var(--dark)
-			),
-			linear-gradient(
-				45deg,
-				var(--dark) 25%,
-				transparent 25%,
-				transparent 75%,
-				var(--dark) 75%,
-				var(--dark)
-			),
-			linear-gradient(
-				45deg,
-				var(--light) 25%,
-				transparent 25%,
-				transparent 75%,
-				var(--light) 75%,
-				var(--light)
-			),
-			linear-gradient(
-				45deg,
-				var(--light) 25%,
-				transparent 25%,
-				transparent 75%,
-				var(--light) 75%,
-				var(--light)
-			);
+		background-image:
+			linear-gradient(45deg, var(--dark) 25%, transparent 25%, transparent 75%, var(--dark) 75%, var(--dark)),
+			linear-gradient(45deg, var(--dark) 25%, transparent 25%, transparent 75%, var(--dark) 75%, var(--dark)),
+			linear-gradient(45deg, var(--light) 25%, transparent 25%, transparent 75%, var(--light) 75%, var(--light)),
+			linear-gradient(45deg, var(--light) 25%, transparent 25%, transparent 75%, var(--light) 75%, var(--light));
 		background-position:
 			0 0,
 			var(--half-size) var(--half-size),

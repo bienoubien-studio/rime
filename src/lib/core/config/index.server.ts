@@ -19,7 +19,7 @@ const dev = process.env.NODE_ENV === 'development';
  */
 export async function createConfigInterface(rawConfig: Config) {
 	const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });
-	
+
 	/**
 	 * Flattens the configuration object for easier access to nested properties
 	 * @param config The compiled configuration object
@@ -27,13 +27,12 @@ export async function createConfigInterface(rawConfig: Config) {
 	 */
 	const flattenConfig = (config: CompiledConfig) => {
 		return flattenWithGuard(config, {
-			shouldFlat: ([key]) =>
-				!['cors', 'plugins', 'routes', 'locales', 'areas', 'collections'].includes(key)
+			shouldFlat: ([key]) => !['cors', 'plugins', 'routes', 'locales', 'areas', 'collections'].includes(key)
 		});
 	};
-	
+
 	const flatConfig: Dic = flattenConfig(config);
-	
+
 	/**
 	 * Retrieves an area configuration by its slug
 	 * @param slug The slug of the area to retrieve
@@ -42,9 +41,9 @@ export async function createConfigInterface(rawConfig: Config) {
 	 */
 	const getArea = (slug: string): CompiledArea => {
 		const areaConfig = config.areas.find((g) => g.slug === slug);
-		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`)
-			
-		return areaConfig
+		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`);
+
+		return areaConfig;
 	};
 
 	/**
@@ -54,11 +53,10 @@ export async function createConfigInterface(rawConfig: Config) {
 	 * @throws {RizomError} If the collection does not exist
 	 */
 	const getCollection = (slug: string): CompiledCollection => {
-		
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
-		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`)
-			
-		return collectionConfig
+		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`);
+
+		return collectionConfig;
 	};
 
 	/**
@@ -70,12 +68,12 @@ export async function createConfigInterface(rawConfig: Config) {
 	const getBySlug = (slug: string) => {
 		// Try to find in collections
 		try {
-			const config = getCollection(slug)
-			return config
+			const config = getCollection(slug);
+			return config;
 		} catch {
 			try {
-				const config = getArea(slug)
-				return config
+				const config = getArea(slug);
+				return config;
 			} catch {
 				throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
 			}
@@ -180,9 +178,7 @@ export async function createConfigInterface(rawConfig: Config) {
 		 * @returns True if the locale is valid, false otherwise
 		 */
 		isValidLocale(locale: any) {
-			const locales = config.localization
-				? config.localization.locales.map((locale) => locale.code)
-				: [];
+			const locales = config.localization ? config.localization.locales.map((locale) => locale.code) : [];
 			return locales.includes(locale);
 		},
 

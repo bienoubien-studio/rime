@@ -287,7 +287,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 			});
 		});
 		const [error, _] = await safe(Promise.all(promises));
-		
+
 		if (error) {
 			console.error('API update failed:', error);
 			throw error;

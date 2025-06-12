@@ -17,8 +17,8 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		canCreate: user && c.access.create(user, {}),
 		link: `/panel/${c.slug}`,
 		titleSingular: c.label.singular,
-		title: c.label.plural,
-	})
+		title: c.label.plural
+	});
 
 	const getLastEdited = async (c: CompiledCollection) => {
 		try {
@@ -31,23 +31,21 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 			console.error(err);
 			return [];
 		}
-	}
-
+	};
 
 	const promiseEntries = rizom.config.collections
-		.filter(collection => user && collection.access.read(user, {}))
-		.filter(collection => !isVersionsSlug(collection.slug))
+		.filter((collection) => user && collection.access.read(user, {}))
+		.filter((collection) => !isVersionsSlug(collection.slug))
 		.map(async (collection) => {
 			if (collection.panel?.dashboard) {
-				return getLastEdited(collection)
-					.then(docs => ({ ...buildBaseEntry(collection), lastEdited: docs }))
+				return getLastEdited(collection).then((docs) => ({ ...buildBaseEntry(collection), lastEdited: docs }));
 			} else {
 				return {
 					...buildBaseEntry(collection),
 					lastEdited: []
-				}
+				};
 			}
-		})
+		});
 
 	try {
 		const collectionEntries = await Promise.all(promiseEntries);
@@ -69,11 +67,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		}
 	}
 
-	
-	const aria: Route[] = [
-		{ title: "Dashboard", icon: "dashboard", path: `/panel`  }
-	]
-
+	const aria: Route[] = [{ title: 'Dashboard', icon: 'dashboard', path: `/panel` }];
 
 	return { entries, aria };
 };

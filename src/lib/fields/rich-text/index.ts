@@ -2,7 +2,12 @@ import type { FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
-import type { MediaFeatureDefinition, ResourceFeatureDefinition, PredefinedFeatureName, RichTextFeature } from './core/types.js';
+import type {
+	MediaFeatureDefinition,
+	ResourceFeatureDefinition,
+	PredefinedFeatureName,
+	RichTextFeature
+} from './core/types.js';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -52,25 +57,27 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: import('@tiptap/core').JSONContent`;
 	}
-	
+
 	/**
 	 * Sets a custom TipTap editor configuration for the rich text field.
-	 * 
+	 *
 	 * @param param - a feature name, a RichTextFeature object, or a shortcut config string
-	 * 
+	 *
 	 * @example
 	 * // Using predefined features
 	 * richText('intro').features('bold', 'heading', 'link')
-	 * 
+	 *
 	 * // Using custom features
 	 * richText('intro').features(myCustomFeature)
-	 * 
+	 *
 	 */
-	features(...features: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>) {
-		this.field.features = features
+	features(
+		...features: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>
+	) {
+		this.field.features = features;
 		return this;
 	}
-	
+
 	static readonly jsonParse = (value: string) => {
 		try {
 			value = JSON.parse(value);

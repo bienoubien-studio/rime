@@ -18,8 +18,7 @@ export const useSortable = ({ ...sortableProps }: SortableType.Options) => {
 				childNodes = Array.prototype.slice.call(node.parentNode!.childNodes);
 				// Filter out the 'sortable-fallback' element used on mobile/old browsers.
 				childNodes = childNodes.filter(
-					(node) =>
-						node.nodeType != Node.ELEMENT_NODE || !node.classList.contains('sortable-fallback')
+					(node) => node.nodeType != Node.ELEMENT_NODE || !node.classList.contains('sortable-fallback')
 				);
 				if (sortableProps.onStart) {
 					sortableProps.onStart(e);

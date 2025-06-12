@@ -16,7 +16,7 @@
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationField } from '../index';
 	import type { RelationFieldItem } from './types.js';
-	
+
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -43,14 +43,14 @@
 	const nothingToSelect = $derived(initialItems.length === 0);
 
 	let isFull = $derived.by(() => {
-		if(!config.many){
-			if(selectedItems.length === 1) return true
-		}else{
-			if(availableItems.length === 0 && selectedItems.length > 0){
-				return true
+		if (!config.many) {
+			if (selectedItems.length === 1) return true;
+		} else {
+			if (availableItems.length === 0 && selectedItems.length > 0) {
+				return true;
 			}
 		}
-		return false
+		return false;
 	});
 
 	// Convert a document to a relation field item value
@@ -62,7 +62,7 @@
 			title: doc.title,
 			editUrl: `/panel/${relationConfig.slug}/${doc.id}`,
 			_type: doc._type,
-			_prototype: doc._prototype,
+			_prototype: doc._prototype
 		};
 		if (itemInFieldValue) {
 			item.id = itemInFieldValue.id;
@@ -144,8 +144,7 @@
 
 	const getAvailableItems = () => {
 		return initialItems.filter(
-			(initialItem) =>
-				!selectedItems.some((selectedItem) => selectedItem.documentId === initialItem.documentId)
+			(initialItem) => !selectedItems.some((selectedItem) => selectedItem.documentId === initialItem.documentId)
 		);
 	};
 

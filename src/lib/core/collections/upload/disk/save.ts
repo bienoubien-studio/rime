@@ -23,16 +23,16 @@ const isSameFile = (buffer: Buffer, filePath: string): boolean => {
 	try {
 		// Check if file exists
 		if (!existsSync(filePath)) return false;
-		
+
 		// Compare file sizes first (quick check)
 		const stats = statSync(filePath);
 		if (stats.size !== buffer.length) return false;
-		
+
 		// Compare content hash (more thorough check)
 		const existingFileBuffer = readFileSync(filePath);
 		const existingFileHash = crypto.createHash('md5').update(existingFileBuffer).digest('hex');
 		const newFileHash = crypto.createHash('md5').update(buffer).digest('hex');
-		
+
 		return existingFileHash === newFileHash;
 	} catch (error) {
 		// If any error occurs during comparison, assume files are different
@@ -49,41 +49,45 @@ const isSameFile = (buffer: Buffer, filePath: string): boolean => {
  *   console.log('All image sizes already exist');
  * }
  */
-const checkImageSizesExist = (name: string, extension: string, imagesSizes: ImageSizesConfig[]): Record<string, string> => {
+const checkImageSizesExist = (
+	name: string,
+	extension: string,
+	imagesSizes: ImageSizesConfig[]
+): Record<string, string> => {
 	const sizes: Record<string, string> = {};
-	
+
 	for (const size of imagesSizes) {
 		const whString = `${size.width}x${size.height}`;
-		
+
 		if (!size.out || !size.out.length) {
 			// Check if the resized image exists
 			const filename = `${name}-${toCamelCase(size.name)}-${whString}.${extension}`;
 			const filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
-			
+
 			if (!existsSync(filePath)) {
 				return {}; // If any size doesn't exist, return empty object
 			}
-			
+
 			sizes[toCamelCase(size.name)] = filename;
 		} else {
 			// Check if all format conversions exist
 			const convertedFilenames: string[] = [];
-			
+
 			for (const format of size.out) {
 				const filename = `${name}-${toCamelCase(size.name)}-${whString}.${format}`;
 				const filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
-				
+
 				if (!existsSync(filePath)) {
 					return {}; // If any format doesn't exist, return empty object
 				}
-				
+
 				convertedFilenames.push(filename);
 			}
-			
+
 			sizes[toCamelCase(size.name)] = convertedFilenames.join('|');
 		}
 	}
-	
+
 	return sizes;
 };
 
@@ -100,23 +104,23 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 	let sizes: UploadDoc['sizes'] = {};
 	let filename = `${name}.${extension}`;
 	let filePath = path.resolve(process.cwd(), `static/medias/${filename}`);
-	
+
 	// Get buffer once to avoid multiple arrayBuffer() calls
 	const buffer = Buffer.from(await file.arrayBuffer());
-	
+
 	// Check if file exists and is identical
 	if (existsSync(filePath) && isSameFile(buffer, filePath)) {
 		// File already exists and is identical
-		
+
 		// Check if image sizes already exist
 		if (imagesSizes && file.type.includes('image') && !file.type.includes('svg')) {
 			const existingSizes = checkImageSizesExist(name, extension, imagesSizes);
-			
+
 			// If all sizes exist, use them
 			if (Object.keys(existingSizes).length > 0) {
 				return { filename, imageSizes: existingSizes };
 			}
-			
+
 			// Otherwise, we'll need to generate the sizes
 			sizes = await generateSizes({
 				name,
@@ -125,10 +129,10 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 				buffer
 			});
 		}
-		
+
 		return { filename, imageSizes: sizes };
 	}
-	
+
 	// File doesn't exist or is different, find a unique name
 	while (existsSync(filePath)) {
 		name += `-${new Date().getTime().toString()}`;
@@ -146,10 +150,10 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 				buffer
 			});
 		}
-	} catch (error:any) {
+	} catch (error: any) {
 		throw new RizomError(RizomError.UPLOAD, `Error while processing file: ${error.message}`);
 	}
-	
+
 	return { filename, imageSizes: sizes };
 };
 

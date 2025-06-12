@@ -2,11 +2,11 @@ import type { Dic, WithRequired } from '$lib/util/types';
 
 /**
  * Creates a new object with only the specified keys from the original object.
- * 
+ *
  * @param keys - Array of keys to include in the new object
  * @param obj - Source object to pick properties from
  * @returns A new object containing only the specified keys
- * 
+ *
  * @example
  * // Returns { name: 'John', age: 30 }
  * pick(['name', 'age'], { name: 'John', age: 30, email: 'john@example.com' });
@@ -23,11 +23,11 @@ export const pick = <T extends object, K extends keyof T>(keys: K[], obj: T): Pi
 
 /**
  * Creates a new object without the specified keys from the original object.
- * 
+ *
  * @param keys - Array of keys to exclude from the new object
  * @param obj - Source object to omit properties from
  * @returns A new object containing all properties except the specified keys
- * 
+ *
  * @example
  * // Returns { email: 'john@example.com' }
  * omit(['name', 'age'], { name: 'John', age: 30, email: 'john@example.com' });
@@ -42,10 +42,10 @@ export const omit = <T extends object, K extends keyof T>(keys: K[], obj: T): Om
 
 /**
  * Creates a new object with all non-null properties from the original object.
- * 
+ *
  * @param obj - Source object to filter null values from
  * @returns A new object with all non-null properties
- * 
+ *
  * @example
  * // Returns { name: 'John', email: 'john@example.com' }
  * withoutNull({ name: 'John', age: null, email: 'john@example.com' });
@@ -63,10 +63,10 @@ export const withoutNull = <T extends object, K extends keyof T>(obj: T): Partia
 /**
  * Creates a new object without the 'id' property from the original object.
  * Specialized version of omit for the common case of removing IDs.
- * 
+ *
  * @param obj - Source object to remove the id from
  * @returns A new object without the id property
- * 
+ *
  * @example
  * // Returns { name: 'John', age: 30 }
  * omitId({ id: '123', name: 'John', age: 30 });
@@ -76,11 +76,11 @@ export const omitId = <T extends { id?: string; [k: string]: any }>(obj: T): Omi
 
 /**
  * Type guard to check if an object has all the specified properties.
- * 
+ *
  * @param props - Array of property keys to check for
  * @param obj - Object to check properties on
  * @returns True if the object has all the specified properties, false otherwise
- * 
+ *
  * @example
  * // Returns true if user has both name and email properties
  * if (hasProps(['name', 'email'], user)) {
@@ -97,11 +97,11 @@ export function hasProps<T extends object, U extends Array<keyof T>>(
 
 /**
  * Type guard to check if an object has a specific property.
- * 
+ *
  * @param prop - Property key to check for
  * @param obj - Object to check the property on
  * @returns True if the object has the specified property, false otherwise
- * 
+ *
  * @example
  * // Returns true if user has an email property
  * if (hasProp('email', user)) {
@@ -109,42 +109,34 @@ export function hasProps<T extends object, U extends Array<keyof T>>(
  *   sendEmail(user.email);
  * }
  */
-export function hasProp<T extends object, U extends keyof T>(
-	prop: U,
-	obj: T
-): obj is T & Required<Pick<T, U>> {
+export function hasProp<T extends object, U extends keyof T>(prop: U, obj: T): obj is T & Required<Pick<T, U>> {
 	return obj[prop] !== undefined;
 }
 
 /**
  * Checks if a value is a Buffer object.
- * 
+ *
  * @param obj - Value to check
  * @returns True if the value is a Buffer, false otherwise
- * 
+ *
  * @example
  * // Returns true for Buffer objects
  * isBuffer(Buffer.from('test'));
  */
 export function isBuffer(obj: any) {
-	return (
-		obj &&
-		obj.constructor &&
-		typeof obj.constructor.isBuffer === 'function' &&
-		obj.constructor.isBuffer(obj)
-	);
+	return obj && obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj);
 }
 
 /**
  * Checks if a value is a plain object literal (not an array, null, or a class instance).
- * 
+ *
  * @param object - Value to check
  * @returns True if the value is a plain object literal, false otherwise
- * 
+ *
  * @example
  * // Returns true
  * isObjectLiteral({ a: 1, b: 2 });
- * 
+ *
  * // Returns false
  * isObjectLiteral([1, 2, 3]);
  * isObjectLiteral(null);
@@ -175,18 +167,18 @@ type FlattenWithGuard = (data: Dic, opts?: FlattenWithGuardOptions) => Dic;
 /**
  * Flattens a nested object structure into a single-level object with dot notation keys.
  * Provides options to control the flattening behavior.
- * 
+ *
  * @param data - The nested object to flatten
  * @param opts - Options to control flattening behavior
  * @returns A flattened object with dot notation keys
- * 
+ *
  * @example
  * // Basic usage - returns { "user.name": "John", "user.address.city": "New York" }
  * flattenWithGuard({ user: { name: "John", address: { city: "New York" } } });
- * 
+ *
  * // With maxDepth=1 - returns { "user.name": "John", "user.address": { city: "New York" } }
  * flattenWithGuard({ user: { name: "John", address: { city: "New York" } } }, { maxDepth: 1 });
- * 
+ *
  * // With shouldFlat - only flatten properties that aren't "address"
  * // Returns { "user.name": "John", "user.address": { city: "New York" } }
  * flattenWithGuard(
@@ -236,15 +228,15 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
 
 /**
  * Gets a value from a nested object using a dot notation path.
- * 
+ *
  * @param path - Dot notation path to the desired value (e.g., 'user.address.city')
  * @param obj - Object to retrieve the value from
  * @returns The value at the specified path, or null/undefined if not found
- * 
+ *
  * @example
  * // Returns "New York"
  * getValueAtPath('user.address.city', { user: { address: { city: "New York" } } });
- * 
+ *
  * // Returns undefined
  * getValueAtPath('user.phone', { user: { address: { city: "New York" } } });
  */
@@ -267,16 +259,16 @@ export const getValueAtPath = <T>(path: string, obj: Dic): T | null | undefined 
 /**
  * Sets a value in a nested object using a dot notation path.
  * Creates the path if it doesn't exist and returns a new object without modifying the original.
- * 
+ *
  * @param obj - Source object to set the value in
  * @param path - Dot notation path where the value should be set
  * @param value - Value to set at the specified path
  * @returns A new object with the value set at the specified path
- * 
+ *
  * @example
  * // Returns { user: { address: { city: "Boston" } } }
  * setValueAtPath({ user: { address: { city: "New York" } } }, 'user.address.city', 'Boston');
- * 
+ *
  * // Creates missing path and returns { user: { phone: "555-1234" } }
  * setValueAtPath({ user: {} }, 'user.phone', '555-1234');
  */
@@ -336,11 +328,11 @@ export const setValueAtPath = <T extends Dic>(obj: T, path: string, value: unkno
 
 /**
  * Deletes a value at a specified path in an object.
- * 
+ *
  * @param obj - Source object to delete the value from
  * @param path - Dot notation path to the value that should be deleted
  * @returns The modified object with the value removed
- * 
+ *
  * @example
  * // Returns { user: { name: "John" } }
  * deleteValueAtPath({ user: { name: "John", age: 30 } }, 'user.age');

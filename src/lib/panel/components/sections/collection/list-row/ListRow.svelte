@@ -25,7 +25,7 @@
 	const getCellComponent = (fieldType: FieldsType) => {
 		return config.raw.blueprints[fieldType].cell || null;
 	};
-	
+
 	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {
@@ -33,12 +33,11 @@
 		gridTemplateColumn = `grid-template-columns: 2fr repeat(${columnLength - 1}, minmax(0, 1fr));`;
 	});
 
-	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, {short: true}) : '');
+	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, { short: true }) : '');
 </script>
 
 <div style={gridTemplateColumn} class="rz-list-row">
 	<div class="rz-list-row__main">
-		
 		{#if collection.selectMode}
 			<Checkbox class="rz-list-row__checkbox" {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
@@ -55,35 +54,32 @@
 					{@const Icon = collection.config.icon}
 					<div class="rz-list-row__icon"><Icon size="13" /></div>
 				{/if}
-				
+
 				<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
-				{#if collection.hasDraft }
+				{#if collection.hasDraft}
 					<StatusDot --rz-dot-size="0.28rem" status={doc.status} />
 				{/if}
 			</a>
 		{/if}
 	</div>
 
-	
-		{#each collection.columns as column, index (index)}
-			
-			<div class="rz-list-row__cell">
-				{#if column.table?.cell}
-					{@const ColumnTableCell = column.table.cell}
-					<ColumnTableCell value={getValueAtPath(column.path, doc)} />
-				{:else if getCellComponent(column.type)}
-					{@const Cell = getCellComponent(column.type)}
-					<Cell value={getValueAtPath(column.path, doc)} />
-				{:else}
-					{getValueAtPath(column.path, doc)}
-				{/if}
-			</div>
-		{/each}
-
+	{#each collection.columns as column, index (index)}
 		<div class="rz-list-row__cell">
-			{formattedDate}
+			{#if column.table?.cell}
+				{@const ColumnTableCell = column.table.cell}
+				<ColumnTableCell value={getValueAtPath(column.path, doc)} />
+			{:else if getCellComponent(column.type)}
+				{@const Cell = getCellComponent(column.type)}
+				<Cell value={getValueAtPath(column.path, doc)} />
+			{:else}
+				{getValueAtPath(column.path, doc)}
+			{/if}
 		</div>
-	
+	{/each}
+
+	<div class="rz-list-row__cell">
+		{formattedDate}
+	</div>
 </div>
 
 <style type="postcss">
@@ -94,7 +90,7 @@
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
 		background-color: hsl(var(--rz-ground-6));
-		.rz-list-row__icon{
+		.rz-list-row__icon {
 			height: var(--rz-size-10);
 			width: var(--rz-size-10);
 			border-radius: var(--rz-radius-md);
@@ -103,9 +99,9 @@
 			justify-content: center;
 			background-color: hsl(var(--rz-ground-4));
 		}
-		:global{
-			.rz-list-row__checkbox{
-				margin-left: var(--rz-size-2)
+		:global {
+			.rz-list-row__checkbox {
+				margin-left: var(--rz-size-2);
 			}
 		}
 	}

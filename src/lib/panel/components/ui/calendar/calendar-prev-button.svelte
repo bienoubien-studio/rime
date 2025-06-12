@@ -1,13 +1,8 @@
 <script lang="ts">
 	import { Calendar as CalendarPrimitive } from 'bits-ui';
-	import {ChevronLeft} from '@lucide/svelte';
+	import { ChevronLeft } from '@lucide/svelte';
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: CalendarPrimitive.PrevButtonProps = $props();
+	let { ref = $bindable(null), class: className, children, ...restProps }: CalendarPrimitive.PrevButtonProps = $props();
 </script>
 
 {#snippet Fallback()}

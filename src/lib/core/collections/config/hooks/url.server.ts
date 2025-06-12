@@ -80,7 +80,7 @@ export const populateURL: CollectionHookBeforeRead<GenericDoc> = async (args) =>
 			url = url.replace(/\/\[\.\.\.parent\.\w+(?:\.\w+)*\]/, '');
 		}
 
-    // Add the url if successfully generated
+		// Add the url if successfully generated
 		if (url) {
 			args.doc = {
 				...args.doc,
@@ -88,12 +88,12 @@ export const populateURL: CollectionHookBeforeRead<GenericDoc> = async (args) =>
 			};
 		}
 
-    // Add the live url if needed
+		// Add the live url if needed
 		if (config.live && event.locals.user && url) {
 			args.doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${url}&slug=${config.slug}&id=${args.doc.id}`;
 			args.doc._live += locale ? `&locale=${locale}` : '';
 		}
 	}
-  
+
 	return args;
 };

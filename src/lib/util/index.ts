@@ -1,7 +1,7 @@
 /**
  * Utility module for Rizom headless CMS.
  * Provides a collection of helper functions and utilities used throughout the application.
- * 
+ *
  * This module exports various utility categories:
  * - access: User permission and role checking utilities
  * - array: Array manipulation functions
@@ -27,16 +27,4 @@ import * as validate from './validate.js';
 import * as file from './file.js';
 import * as access from './access/index.js';
 
-export {
-	access,
-	array,
-	file,
-	config,
-	doc,
-	field,
-	object,
-	random,
-	state,
-	string,
-	validate
-};
+export { access, array, file, config, doc, field, object, random, state, string, validate };

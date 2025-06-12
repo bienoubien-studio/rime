@@ -10,12 +10,7 @@
 	<span>
 		{@render children?.()}
 	</span>
-	<button
-		class="rz-tag__button"
-		class:rz-tag__button--readonly={readOnly}
-		type="button"
-		onclick={onRemove}
-	>
+	<button class="rz-tag__button" class:rz-tag__button--readonly={readOnly} type="button" onclick={onRemove}>
 		<X size={13} />
 	</button>
 </div>

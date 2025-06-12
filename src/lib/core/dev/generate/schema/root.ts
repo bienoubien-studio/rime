@@ -1,11 +1,5 @@
 import type { Field, FormField } from '$lib/fields/types.js';
-import {
-	isBlocksField,
-	isFormField,
-	isGroupField,
-	isRelationField,
-	isTabsField,
-} from '$lib/util/field.js';
+import { isBlocksField, isFormField, isGroupField, isRelationField, isTabsField } from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.js';
 import type { LocaleConfig } from '$lib/core/config/types/index.js';
@@ -112,7 +106,7 @@ const buildRootTable = ({
 						});
 						relationsDic = nestedRelationsDic;
 						relationFieldsMap = nestedRelationFieldsDic;
-						if(nestedRelationFieldsHasLocale) relationFieldsHasLocale = true
+						if (nestedRelationFieldsHasLocale) relationFieldsHasLocale = true;
 						blocksRegister.push(blockTableName);
 						blocksTables.push(blockTable);
 					}
@@ -142,7 +136,7 @@ const buildRootTable = ({
 					});
 					relationsDic = nestedRelationsDic;
 					relationFieldsMap = nestedRelationFieldsDic;
-					if(nestedRelationFieldsHasLocale) relationFieldsHasLocale = true
+					if (nestedRelationFieldsHasLocale) relationFieldsHasLocale = true;
 					blocksRegister.push(treeTableName);
 					blocksTables.push(treeTable);
 				}
@@ -165,7 +159,7 @@ const buildRootTable = ({
 		if (hasParent) {
 			strUnlocalizedFields.push(templateParent(rootName));
 		}
-		if(versionsFrom){
+		if (versionsFrom) {
 			strUnlocalizedFields.push(templateParent(versionsFrom));
 		}
 		if (hasAuth) {
@@ -181,7 +175,7 @@ const buildRootTable = ({
 		if (hasParent) {
 			strFields.push(templateParent(rootName));
 		}
-		if(versionsFrom){
+		if (versionsFrom) {
 			strFields.push(templateParent(versionsFrom));
 		}
 		if (hasAuth) {
@@ -219,7 +213,7 @@ function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 
 		// Case 3: If it's a blocks field, check all fields within each block
 		else if (isBlocksField(field.raw)) {
-			if (field.raw.localized) return true
+			if (field.raw.localized) return true;
 			for (const block of field.raw.blocks) {
 				if (hasLocalizedField(block.raw.fields)) {
 					return true;
@@ -229,12 +223,12 @@ function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 
 		// Case 3: If it's a tree field, check all fields
 		else if (field instanceof TreeBuilder) {
-			if (field.raw.localized) return true
+			if (field.raw.localized) return true;
 			if (hasLocalizedField(field.raw.fields)) {
 				return true;
 			}
 		}
-		
+
 		// Case 4: For regular form fields, check if it's marked as localized
 		else if (isFormField(field.raw) && field.raw.localized) {
 			return true;
@@ -244,6 +238,5 @@ function hasLocalizedField(fields: FieldBuilder<Field>[]): boolean {
 	// If no localized fields were found, return false
 	return false;
 }
-
 
 export default buildRootTable;

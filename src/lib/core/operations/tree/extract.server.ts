@@ -12,12 +12,7 @@ type ExtractTreesArgs = {
 export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 	const blocks: WithRequired<TreeBlock, 'path'>[] = [];
 
-	function processTreeItem(
-		item: TreeBlock,
-		index: number,
-		rootPath: string,
-		parentPath?: string
-	): void {
+	function processTreeItem(item: TreeBlock, index: number, rootPath: string, parentPath?: string): void {
 		// Create a copy of the item to avoid modifying the original
 		const processedItem: TreeBlock = cloneDeep({ ...item });
 

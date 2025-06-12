@@ -22,30 +22,30 @@ export type Routes = Record<string, RouteDefinition>;
  * // If the config has changed since last run, needsRegeneration will be true
  */
 export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
-  const versionsSuffix = (document: any) => document.versions ? '.v' : ''
-  const authSuffix = (collection: typeof config.collections[number]) => collection.auth ? '.auth' : ''
-  
-  const memo = `
+	const versionsSuffix = (document: any) => (document.versions ? '.v' : '');
+	const authSuffix = (collection: (typeof config.collections)[number]) => (collection.auth ? '.auth' : '');
+
+	const memo = `
     areas:${config.areas.map((area) => `${area.slug}${versionsSuffix(area)}`).join(',')}
     collections:${config.collections.map((collection) => `${collection.slug}${authSuffix(collection)}${versionsSuffix(collection)}`).join(',')}
     custom:${
-      config.panel?.routes
-        ? Object.entries(config.panel.routes)
-            .map(([k, v]) => `${k}-${slugify(v.component.toString())}`)
-            .join(',')
-        : ''
-    }
+			config.panel?.routes
+				? Object.entries(config.panel.routes)
+						.map(([k, v]) => `${k}-${slugify(v.component.toString())}`)
+						.join(',')
+				: ''
+		}
     css:${config.panel.css ? config.panel.css : 'none'}
   `;
-  
-  const cachedMemo = cache.get('routes');
-  
-  if (cachedMemo && cachedMemo === memo) {
-    return false;
-  }
-  
-  cache.set('routes', memo);
-  return true;
+
+	const cachedMemo = cache.get('routes');
+
+	if (cachedMemo && cachedMemo === memo) {
+		return false;
+	}
+
+	cache.set('routes', memo);
+	return true;
 }
 
 /**
@@ -57,9 +57,9 @@ export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
  * // The directory will be created if it doesn't exist
  */
 export function ensureDir(dirPath: string): void {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
+	if (!fs.existsSync(dirPath)) {
+		fs.mkdirSync(dirPath, { recursive: true });
+	}
 }
 
 /**
@@ -78,37 +78,36 @@ export function ensureDir(dirPath: string): void {
  * // Creates /path/to/src/routes/(rizom)/panel/news/+page.svelte with the provided content
  */
 export function writeRouteFile(basePath: string, routePath: string, fileType: string, content: string): void {
-  const dir = path.join(basePath, routePath);
-  ensureDir(dir);
-  
-  let fileName: string;
-  if (fileType === 'layout') {
-    fileName = '+layout.svelte';
-  } else if (fileType === 'layoutServer') {
-    fileName = '+layout.server.ts';
-  } else if (fileType === 'page') {
-    fileName = '+page.svelte';
-  } else if (fileType === 'pageServer') {
-    fileName = '+page.server.ts';
-  } else if (fileType === 'error') {
-    fileName = '+error.svelte';
-  } else if (fileType === 'server') {
-    fileName = '+server.ts';
-  } else {
-    fileName = `+${fileType}.svelte`;
-  }
-  
-  fs.writeFileSync(path.join(dir, fileName), content);
+	const dir = path.join(basePath, routePath);
+	ensureDir(dir);
+
+	let fileName: string;
+	if (fileType === 'layout') {
+		fileName = '+layout.svelte';
+	} else if (fileType === 'layoutServer') {
+		fileName = '+layout.server.ts';
+	} else if (fileType === 'page') {
+		fileName = '+page.svelte';
+	} else if (fileType === 'pageServer') {
+		fileName = '+page.server.ts';
+	} else if (fileType === 'error') {
+		fileName = '+error.svelte';
+	} else if (fileType === 'server') {
+		fileName = '+server.ts';
+	} else {
+		fileName = `+${fileType}.svelte`;
+	}
+
+	fs.writeFileSync(path.join(dir, fileName), content);
 }
 
 /**
  * Cast slug in generated templates for document with versions
  * in order to prevent TS error that slug_versions is not a collection/area
- * 
- * @example 
+ *
+ * @example
  * castVersionSlug('pages_versions')
  * // output : 'pages_versions' as any
- * export const GET = api.collection.get('pages_versions' as any) 
+ * export const GET = api.collection.get('pages_versions' as any)
  */
-export const TScastVersionSlug = (slug:string) => 
-  isVersionsSlug(slug) ? `'${slug}' as any` : `'${slug}'`
+export const TScastVersionSlug = (slug: string) => (isVersionsSlug(slug) ? `'${slug}' as any` : `'${slug}'`);

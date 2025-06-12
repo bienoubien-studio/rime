@@ -14,7 +14,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	const authenticated = await rizom.auth.betterAuth.api.getSession({
 		headers: event.request.headers
 	});
-	
+
 	// Redirect to the proper route
 
 	// for /panel request

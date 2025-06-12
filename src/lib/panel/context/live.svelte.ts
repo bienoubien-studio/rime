@@ -21,12 +21,11 @@ type OnDataCallback = (args: { path: string; value: any }) => void;
 type LiveStore<T extends GenericDoc = GenericDoc> = ReturnType<typeof createStore<T>>;
 
 function createStore<T extends GenericDoc = GenericDoc>(href: string) {
-	
 	let enabled = $state(false);
 	let doc = $state<T>();
 	const callbacks: OnDataCallback[] = [];
 	let currentFocusedElement = $state<HTMLElement>();
-	
+
 	/**
 	 * Handles navigation within iframe to maintain live editing mode
 	 */
@@ -49,11 +48,11 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 				// Send handshake response with current URL
 				window.top.postMessage({ handshake: href });
 			}
-		} 
+		}
 		// Handle field updates
 		else if (e.data.path && e.data.value !== undefined) {
 			await handleFieldUpdate(e.data);
-		} 
+		}
 		// Handle focus requests
 		else if (e.data.focus && typeof e.data.focus === 'string' && typeof document !== 'undefined') {
 			handleFocusField(e.data.focus);
@@ -68,21 +67,19 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		if (value === null || value === undefined) {
 			return value;
 		}
-		
+
 		// Check if it's a resource link field value
 		if (
-			isObjectLiteral(value) && 
-			'value' in value && 
-			'target' in value && 
-			'type' in value && 
+			isObjectLiteral(value) &&
+			'value' in value &&
+			'target' in value &&
+			'type' in value &&
 			!['url', 'email', 'tel', 'anchor'].includes(value.type)
 		) {
-			if( value.type && value.value ){
+			if (value.type && value.value) {
 				try {
-					const response = await fetch(
-						`/api/${value.type}/${value.value}?depth=1`
-					).then((r) => r.json());
-					
+					const response = await fetch(`/api/${value.type}/${value.value}?depth=1`).then((r) => r.json());
+
 					if (response && response.doc && response.doc.url) {
 						return {
 							...value,
@@ -90,39 +87,33 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 						};
 					}
 				} catch (err) {
-					console.error(err)
+					console.error(err);
 					return value;
 				}
 			}
-		
+
 			return value;
 		}
 
 		// Check if it's a relation object
-		if (
-			isObjectLiteral(value) && 
-			'documentId' in value && 
-			'relationTo' in value
-		) {
+		if (isObjectLiteral(value) && 'documentId' in value && 'relationTo' in value) {
 			// Process single relation object
 			if ('livePreview' in value) {
 				return value.livePreview;
 			} else {
 				try {
-					const response = await fetch(
-						`/api/${value.relationTo}/${value.documentId}?depth=1`
-					).then((r) => r.json());
-					
+					const response = await fetch(`/api/${value.relationTo}/${value.documentId}?depth=1`).then((r) => r.json());
+
 					if (response && response.doc) {
 						return response.doc;
 					}
 				} catch (err) {
-					console.error(err)
+					console.error(err);
 				}
 			}
 			return value;
 		}
-		
+
 		// Process arrays
 		if (Array.isArray(value)) {
 			const result = [...value];
@@ -131,31 +122,31 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 			}
 			return result;
 		}
-		
+
 		// Process objects (recursively)
 		if (isObjectLiteral(value)) {
-			const result = {...value};
+			const result = { ...value };
 			for (const key of Object.keys(result)) {
 				result[key] = await populate(result[key]);
 			}
 			return result;
 		}
-		
+
 		// Return primitives as is
 		return value;
 	};
 
 	/**
-	 * Handles field value updates 
+	 * Handles field value updates
 	 */
 	const handleFieldUpdate = async (data: { path: string; value: any }) => {
-		if(!doc) throw new Error('live.doc has not been set before handleFieldUpdate');
+		if (!doc) throw new Error('live.doc has not been set before handleFieldUpdate');
 		// Populate relations / link
 		const processedValue = await populate(data.value);
 		// Update the document
 		doc = setValueAtPath(doc, data.path, processedValue) as T;
 	};
-	
+
 	/**
 	 * Handles focusing a specific field in the UI
 	 */
@@ -188,7 +179,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		beforeNavigate,
 		onMessage,
 		onData,
-		
+
 		get data() {
 			return { doc };
 		},

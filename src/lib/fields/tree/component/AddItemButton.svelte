@@ -6,7 +6,7 @@
 	import type { Dic } from '$lib/util/types';
 	import type { Snippet } from 'svelte';
 	import type { Field } from '$lib/fields/types.js';
-	
+
 	type AddItem = (emptyValues: Dic) => void;
 	type Props = {
 		size: 'default' | 'sm';
@@ -23,13 +23,7 @@
 	};
 </script>
 
-<Button
-	icon={Plus}
-	class="rz-add-item-button {className}"
-	onclick={() => add()}
-	variant="outline"
-	{size}
->
+<Button icon={Plus} class="rz-add-item-button {className}" onclick={() => add()} variant="outline" {size}>
 	<span>
 		{@render children()}
 	</span>

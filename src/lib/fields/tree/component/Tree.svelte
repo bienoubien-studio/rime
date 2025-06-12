@@ -98,7 +98,7 @@
 <fieldset class="rz-field-tree {config.className}" use:root={field}>
 	<Field.Error error={field.error} />
 
-	<Field.Label config={config} />
+	<Field.Label {config} />
 
 	{#key treeState.stamp}
 		<div
@@ -110,26 +110,14 @@
 		>
 			{#if hasBlocks}
 				{#each treeState.items as item, index (item.id)}
-					<TreeBlockItem
-						{treeState}
-						treeKey={key}
-						path="{path}.{index}"
-						{form}
-						{sorting}
-						{config}
-					/>
+					<TreeBlockItem {treeState} treeKey={key} path="{path}.{index}" {form} {sorting} {config} />
 				{/each}
 			{/if}
 		</div>
 	{/key}
 
 	<div class="rz-tree__actions">
-		<AddItemButton
-			addItem={add}
-			class="rz-tree__add-button"
-			size={nested ? 'sm' : 'default'}
-			fields={config.fields}
-		>
+		<AddItemButton addItem={add} class="rz-tree__add-button" size={nested ? 'sm' : 'default'} fields={config.fields}>
 			{config.addItemLabel}
 		</AddItemButton>
 
@@ -142,12 +130,11 @@
 </fieldset>
 
 <style lang="postcss">
-	
 	.rz-tree__list {
 		display: grid;
 		margin-left: 1rem;
 	}
-	
+
 	.rz-tree__actions {
 		display: flex;
 		align-items: center;

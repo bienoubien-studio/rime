@@ -5,11 +5,10 @@ import type { SendMailArgs, SMTPConfig } from './types';
 import { RizomError } from '$lib/core/errors/index.js';
 
 export const mailer: Plugin<SMTPConfig> = (smtpConfig) => {
-	
 	if (!smtpConfig) {
 		throw new RizomError(RizomError.BAD_REQUEST, 'SMTP configuration is required');
 	}
-	
+
 	const { password, ...restAuth } = smtpConfig.auth;
 	const options: SMTPTransport.Options = {
 		secure: true,

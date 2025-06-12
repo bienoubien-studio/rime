@@ -1,7 +1,6 @@
-
-.rz-tabs[data-tabs-root]{
-	margin-left: calc( -1 * var(--rz-fields-padding));
-	margin-right: calc( -1 * var(--rz-fields-padding));
+.rz-tabs[data-tabs-root] {
+	margin-left: calc(-1 * var(--rz-fields-padding));
+	margin-right: calc(-1 * var(--rz-fields-padding));
 }
 
 /**************************************/
@@ -23,7 +22,6 @@
 	@mixin font-semibold;
 }
 .rz-tabs-trigger[data-state='active'] {
-	
 	border-color: hsl(var(--rz-ground-1));
 	position: relative;
 }

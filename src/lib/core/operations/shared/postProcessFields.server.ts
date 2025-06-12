@@ -31,6 +31,6 @@ export const postprocessFields = async <T extends Dic>(args: {
 			}
 		}
 	}
-	
+
 	return document;
 };

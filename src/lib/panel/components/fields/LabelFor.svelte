@@ -19,7 +19,7 @@
 
 <style type="postcss">
 	:global {
-		fieldset:disabled .rz-field-label-for{
+		fieldset:disabled .rz-field-label-for {
 			cursor: no-drop;
 		}
 		.rz-field-label-for {

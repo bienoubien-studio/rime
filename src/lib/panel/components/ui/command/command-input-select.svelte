@@ -12,12 +12,7 @@
 
 <div class="rz-command-input-select {className}" data-command-input-wrapper="">
 	<Search class="rz-command-input-select__icon" size={12} />
-	<CommandPrimitive.Input
-		class="rz-command-input-select__input"
-		bind:ref
-		{...restProps}
-		bind:value
-	/>
+	<CommandPrimitive.Input class="rz-command-input-select__input" bind:ref {...restProps} bind:value />
 </div>
 
 <style type="postcss">

@@ -10,8 +10,8 @@ import type { ConfigInterface } from './config/index.server.js';
 import type { CorePlugins, Plugins } from './types/plugins.js';
 
 export type RizomConstructorArgs = {
-	adapter: Adapter
-	config: ConfigInterface
+	adapter: Adapter;
+	config: ConfigInterface;
 	event: RequestEvent;
 };
 
@@ -19,25 +19,25 @@ export class Rizom {
 	//
 	#operationsCount = 0;
 	#requestEvent: RequestEvent;
-	#plugins: Plugins
-	adapter: Adapter
-	config: ConfigInterface
-	
+	#plugins: Plugins;
+	adapter: Adapter;
+	config: ConfigInterface;
+
 	constructor({ adapter, config, event }: RizomConstructorArgs) {
-		this.adapter = adapter
-		this.config = config
-		this.defineLocale({ event })
+		this.adapter = adapter;
+		this.config = config;
+		this.defineLocale({ event });
 		this.#requestEvent = event;
-		this.#plugins = config.get('plugins')
+		this.#plugins = config.get('plugins');
 	}
-	
+
 	preventOperationLoop() {
 		this.#operationsCount++;
 		if (this.#operationsCount++ > 1000) {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'infinite loop');
 		}
 	}
-	
+
 	enforceLocale(locale: string) {
 		this.#requestEvent.locals.locale = locale;
 	}
@@ -48,7 +48,7 @@ export class Rizom {
 
 	collection<Slug extends keyof RegisterCollection>(slug: Slug) {
 		const collectionConfig = this.config.getCollection(slug);
-		
+
 		return new CollectionInterface<RegisterCollection[Slug]>({
 			event: this.#requestEvent,
 			config: collectionConfig as CompiledCollection, // casting fix TS error when no app.generated.d.ts
@@ -99,7 +99,7 @@ export class Rizom {
 
 		await this.adapter.auth.createFirstUser({ email, name, password });
 	}
-	
+
 	/**
 	 * define the locale to use in the event
 	 * based on this hierarchy :
@@ -122,31 +122,30 @@ export class Rizom {
 		const cookieLocale = event.cookies.get('Locale');
 		const defaultLocale = this.config.getDefaultLocale();
 		const locale = paramLocale || searchParamLocale || cookieLocale;
-		
+
 		if (locale && this.config.getLocalesCodes().includes(locale)) {
 			// event.cookies.set('Locale', locale, { path: '.' });
-			return event.locals.locale = locale;
+			return (event.locals.locale = locale);
 		}
 		// event.cookies.set('Locale', defaultLocale, { path: '.' });
-		return event.locals.locale = defaultLocale;
+		return (event.locals.locale = defaultLocale);
 	}
 
-	get plugins () {
-		return this.#plugins as RegisterPlugins
-	}
-	
-	get auth () {
-		return this.adapter.auth
-	}
-	
-	get cache () {
-		return this.#plugins.cache as CorePlugins['cache']
-	}
-	
-	get mailer () {
-		return this.#plugins.mailer as CorePlugins['mailer']
+	get plugins() {
+		return this.#plugins as RegisterPlugins;
 	}
 
+	get auth() {
+		return this.adapter.auth;
+	}
+
+	get cache() {
+		return this.#plugins.cache as CorePlugins['cache'];
+	}
+
+	get mailer() {
+		return this.#plugins.mailer as CorePlugins['mailer'];
+	}
 }
 
 type CreateFirstPanelUserArgs = { email: string; name: string; password: string };

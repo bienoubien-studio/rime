@@ -50,16 +50,15 @@ export const cache: Plugin<CacheOptions> = (options) => {
 			// Add all parameter values in a consistent order (sort keys)
 			Object.keys(params)
 				.sort()
-				.forEach(key => {
+				.forEach((key) => {
 					values.push(`${key}:${valueToString(params[key])}`);
 				});
-			
+
 			return toHash(values.join('-'));
 		},
 		isEnabled: options?.isEnabled || ((event) => !event.locals.user)
 	};
 
-	
 	return {
 		name: 'cache',
 		core: true,

@@ -24,7 +24,7 @@
 	@media (min-width: 640px) {
 		.rz-dialog-footer {
 			flex-direction: row;
-			justify-content: var( --rz-justify-content, flex-end);
+			justify-content: var(--rz-justify-content, flex-end);
 		}
 	}
 </style>

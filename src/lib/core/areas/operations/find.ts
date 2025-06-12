@@ -24,9 +24,9 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 
 	const authorized = config.access.read(event.locals.user, {});
 	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug );
+		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
 	}
-	
+
 	const documentRaw = await rizom.adapter.area.get({
 		slug: config.slug,
 		locale,
@@ -34,9 +34,9 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		versionId,
 		draft
 	});
-	
-	const hasSelect = select && Array.isArray(select) && !!select.length
-	
+
+	const hasSelect = select && Array.isArray(select) && !!select.length;
+
 	let document = await transformDocument<T>({
 		raw: documentRaw,
 		config,
@@ -44,9 +44,9 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		depth,
 		event,
 		augment: !hasSelect,
-		withBlank: !hasSelect,
+		withBlank: !hasSelect
 	});
-	
+
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as unknown as RegisterArea[AreaSlug],
@@ -58,6 +58,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		});
 		document = result.doc as unknown as T;
 	}
-	
+
 	return document;
 };

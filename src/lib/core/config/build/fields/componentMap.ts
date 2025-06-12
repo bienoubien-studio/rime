@@ -8,9 +8,7 @@ import type { FieldBuilder } from '$lib/fields/builders/field.js';
 import type { FieldsComponents } from '$lib/panel/types';
 import type { Field } from '$lib/fields/types.js';
 
-export function buildComponentsMap(
-	fields: FieldBuilder<Field>[]
-): Record<string, FieldsComponents> {
+export function buildComponentsMap(fields: FieldBuilder<Field>[]): Record<string, FieldsComponents> {
 	// Add Text and Email by default as needed for Login/Init forms
 	const componentsMap: Record<string, FieldsComponents> = {
 		email: { component: Email },
@@ -29,7 +27,7 @@ export function buildComponentsMap(
 	for (const field of fields) {
 		// Add current field if it has component
 		addToMap(field);
-		
+
 		// Check in blocks
 		if (field instanceof BlocksBuilder && field.raw.blocks) {
 			for (const block of field.raw.blocks) {

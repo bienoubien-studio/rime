@@ -5,17 +5,15 @@
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
 
-	type Props = { disabled: boolean }
-		const { disabled }: Props = $props()
-	
-	const collection = getContext<CollectionContext>('rizom.collectionList')
+	type Props = { disabled: boolean };
+	const { disabled }: Props = $props();
+
+	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let filterValue = $state('');
-	
+
 	$effect(() => {
 		collection.filterBy(filterValue);
 	});
-
-	
 </script>
 
 <div class="rz-header-search-input">

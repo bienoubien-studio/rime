@@ -68,8 +68,8 @@ function createFormStore(initial: Dic, key: string) {
 		};
 
 		return {
-			path, 
-			
+			path,
+
 			get value() {
 				return form[path];
 			},

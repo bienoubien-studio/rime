@@ -24,7 +24,6 @@ import { getFieldConfigByPath } from '$lib/util/config.js';
 import { env } from '$env/dynamic/public';
 import { random } from '$lib/util/index.js';
 
-
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
 	config,
@@ -48,16 +47,14 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const isCollection = documentConfig.type === 'collection';
 	const collection = isCollection ? getCollectionContext(documentConfig.slug) : null;
 	const hasError = $derived(errors.length);
-	const canSubmit = $derived(
-		!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError
-	);
+	const canSubmit = $derived(!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError);
 	const nestedLevel = initLevel();
 	const initialTitle = initTitle();
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	const apiProxy = getAPIProxyContext('document')
+	const apiProxy = getAPIProxyContext('document');
 
 	function initLevel() {
 		const last = key.split('_').pop() as string;
@@ -93,11 +90,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			// Process all properties of the item
 			Object.keys(newItem).forEach((key) => {
 				// If property is an array of object, process it recursively
-				if (
-					Array.isArray(newItem[key]) &&
-					newItem[key].length &&
-					isObjectLiteral(newItem[key][0])
-				) {
+				if (Array.isArray(newItem[key]) && newItem[key].length && isObjectLiteral(newItem[key][0])) {
 					const newParentPath = `${parentPath}.${index}.${key}`;
 					newItem[key] = rebuildPaths(newItem[key], basePath, newParentPath);
 				}
@@ -163,8 +156,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			let items = cloneDeep(snapshot(getItems()));
 
 			// Get target array
-			const targetArray =
-				getValueAtPath<TreeBlock[]>(atPath.replace(`${path}.`, ''), items) || items;
+			const targetArray = getValueAtPath<TreeBlock[]>(atPath.replace(`${path}.`, ''), items) || items;
 
 			// Perform the move operation
 			targetArray.splice(index, 1);
@@ -239,7 +231,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignBlocksToDoc = (blocks: GenericBlock[]) => {
-			blocks = rebuildPaths(blocks, path)
+			blocks = rebuildPaths(blocks, path);
 			doc = setValueAtPath(doc, path, blocks);
 			if (onDataChange) onDataChange({ path, value: snapshot(blocks) });
 		};
@@ -342,10 +334,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	}
 
 	function useField(path: string, config?: FormField) {
-
 		if (!config) {
-			config = getFieldConfigByPath(path, documentConfig.fields)
-			if (!config) throw new Error(`can't find config for field : ${path}`)
+			config = getFieldConfigByPath(path, documentConfig.fields);
+			if (!config) throw new Error(`can't find config for field : ${path}`);
 		}
 
 		path = path || config.name;
@@ -385,21 +376,21 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				const upperPath = path.substring(0, path.lastIndexOf('.'));
 				siblings = getValueAtPath(upperPath, doc) || {};
 			}
-			return siblings
-		}
+			return siblings;
+		};
 
 		const setValueFromDefaultLocale = async () => {
-			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`
-			let fetchURL: string = BASE_API_URL
+			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
+			let fetchURL: string = BASE_API_URL;
 			if (isCollection) {
-				fetchURL += `?where[id][equals]=${doc.id}&select=${path}&locale=${locale.defaultCode}`
+				fetchURL += `?where[id][equals]=${doc.id}&select=${path}&locale=${locale.defaultCode}`;
 			} else {
-				fetchURL += `?select=${path}&locale=${locale.defaultCode}`
+				fetchURL += `?select=${path}&locale=${locale.defaultCode}`;
 			}
 			// Fetch data
 			const result = await fetch(fetchURL).then((r) => r.json());
 			// Process data
-			if (isCollection && Array.isArray(result.docs) && result.docs.length || result.doc) {
+			if ((isCollection && Array.isArray(result.docs) && result.docs.length) || result.doc) {
 				// Extract data from the appropriate response structure:
 				// - For collections: data is in result.docs[0]
 				// - For areas: data is in result.doc
@@ -408,7 +399,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				// Recursively remove id property from blocks/tree/relations
 				// This ensure elements to be threated as new,
 				// preventing an unwanted delete or update with the wrong locale
-				const removeIds = <T,>(data: T): T => {
+				const removeIds = <T>(data: T): T => {
 					// Handle arrays
 					if (Array.isArray(data)) {
 						return data.map((item) => removeIds(item)) as unknown as T;
@@ -437,7 +428,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				// Remove ids from blocks before setting the value
 				setFieldValue(removeIds(defaultLocaleValue));
 			}
-		}
+		};
 
 		const setFieldValue = (value: any) => {
 			const valid = validate(value);
@@ -453,14 +444,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 							useField,
 							useBlocks,
 							useTree
-						})
+						});
 					}
 				}
 			}
-		}
+		};
 
 		return {
-
 			path,
 			setValueFromDefaultLocale,
 
@@ -473,11 +463,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			},
 
 			set value(value: any) {
-				setFieldValue(value)
+				setFieldValue(value);
 			},
 
 			get editable() {
-				if (readOnly) return false
+				if (readOnly) return false;
 				if (operation === 'create') {
 					return config.access.create(user.attributes);
 				} else {
@@ -506,7 +496,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 			get isEmpty() {
 				return !!config.isEmpty && config.isEmpty(getValueAtPath(path, doc));
-			},
+			}
 		};
 	}
 
@@ -543,7 +533,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				intialDoc = doc;
 			} else {
 				toast.success(t__('common.doc_created'));
-				apiProxy.invalidateAll()
+				apiProxy.invalidateAll();
 				// Do not redirect on creation if it's a nested form
 				// the form will auto close and we are back to the parent
 				// Form so no need to assign the returned doc
@@ -573,22 +563,22 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const listener = (event: SubmitEvent) => {
 			event.preventDefault();
 			// Set status if needed
-			const status = !!event.submitter?.dataset.status
-			if(status && documentConfig.versions && documentConfig.versions.draft){
-				setValue('status', event.submitter?.dataset.status)
+			const status = !!event.submitter?.dataset.status;
+			if (status && documentConfig.versions && documentConfig.versions.draft) {
+				setValue('status', event.submitter?.dataset.status);
 			}
-			let action = formElement.action
-			const draft = !!event.submitter?.dataset.draft
+			let action = formElement.action;
+			const draft = !!event.submitter?.dataset.draft;
 			if (draft) {
-				action += `&draft=true`
+				action += `&draft=true`;
 			}
-			if( documentConfig.versions ){
+			if (documentConfig.versions) {
 				// let versionsSuffix = documentConfig.versions && doc.versionId ? `&versionId=${doc.versionId}` : ''
-				if(!draft){
-					action += `&versionId=${doc.versionId}`
+				if (!draft) {
+					action += `&versionId=${doc.versionId}`;
 				}
 			}
-			console.log(action)
+			console.log(action);
 			submit(action);
 		};
 		formElement.addEventListener('submit', listener);
@@ -701,9 +691,7 @@ export function getDocumentFormContext<T extends GenericDoc>(key: string = 'root
 	return getContext<DocumentFormContext<T>>(`${FORM_KEY}.${key}`);
 }
 
-export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<
-	typeof setDocumentFormContext<T>
->;
+export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<typeof setDocumentFormContext<T>>;
 
 type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
 type MoveBlock = (from: number, to: number) => void;

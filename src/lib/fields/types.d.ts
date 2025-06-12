@@ -75,17 +75,18 @@ export type FormField = Field & {
 type FieldHookContext<T extends AnyFormField = AnyFormField> = {
 	event: RequestEvent;
 	/** The document Id being processed */
-	documentId?: string,
+	documentId?: string;
 	/** The field config */
 	config: T;
 };
 
-export type FieldHookOnChange = (value: any,
+export type FieldHookOnChange = (
+	value: any,
 	context: {
 		siblings: Record<string, any>;
-		useField: DocumentFormContext['useField'],
-		useBlocks: DocumentFormContext['useBlocks'],
-		useTree: DocumentFormContext['useTree']
+		useField: DocumentFormContext['useField'];
+		useBlocks: DocumentFormContext['useBlocks'];
+		useTree: DocumentFormContext['useTree'];
 	}
 ) => void;
 
@@ -95,7 +96,7 @@ type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeValidate?: FieldHook[];
 	beforeSave?: FieldHook[];
-	onChange?: FieldHookOnChange[]
+	onChange?: FieldHookOnChange[];
 };
 
 export type Option = {
@@ -109,11 +110,7 @@ export type OptionWithIcon = {
 	icon?: Component<IconProps>;
 };
 
-export type RelationValue<T> =
-	| T[]
-	| { id?: string; relationTo: string; documentId: string }[]
-	| string[]
-	| string;
+export type RelationValue<T> = T[] | { id?: string; relationTo: string; documentId: string }[] | string[] | string;
 
 export type AnyFormField = GetRegisterType<'AnyFormField'>;
 export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;

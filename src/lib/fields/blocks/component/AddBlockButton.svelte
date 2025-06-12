@@ -37,7 +37,7 @@
 	<Button onclick={() => add(config.blocks[0])} variant="ghost" icon={CirclePlus} size="icon" />
 {:else}
 	<Button onclick={() => (open = true)} variant="ghost" icon={CirclePlus} size="icon" />
-	
+
 	<Command.Dialog
 		onStateChange={(state) => {
 			ariaSelected = state.value;
@@ -45,7 +45,7 @@
 		bind:open
 	>
 		<Command.Input class="rz-add-block-button__search" placeholder={t__('common.search')} />
-		
+
 		<div class="rz-add-block-button__command-content">
 			<Command.List class="rz-add-block-button__list">
 				<Command.Empty>No results found.</Command.Empty>
@@ -103,7 +103,7 @@
 			gap: var(--rz-size-2);
 		}
 
-		.rz-command-dialog-content{
+		.rz-command-dialog-content {
 			width: 60vw;
 		}
 

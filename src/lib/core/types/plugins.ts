@@ -30,13 +30,7 @@ export type Plugin<T = void> = (options?: T) => {
 
 export type MailerPlugin = {
 	options: { from: string };
-	sendMail: (args: {
-		from: string;
-		to: string;
-		subject: string;
-		text: string;
-		html: string;
-	}) => Promise<any>;
+	sendMail: (args: { from: string; to: string; subject: string; text: string; html: string }) => Promise<any>;
 };
 
 export type Plugins = CorePlugins & GetRegisterType<'Plugins'>;

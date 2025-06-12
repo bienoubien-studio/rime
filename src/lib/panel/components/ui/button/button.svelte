@@ -30,12 +30,7 @@
 {/snippet}
 
 {#if href}
-	<a
-		bind:this={ref}
-		{href}
-		class="rz-button rz-button--size-{size} rz-button--{variant} {className}"
-		{...restProps}
-	>
+	<a bind:this={ref} {href} class="rz-button rz-button--size-{size} rz-button--{variant} {className}" {...restProps}>
 		{@render iconProp()}
 		{@render children?.()}
 	</a>
@@ -60,8 +55,7 @@
 		border-radius: var(--rz-radius-md);
 		white-space: nowrap;
 		@mixin font-medium;
-		transition-property: box-shadow, color, background-color, border-color, text-decoration-color,
-			fill, stroke;
+		transition-property: box-shadow, color, background-color, border-color, text-decoration-color, fill, stroke;
 		transition-duration: 0.25s;
 		gap: var(--rz-size-2);
 	}
@@ -145,7 +139,7 @@
 	.rz-button--outline {
 		border: 1px solid hsl(var(--rz-ground-3));
 		background-color: hsl(var(--rz-ground-5) / 0);
-		
+
 		&:hover {
 			background-color: hsl(var(--rz-ground-5) / 1);
 		}
@@ -153,7 +147,7 @@
 
 	.rz-button--ghost {
 		background-color: hsl(var(--rz-ground-4) / 0);
-		
+
 		&:hover {
 			background-color: hsl(var(--rz-ground-4) / 1);
 		}
@@ -173,7 +167,7 @@
 			text-decoration: underline;
 		}
 	}
-	
+
 	.rz-button--text {
 		--opacity: 0.6;
 		padding-left: 0;

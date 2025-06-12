@@ -69,12 +69,7 @@
 	});
 </script>
 
-<div
-	data-path={path}
-	data-tree-children={itemValue?._children.length || 0}
-	data-sorting={sorting}
-	class="rz-tree-item"
->
+<div data-path={path} data-tree-children={itemValue?._children.length || 0} data-sorting={sorting} class="rz-tree-item">
 	<div class="rz-tree-item__grip">
 		<GripVertical size={15} />
 	</div>
@@ -99,14 +94,7 @@
 		<div data-path={path} data-tree-depth={depth} data-tree-key={treeKey} class="rz-tree__list">
 			{#if itemValue && itemValue._children && itemValue._children.length}
 				{#each itemValue._children as child, index (child.id)}
-					<TreeBlockItem
-						{treeState}
-						{form}
-						{sorting}
-						{treeKey}
-						path="{path}._children.{index}"
-						{config}
-					/>
+					<TreeBlockItem {treeState} {form} {sorting} {treeKey} path="{path}._children.{index}" {config} />
 				{/each}
 			{/if}
 		</div>
@@ -189,7 +177,7 @@
 	.rz-tree-item__content--closed:has(:global(.rz-field-error)) {
 		@mixin ring var(--rz-color-error);
 	}
-	
+
 	:global(.rz-tree-item-actions) {
 		opacity: 0;
 		pointer-events: none;

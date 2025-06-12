@@ -8,7 +8,7 @@
 	import { t__ } from '$lib/core/i18n';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
-	
+
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
 
@@ -87,13 +87,12 @@
 		}
 	});
 
-	const ZOOMS = [ 0.5, 0.66, 1 ] as const
-	
-	let currentZoom = $state(1)
-	
-	const iframeScale = $derived(ZOOMS[currentZoom])
-	const iframeSizePercent = $derived((1 / iframeScale) * 100)
+	const ZOOMS = [0.5, 0.66, 1] as const;
 
+	let currentZoom = $state(1);
+
+	const iframeScale = $derived(ZOOMS[currentZoom]);
+	const iframeSizePercent = $derived((1 / iframeScale) * 100);
 </script>
 
 <div class="rz-live-container">
@@ -106,26 +105,23 @@
 		<Pane defaultSize={40}>
 			<div class="rz-live-container__side-panel">
 				{#key data.src + data.doc.id + data.locale + data.slug}
-					<LiveSidePanel
-						{config}
-						{onDataChange}
-						{onFieldFocus}
-						doc={data.doc}
-						user={data.user}
-						locale={data.locale}
-					/>
+					<LiveSidePanel {config} {onDataChange} {onFieldFocus} doc={data.doc} user={data.user} locale={data.locale} />
 				{/key}
 			</div>
 		</Pane>
 		<PaneResizer />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
-			<iframe style="height:{iframeSizePercent}%;width:{iframeSizePercent}%;scale:{iframeScale}" bind:this={iframe} title="edit" src={data.src}></iframe>
+			<iframe
+				style="height:{iframeSizePercent}%;width:{iframeSizePercent}%;scale:{iframeScale}"
+				bind:this={iframe}
+				title="edit"
+				src={data.src}
+			></iframe>
 		</Pane>
 	</PaneGroup>
 </div>
 
 <style>
-	
 	:global(.rz-scroll-area__viewport) {
 		position: relative;
 	}

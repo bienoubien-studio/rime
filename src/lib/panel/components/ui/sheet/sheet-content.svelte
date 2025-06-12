@@ -22,11 +22,7 @@
 
 <SheetPortal>
 	<SheetOverlay />
-	<SheetPrimitive.Content
-		bind:ref
-		class="rz-sheet-content rz-sheet-content--{side} {className}"
-		{...restProps}
-	>
+	<SheetPrimitive.Content bind:ref class="rz-sheet-content rz-sheet-content--{side} {className}" {...restProps}>
 		{@render children?.()}
 
 		{#if showCloseButton}

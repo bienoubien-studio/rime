@@ -9,22 +9,24 @@ export type AreaProps = {
 
 export type AreaLoadReturn =
 	| {
-		status: 401;
-		doc: Record<never, never>;
-		operation: 'update';
-	} | {
-		status: 200;
-		doc: GenericDoc;
-		operation: 'update';
-		readOnly: true;
-		aria: Aria;
-		versions?: Version[]
-	} | {
-		status: 200;
-		doc: GenericDoc;
-		operation: 'update';
-		slug: AreaSlug;
-		readOnly: false;
-		aria: Aria
-		versions?: Version[]
-	};
+			status: 401;
+			doc: Record<never, never>;
+			operation: 'update';
+	  }
+	| {
+			status: 200;
+			doc: GenericDoc;
+			operation: 'update';
+			readOnly: true;
+			aria: Aria;
+			versions?: Version[];
+	  }
+	| {
+			status: 200;
+			doc: GenericDoc;
+			operation: 'update';
+			slug: AreaSlug;
+			readOnly: false;
+			aria: Aria;
+			versions?: Version[];
+	  };

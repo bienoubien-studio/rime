@@ -13,21 +13,24 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 		!['url', 'email', 'tel', 'anchor'].includes(type);
 
 	if (hasValue && isResourceLinkType(value.type)) {
-		const link = value
+		const link = value;
 
 		// Compare with the current document beign processed to prevent infinite loop
 		if (link.value !== documentId) {
 			try {
 				let doc;
 				if (event.locals.rizom.config.isCollection(link.type)) {
-					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`)
-						.then(r => r.json())
-						.then(r => r.docs[0])
+					doc = await event
+						.fetch(
+							`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`
+						)
+						.then((r) => r.json())
+						.then((r) => r.docs[0]);
 				} else if (event.locals.rizom.config.isArea(link.type)) {
-					doc = await event.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
-						.then(r => r.json())
-						.then(r => r.doc)
-
+					doc = await event
+						.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
+						.then((r) => r.json())
+						.then((r) => r.doc);
 				}
 				if (!doc) {
 					link.value = null;
@@ -36,8 +39,8 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 				if (doc.url) value.url = doc.url;
 			} catch (err: any) {
 				if (err.code === 'not_found') {
-					console.warn(`Link field : ${link.type} ${documentId} not found`)
-					return null
+					console.warn(`Link field : ${link.type} ${documentId} not found`);
+					return null;
 				}
 				// catch 404
 				console.error(err);
@@ -51,10 +54,10 @@ const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, 
 class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	constructor(name: string) {
 		super(name, 'link');
-		this.field.isEmpty = (link: unknown) => !link || typeof link === 'object' && 'value' in link && !link.value;
+		this.field.isEmpty = (link: unknown) => !link || (typeof link === 'object' && 'value' in link && !link.value);
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
-		this.field.types = ['url']
+		this.field.types = ['url'];
 		this.field.hooks = {
 			beforeRead: [populateRessourceURL],
 			beforeSave: [],
@@ -102,7 +105,6 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		}
 		return super.compile();
 	}
-	
 }
 
 export const link = (name: string) => new LinkFieldBuilder(name);

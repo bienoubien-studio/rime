@@ -12,16 +12,16 @@ export const setDefaultValues = async <T extends Dic>(args: {
 	data: T;
 	configMap: ConfigMap;
 	adapter: Adapter;
-	mode?: "always" | "required"
+	mode?: 'always' | 'required';
 }) => {
 	const { adapter, configMap } = args;
-	const mode = args.mode || "required";
+	const mode = args.mode || 'required';
 
 	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
 		let value = getValueAtPath(key, output);
 		let isEmpty;
-		const shouldAddDefault = mode === "always" || (mode === "required" && config.required)
+		const shouldAddDefault = mode === 'always' || (mode === 'required' && config.required);
 		try {
 			isEmpty = config.isEmpty(value);
 		} catch {
@@ -48,7 +48,6 @@ type GetDefaultValue = (args: {
  * to a RelationValue from an existing relation record
  */
 const defaultRelationValue = async (config: RelationField, key: string, adapter: Adapter) => {
-
 	const buildRelation = async (defaultValue: any) => {
 		let condition;
 		//@TODO encapsulate this into adapter.relation.something
@@ -58,10 +57,10 @@ const defaultRelationValue = async (config: RelationField, key: string, adapter:
 		} else if (Array.isArray(defaultValue)) {
 			condition = inArray(relationTable.id, defaultValue);
 		}
-		const existing = await adapter.db
+		const existing = (await adapter.db
 			.select({ documentId: relationTable.id })
 			.from(relationTable)
-			.where(condition) as { documentId: string }[];
+			.where(condition)) as { documentId: string }[];
 
 		return existing.map(({ documentId }, index) => ({
 			id: null,

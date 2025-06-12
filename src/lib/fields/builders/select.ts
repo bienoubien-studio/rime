@@ -30,8 +30,8 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 		super(name, type);
 		this.field.validate = ensureSelectIsOption;
 	}
-	
-	options(...options: T["options"] | string[]) {
+
+	options(...options: T['options'] | string[]) {
 		this.field.options = options.map((option) => {
 			if (typeof option === 'string') {
 				return { label: capitalize(option), value: option };
@@ -60,13 +60,13 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 			throw new Error(`${this.field.name} should at least have one option`);
 		}
 		if (!this.field.defaultValue) {
-			const defaultOption = this.field.options[0].value
-			this.field.defaultValue = this.field.many ? [defaultOption] : defaultOption
+			const defaultOption = this.field.options[0].value;
+			this.field.defaultValue = this.field.many ? [defaultOption] : defaultOption;
 		}
-		if(!this.field.isEmpty){
-			if(this.field.many){
+		if (!this.field.isEmpty) {
+			if (this.field.many) {
 				this.field.isEmpty = (value) => Array.isArray(value) && value.length === 0;
-			}else{
+			} else {
 				this.field.isEmpty = (value) => !value;
 			}
 		}

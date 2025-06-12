@@ -7,7 +7,6 @@
 	};
 
 	const { deleteBlock, duplicateBlock }: Props = $props();
-	
 </script>
 
 <div class="rz-block-actions">

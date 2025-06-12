@@ -1,10 +1,4 @@
-import {
-	isBlocksFieldRaw,
-	isFormField,
-	isGroupFieldRaw,
-	isTabsFieldRaw,
-	isTreeFieldRaw
-} from '../../util/field.js';
+import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from '../../util/field.js';
 import { isAuthConfig } from '$lib/util/config.js';
 import cache from '$lib/core/dev/cache/index.js';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/core/config/types/index.js';
@@ -58,22 +52,19 @@ type UnknownConfig = CompiledCollection | CompiledArea;
 
 const validateDocumentFields = (config: UnknownConfig) => {
 	const errors: string[] = [];
-	const isCollection = (config: UnknownConfig): config is CompiledCollection =>
-		config.type === 'collection';
+	const isCollection = (config: UnknownConfig): config is CompiledCollection => config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
 	const registeredBlocks: Record<string, BlocksFieldRaw['blocks'][number]> = {};
 
 	if (isAuth) {
-		const hasRolesField = config.fields
-			.filter(isFormField)
-			.find((f) => f.name === 'roles' && f.type === 'select');
+		const hasRolesField = config.fields.filter(isFormField).find((f) => f.name === 'roles' && f.type === 'select');
 		const hasEmailField = config.fields
 			.filter(isFormField)
 			.find((f: FormField) => f.name === 'email' && f.type === 'email');
 		if (!hasRolesField) errors.push(`Field roles is missing in collection ${config.slug}`);
 		if (!hasEmailField) errors.push(`Field email is missing in collection ${config.slug}`);
 	}
-	
+
 	const validateBlockField = (fields: FormField[], blockType: string) => {
 		const reserved = ['path', 'type', 'ownerId', 'position', 'locale'];
 		for (const key of reserved) {
@@ -99,13 +90,13 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			// Check if string matches pattern and doesn't contain spaces or hyphens
 			return pattern.test(name) && !name.includes('-') && !name.includes(' ');
 		}
-		
+
 		for (const field of fields) {
 			// Check that a field wich has field._root = true is not localized
-			if('_root' in field && field._root && field.localized){
+			if ('_root' in field && field._root && field.localized) {
 				errors.push(`Field ${field.name} of ${config.type} ${config.slug} with _root = true, can't be localized`);
 			}
-			
+
 			// Check for malformed field.name
 			if (!validateFieldName(field.name)) {
 				errors.push(`Field ${field.name} of ${config.type} ${config.slug} should be camelCase`);
@@ -115,8 +106,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			if (isBlocksFieldRaw(field)) {
 				for (const block of field.blocks) {
 					if (block.name in registeredBlocks) {
-						const blockDefinedButDiffer =
-							JSON.stringify(registeredBlocks[block.name]) !== JSON.stringify(block);
+						const blockDefinedButDiffer = JSON.stringify(registeredBlocks[block.name]) !== JSON.stringify(block);
 						if (blockDefinedButDiffer) {
 							errors.push(`Each block with same name should be identique (block ${block.name})`);
 						}

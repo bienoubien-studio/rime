@@ -63,11 +63,10 @@ class TextFieldBuilder extends FormFieldBuilder<TextField> {
 		return super.compile();
 	}
 
-	_root(){
-		this.field._root = true
-		return this
+	_root() {
+		this.field._root = true;
+		return this;
 	}
-	
 }
 
 export const text = (name: string) => new TextFieldBuilder(name, 'text');

@@ -12,21 +12,21 @@ export default function (slug: CollectionSlug) {
 
 		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
 		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
-		const paramDraft = event.url.searchParams.get(PARAMS.DRAFT)
+		const paramDraft = event.url.searchParams.get(PARAMS.DRAFT);
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
-		const draft =  paramDraft ? paramDraft === 'true' : undefined
+		const draft = paramDraft ? paramDraft === 'true' : undefined;
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
-		
+
 		const [error, doc] = await safe(
-			rizom.collection(slug).findById({ 
-				id, 
-				locale: paramLocale || locale, 
+			rizom.collection(slug).findById({
+				id,
+				locale: paramLocale || locale,
 				depth,
 				draft,
 				versionId
 			})
 		);
-		
+
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

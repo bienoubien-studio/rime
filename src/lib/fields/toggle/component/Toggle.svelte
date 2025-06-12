@@ -16,12 +16,7 @@
 </script>
 
 <fieldset class="rz-toggle-field {config.className || ''}" use:root={field}>
-	<Switch
-		data-error={field.error ? '' : null}
-		checked={field.value}
-		{onCheckedChange}
-		id={inputId}
-	/>
+	<Switch data-error={field.error ? '' : null} checked={field.value} {onCheckedChange} id={inputId} />
 	<Field.LabelFor {config} for={inputId} />
 </fieldset>
 

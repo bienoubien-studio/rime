@@ -1,13 +1,9 @@
 <script lang="ts">
-	import type {
-		Command as CommandPrimitive,
-		Dialog as DialogPrimitive,
-		WithoutChildrenOrChild
-	} from 'bits-ui';
+	import type { Command as CommandPrimitive, Dialog as DialogPrimitive, WithoutChildrenOrChild } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 	import Command from './command.svelte';
 	import * as Dialog from '../dialog/index';
-	import './command-dialog.css'
+	import './command-dialog.css';
 
 	let {
 		open = $bindable(false),
@@ -23,12 +19,6 @@
 
 <Dialog.Root bind:open {...restProps}>
 	<Dialog.Content class="rz-command-dialog-content">
-		<Command
-			class="rz-command-dialog-content__command"
-			{...restProps}
-			bind:value
-			bind:ref
-			{children}
-		/>
+		<Command class="rz-command-dialog-content__command" {...restProps} bind:value bind:ref {children} />
 	</Dialog.Content>
 </Dialog.Root>

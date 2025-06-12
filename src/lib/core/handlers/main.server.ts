@@ -16,16 +16,15 @@ export function createCMSHandler({ config, schema }: Args) {
 	// Return the better-auth handler
 	const handleCMS: Handle = async ({ event, resolve }) => {
 		logger.info(`${event.request.method} ${event.url.pathname}`);
-		
+
 		if (dev || !cms.initialized) {
 			await cms.init({ config, schema });
 		}
-		
-		const rizom = new Rizom({ config: cms.config, adapter: cms.adapter, event });
-		event.locals.rizom = rizom
-		
-		return svelteKitHandler({ event, resolve, auth: cms.adapter.auth.betterAuth });
 
+		const rizom = new Rizom({ config: cms.config, adapter: cms.adapter, event });
+		event.locals.rizom = rizom;
+
+		return svelteKitHandler({ event, resolve, auth: cms.adapter.auth.betterAuth });
 	};
 
 	return handleCMS;

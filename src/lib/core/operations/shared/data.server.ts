@@ -22,7 +22,7 @@ export const extractData = async <T extends Dic = GenericDoc>(request: RequestEv
 	} catch {
 		throw new RizomFormError({ _form: RizomFormError.CONTENT_LENGTH_LIMIT });
 	}
-	
+
 	return data as Partial<T>;
 };
 

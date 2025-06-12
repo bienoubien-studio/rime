@@ -7,10 +7,10 @@ import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.
 export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	constructor(name: string) {
 		super(name, 'toggle');
-		this.field.isEmpty = (value) => typeof value !== 'boolean'
-		this.field.defaultValue = false
+		this.field.isEmpty = (value) => typeof value !== 'boolean';
+		this.field.defaultValue = false;
 	}
-	
+
 	get component() {
 		return Toggle;
 	}

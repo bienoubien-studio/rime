@@ -1,22 +1,22 @@
-export const PACKAGE_NAME = 'rizom'
+export const PACKAGE_NAME = 'rizom';
 
-export const PANEL_USERS = 'staff'
+export const PANEL_USERS = 'staff';
 
 export const VERSIONS_STATUS = {
-  DRAFT: 'draft',
-  PUBLISHED: 'published'
-} as const
+	DRAFT: 'draft',
+	PUBLISHED: 'published'
+} as const;
 
 export const PARAMS = {
-  DEPTH: 'depth',
-  DRAFT: 'draft',
-  LIMIT: 'limit',
-  LOCALE: 'locale',
-  OFFSET: 'offset',
-  REDIRECT: 'redirect',
-  SELECT: 'select',
-  SORT: 'sort',
-  VERSION_ID: 'versionId',
-} as const
+	DEPTH: 'depth',
+	DRAFT: 'draft',
+	LIMIT: 'limit',
+	LOCALE: 'locale',
+	OFFSET: 'offset',
+	REDIRECT: 'redirect',
+	SELECT: 'select',
+	SORT: 'sort',
+	VERSION_ID: 'versionId'
+} as const;
 
-export type VersionsStatus = typeof VERSIONS_STATUS[keyof typeof VERSIONS_STATUS]
+export type VersionsStatus = (typeof VERSIONS_STATUS)[keyof typeof VERSIONS_STATUS];

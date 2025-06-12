@@ -43,7 +43,7 @@ const augmentMetas: AugmentAreaFn = ({ config, fields }) => {
 };
 
 /**
- * Add versions related fields and 
+ * Add versions related fields and
  * nomalize config.versions prop
  */
 const augmentVersions: AugmentAreaFn = ({ config, fields }) => {
@@ -64,5 +64,5 @@ const augmentVersions: AugmentAreaFn = ({ config, fields }) => {
 	} else {
 		config.versions = false;
 	}
-	return { config, fields }
+	return { config, fields };
 };

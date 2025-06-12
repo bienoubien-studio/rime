@@ -36,39 +36,41 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 	}
 
 	localized() {
-		if(this.field.blocks.length === 0){
-			throw new Error('localized() must be called after blocks assignment')
+		if (this.field.blocks.length === 0) {
+			throw new Error('localized() must be called after blocks assignment');
 		}
-		this.field.localized = true
+		this.field.localized = true;
 
 		// Set all descendant fields localized
 		this.field.blocks = this.field.blocks.map((blockBuilder) => {
 			// Add a locale prop in each block
-			const hasAlreadyLocale = !!blockBuilder.block.fields.filter(field => field instanceof FormFieldBuilder).find(field => field.raw.name === 'locale')
-			if(!hasAlreadyLocale){
-				blockBuilder.block.fields.push(text('locale').hidden())
+			const hasAlreadyLocale = !!blockBuilder.block.fields
+				.filter((field) => field instanceof FormFieldBuilder)
+				.find((field) => field.raw.name === 'locale');
+			if (!hasAlreadyLocale) {
+				blockBuilder.block.fields.push(text('locale').hidden());
 			}
 			// In each block process fields
-			blockBuilder.block.fields = blockBuilder.block.fields.map(field => {
+			blockBuilder.block.fields = blockBuilder.block.fields.map((field) => {
 				// If type / position / path field do not set as localized
 				// as it's a block property
-				if(field instanceof FormFieldBuilder && ['position','type','path', 'locale'].includes(field.raw.name)){
-					return field
+				if (field instanceof FormFieldBuilder && ['position', 'type', 'path', 'locale'].includes(field.raw.name)) {
+					return field;
 				}
 				// For all others fields set as localized
-				if('localized' in field && field instanceof FormFieldBuilder){
+				if ('localized' in field && field instanceof FormFieldBuilder) {
 					// Clone to prevent localizing a field used elsewhere
-					const fieldClone = field.clone()
-					fieldClone.localized()
-					return fieldClone
+					const fieldClone = field.clone();
+					fieldClone.localized();
+					return fieldClone;
 				}
-				return field
+				return field;
 			});
-			
-			return blockBuilder
-		})
 
-		return this
+			return blockBuilder;
+		});
+
+		return this;
 	}
 
 	compile(): WithoutBuilders<BlocksField> {
@@ -100,9 +102,9 @@ class BlockBuilder {
 		this.block.icon = component;
 		return this;
 	}
-	image(url:string){
-		this.block.image = url
-		return this
+	image(url: string) {
+		this.block.image = url;
+		return this;
 	}
 	renderTitle(render: BlocksFieldBlockRenderTitle) {
 		this.block.renderTitle = render;

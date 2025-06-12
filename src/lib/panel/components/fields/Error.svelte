@@ -10,10 +10,7 @@
 		// subfield::error
 		const cleanError = error.split('::').at(-1) ?? '';
 		// If it's a predefined error from RizomError or RizomFormError
-		if (
-			Object.values(RizomError).includes(cleanError) ||
-			Object.values(RizomFormError).includes(cleanError)
-		) {
+		if (Object.values(RizomError).includes(cleanError) || Object.values(RizomFormError).includes(cleanError)) {
 			return t__(`errors.${cleanError}`);
 		}
 		// Otherwise return as-is (user defined message)

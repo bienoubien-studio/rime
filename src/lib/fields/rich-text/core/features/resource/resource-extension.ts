@@ -4,49 +4,50 @@ import CounterComponent from './resource.svelte';
 import type { Dic } from '$lib/util/types';
 
 export const Resource = Node.create({
-  name: 'resource',
-  group: 'block',
-  atom: true,
-  draggable: true, // Optional: to make the node draggable
-  inline: false,
-  
-  addOptions() {
-      return {
-        query: null,
-        _type: null,
-    }
-  },
-  
-  addAttributes() {
-    return ['id', 'title', '_type'].reduce((acc: Dic, key) => {
-      acc[key] = { default: null };
-      return acc;
-    }, {});
-  },
+	name: 'resource',
+	group: 'block',
+	atom: true,
+	draggable: true, // Optional: to make the node draggable
+	inline: false,
 
-  //@ts-expect-error boring
-  addCommands() {
-    return {
-      insertResource: (attributes = {}) => 
-        //@ts-expect-error boring
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: attributes
-          })
-        }
-    }
-  },
-  
-  parseHTML() {
-    return [{ tag: 'richt-text-resource' }];
-  },
+	addOptions() {
+		return {
+			query: null,
+			_type: null
+		};
+	},
 
-  renderHTML({ HTMLAttributes }) {
-    return ['richt-text-resource', mergeAttributes(HTMLAttributes)];
-  },
+	addAttributes() {
+		return ['id', 'title', '_type'].reduce((acc: Dic, key) => {
+			acc[key] = { default: null };
+			return acc;
+		}, {});
+	},
 
-  addNodeView() {
-    return SvelteNodeViewRenderer(CounterComponent);
-  },
+	//@ts-expect-error boring
+	addCommands() {
+		return {
+			insertResource:
+				(attributes = {}) =>
+				//@ts-expect-error boring
+				({ commands }) => {
+					return commands.insertContent({
+						type: this.name,
+						attrs: attributes
+					});
+				}
+		};
+	},
+
+	parseHTML() {
+		return [{ tag: 'richt-text-resource' }];
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ['richt-text-resource', mergeAttributes(HTMLAttributes)];
+	},
+
+	addNodeView() {
+		return SvelteNodeViewRenderer(CounterComponent);
+	}
 });

@@ -8,6 +8,6 @@
 	cursor: not-allowed;
 }
 
-.rz-label[for]{
+.rz-label[for] {
 	cursor: pointer;
 }

@@ -27,7 +27,7 @@ export const load = pagesLoad.collection.list('${slug}')
  * Page template for collection list
  * (rizom)/panel/{collection.slug}/+page.svelte
  */
-const page = (slug:string) => `
+const page = (slug: string) => `
 <script>
   import { CollectionList } from '${PACKAGE_NAME}/panel'
   const { data } = $props()
@@ -49,8 +49,8 @@ const docPage = (slug: string) => `
  * Document page server template
  * (rizom)/panel/{collection.slug}/[id]/+page.server.ts
  * (rizom)/panel/{collection.slug}/[id]/versions/+page.server.ts
- * Same actions / load for /versions page 
- * except the withVersion param 
+ * Same actions / load for /versions page
+ * except the withVersion param
  */
 const docPageServer = (slug: string) => `
 import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
@@ -84,7 +84,7 @@ import * as api from '${PACKAGE_NAME}/api';
 
 export const GET = api.collection.get(${TScastVersionSlug(slug)})
 export const POST = api.collection.create(${TScastVersionSlug(slug)})
-`
+`;
 
 /**
  * API collection document operations
@@ -124,46 +124,46 @@ export const POST = api.collection.logout
  * Collection panel routes
  */
 export const collectionPanelRoutes: Routes = {
-  '(rizom)/panel/{collection.slug}/': {
-    pageServer: pageServer,
-    page: page
-  },
-  '(rizom)/panel/{collection.slug}/[id]': {
-    page: docPage,
-    pageServer: docPageServer
-  }
+	'(rizom)/panel/{collection.slug}/': {
+		pageServer: pageServer,
+		page: page
+	},
+	'(rizom)/panel/{collection.slug}/[id]': {
+		page: docPage,
+		pageServer: docPageServer
+	}
 };
 
 /**
  * Collection verions panel routes
  */
 export const collectionVersionsPanelRoutes: Routes = {
-  '(rizom)/panel/{collection.slug}/[id]/versions': {
-    page: docPageVersions,
-    pageServer: docPageServerVersions
-  }
+	'(rizom)/panel/{collection.slug}/[id]/versions': {
+		page: docPageVersions,
+		pageServer: docPageServerVersions
+	}
 };
 
 /**
  * Collection API routes
  */
 export const collectionAPIRoutes: Routes = {
-  '(rizom)/api/{collection.slug}/': {
-    server: apiCollectionServer,
-  },
-  '(rizom)/api/{collection.slug}/[id]': {
-    server: apiCollectionDocServer,
-  }
-}
+	'(rizom)/api/{collection.slug}/': {
+		server: apiCollectionServer
+	},
+	'(rizom)/api/{collection.slug}/[id]': {
+		server: apiCollectionDocServer
+	}
+};
 
 /**
  * Collection Auth API routes
  */
 export const collectionAPIAuthRoutes: Routes = {
-  '(rizom)/api/{collection.slug}/login': {
-    server: apiCollectionDocLoginServer,
-  },
-  '(rizom)/api/{collection.slug}/logout': {
-    server: apiCollectionDocLogoutServer,
-  }
-}
+	'(rizom)/api/{collection.slug}/login': {
+		server: apiCollectionDocLoginServer
+	},
+	'(rizom)/api/{collection.slug}/logout': {
+		server: apiCollectionDocLogoutServer
+	}
+};

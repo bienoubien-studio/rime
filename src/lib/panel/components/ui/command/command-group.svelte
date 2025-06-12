@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Command as CommandPrimitive } from 'bits-ui';
-	import './command-group.css'
+	import './command-group.css';
 
 	let {
 		ref = $bindable(null),

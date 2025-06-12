@@ -15,14 +15,14 @@
 		{#if url && mimeType && mimeType.includes('image')}
 			<img class="rz-upload-preview-cell__image" src={url} alt="preview" />
 		{:else}
-		<div class="rz-upload-preview-cell__placeholder">
-			{#if mimeType}
-				{@const FileIcon = mimeTypeToIcon(mimeType)}
-				<FileIcon size={14} />
-			{:else}
-				<FileText size={14} />
-			{/if}
-		</div>
+			<div class="rz-upload-preview-cell__placeholder">
+				{#if mimeType}
+					{@const FileIcon = mimeTypeToIcon(mimeType)}
+					<FileIcon size={14} />
+				{:else}
+					<FileText size={14} />
+				{/if}
+			</div>
 		{/if}
 	</div>
 </div>

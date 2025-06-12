@@ -10,15 +10,15 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 
 	toSchema(parentPath?: string) {
 		const { camel, snake } = this.getSchemaName(parentPath);
-		if(this.field.many){
+		if (this.field.many) {
 			return `${camel}: text('${snake}', { mode: 'json' })${templateUniqueRequired(this.field)}`;
-		}else{
+		} else {
 			return `${camel}: text('${snake}')${templateUniqueRequired(this.field)}`;
 		}
 	}
 
 	toType() {
-		const optionsJoinedType = this.field.options.map(o => o.value).join(' | ')
+		const optionsJoinedType = this.field.options.map((o) => o.value).join(' | ');
 		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
 	}
 

@@ -3,7 +3,6 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionHookBeforeRead } from '$lib/core/config/types/hooks.js';
 import type { WithUpload } from '$lib/util/types.js';
 
-
 export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const doc = args.doc;
@@ -34,9 +33,7 @@ export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) 
 		if ('thumbnail' in doc.sizes) {
 			doc._thumbnail = doc.sizes.thumbnail;
 		} else {
-			const thumbnailKey = Object.keys(doc.sizes).find((sizeName) =>
-				sizeName.startsWith('thumbnail')
-			);
+			const thumbnailKey = Object.keys(doc.sizes).find((sizeName) => sizeName.startsWith('thumbnail'));
 			if (thumbnailKey) {
 				doc._thumbnail = doc.sizes[thumbnailKey];
 			} else {

@@ -12,11 +12,7 @@ type Args = {
 	locale?: string;
 };
 
-export const defineRelationsDiff = ({
-	existingRelations,
-	incomingRelations,
-	locale
-}: Args): RelationDiff => {
+export const defineRelationsDiff = ({ existingRelations, incomingRelations, locale }: Args): RelationDiff => {
 	const toAdd: BeforeOperationRelation[] = [];
 	const toDelete: Relation[] = [];
 	const toUpdate: Relation[] = [];

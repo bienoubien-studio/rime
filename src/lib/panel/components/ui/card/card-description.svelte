@@ -3,12 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	type PrimitiveElementAttributes = WithElementRef<HTMLAttributes<HTMLElement>>;
-	let {
-		ref = $bindable(null),
-		class: className,
-		children,
-		...restProps
-	}: PrimitiveElementAttributes = $props();
+	let { ref = $bindable(null), class: className, children, ...restProps }: PrimitiveElementAttributes = $props();
 </script>
 
 <p bind:this={ref} class="rz-card-description {className}" {...restProps}>

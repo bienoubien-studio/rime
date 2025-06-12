@@ -13,26 +13,25 @@
 			status: number;
 			readOnly: boolean;
 			operation: 'create' | 'update';
-			versions: Version[]
+			versions: Version[];
 		};
 	};
-	
-	const { data }: Props = $props();
-	
-	setAPIProxyContext('document');
 
+	const { data }: Props = $props();
+
+	setAPIProxyContext('document');
 </script>
 
 {#if data.status === 200}
 	{#key data.doc.id + data.doc.versionId || ''}
-	<Page>
-		{#snippet main()}
-			<Document doc={data.doc} operation={data.operation} readOnly={data.readOnly} />
-		{/snippet}
-		{#snippet aside()}
-			<Versions doc={data.doc} versions={data.versions} />
-		{/snippet}
-	</Page>
+		<Page>
+			{#snippet main()}
+				<Document doc={data.doc} operation={data.operation} readOnly={data.readOnly} />
+			{/snippet}
+			{#snippet aside()}
+				<Versions doc={data.doc} versions={data.versions} />
+			{/snippet}
+		</Page>
 	{/key}
 {:else}
 	<Unauthorized />

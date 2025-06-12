@@ -35,17 +35,19 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 	};
 
 	// Process collections
-	config.collections.filter(collection => !isVersionsSlug(collection.slug)).forEach((collection) => {
-		if (user && collection.access.read(user, {})) {
-			const route: Route = {
-				title: collection.label.plural,
-				icon: collection.slug,
-				path: `/panel/${collection.slug}`
-			};
-			addRouteToGroup(route, collection.panel?.group || 'collections');
-		}
-	});
-	
+	config.collections
+		.filter((collection) => !isVersionsSlug(collection.slug))
+		.forEach((collection) => {
+			if (user && collection.access.read(user, {})) {
+				const route: Route = {
+					title: collection.label.plural,
+					icon: collection.slug,
+					path: `/panel/${collection.slug}`
+				};
+				addRouteToGroup(route, collection.panel?.group || 'collections');
+			}
+		});
+
 	// Process areas
 	config.areas.forEach((area) => {
 		if (user && area.access.read(user, {})) {
@@ -57,7 +59,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 			addRouteToGroup(route, area.panel?.group || 'areas');
 		}
 	});
-	
+
 	// Process custom panel routes
 	Object.entries(config.panel.routes).forEach(([routePath, routeConfig]) => {
 		const route: Route = {
@@ -70,8 +72,6 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 
 	return groups;
 };
-
-
 
 export default buildNavigation;
 

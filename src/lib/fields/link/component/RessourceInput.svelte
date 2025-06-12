@@ -4,7 +4,7 @@
 	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import { getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import type { PrototypeSlug } from '$lib/types';
-	import type { GenericDoc } from '$lib/core/types/doc.js'
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	type Ressource = {
 		label: string;

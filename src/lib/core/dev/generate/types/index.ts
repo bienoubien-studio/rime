@@ -23,7 +23,7 @@ export type RelationValue<T> =
 
 /**
  * Generate document's type name
- * @param slug the slug of the area/collection 
+ * @param slug the slug of the area/collection
  * @returns the type name for this document
  * @example
  * makeDocTypeName('pages')
@@ -34,7 +34,7 @@ const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 /**
  * Generate the document's type definition
  * @param slug the collection/area slug
- * @param content a string of all types properties 
+ * @param content a string of all types properties
  * @param upload a boolean flag for upload colections
  * @returns the full document type
  */
@@ -64,33 +64,36 @@ export type Block${toPascalCase(slug)} = {
  * @param config The built configuration containing collections and areas
  * @returns A string containing the module declaration for type registration
  */
-const templateRegister = (config:BuiltConfig): string => {
+const templateRegister = (config: BuiltConfig): string => {
 	const registerCollections = config.collections.length
 		? [
 				'\tinterface RegisterCollection {',
-				`${config.collections.map((collection) => {
-					let collectionRegister = `\t\t'${collection.slug}': ${makeDocTypeName(collection.slug)}`
-					if(collection.versions){
-						collectionRegister += `\n\t\t'${makeVersionsSlug(collection.slug)}': ${makeDocTypeName(collection.slug)}`
-					}
-					return collectionRegister
-				}).join('\n')};`,
+				`${config.collections
+					.map((collection) => {
+						let collectionRegister = `\t\t'${collection.slug}': ${makeDocTypeName(collection.slug)}`;
+						if (collection.versions) {
+							collectionRegister += `\n\t\t'${makeVersionsSlug(collection.slug)}': ${makeDocTypeName(collection.slug)}`;
+						}
+						return collectionRegister;
+					})
+					.join('\n')};`,
 				'\t}'
 			]
 		: [];
 	const registerAreas = config.areas.length
 		? [
 				'\tinterface RegisterArea {',
-				`${config.areas.map((area) => {
-					let areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`
-					return areaRegister
-				}).join('\n')};`,
+				`${config.areas
+					.map((area) => {
+						let areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`;
+						return areaRegister;
+					})
+					.join('\n')};`,
 				'\t}'
 			]
 		: [];
 	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
-
 
 /**
  * Generates type definitions for image sizes
@@ -148,9 +151,7 @@ export function generateTypesString(config: BuiltConfig) {
 				{
 					for (const block of field.raw.blocks) {
 						if (!registeredBlocks.includes(block.raw.name)) {
-							const templates = buildFieldsTypes(
-								block.raw.fields.filter((field) => field instanceof FormFieldBuilder)
-							);
+							const templates = buildFieldsTypes(block.raw.fields.filter((field) => field instanceof FormFieldBuilder));
 							blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
 							registeredBlocks.push(block.raw.name);
 						}
@@ -167,37 +168,37 @@ export function generateTypesString(config: BuiltConfig) {
 			}
 		}
 	};
-	
-	const processCollection = (collection: typeof config.collections[number]) => {
-		let fields = collection.fields;
-			if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
-				fields = collection.fields
-					.filter((f) => f instanceof FormFieldBuilder)
-					.filter((field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name));
-			}
-			let fieldsTypesList = buildFieldsTypes(fields);
-			if(collection.versions){
-				fieldsTypesList.push('versionId: string')
-			}
-			let fieldsContent = fieldsTypesList.join('\n\t')
-			buildblocksTypes(fields);
-			if (isUploadConfig(collection)) {
-				addImport('UploadDoc');
-				if (collection.upload.imageSizes?.length) {
-					fieldsContent += generateImageSizesType(collection.upload.imageSizes);
-				}
-			}
-			return templateDocType(collection.slug, fieldsContent, !!collection.upload);
-	}
 
-	const processArea = (area: typeof config.areas[number]) => {
-		const fieldsTypesList = buildFieldsTypes(area.fields);
-			if(area.versions){
-				fieldsTypesList.push('versionId: string')
+	const processCollection = (collection: (typeof config.collections)[number]) => {
+		let fields = collection.fields;
+		if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
+			fields = collection.fields
+				.filter((f) => f instanceof FormFieldBuilder)
+				.filter((field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name));
+		}
+		let fieldsTypesList = buildFieldsTypes(fields);
+		if (collection.versions) {
+			fieldsTypesList.push('versionId: string');
+		}
+		let fieldsContent = fieldsTypesList.join('\n\t');
+		buildblocksTypes(fields);
+		if (isUploadConfig(collection)) {
+			addImport('UploadDoc');
+			if (collection.upload.imageSizes?.length) {
+				fieldsContent += generateImageSizesType(collection.upload.imageSizes);
 			}
-			buildblocksTypes(area.fields);
-			return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
-	}
+		}
+		return templateDocType(collection.slug, fieldsContent, !!collection.upload);
+	};
+
+	const processArea = (area: (typeof config.areas)[number]) => {
+		const fieldsTypesList = buildFieldsTypes(area.fields);
+		if (area.versions) {
+			fieldsTypesList.push('versionId: string');
+		}
+		buildblocksTypes(area.fields);
+		return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
+	};
 
 	const register = templateRegister(config);
 	const collectionsTypes = config.collections.map(processCollection).join('\n');

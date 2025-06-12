@@ -10,7 +10,7 @@ const clearMessage = `Are you sure you want to delete all related rizom files, i
 - src/app.generated.d.ts
 - src/hooks.server.ts
 - drizzle.config.ts
-`
+`;
 
 export const clear = async (args: { force?: boolean }) => {
 	let shouldProceed = true;
@@ -35,8 +35,7 @@ export const clear = async (args: { force?: boolean }) => {
 	rmSync(path.join('drizzle.config.ts'), { force: true });
 	if (args.force) {
 		return console.info('rizom cleared');
-	}
-	else {
+	} else {
 		return outro('rizom cleared');
 	}
-}
+};

@@ -4,10 +4,9 @@ import Radio from './component/Radio.svelte';
 import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
 
 class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
-	
 	constructor(name: string) {
 		super(name, 'radio');
-		this.field.many = false
+		this.field.many = false;
 	}
 
 	get component() {
@@ -19,9 +18,9 @@ class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
 		const suffix = templateUniqueRequired(this.field);
 		return `${camel}: text('${snake}')${suffix}`;
 	}
-	
+
 	toType() {
-		const optionsString = this.field.options.map(option => `'${option.value}'` ).join(' | ')
+		const optionsString = this.field.options.map((option) => `'${option.value}'`).join(' | ');
 		return `${this.field.name}${this.field.required ? '' : '?'}: ${optionsString}`;
 	}
 }

@@ -6,23 +6,24 @@
 	import { onMount, onDestroy } from 'svelte';
 	import './node-selector.css';
 
-	type Props = { editor: Editor; isMenuOpen: boolean, items: RichTextFeatureNode[] };
+	type Props = { editor: Editor; isMenuOpen: boolean; items: RichTextFeatureNode[] };
 	let { editor, items, isMenuOpen }: Props = $props();
 
-	let open = $state(false)
-	
-	let activeItems = $state<Record<string, boolean>>({})
+	let open = $state(false);
+
+	let activeItems = $state<Record<string, boolean>>({});
 	const activeItem = $derived.by(getActiveItem);
-	
+
 	function getActiveItem() {
 		// Count active items
 		const activeCount = Object.values(activeItems).filter(Boolean).length;
 		if (activeCount === 1) {
 			// Find the active item name
-			const activeItemName = Object.keys(activeItems).find(name => activeItems[name]);
+			const activeItemName = Object.keys(activeItems).find((name) => activeItems[name]);
 			// Return the matching item or default to paragraph
-			return items.find(item => item.name === activeItemName) || 
-				{ name: 'paragraph', label: 'Paragraph', icon: Asterisk };
+			return (
+				items.find((item) => item.name === activeItemName) || { name: 'paragraph', label: 'Paragraph', icon: Asterisk }
+			);
 		} else if (activeCount > 1) {
 			return { name: 'multiple', label: 'Multiple', icon: Asterisk };
 		} else {
@@ -33,32 +34,34 @@
 
 	function setActiveItems() {
 		// Update active states for all items
-		activeItems = items.reduce((acc, item) => {
-			acc[item.name] = item.isActive?.({ editor }) || false;
-			return acc;
-		}, {} as Record<string, boolean>);
+		activeItems = items.reduce(
+			(acc, item) => {
+				acc[item.name] = item.isActive?.({ editor }) || false;
+				return acc;
+			},
+			{} as Record<string, boolean>
+		);
 	}
 
 	onMount(() => {
 		editor.on('update', setActiveItems);
 		editor.on('selectionUpdate', setActiveItems);
 		setActiveItems();
-	})
-	
+	});
+
 	onDestroy(() => {
 		editor.off('update', setActiveItems);
 		editor.off('selectionUpdate', setActiveItems);
-	})
+	});
 
 	$effect(() => {
-		if(!isMenuOpen){
-			open = false
+		if (!isMenuOpen) {
+			open = false;
 		}
-	})
-	
+	});
 </script>
 
-<Popover.Root bind:open={open}>
+<Popover.Root bind:open>
 	<Popover.Trigger class="rz-node-selector__trigger" type="button">
 		<p>{activeItem.label || activeItem.name}</p>
 		<ChevronDown size={16} />

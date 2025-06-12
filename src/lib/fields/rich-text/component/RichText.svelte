@@ -11,7 +11,7 @@
 	import DragHandler from './drag-handle/drag-handle.svelte';
 	import Suggestion from './suggestion/suggestion.svelte';
 	import { setRichTextContext } from './context.svelte';
-	
+
 	const { path, config, form, standAlone, class: className }: RichTextFieldProps = $props();
 
 	let element: HTMLElement;
@@ -22,7 +22,7 @@
 
 	const field = $derived(form.useField(path, config));
 
-	setRichTextContext(path)
+	setRichTextContext(path);
 
 	onMount(() => {
 		// Build editor configuration
@@ -43,10 +43,10 @@
 				console.log(err);
 			}
 		}
-		
+
 		// Update field value when editor content changes
 		editor.on('update', ({ editor }) => {
-			field.value = editor.getJSON()
+			field.value = editor.getJSON();
 		});
 	});
 </script>
@@ -56,16 +56,11 @@
 	class="rz-field-rich-text {config.className || ''}"
 	use:root={field}
 >
-
 	<Field.Label {config} />
 	<Field.Error error={field.error} />
 
 	<div class="rz-rich-text__editor-wrapper">
-		<div
-			bind:this={element}
-			data-error={field.error ? 'true' : null}
-			class="rz-rich-text__editor {className}"
-		></div>
+		<div bind:this={element} data-error={field.error ? 'true' : null} class="rz-rich-text__editor {className}"></div>
 
 		{#if editor && editor.isEditable}
 			{#if standAlone}
@@ -87,7 +82,7 @@
 
 	.rz-field-rich-text--standalone {
 		margin-bottom: var(--rz-size-20);
-		.rz-rich-text__editor{
+		.rz-rich-text__editor {
 			border: none;
 		}
 	}

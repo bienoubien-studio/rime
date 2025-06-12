@@ -19,7 +19,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 	const load: ServerLoad = async (event) => {
 		const { locale, user, rizom } = event.locals;
 		const { id } = event.params;
-		
+
 		if (!id) throw error(404, 'Not found');
 
 		let doc: GenericDoc;
@@ -36,11 +36,11 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			/** Make blank document */
 			const blankDocument = collection.blank();
 			const configMap = buildConfigMap(blankDocument, collection.config.fields);
-			doc = await setDefaultValues({ 
-				data: blankDocument, 
-				adapter: rizom.adapter, 
+			doc = await setDefaultValues({
+				data: blankDocument,
+				adapter: rizom.adapter,
 				configMap,
-				mode: "always"
+				mode: 'always'
 			});
 		} else {
 			/** Check for authorizations */
@@ -50,12 +50,12 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 				return { doc: {}, operation, status: 401 };
 			}
 
-			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined
+			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 
 			/** Get doc */
 			const [error, document] = await safe(collection.findById({ id, locale, versionId, draft: true }));
 			doc = document;
-			
+
 			if (error) {
 				return handleError(error, { context: 'load' });
 			}
@@ -67,30 +67,30 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		}
 
 		const aria: WithRequired<Partial<Route>, 'title'>[] = [
-			{ title: "Dashboard", icon: "dashboard", path: `/panel`  },
+			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
 			{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
-			{ title: doc.title },
-		]
+			{ title: doc.title }
+		];
 
-		let data:Dic = {
+		let data: Dic = {
 			aria,
 			doc,
 			operation,
 			status: 200,
-			readOnly,
+			readOnly
 		};
 
-		if(withVersion){
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`
-			const promise = event.fetch(url).then(r => r.json())
-			const [error, result] = await safe(promise)
-			if(error || !Array.isArray(result.docs)){
-				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions')
+		if (withVersion) {
+			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
+			const promise = event.fetch(url).then((r) => r.json());
+			const [error, result] = await safe(promise);
+			if (error || !Array.isArray(result.docs)) {
+				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}
-			data = { ...data, versions: result.docs}
+			data = { ...data, versions: result.docs };
 		}
 
-		return data
+		return data;
 	};
 	return load;
 }

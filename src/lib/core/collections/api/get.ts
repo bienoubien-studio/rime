@@ -5,16 +5,18 @@ import { safe } from '$lib/util/safe.js';
 import { normalizeQuery } from '$lib/adapter-sqlite/util.js';
 import { PARAMS } from '$lib/core/constant.js';
 
-
 export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
 		const { rizom, locale } = event.locals;
 		const params = event.url.searchParams;
 
-		const hasQueryParams = !!params.keys().filter(key => key.startsWith('where')).toArray().length;
-		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined
-		
+		const hasQueryParams = !!params
+			.keys()
+			.filter((key) => key.startsWith('where'))
+			.toArray().length;
+		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined;
+
 		const apiParams = {
 			locale: params.get(PARAMS.LOCALE) || locale,
 			sort: params.get(PARAMS.SORT) || undefined,
@@ -25,13 +27,13 @@ export default function (slug: CollectionSlug) {
 			query,
 			select: params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined
 		};
-		
+
 		const [error, docs] = await safe(rizom.collection(slug).find(apiParams));
-		
+
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
-		
+
 		return json({ docs }, { status: 200 });
 	}
 

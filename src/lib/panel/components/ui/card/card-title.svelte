@@ -15,13 +15,7 @@
 	} = $props();
 </script>
 
-<div
-	role="heading"
-	aria-level={level}
-	bind:this={ref}
-	class="rz-card-title {className}"
-	{...restProps}
->
+<div role="heading" aria-level={level} bind:this={ref} class="rz-card-title {className}" {...restProps}>
 	{@render children?.()}
 </div>
 

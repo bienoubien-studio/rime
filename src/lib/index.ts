@@ -33,7 +33,6 @@ declare module 'rizom' {
 		AnyFormField: RegisterFormFields[keyof RegisterFormFields];
 		AnyField: RegisterFields[keyof RegisterFields];
 	}
-
 }
 
 // Utility type for accessing register types

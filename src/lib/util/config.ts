@@ -25,19 +25,18 @@ export function isUploadConfig(config: { upload?: UploadConfig }): config is Wit
  *   // Handle auth-specific functionality
  * }
  */
-export const isAuthConfig = (config: Collection<any> | BuiltCollection | CompiledCollection) =>
-	config.auth === true;
+export const isAuthConfig = (config: Collection<any> | BuiltCollection | CompiledCollection) => config.auth === true;
 
 /**
  * Utility function to includes a module with internals imports in the config
- * the browser config is re-writed and sanitized, that way imports of external modules should be tracked 
+ * the browser config is re-writed and sanitized, that way imports of external modules should be tracked
  * like for example a tiptap extensions
  * @param module The module to mark as external
- * @param path should always be : import.meta.url, 
+ * @param path should always be : import.meta.url,
  * @param exportName The name of the export to use, defaults to 'default'
  * @returns The original module with external metadata attached
  * @example
- * 
+ *
  * // src/config/lorem-feature.ts
  * const LoremFeature = {
  *   name: 'lorem-fill',
@@ -45,7 +44,7 @@ export const isAuthConfig = (config: Collection<any> | BuiltCollection | Compile
  * };
  *
  * export default external(LoremFeature, import.meta.url);
- * 
+ *
  * // src/config/rizom.config.ts
  * import loremFeature from './lorem-feature.ts'
  * const writer = richText('writer').features('bold', loremFeature)
@@ -68,13 +67,13 @@ export function external<T>(module: T, path: string, exportName: string = 'defau
  * @example
  * // Get the title field in the attributes group
  * const titleField = getFieldConfigByPath('attributes.title', collection.fields);
- * 
+ *
  * // Get a field within a specific block type
  * const imageField = getFieldConfigByPath('content.image', collection.fields, { inBlockType: 'hero' });
  */
 export const getFieldConfigByPath = (
-	path: string, 
-	fields: Field[], 
+	path: string,
+	fields: Field[],
 	options?: {
 		inBlockType?: string;
 	}

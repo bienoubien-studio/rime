@@ -11,10 +11,7 @@ type DefineBlocksDiffArgs = {
 	incomingBlocks: GenericBlock[];
 };
 
-export function defineBlocksDiff({
-	existingBlocks,
-	incomingBlocks
-}: DefineBlocksDiffArgs): BlocksDiff {
+export function defineBlocksDiff({ existingBlocks, incomingBlocks }: DefineBlocksDiffArgs): BlocksDiff {
 	// Consider blocks as new if they have temp ID OR no ID at all
 	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
 

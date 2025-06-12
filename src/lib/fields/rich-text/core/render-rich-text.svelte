@@ -2,7 +2,7 @@
 	import type { JSONContent } from '@tiptap/core';
 	import RenderRichText from './render-rich-text.svelte';
 	import type { Snippet, Component } from 'svelte';
-	
+
 	type NodeComp = Component<{ node: JSONContent[number]; children: Snippet }>;
 	type Props = {
 		json?: JSONContent;

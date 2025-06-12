@@ -21,17 +21,9 @@
 		class: className,
 		...restProps
 	}: Props = $props();
-
 </script>
 
-<Button
-	{variant}
-	formaction={formaction || null}
-	class={className || null}
-	type="submit"
-	{disabled}
-	{...restProps}
->
+<Button {variant} formaction={formaction || null} class={className || null} type="submit" {disabled} {...restProps}>
 	{#if processing}
 		<SpinLoader />
 	{:else}

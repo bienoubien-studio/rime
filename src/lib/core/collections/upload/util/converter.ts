@@ -87,31 +87,31 @@ export async function filePathToBase64(filePath: string): Promise<string> {
  * const file = await filePathToFile('/path/to/image.jpg');
  */
 export async function filePathToFile(filePath: string): Promise<File> {
-  try {
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      throw new RizomError(RizomError.UPLOAD, `File not found: ${filePath}`);
-    }
-    
-    // Read file stats and content
-    const fileStats = fs.statSync(filePath);
-    const buffer = fs.readFileSync(filePath);
-    
-    // Get filename and extension
-    const filename = path.basename(filePath);
-    const ext = path.extname(filePath).slice(1).toLowerCase();
-    const mimeType = getMimeTypeFromExtension(ext) || 'application/octet-stream';
-    
-    // Create a Blob with the file content
-    const blob = new Blob([buffer], { type: mimeType });
-    
-    // Create and return a File object
-    return new File([blob], filename, {
-      type: mimeType,
-      lastModified: fileStats.mtimeMs
-    });
-  } catch (error:any) {
-    logger.error('Error creating File from path:', error.message);
-    throw new RizomError(RizomError.UPLOAD, `Failed to create File from path: ${error.message}`);
-  }
+	try {
+		// Check if file exists
+		if (!fs.existsSync(filePath)) {
+			throw new RizomError(RizomError.UPLOAD, `File not found: ${filePath}`);
+		}
+
+		// Read file stats and content
+		const fileStats = fs.statSync(filePath);
+		const buffer = fs.readFileSync(filePath);
+
+		// Get filename and extension
+		const filename = path.basename(filePath);
+		const ext = path.extname(filePath).slice(1).toLowerCase();
+		const mimeType = getMimeTypeFromExtension(ext) || 'application/octet-stream';
+
+		// Create a Blob with the file content
+		const blob = new Blob([buffer], { type: mimeType });
+
+		// Create and return a File object
+		return new File([blob], filename, {
+			type: mimeType,
+			lastModified: fileStats.mtimeMs
+		});
+	} catch (error: any) {
+		logger.error('Error creating File from path:', error.message);
+		throw new RizomError(RizomError.UPLOAD, `Failed to create File from path: ${error.message}`);
+	}
 }

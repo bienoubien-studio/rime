@@ -3,12 +3,12 @@ import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Group from './component/Group.svelte';
 
 const isEmpty = (value: unknown) =>
-	!!value === false || (
-		typeof value === 'object' &&
+	!!value === false ||
+	(typeof value === 'object' &&
 		value !== null &&
 		!Array.isArray(value) &&
-		Object.getPrototypeOf(value) === Object.prototype
-		&& Object.keys(value).length === 0);
+		Object.getPrototypeOf(value) === Object.prototype &&
+		Object.keys(value).length === 0);
 
 export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 	//

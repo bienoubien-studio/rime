@@ -7,7 +7,7 @@ import { logoutActions as logout } from './logout/actions.server.js';
 
 const collection = {
 	doc: collectionDoc
-}
+};
 
 export { area, collection, init, login, logout };
 

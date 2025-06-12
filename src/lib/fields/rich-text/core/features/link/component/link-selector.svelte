@@ -68,19 +68,9 @@
 			/>
 
 			{#if editor.getAttributes('link').href}
-				<IconButton
-					icon={Trash}
-					class="rz-link-selector__button"
-					onclick={onDelete}
-					active={false}
-				/>
+				<IconButton icon={Trash} class="rz-link-selector__button" onclick={onDelete} active={false} />
 			{:else}
-				<IconButton
-					type="submit"
-					active={urlState.isValid}
-					icon={Check}
-					class="rz-link-selector__button"
-				></IconButton>
+				<IconButton type="submit" active={urlState.isValid} icon={Check} class="rz-link-selector__button"></IconButton>
 			{/if}
 		</form>
 	{/if}

@@ -5,48 +5,49 @@ import CounterComponent from './media.svelte';
 import type { Dic } from '$lib/util/types';
 
 export const Media = Node.create({
-  name: 'media',
-  group: 'block',
-  atom: true,
-  draggable: true, // Optional: to make the node draggable
-  inline: false,
-  
-  addOptions() {
-      return {
-        query: null,
-    }
-  },
-  
-  addAttributes() {
-    return ['id', 'title', 'sizes', 'mimeType', 'url', 'filename', 'legend'].reduce((acc: Dic, key) => {
-      acc[key] = { default: null };
-      return acc;
-    }, {});
-  },
+	name: 'media',
+	group: 'block',
+	atom: true,
+	draggable: true, // Optional: to make the node draggable
+	inline: false,
 
-  //@ts-expect-error boring
-  addCommands() {
-    return {
-      insertMedia: (attributes = {}) => 
-        //@ts-expect-error boring
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: attributes
-          })
-        }
-    }
-  },
-  
-  parseHTML() {
-    return [{ tag: 'richt-text-media' }];
-  },
+	addOptions() {
+		return {
+			query: null
+		};
+	},
 
-  renderHTML({ HTMLAttributes }) {
-    return ['richt-text-media', mergeAttributes(HTMLAttributes)];
-  },
+	addAttributes() {
+		return ['id', 'title', 'sizes', 'mimeType', 'url', 'filename', 'legend'].reduce((acc: Dic, key) => {
+			acc[key] = { default: null };
+			return acc;
+		}, {});
+	},
 
-  addNodeView() {
-    return SvelteNodeViewRenderer(CounterComponent);
-  },
+	//@ts-expect-error boring
+	addCommands() {
+		return {
+			insertMedia:
+				(attributes = {}) =>
+				//@ts-expect-error boring
+				({ commands }) => {
+					return commands.insertContent({
+						type: this.name,
+						attrs: attributes
+					});
+				}
+		};
+	},
+
+	parseHTML() {
+		return [{ tag: 'richt-text-media' }];
+	},
+
+	renderHTML({ HTMLAttributes }) {
+		return ['richt-text-media', mergeAttributes(HTMLAttributes)];
+	},
+
+	addNodeView() {
+		return SvelteNodeViewRenderer(CounterComponent);
+	}
 });

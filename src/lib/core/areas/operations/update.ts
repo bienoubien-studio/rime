@@ -69,7 +69,7 @@ async function handleVersionCreation<T extends GenericDoc>({
 			data,
 			locale
 		});
-		
+
 		if (config.versions && config.versions.maxVersions) {
 			await rizom.collection(versionsSlug).delete({
 				sort: '-updatedAt',
@@ -224,6 +224,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			metas: {}
 		});
 	}
-	
+
 	return document as unknown as T;
 };

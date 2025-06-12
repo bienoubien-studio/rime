@@ -14,7 +14,7 @@ export default function (slug: PrototypeSlug) {
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
-		
+
 		const headers = { 'set-auth-token': success.token };
 		return json({ user: success.user }, { headers });
 	}

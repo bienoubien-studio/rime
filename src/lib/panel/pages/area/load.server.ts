@@ -20,23 +20,21 @@ export default function (slug: AreaSlug, withVersions?: boolean) {
 		if (!authorizedRead) {
 			return { doc: {}, operation: 'update', status: 401 };
 		}
-		
+
 		const versionId = url.searchParams.get(PARAMS.VERSION_ID) || undefined;
-		const draft = url.searchParams.get(PARAMS.DRAFT)
-			? url.searchParams.get(PARAMS.DRAFT) === 'true'
-			: undefined;
+		const draft = url.searchParams.get(PARAMS.DRAFT) ? url.searchParams.get(PARAMS.DRAFT) === 'true' : undefined;
 		const doc = await area.find({ locale, versionId, draft });
-		
+
 		if (!authorizedUpdate) {
 			return { doc, operation: 'update', status: 200, readOnly: true };
 		}
-		
+
 		const aria: WithRequired<Partial<Route>, 'title'>[] = [
 			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
 			{ title: area.config.label }
 		];
 
-		let data:Dic = {
+		let data: Dic = {
 			aria,
 			doc,
 			operation: 'update',
@@ -44,19 +42,18 @@ export default function (slug: AreaSlug, withVersions?: boolean) {
 			readOnly: false,
 			slug
 		};
-		
-		if(withVersions){
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`
-			const promise = fetch(url).then(r => r.json())
-			const [error, result] = await safe(promise)
-			if(error || !Array.isArray(result.docs)){
-				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions')
+
+		if (withVersions) {
+			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
+			const promise = fetch(url).then((r) => r.json());
+			const [error, result] = await safe(promise);
+			if (error || !Array.isArray(result.docs)) {
+				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}
-			data = { ...data, versions: result.docs}
+			data = { ...data, versions: result.docs };
 		}
 
-		return data
-
+		return data;
 	};
 	return load;
 }

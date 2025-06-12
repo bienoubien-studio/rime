@@ -5,10 +5,10 @@
 	import { capitalize, slugify } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	
+
 	const { path, config, form }: RadioFieldProps = $props();
 	const field = $derived(form.useField(path, config));
-	
+
 	const fieldId = $derived(slugify(`${form.key}-${path}`));
 </script>
 

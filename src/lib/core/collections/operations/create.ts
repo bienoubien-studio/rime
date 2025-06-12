@@ -35,7 +35,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
-	
+
 	if (config.auth) {
 		/** Add auth fields into validation process */
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);

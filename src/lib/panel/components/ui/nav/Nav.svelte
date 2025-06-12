@@ -41,7 +41,7 @@
 
 		<div class="rz-nav__body">
 			<ScrollArea>
-			<nav class="rz-nav__nav">
+				<nav class="rz-nav__nav">
 					{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
 						{#if groupName !== 'none'}
 							{@const icon = getGroupIcon(groupName)}
@@ -66,12 +66,7 @@
 		</div>
 	</div>
 
-	<button
-		class="rz-nav__toggle"
-		onclick={() => setCollapsed(!isCollapsed)}
-		aria-label="Toggle navigation"
-	>
-	</button>
+	<button class="rz-nav__toggle" onclick={() => setCollapsed(!isCollapsed)} aria-label="Toggle navigation"> </button>
 </div>
 
 <style type="postcss">
@@ -128,7 +123,7 @@
 		justify-content: space-between;
 		padding-right: var(--rz-size-4);
 		padding-left: var(--rz-size-4);
-		
+
 		&.rz-nav__header--collapsed {
 			justify-content: center;
 		}

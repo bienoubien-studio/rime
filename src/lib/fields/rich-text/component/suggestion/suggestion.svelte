@@ -17,15 +17,11 @@
 
 	// Get all items with suggestion commands
 	const markItems = $derived(
-		features
-			.flatMap((feature) => feature.marks || [])
-			.filter((mark) => mark.suggestion && mark.suggestion.command)
+		features.flatMap((feature) => feature.marks || []).filter((mark) => mark.suggestion && mark.suggestion.command)
 	);
 
 	const nodeItems = $derived(
-		features
-			.flatMap((feature) => feature.nodes || [])
-			.filter((node) => node.suggestion && node.suggestion.command)
+		features.flatMap((feature) => feature.nodes || []).filter((node) => node.suggestion && node.suggestion.command)
 	);
 
 	// Combine all suggestion items

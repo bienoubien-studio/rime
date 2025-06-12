@@ -256,83 +256,81 @@ const lockedPage = () => `
  * Used for generating custom routes
  */
 const customRoute = (config: any): string => {
-  let componentPath: string = '';
-  let componentName: string = '';
+	let componentPath: string = '';
+	let componentName: string = '';
 
-  const rawPath =
-    typeof config.component === 'string'
-      ? config.component
-      : config.component[Symbol.for('filename')] || (config.component as any)[Symbol('filename')];
+	const rawPath =
+		typeof config.component === 'string'
+			? config.component
+			: config.component[Symbol.for('filename')] || (config.component as any)[Symbol('filename')];
 
-  if (rawPath) {
-    const componentReg = /([A-Z][a-zA-Z0-9]+)\.svelte$/;
-    const match = rawPath.match(componentReg);
-    if (match) {
-      componentName = match[1];
+	if (rawPath) {
+		const componentReg = /([A-Z][a-zA-Z0-9]+)\.svelte$/;
+		const match = rawPath.match(componentReg);
+		if (match) {
+			componentName = match[1];
 
-      if (rawPath.includes('node_modules/')) {
-        componentPath = 'node_modules/' + rawPath.split('node_modules/').at(-1);
-      } else {
-        componentPath = '$lib/' + rawPath.split('lib/').at(-1);
-      }
-    }
-  }
+			if (rawPath.includes('node_modules/')) {
+				componentPath = 'node_modules/' + rawPath.split('node_modules/').at(-1);
+			} else {
+				componentPath = '$lib/' + rawPath.split('lib/').at(-1);
+			}
+		}
+	}
 
-  if (componentName && componentPath) {
-    return `<script lang="ts">
+	if (componentName && componentPath) {
+		return `<script lang="ts">
   import ${componentName} from '${componentPath}'
   const { data } = $props()
 </script>
 <${componentName} {data} />`;
-  }
+	}
 
-  return `Cannot parse provided component path`;
+	return `Cannot parse provided component path`;
 };
-
-
 
 // Shared routes dictionary
 export const commonRoutes: Routes = {
-  '': {
-    layoutServer: mainLayout,
-  },
-  '(rizom)': {
-    layout: rootLayout,
-    layoutServer: rootLayoutServer,
-    error: error
-  },
-  '(rizom)/login': {
-    page: loginPage,
-    pageServer: loginPageServer
-  },
-  '(rizom)/logout': {
-    pageServer: logoutPageServer
-  },
-  '(rizom)/forgot-password': {
-    page: forgotPasswordPage,
-    pageServer: forgotPasswordPageServer
-  },
-  '(rizom)/reset-password': {
-    page: resetPasswordPage,
-    pageServer: resetPasswordPageServer
-  },
-  '(rizom)/panel': {
-    layout: panelLayout,
-    layoutServer: panelLayoutServer,
-    page: panelPage,
-    pageServer: panelPageServer
-  },
-  '(rizom)/init': {
-    page: initPage,
-    pageServer: initPageServer
-  },
-  '(rizom)/live': {
-    page: livePage,
-    pageServer: livePageServer
-  },
-  '(rizom)/locked': {
-    page: lockedPage
-  }
+	'': {
+		layoutServer: mainLayout
+	},
+	'(rizom)': {
+		layout: rootLayout,
+		layoutServer: rootLayoutServer,
+		error: error
+	},
+	'(rizom)/login': {
+		page: loginPage,
+		pageServer: loginPageServer
+	},
+	'(rizom)/logout': {
+		pageServer: logoutPageServer
+	},
+	'(rizom)/forgot-password': {
+		page: forgotPasswordPage,
+		pageServer: forgotPasswordPageServer
+	},
+	'(rizom)/reset-password': {
+		page: resetPasswordPage,
+		pageServer: resetPasswordPageServer
+	},
+	'(rizom)/panel': {
+		layout: panelLayout,
+		layoutServer: panelLayoutServer,
+		page: panelPage,
+		pageServer: panelPageServer
+	},
+	'(rizom)/init': {
+		page: initPage,
+		pageServer: initPageServer
+	},
+	'(rizom)/live': {
+		page: livePage,
+		pageServer: livePageServer
+	},
+	'(rizom)/locked': {
+		page: lockedPage
+	}
 };
 
 export { customRoute };

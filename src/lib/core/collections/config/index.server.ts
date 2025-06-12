@@ -8,7 +8,7 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const authHooks = await import('rizom/core/collections/auth/hooks/hooks.server.js');
-		const { beforeUpdate, beforeCreate,beforeDelete, afterDelete, afterCreate } = authHooks;
+		const { beforeUpdate, beforeCreate, beforeDelete, afterDelete, afterCreate } = authHooks;
 		hooks = {
 			...hooks,
 			beforeUpdate: [beforeUpdate, ...(hooks?.beforeUpdate || [])],
@@ -45,7 +45,7 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 			beforeRead: [addChildrenProperty, ...(hooks?.beforeRead || [])]
 		};
 	}
-	
+
 	return hooks;
 };
 

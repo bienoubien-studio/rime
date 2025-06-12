@@ -30,10 +30,10 @@
 	</div>
 
 	<div class="rz-card-resource__info">
-    <p class="rz-card-resource__title">
-      {resource.title} <a href="/panel/{resource._type}/{resource.id}"><Edit size="12" /></a>
-    </p>
-    {#if isUpload}
+		<p class="rz-card-resource__title">
+			{resource.title} <a href="/panel/{resource._type}/{resource.id}"><Edit size="12" /></a>
+		</p>
+		{#if isUpload}
 			<p class="rz-card-resource__info-text">{resource.filesize}</p>
 			<p class="rz-card-resource__info-text">{resource.mimeType}</p>
 		{/if}
@@ -55,18 +55,18 @@
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
 		padding: var(--rz-internal-padding);
-    max-width: 400px;
+		max-width: 400px;
 	}
-  
+
 	.rz-card-resource__thumbnail {
 		width: var(--rz-internal-thumbnail-size);
 		height: var(--rz-internal-thumbnail-size);
 		flex-shrink: 0;
 		overflow: hidden;
-    background-color: hsl(var(--rz-ground-5));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+		background-color: hsl(var(--rz-ground-5));
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		border-radius: var(--rz-radius-md);
 	}
 
@@ -82,7 +82,6 @@
 	}
 
 	.rz-card-resource__title {
-		
 		@mixin font-semibold;
 		a {
 			display: inline-block;
@@ -93,7 +92,7 @@
 		}
 	}
 
-	.rz-card-resource__info-text{
+	.rz-card-resource__info-text {
 		font-size: var(--rz-text-sm);
 	}
 

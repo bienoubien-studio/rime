@@ -20,9 +20,7 @@
 	let isOpen = $state(false);
 
 	// Get all node selector items from features
-	const nodeItems = $derived(
-		features.flatMap((feature) => feature.nodes || []).filter((node) => !!node.nodeSelector)
-	);
+	const nodeItems = $derived(features.flatMap((feature) => feature.nodes || []).filter((node) => !!node.nodeSelector));
 
 	// Get all items with bubble menu components (both nodes and marks)
 	const bubbleMenuItems = $derived([
@@ -32,15 +30,15 @@
 
 	const pluginKey = path;
 	const updateDelay = 250;
-	const richTextContext = getRichTextContext(path)
+	const richTextContext = getRichTextContext(path);
 
 	const onShow = () => {
-		richTextContext.bubbleOpen = true
+		richTextContext.bubbleOpen = true;
 		isOpen = true;
 	};
 
 	const onHidden = () => {
-		richTextContext.bubbleOpen = false
+		richTextContext.bubbleOpen = false;
 		isOpen = false;
 	};
 
@@ -53,19 +51,17 @@
 	};
 
 	const shouldShow = ({ editor }: { editor: Editor }) => {
-		return (
-			editor.view.state.selection.$head.depth > 0 && editor.view.state.selection.content().size > 0
-		);
+		return editor.view.state.selection.$head.depth > 0 && editor.view.state.selection.content().size > 0;
 	};
 
-	function setActiveItems () {
+	function setActiveItems() {
 		activeItems = bubbleMenuItems.reduce(
-				(acc, item) => {
-					acc[item.name] = item.isActive?.({ editor }) || false;
-					return acc;
-				},
-				{} as Record<string, boolean>
-			);
+			(acc, item) => {
+				acc[item.name] = item.isActive?.({ editor }) || false;
+				return acc;
+			},
+			{} as Record<string, boolean>
+		);
 	}
 
 	onMount(() => {
@@ -81,7 +77,7 @@
 		editor.registerPlugin(plugin);
 		editor.on('selectionUpdate', setActiveItems);
 		// editor.on('update', setActiveItems);
-		setActiveItems()
+		setActiveItems();
 	});
 
 	onDestroy(() => {
@@ -91,7 +87,6 @@
 	});
 
 	let activeItems = $state<Record<string, boolean>>({});
-	
 </script>
 
 <div id={pluginKey} bind:this={element} class="rz-bubble-menu">

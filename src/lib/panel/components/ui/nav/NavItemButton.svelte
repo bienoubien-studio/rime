@@ -35,10 +35,9 @@
 		white-space: nowrap;
 		@mixin font-normal;
 		justify-content: start;
-		transition-property: box-shadow, color, background-color, border-color, text-decoration-color,
-			fill, stroke;
+		transition-property: box-shadow, color, background-color, border-color, text-decoration-color, fill, stroke;
 		transition-duration: 0.25s;
-		
+
 		gap: var(--rz-size-3);
 		&:not(:last-child) {
 			border-bottom: 1px solid hsl(var(--rz-ground-3));
@@ -49,5 +48,4 @@
 		text-decoration: underline;
 		position: relative;
 	}
-	
 </style>

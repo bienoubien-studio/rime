@@ -23,9 +23,8 @@
 		}
 	});
 	const nameField = text('name').layout('compact').required().compile();
-	const emailField = usersFields.email.layout('compact').compile()
-	const passwordField = usersFields.password.layout('compact').compile()
-
+	const emailField = usersFields.email.layout('compact').compile();
+	const passwordField = usersFields.password.layout('compact').compile();
 </script>
 
 <AuthForm title={t__('common.create_first', 'admin')}>

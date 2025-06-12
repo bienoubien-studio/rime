@@ -74,8 +74,7 @@
 </script>
 
 <div data-sorting={sorting} class="rz-block">
-	<button onclick={toggleBlock} type="button" class="rz-block__ghost-toggle" aria-label="toggle">
-	</button>
+	<button onclick={toggleBlock} type="button" class="rz-block__ghost-toggle" aria-label="toggle"> </button>
 	<div class="rz-block__content" class:rz-block__content--closed={!isOpen}>
 		<header class="rz-block__header">
 			{#if !isOpen}
@@ -154,7 +153,7 @@
 			justify-content: flex-start;
 			flex-direction: row;
 		}
-		
+
 		:global(.rz-block-actions) {
 			position: absolute;
 			opacity: 0;

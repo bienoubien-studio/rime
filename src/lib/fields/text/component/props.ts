@@ -8,6 +8,6 @@ export type TextFieldProps = {
 	path?: string;
 	config: TextField;
 	type?: 'text' | 'password';
-	icon?: Component<IconProps>
+	icon?: Component<IconProps>;
 	form: DocumentFormContext | FormContext;
 };

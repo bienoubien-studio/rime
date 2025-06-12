@@ -17,7 +17,7 @@ class RizomError extends Error {
 	static UNKWONW = 'unknown';
 	static UPLOAD = 'upload_error';
 	static USER_BANNED = 'user_banned';
-	
+
 	code = RizomError.UNKWONW;
 	status: number;
 
