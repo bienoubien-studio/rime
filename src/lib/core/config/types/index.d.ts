@@ -25,7 +25,7 @@ export interface Config {
 	/** List of Collection  */
 	collections: Collection<any>[];
 	/** List of Area  */
-	areas: Area[];
+	areas: Area<any>[];
 	/** Define locales that will be enabled
 	 * @example
 	 * ```typescript

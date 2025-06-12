@@ -34,7 +34,6 @@ export function collection<S extends string>(slug: S, config: CollectionWithoutS
 	return {
 		...config,
 		slug,
-		type: 'collection',
 		label: config.label ? config.label : { singular: capitalize(slug), plural: capitalize(slug), gender: 'm' },
 		fields,
 		icon: config.icon || FileText,

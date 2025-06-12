@@ -13,14 +13,13 @@ export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Are
 	let fields: typeof config.fields = [...config.fields];
 	
 	config = augmentTitle(config);
-	
+
 	({ config, fields } = augmentMetas({ config, fields }));
 	({ config, fields } = augmentVersions({ config, fields }));
 	
 	return {
 		...config,
 		slug,
-		type: 'area',
 		icon: config.icon || FileText,
 		label: config.label ? config.label : capitalize(slug),
 		fields: fields,

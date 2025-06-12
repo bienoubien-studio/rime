@@ -12,6 +12,7 @@ import { BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 import { mergePanelUsersCollectionWithDefault } from '$lib/core/collections/auth/config/usersConfig.server.js';
+import { collection } from '$lib/core/collections/config/builder.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -21,14 +22,14 @@ const dev = process.env.NODE_ENV === 'development';
  */
 const buildConfig = async (config: Config, options: { generateFiles?: boolean }): Promise<CompiledConfig> => {
 	const generateFiles = options?.generateFiles || false;
-
-	let collections: BuiltCollection[] = [];
-	let areas: BuiltArea[] = [];
 	const icons: Dic = {};
 
 	// Retrieve Default Users collection
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
-	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), panelUsersCollection];
+	config.collections = [
+		...config.collections.filter((c) => c.slug !== PANEL_USERS),
+		collection(PANEL_USERS, panelUsersCollection)
+	] as BuiltCollection[];
 
 	// Add icons
 	for (const collection of config.collections) {
@@ -74,8 +75,8 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			},
 			css: config.panel?.css
 		},
-		collections: config.collections,
-		areas: config.areas,
+		collections: config.collections.map(c => ({ ...c, type: 'collection' })) as BuiltCollection[],
+		areas: config.areas.map(c => ({ ...c, type: 'area' })) as BuiltArea[],
 		plugins: {},
 		trustedOrigins,
 		icons
@@ -87,13 +88,13 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	let fieldsComponentsMap = buildComponentsMap([...collectionFields, ...areaFields]);
 
 	/****************************************************
-	* Plugins
-	*
-	* IMPORTANT ! Core plugins that includes handlers should be added also here :
-	* src/lib/handlers/plugins.server.ts
-	* because the config is built from inside the first handler
-	* if a plugin includes a handler, the handler should be register there before...
-	*/
+	 * Plugins
+	 *
+	 * IMPORTANT ! Core plugins that includes handlers should be added also here :
+	 * src/lib/handlers/plugins.server.ts
+	 * because the config is built from inside the first handler
+	 * if a plugin includes a handler, the handler should be register there before...
+	 */
 	const corePlugins = [cache(config.cache || {})];
 	if (hasProp('smtp', config)) {
 		corePlugins.push(mailer(config.smtp));
