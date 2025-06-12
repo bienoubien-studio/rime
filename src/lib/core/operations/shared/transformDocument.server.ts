@@ -1,11 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { buildConfigMap } from '../configMap/index.server.js';
 import { augmentDocument } from './augmentDocument.server.js';
 import { postprocessFields } from './postProcessFields.server.js';
-import type { Rizom } from '../../rizom.server.js';
 
 export const transformDocument = async <T>(args: {
 	raw: RawDoc;
@@ -13,9 +11,9 @@ export const transformDocument = async <T>(args: {
 	event: RequestEvent;
 	depth?: number;
 	config: CompiledArea | CompiledCollection;
-	augment?: boolean
-	withURL?: boolean
-	withBlank?: boolean
+	augment?: boolean;
+	withURL?: boolean;
+	withBlank?: boolean;
 }) => {
 	const { raw, locale, event, depth, config, augment = true, withBlank = true } = args;
 
@@ -27,7 +25,7 @@ export const transformDocument = async <T>(args: {
 		depth,
 		withBlank
 	});
-	
+
 	const configMap = buildConfigMap(document, config.fields);
 
 	if (augment) {
@@ -37,7 +35,7 @@ export const transformDocument = async <T>(args: {
 	document = await postprocessFields({
 		document,
 		configMap,
-		event,
+		event
 	});
 
 	return document as T;

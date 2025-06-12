@@ -1,9 +1,9 @@
+import qs from 'qs';
 import { and, desc, eq, getTableColumns } from "drizzle-orm";
-import qs, { type ParsedQs } from 'qs';
 import { RizomError } from "$lib/core/errors";
-import type { RawDoc } from "$lib/core/types/doc";
 import { isObjectLiteral, omit, pick } from "$lib/util/object";
-import { getBlocksTableNames, transformDataToSchema } from "$lib/util/schema";
+import { transformDataToSchema } from "$lib/util/schema";
+import type { RawDoc } from "$lib/core/types/doc";
 import type { BuiltArea, BuiltCollection } from "../types.js";
 import type { OperationQuery, ParsedOperationQuery } from "$lib/core/types/index.js";
 import type { Dic } from "$lib/util/types.js";
@@ -80,6 +80,23 @@ export async function upsertLocalizedData(db: any, tables: any, tableLocalesName
 }
 
 /**
+ * Extract _parent and _position props from an incomming data object
+ * returning an object with the data filtered and the hierarchyData.
+ */
+export function extractHierarchyFields(data: any) {
+  const hierarchyData: { _parent?: string, _position?: number } = {};
+  if ('_parent' in data) {
+    hierarchyData._parent = data._parent;
+    delete data._parent;
+  }
+  if ('_position' in data) {
+    hierarchyData._position = data._position;
+    delete data._position;
+  }
+  return { data, hierarchyData};
+}
+
+/**
  * Prepares data for database operations by transforming it according to table schemas
  */
 export function prepareSchemaData(data: any, options: {
@@ -112,6 +129,20 @@ export function prepareSchemaData(data: any, options: {
   }
 }
 
+/**
+ * Merges a document with its version data to create a complete document representation
+ * 
+ * In versioned collections/areas, data is split between:
+ * - Root document table (containing hierarchy fields like _parent, _position, and metadata like createdAt)
+ * - Version table (containing the actual content fields)
+ * 
+ * This function combines these two data sources into a single document object:
+ * 1. Validates that version data exists or throw 404
+ * 2. Handles field selection if specified
+ * 3. Preserves root document fields (id, createdAt, updatedAt, _parent, _position)
+ * 4. Adds version fields while avoiding duplicates
+ * 5. Includes the versionId in the result
+ */
 export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
   // Check if we have version data
   if (!doc[versionTableName] || doc[versionTableName].length === 0) {
@@ -121,7 +152,7 @@ export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: strin
   const versionData = doc[versionTableName][0];
 
   if (select && Array.isArray(select) && select.length) {
-    const rootProps = ['createdAt', 'updatedAt', 'id'] as const
+    const rootProps = ['createdAt', 'updatedAt', '_parent', '_position', 'id'] as const
     const hasRootSelectColumn = rootProps.some(column => select.includes(column))
 
     // Pick "createdAt" and "updatedAt" on doc if they are in select, or only the "id"
@@ -164,6 +195,14 @@ export function buildPublishedOrLatestVersionParams(args: { draft?: boolean, con
   }
 }
 
+/**
+ * Convert and validate on incoming query to a complient query 
+ * for the buildWhereParam wich require an object with a root prop where.
+ * 
+ * @example
+ * // returns 
+ * { where: queryObject }
+ */
 export function normalizeQuery(incomingQuery: OperationQuery): ParsedOperationQuery {
   let query
   if (typeof incomingQuery === 'string') {

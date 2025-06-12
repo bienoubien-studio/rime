@@ -23,8 +23,8 @@ type BaseDoc = {
 };
 
 export type GenericDoc = Pretty<BaseDoc & Dic>;
-export type GenericHierarcyDoc = Pretty<
-	BaseDoc & { _children: string[]; parent: string; _position: number } & Dic
+export type GenericNestedDoc = Pretty<
+	BaseDoc & { _children: string[]; _parent: string; _position: number } & Dic
 >;
 
 export type TreeBlock = {

@@ -2,7 +2,6 @@ import { type ServerLoad } from '@sveltejs/kit';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import type { WithRequired } from 'better-auth/svelte';
-import type { Pretty } from '$lib/util/types.js';
 
 /****************************************************/
 /* Layout load
@@ -15,7 +14,10 @@ export function collectionLoad(slug: CollectionSlug) {
 		const collection = rizom.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 		
-		const docs = await collection.find({ locale, draft: true });
+		const docs = await collection.find({ 
+			locale,
+			draft: true
+		});
 
 		const aria: WithRequired<Partial<Route>, 'title'>[] = [
 			{ title: "Dashboard", icon: "dashboard", path: `/panel`  },
