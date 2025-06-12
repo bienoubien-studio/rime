@@ -15,6 +15,8 @@ import { env } from '$env/dynamic/public';
 import cloneDeep from 'clone-deep';
 import { snapshot } from '$lib/util/state.js';
 import { toNestedStructure } from '$lib/util/doc.js';
+import { PARAMS } from '$lib/core/constant.js';
+import { safe } from '$lib/util/safe.js';
 
 type SortMode = 'asc' | 'dsc';
 type DisplayMode = 'list' | 'grid' | 'nested';
@@ -258,7 +260,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 			// Revert to current database docs
 			docs = await fetch(`${env.PUBLIC_RIZOM_URL}/api/${config.slug}`)
 				.then((r) => r.json())
-				.then((r) => r.docs)
+				.then((r) => r.docs);
 			stamp = Date.now();
 			return false;
 		}
@@ -270,25 +272,28 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 	 * @returns Promise that resolves to true if all updates succeeded
 	 */
 	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]) => {
-		try {
-			// Send updates in parallel
-			await Promise.all(
-				docsToUpdate.map((doc) =>
-					fetch(`${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`, {
-						method: 'PATCH',
-						body: JSON.stringify({
-							_parent: doc._parent,
-							_position: doc._position
-						}),
-						headers: { 'Content-Type': 'application/json' }
-					})
-				)
-			);
-			return true;
-		} catch (error) {
+		const promises = docsToUpdate.map((doc) => {
+			let url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
+			if (doc.versionId) {
+				url += `?${PARAMS.VERSION_ID}=${doc.versionId}`;
+			}
+			return fetch(url, {
+				method: 'PATCH',
+				body: JSON.stringify({
+					_parent: doc._parent,
+					_position: doc._position
+				}),
+				headers: { 'Content-Type': 'application/json' }
+			});
+		});
+		const [error, _] = await safe(Promise.all(promises));
+		
+		if (error) {
 			console.error('API update failed:', error);
 			throw error;
 		}
+
+		return true;
 	};
 
 	function isList() {
