@@ -116,7 +116,7 @@ test('Should create a page', async ({ request }) => {
 	expect(doc.attributes.title).toBe('Page');
 	expect(doc.createdAt).toBeDefined();
 	expect(doc.id).toBeDefined();
-	expect(doc._parent.at(0).documentId).toBe(homeId);
+	expect(doc._parent).toBe(homeId);
 	expect(doc.attributes.template).toBe('basic');
 	pageId = doc.id;
 });
@@ -177,7 +177,7 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 });
 
 test('Should return page (query)', async ({ request }) => {
-	const url = `${API_BASE_URL}/pages?where[parent][in_array]=${homeId}`;
+	const url = `${API_BASE_URL}/pages?where[_parent][equals]=${homeId}`;
 	const response = await request.get(url).then((response) => {
 		return response.json();
 	});
