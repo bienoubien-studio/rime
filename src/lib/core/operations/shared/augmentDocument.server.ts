@@ -36,10 +36,6 @@ export const augmentDocument = async <T extends GenericDoc>(args: {
 		};
 	}
 
-	if (config.live && event.locals.user && config.url) {
-		output._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${output.url}&slug=${config.slug}&id=${output.id}`;
-		output._live += locale ? `&locale=${locale}` : '';
-	}
 
 	output = sortDocumentKeys(output);
 

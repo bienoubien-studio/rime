@@ -7,7 +7,6 @@ import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.j
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
-import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
 import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
 import { filePathToFile } from '../upload/util/converter.js';
 import {
@@ -195,7 +194,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 				originalDoc: original as RegisterCollection[CollectionSlug],
 				operation: 'update',
 				rizom: event.locals.rizom,
-				event
+				event,
+				metas: {}
 			});
 			data = result.data as Partial<T>;
 		}
@@ -249,38 +249,17 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: versionId });
-
-	/**
-	 * @TODO handle url generation over all versions ??
-	 */
-
-	// Populate URL
-	document = await populateURL(document, { config, event, locale });
-
-	// If parent has changed populate URL for all language.
-	// Note : There is no need to update all localized url as
-	// if no parent the url is built with the document data only
-	if ('parent' in data) {
-		const locales = event.locals.rizom.config.getLocalesCodes();
-		if (locales.length) {
-			for (const otherLocale of locales) {
-				const documentLocale = await rizom
-					.collection(config.slug)
-					.findById({ id, locale: otherLocale, versionId: versionId });
-				await populateURL(documentLocale, { config, event, locale: otherLocale });
-			}
-		}
-	}
-
+	
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
 			doc: document,
 			config,
 			operation: 'update',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas: {}
 		});
 	}
-
+	
 	return document as T;
 };

@@ -29,9 +29,17 @@ const buildHooks = async (collection: Collection<any>): Promise<CollectionHooks<
 			beforeRead: [populateSizes, ...(hooks?.beforeRead || [])]
 		};
 	}
+	if (collection.url) {
+		const urlHooks = await import('$lib/core/collections/config/hooks/url.server.js');
+		const { populateURL } = urlHooks;
+		hooks = {
+			...hooks,
+			beforeRead: [populateURL, ...(hooks?.beforeRead || [])]
+		};
+	}
 	if (collection.nested) {
-		const hierarchyHooks = await import('$lib/core/collections/hierarchy/hooks/index.server.js');
-		const { addChildrenProperty } = hierarchyHooks;
+		const nestedHooks = await import('$lib/core/collections/nested/hooks/index.server.js');
+		const { addChildrenProperty } = nestedHooks;
 		hooks = {
 			...hooks,
 			beforeRead: [addChildrenProperty, ...(hooks?.beforeRead || [])]

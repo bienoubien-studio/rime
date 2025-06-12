@@ -2,7 +2,7 @@ import type { Rizom } from '$lib/core/rizom.server.js';
 import type { Rizom } from '$lib/core/cms.server';
 import type { CompiledArea, CompiledCollection } from '.';
 import type { GenericDoc } from '../../..';
-import type { DeepPartial } from '$lib/util/types';
+import type { DeepPartial, Dic, Pretty } from '$lib/util/types';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
@@ -10,6 +10,7 @@ type HookContext = {
 	rizom: Rizom;
 	event: RequestEvent & { locals: App.Locals };
 	config: CompiledCollection;
+	metas: Dic
 };
 
 // Collection Hooks
@@ -52,10 +53,12 @@ type CollectionHookBeforeUpdate<T extends GenericDoc = GenericDoc> = (
 >;
 
 type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = (
-	args: HookContext & {
-		operation: 'update';
-		doc: T;
-	}
+	args: Pretty<
+		HookContext & {
+			operation: 'update';
+			doc: T;
+		}
+	>
 ) => Promise<
 	HookContext & {
 		operation: 'update';
@@ -64,28 +67,26 @@ type CollectionHookAfterUpdate<T extends GenericDoc = GenericDoc> = (
 >;
 
 type CollectionHookBeforeUpsert<T extends GenericDoc = GenericDoc> = (
-	args: HookContext &
-		(
-			| { operation: 'create'; data: DeepPartial<T> }
-			| { operation: 'update'; data: DeepPartial<T>; originalDoc: T }
-		)
+	args: Pretty<
+		HookContext &
+			({ operation: 'create'; data: DeepPartial<T> } | { operation: 'update'; data: DeepPartial<T>; originalDoc: T })
+	>
 ) => Promise<
 	HookContext &
-		(
-			| { operation: 'create'; data: DeepPartial<T> }
-			| { operation: 'update'; data: DeepPartial<T>; originalDoc: T }
-		)
+		({ operation: 'create'; data: DeepPartial<T> } | { operation: 'update'; data: DeepPartial<T>; originalDoc: T })
 >;
 
 type CollectionHookAfterUpsert<T extends GenericDoc = GenericDoc> = (
-	args: HookContext & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })
+	args: Pretty<HookContext & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>
 ) => Promise<HookContext & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>;
 
 type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = (
-	args: HookContext & {
-		operation: 'read';
-		doc: T;
-	}
+	args: Pretty<
+		HookContext & {
+			operation: 'read';
+			doc: T;
+		}
+	>
 ) => Promise<
 	HookContext & {
 		operation: 'read';
@@ -94,10 +95,12 @@ type CollectionHookBeforeRead<T extends GenericDoc = GenericDoc> = (
 >;
 
 type CollectionHookBeforeDelete<T extends GenericDoc = GenericDoc> = (
-	args: HookContext & {
-		operation: 'delete';
-		doc: T;
-	}
+	args: Pretty<
+		HookContext & {
+			operation: 'delete';
+			doc: T;
+		}
+	>
 ) => Promise<
 	HookContext & {
 		operation: 'delete';

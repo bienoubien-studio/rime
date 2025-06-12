@@ -53,7 +53,11 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 			config,
 			operation: 'read',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas: {
+				select,
+				draft
+			}
 		});
 		document = result.doc as T;
 	}

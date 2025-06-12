@@ -53,7 +53,8 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			config,
 			operation: 'read',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas: {}
 		});
 		document = result.doc as unknown as T;
 	}

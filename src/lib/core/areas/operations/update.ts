@@ -2,7 +2,6 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { AreaSlug } from '$lib/types.js';
-import { populateURL } from '$lib/core/operations/shared/populateURL.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { validateFields } from '$lib/core/operations/shared/validateFields.server.js';
 import { buildConfigMap } from '../../operations/configMap/index.server.js';
@@ -155,7 +154,8 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			originalDoc: original as unknown as RegisterArea[AreaSlug],
 			operation: 'update',
 			rizom,
-			event
+			event,
+			metas: {}
 		});
 		data = result.data as Partial<T>;
 	}
@@ -214,31 +214,16 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		draft: true
 	});
 
-	// Populate URL
-	document = await populateURL(document, { config, event, locale });
-
-	// Handle localized URLs if needed
-	const locales = event.locals.rizom.config.getLocalesCodes();
-	if (locales.length) {
-		for (const otherLocale of locales) {
-			if (otherLocale !== locale) {
-				const documentLocale = await rizom
-					.area(config.slug)
-					.find({ locale: otherLocale, versionId: versionId, draft: true });
-				await populateURL(documentLocale, { config, event, locale: otherLocale });
-			}
-		}
-	}
-
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
 			doc: document,
 			config,
 			operation: 'update',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas: {}
 		});
 	}
-
+	
 	return document as unknown as T;
 };
