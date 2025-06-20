@@ -5,7 +5,7 @@ import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { Route } from '$lib/panel/types.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import { env } from '$env/dynamic/public';
-import { safe } from '$lib/util/safe.js';
+import { trycatch } from '$lib/util/trycatch.js';
 import { RizomError } from '$lib/core/errors/index.js';
 
 export default function (slug: AreaSlug, withVersions?: boolean) {
@@ -46,7 +46,7 @@ export default function (slug: AreaSlug, withVersions?: boolean) {
 		if (withVersions) {
 			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = fetch(url).then((r) => r.json());
-			const [error, result] = await safe(promise);
+			const [error, result] = await trycatch(promise);
 			if (error || !Array.isArray(result.docs)) {
 				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}

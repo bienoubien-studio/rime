@@ -1,7 +1,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { safe } from '$lib/util/safe.js';
+import { trycatch } from '$lib/util/trycatch.js';
 import { normalizeQuery } from '$lib/adapter-sqlite/util.js';
 import { PARAMS } from '$lib/core/constant.js';
 
@@ -28,7 +28,7 @@ export default function (slug: CollectionSlug) {
 			select: params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined
 		};
 
-		const [error, docs] = await safe(rizom.collection(slug).find(apiParams));
+		const [error, docs] = await trycatch(rizom.collection(slug).find(apiParams));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

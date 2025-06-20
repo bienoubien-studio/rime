@@ -2,7 +2,7 @@ import { dev } from '$app/environment';
 import { redirect, type Actions } from '@sveltejs/kit';
 import { PANEL_USERS } from '$lib/core/constant';
 import { handleError } from '$lib/core/errors/handler.server';
-import { safe } from '$lib/util/safe';
+import { trycatch } from '$lib/util/trycatch.js';
 
 export const loginActions: Actions = {
 	default: async ({ cookies, request, locals }) => {
@@ -12,7 +12,7 @@ export const loginActions: Actions = {
 		const email = data.get('email')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 
-		const [error, success] = await safe(rizom.auth.login({ email, password, slug: PANEL_USERS }));
+		const [error, success] = await trycatch(rizom.auth.login({ email, password, slug: PANEL_USERS }));
 
 		if (error) {
 			return handleError(error, { context: 'action', formData: { email } });

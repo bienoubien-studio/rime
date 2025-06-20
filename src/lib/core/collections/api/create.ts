@@ -3,7 +3,7 @@ import { extractData } from '$lib/core/operations/shared/data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { safe } from '$lib/util/safe.js';
+import { trycatch } from '$lib/util/trycatch.js';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -11,14 +11,17 @@ export default function (slug: CollectionSlug) {
 		const { rizom, locale } = event.locals;
 
 		const collection = rizom.collection(slug);
-		const data = await extractData(event.request);
-
+		const [extractError, data] = await trycatch(extractData(event.request));
+		if (extractError) {
+			return handleError(extractError, { context: 'api' });
+		}
+		
 		// Bypass confirm password for api auth collection creation calls
 		if (isAuthConfig(collection.config) && 'password' in data) {
 			data.confirmPassword = data.password;
 		}
 
-		const [error, result] = await safe(collection.create({ data, locale: data.locale || locale }));
+		const [error, result] = await trycatch(collection.create({ data, locale: data.locale || locale }));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

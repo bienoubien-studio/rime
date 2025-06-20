@@ -2,7 +2,7 @@ import { error, type ServerLoad } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
 import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
-import { safe } from '$lib/util/safe';
+import { trycatch } from '$lib/util/trycatch.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { PARAMS } from '$lib/core/constant.js';
 import type { Dic, WithRequired } from '$lib/util/types.js';
@@ -53,7 +53,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 
 			/** Get doc */
-			const [error, document] = await safe(collection.findById({ id, locale, versionId, draft: true }));
+			const [error, document] = await trycatch(collection.findById({ id, locale, versionId, draft: true }));
 			doc = document;
 
 			if (error) {
@@ -83,7 +83,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		if (withVersion) {
 			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = event.fetch(url).then((r) => r.json());
-			const [error, result] = await safe(promise);
+			const [error, result] = await trycatch(promise);
 			if (error || !Array.isArray(result.docs)) {
 				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}

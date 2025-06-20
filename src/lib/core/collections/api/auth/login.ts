@@ -1,7 +1,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
-import { safe } from '$lib/util/safe.js';
+import { trycatch } from '$lib/util/trycatch.js';
 
 export default function (slug: PrototypeSlug) {
 	//
@@ -10,7 +10,7 @@ export default function (slug: PrototypeSlug) {
 		const data = await event.request.json();
 		const { email, password } = data;
 
-		const [error, success] = await safe(rizom.auth.login({ email, password, slug }));
+		const [error, success] = await trycatch(rizom.auth.login({ email, password, slug }));
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
