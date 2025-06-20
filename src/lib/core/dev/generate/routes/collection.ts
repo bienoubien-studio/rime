@@ -16,10 +16,10 @@ export const load = pagesLoad.collection.list('${slug}')
  */
 const page = (slug: string) => `
 <script>
-  import { CollectionList } from '${PACKAGE_NAME}/panel'
+  import { Collection } from '${PACKAGE_NAME}/panel'
   const { data } = $props()
 </script>
-<CollectionList {data} slug='${slug}' />`;
+<Collection {data} slug='${slug}' />`;
 
 /**
  * Document page template

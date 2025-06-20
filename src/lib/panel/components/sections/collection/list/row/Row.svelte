@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
-	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
+	import UploadThumbCell from '../../upload-thumb-cell/UploadThumbCell.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getContext } from 'svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
@@ -9,7 +9,7 @@
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import type { FieldsType } from '$lib/fields/types.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import StatusDot from '../StatusDot.svelte';
+	import StatusDot from '../../StatusDot.svelte';
 
 	type Props = {
 		checked: boolean;

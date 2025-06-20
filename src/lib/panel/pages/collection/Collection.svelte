@@ -7,21 +7,26 @@
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { invalidateAll } from '$app/navigation';
-	import { t__ } from '../../../core/i18n/index.js';
 	import CollectionTree from '$lib/panel/components/sections/collection/tree/CollectionTree.svelte';
-	import ListRow from '$lib/panel/components/sections/collection/list-row/ListRow.svelte';
-	import GridItem from '$lib/panel/components/sections/collection/grid-item/GridItem.svelte';
 	import CollectionHeader from '$lib/panel/components/sections/collection/header/Header.svelte';
 	import SearchInput from '$lib/panel/components/sections/collection/header/SearchInput.svelte';
 	import ButtonCreate from '$lib/panel/components/sections/collection/header/ButtonCreate.svelte';
 	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
+	import CollectionGrid from '$lib/panel/components/sections/collection/grid/CollectionGrid.svelte';
+	import type { Directory } from '$lib/core/collections/upload/upload.js';
+	import CollectionList from '$lib/panel/components/sections/collection/list/CollectionList.svelte';
 
 	type Props = {
 		slug: PrototypeSlug;
 		data: {
-			docs: GenericDoc[];
 			status: number;
+			docs: GenericDoc[];
 			canCreate: boolean;
+			upload?: {
+				directories: Directory[];
+				currentPath: `root${string}`;
+				parentDirectory: Directory;
+			};
 		};
 	};
 
@@ -33,12 +38,16 @@
 		initial: data.docs,
 		config: collectionConfig,
 		canCreate: data.canCreate,
+		upload: {
+			directories: data.upload?.directories,
+			currentPath: data.upload?.currentPath,
+			parentDirectory: data.upload?.parentDirectory
+		},
 		key: slug
 	});
 
-	const searchDisabled = $derived(collection.isNested() || collection.selectMode);
-
 	setContext('rizom.collectionList', collection);
+	
 	const titleContext = getContext<{ value: string }>('title');
 	titleContext.value = collection.config.label.plural;
 </script>
@@ -66,36 +75,17 @@
 				{/snippet}
 
 				{#snippet bottomRight()}
-					<SearchInput disabled={searchDisabled} />
+					<SearchInput />
 				{/snippet}
 			</PageHeader>
 
 			<div class="rz-collection__docs">
-				{#if !collection.docs.length}
-					<div class="rz-page-collection__empty">
-						<div>
-							<span>
-								{t__(`common.no_document|${collection.config.label.gender}`, collection.config.label.singular)}
-							</span>
-						</div>
-					</div>
-				{:else if collection.isNested()}
-					<CollectionTree />
+				{#if collection.isNested()}
+					<CollectionTree {collection} />
+				{:else if collection.isGrid()}
+					<CollectionGrid {collection} />
 				{:else}
-					<div
-						class:rz-page-collection__list={!collection.isGrid()}
-						class:rz-page-collection__grid={collection.isGrid()}
-					>
-						{#each collection.docs as doc, index (index)}
-							{@const checked = collection.selected.includes(doc.id)}
-
-							{#if collection.isList()}
-								<ListRow {doc} {checked} />
-							{:else if collection.isGrid()}
-								<GridItem {doc} {checked} />
-							{/if}
-						{/each}
-					</div>
+					<CollectionList {collection} />
 				{/if}
 			</div>
 		{/snippet}
@@ -122,29 +112,5 @@
 			height: calc(100vh - 3.5rem);
 			background-color: hsl(var(--rz-ground-6));
 		}
-	}
-
-	.rz-page-collection__grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-		gap: var(--rz-size-4);
-		@container collection-area (min-width:420px) {
-			gap: var(--rz-size-6);
-			grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-		}
-	}
-
-	.rz-page-collection__list {
-		gap: var(--rz-size-2);
-		display: grid;
-	}
-	.rz-page-collection__empty {
-		height: var(--rz-input-height);
-		background-color: hsl(var(--rz-ground-4));
-		display: flex;
-		align-items: center;
-		border-radius: var(--rz-radius-md);
-		padding: var(--rz-size-3);
-		border: var(--rz-border);
 	}
 </style>

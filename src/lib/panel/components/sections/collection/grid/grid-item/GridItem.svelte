@@ -2,13 +2,14 @@
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { isUploadConfig } from '$lib/util/config.js';
-	import UploadThumbCell from '../upload-thumb-cell/UploadThumbCell.svelte';
+	import UploadThumbCell from '../../upload-thumb-cell/UploadThumbCell.svelte';
 	import * as Card from '$lib/panel/components/ui/card/index';
 	import { getContext } from 'svelte';
 	import type { GenericDoc } from '$lib/core/types/doc';
+	import { goto } from '$app/navigation';
 
-	type Props = { checked: boolean; doc: GenericDoc };
-	const { checked, doc }: Props = $props();
+	type Props = { checked: boolean; doc: GenericDoc; draggable?: 'true' };
+	const { checked, doc, draggable }: Props = $props();
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
@@ -19,6 +20,14 @@
 		}
 		return null;
 	});
+
+	function handleEdit() {
+		goto(`/panel/${collection.config.slug}/${doc.id}`);
+	}
+
+	function handleDragStart(e: DragEvent) {
+		e.dataTransfer?.setData('text/plain', doc.id);
+	}
 </script>
 
 {#snippet card(doc: GenericDoc)}
@@ -54,12 +63,20 @@
 		{@render card(doc)}
 	</div>
 {:else}
-	<a href="/panel/{collection.config.slug}/{doc.id}" class="rz-grid-item">
+	<button
+		class="rz-grid-item"
+		onclick={handleEdit}
+		draggable={draggable || null}
+		ondragstart={draggable ? handleDragStart : null}
+	>
 		{@render card(doc)}
-	</a>
+	</button>
 {/if}
 
 <style lang="postcss">
+	button.rz-grid-item {
+		text-align: left;
+	}
 	.rz-grid-item {
 		--checkbox-border: hsl(var(--rz-ground-6));
 		--rz-card-color-bg: var(--rz-ground-6);
