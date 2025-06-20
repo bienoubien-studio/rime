@@ -31,7 +31,7 @@
 		display: inline-flex;
 		align-items: center;
 		height: calc(var(--rz-size-12) - 1px);
-		padding: var(--rz-size-2) var(--rz-size-0);
+		padding: var(--rz-size-2) 0px;
 		white-space: nowrap;
 		@mixin font-normal;
 		justify-content: start;

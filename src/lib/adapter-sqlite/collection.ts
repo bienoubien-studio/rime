@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
@@ -12,9 +12,13 @@ import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import type { Schema } from '$lib/server/schema.js';
+import { getTableConfig } from 'drizzle-orm/sqlite-core';
+import { getSegments } from '$lib/core/collections/upload/util/path.js';
+import { trycatchSync } from '$lib/util/trycatch.js';
 
 type Args = {
-	db: BetterSQLite3Database<any>;
+	db: BetterSQLite3Database<Schema>;
 	tables: any;
 	configInterface: ConfigInterface;
 };
@@ -31,13 +35,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
 		const config = configInterface.getCollection(slug);
 		const isVersioned = !!config.versions;
+		const table = tables[slug];
 
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
 			//@ts-ignore
 			const doc = await db.query[slug].findFirst({
-				where: eq(tables[slug].id, id),
+				where: eq(table.id, id),
 				with: withParam
 			});
 
@@ -55,7 +60,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// if version Id get the specifi version
 			// else get the published or the latest, depending on the draft param
 			let params = {
-				where: eq(tables[slug].id, id),
+				where: eq(table.id, id),
 				with: {
 					[versionsTable]: {
 						with: withParam,
@@ -90,6 +95,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 * removes the root document and all its versions.
 	 */
 	const deleteById: DeleteById = async ({ slug, id }) => {
+		console.log({ slug, id })
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -107,15 +113,47 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		const isVersioned = !!config.versions;
 		const now = new Date();
 
-		if (isVersioned) {
-			// Extract hierarchy fields (_parent, _position) from data
-			const { data: contentData, hierarchyData } = adapterUtil.extractHierarchyFields(data);
+		if (config.upload) {
+			// Get path segments
+			const [error, segments] = trycatchSync(() => getSegments(data._path));
+			if (error) {
+				throw new RizomError(RizomError.BAD_REQUEST, error.message);
+			}
+			const { path, name, parent } = segments;
+			// set the normailzed path for the reference in the upload table
+			data._path = path;
+			// Get relative directory collection table
+			const tableName = schemaUtil.makeUploadDirectoriesSlug(slug);
+			const table = tables[tableName];
 
-			// Create root document with hierarchy fields
+			// Check if there is already a folder with the path in the uploadDirectories
+			//@ts-ignore
+			const uploadDir = await db.query[tableName].findFirst({
+				where: and(eq(table.id, data._path))
+			});
+			
+			if (!uploadDir) {
+				await db.insert(table).values({
+					id: data._path,
+					parent,
+					name,
+					createdAt: new Date(),
+					updatedAt: new Date()
+				});
+			}
+		}
+		
+		if (isVersioned) {
+			// Extract root props (_parent, _position, _path) from data
+			const { data: contentData, rootData } = adapterUtil.extractRootData(data);
+
+			console.log(rootData)
+
+			// Create root document with hierarchy/upload root props
 			const docId = await adapterUtil.insertTableRecord(db, tables, slug, {
 				createdAt: now,
 				updatedAt: now,
-				...hierarchyData
+				...rootData
 			});
 
 			// Generate version ID
@@ -129,7 +167,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${versionsTableName}Locales`,
 				locale
 			});
-
+			
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -155,7 +193,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			};
 		} else {
 			// Generate document ID
-			const docId = adapterUtil.generatePK();
+			const docId = data.id || adapterUtil.generatePK();
 
 			// Prepare data for main table
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
@@ -164,6 +202,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${slug}Locales`,
 				locale
 			});
+
+
 
 			// Insert main record
 			await adapterUtil.insertTableRecord(db, tables, slug, {
@@ -236,14 +276,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			}
 
 			// Extract hierarchy fields (_parent, _position) from data
-			const { data: contentData, hierarchyData } = adapterUtil.extractHierarchyFields(data);
+			const { data: contentData, rootData } = adapterUtil.extractRootData(data);
 
 			// Update the root table with updatedAt and any hierarchy fields
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: id,
 				data: {
 					updatedAt: now,
-					...hierarchyData
+					...rootData
 				}
 			});
 
@@ -285,12 +325,12 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// so only update the the root table
 
 			// Extract hierarchy fields (_parent, _position) from data
-			const { hierarchyData } = adapterUtil.extractHierarchyFields(data);
+			const { rootData } = adapterUtil.extractRootData(data);
 
 			// 2. Get possible hierarchy data update only the root table
 			await adapterUtil.updateTableRecord(db, tables, slug, {
 				recordId: id,
-				data: { updatedAt: now, ...hierarchyData }
+				data: { updatedAt: now, ...rootData }
 			});
 
 			return { id };
@@ -327,12 +367,14 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
-
+			
 			//@ts-ignore
 			return await db.query[slug].findMany({
 				columns: selectColumns,
 				...params
 			});
+
+
 		} else {
 			// Implementation for versioned collections
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);

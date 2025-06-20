@@ -18,7 +18,7 @@
 			</Button>
 			<span>/</span>
 		{:else}
-			<span class="rz-aria__last">{titleContext.value}</span>
+			<span class="rz-aria__last">{route.title || titleContext.value}</span>
 		{/if}
 	{/each}
 </div>

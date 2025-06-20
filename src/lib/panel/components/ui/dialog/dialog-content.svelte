@@ -7,16 +7,18 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		size = 'default',
 		children,
 		...restProps
 	}: WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
 		children: Snippet;
+		size?: 'sm' | 'default' | 'lg'
 	} = $props();
 </script>
 
 <Dialog.Portal>
 	<Dialog.Overlay />
-	<DialogPrimitive.Content bind:ref class="rz-dialog-content {className}" {...restProps}>
+	<DialogPrimitive.Content bind:ref class="rz-dialog-content rz-dialog-content--{size} {className}" {...restProps}>
 		{@render children?.()}
 	</DialogPrimitive.Content>
 </Dialog.Portal>

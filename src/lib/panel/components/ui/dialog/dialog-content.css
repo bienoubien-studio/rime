@@ -5,25 +5,25 @@
 	top: 40%;
 	z-index: 1010;
 	display: grid;
-	min-width: var(--rz-size-80);
-	max-width: 41rem;
+	width: 100%;
 	background-color: hsl(var(--rz-ground-5));
 	transform: translate(-50%, -50%);
 	gap: var(--rz-size-4);
 	border: var(--rz-border);
 	padding: var(--rz-size-3);
 	box-shadow: var(--rz-shadow-lg);
-}
-
-@media (min-width: 640px) {
-	.rz-dialog-content {
-		border-radius: var(--rz-radius-lg);
-	}
+	border-radius: var(--rz-radius-lg);
 }
 
 @media (min-width: 768px) {
-	.rz-dialog-content {
-		min-width: var(--rz-size-114);
+	.rz-dialog-content--sm {
+		width: var(--rz-size-xs);
+	}
+	.rz-dialog-content--default {
+		width: var(--rz-size-sm);
+	}
+	.rz-dialog-content--lg {
+		width: var(--rz-size-lg);
 	}
 }
 

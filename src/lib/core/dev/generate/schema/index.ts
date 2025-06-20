@@ -2,6 +2,7 @@ import buildRootTable from './root.js';
 import write from './write.js';
 import {
 	templateAuth,
+	templateDirectories,
 	templateExportRelationsFieldsToTable,
 	templateExportSchema,
 	templateExportTables,
@@ -16,7 +17,7 @@ import type { Dic } from '$lib/util/types.js';
 import { generateJunctionTableDefinition } from './relations/junction.js';
 import { generateRelationshipDefinitions } from './relations/definition.js';
 import { toCamelCase, toPascalCase } from '$lib/util/string.js';
-import { makeVersionsSlug } from '../../../../util/schema.js';
+import { makeUploadDirectoriesSlug, makeVersionsSlug } from '../../../../util/schema.js';
 import { date } from '$lib/fields/date/index.js';
 import type { Field, FormField } from '$lib/fields/types.js';
 
@@ -136,6 +137,11 @@ export function generateSchemaString(config: BuiltConfig) {
 			[rootTableName]: relationFieldsMap
 		};
 
+		if (collection.upload) {
+			schema.push(templateDirectories(collection.slug));
+			enumTables = [...enumTables, makeUploadDirectoriesSlug(collection.slug)];
+		}
+		
 		schema.push(collectionSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
 	}
 

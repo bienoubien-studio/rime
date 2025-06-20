@@ -1,21 +1,22 @@
 <script lang="ts">
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { getContext, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
 	import CollectionTreeNode from './CollectionTreeNode.svelte';
 	import { toast } from 'svelte-sonner';
 	import { countRows } from './util';
+	import Empty from '../Empty.svelte';
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	type Props = { collection: CollectionContext };
+	const { collection }: Props = $props();
 
 	// Track collection stamp for reactivity
 	const collectionStamp = $derived(collection.stamp);
 
 	let sortingInitialized = $state(false);
-
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
 	const shouldInit = $derived(!sortingInitialized && collection.docs.length > 0);
-
+	
 	const sortableOptions: Sortable.Options = {
 		handle: '.rz-collection-node__grip',
 		animation: 150,
@@ -90,6 +91,7 @@
 </script>
 
 {#key `${collectionStamp}`}
+	{#if collection.docs.length}
 	<div
 		class="rz-collection-sortable rz-collection-sortable--root"
 		data-id="root"
@@ -100,6 +102,9 @@
 			<CollectionTreeNode {collection} parentId="root" {doc} />
 		{/each}
 	</div>
+	{:else}
+		<Empty {collection} />
+	{/if}
 {/key}
 
 <style lang="postcss">

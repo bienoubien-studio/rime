@@ -1,0 +1,20 @@
+.rz-context-menu-item {
+	position: relative;
+	display: flex;
+	cursor: pointer;
+	user-select: none;
+	align-items: center;
+	gap: var(--rz-size-2);
+	border-radius: var(--rz-radius-md);
+	outline: none;
+	color: hsl(var(--rz-color-fg));
+	@mixin py var(--rz-size-1);
+	@mixin px var(--rz-size-2);
+	&[data-highlighted] {
+		background-color: hsl(var(--rz-ground-4));
+	}
+	&[data-disabled] {
+		pointer-events: none;
+		opacity: 0.5;
+	}
+}

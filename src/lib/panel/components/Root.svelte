@@ -66,9 +66,9 @@
 <Toaster />
 
 <div class="rz-panel-root">
-	{#key page.url.pathname + locale.code}
-		<Nav {setCollapsed} {routes} {isCollapsed} />
-
+	<Nav {setCollapsed} {routes} {isCollapsed} />
+	
+	{#key `${page.url}${locale.code || ''}`}
 		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}
 		</div>

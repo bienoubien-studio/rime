@@ -32,6 +32,6 @@
 
 	.rz-page-with-aside {
 		display: grid;
-		grid-template-columns: 1fr var(--rz-size-96);
+		grid-template-columns: 1fr var(--rz-size-xs);
 	}
 </style>

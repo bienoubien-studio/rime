@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { and, desc, eq, getTableColumns } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, Table } from 'drizzle-orm';
 import { RizomError } from '$lib/core/errors';
 import { isObjectLiteral, omit, pick } from '$lib/util/object';
 import { transformDataToSchema } from '$lib/util/schema';
@@ -7,6 +7,7 @@ import type { RawDoc } from '$lib/core/types/doc';
 import type { BuiltArea, BuiltCollection } from '../types.js';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
 import type { Dic } from '$lib/util/types.js';
+import { getTableConfig } from 'drizzle-orm/sqlite-core';
 
 /**
  * Main function to generated primaryKeys
@@ -85,21 +86,30 @@ export async function upsertLocalizedData(
 }
 
 /**
- * Extract _parent and _position props from an incomming data object
- * returning an object with the data filtered and the hierarchyData.
+ * Extract root table properties : 
+ * - hierarchy props (nested) : _parent and _position
+ * - directory props (upload) : _path
+ * return an object with the data filtered and the rootData.
  */
-export function extractHierarchyFields(data: any) {
-	const hierarchyData: { _parent?: string; _position?: number } = {};
+export function extractRootData(data: any) {
+	const rootData: { _parent?: string; _position?: number, _path?:string } = {};
+	// extract nested collection props
 	if ('_parent' in data) {
-		hierarchyData._parent = data._parent;
+		rootData._parent = data._parent;
 		delete data._parent;
 	}
 	if ('_position' in data) {
-		hierarchyData._position = data._position;
+		rootData._position = data._position;
 		delete data._position;
 	}
-	return { data, hierarchyData };
+	// extract upload directory props
+	if ('_path' in data) {
+		rootData._path = data._path;
+		delete data._path;
+	}
+	return { data, rootData };
 }
+
 
 /**
  * Prepares data for database operations by transforming it according to table schemas
@@ -256,4 +266,12 @@ export function columnsParams({ table, select }: { table: Dic; select?: string[]
 		}
 	}
 	return Object.keys(selectColumns).length ? selectColumns : undefined;
+}
+
+/**
+ * Get the primary key name given a table
+ */
+export function getPrimaryKey(table: Table) {
+	const columnsPrimary = getTableConfig(table).columns.filter(c => c.primary)
+	return columnsPrimary.length ? columnsPrimary[0].name : 'id' 
 }

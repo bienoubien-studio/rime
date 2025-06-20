@@ -13,7 +13,7 @@ import { injectCustomCSS, removeCustomCSS } from './custom-css.js';
 import { taskLogger } from '$lib/core/logger/index.server.js';
 import type { BuiltConfig } from '$lib/core/config/types/index.js';
 import type { Dic } from '$lib/util/types.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
+import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
 
 const projectRoot = process.cwd();
 
@@ -88,6 +88,9 @@ function generateRoutes(config: BuiltConfig): void {
 		if (collection.versions) {
 			processRoutes(collection.slug, collectionVersionsPanelRoutes);
 			processRoutes(makeVersionsSlug(collection.slug), collectionAPIRoutes);
+		}
+		if (collection.upload) {
+			processRoutes(makeUploadDirectoriesSlug(collection.slug), collectionAPIRoutes);
 		}
 	}
 

@@ -6,6 +6,7 @@
 	import { PanelsTopLeft } from '@lucide/svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import ScrollArea from '../scroll-area/scroll-area.svelte';
+	import { page } from '$app/state';
 
 	type Props = {
 		isCollapsed: boolean;
@@ -41,23 +42,25 @@
 
 		<div class="rz-nav__body">
 			<ScrollArea>
-				<nav class="rz-nav__nav">
-					{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
-						{#if groupName !== 'none'}
-							{@const icon = getGroupIcon(groupName)}
-							<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
-								{#each routes as route (route.path)}
-									<NavItem href={route.path} {isCollapsed} {route} />
-								{/each}
-							</NavGroup>
-						{/if}
-					{/each}
-					{#each routesGroups.none as route (route.path)}
-						<div class="rz-nav__group-none">
-							<NavItem href={route.path} {isCollapsed} {route} />
-						</div>
-					{/each}
-				</nav>
+				{#key page.url}
+					<nav class="rz-nav__nav">
+						{#each Object.entries(routesGroups) as [groupName, routes], index (index)}
+							{#if groupName !== 'none'}
+								{@const icon = getGroupIcon(groupName)}
+								<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
+									{#each routes as route (route.path)}
+										<NavItem href={route.path} {isCollapsed} {route} />
+									{/each}
+								</NavGroup>
+							{/if}
+						{/each}
+						{#each routesGroups.none as route (route.path)}
+							<div class="rz-nav__group-none">
+								<NavItem href={route.path} {isCollapsed} {route} />
+							</div>
+						{/each}
+					</nav>
+				{/key}
 			</ScrollArea>
 
 			<div class="rz-nav__user">

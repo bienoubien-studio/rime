@@ -70,7 +70,7 @@ export type {
 } from './core/config/types/hooks.js';
 
 // Panel types
-export type { CollectionListProps, FieldPanelTableConfig, FormErrors, Route } from './panel/types.js';
+export type { CollectionProps, FieldPanelTableConfig, FormErrors, Route } from './panel/types.js';
 
 export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 

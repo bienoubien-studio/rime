@@ -7,10 +7,11 @@ import type { DeepPartial, Dic, Pretty } from '$lib/util/types';
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
 type HookContext = {
-	rizom: Rizom;
-	event: RequestEvent & { locals: App.Locals };
-	config: CompiledCollection;
-	metas: Dic;
+	rizom: Pretty<Rizom>;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<CompiledCollection>;
+	/** object that can be used to pass data from a hook to an other */
+	metas: Pretty<Dic>;
 };
 
 // Collection Hooks

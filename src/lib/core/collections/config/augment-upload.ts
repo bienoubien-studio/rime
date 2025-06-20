@@ -1,5 +1,7 @@
 import { text } from '$lib/fields/text/index.js';
+import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { toCamelCase } from "$lib/util/string.js";
+import validate from '$lib/util/validate.js';
 import type { ImageSizesConfig } from "../../../types.js";
 import type { AugmentCollectionFn } from "./types.js";
 
@@ -8,7 +10,8 @@ import type { AugmentCollectionFn } from "./types.js";
  * add corresponding fields with validation if config.upload.accept is defined
  */
 export const augmentUpdload: AugmentCollectionFn = ({ config, fields }) => {
-	if (config.upload) {
+	
+  if (config.upload) {
 		// set an empty object for config.upload if it's true
 		config.upload = config.upload === true ? {} : config.upload;
 		// Add panel thumbnail size if not already present
@@ -41,8 +44,17 @@ export const augmentUpdload: AugmentCollectionFn = ({ config, fields }) => {
 			};
 		}
 
-		// Add hidden fields
-		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden());
+    const pathField = text('_path')._root().hidden().validate(validate.uploadPath)
+    pathField.toSchema = () => `_path: text('_path').references(() => ${makeUploadDirectoriesSlug(config.slug)}.id, {onDelete: 'cascade'})`
+		
+    // Add hidden fields
+		fields.push(
+      mimeType, 
+      text('filename').hidden(), 
+      text('filesize').hidden(),
+      pathField,
+    );
 	}
+
 	return { config, fields };
 };

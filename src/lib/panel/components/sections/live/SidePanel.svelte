@@ -46,7 +46,7 @@
 
 <Toaster />
 
-<ScrollArea>
+<ScrollArea class="rz-live-panel">
 	<Document
 		onClose={() => goto(buildPanelURL())}
 		{onDataChange}
@@ -59,7 +59,7 @@
 
 <style>
 	:global {
-		.rz-scroll-area {
+		.rz-live-panel .rz-scroll-area {
 			--rz-page-gutter: var(--rz-size-4);
 			--rz-tabs-list-top: 0;
 			height: 100vh;

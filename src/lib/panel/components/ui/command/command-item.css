@@ -3,6 +3,7 @@
 	display: flex;
 	cursor: pointer;
 	user-select: none;
+	min-height: var(--rz-input-height);
 	align-items: center;
 	gap: var(--rz-size-2);
 	@mixin px var(--rz-size-2);
@@ -12,7 +13,7 @@
 }
 
 .rz-command-item[aria-selected='true'] {
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-ground-4));
 	color: hsl(var(--rz-color-fg));
 }
 

@@ -1,5 +1,5 @@
 .rz-rich-text__editor {
-	background-color: hsl(var(--rz-ground-6));
+	background-color: hsl(var(--rz-color-input));
 	min-height: var(--rz-size-11);
 	width: 100%;
 	position: relative;

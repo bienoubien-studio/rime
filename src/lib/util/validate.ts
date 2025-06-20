@@ -1,3 +1,4 @@
+import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
 
 /**
@@ -170,10 +171,53 @@ export const link = (link: any) => {
 };
 
 /**
+ * Validates that a path string follows the required format:
+ * - Must start with ROOT_NAME
+ * - Only allows alphanumeric characters, hyphens, underscores, spaces, and the separator
+ * - Can only use the defined separator
+ * @example
+ * validatePath("root:folder:subfolder") // valid
+ * validatePath("root:folder with spaces:sub-folder_name") // valid
+ * validatePath("root/folder") // invalid
+ * validatePath("root:folder$") // invalid
+ */
+export const uploadPath = (value: unknown): string | true => {
+	if (typeof value !== 'string') {
+		return 'path should be a string';
+	}
+
+	// Check if path starts with ROOT_NAME
+	if (!value.startsWith(UPLOAD_PATH.ROOT_NAME)) {
+		return `Path must start with "${UPLOAD_PATH.ROOT_NAME}"`;
+	}
+
+	// Create a mutable copy for normalization
+	let normalizedPath = value;
+
+	// Remove trailing separator if present
+	while (normalizedPath !== UPLOAD_PATH.ROOT_NAME && normalizedPath.endsWith(UPLOAD_PATH.SEPARATOR)) {
+		normalizedPath = normalizedPath.slice(0, -1);
+	}
+
+	// Only allow alphanumeric characters, hyphens, underscores, spaces, and the separator
+	// The regex ensures:
+	// 1. Starts with ROOT_NAME
+	// 2. Followed by zero or more segments (each segment starts with separator followed by valid chars)
+	const validPathRegex = new RegExp(`^${UPLOAD_PATH.ROOT_NAME}(${UPLOAD_PATH.SEPARATOR}[a-zA-Z0-9\\-_ ]+)*$`);
+
+	if (!validPathRegex.test(normalizedPath)) {
+		return 'Path contains invalid characters. Only alphanumeric characters, hyphens, underscores, and spaces are allowed.';
+	}
+
+	return true;
+};
+
+/**
  * Collection of validation utility functions for common data types.
  * Each function returns true if the value is valid, or an error code/message if invalid.
  */
 const validate = {
+	uploadPath,
 	password,
 	email,
 	slug,

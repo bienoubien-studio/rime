@@ -99,7 +99,7 @@
 			opacity: 0.37;
 			position: absolute;
 			left: 0.75rem;
-			top: 0.825rem;
+			top: 1rem;
 		}
 	}
 

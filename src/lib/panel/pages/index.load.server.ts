@@ -1,5 +1,5 @@
 import area from './area/load.server.js';
-import { collectionLoad } from './collection-list/load.server.js';
+import { collectionLoad } from './collection/load.server.js';
 import { docLoad } from './collection-document/load.server.js';
 import { forgotPasswordLoad as forgotPassword } from './forgot-password/load.server.js';
 import { resetPasswordLoad as resetPassword } from './reset-password/load.server.js';

@@ -2,26 +2,39 @@
 	import { LayoutGrid, List, TextQuote } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { getContext } from 'svelte';
-	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
-
+	import { DISPLAY_MODE, type CollectionContext, type DisplayMode } from '$lib/panel/context/collection.svelte.js';
+	
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const listIconClass = $derived(collection.isList() ? 'rz-header-display-mode__icon--active' : '');
 	const gridIconClass = $derived(collection.isGrid() ? 'rz-header-display-mode__icon--active' : '');
 	const nestedIconClass = $derived(collection.isNested() ? 'rz-header-display-mode__icon--active' : '');
+
+	const isActive = (mode: DisplayMode) => (mode === collection.display ? 'secondary' : 'ghost');
+		
+	function handleListClick() {
+		collection.display = DISPLAY_MODE.LIST;
+	}
+	function handleGridClick() {
+		collection.display = DISPLAY_MODE.GRID;
+	}
+	function handleNestedClick() {
+		collection.display = DISPLAY_MODE.NESTED;
+	}
 </script>
 
 <div class="rz-header-display-mode">
-	<Button size="icon-sm" variant="ghost" onclick={() => collection.display('list')}>
+	<Button size="icon-sm" variant={isActive(DISPLAY_MODE.LIST)} onclick={handleListClick}>
 		<List size={17} class="rz-header-display-mode__icon {listIconClass}" />
 	</Button>
+
 	{#if collection.config.upload}
-		<Button size="icon-sm" variant="ghost" onclick={() => collection.display('grid')}>
+		<Button size="icon-sm" variant={isActive(DISPLAY_MODE.GRID)} onclick={handleGridClick}>
 			<LayoutGrid size={17} class="rz-header-display-mode__icon {gridIconClass}" />
 		</Button>
 	{/if}
 	{#if collection.config.nested}
-		<Button size="icon-sm" variant="ghost" onclick={() => collection.display('nested')}>
+		<Button size="icon-sm" variant={isActive(DISPLAY_MODE.NESTED)} onclick={handleNestedClick}>
 			<TextQuote size={17} class="rz-header-display-mode__icon {nestedIconClass}" />
 		</Button>
 	{/if}

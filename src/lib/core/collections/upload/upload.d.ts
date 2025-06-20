@@ -5,3 +5,9 @@ export type JsonFile = {
 	filesize?: number;
 	lastModified?: number;
 };
+
+export type Directory = {
+	id: `root${string}`
+	name: string,
+	parent: string | null
+}

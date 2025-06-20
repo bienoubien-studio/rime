@@ -1,6 +1,7 @@
 import dedent from 'dedent';
 import { PANEL_USERS } from '$lib/core/constant';
 import { toSnakeCase } from '$lib/util/string.js';
+import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 const s = toSnakeCase;
 
 /**
@@ -358,6 +359,17 @@ export const templateExportSchema = ({ enumTables, enumRelations }: TemplateExpo
  */
 export const templateHead = (slug: string) => dedent`
   /** ${slug} ============================================== **/`;
+
+
+export const templateDirectories = (slug:string) => `
+export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDirectoriesSlug(slug))}', {
+  id: text('id').notNull().primaryKey(),
+  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, { onDelete : 'cascade' }),
+  name: text('name').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }),
+	updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+})
+`
 
 type RelationOneArgs = {
 	name: string;

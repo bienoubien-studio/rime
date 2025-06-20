@@ -252,8 +252,8 @@ test('should return correct field config inside blocks inside tree', () => {
 	expect(field?.type).toBe('text');
 });
 
-test('should not return field config inside blocks without param', () => {
+test('should not return field config inside blocks without param inBlockType', () => {
 	//@ts-expect-error no need for field.access prop for testing this
 	const field = getFieldConfigByPath('layout.components.0.legends.0.legend', fields);
-	expect(field).toBe(null);
+	expect(field).toBe(undefined);
 });

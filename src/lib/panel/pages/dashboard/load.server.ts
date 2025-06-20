@@ -11,7 +11,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 
 	const buildBaseEntry = (c: CompiledCollection): DashboardEntry => ({
 		prototype: 'collection',
-		description: c.panel?.description || null,
+		description: c.panel && c.panel?.description ? c.panel.description : null,
 		slug: c.slug,
 		gender: c.label?.gender || 'm',
 		canCreate: user && c.access.create(user, {}),
@@ -32,12 +32,12 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 			return [];
 		}
 	};
-
+	
 	const promiseEntries = rizom.config.collections
 		.filter((collection) => user && collection.access.read(user, {}))
-		.filter((collection) => !isVersionsSlug(collection.slug))
+		.filter((collection) => collection.panel !== false)
 		.map(async (collection) => {
-			if (collection.panel?.dashboard) {
+			if (collection.panel && collection.panel?.dashboard) {
 				return getLastEdited(collection).then((docs) => ({ ...buildBaseEntry(collection), lastEdited: docs }));
 			} else {
 				return {
@@ -55,11 +55,11 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		console.error(err);
 	}
 
-	for (const area of rizom.config.areas) {
+	for (const area of rizom.config.areas.filter(a => a.panel !== false)) {
 		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',
-				description: area.panel?.description || null,
+				description: area.panel && area.panel?.description || null,
 				slug: area.slug,
 				link: `/panel/${area.slug}`,
 				title: area.label || capitalize(area.slug)

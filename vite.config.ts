@@ -28,6 +28,6 @@ export default defineConfig({
 		: undefined,
 
 	test: {
-		include: ['src/**/*.{spec}.{js,ts}']
+		include: ['src/**/*.spec.{js,ts}']
 	}
 });

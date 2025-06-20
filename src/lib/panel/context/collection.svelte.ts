@@ -7,32 +7,45 @@ import { isUploadConfig } from '$lib/util/config.js';
 import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
 import { getValueAtPath, hasProp } from '$lib/util/object.js';
 import type { Field, FormField } from '$lib/fields/types.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { FieldPanelTableConfig } from '$lib/panel/types.js';
 import type { WithRequired } from '$lib/util/types.js';
 import { env } from '$env/dynamic/public';
 import cloneDeep from 'clone-deep';
-import { snapshot } from '$lib/util/state.js';
 import { toNestedStructure } from '$lib/util/doc.js';
 import { PARAMS } from '$lib/core/constant.js';
-import { safe } from '$lib/util/safe.js';
+import { trycatch } from '$lib/util/trycatch.js';
+import type { Directory } from '$lib/core/collections/upload/upload.js';
 
 type SortMode = 'asc' | 'dsc';
-type DisplayMode = 'list' | 'grid' | 'nested';
+export type DisplayMode = (typeof DISPLAY_MODE)[keyof typeof DISPLAY_MODE];
 
-function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, config, canCreate }: Args<T>) {
+export const DISPLAY_MODE = {
+	LIST: 'display_list',
+	GRID: 'display_grid',
+	NESTED: 'display_nested'
+} as const;
+
+function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>) {
+	const { initial, config, canCreate, upload: incomingUpload } = args;
+
 	let initialDocs = $state.raw(initial);
 	let docs = $state(initial);
 	let sortingOrder = $state<SortMode>('asc');
 	let sortingBy = $state<string>('updatedAt');
 	let selectMode = $state(false);
 	let selected = $state<string[]>([]);
-	let displayMode = $state<DisplayMode>('list');
+	let displayMode = $state<DisplayMode>(DISPLAY_MODE.LIST);
+	let upload = $state({
+		directories: incomingUpload?.directories || [],
+		currentPath: incomingUpload?.currentPath || 'root',
+		parentDirectory: incomingUpload?.parentDirectory || null
+	});
+
 	let stamp = $state(Date.now()); // Add a timestamp to track changes
 	const hasVersions = $derived(!!config.versions);
 	const hasDraft = $derived(config.versions && config.versions.draft);
-	// const statusList = $derived(config.status && Array.isArray(config.status) ? config.status : null);
 
 	onMount(() => {
 		displayMode = (localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list';
@@ -195,7 +208,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 		to: { parent: string | null; index: number };
 	}) => {
 		// 1. Create a new array to track changes
-		const updatedDocs = [...docs];
+		const updatedDocs = [...docs] as GenericNestedDoc[];
 		const docToMove = updatedDocs.find((d) => d.id === documentId);
 		if (!docToMove) return;
 
@@ -248,7 +261,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 		}
 
 		// 7. Update local state optimistically
-		docs = updatedDocs;
+		docs = updatedDocs as T[];
 		stamp = Date.now();
 
 		// 8. Send updates to API
@@ -286,7 +299,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 				headers: { 'Content-Type': 'application/json' }
 			});
 		});
-		const [error, _] = await safe(Promise.all(promises));
+		const [error, _] = await trycatch(Promise.all(promises));
 
 		if (error) {
 			console.error('API update failed:', error);
@@ -297,18 +310,13 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 	};
 
 	function isList() {
-		return displayMode === 'list';
+		return displayMode === DISPLAY_MODE.LIST;
 	}
 	function isGrid() {
-		return displayMode === 'grid';
+		return displayMode === DISPLAY_MODE.GRID;
 	}
 	function isNested() {
-		return displayMode === 'nested';
-	}
-
-	function display(mode: DisplayMode) {
-		localStorage.setItem(`collection.${config.slug}.display`, mode);
-		displayMode = mode;
+		return displayMode === DISPLAY_MODE.NESTED;
 	}
 
 	function toggleSelectOf(docId: string) {
@@ -329,6 +337,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 	}
 
 	function filterBy(inputValue: string) {
+		displayMode = DISPLAY_MODE.LIST
 		if (inputValue !== '') {
 			const scores: any[] = [];
 			for (const doc of initialDocs) {
@@ -401,10 +410,19 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 		isList,
 		isGrid,
 		isNested,
-		display,
+
+		set display(mode: DisplayMode) {
+			localStorage.setItem(`collection.${config.slug}.display`, mode);
+			displayMode = mode;
+		},
+
+		get display() {
+			return displayMode;
+		},
 
 		columns: columns as Array<{ path: string } & WithRequired<FormField, 'table'>>,
 		sortBy,
+
 		get sortingOrder() {
 			return sortingOrder;
 		},
@@ -431,6 +449,13 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>({ initial, con
 
 		get isUpload() {
 			return isUploadConfig(config);
+		},
+
+		get upload() {
+			if (isUploadConfig(config)) {
+				return upload;
+			}
+			throw new Error('upload is available only on upload collections');
 		},
 
 		/****************************************************/
@@ -475,5 +500,10 @@ type Args<T extends GenericDoc = GenericDoc> = {
 	initial: T[];
 	config: CompiledCollection;
 	canCreate: boolean;
+	upload?: {
+		directories?: Directory[];
+		currentPath?: `root${string}`;
+		parentDirectory?: Directory;
+	};
 	key?: string;
 };

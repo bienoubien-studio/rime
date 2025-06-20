@@ -37,6 +37,7 @@
 		align-items: center;
 		justify-content: center;
 		overflow: hidden;
+		pointer-events: none;
 		border-radius: var(--rz-radius-sm);
 		> div {
 			width: 100%;

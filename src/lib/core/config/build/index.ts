@@ -8,11 +8,11 @@ import { buildComponentsMap } from './fields/componentMap.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
-import { BookType, SlidersVertical } from '@lucide/svelte';
+import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/constant.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 import { mergePanelUsersCollectionWithDefault } from '$lib/core/collections/auth/config/usersConfig.server.js';
-import { collection } from '$lib/core/collections/config/builder.js';
+import { makeUploadDirectoriesCollections } from './upload-directories.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -24,12 +24,9 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	const generateFiles = options?.generateFiles || false;
 	const icons: Dic = {};
 
-	// Retrieve Default Users collection
+	// Retrieve Default Users collection and merge with defined panel user config
 	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
-	config.collections = [
-		...config.collections.filter((c) => c.slug !== PANEL_USERS),
-		collection(PANEL_USERS, panelUsersCollection)
-	] as BuiltCollection[];
+	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), panelUsersCollection];
 
 	// Add icons
 	for (const collection of config.collections) {
@@ -54,6 +51,14 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			? config.trustedOrigins
 			: [process.env.PUBLIC_RIZOM_URL as string];
 
+	const panelNavigationGroups = [
+			...(config.panel?.navigation?.groups || []),
+			{ label: 'content', icon: BookType },
+			{ label: 'system', icon: SlidersVertical },
+			{ label: 'collections', icon: BookCopy },
+			{ label: 'areas', icon: Book }
+		]
+	
 	/****************************************************/
 	/* Base Config 
 	/****************************************************/
@@ -63,20 +68,15 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			access: config.panel?.access ? config.panel.access : (user) => access.isAdmin(user),
 			routes: config.panel?.routes ? config.panel.routes : {},
 			language: config.panel?.language || 'en',
-			navigation: config.panel?.navigation || {
-				groups: [
-					{ label: 'content', icon: BookType },
-					{ label: 'system', icon: SlidersVertical }
-				]
-			},
+			navigation: { groups : panelNavigationGroups},
 			components: {
 				header: config.panel?.components?.header || [],
 				...(config.panel?.components?.dashboard && { dashboard: config.panel.components.dashboard })
 			},
 			css: config.panel?.css
 		},
-		collections: config.collections.map(c => ({ ...c, type: 'collection' })) as BuiltCollection[],
-		areas: config.areas.map(c => ({ ...c, type: 'area' })) as BuiltArea[],
+		collections: config.collections.map((c) => ({ ...c, type: 'collection' })) as BuiltCollection[],
+		areas: config.areas.map((c) => ({ ...c, type: 'area' })) as BuiltArea[],
 		plugins: {},
 		trustedOrigins,
 		icons
@@ -145,7 +145,12 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 		}
 	}
 
+	// Versions collection aliases 
+	// create {slug}_versions collections
 	compiledConfig = makeVersionsCollectionsAliases(compiledConfig);
+	// Upload collection directories 
+	// create {slug}_directories collections
+	compiledConfig = makeUploadDirectoriesCollections(compiledConfig)
 
 	return compiledConfig;
 };

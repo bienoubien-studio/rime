@@ -38,7 +38,7 @@ class RizomError extends Error {
 }
 
 class RizomFormError extends RizomError {
-	static CONTENT_LENGTH_LIMIT = 'content_length_limit';
+	static INVALID_DATA = 'invalid_data';
 	static INVALID_EMAIL = 'invalid_email';
 	static INVALID_FIELD = 'invalid_field';
 	static INVALID_PHONE = 'invalid_phone';

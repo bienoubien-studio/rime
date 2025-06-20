@@ -5,9 +5,6 @@
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
 
-	type Props = { disabled: boolean };
-	const { disabled }: Props = $props();
-
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 	let filterValue = $state('');
 
@@ -24,7 +21,6 @@
 		class="rz-header-search-input__input"
 		placeholder={t__('common.search', `${collection.length} document(s)`)}
 		type="text"
-		disabled={disabled || null}
 		bind:value={filterValue}
 	/>
 </div>
@@ -53,12 +49,7 @@
 			display: flex;
 		}
 	}
-
-	.rz-header-search-input--compact {
-		width: 100%;
-		display: flex;
-	}
-
+	
 	.rz-header-search-input__icon {
 		position: absolute;
 		left: var(--rz-size-3);

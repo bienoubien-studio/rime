@@ -4,7 +4,7 @@ import Area from './pages/area/Area.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
 import CollectionDocVersions from './pages/collection-document/CollectionDocVersions.svelte';
 import AreaVersionsDoc from './pages/area/AreaVersionsDoc.svelte';
-import CollectionList from './pages/collection-list/CollectionList.svelte';
+import Collection from './pages/collection/Collection.svelte';
 import ForgotPassword from './pages/forgot-password/ForgotPassword.svelte';
 import Init from './pages/init/Init.svelte';
 import Live from './pages/live/Live.svelte';
@@ -21,7 +21,7 @@ export {
 	AreaVersionsDoc,
 	CollectionDocVersions,
 	CollectionDoc,
-	CollectionList,
+	Collection,
 	ForgotPassword,
 	Init,
 	Live,
@@ -36,7 +36,7 @@ export {
 
 export type { DocumentFormContext } from './context/documentForm.svelte.js';
 
-export type CollectionListProps = {
+export type CollectionProps = {
 	slug: CollectionSlug;
 	data: {
 		docs: GenericDoc[];

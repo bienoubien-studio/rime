@@ -138,6 +138,9 @@
 			{#if form.doc.updatedAt}
 				{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
 			{/if}
+			{#if form.doc.editedBy}
+				{@render meta(t__('common.edited_by'), locale.dateFormat(form.doc.editedBy))}
+			{/if}
 			{#if form.doc.id}
 				{@render meta('id', form.doc.id)}
 			{/if}
@@ -164,7 +167,7 @@
 	}
 	.rz-document__infos {
 		border-top: var(--rz-border);
-		@mixin px var(--rz-fields-padding);
+		@mixin px var(--rz-page-gutter);
 		@mixin py var(--rz-size-6);
 	}
 	.rz-document__metas {

@@ -31,6 +31,27 @@ export const getBlocksTableNames = (slug: string, tables: Record<string, any>): 
 	Object.keys(tables).filter((key) => key.startsWith(`${slug}Blocks`) && !key.endsWith('Locales'));
 
 /**
+ * Creates a upload_directories table name for a given table name.
+ * Used for uploads path in the database. 
+ * Prevent a version table name from being used, force the use of the main one.
+ *
+ * @example
+ * // Returns botth 'pages_directories'
+ * makeUploadDirectoriesSlug('pages');
+ * makeUploadDirectoriesSlug('pages_versions');
+ */
+export const makeUploadDirectoriesSlug = (slug: string) => `${slug.replace('_versions', '')}_directories` as CollectionSlug;
+
+/**
+ * Check if a slug is a _directories collection slug
+ * 
+ * @example
+ * // Returns true
+ * isDirectorySlug('medias_directories');
+ */
+export const isDirectorySlug = (slug: string) => slug.endsWith('_directories');
+
+/**
  * Creates a versions table name for a given table.
  * Used for document versioning in the database.
  *
@@ -41,7 +62,7 @@ export const getBlocksTableNames = (slug: string, tables: Record<string, any>): 
 export const makeVersionsSlug = (tableName: string) => `${tableName}_versions` as CollectionSlug;
 
 /**
- * Check is a slug is a verioned collection slug
+ * Check if a slug is a verioned collection slug
  *  * @example
  * // Returns true
  * isVersionsSlug('pages_versions');
@@ -162,7 +183,7 @@ export const transformDataToSchema = (
 
 		// Case 3: Add placeholders for missing or null values in not-null columns
 		if (params.fillNotNull && columnConfig.notNull) {
-			console.warn(`No default value provided for ${column}, set it with a placeholder`);
+			console.warn(`No default value provided for ${column}, setting it with a placeholder`);
 			// Add default values for not-null columns without defaults
 			switch (columnConfig.dataType) {
 				case 'string':

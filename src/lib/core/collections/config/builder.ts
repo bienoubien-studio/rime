@@ -12,10 +12,14 @@ import { augmentVersions } from './augment-versions.js';
 import { augmentAuth } from './augment-auth.js';
 import { FileText } from '@lucide/svelte';
 
+const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>): Collection<S> => ({ ...config, slug });
+
 /**
  * Function to define a collection
  */
-export function collection<S extends string>(slug: S, config: CollectionWithoutSlug<S>): Collection<S> {
+export function collection<S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): Collection<S> {
+	
+	let config = addSlug(slug, incomingConfig);
 	let fields: typeof config.fields = [...config.fields];
 	
 	({ config, fields } = augmentUpdload({ config, fields }));
@@ -30,7 +34,7 @@ export function collection<S extends string>(slug: S, config: CollectionWithoutS
 
 	config = augmentHooks(config);
 	config = augmentTitle(config);
-	
+
 	return {
 		...config,
 		slug,

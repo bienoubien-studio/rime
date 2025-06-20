@@ -19,7 +19,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	const document = (await rizom.adapter.collection.findById({ slug: config.slug, id })) as T;
+	const document = (await rizom.adapter.collection.findById({ slug: config.slug, id, draft: true })) as T;
 	if (!document) {
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
@@ -30,7 +30,8 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			config,
 			operation: 'delete',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas:{}
 		});
 	}
 
@@ -42,7 +43,8 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			config,
 			operation: 'delete',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas:{}
 		});
 	}
 

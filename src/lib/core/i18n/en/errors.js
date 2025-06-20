@@ -1,4 +1,5 @@
 export default {
+	generic: 'Field $1 is required',
 	required_field: 'Field $1 is required',
 	invalid_credentials: 'Invalid credentials',
 	user_banned: 'User banned',

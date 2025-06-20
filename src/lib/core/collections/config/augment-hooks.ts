@@ -1,15 +1,14 @@
-import type { CollectionHooks } from '../../../types.js';
+import type { Collection, CollectionHooks } from '../../../types.js';
 import * as authHooks from '$lib/core/collections/auth/hooks/hooks.server.js';
 import * as uploadHooks from '$lib/core/collections/upload/hooks/index.server.js';
 import * as urlHooks from '$lib/core/collections/config/hooks/url.server.js';
 import * as nestedHooks from '$lib/core/collections/nested/hooks/index.server.js';
-import type { CollectionWithoutSlug } from './types.js';
 
 /**
  * Augment a collection config with hooks based on different configs
  * upload, url, nesting, auth 
  */
-export const augmentHooks = (collection: CollectionWithoutSlug<any>): CollectionWithoutSlug<any> => {
+export const augmentHooks = (collection: Collection<any>): Collection<any> => {
 	let hooks: CollectionHooks<any> = { ...collection.hooks };
 	if (collection.auth) {
 		const { beforeUpdate, beforeCreate, beforeDelete, afterDelete, afterCreate } = authHooks;

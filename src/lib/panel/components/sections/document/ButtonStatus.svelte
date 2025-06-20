@@ -36,11 +36,11 @@
 					dialogOpen = false;
 					invalidateAll();
 				} else {
-					toast.error(t__('common.error_occured'));
+					toast.error(t__('error.generic'));
 				}
 			})
 			.catch((err) => {
-				toast.error(t__('common.error_occured'));
+				toast.error(t__('error.generic'));
 			});
 	}
 

@@ -60,7 +60,7 @@ export interface Config {
 		routes?: Record<string, CustomPanelRoute>;
 		users?: PanelUsersConfig;
 		language?: PanelLanguage;
-		navigation?: NavigationConfig;
+		navigation?: Pretty<NavigationConfig>;
 		components?: {
 			header?: Component[];
 			collectionHeader?: Component[];
@@ -130,12 +130,13 @@ type BaseDocConfig<S extends string = string> = {
 	access?: Access;
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
-	panel?: {
+	/** Panel configuration, set false to hide the area/collection from the panel */
+	panel?: false | {
 		/** Description for the collection/area, basically displayed on the dashboard */
 		description?: string;
 		/** Sidebar navigation group */
 		group?: string;
-		/** Add the list of latest edited document */
+		/** Add the list of latest edited document on the dashboard */
 		dashboard?: boolean;
 	};
 };

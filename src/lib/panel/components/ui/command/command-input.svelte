@@ -40,10 +40,9 @@
 
 		& :global(.rz-command-input__input) {
 			display: flex;
-			height: var(--rz-size-8);
+			height: var(--rz-input-height);
 			width: 100%;
 			background-color: transparent;
-			@mixin py var(--rz-size-3);
 			font-size: var(--rz-text-sm);
 			outline: none;
 		}

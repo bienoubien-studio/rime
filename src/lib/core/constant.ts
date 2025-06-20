@@ -16,7 +16,13 @@ export const PARAMS = {
 	REDIRECT: 'redirect',
 	SELECT: 'select',
 	SORT: 'sort',
-	VERSION_ID: 'versionId'
+	VERSION_ID: 'versionId',
+	UPLOAD_PATH: 'uploadPath'
 } as const;
+
+export const UPLOAD_PATH = {
+	SEPARATOR: ":",
+	ROOT_NAME: "root",
+} as const
 
 export type VersionsStatus = (typeof VERSIONS_STATUS)[keyof typeof VERSIONS_STATUS];

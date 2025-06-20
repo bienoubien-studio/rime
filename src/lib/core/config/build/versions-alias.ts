@@ -24,7 +24,8 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 				upload: collection.upload,
 				label: collection.label,
 				type: collection.type,
-				asTitle: collection.asTitle
+				asTitle: collection.asTitle,
+				panel: false
 			};
 			config.collections = [...config.collections, versionedCollection];
 		}
@@ -39,7 +40,8 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 				hooks: area.hooks,
 				fields: area.fields,
 				type: 'collection',
-				label: { plural: area.label, singular: area.label, gender: 'm' }
+				label: { plural: area.label, singular: area.label, gender: 'm' },
+				panel: false
 			} as CompiledCollection;
 			config.collections = [...config.collections, versionedCollection];
 		}

@@ -16,10 +16,8 @@ interface Route {
  * @returns Dictionary of navigation groups
  */
 const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
-	const groups: Dic = {
-		none: [] // Default group for ungrouped items
-	};
-
+	const groups: Dic = {};
+	
 	/**
 	 * Adds a route to the appropriate navigation group
 	 */
@@ -36,7 +34,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 
 	// Process collections
 	config.collections
-		.filter((collection) => !isVersionsSlug(collection.slug))
+		.filter((collection) => collection.panel !== false)
 		.forEach((collection) => {
 			if (user && collection.access.read(user, {})) {
 				const route: Route = {
@@ -44,7 +42,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 					icon: collection.slug,
 					path: `/panel/${collection.slug}`
 				};
-				addRouteToGroup(route, collection.panel?.group || 'collections');
+				addRouteToGroup(route, collection.panel && collection.panel?.group || 'collections');
 			}
 		});
 
@@ -56,7 +54,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 				icon: area.slug,
 				path: `/panel/${area.slug}`
 			};
-			addRouteToGroup(route, area.panel?.group || 'areas');
+			addRouteToGroup(route, area.panel && area.panel?.group || 'areas');
 		}
 	});
 

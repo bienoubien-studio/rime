@@ -19,7 +19,7 @@
 	const isCollection = $derived(form.doc._prototype === 'collection');
 
 	function handleNewDraft() {
-		if (form.readOnly || !form.element) return console.log(form.readOnly);
+		if (form.readOnly || !form.element) return;
 		const saveButton = form.element.querySelector('button[data-submit]') as HTMLButtonElement;
 		const initialSaveButtonDataDraft = saveButton.dataset.draft;
 		if (saveButton) {
@@ -45,10 +45,14 @@
 	async function handleDelete() {
 		await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}/${form.doc.id}`, {
 			method: 'DELETE'
-		}).then(() => {
-			toast.success(t__('common.doc_deleted'));
-			goto(`${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`);
-		});
+		}).then(response => {
+			if(response.ok){
+				toast.success(t__('common.doc_deleted'));
+				goto(`${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`);
+			}else{
+				toast.error(t__('error.generic'));
+			}
+		})
 	}
 </script>
 
@@ -64,7 +68,7 @@
 			{#if form.config.versions}
 				<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
 					<History size="12" />
-					{t__('common.view_versions')}
+					{t__('common.versions_history')}
 				</DropdownMenu.Item>
 			{/if}
 

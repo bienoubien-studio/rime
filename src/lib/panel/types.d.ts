@@ -20,7 +20,7 @@ export type FieldPanelTableConfig = {
 	position: number;
 };
 
-export type CollectionListProps = {
+export type CollectionProps = {
 	data: {
 		docs: GenericDoc[];
 		status: number;
