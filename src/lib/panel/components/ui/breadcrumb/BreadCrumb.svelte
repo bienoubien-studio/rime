@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { Home } from '@lucide/svelte';
 	import { page } from '$app/state';
 	import Button from '../button/button.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 	import { getContext } from 'svelte';
-	// type Props = {  }
-	// const { }: Props = $props()
+
 	const config = getConfigContext();
 	const titleContext = getContext<{ value: string }>('title');
+	
 </script>
 
 <div class="rz-aria">

@@ -121,7 +121,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}
-			console.log(doc);
+			
 			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
 		}
 	};

@@ -20,9 +20,6 @@
 
 	async function handleValidateStatus() {
 		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/';
-		console.log(
-			`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`
-		);
 		await fetch(
 			`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`,
 			{

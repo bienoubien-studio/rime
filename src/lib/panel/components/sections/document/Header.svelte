@@ -3,7 +3,7 @@
 	import { Button } from '../../ui/button';
 	import { X, PencilRuler, History, ExternalLink } from '@lucide/svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import { goto, invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import ButtonSave from './ButtonSave.svelte';
@@ -14,8 +14,7 @@
 	import ButtonStatus from './ButtonStatus.svelte';
 	import { page } from '$app/state';
 	import { PARAMS } from '$lib/core/constant.js';
-	import { doc } from '$lib/util/index.js';
-
+	
 	// Props
 	type Props = {
 		onClose?: any;
@@ -26,22 +25,7 @@
 
 	const onCloseIsDefined = !!onClose;
 	const titleContext = getContext<{ value: string }>('title');
-
-	const isVersionPage = $derived(page.url.pathname.includes('/versions'));
-
-	const versionsUrl = $derived.by(() => {
-		const isCollection = form.doc._prototype === 'collection';
-		const basUrl = isCollection
-			? `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}/${form.doc.id}`
-			: `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`;
-		if (isVersionPage) {
-			// Close versions and go to edit the document version
-			return `${basUrl}?${PARAMS.VERSION_ID}=${form.doc.versionId}`;
-		} else {
-			// Go to version page
-			return `${basUrl}/versions?${PARAMS.VERSION_ID}=${form.doc.versionId}`;
-		}
-	});
+	
 </script>
 
 {#snippet topLeft()}

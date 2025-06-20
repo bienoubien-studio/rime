@@ -22,18 +22,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 	if (!authorized) {
 		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
 	}
-
-	console.log({
-		slug: config.slug,
-		query,
-		limit,
-		offset,
-		sort,
-		select: ['id'],
-		locale,
-		draft: true
-	});
-
+	
 	const documentsToDelete = await rizom.adapter.collection.find({
 		slug: config.slug,
 		query,
@@ -45,7 +34,6 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 		draft: true
 	});
 
-	console.log(documentsToDelete);
 	const promisesDelete = documentsToDelete.map(({ id }) => {
 		return rizom.collection(config.slug).deleteById({ id });
 	});

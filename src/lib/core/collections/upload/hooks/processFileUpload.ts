@@ -36,7 +36,6 @@ export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (
 	if (data.file) {
 		if (operation === 'update') await cleanupStoredFiles({ config, rizom, id: args.originalDoc.id });
 		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
-		console.log({ filename, imageSizes });
 		data = {
 			...omit(['file'], data),
 			filename,

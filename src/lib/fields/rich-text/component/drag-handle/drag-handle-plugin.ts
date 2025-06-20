@@ -176,20 +176,7 @@ export function DragHandlePlugin(options: GlobalDragHandleOptions & { pluginKey:
 			dragHandleElement.classList.remove('hide');
 		}
 	}
-
-	// function hideHandleOnEditorOut(event: MouseEvent) {
-	//   if (event.target instanceof Element) {
-	//     // Check if the relatedTarget class is still inside the editor
-	//     const relatedTarget = event.relatedTarget as HTMLElement;
-	//     const isInsideEditor =
-	//       relatedTarget?.classList.contains('tiptap') ||
-	//       relatedTarget?.classList.contains('drag-handle');
-
-	//     if (isInsideEditor) return;
-	//   }
-	//   hideDragHandle();
-	// }
-
+	
 	function handleMoveAF(view: EditorView, event: MouseEvent) {
 		if (!view.editable) {
 			return;
@@ -241,11 +228,11 @@ export function DragHandlePlugin(options: GlobalDragHandleOptions & { pluginKey:
 	return new Plugin({
 		key: new PluginKey(options.pluginKey),
 		view: (view) => {
-			const handleBySelector = options.dragHandleSelector
+			const dragHandleSelector = options.dragHandleSelector
 				? document.querySelector<HTMLElement>(options.dragHandleSelector)
 				: null;
 
-			dragHandleElement = handleBySelector ?? document.createElement('div');
+			dragHandleElement = dragHandleSelector ?? document.createElement('div');
 			dragHandleElement.draggable = true;
 			dragHandleElement.dataset.dragHandle = '';
 			dragHandleElement.classList.add('drag-handle');
@@ -271,26 +258,18 @@ export function DragHandlePlugin(options: GlobalDragHandleOptions & { pluginKey:
 
 			hideDragHandle();
 
-			if (!handleBySelector) {
+			if (!dragHandleSelector) {
 				view?.dom?.parentElement?.appendChild(dragHandleElement);
 			}
-			// view?.dom?.parentElement?.addEventListener(
-			//   'mouseout',
-			//   hideHandleOnEditorOut,
-			// );
 
 			return {
 				destroy: () => {
-					if (!handleBySelector) {
+					if (!dragHandleSelector) {
 						dragHandleElement?.remove?.();
 					}
 					dragHandleElement?.removeEventListener('drag', onDragHandleDrag);
 					dragHandleElement?.removeEventListener('dragstart', onDragHandleDragStart);
 					dragHandleElement = null;
-					// view?.dom?.parentElement?.removeEventListener(
-					//   'mouseout',
-					//   hideHandleOnEditorOut,
-					// );
 				}
 			};
 		},

@@ -27,11 +27,9 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 				});
 			case 'api':
 				return error(400, err.message);
-			// case 'load':
-			// 	return error(400, err.errors);
 		}
 	}
-
+	
 	if (err instanceof RizomError) {
 		if (err.code === RizomError.USER_BANNED && context === 'action') {
 			throw redirect(302, '/locked');
@@ -49,7 +47,7 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	if (isRedirect(err)) {
 		return redirect(err.status, err.location);
 	}
-
+	
 	// Unknown errors
 	console.error(err);
 	logger.error(`500 - ${err.message}`);

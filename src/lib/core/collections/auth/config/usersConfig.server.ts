@@ -6,7 +6,6 @@ import { PANEL_USERS } from '$lib/core/constant.js';
 import type { PanelUsersConfig } from '../../../../types.js';
 import { FormFieldBuilder } from '$lib/fields/builders/field.js';
 
-
 export const panelUsersCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
 	panel: {
@@ -24,7 +23,6 @@ export const panelUsersCollection = collection(PANEL_USERS, {
 	}
 });
 
-
 export const mergePanelUsersCollectionWithDefault = ({
 	roles,
 	fields,
@@ -33,6 +31,7 @@ export const mergePanelUsersCollectionWithDefault = ({
 	label
 }: PanelUsersConfig = {}) => {
 	const collection = { ...panelUsersCollection };
+
 	if (roles) {
 		const hasAdminRole = roles.find((role) => role.value === 'admin');
 		const otherRoles = roles.filter((role) => role.value !== 'admin');
@@ -71,5 +70,6 @@ export const mergePanelUsersCollectionWithDefault = ({
 	if (label) {
 		collection.label = label;
 	}
+
 	return collection;
 };

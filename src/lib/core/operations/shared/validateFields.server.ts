@@ -52,7 +52,7 @@ export const validateFields = async <T extends GenericDoc>(args: {
 				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}
 		}
-
+		
 		/****************************************************/
 		/* Field hook before validate
 		/****************************************************/

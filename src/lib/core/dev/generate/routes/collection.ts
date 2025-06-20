@@ -1,19 +1,6 @@
 import { PACKAGE_NAME } from '$lib/core/constant.js';
 import { TScastVersionSlug, type Routes } from './util.js';
 
-// /**
-//  * Collection layout template
-//  * (rizom)/panel/{collection.slug}/+layout.svelte
-//  */
-// const layout = (slug: string) => `
-// <script lang="ts">
-//   import { CollectionList, type CollectionListProps } from '${PACKAGE_NAME}/panel'
-//   const { data, children }: CollectionListProps = $props();
-// </script>
-// <CollectionList {data} slug='${slug}'>
-//   {@render children()}
-// </CollectionList>`;
-
 /**
  * Layout server template for collection
  * (rizom)/panel/{collection.slug}/+page.server.ts
