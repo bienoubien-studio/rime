@@ -353,7 +353,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 				.update(userTable)
 				.set({
 					locked: false,
-					loginAttempts: 0
+					loginAttempts: 0,
+					lockedAt: null
 				})
 				.where(eq(userTable.id, user.id));
 		}
