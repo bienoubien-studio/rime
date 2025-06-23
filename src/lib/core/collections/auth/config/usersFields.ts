@@ -45,7 +45,7 @@ const confirmPassword = text('confirmPassword')
 	.required()
 	.validate((value, metas) => {
 		if (metas.data.password !== value) {
-			return 'Password mismatch';
+			return 'password_mismatch';
 		}
 		return true;
 	});

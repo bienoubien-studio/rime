@@ -6,12 +6,15 @@ const LOCALE_KEY = Symbol('rizom.locale');
 function createStore(initial?: string) {
 	let code = $state<string>();
 	let bcp47 = $state<string>();
+	let label = $state<string>();
+
 	const config = getConfigContext();
 
 	const setValue = (value?: string) => {
 		if (config.raw.localization && value) {
 			code = value;
 			bcp47 = config.raw.localization.locales.find((l) => l.code === code)?.bcp47;
+			label = config.raw.localization.locales.find((l) => l.code === code)?.label;
 		}
 	};
 
@@ -54,6 +57,9 @@ function createStore(initial?: string) {
 		},
 		get code() {
 			return code;
+		},
+		get label() {
+			return label;
 		},
 		get bcp47() {
 			return bcp47;

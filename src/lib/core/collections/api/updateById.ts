@@ -13,23 +13,27 @@ export default function (slug: CollectionSlug) {
 
 		const id = event.params.id;
 		if (!id) throw new RizomError(RizomError.NOT_FOUND);
-
-		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
+		
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
 			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
 			: undefined;
 
 		const [extractError, data] = await trycatch(extractData(event.request));
+		
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
-
-		const [error, doc] = await trycatch(
+		
+		if(data.locale){
+			rizom.setLocale(data.locale)
+		}
+		
+		const [error, document] = await trycatch(
 			rizom.collection(slug).updateById({
 				id,
 				data,
-				locale: paramLocale || data.locale || locale,
+				locale: rizom.getLocale(),
 				versionId,
 				draft
 			})
@@ -39,7 +43,7 @@ export default function (slug: CollectionSlug) {
 			return handleError(error, { context: 'api' });
 		}
 
-		return json({ doc });
+		return json({ doc: document });
 	}
 
 	return PATCH;

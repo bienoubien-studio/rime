@@ -9,8 +9,8 @@ import type { Dic } from '$lib/util/types.js';
 import { extractFieldName } from '../fields/tree/util.js';
 import { privateFieldNames } from '../core/collections/auth/config/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Rizom } from '../core/rizom.server.js';
 import { logger } from '../core/logger/index.server.js';
+
 import {
 	getBlocksTableNames,
 	getTreeTableNames,

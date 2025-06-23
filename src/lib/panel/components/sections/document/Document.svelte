@@ -46,8 +46,8 @@
 	});
 	const user = getUserContext();
 	const title = getContext<{ value: string }>('title');
-	let formElement: HTMLFormElement;
-
+	let formElement = $state<HTMLFormElement>();
+	
 	beforeNavigate(async () => {
 		// if (
 		// 	operation === 'update' &&
@@ -64,6 +64,7 @@
 	});
 
 	const form = setDocumentFormContext({
+		element: () => formElement,
 		initial,
 		config,
 		readOnly,
@@ -81,6 +82,7 @@
 	});
 
 	function handleKeyDown(event: KeyboardEvent) {
+		if(!formElement) throw Error('formElement is not defined')
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
 			if (!form.canSubmit) return;

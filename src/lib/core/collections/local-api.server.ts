@@ -10,12 +10,12 @@ import { deleteDocs } from './operations/delete.js';
 import { updateById } from './operations/updateById.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { CollectionSlug, GenericDoc } from '../types/doc.js';
+import type { CollectionSlug } from '../types/doc.js';
 import type { CompiledCollection } from '../config/types/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { Rizom } from '../rizom.server.js';
-import type { DeepPartial, Pretty } from '$lib/util/types.js';
+import type { Pretty } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -23,12 +23,21 @@ type Args = {
 	event: RequestEvent;
 };
 
+/**
+ * Interface for interacting with a collection
+ *
+ * Provides methods to create, retrieve, update, and delete documents within a collection.
+ * Handles versioning, drafts, authentication, and localization according to the collection configuration.
+ */
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
 	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
 
+	/**
+	 * Initializes the collection interface
+	 */
 	constructor({ config, defaultLocale, event }: Args) {
 		this.config = config;
 		this.defaultLocale = defaultLocale;
@@ -41,28 +50,61 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.deleteById = this.deleteById.bind(this);
 	}
 
+	/**
+	 * Returns the locale to use, with fallback logic
+	 * Prioritizes provided locale, then event locale, then default locale
+	 *
+	 * @returns The locale to use
+	 */
 	#fallbackLocale(locale?: string) {
 		return locale || this.#event.locals.locale || this.defaultLocale;
 	}
 
+	/**
+	 * Creates a blank document based on the collection schema
+	 * For auth collections, private fields are filtered out
+	 *
+	 * @returns A blank document with default values
+	 *
+	 * @example
+	 * const emptyDoc = rizom.collection('posts').blank();
+	 */
 	blank(): Doc {
 		if (isAuthConfig(this.config)) {
+			
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
 				.filter((field: FormField) => !privateFieldNames.includes(field.name));
+
 			return createBlankDocument({
 				...this.config,
 				fields: [...withoutPrivateFields]
+
 			}) as Doc;
+
 		}
 		return createBlankDocument(this.config) as Doc;
 	}
 
+	/**
+	 * Checks if this collection is an authentication collection
+	 *
+	 * @returns True if this is an auth collection
+	 */
 	get isAuth() {
 		return !!this.config.auth;
 	}
 
-	create(args: CreateArgs<Doc>) {
+	/**
+	 * Creates a new document in the collection
+	 *
+	 * @example
+	 * const post = await rizom.collection('posts').create({
+	 *   data: { title: 'Hello World', content: 'My first post' },
+	 *   locale: 'en'
+	 * });
+	 */
+	create(args: APIMethodArgs<typeof create>): Promise<Doc> {
 		return create<Doc>({
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
@@ -71,20 +113,23 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
-	find({
-		select: selectArray,
-		query,
-		locale,
-		sort = '-updatedAt',
-		depth = 0,
-		limit,
-		offset,
-		draft
-	}: APIMethodArgs<typeof find>): Promise<Doc[]> {
+	/**
+	 * Finds documents in the collection matching the query
+	 *
+	 * @example
+	 * // Find published posts sorted by creation date
+	 * const posts = await rizom.collection('posts').find({
+	 *   query: { published: true },
+	 *   sort: '-createdAt',
+	 *   limit: 10
+	 * });
+	 */
+	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
+		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
 		this.#rizom.preventOperationLoop();
 
 		const params = {
-			select: selectArray,
+			select: args.select,
 			query,
 			locale: this.#fallbackLocale(locale),
 			config: this.config,
@@ -99,7 +144,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		if (this.#event.locals.cacheEnabled) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
 				slug: this.config.slug,
-				select: selectArray,
+				select: args.select,
 				userRoles: this.#event.locals.user?.roles,
 				sort,
 				depth,
@@ -115,7 +160,34 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return find<Doc>(params);
 	}
 
-	findById({ id, versionId, locale, draft, depth = 0 }: APIMethodArgs<typeof findById>): Promise<Doc> {
+	/**
+	 * Finds a document in the collection by ID
+	 *
+	 * For collections with versioning:
+	 * - If versionId is provided: Retrieves that specific version
+	 * - If no versionId and draft=true: Retrieves the latest draft if available
+	 * - If no versionId and draft=false: Retrieves the published version
+	 *
+	 * @example
+	 * // Get published version
+	 * const post = await rizom.collection('posts').findById({ id: '12345' });
+	 * 
+	 * // Get specific version
+	 * const post = await rizom.collection('posts').findById({ 
+	 *   id: '12345',
+	 *   versionId: 'v2',
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * // Get latest draft version
+	 * const post = await rizom.collection('posts').findById({
+	 *   id: '12345',
+	 *   draft: true
+	 * });
+	 */
+	findById(args: APIMethodArgs<typeof findById>): Promise<Doc> {
+		const { id, versionId, locale, draft, depth = 0 } = args;
+
 		this.#rizom.preventOperationLoop();
 
 		if (!id) {
@@ -147,7 +219,43 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return findById<Doc>(params);
 	}
 
-	updateById(args: UpdateByIdArgs<Doc>): Promise<Doc> {
+	/**
+	 * Updates a document in the collection by ID
+	 *
+	 * For collections with versioning:
+	 * - For non-versioned collections: Simply updates the document
+	 * - For versioned collections without draft support:
+	 *   - If versionId is provided: Updates that specific version
+	 *   - If no versionId is provided: Creates a new version based on the latest
+	 * - For versioned collections with draft support:
+	 *   - If versionId is provided: Updates that specific version
+	 *   - If no versionId and draft !== true: Updates the published version
+	 *   - If no versionId and draft === true: Creates a new draft from the published version
+	 *
+	 * @example
+	 * // Update published version
+	 * const post = await rizom.collection('posts').updateById({
+	 *   id: '12345',
+	 *   data: { title: 'New title' },
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * // Update specific version
+	 * const post = await rizom.collection('posts').updateById({
+	 *   id: '12345',
+	 *   versionId: 'v2',
+	 *   data: { title: 'New title' },
+	 *   locale: 'en'
+	 * });
+	 * 
+	 * // Create or update draft version
+	 * const post = await rizom.collection('posts').updateById({
+	 *   id: '12345',
+	 *   data: { title: 'Draft title' },
+	 *   draft: true
+	 * });
+	 */
+	updateById(args: APIMethodArgs<typeof updateById>): Promise<Doc> {
 		this.#rizom.preventOperationLoop();
 		return updateById<Doc>({
 			...args,
@@ -157,6 +265,12 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	}
 
+	/**
+	 * Deletes a document in the collection by ID
+	 *
+	 * @example
+	 * const post = await rizom.collection('posts').deleteById('12345');
+	 */
 	deleteById = ({ id }: APIMethodArgs<typeof deleteById>) => {
 		this.#rizom.preventOperationLoop();
 		return deleteById({
@@ -166,6 +280,15 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		});
 	};
 
+	/**
+	 * Deletes multiple documents in the collection
+	 *
+	 * @example
+	 * const posts = await rizom.collection('posts').delete({
+	 *   query: { published: true },
+	 *   limit: 10
+	 * });
+	 */
 	delete = (args: APIMethodArgs<typeof deleteDocs>) => {
 		this.#rizom.preventOperationLoop();
 		return deleteDocs({
@@ -178,21 +301,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 
 export { CollectionInterface };
 
-/****************************************************/
+/****************************************************
 /* Types 
 /****************************************************/
-
-type UpdateByIdArgs<T extends GenericDoc = GenericDoc> = {
-	id: string;
-	versionId?: string;
-	draft?: boolean;
-	data: DeepPartial<T>;
-	locale?: string;
-	isFallbackLocale?: boolean;
-};
 
 type APIMethodArgs<T extends (...args: any) => any> = Pretty<
 	Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>
 >;
-
-type CreateArgs<T> = { data: DeepPartial<T>; locale?: string; draft?: boolean };

@@ -1,11 +1,12 @@
 .rz-dialog-content {
+	--gutter: var(--rz-size-4);
 	@mixin bg color-bg;
 	position: fixed;
-	left: 50%;
+	left: calc(50% - var(--gutter));
 	top: 40%;
 	z-index: 1010;
 	display: grid;
-	width: 100%;
+	width: calc(100% - 2 * var(--gutter));
 	background-color: hsl(var(--rz-ground-5));
 	transform: translate(-50%, -50%);
 	gap: var(--rz-size-4);
@@ -13,6 +14,7 @@
 	padding: var(--rz-size-3);
 	box-shadow: var(--rz-shadow-lg);
 	border-radius: var(--rz-radius-lg);
+	margin: 0 var(--gutter);
 }
 
 @media (min-width: 768px) {

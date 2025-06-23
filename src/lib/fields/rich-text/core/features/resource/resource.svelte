@@ -3,7 +3,7 @@
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { onMount } from 'svelte';
-	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
+	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
@@ -44,7 +44,7 @@
 	// Need to set a local APIProxy because the app one is not
 	// available from inside tiptap rendered components
 	// TODO try to pass it as a prop in a near future
-	const APIProxy = setAPIProxyContext('titap');
+	const APIProxy = setAPIProxyContext(API_PROXY.TIPTAP);
 	const ressource = APIProxy.getRessource(`/api/${extension.options.query}`);
 	let docs = $state<GenericDoc[]>([]);
 

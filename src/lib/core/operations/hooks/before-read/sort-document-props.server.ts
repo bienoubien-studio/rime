@@ -1,49 +1,28 @@
-import type { RequestEvent } from '@sveltejs/kit';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { Dic } from '$lib/util/types';
-import { getValueAtPath, isObjectLiteral } from '$lib/util/object.js';
+import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
+import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
+import { isObjectLiteral } from '$lib/util/object.js';
+import type { Dic } from '$lib/util/types.js';
 
-/**
- * Augment document with locale, _type, _prototype
- * add the title prop as defined in config or with default : id or filename for a collection
- * add the _live url if relevant, based on the config.
- */
-export const augmentDocument = async <T extends GenericDoc>(args: {
-	document: Partial<T>;
-	config: CompiledCollection | CompiledArea;
-	locale?: string;
-	event: RequestEvent;
-}): Promise<T> => {
-	const { locale, config, event } = args;
-
-	let output = args.document;
-
-	// Add locale
-	if (locale) {
-		output.locale = locale;
-	}
-
-	// type and prototype
-	output._prototype = config.type;
-	output._type = config.slug;
-
-	// populate title
-	if (!('title' in output)) {
-		output = {
-			title: getValueAtPath(config.asTitle, output),
-			...output
-		};
-	}
-
-	output = sortDocumentKeys(output);
-
-	return output as T;
+export const sortDocumentProps: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
+	return { ...args, doc: sortDocumentKeys(args.doc) };
 };
 
 function sortDocumentKeys<T extends Dic>(obj: T): T {
 	const specificOrder = ['id', 'title', 'status'];
-	const endOrder = ['locale', 'path', 'position', 'ownerId', 'createdAt', 'updatedAt', '_type', '_prototype', '_live'];
+	const endOrder = [
+		'locale',
+		'path',
+		'position',
+		'ownerId',
+		'createdAt',
+		'updatedAt',
+		'_type',
+		'_prototype',
+		'_live',
+		'_children',
+		'_parent',
+		'_position'
+	];
 
 	function sortObjectKeys(obj: Dic): Dic {
 		// If not an object or is null, return the value as-is

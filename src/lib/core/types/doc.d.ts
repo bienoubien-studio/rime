@@ -5,8 +5,9 @@ export type AreaSlug = GetRegisterType<'AreaSlug'>;
 export type PrototypeSlug = CollectionSlug | AreaSlug;
 
 import type { Dic, Pretty } from '$lib/util/types.js';
+import type { VersionsStatus } from '../constant.js';
 
-export type DocPrototype = 'area' | 'collection';
+export type Prototype = 'area' | 'collection';
 
 export type RawDoc = Dic & { id: string };
 
@@ -16,8 +17,8 @@ type BaseDoc = {
 	updatedAt?: Date;
 	createdAt?: Date;
 	locale?: string;
-	url?: string;
-	_prototype: DocPrototype;
+	url?: string | null;
+	_prototype: Prototype;
 	_type: PrototypeSlug;
 	_live?: string;
 };
@@ -48,10 +49,13 @@ export type GenericBlock<T extends string = string> = {
 } & Dic;
 
 export type UploadDoc = BaseDoc & {
-	title: string;
 	mimeType: string;
 	filesize: string;
 	filename: string;
 	url: string;
 	sizes: { [key: string]: string };
 } & Dic;
+
+export type VersionDoc = BaseDoc & {
+	status: VersionsStatus;
+};

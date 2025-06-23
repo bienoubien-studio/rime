@@ -11,7 +11,7 @@
 	import { toast } from 'svelte-sonner';
 	import AuthForm from '$lib/panel/components/sections/auth/AuthForm.svelte';
 	import { KeyRound } from '@lucide/svelte';
-
+	
 	type Props = {
 		data: {
 			forgotPasswordEnabled: boolean;
@@ -29,16 +29,17 @@
 		}
 	});
 
+	
 	const passwordField = text('password').layout('compact').label(t__('fields.password')).required().compile();
-
 	const emailField = email.layout('compact').compile();
+	
 </script>
 
 <AuthForm title={t__('common.signin')}>
+	{#if context.status !== 429 }
 	<form method="POST" action="/login" use:enhance={context.enhance}>
 		<Email config={emailField} form={context} />
 		<Text type="password" icon={KeyRound} config={passwordField} form={context} />
-
 		<Button size="xl" disabled={!context.canSubmit} type="submit">Login</Button>
 
 		{#if data.forgotPasswordEnabled}
@@ -46,5 +47,9 @@
 				{t__('common.forgotPassword')}
 			</Button>
 		{/if}
+
 	</form>
+	{:else}
+		<p class="rz-locked">{t__(`errors.user_banned`)}</p>
+	{/if}
 </AuthForm>

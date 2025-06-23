@@ -7,6 +7,8 @@
 	import { getContext } from 'svelte';
 	import type { GenericDoc } from '$lib/core/types/doc';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 
 	type Props = { checked: boolean; doc: GenericDoc; draggable?: 'true' };
 	const { checked, doc, draggable }: Props = $props();
@@ -15,14 +17,16 @@
 
 	const isUploadCollection = $derived(isUploadConfig(collection.config));
 	const thumbnailUrl = $derived.by(() => {
-		if (isUploadConfig(collection.config) && doc.mimeType.includes('image')) {
+		if (isUploadConfig(collection.config) && doc.mimeType && doc.mimeType.includes('image')) {
 			return doc._thumbnail;
 		}
 		return null;
 	});
 
 	function handleEdit() {
-		goto(`/panel/${collection.config.slug}/${doc.id}`);
+		const uploadPath = isUploadCollection ? page.url.searchParams.get(PARAMS.UPLOAD_PATH) || UPLOAD_PATH.ROOT_NAME : null
+		const params = uploadPath ? `?${PARAMS.UPLOAD_PATH}=${uploadPath}` : ''
+		goto(`/panel/${collection.config.slug}/${doc.id}${params}`);
 	}
 
 	function handleDragStart(e: DragEvent) {

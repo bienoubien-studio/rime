@@ -31,8 +31,8 @@ type Aria = WithRequired<Partial<Route>, 'title'>;
  */
 export function getSegments(path?: UploadPath | null): {
 	name: string;
-	path: string;
-	parent: string | null;
+	path: UploadPath;
+	parent: UploadPath | null;
 } {
 	// Use nullish coalescing to handle both undefined and null
 	const safePath = path ?? UPLOAD_PATH.ROOT_NAME;
@@ -59,7 +59,7 @@ export function getSegments(path?: UploadPath | null): {
 
 	return {
 		name,
-		parent,
+		parent: parent as UploadPath,
 		path: safePath
 	};
 }
@@ -101,18 +101,23 @@ export function buildUploadAria({
 		if (!segment) continue;
 		currentPath = currentPath ? `${currentPath}:${segment}` : segment;
 		if (currentPath !== segments[0]) {
-			if (segment === segments[segments.length - 1]) {
-				result.push({
-					title: segment
-				});
-			} else {
-				result.push({
-					title: segment,
-					path: `/panel/${slug}?${PARAMS.UPLOAD_PATH}=${currentPath}`
-				});
-			}
+			result.push({
+				title: segment,
+				path: `/panel/${slug}?${PARAMS.UPLOAD_PATH}=${currentPath}`
+			});
+			
 		}
 	}
 
 	return result;
+}
+
+
+export function removePathFromLastAria(aria:WithRequired<Partial<Route>, 'title'>[] ){
+	return aria.map((route, index) => {
+		if(index === aria.length - 1){
+			return { title: route.title }
+		}
+		return route
+	})
 }

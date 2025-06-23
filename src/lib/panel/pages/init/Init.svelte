@@ -18,7 +18,7 @@
 	const context = setFormContext(form || {}, 'init');
 
 	$effect(() => {
-		if (context.status === 'failure') {
+		if (context.status === 400) {
 			toast.warning('Invalid credential');
 		}
 	});

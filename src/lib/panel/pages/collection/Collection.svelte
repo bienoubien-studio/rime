@@ -15,7 +15,7 @@
 	import CollectionGrid from '$lib/panel/components/sections/collection/grid/CollectionGrid.svelte';
 	import type { Directory } from '$lib/core/collections/upload/upload.js';
 	import CollectionList from '$lib/panel/components/sections/collection/list/CollectionList.svelte';
-
+	
 	type Props = {
 		slug: PrototypeSlug;
 		data: {
@@ -38,16 +38,24 @@
 		initial: data.docs,
 		config: collectionConfig,
 		canCreate: data.canCreate,
-		upload: {
-			directories: data.upload?.directories,
-			currentPath: data.upload?.currentPath,
-			parentDirectory: data.upload?.parentDirectory
-		},
+		upload: data.upload,
 		key: slug
 	});
 
 	setContext('rizom.collectionList', collection);
-	
+
+	$effect(() => {
+		collection.upload = {
+			directories: data.upload?.directories || [],
+			currentPath: data.upload?.currentPath || 'root',
+			parentDirectory: data.upload?.parentDirectory || null
+		};
+	});
+
+	$effect(() => {
+		collection.docs = data.docs
+	})
+
 	const titleContext = getContext<{ value: string }>('title');
 	titleContext.value = collection.config.label.plural;
 </script>

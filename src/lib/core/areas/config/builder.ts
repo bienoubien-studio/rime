@@ -5,18 +5,25 @@ import type { Area } from '$lib/core/config/types/index.js';
 import type { AreaWithoutSlug } from './types.js';
 import { augmentVersions } from './augment-versions.js';
 import { FileText } from '@lucide/svelte';
+import { augmentHooks } from './augment-hooks.js';
+
+const addSlug = <S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S> => ({ ...config, slug });
 
 /**
  * Function to define an Area
  */
-export function area<S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S> {
+export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): Area<S> {
+	
+	let config = addSlug(slug, incomingConfig);
 	let fields: typeof config.fields = [...config.fields];
 	
 	config = augmentTitle(config);
 
 	({ config, fields } = augmentMetas({ config, fields }));
 	({ config, fields } = augmentVersions({ config, fields }));
-	
+
+	config = augmentHooks(config);
+
 	return {
 		...config,
 		slug,

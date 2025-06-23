@@ -1,11 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { Rizom } from '$lib/core/rizom.server.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { transformDocument } from '$lib/core/operations/shared/transformDocument.server.js';
+import type { Dic } from '$lib/util/types.js';
 
 type Args = {
 	id: string;
@@ -39,14 +37,18 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		draft
 	});
 
-	let document = await transformDocument<T>({
-		raw: documentRaw,
-		config,
+	let document = await event.locals.rizom.adapter.transform.doc({
+		doc: documentRaw,
+		slug: config.slug,
 		locale,
-		depth,
-		event
+		event,
+		depth
 	});
 
+	let metas: Dic = {
+		select,
+		draft
+	};
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
@@ -54,13 +56,11 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 			operation: 'read',
 			rizom: event.locals.rizom,
 			event,
-			metas: {
-				select,
-				draft
-			}
+			metas
 		});
+		metas = result.metas;
 		document = result.doc as T;
 	}
 
-	return document;
+	return document as T;
 };

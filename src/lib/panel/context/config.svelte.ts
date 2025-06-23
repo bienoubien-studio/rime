@@ -1,5 +1,5 @@
 import type { CompiledCollection, BrowserConfig, CompiledArea } from '$lib/core/config/types';
-import type { DocPrototype, PrototypeSlug } from '$lib/core/types/doc';
+import type { Prototype, PrototypeSlug } from '$lib/core/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BrowserConfig) {
@@ -37,6 +37,6 @@ export function getConfigContext() {
 }
 
 type GetDocumentConfigArgs = {
-	prototype: DocPrototype;
+	prototype: Prototype;
 	slug: PrototypeSlug;
 };

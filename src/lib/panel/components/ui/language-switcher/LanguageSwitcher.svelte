@@ -3,6 +3,8 @@
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import Cookies from 'js-cookie';
+	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
+	import { Languages } from '@lucide/svelte';
 
 	type Props = { onLocalClick: (code: string) => void };
 	const { onLocalClick }: Props = $props();
@@ -10,58 +12,35 @@
 	const locale = getLocaleContext();
 	const config = getConfigContext();
 	const locales = $state(config.raw.localization?.locales || []);
+	
+	function isActive(code: string) {
+		return code === locale.code;
+	}
 </script>
 
-{#if locales.length}
-	<div class="rz-language-switch">
-		{#each locales as item, index (index)}
-			<Button
-				disabled={item.code === locale.code}
-				data-active={item.code === locale.code ? '' : null}
-				onclick={() => {
-					Cookies.set('Locale', item.code);
-					onLocalClick(item.code);
-				}}
-				variant="outline"
-				size="icon"
-			>
-				<span class="rz-language-switch__code">{item.code}</span>
+<DropdownMenu.Root>
+	<DropdownMenu.Trigger>
+		{#snippet child({ props })}
+			<Button icon={Languages} size="sm" variant={ props['data-state'] === 'open' ? 'secondary' : 'ghost'} {...props}>
+				{locale.label}
 			</Button>
-		{/each}
-	</div>
-{/if}
+		{/snippet}
+	</DropdownMenu.Trigger>
 
-<style type="postcss">
-	.rz-language-switch {
-		@mixin mx var(--rz-size-1);
-		display: flex;
-
-		& :global([data-active]),
-		:global(:disabled) {
-			opacity: 1;
-			@mixin bg ground-5;
-			@mixin color ground-2;
-		}
-
-		& :global(button) {
-			border-radius: 0;
-			border-bottom: var(--rz-border);
-			border-left: var(--rz-border);
-			border-top: var(--rz-border);
-			border-right: 0;
-
-			&:first-child {
-				@mixin radius-left md;
-			}
-			&:last-child {
-				@mixin radius-right md;
-				border-right: var(--rz-border);
-			}
-		}
-	}
-
-	.rz-language-switch__code {
-		font-size: var(--rz-text-2xs);
-		text-transform: uppercase;
-	}
-</style>
+	<DropdownMenu.Portal>
+		<DropdownMenu.Content align="end">
+			{#each locales as item, index (index)}
+				<DropdownMenu.Item
+					disabled={isActive(item.code)}
+					data-active={isActive(item.code) ? '' : null}
+					onclick={() => {
+						Cookies.set('Locale', item.code);
+						onLocalClick(item.code);
+					}}
+				>
+					<span>{item.label}</span>
+				</DropdownMenu.Item>
+			{/each}
+		</DropdownMenu.Content>
+	</DropdownMenu.Portal>
+</DropdownMenu.Root>

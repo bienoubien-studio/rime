@@ -32,7 +32,7 @@ import {
 } from '@lucide/svelte';
 
 import { collection, area, defineConfig } from '$lib/index.js';
-import type { CollectionHookAfterUpsert, CollectionHookBeforeUpsert } from 'rizom/core/config/types/hooks';
+import type { HookAfterUpsert, HookBeforeUpsert } from 'rizom/core/config/types/hooks';
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
@@ -95,12 +95,12 @@ const tabLayout = tab('layout')
 		blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
 	);
 
-const clearCacheHook: CollectionHookAfterUpsert<PagesDoc> = async (args) => {
+const clearCacheHook: HookAfterUpsert<PagesDoc> = async (args) => {
 	args.rizom.cache.clear();
 	return args;
 };
 
-const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
+const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	const { data, rizom } = args;
 
 	if (data?.attributes?.isHome) {

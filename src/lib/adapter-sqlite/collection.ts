@@ -10,12 +10,13 @@ import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
-import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import type { Schema } from '$lib/server/schema.js';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 type Args = {
 	db: BetterSQLite3Database<Schema>;
@@ -49,7 +50,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			if (!doc) {
 				throw new RizomError(RizomError.NOT_FOUND);
 			}
-
+			
 			return doc;
 		} else {
 			// Implementation for versioned collections
@@ -95,7 +96,6 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 * removes the root document and all its versions.
 	 */
 	const deleteById: DeleteById = async ({ slug, id }) => {
-		console.log({ slug, id })
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -131,7 +131,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const uploadDir = await db.query[tableName].findFirst({
 				where: and(eq(table.id, data._path))
 			});
-			
+
 			if (!uploadDir) {
 				await db.insert(table).values({
 					id: data._path,
@@ -142,12 +142,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				});
 			}
 		}
-		
+
 		if (isVersioned) {
 			// Extract root props (_parent, _position, _path) from data
 			const { data: contentData, rootData } = adapterUtil.extractRootData(data);
-
-			console.log(rootData)
 
 			// Create root document with hierarchy/upload root props
 			const docId = await adapterUtil.insertTableRecord(db, tables, slug, {
@@ -167,7 +165,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${versionsTableName}Locales`,
 				locale
 			});
-			
+
 			// Insert version record
 			await adapterUtil.insertTableRecord(db, tables, versionsTableName, {
 				id: versionId,
@@ -202,8 +200,6 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				localesTableName: `${slug}Locales`,
 				locale
 			});
-
-
 
 			// Insert main record
 			await adapterUtil.insertTableRecord(db, tables, slug, {
@@ -268,7 +264,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 					locale: locale!
 				});
 			}
-			return { id };
+			return { id: data.id || id };
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Upadte specific version
 			if (!versionId) {
@@ -318,7 +314,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				});
 			}
 
-			return { id };
+			return { id: data.id || id };
 		} else if (VersionOperations.isNewVersionCreation(versionOperation)) {
 			// Scenario 2: Version creation
 			// The creation is handled by the caller operation updateById
@@ -333,7 +329,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				data: { updatedAt: now, ...rootData }
 			});
 
-			return { id };
+			return { id: data.id || id };
 		} else {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation');
 		}
@@ -367,14 +363,12 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
-			
+
 			//@ts-ignore
 			return await db.query[slug].findMany({
 				columns: selectColumns,
 				...params
 			});
-
-
 		} else {
 			// Implementation for versioned collections
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);

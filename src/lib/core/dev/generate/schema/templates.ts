@@ -364,7 +364,10 @@ export const templateHead = (slug: string) => dedent`
 export const templateDirectories = (slug:string) => `
 export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDirectoriesSlug(slug))}', {
   id: text('id').notNull().primaryKey(),
-  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, { onDelete : 'cascade' }),
+  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, { 
+		onDelete : 'cascade',
+		onUpdate : 'cascade',
+	}),
   name: text('name').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp_ms' }),
 	updatedAt: integer('updated_at', { mode: 'timestamp_ms' })

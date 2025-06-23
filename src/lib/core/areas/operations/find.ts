@@ -1,11 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { transformDocument } from '$lib/core/operations/shared/transformDocument.server.js';
 import type { Rizom } from '../../rizom.server.js';
 import { rizom, type RegisterArea } from '$lib/index.js';
+import type { Dic } from '$lib/util/types.js';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -37,16 +36,16 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 
 	const hasSelect = select && Array.isArray(select) && !!select.length;
 
-	let document = await transformDocument<T>({
-		raw: documentRaw,
-		config,
+	let document = await event.locals.rizom.adapter.transform.doc({
+		doc: documentRaw,
+		slug: config.slug,
 		locale,
-		depth,
 		event,
-		augment: !hasSelect,
+		depth,
 		withBlank: !hasSelect
 	});
-
+	
+	let metas:Dic = { depth, select, draft }
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as unknown as RegisterArea[AreaSlug],
@@ -54,10 +53,11 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			operation: 'read',
 			rizom: event.locals.rizom,
 			event,
-			metas: {}
+			metas
 		});
+		metas = result.metas
 		document = result.doc as unknown as T;
 	}
 
-	return document;
+	return document as T;
 };

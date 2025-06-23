@@ -24,28 +24,31 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
+	let metas = {}
 	for (const hook of config.hooks?.beforeDelete || []) {
-		await hook({
+		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'delete',
 			rizom: event.locals.rizom,
 			event,
-			metas:{}
+			metas
 		});
+		metas = result.metas
 	}
 
 	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
 
 	for (const hook of config.hooks?.afterDelete || []) {
-		await hook({
+		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'delete',
 			rizom: event.locals.rizom,
 			event,
-			metas:{}
+			metas
 		});
+		metas = result.metas
 	}
 
 	return args.id;

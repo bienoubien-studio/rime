@@ -6,8 +6,6 @@ import { setErrorsContext } from './errors.svelte';
 import type { AnyFormField } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types';
 
-type Status = ActionResult['type'];
-
 function createFormStore(initial: Dic, key: string) {
 	//
 	const errors = setErrorsContext(key);
@@ -16,7 +14,7 @@ function createFormStore(initial: Dic, key: string) {
 	const changes = $derived<Dic>(diff(initial, form));
 	const hasError = $derived(errors.length);
 	const canSubmit = $derived(Object.keys(changes).length > 0 && !hasError);
-	let status = $state<Status>();
+	let status = $state<number>();
 
 	$effect(() => {
 		if (Object.keys(changes).length) {
@@ -102,26 +100,28 @@ function createFormStore(initial: Dic, key: string) {
 		}
 
 		return async ({ result }) => {
-			status = result.type;
+			status = result.status;
 
-			if (result.type === 'redirect') {
-				await applyAction(result);
-			} else if (result.type === 'failure') {
-				if (result.data?.errors) {
-					errors.value = result.data.errors;
-				}
-				if (result.data?.error) {
-					errors.value = result.data.errors;
-				}
-				form = result.data?.form || {};
-				initial = form;
+			switch (result.type) {
+				case 'failure':
+					if (result.data?.errors) {
+						errors.value = result.data.errors;
+					}
+					if (result.data?.error) {
+						errors.value = result.data.errors;
+					}
+					form = result.data?.form || {};
+					initial = form;
+					break;
+				case 'redirect':
+					await applyAction(result);
+					break;
 			}
 		};
 	};
 
 	return {
 		setValue,
-		// deleteValue,
 		useField,
 		readOnly: false,
 		enhance,

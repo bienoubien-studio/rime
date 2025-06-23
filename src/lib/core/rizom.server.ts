@@ -38,10 +38,10 @@ export class Rizom {
 		}
 	}
 
-	enforceLocale(locale: string) {
+	setLocale(locale: string) {
 		this.#requestEvent.locals.locale = locale;
 	}
-
+	
 	getLocale() {
 		return this.#requestEvent.locals.locale;
 	}
@@ -109,6 +109,7 @@ export class Rizom {
 	 * - default locale
 	 */
 	defineLocale({ event }: { event: RequestEvent }) {
+		
 		// locale present inside the url params ex : /en/foo
 		const params = event.params;
 		const paramLocale = params.locale;

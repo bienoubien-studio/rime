@@ -241,17 +241,6 @@ import { pagesLoad } from 'rizom/panel/pages';
 export const load = pagesLoad.live;`;
 
 /**
- * Locked page template
- * (rizom)/locked/+page.svelte
- */
-const lockedPage = () => `
-<script>
-  import { Locked } from 'rizom/panel';
-</script>
-
-<Locked />`;
-
-/**
  * Custom route template generator
  * Used for generating custom routes
  */
@@ -327,9 +316,6 @@ export const commonRoutes: Routes = {
 	'(rizom)/live': {
 		page: livePage,
 		pageServer: livePageServer
-	},
-	'(rizom)/locked': {
-		page: lockedPage
 	}
 };
 

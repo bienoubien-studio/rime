@@ -6,54 +6,50 @@
 	import ContextMenu from '$lib/panel/components/ui/context-menu/ContextMenu.svelte';
 	import ContextMenuItem from '$lib/panel/components/ui/context-menu/ContextMenuItem.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { trycatch } from '$lib/util/trycatch.js';
+	import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../../../core/i18n/index.js';
 	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	type Props = {
 		folder: Directory;
 		slug: string;
 		onDelete?: (path: string) => void;
-		onMoveInside: (args: { documentId: string; path: string }) => void;
+		onDocumentDrop: (args: { documentId: string; path: string }) => void;
+		draggable?: 'true';
 	};
-	const { folder, slug, onDelete, onMoveInside }: Props = $props();
+	const { folder, slug, onDelete, onDocumentDrop, draggable }: Props = $props();
 
 	let deleteConfirmOpen = $state(false);
-	let filesToDeleteCount = $state(0);
-	let foldersToDeleteCount = $state(0);
 	let message = $state('');
 
 	const isRoot = $derived(folder.name === '...');
 
-	let anchorElement = $state<HTMLAnchorElement>();
+	let rootElement = $state<HTMLButtonElement>();
+
+	const APIProxy = getAPIProxyContext(API_PROXY.ROOT);
+
+	const childFilesURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${slug}?where[_path][equals]=${folder.id}&select=id`);
+	const childFiles = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFilesURL));
+	const childFilesCount = $derived(childFiles.data?.docs?.length || 0);
+
+	const childFoldersURL = $derived(
+		`${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}?where[parent][equals]=${folder.id}&select=id`
+	);
+	const childFolders = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFoldersURL));
+	const childFoldersCount = $derived(childFolders.data?.docs?.length || 0);
 
 	async function handleGetDeleteInfos() {
-		// Get number of files inside this folder
-		const urlFiles = `${env.PUBLIC_RIZOM_URL}/api/${slug}?where[_path][like]=${folder.id}&select=id`;
-		const [errorFiles, resultFiles] = await trycatch(fetch(urlFiles).then((r) => r.json()));
-		if (errorFiles) {
-			return toast.error('Error retrieving folder content');
-		}
-		// Get number of folder inside this folder
-		const urlFolders = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}?where[parent][like]=${folder.id}&select=id`;
-		const [errorFolders, resultfolders] = await trycatch(fetch(urlFolders).then((r) => r.json()));
-		if (errorFolders) {
-			return toast.error('Error retrieving folder content');
-		}
-
-		filesToDeleteCount = resultFiles.docs.length;
-		foldersToDeleteCount = resultfolders.docs.length;
-		message = t__(
-			'common.delete_dialog_text',
-			`wich contains ${filesToDeleteCount} documents and ${foldersToDeleteCount} folders`
-		);
+		message = t__('common.delete_dialog_text', `wich contains ${childFilesCount + childFoldersCount} elements`);
 		deleteConfirmOpen = true;
 	}
 
 	async function handleDelete() {
 		const url = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folder.id}`;
-		const [error, result] = await trycatch(fetch(url, { method: 'DELETE' }).then((r) => r.json()));
+		const [error, _] = await trycatch(fetch(url, { method: 'DELETE' }).then((r) => r.json()));
 		if (error) {
 			return toast.error('Error deleting folder');
 		}
@@ -64,39 +60,73 @@
 		}
 	}
 
+	async function handleDropFolder(folderId: string) {
+		const movedFolderPath = folderId;
+		const newFolderPath = `${folder.id}:${movedFolderPath.split(':').at(-1)}`;
+		const moveAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folderId}`;
+		const [error, _] = await trycatchFetch(moveAPICallURL, {
+			method: 'PATCH',
+			body: JSON.stringify({ id: newFolderPath })
+		});
+
+		if (error) {
+			console.error(error);
+			return toast.error('Error moving folder');
+		}
+
+		toast.success('Folder moved successfully');
+		childFolders.refresh();
+		return invalidateAll();
+	}
+
+	async function handleDropDocument(docId: string) {
+		const moveDocumentAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${slug}/${docId}`;
+		const [error, _] = await trycatchFetch(moveDocumentAPICallURL, {
+			method: 'PATCH',
+			body: JSON.stringify({ _path: folder.id })
+		});
+		if (error) {
+			console.error(error);
+			return toast.error('Error moving document');
+		}
+		toast.success('Document moved successfully');
+		if (onDocumentDrop) {
+			onDocumentDrop({ documentId: docId, path: folder.id });
+		}
+		childFiles.refresh();
+	}
+
 	async function handleDrop(e: DragEvent) {
-		e.preventDefault(); // Prevent default browser behavior
-    anchorElement?.classList.remove('rz-folder--dragover');
-    
+		e.preventDefault(); // prevent default browser behavior
+		rootElement?.classList.remove('rz-folder--dragover');
+
 		// Get the document ID from dataTransfer
 		const docId = e.dataTransfer?.getData('text/plain');
 		if (!docId) return;
 
-		const updatePathUrl = `${env.PUBLIC_RIZOM_URL}/api/${slug}/${docId}`;
-		const [error, repsonse] = await trycatch(
-			fetch(updatePathUrl, {
-				method: 'PATCH',
-				body: JSON.stringify({ _path: folder.id })
-			}).then((r) => r.json())
-		);
-
-		if (error) {
-			return toast.error('Error moving document');
+		// This is a folder move so update folder path
+		if (docId.includes(':')) {
+			return handleDropFolder(docId);
 		}
 
-		toast.success('Document moved successfully');
-		if (onMoveInside) {
-			onMoveInside({ documentId: docId, path: folder.id });
-		}
+		return handleDropDocument(docId);
 	}
 
 	function handleDragEnter(e: DragEvent) {
 		e.preventDefault();
-		anchorElement?.classList.add('rz-folder--dragover');
+		rootElement?.classList.add('rz-folder--dragover');
 	}
 
 	function handleDragLeave() {
-		anchorElement?.classList.remove('rz-folder--dragover');
+		rootElement?.classList.remove('rz-folder--dragover');
+	}
+
+	function handleGoToFolder() {
+		goto(`${env.PUBLIC_RIZOM_URL}/panel/${slug}?${PARAMS.UPLOAD_PATH}=${folder.id}`);
+	}
+
+	function handleDragStart(e: DragEvent) {
+		e.dataTransfer?.setData('text/plain', folder.id);
 	}
 </script>
 
@@ -125,13 +155,15 @@
 	</h3>
 {/snippet}
 
-<a
-	bind:this={anchorElement}
-	href="{env.PUBLIC_RIZOM_URL}/panel/{slug}?{PARAMS.UPLOAD_PATH}={folder.id}"
+<button
+	bind:this={rootElement}
+	onclick={handleGoToFolder}
 	class="rz-folder"
 	ondragleave={handleDragLeave}
 	ondragover={handleDragEnter}
 	ondrop={handleDrop}
+	draggable={draggable === 'true' ? 'true' : null}
+	ondragstart={draggable === 'true' ? handleDragStart : null}
 >
 	{#if !isRoot}
 		<ContextMenu>
@@ -145,7 +177,12 @@
 	{:else}
 		{@render folderContent()}
 	{/if}
-</a>
+	{#if !isRoot}
+		<span>{childFilesCount + childFoldersCount} items</span>
+	{:else}
+		<span></span>
+	{/if}
+</button>
 
 <Dialog.Root bind:open={deleteConfirmOpen}>
 	<Dialog.Content>
@@ -163,6 +200,7 @@
 <style lang="postcss">
 	.rz-folder {
 		width: 100%;
+		aspect-ratio: 5/4;
 		padding: var(--rz-size-5);
 		border-radius: var(--rz-radius-lg);
 		h3 {

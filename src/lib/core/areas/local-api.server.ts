@@ -5,7 +5,7 @@ import { update } from './operations/update.js';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { Rizom } from '../rizom.server.js';
-import type { DeepPartial } from '$lib/util/types.js';
+import type { DeepPartial, Pretty } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledArea;
@@ -83,7 +83,8 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 * // Get the latest version including draft
 	 * const doc = await rizom.area('settings').find({ draft: true })
 	 */
-	find({ locale, select = [], depth = 0, versionId, draft }: FindArgs): Promise<Doc> {
+	find(args:APIMethodArgs<typeof find>): Promise<Doc> {
+		const { locale, select = [], depth = 0, versionId, draft } = args
 		this.#rizom.preventOperationLoop();
 
 		const params = {
@@ -126,16 +127,11 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 *   - If no versionId and draft !== true: Updates the published version
 	 *   - If no versionId and draft === true: Creates a new draft from the published version
 	 *
-	 * @param args - Object containing update parameters
-	 * @param args.data - Partial document data to update
-	 * @param args.locale - Optional locale for localized content
-	 * @param args.versionId - Optional specific version ID to update
-	 * @param args.draft - Optional flag to indicate draft mode
-	 * @returns Promise resolving to the updated document
 	 * @example
 	 * rizom.area('settings').update({ data, locale })
 	 */
-	update({ data, locale, versionId, draft }: UpdateArgs<Doc>): Promise<Doc> {
+	update(args: APIMethodArgs<typeof update>): Promise<Doc> {
+		const { data, locale, versionId, draft } = args
 		this.#rizom.preventOperationLoop();
 
 		return update<Doc>({
@@ -151,22 +147,10 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 
 export { AreaInterface };
 
-type UpdateArgs<T> = {
-	data: DeepPartial<T>;
-	locale?: string;
-	versionId?: string;
-	draft?: boolean;
-};
+/****************************************************
+/* Types 
+/****************************************************/
 
-type FindArgs = {
-	/** Optional locale for localized content */
-	locale?: string;
-	/** Optional specific version ID to retrieve */
-	versionId?: string;
-	/** Optional flag to indicate draft mode allowing the retrieve of draft documents */
-	draft?: boolean;
-	/** Optional depth for resolving relations */
-	depth?: number;
-	/** Optional array of fields to select */
-	select?: string[];
-};
+type APIMethodArgs<T extends (...args: any) => any> = Pretty<
+	Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>
+>;

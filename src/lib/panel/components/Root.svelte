@@ -6,7 +6,7 @@
 	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import { setAPIProxyContext } from '../context/api-proxy.svelte.js';
+	import { API_PROXY, setAPIProxyContext } from '../context/api-proxy.svelte.js';
 	import { page } from '$app/state';
 	import type { User } from '$lib/core/collections/auth/types.js';
 	import type { Route } from '$lib/panel/types.js';
@@ -27,8 +27,8 @@
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');
-	setAPIProxyContext('root');
-
+	setAPIProxyContext(API_PROXY.ROOT);
+	
 	const locale = setLocaleContext(initialeLocale);
 
 	$effect(() => {
@@ -67,7 +67,6 @@
 
 <div class="rz-panel-root">
 	<Nav {setCollapsed} {routes} {isCollapsed} />
-	
 	{#key `${page.url}${locale.code || ''}`}
 		<div class="rz-panel-root__right" class:rz-panel-root__right--navCollapsed={isCollapsed}>
 			{@render children()}

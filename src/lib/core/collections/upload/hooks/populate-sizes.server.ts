@@ -1,12 +1,13 @@
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { CollectionHookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
 import type { WithUpload } from '$lib/util/types.js';
 
-export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) => {
+export const populateSizes: HookBeforeRead<'collection', GenericDoc> = async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const doc = args.doc;
-	if ('imageSizes' in config.upload && config.upload.imageSizes) {
+	
+	if ('imageSizes' in config.upload && config.upload.imageSizes && doc.filename) {
 		doc.sizes = {};
 		for (const size of config.upload.imageSizes) {
 			if (doc[size.name]) {
@@ -42,7 +43,7 @@ export const populateSizes: CollectionHookBeforeRead<GenericDoc> = async (args) 
 		}
 	}
 
-	doc.url = `/medias/${doc.filename}`;
+	doc.url = doc.filename ? `/medias/${doc.filename}` : null;
 
 	return { ...args, doc };
 };

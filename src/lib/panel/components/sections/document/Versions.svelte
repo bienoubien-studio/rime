@@ -1,31 +1,22 @@
-<script module lang="ts">
-	export type Version = {
-		id: string;
-		updatedAt: Date;
-		status: VersionsStatus;
-	};
-</script>
-
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import type { GenericDoc, VersionDoc } from '$lib/core/types/doc.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
 	import { X } from '@lucide/svelte';
-	import type { VersionsStatus } from '$lib/core/constant.js';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import StatusDot from '../collection/StatusDot.svelte';
 
 	type Props = {
 		doc: GenericDoc;
-		versions: Version[];
+		versions: VersionDoc[];
 	};
 	const { doc, versions }: Props = $props();
 
 	const locale = getLocaleContext();
 
-	const makeVersionUrl = (version: Version) => {
+	const makeVersionUrl = (version: VersionDoc) => {
 		if (doc._prototype === 'collection') {
 			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/${doc.id}/versions?versionId=${version.id}`;
 		} else {

@@ -7,7 +7,7 @@
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import type { User } from '$lib/core/collections/auth/types.js';
 	import type { BrowserConfig } from '$lib/core/config/types/index.js';
-	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
+	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { goto } from '$app/navigation';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 
@@ -33,7 +33,7 @@
 		return panelUri;
 	}
 
-	setAPIProxyContext('document');
+	setAPIProxyContext(API_PROXY.DOCUMENT);
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');
@@ -47,14 +47,16 @@
 <Toaster />
 
 <ScrollArea class="rz-live-panel">
-	<Document
-		onClose={() => goto(buildPanelURL())}
-		{onDataChange}
-		{onFieldFocus}
-		{doc}
-		readOnly={false}
-		operation="update"
-	/>
+	{#key doc.id + doc.versionId || '' + doc.locale || ''}
+		<Document
+			onClose={() => goto(buildPanelURL())}
+			{onDataChange}
+			{onFieldFocus}
+			{doc}
+			readOnly={false}
+			operation="update"
+		/>
+	{/key}
 </ScrollArea>
 
 <style>

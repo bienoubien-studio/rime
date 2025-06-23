@@ -1,7 +1,10 @@
-import { exctractPath } from '$lib/core/collections/upload/hooks/extractPath.js';
+import { exctractPath } from '$lib/core/collections/upload/hooks/extract-path.js';
+import { prepareDirectoryChildren, updateDirectoryChildren } from '$lib/core/collections/upload/hooks/update-directory-children.js';
+import { buildDataConfigMap } from '$lib/core/operations/hooks/before-upsert/data-config-map.server.js';
+import { setDefaultValues } from '$lib/core/operations/hooks/before-upsert/set-default-values.server.js';
 import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.js';
-import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
+import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { uploadPath } from '$lib/util/validate.js';
 import type { CollectionSlug } from '../../../types.js';
 import type { CompiledCollection, CompiledConfig } from '../types/index.js';
@@ -37,8 +40,9 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 					gender: 'f'
 				},
 				hooks: {
-					beforeUpdate: [exctractPath],
-					beforeCreate: [exctractPath]
+					beforeUpdate: [ buildDataConfigMap, setDefaultValues, exctractPath, prepareDirectoryChildren],
+					afterUpdate: [ updateDirectoryChildren],
+					beforeCreate: [ buildDataConfigMap, setDefaultValues, exctractPath]
 				},
 				asTitle: 'path',
 				panel: false

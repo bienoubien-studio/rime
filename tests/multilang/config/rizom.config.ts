@@ -16,7 +16,7 @@ import {
 } from '$lib/fields/index.js';
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
-import type { CollectionHookBeforeUpsert } from '$lib/types';
+import type { HookBeforeUpsert } from '$lib/types';
 import { collection, area, defineConfig } from '$lib';
 import { apiInit } from './api-init/index.js';
 
@@ -91,7 +91,7 @@ const Informations = area('infos', {
 /* Pages
 /****************************************************/
 
-const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
+const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	const { data, rizom } = args;
 
 	if (data?.attributes?.isHome) {
@@ -116,7 +116,7 @@ const setHome: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
 	return args;
 };
 
-const formatslug: CollectionHookBeforeUpsert<PagesDoc> = async (args) => {
+const formatslug: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	const { rizom, operation, event } = args;
 	let data = args.data;
 

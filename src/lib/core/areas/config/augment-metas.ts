@@ -4,6 +4,7 @@ import { date } from '$lib/fields/date/index.js';
 
 /**
  * Add updatedAt createdAt editedBy fields
+ * to an Area
  */
 export const augmentMetas: AugmentAreaFn = ({ config, fields }) => {
 	fields.push(

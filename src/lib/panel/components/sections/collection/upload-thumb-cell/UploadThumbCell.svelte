@@ -8,6 +8,7 @@
 		class?: string;
 	};
 	const { url, class: className, mimeType }: Props = $props();
+	
 </script>
 
 <div class="rz-upload-preview-cell {className}">

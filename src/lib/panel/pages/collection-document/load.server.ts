@@ -1,15 +1,15 @@
 import { error, type ServerLoad } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
-import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues';
 import { trycatch } from '$lib/util/trycatch.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import { PARAMS } from '$lib/core/constant.js';
+import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { Route } from '$lib/panel/types.js';
 import { env } from '$env/dynamic/public';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 
 /****************************************************/
 /* Document Load
@@ -33,15 +33,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			if (!authorized) {
 				return { doc: {}, operation, status: 401 };
 			}
-			/** Make blank document */
-			const blankDocument = collection.blank();
-			const configMap = buildConfigMap(blankDocument, collection.config.fields);
-			doc = await setDefaultValues({
-				data: blankDocument,
-				adapter: rizom.adapter,
-				configMap,
-				mode: 'always'
-			});
+			doc = collection.blank();
 		} else {
 			/** Check for authorizations */
 			const authorizedRead = collection.config.access.read(user, { id });
@@ -66,11 +58,25 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			}
 		}
 
-		const aria: WithRequired<Partial<Route>, 'title'>[] = [
-			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
-			{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
-			{ title: doc.title }
-		];
+		let aria: WithRequired<Partial<Route>, 'title'>[];
+
+		const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` };
+		if (collection.config.upload) {
+			const paramUploadPath = event.url.searchParams.get('uploadPath') as UploadPath | null;
+			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
+			aria = [
+				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
+				collectionAria,
+				...buildUploadAria({ path: currentDirectoryPath, slug }),
+				{ title: doc.title }
+			];
+		} else {
+			aria = [
+				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
+				{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
+				{ title: doc.title }
+			];
+		}
 
 		let data: Dic = {
 			aria,

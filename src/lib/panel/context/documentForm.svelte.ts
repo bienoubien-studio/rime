@@ -18,14 +18,17 @@ import type { Dic } from '$lib/util/types';
 import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
 import type { AreaSlug, TreeBlock, GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
-import { getAPIProxyContext } from './api-proxy.svelte.js';
+import { API_PROXY, getAPIProxyContext } from './api-proxy.svelte.js';
 import { t__ } from '../../core/i18n/index.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import { env } from '$env/dynamic/public';
 import { random } from '$lib/util/index.js';
+import { page } from '$app/state';
+import { PARAMS } from '$lib/core/constant.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
+	element,
 	config,
 	readOnly,
 	key,
@@ -40,7 +43,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
 	let processing = $state(false);
-	let element = $state<HTMLFormElement>();
 	const operation = $derived(doc.id ? 'update' : 'create');
 	const user = getUserContext();
 	const errors = setErrorsContext(key);
@@ -54,7 +56,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const locale = getLocaleContext();
 	let title = $state(initialTitle);
 
-	const apiProxy = getAPIProxyContext('document');
+	const apiProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 
 	function initLevel() {
 		const last = key.split('_').pop() as string;
@@ -329,8 +331,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	 *
 	 * // value will not update if doc.blocks.0.title update
 	 */
-	function getRawValue(path: string) {
-		return snapshot(getValueAtPath(path, doc)) || null;
+	function getRawValue<T extends any = any>(path: string) {
+		return snapshot(getValueAtPath(path, doc)) as T || null;
 	}
 
 	function useField(path: string, config?: FormField) {
@@ -455,10 +457,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			setValueFromDefaultLocale,
 
 			get value() {
-				// if(config.required){
-				// 	const defaultValue = typeof config.defaultValue === 'function' ? config.defaultValue() : config.defaultValue
-				// 	return getValueAtPath(path, doc) || defaultValue
-				// }
 				return getValueAtPath(path, doc);
 			},
 
@@ -500,33 +498,35 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 	}
 
-	const submit = async (action: string) => {
-		if (processing) return;
-		processing = true;
-
+	const prepareData = () => {
 		const data: Dic = {};
-
 		for (const key of Object.keys(changes)) {
 			data[key] = doc[key];
 		}
-
 		const flatData: Dic = flatten(data);
 
 		const formData = new FormData();
-
 		for (const key of Object.keys(flatData)) {
 			formData.set(key, flatData[key]);
 		}
+		if (isCollection && documentConfig.upload) {
+			const uploadPath = page.url.searchParams.get(PARAMS.UPLOAD_PATH);
+			formData.set('_path', uploadPath || 'root');
+		}
+		return formData
+	}
 
-		const response = await fetch(action, {
+	const submit = async (action: string) => {
+		if (processing) return;
+		processing = true;
+		
+		const result: ActionResult = await fetch(action, {
 			method: 'POST',
-			body: formData
-		});
-
-		const result: ActionResult = deserialize(await response.text());
-
-		if (result.type === 'success') {
-			doc = result.data?.doc || (doc as GenericDoc);
+			body: prepareData()
+		}).then(async r => deserialize(await r.text()));
+		
+		async function handleSuccess(data?: Dic) {
+			doc = data?.doc || (doc as GenericDoc);
 			if (nestedLevel === 0) {
 				toast.success(t__('common.doc_updated'));
 				await invalidateAll();
@@ -539,15 +539,12 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				// Form so no need to assign the returned doc
 				if (onNestedDocumentCreated) onNestedDocumentCreated(doc);
 			}
-		} else if (result.type === 'redirect') {
-			// handle redirect after document creation
-			toast.success(t__('common.doc_created'));
-			// if (collection) collection.addDoc(doc as GenericDoc);
-			applyAction(result);
-		} else if (result.type === 'failure') {
+		}
+
+		async function handleError(data?: Dic) {
 			// Handle error
-			if (result.data?.errors) {
-				errors.value = result.data.errors;
+			if (data?.errors) {
+				errors.value = data.errors;
 				for (const [key, error] of Object.entries(errors.value)) {
 					toast.error(key + ': ' + error);
 				}
@@ -555,38 +552,66 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				toast.error('An error occured');
 			}
 		}
+
+		async function handleRedirect(res: ActionResult) {
+			// handle redirect after document creation
+			toast.success(t__('common.doc_created'));
+			applyAction(res);
+		}
+
+		switch (result.type) {
+			case 'success':
+				handleSuccess(result.data);
+				break;
+			case 'redirect':
+				handleRedirect(result);
+				break;
+			case 'failure':
+				handleError(result);
+				break;
+		}
+
 		processing = false;
 	};
 
 	const enhance = (formElement: HTMLFormElement) => {
-		element = formElement;
-		const listener = (event: SubmitEvent) => {
-			event.preventDefault();
-			// Set status if needed
-			const status = !!event.submitter?.dataset.status;
+		
+		const setStatus = (submitter: SubmitEvent['submitter']) => {
+			const status = !!submitter?.dataset.status;
 			if (status && documentConfig.versions && documentConfig.versions.draft) {
-				setValue('status', event.submitter?.dataset.status);
+				setValue('status', submitter?.dataset.status);
 			}
+		}
+
+		const enhanceAction = (submitter: SubmitEvent['submitter']) => {
 			let action = formElement.action;
-			const draft = !!event.submitter?.dataset.draft;
+			
+			const draft = !!submitter?.dataset.draft;
 			if (draft) {
 				action += `&draft=true`;
 			}
 			if (documentConfig.versions) {
-				// let versionsSuffix = documentConfig.versions && doc.versionId ? `&versionId=${doc.versionId}` : ''
 				if (!draft) {
 					action += `&versionId=${doc.versionId}`;
 				}
 			}
-			console.log(action);
-			submit(action);
+			return action
+		}
+
+		const listener = (event: SubmitEvent) => {
+			event.preventDefault();
+			setStatus(event.submitter)
+			submit(enhanceAction(event.submitter));
 		};
+
 		formElement.addEventListener('submit', listener);
+		
 		return {
 			destroy() {
 				formElement.removeEventListener('submit', listener);
 			}
 		};
+
 	};
 
 	const buildPanelActionUrl = () => {
@@ -603,10 +628,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		} else {
 			actionSuffix = '?/update';
 		}
-
 		// Add a redirect parameter if we're in a nested form ex: relation creation
 		const redirectParam = nestedLevel > 0 ? '&redirect=0' : '';
-
 		// Combine all parts to form the final action URL
 		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};
@@ -633,7 +656,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		},
 
 		get element() {
-			return element;
+			const htmlFormElement = element()
+			if(!htmlFormElement) throw new Error('form element is not defined')
+			return htmlFormElement;
 		},
 
 		get canSubmit() {
@@ -697,6 +722,7 @@ type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
 type MoveBlock = (from: number, to: number) => void;
 
 type Args<T> = {
+	element: () => HTMLFormElement | undefined,
 	initial: T;
 	config: (AreaSlug extends never ? never : CompiledArea) | CompiledCollection;
 	readOnly: boolean;

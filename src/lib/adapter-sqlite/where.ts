@@ -8,7 +8,7 @@ import { isRelationField } from '$lib/util/field.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import type { ParsedQs } from 'qs';
 import { RizomError } from '$lib/core/errors/index.js';
-import { isVersionsSlug } from '$lib/util/schema.js';
+import { isDirectorySlug, isVersionsSlug } from '$lib/util/schema.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
@@ -68,7 +68,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		const sqlColumn = column.replace(/\./g, '__');
 
 		// Handle hierarchy fields (_parent, _position) in versioned collections
-		if (isVersionsSlug(slug) && (sqlColumn === '_parent' || sqlColumn === '_position')) {
+		if (isVersionsSlug(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
 			const rootTable = rizom.adapter.tables[rootSlug];
@@ -79,7 +79,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 				db.select({ ownerId: rootTable.id }).from(rootTable).where(fn(rootTable[sqlColumn], value))
 			);
 		}
-
+		
 		// Handle regular fields
 		if (unlocalizedColumns.includes(sqlColumn)) {
 			return fn(table[sqlColumn], value);
@@ -116,7 +116,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		// Not a relation
 		if (!isRelationField(fieldConfig)) {
-			logger.warn(`the query contains the field "${column}" which is not a relation of ${documentConfig.slug}`);
+			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
 			// Return a condition that will always be false
 			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
 		}
@@ -174,7 +174,7 @@ const formatValue = ({ operator, value }: { operator: string; value: any }) => {
 			// Handle string value with "," separators for url params
 			return value.split(',');
 		case ['like', 'ilike', 'not_like'].includes(operator):
-			return `%${value}%`;
+			return !value.includes('%') ? `%${value}%` : value;
 		default:
 			return value;
 	}

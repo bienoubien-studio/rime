@@ -48,7 +48,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	const hasDraft = $derived(config.versions && config.versions.draft);
 
 	onMount(() => {
-		displayMode = (localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || 'list';
+		displayMode = (localStorage.getItem(`collection.${config.slug}.display`) as DisplayMode) || DISPLAY_MODE.LIST;
 		const localSortBy = localStorage.getItem(`collection.${config.slug}.sortBy`);
 		sortingBy = localSortBy || 'updatedAt';
 		const localSortOrder = localStorage.getItem(`collection.${config.slug}.sortOrder`) as SortMode;
@@ -337,7 +337,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	}
 
 	function filterBy(inputValue: string) {
-		displayMode = DISPLAY_MODE.LIST
+		displayMode = DISPLAY_MODE.LIST;
 		if (inputValue !== '') {
 			const scores: any[] = [];
 			for (const doc of initialDocs) {
@@ -456,6 +456,10 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 				return upload;
 			}
 			throw new Error('upload is available only on upload collections');
+		},
+
+		set upload(value) {
+			upload = value;
 		},
 
 		/****************************************************/

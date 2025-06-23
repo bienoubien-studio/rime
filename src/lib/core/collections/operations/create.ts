@@ -1,10 +1,6 @@
 import cloneDeep from 'clone-deep';
 import { RizomError } from '$lib/core/errors/index.js';
 import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
-import { mergeWithBlankDocument } from '$lib/core/operations/shared/mergeWithBlank.js';
-import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
-import { buildConfigMap } from '../../operations/configMap/index.server.js';
-import { validateFields } from '$lib/core/operations/shared/validateFields.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
@@ -12,7 +8,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { DeepPartial } from '$lib/util/types.js';
+import type { DeepPartial, Dic } from '$lib/util/types.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;
@@ -41,44 +37,24 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
 	}
 
-	data = mergeWithBlankDocument({
-		data: data,
-		config
-	});
-
-	const configMap = buildConfigMap(data, config.fields);
-
-	// throw new Error('thats an error');
-
-	data = await setDefaultValues({
-		data,
-		adapter: rizom.adapter,
-		configMap,
-		mode: 'always'
-	});
-
-	data = await validateFields({
-		data,
-		event,
-		locale,
-		config,
-		configMap,
-		operation: 'create'
-	});
-
+	let metas: Dic = {}
+	
 	for (const hook of config.hooks?.beforeCreate || []) {
 		const result = await hook({
-			//@ts-expect-error well well well
 			data,
 			config,
 			operation: 'create',
 			rizom: event.locals.rizom,
-			event
+			event,
+			metas
 		});
+		metas = result.metas
 		data = result.data as Partial<T>;
 	}
+	
+	if (!metas.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @create')
 
-	const incomingPaths = Object.keys(configMap);
+	const incomingPaths = Object.keys(metas.configMap);
 
 	const created = await rizom.adapter.collection.insert({
 		slug: config.slug,
@@ -89,7 +65,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	// Use the versionId for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
 		ownerId: created.versionId,
-		configMap,
+		configMap: metas.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -99,7 +75,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	const treeDiff = await saveTreeBlocks({
 		ownerId: created.versionId,
-		configMap,
+		configMap: metas.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -109,7 +85,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	await saveRelations({
 		ownerId: created.versionId,
-		configMap,
+		configMap: metas.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -144,7 +120,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			// Get locales
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
-				rizom.enforceLocale(otherLocale);
+				rizom.setLocale(otherLocale);
 				await rizom.collection(config.slug).updateById({
 					id: created.id,
 					versionId: created.versionId,
@@ -154,9 +130,9 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 				});
 			}
 		}
-		rizom.enforceLocale(locale);
+		rizom.setLocale(locale);
 	}
-
+	
 	for (const hook of config.hooks?.afterCreate || []) {
 		await hook({
 			doc: document as RegisterCollection[CollectionSlug],
@@ -164,9 +140,9 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			operation: 'create',
 			rizom: event.locals.rizom,
 			event,
-			metas: {}
+			metas
 		});
 	}
 
-	return { doc: document };
+	return document;
 };

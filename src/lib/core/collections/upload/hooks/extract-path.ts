@@ -1,14 +1,15 @@
 import { RizomError } from '$lib/core/errors/index.js';
-import type { CollectionHookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
-import { getSegments } from '../util/path.js';
+import { getSegments, type UploadPath } from '../util/path.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 
 /**
  * Hook executed before save/update operations on {uploadSlug}_directories collections 
  * the function nomalize and validate path ({slug}_directories.id).
  * Then extract parent, name from the given path.
  */
-export const exctractPath: CollectionHookBeforeUpsert<any> = async (args) => {
+export const exctractPath: HookBeforeUpsert<'collection', GenericDoc & { id: UploadPath }> = async (args) => {
   let data = args.data;
   if (data?.id) {
     const [error, segments] = trycatchSync(() => getSegments(data.id))

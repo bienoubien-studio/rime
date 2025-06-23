@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { Button } from '../../ui/button';
-	import { X, PencilRuler, History, ExternalLink } from '@lucide/svelte';
+	import { X, PencilRuler, ExternalLink } from '@lucide/svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import { invalidateAll } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import ButtonSave from './ButtonSave.svelte';
 	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
@@ -12,9 +11,7 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Settings from './Settings.svelte';
 	import ButtonStatus from './ButtonStatus.svelte';
-	import { page } from '$app/state';
-	import { PARAMS } from '$lib/core/constant.js';
-	
+
 	// Props
 	type Props = {
 		onClose?: any;
@@ -25,7 +22,6 @@
 
 	const onCloseIsDefined = !!onClose;
 	const titleContext = getContext<{ value: string }>('title');
-	
 </script>
 
 {#snippet topLeft()}
@@ -53,7 +49,9 @@
 			></Button>
 		{/if}
 
-		<Settings {form} />
+		{#if form.doc.id}
+			<Settings {form} />
+		{/if}
 
 		{#if !form.config.versions}
 			<!-- scenario 1: no versions -->
@@ -69,7 +67,11 @@
 				data-submit
 			/>
 		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
-			<ButtonStatus {form} />
+			
+			{#if form.doc.id}
+				<ButtonStatus {form} />
+			{/if}
+
 			<!-- scenario 3: versions and draft, on a published doc -->
 			<ButtonSave
 				size="sm"
@@ -80,7 +82,9 @@
 				data-submit
 			/>
 		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
-			<ButtonStatus {form} />
+			{#if form.doc.id}
+				<ButtonStatus {form} />
+			{/if}
 			<!-- scenario 4: versions and draft, on a draft doc -->
 
 			<!-- PUBLISH -->

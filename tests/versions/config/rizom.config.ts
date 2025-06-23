@@ -1,13 +1,4 @@
-import {
-	relation,
-	richText,
-	text,
-	toggle,
-	slug,
-	tabs,
-	tab,
-	date
-} from '$lib/fields/index.js';
+import { relation, richText, text, toggle, slug, tabs, tab, date, group } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import { collection, area, defineConfig } from '$lib/index.js';
 import { apiInit } from './api-init/index.js';
@@ -30,16 +21,11 @@ const Infos = area('infos', {
 
 const tabWriter = tab('writer').fields(
 	richText('text').features('bold', 'italic', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
-)
+);
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
-	slug('slug')
-		.slugify('attributes.title')
-		.live(false)
-		.table({ position: 3, sort: true })
-		.localized()
-		.required(),
+	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
 	relation('image').to('medias'),
 	richText('intro').features('bold', 'link'),
 	date('published')
@@ -55,7 +41,7 @@ const News = collection('news', {
 		update: (user) => access.hasRoles(user, 'admin', 'editor')
 	},
 	versions: { draft: true }
-})
+});
 
 const Medias = collection('medias', {
 	panel: {
@@ -67,7 +53,7 @@ const Medias = collection('medias', {
 			{ name: 'small', width: 720, out: ['webp'] },
 			{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
 			{ name: 'large', width: 1080, out: ['webp'] }
-		],
+		]
 	},
 	fields: [text('alt').required()],
 	access: {
@@ -92,7 +78,12 @@ const Pages = collection('pages', {
 	panel: {
 		group: 'content'
 	},
-	fields: [text('alt').required().isTitle()],
+	fields: [
+		group('attributes').fields(
+			text('title').isTitle(), 
+			slug('slug'),
+			toggle('isHome'),
+		)],
 	url: (doc) => '/',
 	nested: true,
 	access: {

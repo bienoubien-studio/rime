@@ -14,7 +14,7 @@ type DeleteArgs = {
 };
 
 export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
-	//
+	
 	const { config, event, locale, limit, offset, sort, query } = args;
 	const { rizom } = event.locals;
 

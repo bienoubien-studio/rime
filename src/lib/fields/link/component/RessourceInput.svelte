@@ -2,7 +2,7 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
-	import { getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
+	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import type { PrototypeSlug } from '$lib/types';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 
@@ -26,7 +26,7 @@
 	let resources = $state<Ressource[]>([]);
 	let selected = $state<Ressource | null>();
 
-	const APIProxy = getAPIProxyContext('document');
+	const APIProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 	let resource = $state<any>(null);
 
 	function convertDocToResource(doc: GenericDoc) {

@@ -2,8 +2,6 @@ import path from 'node:path';
 import { RizomError } from '$lib/core/errors/index.js';
 import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 import { buildConfigMap } from '../../operations/configMap/index.server.js';
-import { validateFields } from '$lib/core/operations/shared/validateFields.server.js';
-import { setDefaultValues } from '$lib/core/operations/shared/setDefaultValues.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
@@ -13,7 +11,7 @@ import {
 	getVersionUpdateOperation,
 	VersionOperations,
 	type VersionOperation
-} from '$lib/core/operations/shared/versions.js';
+} from '$lib/core/collections/versions/operations.js';
 import { type RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
@@ -86,7 +84,7 @@ async function handleVersionCreation<T extends GenericDoc>({
 
 		const versionsSlug = makeVersionsSlug(config.slug);
 
-		const { doc } = await rizom.collection(versionsSlug).create({ data, locale });
+		const document = await rizom.collection(versionsSlug).create({ data, locale });
 
 		if (config.versions && config.versions.maxVersions) {
 			await rizom.collection(versionsSlug).delete({
@@ -96,7 +94,7 @@ async function handleVersionCreation<T extends GenericDoc>({
 			});
 		}
 
-		return doc.id;
+		return document.id;
 	}
 
 	// Handle simple update (no version)
@@ -158,52 +156,34 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		originalConfigMap
 	});
 
-	// build the config map according to the augmented data
-	const configMap = buildConfigMap(data, config.fields);
 
-	// Set default values for missings ones
-	// for example if a field has been deleted but is required
-	data = await setDefaultValues({
-		data,
-		adapter: rizom.adapter,
-		configMap,
-		mode: 'required'
-	});
-
-	data = await validateFields({
-		data,
-		event,
-		locale,
-		original,
-		config,
-		configMap,
-		operation: 'update'
-	});
-
+	let metas: Dic = { versionOperation, isFallbackLocale }
 	// We do not re-run hooks on locale fallbackCreation
-	if (!isFallbackLocale) {
-		for (const hook of config.hooks?.beforeUpdate || []) {
-			const result = await hook({
-				/**
-				 * TS is expecting a more specific types,
-				 * but with RegisterCollection[Slug] devs get their
-				 * types in the hook definition arguments
-				 */
-				data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
-				config,
-				originalDoc: original as RegisterCollection[CollectionSlug],
-				operation: 'update',
-				rizom: event.locals.rizom,
-				event,
-				metas: {}
-			});
-			data = result.data as Partial<T>;
-		}
+
+	for (const hook of config.hooks?.beforeUpdate || []) {
+		const result = await hook({
+			/**
+			 * TS is expecting a more specific types,
+			 * but with RegisterCollection[Slug] devs get their
+			 * types in the hook definition arguments
+			 */
+			data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
+			config,
+			originalDoc: original as RegisterCollection[CollectionSlug],
+			operation: 'update',
+			rizom: event.locals.rizom,
+			event,
+			metas
+		});
+		metas = result.metas
+		data = result.data as Partial<T>;
 	}
+	
+	if (!metas.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @updateById')
 
-	const incomingPaths = Object.keys(configMap);
+	const incomingPaths = Object.keys(metas.configMap);
 
-	await rizom.adapter.collection.update({
+	const { id: updatedId } = await rizom.adapter.collection.update({
 		id,
 		versionId,
 		slug: config.slug,
@@ -214,7 +194,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	const blocksDiff = await saveBlocks({
 		ownerId: versionId,
-		configMap,
+		configMap: metas.configMap,
 		originalConfigMap,
 		data,
 		incomingPaths,
@@ -226,7 +206,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	const treeDiff = await saveTreeBlocks({
 		ownerId: versionId,
-		configMap,
+		configMap: metas.configMap,
 		originalConfigMap,
 		data,
 		incomingPaths,
@@ -238,7 +218,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	await saveRelations({
 		ownerId: versionId,
-		configMap,
+		configMap: metas.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -248,7 +228,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		treeDiff
 	});
 
-	let document = await rizom.collection(config.slug).findById({ id, locale, versionId: versionId });
+	let document = await rizom.collection(config.slug).findById({ id: updatedId, locale, versionId: versionId });
 
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
@@ -257,7 +237,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 			operation: 'update',
 			rizom: event.locals.rizom,
 			event,
-			metas: {}
+			metas
 		});
 	}
 

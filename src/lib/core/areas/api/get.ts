@@ -8,9 +8,8 @@ import { PARAMS } from '$lib/core/constant.js';
 export default function (slug: AreaSlug) {
 	//
 	async function GET(event: RequestEvent) {
-		const { rizom, locale } = event.locals;
+		const { rizom } = event.locals;
 
-		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
 		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
 		const paramSelect = event.url.searchParams.get(PARAMS.SELECT);
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
@@ -20,12 +19,12 @@ export default function (slug: AreaSlug) {
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const params: Dic = {
-			locale: paramLocale || locale,
+			locale: rizom.getLocale(),
 			draft,
 			versionId,
 			depth
 		};
-
+		
 		if (paramSelect) {
 			params.select = paramSelect.split(',');
 		}

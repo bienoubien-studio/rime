@@ -8,9 +8,8 @@ import { PARAMS } from '$lib/core/constant.js';
 export default function (slug: AreaSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { rizom, locale } = event.locals;
+		const { rizom } = event.locals;
 
-		const paramLocale = event.url.searchParams.get(PARAMS.LOCALE);
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
 			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
@@ -20,16 +19,20 @@ export default function (slug: AreaSlug) {
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
-		
+
+		if(data.locale){
+			rizom.setLocale(data.locale)
+		}
+
 		const [error, doc] = await trycatch(
 			rizom.area(slug).update({
 				data,
 				versionId,
 				draft,
-				locale: paramLocale || data.locale || locale
+				locale: rizom.getLocale()
 			})
 		);
-
+		
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

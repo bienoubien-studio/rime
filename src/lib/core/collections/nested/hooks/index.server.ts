@@ -1,11 +1,11 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { CollectionHookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
 import { asc, eq } from 'drizzle-orm';
 
 /**
  * Hook to populate _children property on document from a nested collection
  */
-export const addChildrenProperty: CollectionHookBeforeRead<GenericDoc> = async (args) => {
+export const addChildrenProperty: HookBeforeRead<'collection', GenericDoc> = async (args) => {
 	const select = args.metas.select && Array.isArray(args.metas.select) ? args.metas.select : [];
 	const emptySelect = select.length === 0;
 

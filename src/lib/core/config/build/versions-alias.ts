@@ -1,3 +1,4 @@
+import { mergeWithBlankDocument } from '$lib/core/operations/hooks/before-create/merge-with-blank.server.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { CollectionSlug } from '../../../types.js';
 import type { CompiledCollection, CompiledConfig } from '../types/index.js';
@@ -37,7 +38,13 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 				slug: makeVersionsSlug(area.slug) as CollectionSlug,
 				versions: false,
 				access: area.access,
-				hooks: area.hooks,
+				asTitle: area.asTitle,
+				hooks: {
+					beforeCreate: [ mergeWithBlankDocument, ...(area.hooks?.beforeUpdate || [])],
+					beforeUpdate: area.hooks?.beforeUpdate || [],
+					afterUpdate: area.hooks?.afterUpdate || [],
+					beforeRead: area.hooks?.beforeRead || [],
+				},
 				fields: area.fields,
 				type: 'collection',
 				label: { plural: area.label, singular: area.label, gender: 'm' },
@@ -46,6 +53,6 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 			config.collections = [...config.collections, versionedCollection];
 		}
 	}
-
+	
 	return config;
 }

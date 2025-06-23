@@ -1,7 +1,7 @@
 import { findTitleField } from "$lib/core/config/build/fields/findTitle.js";
-import type { AreaWithoutSlug } from "./types.js";
+import type { Area } from "../../../types.js";
 
-export const augmentTitle = ( config: AreaWithoutSlug<any> ) => {
+export const augmentTitle = ( config: Area<any> ) => {
   const fieldTitle = findTitleField(config.fields);
   return {
     ...config,

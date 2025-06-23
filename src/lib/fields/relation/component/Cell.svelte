@@ -2,7 +2,7 @@
 	import { env } from '$env/dynamic/public';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
-	import { getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
+	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 
 	type Props = {
 		value: {
@@ -15,7 +15,7 @@
 	let { value }: Props = $props();
 	let displayCount = $derived(value && value.length > 1);
 
-	const APIProxy = getAPIProxyContext('document');
+	const APIProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 
 	let APIUrl = $derived.by(() => {
 		if (value && value.length && value[0].documentId) {
@@ -26,7 +26,7 @@
 	});
 
 	const ressource = $derived.by(() => {
-		return APIUrl ? APIProxy.getRessource<{ data: { doc: GenericDoc } }>(APIUrl) : null;
+		return APIUrl ? APIProxy.getRessource<{ doc: GenericDoc }>(APIUrl) : null;
 	});
 </script>
 

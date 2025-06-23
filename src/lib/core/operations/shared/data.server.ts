@@ -33,7 +33,6 @@ export const extractData = async <T extends Dic = GenericDoc>(request: RequestEv
 	} catch (err:any){
 		throw new RizomFormError({ _form: err.message });
 	}
-	
 	return data as Partial<T>;
 };
 

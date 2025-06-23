@@ -51,3 +51,49 @@ export const trycatchSync = <T>(fn: () => T): [Error, never] | [never, T] => {
 		return [error as Error, null] as [Error, never];
 	}
 };
+
+/**
+ * A type representing a browser fetch function
+ */
+type FetchFunction = (input: string | URL | globalThis.Request, init?: RequestInit) => Promise<Response>;
+
+/**
+ * Safely executes a fetch request and treats both network errors and HTTP error status codes as errors.
+ * Returns a tuple containing either an error or the successful response.
+ *
+ * @example
+ * // Using trycatchFetch to handle both network and HTTP errors
+ * const [error, response] = await trycatchFetch('/api/data');
+ * if (error) {
+ *   // Handle both network and HTTP errors
+ *   return console.error(error);
+ * }
+ * 
+ * // Process successful response
+ * const data = await response.json();
+ * 
+ */
+export const trycatchFetch = async (
+  input: string | URL | globalThis.Request,
+  init?: RequestInit
+): Promise<[Error, never] | [never, Response]> => {
+  try {
+    const response = await fetch(input, init);
+    
+    if (!response.ok) {
+      // Try to get error details from response if possible
+      try {
+        const errorData = await response.json();
+        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+        return [new Error(errorMessage), null] as [Error, never];
+      } catch {
+        // If we can't parse the response as JSON, use a generic error message
+        return [new Error(`HTTP error! Status: ${response.status}`), null] as [Error, never];
+      }
+    }
+    
+    return [null, response] as [never, Response];
+  } catch (error) {
+    return [error as Error, null] as [Error, never];
+  }
+};

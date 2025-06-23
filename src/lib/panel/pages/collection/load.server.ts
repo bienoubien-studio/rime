@@ -5,19 +5,25 @@ import type { WithRequired } from 'better-auth/svelte';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import type { Dic } from '$lib/util/types.js';
-import { buildUploadAria, getParentPath, type UploadPath } from '$lib/core/collections/upload/util/path.js';
+import {
+	buildUploadAria,
+	getParentPath,
+	removePathFromLastAria,
+	type UploadPath
+} from '$lib/core/collections/upload/util/path.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { trycatch } from '$lib/util/trycatch.js';
+import { handleError } from '$lib/core/errors/handler.server.js';
 
-/****************************************************/
+/****************************************************
 /* Layout load
 /****************************************************/
+
 export function collectionLoad(slug: CollectionSlug) {
 	//
 	const load: ServerLoad = async (event) => {
 		const { rizom, locale, user } = event.locals;
 
-		event.depends('data:currentPath');
 		const collection = rizom.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 
@@ -45,36 +51,48 @@ export function collectionLoad(slug: CollectionSlug) {
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
 			const directoryCollection = rizom.collection(makeUploadDirectoriesSlug(slug));
 			// Check if dir exists
-			let [_, currentDirectory] = await trycatch(directoryCollection.findById({
-				id: currentDirectoryPath
-			}));
+			let [error, currentDirectory] = await trycatch(
+				directoryCollection.findById({
+					id: currentDirectoryPath
+				})
+			);
+			
 			// If doesn't exists and path is root then create it
 			if (!currentDirectory && currentDirectoryPath === UPLOAD_PATH.ROOT_NAME) {
 				await directoryCollection.create({
 					data: { id: UPLOAD_PATH.ROOT_NAME }
 				});
+			}else if(error){
+				logger.error(`${paramUploadPath} doesn't exists`);
+				return redirect(301, event.url.pathname);
 			}
-			if(!currentDirectory){
-				logger.error(`${paramUploadPath} doesn't exists`)
-				return redirect(301, event.url.pathname)
-			}
+
 			directories = await directoryCollection.find({
-				query: `where[parent][equals]=${currentDirectoryPath}`
+				query: `where[parent][equals]=${currentDirectoryPath}`,
+				sort: 'name'
 			});
 
 			const parentPath = getParentPath(currentDirectoryPath);
 			let parentDirectory;
 
 			if (parentPath) {
-				parentDirectory = await directoryCollection.findById({
-					id: parentPath
-				});
-				const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` }
+				const [parentError, result] = await trycatch(
+					directoryCollection.findById({
+						id: parentPath
+					})
+				);
+
+				if (parentError) {
+					return handleError(parentError, { context: 'load' });
+				}
+				parentDirectory = result;
+
+				const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` };
 				aria = [...aria].slice(0, -1);
 				aria = [...aria, collectionAria, ...buildUploadAria({ path: currentDirectoryPath, slug })];
-				data.aria = aria
+				data.aria = removePathFromLastAria(aria);
 			}
-
+			
 			data = { ...data, upload: { directories, currentPath: currentDirectoryPath, parentDirectory } };
 		}
 

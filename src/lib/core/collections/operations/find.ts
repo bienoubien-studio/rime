@@ -3,9 +3,9 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { transformDocument } from '$lib/core/operations/shared/transformDocument.server.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
+import type { Dic } from '$lib/util/types.js';
 
 type FindArgs = {
 	query?: OperationQuery;
@@ -43,15 +43,24 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 
 	const hasSelect = select && Array.isArray(select) && select.length;
 	const processDocument = async (documentRaw: RawDoc) => {
-		let document = await transformDocument<T>({
-			raw: documentRaw,
-			config,
+		
+		let document = await event.locals.rizom.adapter.transform.doc({
+			doc: documentRaw,
+			slug: config.slug,
 			locale,
-			depth,
 			event,
-			augment: !hasSelect,
+			depth,
 			withBlank: !hasSelect
 		});
+
+		let metas: Dic = {
+			query,
+			sort,
+			limit,
+			offset,
+			select,
+			draft
+		}
 
 		for (const hook of config.hooks?.beforeRead || []) {
 			const result = await hook({
@@ -60,22 +69,16 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 				operation: 'read',
 				rizom: event.locals.rizom,
 				event,
-				metas: {
-					query,
-					sort,
-					limit,
-					offset,
-					select,
-					draft
-				}
+				metas
 			});
+			metas = result.metas
 			document = result.doc as unknown as T;
 		}
-
+		
 		return document;
 	};
 
 	const documents = await Promise.all(documentsRaw.map((doc) => processDocument(doc)));
 
-	return documents;
+	return documents as T[];
 };

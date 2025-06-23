@@ -1,17 +1,17 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type {
-	CollectionHookAfterCreate,
-	CollectionHookAfterDelete,
-	CollectionHookBeforeCreate,
-	CollectionHookBeforeDelete,
-	CollectionHookBeforeUpdate
+	HookAfterCreate,
+	HookAfterDelete,
+	HookBeforeCreate,
+	HookBeforeDelete,
+	HookBeforeUpdate
 } from '$lib/core/config/types/hooks.js';
 
 /****************************************************/
 /* Create a better-auth user before creation
 /****************************************************/
-export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
+export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) => {
 	const { rizom } = args;
 
 	// Prevent superAdmin value to be set on creation
@@ -42,7 +42,7 @@ export const beforeCreate: CollectionHookBeforeCreate = async (args) => {
 // as it's not working with signupEmail
 // Only admin can change roles
 /****************************************************/
-export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) => {
+export const afterCreateSetAuthUserRole: HookAfterCreate<GenericDoc> = async (args) => {
 	const { rizom, event, doc } = args;
 	const isAdmin = 'roles' in doc && Array.isArray(doc.roles) && doc.roles.includes('admin');
 	if (isAdmin) {
@@ -59,9 +59,28 @@ export const afterCreate: CollectionHookAfterCreate<GenericDoc> = async (args) =
 /****************************************************/
 /* Before update :
 // - set proper better-auth role
+/****************************************************/
+export const forwardRolesToBetterAuth: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
+	const { rizom, event, originalDoc } = args;
+	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
+
+	if (rolesChanged) {
+		await rizom.auth.setAuthUserRole({
+			roles: args.data.roles,
+			userId: args.originalDoc.id,
+			slug: args.config.slug,
+			headers: event.request.headers
+		});
+	}
+
+	return args;
+};
+
+/****************************************************/
+/* Before update :
 // - prevent superadmin to be changed by someone else
 /****************************************************/
-export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args) => {
+export const preventSuperAdminMutation: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
 	const { rizom, event, originalDoc } = args;
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
 
@@ -82,22 +101,13 @@ export const beforeUpdate: CollectionHookBeforeUpdate<GenericDoc> = async (args)
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 
-	if (rolesChanged) {
-		await rizom.auth.setAuthUserRole({
-			roles: args.data.roles,
-			userId: args.originalDoc.id,
-			slug: args.config.slug,
-			headers: event.request.headers
-		});
-	}
-
 	return args;
 };
 
 /****************************************************/
 /* Prevent superadmin to be deleted
 /****************************************************/
-export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
+export const preventSupperAdminToBeDeleted: HookBeforeDelete<GenericDoc> = async (args) => {
 	const { doc, rizom } = args;
 	const isSuperAdminDeletion = await rizom.auth.isSuperAdmin(doc.id);
 	if (isSuperAdminDeletion) {
@@ -109,7 +119,7 @@ export const beforeDelete: CollectionHookBeforeDelete = async (args) => {
 /****************************************************/
 /* After delete, delete better-auth user
 /****************************************************/
-export const afterDelete: CollectionHookAfterDelete = async (args) => {
+export const deleteBetterAuthUser: HookAfterDelete<GenericDoc> = async (args) => {
 	const { doc, rizom } = args;
 	await rizom.auth.deleteAuthUserById({
 		id: doc.authUserId,

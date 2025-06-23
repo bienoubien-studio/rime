@@ -19,7 +19,7 @@
 
 	$effect(() => {
 		if (form.doc.password !== form.doc.confirmPassword && operation === 'create') {
-			form.errors.set('__form', 'password mismatch');
+			form.errors.set('__form', 'password_mismatch');
 		} else {
 			form.errors.delete('__form');
 		}

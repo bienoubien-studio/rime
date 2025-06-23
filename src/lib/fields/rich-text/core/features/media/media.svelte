@@ -4,7 +4,7 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { onMount } from 'svelte';
-	import { setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
+	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -57,7 +57,7 @@
 	// Need to set a local APIProxy because the app one is not
 	// available from inside tiptap rendered components
 	// TODO try to pass it as a prop in a near future
-	const APIProxy = setAPIProxyContext('titap');
+	const APIProxy = setAPIProxyContext(API_PROXY.TIPTAP);
 	const ressource = APIProxy.getRessource(`/api/${extension.options.query}`);
 	let docs = $state<UploadDoc[]>([]);
 

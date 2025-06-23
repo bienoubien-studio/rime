@@ -9,13 +9,14 @@
 	import { snapshot } from '$lib/util/state.js';
 	import { getValueAtPath } from '$lib/util/object.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import { getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
+	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
 	import { getCollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import type { Relation } from '$lib/adapter-sqlite/relations.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { RelationField } from '../index';
 	import type { RelationFieldItem } from './types.js';
+	import type { RelationValue } from '$lib/fields/types.js';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
@@ -24,7 +25,7 @@
 	// Context
 	const { getCollection } = getConfigContext();
 	const locale = getLocaleContext();
-	const APIProxy = getAPIProxyContext('document');
+	const APIProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 	const field = $derived(form.useField(path, config));
 	const relationConfig = getCollection(config.relationTo);
 	const relationCollectionCtx = getCollectionContext(relationConfig.slug);
@@ -33,7 +34,7 @@
 	// the fetched items
 	let initialItems: RelationFieldItem[] = $state([]);
 	// value from the form
-	let initialValue = form.getRawValue(path) || [];
+	let initialValue = form.getRawValue<Relation[]>(path) || [];
 	// timestamp to force re-render
 	let stamp = $state(new Date().getTime().toString());
 
@@ -116,16 +117,17 @@
 	const ressourceURL = makeRessourceURL();
 
 	// Fetch the collection data
-	const ressource = APIProxy.getRessource(ressourceURL);
+	const ressource = APIProxy.getRessource<{ docs: GenericDoc[] }>(ressourceURL);
 
 	// Initialize the initial items and selected items
 	$effect(() => {
 		if (ressource.data) {
 			initialItems = ressource.data.docs.map((doc: GenericDoc) => documentToRelationFieldItem(doc));
 			if (!initialized) {
-				selectedItems = initialValue.map((relation: Relation) => {
+				const findItem = (relation: Relation) => {
 					return initialItems.find((item) => item.documentId === relation.documentId);
-				});
+				}
+				selectedItems = initialValue.map(findItem).filter(item => !!item);
 				initialized = true;
 			}
 		}
@@ -192,7 +194,7 @@
 		// Enabled the form
 		form.isDisabled = false;
 		// update resssource
-		ressource.data.docs.push(doc);
+		ressource.data?.docs.push(doc);
 		// update collection if present
 		if (relationCollectionCtx) {
 			relationCollectionCtx.addDoc(doc);

@@ -14,8 +14,6 @@ import type { IconProps, Upload } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
 
-export type DocumentPrototype = 'collection' | 'area';
-
 export interface Config {
 	/** The database name inside ./db folder */
 	database: string;

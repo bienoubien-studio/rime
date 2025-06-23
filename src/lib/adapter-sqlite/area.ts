@@ -8,7 +8,7 @@ import { createBlankDocument } from '$lib/util/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
-import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/operations/shared/versions.js';
+import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 
 type AreaInterfaceArgs = {

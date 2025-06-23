@@ -3,7 +3,7 @@ import { toCamelCase } from '$lib/util/string.js';
 import { cleanupStoredFiles } from '$lib/core/collections/upload/disk/delete.js';
 import { saveFile } from '$lib/core/collections/upload/disk/save.js';
 import { isUploadConfig } from '$lib/util/config.js';
-import type { CollectionHookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 
 /**
@@ -25,7 +25,7 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
  *    - Cleans up image variations
  *    - Nullifies related document fields
  */
-export const processFileUpload: CollectionHookBeforeUpsert<GenericDoc> = async (args) => {
+export const processFileUpload: HookBeforeUpsert<'collection', GenericDoc> = async (args) => {
 	const { operation, config, rizom } = args;
 	if (!isUploadConfig(config)) throw new Error('Should never throw');
 

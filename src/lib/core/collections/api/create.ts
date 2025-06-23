@@ -8,7 +8,7 @@ import { trycatch } from '$lib/util/trycatch.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { rizom, locale } = event.locals;
+		const { rizom } = event.locals;
 
 		const collection = rizom.collection(slug);
 		const [extractError, data] = await trycatch(extractData(event.request));
@@ -21,13 +21,17 @@ export default function (slug: CollectionSlug) {
 			data.confirmPassword = data.password;
 		}
 
-		const [error, result] = await trycatch(collection.create({ data, locale: data.locale || locale }));
+		if(data.locale){
+			rizom.setLocale(data.locale)
+		}
+
+		const [error, document] = await trycatch(collection.create({ data, locale: rizom.getLocale() }));
 
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
-
-		return json(result);
+		
+		return json({ doc: document});
 	}
 
 	return POST;

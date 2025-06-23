@@ -64,7 +64,7 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Portal>
-		<DropdownMenu.Content class="rz-link__type-content" align="end">
+		<DropdownMenu.Content align="end">
 			{#if form.config.versions}
 				<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
 					<History size="12" />
@@ -72,7 +72,7 @@
 				</DropdownMenu.Item>
 			{/if}
 
-			{#if form.config.versions && form.config.versions.draft}
+			{#if form.config.versions && form.config.versions.draft && form.doc.status === VERSIONS_STATUS.PUBLISHED}
 				<DropdownMenu.Item onclick={() => handleNewDraft()}>
 					<Pickaxe size="12" />
 					{t__('common.save_new_draft')}

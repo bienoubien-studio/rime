@@ -1,5 +1,4 @@
-import type { AreaSlug, GenericDoc } from '$lib/core/types/doc';
-import type { Version } from '$lib/panel/components/sections/document/Versions.svelte';
+import type { AreaSlug, GenericDoc, VersionDoc } from '$lib/core/types/doc';
 import type { Aria } from '$lib/panel/types.js';
 
 export type AreaProps = {
@@ -19,7 +18,7 @@ export type AreaLoadReturn =
 			operation: 'update';
 			readOnly: true;
 			aria: Aria;
-			versions?: Version[];
+			versions?: VersionDoc[];
 	  }
 	| {
 			status: 200;
@@ -28,5 +27,5 @@ export type AreaLoadReturn =
 			slug: AreaSlug;
 			readOnly: false;
 			aria: Aria;
-			versions?: Version[];
+			versions?: VersionDoc[];
 	  };
