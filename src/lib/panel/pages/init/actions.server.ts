@@ -1,5 +1,5 @@
 import { redirect, type RequestEvent } from '@sveltejs/kit';
-import { extractData } from '$lib/core/operations/shared/data.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import { handleError } from '$lib/core/errors/handler.server';
 
 export const initActions = {

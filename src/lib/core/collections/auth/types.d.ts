@@ -1,3 +1,5 @@
+import type { RequestEvent } from "@sveltejs/kit";
+
 export type User = {
 	id: string;
 	name: string;
@@ -6,7 +8,8 @@ export type User = {
 	isSuperAdmin?: boolean;
 };
 
-type AccessOptions = { id?: string };
+type AccessOptions = { id?: string, event: RequestEvent };
+
 export type Access = {
 	create?: (user?: User, options: AccessOptions) => boolean;
 	read?: (user?: User, options: AccessOptions) => boolean;

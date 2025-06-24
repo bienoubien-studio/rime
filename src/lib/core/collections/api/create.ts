@@ -1,5 +1,5 @@
 import { isAuthConfig } from '$lib/util/config.js';
-import { extractData } from '$lib/core/operations/shared/data.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';

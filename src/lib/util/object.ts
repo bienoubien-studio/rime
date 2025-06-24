@@ -231,7 +231,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
  *
  * @param path - Dot notation path to the desired value (e.g., 'user.address.city')
  * @param obj - Object to retrieve the value from
- * @returns The value at the specified path, or null/undefined if not found
+ * @returns The value at the specified path, or undefined if not found
  *
  * @example
  * // Returns "New York"
@@ -240,7 +240,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
  * // Returns undefined
  * getValueAtPath('user.phone', { user: { address: { city: "New York" } } });
  */
-export const getValueAtPath = <T>(path: string, obj: Dic): T | null | undefined => {
+export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
 	const parts = path.split('.');
 	let current = obj;
 	for (const part of parts) {
@@ -249,8 +249,8 @@ export const getValueAtPath = <T>(path: string, obj: Dic): T | null | undefined 
 		} else {
 			current = current[part];
 		}
-		if (!current) {
-			return current;
+		if (current === undefined) {
+			return undefined;
 		}
 	}
 	return current as T;

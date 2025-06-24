@@ -3,6 +3,8 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 type DeleteArgs = {
 	id: string;
@@ -13,10 +15,17 @@ type DeleteArgs = {
 export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promise<string> => {
 	const { event, id, config } = args;
 	const { rizom } = event.locals;
+	let context: HookContext = { params : { id }}
 
-	const authorized = config.access.delete(event.locals.user, { id });
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'delete',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context
 	}
 
 	const document = (await rizom.adapter.collection.findById({ slug: config.slug, id, draft: true })) as T;
@@ -24,17 +33,16 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
-	let metas = {}
 	for (const hook of config.hooks?.beforeDelete || []) {
 		const result = await hook({
-			doc: document as RegisterCollection[CollectionSlug],
+			doc: document,
 			config,
 			operation: 'delete',
 			rizom: event.locals.rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas
+		context = result.context
 	}
 
 	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
@@ -46,9 +54,9 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			operation: 'delete',
 			rizom: event.locals.rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas
+		context = result.context
 	}
 
 	return args.id;

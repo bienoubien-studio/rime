@@ -3,12 +3,20 @@ import { getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
 import type { ConfigMap } from '../configMap/types.js';
 
-export const setValuesFromOriginal = async <T extends Dic>(args: { data: T; original: T; configMap: ConfigMap }) => {
-	const { original, configMap } = args;
+export const setValuesFromOriginal = async <T extends Dic>(args: {
+	data: T;
+	original: T;
+	configMap: ConfigMap;
+	ignore: string[];
+}) => {
+	//
+	const { original, configMap, ignore } = args;
 	let output = { ...args.data };
+
 	for (const [key, config] of Object.entries(configMap)) {
-		// skip the status prop to prevent publishing a new created doc
-		if (key === 'status') continue;
+		// skip keys in ignore list
+		if (ignore.includes(key)) continue;
+			
 		let value = getValueAtPath(key, output);
 		let isEmpty;
 

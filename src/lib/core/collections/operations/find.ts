@@ -1,11 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
-import type { RegisterCollection } from '$lib/index.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { Dic } from '$lib/util/types.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type FindArgs = {
 	query?: OperationQuery;
@@ -24,12 +22,30 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	//
 	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [] } = args;
 	const { rizom } = event.locals;
-
-	const authorized = config.access.read(event.locals.user, {});
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
+	
+	let context: HookContext = {
+		params: {
+			query,
+			sort,
+			limit,
+			offset,
+			locale,
+			select,
+			draft,
+		}
+	};
+	
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'read',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context;
 	}
-
+	
 	const documentsRaw = await rizom.adapter.collection.find({
 		slug: config.slug,
 		query,
@@ -40,10 +56,10 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		select,
 		draft
 	});
-
+	
 	const hasSelect = select && Array.isArray(select) && select.length;
-	const processDocument = async (documentRaw: RawDoc) => {
-		
+
+	async function processDocument(documentRaw: RawDoc) {
 		let document = await event.locals.rizom.adapter.transform.doc({
 			doc: documentRaw,
 			slug: config.slug,
@@ -53,30 +69,21 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 			withBlank: !hasSelect
 		});
 
-		let metas: Dic = {
-			query,
-			sort,
-			limit,
-			offset,
-			select,
-			draft
-		}
-
 		for (const hook of config.hooks?.beforeRead || []) {
 			const result = await hook({
-				doc: document as unknown as RegisterCollection[CollectionSlug],
+				doc: document,
 				config,
 				operation: 'read',
 				rizom: event.locals.rizom,
 				event,
-				metas
+				context
 			});
-			metas = result.metas
-			document = result.doc as unknown as T;
+			context = result.context;
+			document = result.doc;
 		}
-		
+
 		return document;
-	};
+	}
 
 	const documents = await Promise.all(documentsRaw.map((doc) => processDocument(doc)));
 

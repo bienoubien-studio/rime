@@ -1,0 +1,106 @@
+import { VersionOperations } from '$lib/core/collections/versions/operations.js';
+import type { Dic } from '$lib/util/types.js';
+import path from 'path';
+import type { CompiledArea, CompiledCollection, GenericDoc, HookBeforeUpsert, Prototype } from '../../../../types.js';
+import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
+import { setValuesFromOriginal } from '../../shared/setValuesFromOriginal.js';
+import type { ConfigMap } from '../../configMap/types.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
+
+/**
+ * Handles version-related operations for document updates
+ * Manages specific version updates and new version creation
+ */
+export const handleNewVersion: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
+	const { config, rizom } = args;
+	const { versionOperation, originalDoc, originalConfigMap, params } = args.context;
+
+	if (!originalConfigMap)
+		throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalConfigMap @handleNewVersion');
+	if (!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @handleNewVersion');
+	if (!versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionOperation @handleNewVersion');
+
+	let versionId;
+	let data;
+
+	switch (true) {
+		case VersionOperations.isSpecificVersionUpdate(versionOperation):
+			versionId = originalDoc.versionId;
+			break;
+
+		case VersionOperations.isNewVersionCreation(versionOperation):
+			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
+			const versionsSlug = makeVersionsSlug(config.slug);
+			
+			const document = await rizom.collection(versionsSlug).create({
+				data,
+				locale: params.locale
+			})
+
+			if (config.versions && config.versions.maxVersions) {
+				await rizom.collection(versionsSlug).delete({
+					sort: '-updatedAt',
+					query: 'where[status][not_equals]=published',
+					offset: config.versions.maxVersions
+				});
+			}
+			versionId = document.id;
+			break;
+
+		default:
+			versionId = originalDoc.id;
+	}
+
+	return {
+		...args,
+		context: {
+			...args.context,
+			params: {
+				...args.context.params,
+				versionId
+			}
+		}
+	};
+};
+
+async function prepareDataForNewVersion(args: {
+	data: Dic;
+	config: CompiledCollection | CompiledArea;
+	originalDoc: Dic;
+	originalConfigMap: ConfigMap;
+}) {
+	const { config, originalDoc, originalConfigMap } = args;
+	let data = { ...args.data };
+
+	const isCollection = config.type === 'collection';
+	// Add the original file if we are on an upload collection
+	if (isCollection && config.upload && !data.file && originalDoc.filename) {
+		// Create a File object from the existing file path
+		const filePath = path.resolve(process.cwd(), 'static', 'medias', originalDoc.filename);
+		try {
+			data.file = await filePathToFile(filePath);
+		} catch (err) {
+			console.error(`Failed to create file from path: ${filePath}`, err);
+		}
+	}
+
+	// Use missing data from original version
+	data = await setValuesFromOriginal({
+		data,
+		original: originalDoc,
+		configMap: originalConfigMap,
+		ignore: ['status']
+	});
+
+	// Set default status to "draft" if no data.status
+	if (!data.status) {
+		data.status = VERSIONS_STATUS.DRAFT;
+	}
+
+	data.ownerId = originalDoc.id;
+	delete data.id;
+
+	return data;
+}

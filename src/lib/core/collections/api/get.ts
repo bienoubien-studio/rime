@@ -15,6 +15,7 @@ export default function (slug: CollectionSlug) {
 			.keys()
 			.filter((key) => key.startsWith('where'))
 			.toArray().length;
+		
 		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined;
 
 		const apiParams = {

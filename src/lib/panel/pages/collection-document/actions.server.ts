@@ -1,5 +1,5 @@
 import { redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
-import { extractData } from '$lib/core/operations/shared/data.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc';
 import { handleError } from '$lib/core/errors/handler.server';
 import { trycatch } from '$lib/util/trycatch.js';

@@ -1,6 +1,5 @@
 import type { Collection, CollectionHooks, GenericDoc } from '../../../types.js';
 import * as authHooks from '$lib/core/collections/auth/hooks/hooks.server.js';
-import * as nestedHooks from '$lib/core/collections/nested/hooks/index.server.js';
 import { setDocumentTitle } from '$lib/core/operations/hooks/before-read/set-document-title.server.js';
 import { setDocumentLocale } from '$lib/core/operations/hooks/before-read/set-document-locale.server.js';
 import { setDocumentType } from '$lib/core/operations/hooks/before-read/set-document-type.server.js';
@@ -15,149 +14,97 @@ import { setDefaultValues } from '$lib/core/operations/hooks/before-upsert/set-d
 import { populateURL } from '$lib/core/operations/hooks/before-read/populate-url.server.js';
 import { buildDataConfigMap } from '$lib/core/operations/hooks/before-upsert/data-config-map.server.js';
 import { mergeWithBlankDocument } from '$lib/core/operations/hooks/before-create/merge-with-blank.server.js';
+import { defineVersionOperation } from '$lib/core/operations/hooks/before-update/define-version-operation.server.js';
+import { augmentFieldsPassword } from '../auth/hooks/before-upsert/augment-fields-password.server.js';
+import { getOriginalDocument } from '$lib/core/operations/hooks/before-update/get-original-document.server.js';
+import { addChildrenProperty } from '../nested/hooks/index.server.js';
+import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
+import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
+import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
+
+type PartialConfig = {
+	upload?: Collection<any>['upload'];
+	nested?: Collection<any>['nested'];
+	auth?: Collection<any>['auth'];
+	hooks?: CollectionHooks<any>;
+	url?: Collection<any>['url'];
+};
 
 /**
  * Augment a collection config with hooks based on different configs
  * upload, url, nesting, auth
  */
-export const augmentHooks = (collection: Collection<any>): Collection<any> => {
-
+export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
+	//
 	let hooks: Required<CollectionHooks<GenericDoc>> = {
+		//
+		beforeOperation: [
+			authorize,
+		],
 
 		beforeRead: [
 			processDocumentFields,
 			setDocumentTitle,
 			setDocumentLocale,
-			setDocumentType
+			setDocumentType,
+			...(collection.upload ? [populateSizes] : []),
+			...(collection.url ? [populateURL] : []),
+			...(collection.nested ? [addChildrenProperty] : []),
+			sortDocumentProps
 		],
 
 		beforeUpdate: [
+			defineVersionOperation,
+			getOriginalDocument,
+			buildOriginalDocConfigMap,
+			handleNewVersion,
+			...(collection.auth
+				? [
+						//
+						augmentFieldsPassword,
+						authHooks.preventSuperAdminMutation,
+						authHooks.forwardRolesToBetterAuth
+					]
+				: []),
 			buildDataConfigMap,
 			setDefaultValues,
-			validateFields
+			validateFields,
+			...(collection.upload ? [castBase64ToFile, processFileUpload] : [])
 		],
 
 		afterUpdate: [],
 
 		beforeCreate: [
+			...(collection.auth ? [augmentFieldsPassword] : []),
 			mergeWithBlankDocument,
 			buildDataConfigMap,
 			setDefaultValues,
-			validateFields
+			validateFields,
+			...(collection.auth ? [authHooks.createBetterAuthUser] : []),
+			...(collection.upload ? [castBase64ToFile, processFileUpload] : [])
 		],
 
-		afterCreate: [],
-		beforeDelete: [],
-		afterDelete: [],
+		afterCreate: [...(collection.auth ? [authHooks.afterCreateSetAuthUserRole] : [])],
 
-	}
+		beforeDelete: [
+			...(collection.auth ? [authHooks.preventSupperAdminToBeDeleted] : []),
+			...(collection.upload ? [cleanUpFiles] : [])
+		],
 
-
-	if (collection.auth) {
-
-		hooks = {
-			...hooks,
-			beforeUpdate: [
-				...hooks.beforeUpdate,
-				authHooks.preventSuperAdminMutation,
-				authHooks.forwardRolesToBetterAuth,
-			],
-			beforeCreate: [
-				...hooks.beforeCreate,
-				authHooks.createBetterAuthUser,
-			],
-			afterCreate: [
-				...hooks.afterCreate,
-				authHooks.afterCreateSetAuthUserRole
-			],
-			beforeDelete: [
-				...hooks.beforeDelete,
-				authHooks.preventSupperAdminToBeDeleted,
-			],
-			afterDelete: [
-				...hooks.afterDelete,
-				authHooks.deleteBetterAuthUser
-			]
-		};
-	}
-
-	if (collection.upload) {
-		hooks = {
-			...hooks,
-			beforeUpdate: [
-				...hooks.beforeUpdate,
-				castBase64ToFile,
-				processFileUpload
-			],
-			beforeCreate: [
-				...hooks.beforeCreate,
-				castBase64ToFile,
-				processFileUpload
-			],
-			beforeDelete: [
-				...hooks.beforeDelete,
-				cleanUpFiles
-			],
-			beforeRead: [
-				...hooks.beforeRead,
-				populateSizes,
-			]
-		};
-	}
-
-
-	if (collection.url) {
-		hooks = {
-			...hooks,
-			beforeRead: [...hooks.beforeRead, populateURL]
-		};
-	}
-
-
-	if (collection.nested) {
-		hooks = {
-			...hooks,
-			beforeRead: [...hooks.beforeRead, nestedHooks.addChildrenProperty]
-		};
-	}
-
-	hooks = {
-		...hooks,
-		beforeRead: [...hooks.beforeRead, sortDocumentProps]
+		afterDelete: [...(collection.auth ? [authHooks.deleteBetterAuthUser] : [])]
 	};
-
 
 	return {
 		...collection,
 		hooks: {
-			beforeCreate: [
-				...hooks.beforeCreate,
-				...(collection.hooks?.beforeCreate || [])
-			],
-			afterCreate: [
-				...hooks.afterCreate,
-				...(collection.hooks?.afterCreate || [])
-			],
-			beforeUpdate: [
-				...hooks.beforeUpdate,
-				...(collection.hooks?.beforeUpdate || [])
-			],
-			afterUpdate: [
-				...hooks.afterUpdate,
-				...(collection.hooks?.afterUpdate || [])
-			],
-			beforeDelete: [
-				...hooks.beforeDelete,
-				...(collection.hooks?.beforeDelete || [])
-			],
-			afterDelete: [
-				...hooks.afterDelete,
-				...(collection.hooks?.afterDelete || [])
-			],
-			beforeRead: [
-				...hooks.beforeRead,
-				...(collection.hooks?.beforeRead || [])
-			]
+			beforeOperation: [...hooks.beforeOperation, ...(collection.hooks?.beforeOperation || [])],
+			beforeCreate: [...hooks.beforeCreate, ...(collection.hooks?.beforeCreate || [])],
+			afterCreate: [...hooks.afterCreate, ...(collection.hooks?.afterCreate || [])],
+			beforeUpdate: [...hooks.beforeUpdate, ...(collection.hooks?.beforeUpdate || [])],
+			afterUpdate: [...hooks.afterUpdate, ...(collection.hooks?.afterUpdate || [])],
+			beforeDelete: [...hooks.beforeDelete, ...(collection.hooks?.beforeDelete || [])],
+			afterDelete: [...hooks.afterDelete, ...(collection.hooks?.afterDelete || [])],
+			beforeRead: [...hooks.beforeRead, ...(collection.hooks?.beforeRead || [])]
 		}
 	};
 };

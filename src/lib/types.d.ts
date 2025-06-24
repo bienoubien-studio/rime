@@ -53,6 +53,7 @@ export type { Field, FormField, AnyField, AnyFormField, FieldsType, Option, Rela
 // Hooks types
 export type {
 	CollectionHooks,
+	HookBeforeOperation,
 	HookBeforeUpdate,
 	HookAfterUpdate,
 	HookBeforeCreate,

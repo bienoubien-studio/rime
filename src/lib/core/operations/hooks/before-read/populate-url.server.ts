@@ -7,16 +7,15 @@ import { getValueAtPath } from '$lib/util/object.js';
  * Hook to populate _children property on document from a nested collection
  */
 export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
-  
-  const select = args.metas.select && Array.isArray(args.metas.select) ? args.metas.select : [];
+  const select = args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
   const emptySelect = select.length === 0;
 
   // If there is a select param, populate url only if included
   if (!emptySelect && !select.includes('url')) return args;
 
   // Else populate url
-  const { config, event } = args;
-  const locale = event.locals.locale;
+  const { config, event, context } = args;
+  const locale = context.params.locale;
   const document = args.doc;
 
   if (config.url) {
@@ -81,6 +80,14 @@ export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) =
       url = url.replace(/\/\[\.\.\.parent\.\w+(?:\.\w+)*\]/, '');
     }
 
+    if(!url){
+      return args
+    }
+    if(url.includes('undefined')){
+      logger.warn('Missing document properties to generate URL for : ' + document.id);
+      return args
+    }
+    
     // Add the url if successfully generated
     if (url) {
       args.doc = {
@@ -94,6 +101,7 @@ export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) =
       args.doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${url}&slug=${config.slug}&id=${args.doc.id}`;
       args.doc._live += locale ? `&locale=${locale}` : '';
     }
+
   }
 
   return args;

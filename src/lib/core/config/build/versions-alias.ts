@@ -1,3 +1,4 @@
+import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
 import { mergeWithBlankDocument } from '$lib/core/operations/hooks/before-create/merge-with-blank.server.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { CollectionSlug } from '../../../types.js';
@@ -34,22 +35,20 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 
 	for (const area of config.areas) {
 		if (area.versions) {
-			const versionedCollection: CompiledCollection = {
+			let versionedCollection: CompiledCollection = {
 				slug: makeVersionsSlug(area.slug) as CollectionSlug,
 				versions: false,
 				access: area.access,
 				asTitle: area.asTitle,
-				hooks: {
-					beforeCreate: [ mergeWithBlankDocument, ...(area.hooks?.beforeUpdate || [])],
-					beforeUpdate: area.hooks?.beforeUpdate || [],
-					afterUpdate: area.hooks?.afterUpdate || [],
-					beforeRead: area.hooks?.beforeRead || [],
-				},
+				hooks: area.hooks,
 				fields: area.fields,
 				type: 'collection',
 				label: { plural: area.label, singular: area.label, gender: 'm' },
 				panel: false
 			} as CompiledCollection;
+
+			versionedCollection = augmentHooks(versionedCollection)
+			
 			config.collections = [...config.collections, versionedCollection];
 		}
 	}

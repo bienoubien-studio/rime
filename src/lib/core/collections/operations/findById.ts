@@ -2,8 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import type { Dic } from '$lib/util/types.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type Args = {
 	id: string;
@@ -20,12 +19,25 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, versionId, locale, depth, select, draft } = args;
 	const { rizom } = event.locals;
 
-	/****************************************************/
-	// Authorized
-	/****************************************************/
-	const authorized = config.access.read(event.locals.user, { id });
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
+	let context: HookContext = {
+			params: {
+				id,
+				versionId,
+				locale,
+				draft,
+				select
+			}
+		};
+	
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'read',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context;
 	}
 
 	const documentRaw = await rizom.adapter.collection.findById({
@@ -45,10 +57,6 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		depth
 	});
 
-	let metas: Dic = {
-		select,
-		draft
-	};
 	for (const hook of config.hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
@@ -56,9 +64,9 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 			operation: 'read',
 			rizom: event.locals.rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas;
+		context = result.context;
 		document = result.doc as T;
 	}
 

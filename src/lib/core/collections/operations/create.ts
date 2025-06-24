@@ -1,6 +1,5 @@
 import cloneDeep from 'clone-deep';
 import { RizomError } from '$lib/core/errors/index.js';
-import { usersFields } from '$lib/core/collections/auth/config/usersFields.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
@@ -8,7 +7,8 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { DeepPartial, Dic } from '$lib/util/types.js';
+import type { DeepPartial } from '$lib/util/types.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;
@@ -25,19 +25,19 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	let data = args.data;
 	const incomingData = cloneDeep(data);
-	//
 
-	const authorized = config.access.create(event.locals.user, { id: undefined });
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+	let context: HookContext = { params: { locale } };
+
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'create',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context;
 	}
-
-	if (config.auth) {
-		/** Add auth fields into validation process */
-		config.fields.push(usersFields.password.raw, usersFields.confirmPassword.raw);
-	}
-
-	let metas: Dic = {}
 	
 	for (const hook of config.hooks?.beforeCreate || []) {
 		const result = await hook({
@@ -46,15 +46,15 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			operation: 'create',
 			rizom: event.locals.rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas
+		context = result.context;
 		data = result.data as Partial<T>;
 	}
-	
-	if (!metas.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @create')
 
-	const incomingPaths = Object.keys(metas.configMap);
+	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @create');
+
+	const incomingPaths = Object.keys(context.configMap);
 
 	const created = await rizom.adapter.collection.insert({
 		slug: config.slug,
@@ -65,7 +65,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 	// Use the versionId for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
 		ownerId: created.versionId,
-		configMap: metas.configMap,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -75,7 +75,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	const treeDiff = await saveTreeBlocks({
 		ownerId: created.versionId,
-		configMap: metas.configMap,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -85,7 +85,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	await saveRelations({
 		ownerId: created.versionId,
-		configMap: metas.configMap,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -132,16 +132,17 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		}
 		rizom.setLocale(locale);
 	}
-	
+
 	for (const hook of config.hooks?.afterCreate || []) {
-		await hook({
+		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'create',
 			rizom: event.locals.rizom,
 			event,
-			metas
+			context
 		});
+		context = result.context;
 	}
 
 	return document;

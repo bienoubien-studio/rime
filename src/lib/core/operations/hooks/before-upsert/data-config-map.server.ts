@@ -2,13 +2,12 @@ import type { GenericDoc, HookBeforeUpsert, Prototype } from '../../../../types.
 import { buildConfigMap } from '../../configMap/index.server.js';
 
 export const buildDataConfigMap: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
-
   const configMap = buildConfigMap(args.data, args.config.fields);
   
   return {
     ...args,
-    metas: {
-      ...args.metas,
+    context: {
+      ...args.context,
       configMap 
     }
   }

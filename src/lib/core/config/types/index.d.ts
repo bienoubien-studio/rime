@@ -255,7 +255,7 @@ export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions' | 'upl
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltArea = Area<AreaSlug> & {
+export type BuiltArea = Omit<Area<AreaSlug>, 'versions'> & {
 	type: 'area';
 	label: string;
 	slug: AreaSlug;

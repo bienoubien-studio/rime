@@ -268,7 +268,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Upadte specific version
 			if (!versionId) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId');
+				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @adapter-update-collection');
 			}
 
 			// Extract hierarchy fields (_parent, _position) from data
@@ -345,7 +345,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		const isVersioned = !!config.versions;
 
 		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined;
-
+		
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const params: Dic = {
@@ -359,7 +359,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			if (query) {
 				params.where = buildWhereParam({ query, slug, locale, db });
 			}
-
+			
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
@@ -408,7 +408,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				offset: offset,
 				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort })
 			};
-
+			
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 

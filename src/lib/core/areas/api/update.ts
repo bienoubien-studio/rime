@@ -1,4 +1,4 @@
-import { extractData } from '$lib/core/operations/shared/data.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
@@ -32,7 +32,7 @@ export default function (slug: AreaSlug) {
 				locale: rizom.getLocale()
 			})
 		);
-		
+
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

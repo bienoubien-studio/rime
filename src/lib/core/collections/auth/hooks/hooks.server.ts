@@ -61,13 +61,16 @@ export const afterCreateSetAuthUserRole: HookAfterCreate<GenericDoc> = async (ar
 // - set proper better-auth role
 /****************************************************/
 export const forwardRolesToBetterAuth: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
-	const { rizom, event, originalDoc } = args;
+	const { rizom, event, context } = args;
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
-
+	const originalDoc = context.originalDoc
+	
+	if(!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @forwardRolesToBetterAuth')
+		
 	if (rolesChanged) {
 		await rizom.auth.setAuthUserRole({
 			roles: args.data.roles,
-			userId: args.originalDoc.id,
+			userId: originalDoc.id,
 			slug: args.config.slug,
 			headers: event.request.headers
 		});
@@ -81,7 +84,11 @@ export const forwardRolesToBetterAuth: HookBeforeUpdate<'collection', GenericDoc
 // - prevent superadmin to be changed by someone else
 /****************************************************/
 export const preventSuperAdminMutation: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
-	const { rizom, event, originalDoc } = args;
+	const { rizom, event, context } = args;
+	const originalDoc = context.originalDoc
+	
+	if(!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @preventSuperAdminMutation')
+		
 	const rolesChanged = 'roles' in args.data && Array.isArray(args.data.roles);
 
 	const isSuperAdminMutation = await rizom.auth.isSuperAdmin(originalDoc.id);

@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import { RizomError } from '$lib/core/errors/index.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type DeleteArgs = {
 	query?: OperationQuery;
@@ -14,15 +14,22 @@ type DeleteArgs = {
 };
 
 export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
-	
 	const { config, event, locale, limit, offset, sort, query } = args;
 	const { rizom } = event.locals;
 
-	const authorized = config.access.read(event.locals.user, {});
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED, 'try to read ' + config.slug);
+	let context: HookContext = { params: { locale, limit, offset, sort, query } };
+
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'delete',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context;
 	}
-	
+
 	const documentsToDelete = await rizom.adapter.collection.find({
 		slug: config.slug,
 		query,

@@ -6,7 +6,7 @@ import { getRequestEvent } from '$app/server';
 export const ERROR_CONTEXT = {
 	ACTION: 'action',
 	API: 'api',
-	load: 'load'
+	LOAD: 'load'
 } as const;
 
 export type ErrorContext = (typeof ERROR_CONTEXT)[keyof typeof ERROR_CONTEXT];
@@ -21,23 +21,22 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 
 	if (err instanceof RizomFormError) {
 		switch (context) {
-			case 'action':
+			case ERROR_CONTEXT.ACTION:
 				logger.debug(`400 — ${err.message}`);
 				return fail(400, {
 					form: formData || {},
 					errors: err.errors
 				});
-			case 'api':
+			case ERROR_CONTEXT.API:
 				logger.debug(`400 — ${err.message}`);
 				return error(400, err.message);
 		}
 	}
-	
+
 	if (err instanceof RizomError) {
-		
-		if (err.code === RizomError.NOT_FOUND && context === 'load') {
-			const event = getRequestEvent()
-			logger.error(`404 - ${event.url.href}`);
+		if (err.code === RizomError.NOT_FOUND && context === ERROR_CONTEXT.LOAD) {
+			const event = getRequestEvent();
+			logger.error(`404 - ${err.message} - ${event.url.href}`);
 			throw error(404, event.url.href + ' : ' + err.message);
 		}
 
@@ -49,11 +48,11 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	if (isRedirect(err)) {
 		return redirect(err.status, err.location);
 	}
-	
+
 	// Unknown errors
 	console.error(err);
-	const event = getRequestEvent()
+	const event = getRequestEvent();
 	logger.error(`500 - ${event.url.href} - ${err.message}`);
-	
+
 	return error(500, 'Internal Server Error');
 }

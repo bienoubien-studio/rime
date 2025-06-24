@@ -6,7 +6,7 @@ import { asc, eq } from 'drizzle-orm';
  * Hook to populate _children property on document from a nested collection
  */
 export const addChildrenProperty: HookBeforeRead<'collection', GenericDoc> = async (args) => {
-	const select = args.metas.select && Array.isArray(args.metas.select) ? args.metas.select : [];
+	const select = args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
 	const emptySelect = select.length === 0;
 
 	// If there is a select param do not populate _children just return args

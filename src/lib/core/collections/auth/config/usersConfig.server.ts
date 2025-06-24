@@ -16,7 +16,7 @@ export const panelUsersCollection = collection(PANEL_USERS, {
 	icon: UsersRound,
 	fields: [usersFields.name, usersFields.email, usersFields.roles],
 	access: {
-		read: (user) => !!user,
+		read: (user) => access.isAdmin(user),
 		create: (user) => access.isAdmin(user),
 		delete: (user) => access.isAdmin(user),
 		update: (user, { id }) => access.isAdminOrMe(user, id)

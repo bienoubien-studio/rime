@@ -5,6 +5,8 @@ import path from 'path';
 // Environment and configuration
 const LOG_TO_FILE = process.env.RIZOM_LOG_TO_FILE === 'true';
 const LOG_DIR = path.join(process.cwd(), 'logs');
+// Maximum number of days to keep log files (default: 30 days)
+const LOG_MAX_DAYS = parseInt(process.env.RIZOM_LOG_TO_FILE_MAX_DAYS || '30', 10);
 
 // Log levels with numeric values for comparison
 enum LogLevel {
@@ -30,6 +32,46 @@ const formatMessage = (args: unknown[]): string => {
 	return args
 		.map((arg) => (typeof arg === 'string' ? arg : typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
 		.join(' ');
+};
+
+/**
+ * Clean up old log files that exceed the maximum retention period
+ */
+const cleanupOldLogs = async () => {
+	if (!LOG_TO_FILE) return;
+
+	try {
+		// Create logs directory if it doesn't exist
+		await fs.mkdir(LOG_DIR, { recursive: true });
+		
+		// Get all log files
+		const files = await fs.readdir(LOG_DIR);
+		
+		// Current date for comparison
+		const now = new Date();
+		
+		for (const file of files) {
+			// Only process .log files
+			if (!file.endsWith('.log')) continue;
+			
+			// Extract date from filename (format: YYYY-MM-DD.log)
+			const dateStr = file.replace('.log', '');
+			const fileDate = new Date(dateStr);
+			
+			// Skip files with invalid dates
+			if (isNaN(fileDate.getTime())) continue;
+			
+			// Calculate age in days
+			const ageInDays = (now.getTime() - fileDate.getTime()) / (1000 * 60 * 60 * 24);
+			
+			// Delete if older than max days
+			if (ageInDays > LOG_MAX_DAYS) {
+				await fs.unlink(path.join(LOG_DIR, file));
+			}
+		}
+	} catch (error) {
+		console.error('Failed to clean up old log files:', error);
+	}
 };
 
 /**
@@ -61,6 +103,9 @@ const writeToFile = async (level: string, timestamp: string, args: unknown[]) =>
 
 		// Append to date-specific log file
 		await fs.appendFile(path.join(LOG_DIR, logFileName), logEntry);
+		
+		// Clean up old log files
+		await cleanupOldLogs();
 	} catch (error) {
 		console.error('Failed to write to log file:', error);
 	}

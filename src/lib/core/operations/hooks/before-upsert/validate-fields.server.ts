@@ -1,24 +1,25 @@
-import { RizomFormError } from '$lib/core/errors/index.js';
+import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
 import type { Prototype } from '../../../../types.js';
 import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
-import type { ConfigMap } from '../../configMap/types.js';
 
 export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
-
-  const errors: FormErrors = {};
-  const { event, operation } = args;
-  const configMap: ConfigMap = args.metas.configMap
-
-  const { user, rizom, locale } = event.locals;
   
+  const errors: FormErrors = {};
+  const { event, operation, rizom } = args;
+  const { user } = event.locals;
+  const configMap = args.context.configMap
+  const locale = args.context.params.locale || args.event.locals.locale
   const slug = args.config.slug;
   const isCollection = rizom.config.isCollection(slug);
+
   let output = { ...args.data };
 
+  if(!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @validateFields')
+  
   for (const [key, config] of Object.entries(configMap)) {
     let value: any = getValueAtPath(key, output);
 
@@ -34,10 +35,16 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
     // Unique
     /** @TODO better unique check like relations, locale,... */
     if ('unique' in config && config.unique && isCollection) {
-      const query =
-        operation === 'create'
-          ? `where[${key}][equals]=${value}`
-          : `where[and][0][${key}][equals]=${value}&where[and][1][id][not_equals]=${args.originalDoc?.id}`;
+      let query
+      switch(operation){
+        case 'create':
+          query = `where[${key}][equals]=${value}`
+          break;
+        case 'update' : 
+          if(!args.context.originalDoc) 
+            throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @validateFields')
+          query = `where[and][0][${key}][equals]=${value}&where[and][1][id][not_equals]=${args.context.originalDoc.id}`
+      }
       const existing = await rizom.collection(slug).find({ locale, query });
       if (existing.length) {
         errors[key] = RizomFormError.UNIQUE_FIELD;
@@ -66,7 +73,7 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
         const valid = config.validate(value, {
           data: output as Partial<GenericDoc>,
           operation,
-          id: operation === 'update' ? args.originalDoc?.id : undefined,
+          id: operation === 'update' ? args.context.originalDoc?.id : undefined,
           user: user,
           locale,
           config
@@ -76,7 +83,7 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
         }
       } catch {
         logger.warn(`Error while validating field ${key}`);
-        errors[key] = RizomFormError.VALIDATION_ERROR;
+        errors [key] = RizomFormError.VALIDATION_ERROR;
       }
     }
 
@@ -99,7 +106,7 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
 
     if (config.access && config.access.update && operation === 'update') {
       const authorizedFieldUpdate = config.access.update(user, {
-        id: args.originalDoc?.id
+        id: args.context.originalDoc?.id
       });
       if (!authorizedFieldUpdate) {
         output = deleteValueAtPath(output, key);

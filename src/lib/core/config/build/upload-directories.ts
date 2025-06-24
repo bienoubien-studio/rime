@@ -1,7 +1,9 @@
+import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
 import { exctractPath } from '$lib/core/collections/upload/hooks/extract-path.js';
-import { prepareDirectoryChildren, updateDirectoryChildren } from '$lib/core/collections/upload/hooks/update-directory-children.js';
-import { buildDataConfigMap } from '$lib/core/operations/hooks/before-upsert/data-config-map.server.js';
-import { setDefaultValues } from '$lib/core/operations/hooks/before-upsert/set-default-values.server.js';
+import {
+	prepareDirectoryChildren,
+	updateDirectoryChildren
+} from '$lib/core/collections/upload/hooks/update-directory-children.js';
 import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
@@ -22,7 +24,7 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 			// collection should not have a directories related table
 			if (config.collections.filter((c) => c.slug === slug).length) continue;
 			// else create the directory collection
-			const directoriesCollection: CompiledCollection = {
+			let directoriesCollection: CompiledCollection = {
 				slug: slug as CollectionSlug,
 				versions: false,
 				access: collection.access,
@@ -40,13 +42,16 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 					gender: 'f'
 				},
 				hooks: {
-					beforeUpdate: [ buildDataConfigMap, setDefaultValues, exctractPath, prepareDirectoryChildren],
-					afterUpdate: [ updateDirectoryChildren],
-					beforeCreate: [ buildDataConfigMap, setDefaultValues, exctractPath]
+					beforeUpdate: [exctractPath, prepareDirectoryChildren],
+					afterUpdate: [updateDirectoryChildren],
+					beforeCreate: [exctractPath]
 				},
 				asTitle: 'path',
 				panel: false
 			};
+			
+			directoriesCollection = augmentHooks(directoriesCollection)
+
 			config.collections = [...config.collections, directoriesCollection];
 		}
 	}

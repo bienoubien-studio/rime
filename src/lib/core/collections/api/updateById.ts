@@ -1,4 +1,4 @@
-import { extractData } from '$lib/core/operations/shared/data.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
@@ -13,7 +13,7 @@ export default function (slug: CollectionSlug) {
 
 		const id = event.params.id;
 		if (!id) throw new RizomError(RizomError.NOT_FOUND);
-		
+
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
 			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'

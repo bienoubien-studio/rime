@@ -8,55 +8,50 @@ import { validateFields } from '$lib/core/operations/hooks/before-upsert/validat
 import { setDefaultValues } from '$lib/core/operations/hooks/before-upsert/set-default-values.server.js';
 import { populateURL } from '$lib/core/operations/hooks/before-read/populate-url.server.js';
 import { buildDataConfigMap } from '$lib/core/operations/hooks/before-upsert/data-config-map.server.js';
+import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
+import { defineVersionOperation } from '$lib/core/operations/hooks/before-update/define-version-operation.server.js';
+import { getOriginalDocument } from '$lib/core/operations/hooks/before-update/get-original-document.server.js';
+import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
+import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
 
 /**
  * Augment an area config with hooks
  */
 export const augmentHooks = (area: Area<any>): Area<any> => {
-  
-  let hooks: Required<AreaHooks<any>> = {
-    beforeRead: [
-      processDocumentFields,
-      setDocumentTitle,
-      setDocumentLocale,
-      setDocumentType
-    ],
-    beforeUpdate: [
-      buildDataConfigMap,
-      setDefaultValues,
-      validateFields
-    ],
-    afterUpdate: []
-  };
+	let hooks: Required<AreaHooks<any>> = {
+		beforeOperation: [authorize],
 
-  if (area.url) {
-    hooks = {
-      ...hooks,
-      beforeRead: [...hooks.beforeRead, populateURL]
-    };
-  }
+		beforeRead: [
+			//
+			processDocumentFields,
+			setDocumentTitle,
+			setDocumentLocale,
+			...(area.url ? [populateURL] : []),
+			setDocumentType,
+			sortDocumentProps
+		],
 
-  hooks = {
-    ...hooks,
-    beforeRead: [...hooks.beforeRead, sortDocumentProps]
-  };
+		beforeUpdate: [
+			//
+			defineVersionOperation,
+      getOriginalDocument,
+      buildOriginalDocConfigMap,
+      handleNewVersion,
+			buildDataConfigMap,
+			setDefaultValues,
+			validateFields
+		],
 
+		afterUpdate: []
+	};
 
-  return {
-    ...area,
-    hooks: {
-			beforeUpdate: [
-				...hooks.beforeUpdate,
-				...(area.hooks?.beforeUpdate || [])
-			],
-			afterUpdate: [
-				...hooks.afterUpdate,
-				...(area.hooks?.afterUpdate || [])
-			],
-			beforeRead: [
-				...hooks.beforeRead,
-				...(area.hooks?.beforeRead || [])
-			]
+	return {
+		...area,
+		hooks: {
+			beforeOperation: [...hooks.beforeOperation, ...(area.hooks?.beforeOperation || [])],
+			beforeUpdate: [...hooks.beforeUpdate, ...(area.hooks?.beforeUpdate || [])],
+			afterUpdate: [...hooks.afterUpdate, ...(area.hooks?.afterUpdate || [])],
+			beforeRead: [...hooks.beforeRead, ...(area.hooks?.beforeRead || [])]
 		}
-  };
+	};
 };

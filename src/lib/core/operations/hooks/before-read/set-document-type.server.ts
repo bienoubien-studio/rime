@@ -5,8 +5,8 @@ export const setDocumentType: HookBeforeRead<Prototype, Omit<GenericDoc, 'title'
 	const config = args.config;
 	let doc = args.doc;
 
-	const hasSelect = Array.isArray(args.metas.select) && args.metas.select.length
-
+	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length
+	
 	if (!hasSelect) {
 		doc = {
 			...doc,

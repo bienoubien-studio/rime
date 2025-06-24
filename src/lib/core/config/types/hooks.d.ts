@@ -2,6 +2,9 @@ import type { Rizom } from '$lib/core/rizom.server.js';
 import type { CompiledArea, CompiledCollection } from '.';
 import type { GenericDoc, Prototype } from '../../types/doc.js';
 import type { DeepPartial, Dic, Pretty } from '$lib/util/types';
+import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+import type { ConfigMap } from '$lib/core/operations/configMap/types.js';
 
 type RequestEvent = import('@sveltejs/kit').RequestEvent;
 
@@ -9,108 +12,146 @@ type RequestEvent = import('@sveltejs/kit').RequestEvent;
  * Maps prototype to its corresponding config type
  */
 type ConfigTypeMap = {
-  'collection': CompiledCollection;
-  'area': CompiledArea;
+	collection: CompiledCollection;
+	area: CompiledArea;
+};
+
+type HookContext = Dic & {
+	params: {
+		id?: string;
+		versionId?: string;
+		sort?: string;
+		locale?: string;
+		draft?: boolean;
+		offset?: number;
+		limit?: number;
+		depth?: number;
+		select?: string[];
+		query?: OperationQuery;
+		draft?: boolean
+	};
+	/** parameter passed to an update operation when creating locale document fallback */
+	isFallbackLocale?: boolean;
+	versionOperation?: VersionOperation;
+	originalDoc?: GenericDoc;
+	originalConfigMap?: ConfigMap;
+	configMap?: ConfigMap;
 };
 
 /**
  * Base hook context with prototype parameter
  */
-type HookContext<P extends Prototype> = {
-  rizom: Rizom;
-  event: Pretty<RequestEvent & { locals: App.Locals }>;
-  config: Pretty<ConfigTypeMap[P]>;
-  /** Object that can be used to pass data from one hook to another */
-  metas: Pretty<Dic>;
+type HookParams<P extends Prototype, T extends Partial<GenericDoc>> = {
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	/** Object that can be used to pass data from one hook to another */
+	context: HookContext;
 };
 
 // Shared hooks for operations supported by both collections and areas
+
+/**
+ * Hook executed before any operation
+ */
+type HookBeforeOperation<P extends Prototype> = (args: {
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	operation: 'create' | 'read' | 'update' | 'delete';
+	context: HookContext;
+}) => Promise<{
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	operation: 'create' | 'read' | 'update' | 'delete';
+	context: HookContext;
+}>;
+
 /**
  * Hook executed before reading a document
  */
-type HookBeforeRead<P extends Prototype, T> = (
-  args: Pretty<
-    HookContext<P> & {
-      operation: 'read';
-      doc: T;
-    }
-  >
+type HookBeforeRead<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'read';
+			doc: T;
+		}
+	>
 ) => Promise<
-  HookContext<P> & {
-    operation: 'read';
-    doc: T;
-  }
+	HookParams<P, T> & {
+		operation: 'read';
+		doc: T;
+	}
 >;
 
 /**
  * Hook executed before updating a document
  */
-type HookBeforeUpdate<P extends Prototype, T> = (
-  args: Pretty<
-    HookContext<P> & {
-      operation: 'update';
-      data: DeepPartial<T>;
-      originalDoc: T;
-    }
-  >
+type HookBeforeUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'update';
+			data: DeepPartial<T>;
+		}
+	>
 ) => Promise<
-  HookContext<P> & {
-    operation: 'update';
-    data: DeepPartial<T>;
-    originalDoc: T;
-  }
+	HookParams<P, T> & {
+		operation: 'update';
+		data: DeepPartial<T>;
+	}
 >;
 
 /**
  * Hook executed after updating a document
  */
-type HookAfterUpdate<P extends Prototype, T> = (
-  args: Pretty<
-    HookContext<P> & {
-      operation: 'update';
-      doc: T;
-    }
-  >
+type HookAfterUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'update';
+			doc: T;
+		}
+	>
 ) => Promise<
-  HookContext<P> & {
-    operation: 'update';
-    doc: T;
-  }
+	HookParams<P, T> & {
+		operation: 'update';
+		doc: T;
+	}
 >;
 
 // Collection-only hooks
 /**
  * Hook executed before creating a document (collection only)
  */
-type HookBeforeCreate<T> = (
-  args: Pretty<
-    HookContext<'collection'> & {
-      operation: 'create';
-      data: DeepPartial<T>;
-    }
-  >
+type HookBeforeCreate<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'create';
+			data: DeepPartial<T>;
+		}
+	>
 ) => Promise<
-  HookContext<'collection'> & {
-    operation: 'create';
-    data: DeepPartial<T>;
-  }
+	HookParams<'collection', T> & {
+		operation: 'create';
+		data: DeepPartial<T>;
+	}
 >;
 
 /**
  * Hook executed after creating a document (collection only)
  */
-type HookAfterCreate<T> = (
-  args: Pretty<
-    HookContext<'collection'> & {
-      operation: 'create';
-      doc: T;
-    }
-  >
+type HookAfterCreate<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'create';
+			doc: T;
+		}
+	>
 ) => Promise<
-  HookContext<'collection'> & {
-    operation: 'create';
-    doc: T;
-  }
+	HookParams<'collection', T> & {
+		operation: 'create';
+		doc: T;
+	}
 >;
 
 /**
@@ -119,114 +160,121 @@ type HookAfterCreate<T> = (
  * For collections: handles both create and update operations
  * For areas: handles only update operations
  */
-type HookBeforeUpsert<P extends Prototype, T> = (
-  args: Pretty<
-    P extends 'collection'
-    ? HookContext<P> & ({
-      operation: 'create';
-      data: DeepPartial<T>;
-    } | {
-      operation: 'update';
-      data: DeepPartial<T>;
-      originalDoc: T
-    })
-    : HookContext<P> & {
-      operation: 'update';
-      data: DeepPartial<T>;
-      originalDoc: T;
-    }
-  >
+type HookBeforeUpsert<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		P extends 'collection'
+			? HookParams<P, T> &
+					(
+						| {
+								operation: 'create';
+								data: DeepPartial<T>;
+						  }
+						| {
+								operation: 'update';
+								data: DeepPartial<T>;
+						  }
+					)
+			: HookParams<P, T> & {
+					operation: 'update';
+					data: DeepPartial<T>;
+				}
+	>
 ) => Promise<
-  P extends 'collection'
-  ? HookContext<P> & ({
-    operation: 'create';
-    data: DeepPartial<T>;
-  } | {
-    operation: 'update';
-    data: DeepPartial<T>;
-    originalDoc: T
-  })
-  : HookContext<P> & {
-    operation: 'update';
-    data: DeepPartial<T>;
-    originalDoc: T;
-  }
+	P extends 'collection'
+		? HookParams<P, T> &
+				(
+					| {
+							operation: 'create';
+							data: DeepPartial<T>;
+					  }
+					| {
+							operation: 'update';
+							data: DeepPartial<T>;
+					  }
+				)
+		: HookParams<P, T> & {
+				operation: 'update';
+				data: DeepPartial<T>;
+			}
 >;
 
 /**
  * Hook executed after upserting a document (collection only)
  */
-type HookAfterUpsert<T> = (
-  args: Pretty<HookContext<'collection'> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>
-) => Promise<HookContext<'collection'> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>;
+type HookAfterUpsert<T extends Partial<GenericDoc>> = (
+	args: Pretty<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>
+) => Promise<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>;
 
 /**
  * Hook executed before deleting a document (collection only)
  */
-type HookBeforeDelete<T> = (
-  args: Pretty<
-    HookContext<'collection'> & {
-      operation: 'delete';
-      doc: T;
-    }
-  >
+type HookBeforeDelete<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'delete';
+			doc: T;
+		}
+	>
 ) => Promise<
-  HookContext<'collection'> & {
-    operation: 'delete';
-    doc: T;
-  }
+	HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
 >;
 
 /**
  * Hook executed after deleting a document (collection only)
  */
-type HookAfterDelete<T> = (
-  args: HookContext<'collection'> & {
-    operation: 'delete';
-    doc: T;
-  }
+type HookAfterDelete<T extends Partial<GenericDoc>> = (
+	args: HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
 ) => Promise<
-  HookContext<'collection'> & {
-    operation: 'delete';
-    doc: T;
-  }
+	HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
 >;
 
 // Hook collections
-type CollectionHooks<T> = Pretty<{
-  beforeCreate?: (HookBeforeCreate | HookBeforeUpsert)[];
-  afterCreate?: (HookAfterCreate | HookAfterUpsert)[];
-  beforeUpdate?: (HookBeforeUpdate | HookBeforeUpsert)[];
-  afterUpdate?: (HookAfterUpdate | HookAfterUpsert<T>)[];
-  beforeRead?: HookBeforeRead[];
-  beforeDelete?: HookBeforeDelete<T>[];
-  afterDelete?: HookAfterDelete<T>[];
-}>;
+type CollectionHooks<T> = {
+	beforeOperation?: HookBeforeOperation<any>[];
+	beforeCreate?: (HookBeforeCreate<any> | HookBeforeUpsert<any, any>)[];
+	afterCreate?: (HookAfterCreate<any> | HookAfterUpsert<any>)[];
+	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
+	afterUpdate?: (HookAfterUpdate<any, any> | HookAfterUpsert<any>)[];
+	beforeRead?: HookBeforeRead<any, any>[];
+	beforeDelete?: HookBeforeDelete<any>[];
+	afterDelete?: HookAfterDelete<any>[];
+};
 
 type AreaHooks<T> = {
-  beforeRead?: HookBeforeRead[];
-  beforeUpdate?: (HookBeforeUpdate | HookBeforeUpsert)[];
-  afterUpdate?: HookAfterUpdate[];
+	beforeOperation?: HookBeforeOperation<any>[];
+	beforeRead?: HookBeforeRead<any, any>[];
+	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
+	afterUpdate?: HookAfterUpdate<any, any>[];
 };
 
 export type {
-  // Hook context
-  HookContext,
+	// Hook context
+	HookContext,
+	HookBeforeOperation,
 
-  // Generic hooks
-  HookBeforeRead,
-  HookBeforeUpdate,
-  HookAfterUpdate,
-  HookBeforeUpsert,
+	// Generic hooks
+	HookBeforeRead,
+	HookBeforeUpdate,
+	HookAfterUpdate,
+	HookBeforeUpsert,
 
-  // Collection-specific hooks
-  HookBeforeCreate,
-  HookAfterCreate,
-  HookAfterUpsert,
-  HookBeforeDelete,
-  HookAfterDelete,
+	// Collection-specific hooks
+	HookBeforeCreate,
+	HookAfterCreate,
+	HookAfterUpsert,
+	HookBeforeDelete,
+	HookAfterDelete,
 
-  // Hook collections
-  CollectionHooks,
-  AreaHooks
+	// Hook collections
+	CollectionHooks,
+	AreaHooks
 };

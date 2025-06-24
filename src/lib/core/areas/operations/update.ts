@@ -1,24 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { AreaSlug, Rizom } from '$lib/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { buildConfigMap } from '../../operations/configMap/index.server.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { DeepPartial, Dic, Pretty } from '$lib/util/types.js';
-import type { RegisterArea } from '$lib/index.js';
-import { setValuesFromOriginal } from '$lib/core/operations/shared/setValuesFromOriginal.js';
-
-
-import {
-	getVersionUpdateOperation,
-	VersionOperations,
-	type VersionOperation
-} from '$lib/core/collections/versions/operations.js';
-import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
+import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -29,158 +17,89 @@ type UpdateArgs<T> = {
 	draft?: boolean;
 };
 
-/**
- * Handles version-related operations for document updates
- * Manages specific version updates and new version creation
- */
-async function handleVersionCreation<T extends GenericDoc>({
-	versionOperation,
-	original,
-	data,
-	config,
-	rizom,
-	locale,
-	originalConfigMap
-}: {
-	versionOperation: VersionOperation;
-	original: T;
-	data: Dic;
-	config: CompiledArea;
-	rizom: Rizom;
-	locale?: string;
-	originalConfigMap: Record<string, any>;
-}): Promise<string> {
-
-	if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
-		return original.versionId;
-	}
-
-	if (VersionOperations.isNewVersionCreation(versionOperation)) {
-		data = await setValuesFromOriginal({ data, original, configMap: originalConfigMap });
-		if (!data.status) {
-			data.status = VERSIONS_STATUS.DRAFT;
-		}
-		
-		data.ownerId = original.id;
-		delete data.id;
-
-		const versionsSlug = makeVersionsSlug(config.slug);
-
-		const doc = await rizom.collection(versionsSlug).create({
-			data,
-			locale
-		});
-		
-		if (config.versions && config.versions.maxVersions) {
-			await rizom.collection(versionsSlug).delete({
-				sort: '-updatedAt',
-				query: 'where[status][not_equals]=published',
-				offset: config.versions.maxVersions
-			});
-		}
-
-		return doc.id;
-	}
-
-	return original.id;
-}
-
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, locale } = args;
+	const { config, event, locale, draft } = args;
+	let { versionId } = args;
 	const { rizom } = event.locals;
 	let data = args.data;
-	let versionId = args.versionId;
 
-	// Check authorization
-	const authorized = config.access.update(event.locals.user, {});
-	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+	let context: HookContext = {
+		params: {
+			locale,
+			versionId,
+			draft
+		}
+	};
+
+	for (const hook of config.hooks?.beforeOperation || []) {
+		const result = await hook({
+			config,
+			operation: 'update',
+			rizom: event.locals.rizom,
+			event,
+			context
+		});
+		context = result.context
 	}
 
-	// Define the kind of update operation depending on versions config
-	const versionOperation = getVersionUpdateOperation({ draft: args.draft, versionId, config });
-
-	// Allow draft version to be retrieved in specific scenarios
-	// In all other cases the "published" document is used
-	const original = (await rizom.area(config.slug).find({
-		locale,
-		versionId,
-		draft: VersionOperations.shouldRetrieveDraft(versionOperation)
-	})) as unknown as T;
-
-	const originalConfigMap = buildConfigMap(original, config.fields);
-
-	versionId = await handleVersionCreation({
-		versionOperation,
-		original,
-		data,
-		config,
-		rizom,
-		locale,
-		originalConfigMap
-	});
-
-	let metas: Dic = { versionOperation }
 	for (const hook of config.hooks?.beforeUpdate || []) {
-		/**
-		 * TS is expecting a more specific types,
-		 * but with RegisterArea[AreaSlug] devs get their
-		 * types in the hook definition arguments
-		 */
 		const result = await hook({
-			data: data as DeepPartial<RegisterArea[AreaSlug]>,
+			data,
 			config,
-			originalDoc: original as unknown as RegisterArea[AreaSlug],
 			operation: 'update',
 			rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas
+		context = result.context;
 		data = result.data as Partial<T>;
 	}
 
-	if (!metas.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @update')
+	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @update');
+	if (!context.originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalConfigMap @update');
+	if (!context.originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @update');
+	if (!context.versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionOperation @update');
+	if (!context.params.versionId) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @update');
 
-	const incomingPaths = Object.keys(metas.configMap);
+	const incomingPaths = Object.keys(context.configMap);
 
 	await rizom.adapter.area.update({
 		slug: config.slug,
 		data,
 		locale,
-		versionId,
-		versionOperation
+		versionId: context.params.versionId,
+		versionOperation: context.versionOperation
 	});
 
 	// Use the versionId from the update result for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
-		ownerId: versionId,
-		configMap: metas.configMap,
+		ownerId: context.params.versionId,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
-		original,
-		originalConfigMap,
+		original: context.originalDoc,
+		originalConfigMap: context.originalConfigMap,
 		adapter: rizom.adapter,
 		config,
 		locale
 	});
 
 	const treeDiff = await saveTreeBlocks({
-		ownerId: versionId,
-		configMap: metas.configMap,
+		ownerId: context.params.versionId,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
-		original,
-		originalConfigMap,
+		original: context.originalDoc,
+		originalConfigMap: context.originalConfigMap,
 		adapter: rizom.adapter,
 		config,
 		locale
 	});
 
 	await saveRelations({
-		ownerId: versionId,
-		configMap: metas.configMap,
+		ownerId: context.params.versionId,
+		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
@@ -189,6 +108,8 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		blocksDiff,
 		treeDiff
 	});
+
+	//@TODO draft should not be true
 
 	// Get the updated area with the correct version ID
 	let document = await rizom.area(config.slug).find({
@@ -202,11 +123,11 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			doc: document,
 			config,
 			operation: 'update',
-			rizom: event.locals.rizom,
+			rizom,
 			event,
-			metas
+			context
 		});
-		metas = result.metas
+		context = result.context;
 	}
 
 	return document as unknown as T;

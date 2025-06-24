@@ -84,7 +84,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		if (unlocalizedColumns.includes(sqlColumn)) {
 			return fn(table[sqlColumn], value);
 		}
-
+		
 		// Handle localized fields
 		if (locale && localizedColumns.includes(sqlColumn)) {
 			return inArray(

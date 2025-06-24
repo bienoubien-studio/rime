@@ -292,7 +292,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Update a specific version directly
 			if (!versionId) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId');
+				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @adapter-update-area');
 			}
 			// First, update the root table's updatedAt
 			await db

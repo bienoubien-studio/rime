@@ -8,7 +8,11 @@ type Update = { id: string; data: { parent: string } };
 
 export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
 	let data = args.data;
-	const { event, config, originalDoc } = args;
+	const { event, config, context } = args;
+	const originalDoc = context.originalDoc
+
+	if(!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @prepareDirectoryChildren')
+		
 	const db = event.locals.rizom.adapter.db;
 
 	if (data.id) {
@@ -27,7 +31,7 @@ export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc
 				}
 			};
 		});
-		args.metas.directoriesUpdates = updates;
+		args.context.directoriesUpdates = updates;
 	}
 
 	return args;
@@ -36,7 +40,7 @@ export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc
 export const updateDirectoryChildren: HookAfterUpdate<'collection', GenericDoc> = async (args) => {
 	const { event, config } = args;
 	const collection = event.locals.rizom.collection(config.slug);
-	const updates: Update[] = args.metas.directoriesUpdates || [];
+	const updates: Update[] = args.context.directoriesUpdates || [];
 
 	for (const update of updates) {
 		const [error, _] = await trycatch(collection.updateById(update));

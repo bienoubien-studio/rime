@@ -5,7 +5,6 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { HookBeforeCreate } from '../../../../types.js';
 
 export const mergeWithBlankDocument: HookBeforeCreate<GenericDoc> = async (args) => {
-  
   const { config } = args
   let data = args.data
 
