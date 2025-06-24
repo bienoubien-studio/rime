@@ -18,6 +18,7 @@
 	}
 </script>
 
+{#if config.raw.localization?.locales.length}
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
@@ -44,3 +45,4 @@
 		</DropdownMenu.Content>
 	</DropdownMenu.Portal>
 </DropdownMenu.Root>
+{/if}

@@ -61,7 +61,10 @@
 
 <style>
 	:global {
-		.rz-live-panel .rz-scroll-area {
+		html:has(.rz-live-panel){
+			font-size: 13px;
+		}
+		.rz-live-panel {
 			--rz-page-gutter: var(--rz-size-4);
 			--rz-tabs-list-top: 0;
 			height: 100vh;

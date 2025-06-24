@@ -97,7 +97,9 @@
 			/>
 		{/if}
 	{/snippet}
+
 	{#snippet topRight()}
 		<LanguageSwitcher onLocalClick={invalidateAll} />
 	{/snippet}
+	
 </PageHeader>

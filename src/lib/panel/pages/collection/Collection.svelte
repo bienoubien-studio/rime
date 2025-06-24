@@ -77,9 +77,9 @@
 					{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent, index (index)}
 						<CustomHeaderComponent />
 					{/each}
-					{#if config.raw.localization}
-						<LanguageSwitcher onLocalClick={() => invalidateAll()} />
-					{/if}
+					
+					<LanguageSwitcher onLocalClick={() => invalidateAll()} />
+					
 				{/snippet}
 
 				{#snippet bottomRight()}

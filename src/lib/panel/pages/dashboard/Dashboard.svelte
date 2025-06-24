@@ -33,9 +33,8 @@
 					{#each config.raw.panel.components.header as CustomHeaderComponent, index (index)}
 						<CustomHeaderComponent />
 					{/each}
-					{#if config.raw.localization}
-						<LanguageSwitcher onLocalClick={() => invalidateAll()} />
-					{/if}
+
+					<LanguageSwitcher onLocalClick={() => invalidateAll()} />
 				{/snippet}
 			</PageHeader>
 

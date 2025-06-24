@@ -8,10 +8,12 @@
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';
+	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
 
+	
 	function onLocaleClick(code: string) {
 		fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
 			.then((response) => response.json())
@@ -54,9 +56,9 @@
 		/>
 	{/if}
 
-	{#if form.config.url}
-		<LanguageSwitcher onLocalClick={onLocaleClick} />
-	{/if}
+	
+	<LanguageSwitcher onLocalClick={onLocaleClick} />
+	
 </div>
 
 <style>

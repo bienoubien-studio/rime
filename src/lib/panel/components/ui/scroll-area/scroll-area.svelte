@@ -18,8 +18,8 @@
 	} = $props();
 </script>
 
-<ScrollAreaPrimitive.Root bind:ref {...restProps} class="rz-scroll-area {className}">
-	<ScrollAreaPrimitive.Viewport class="rz-scroll-area__viewport">
+<ScrollAreaPrimitive.Root bind:ref {...restProps}>
+	<ScrollAreaPrimitive.Viewport class="rz-scroll-area__viewport rz-scroll-area {className}">
 		{@render children?.()}
 	</ScrollAreaPrimitive.Viewport>
 	{#if orientation === 'vertical' || orientation === 'both'}
