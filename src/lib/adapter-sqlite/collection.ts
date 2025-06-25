@@ -13,10 +13,8 @@ import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import type { Schema } from '$lib/server/schema.js';
-import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
-import { logger } from '$lib/core/logger/index.server.js';
 
 type Args = {
 	db: BetterSQLite3Database<Schema>;

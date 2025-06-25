@@ -19,7 +19,6 @@ import { generateRelationshipDefinitions } from './relations/definition.js';
 import { toCamelCase, toPascalCase } from '$lib/util/string.js';
 import { makeUploadDirectoriesSlug, makeVersionsSlug } from '../../../../util/schema.js';
 import { date } from '$lib/fields/date/index.js';
-import type { Field, FormField } from '$lib/fields/types.js';
 
 export function generateSchemaString(config: BuiltConfig) {
 	const schema: string[] = [templateImports];
