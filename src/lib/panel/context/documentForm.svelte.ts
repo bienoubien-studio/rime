@@ -542,6 +542,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		}
 
 		async function handleError(data?: Dic) {
+			console.log(data)
 			// Handle error
 			if (data?.errors) {
 				errors.value = data.errors;
@@ -567,7 +568,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				handleRedirect(result);
 				break;
 			case 'failure':
-				handleError(result);
+				handleError(result.data);
 				break;
 		}
 
