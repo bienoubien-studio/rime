@@ -48,7 +48,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			if (!doc) {
 				throw new RizomError(RizomError.NOT_FOUND);
 			}
-			
+
 			return doc;
 		} else {
 			// Implementation for versioned collections
@@ -160,7 +160,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(contentData, {
 				tables,
 				mainTableName: versionsTableName,
-				localesTableName: `${versionsTableName}Locales`,
+				localesTableName: schemaUtil.makeLocalesSlug(versionsTableName),
 				locale
 			});
 
@@ -175,7 +175,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, `${versionsTableName}Locales`, {
+				await adapterUtil.insertTableRecord(db, tables, schemaUtil.makeLocalesSlug(versionsTableName), {
 					...localizedData,
 					ownerId: versionId,
 					locale: locale!
@@ -195,7 +195,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
 				mainTableName: slug,
-				localesTableName: `${slug}Locales`,
+				localesTableName: schemaUtil.makeLocalesSlug(slug),
 				locale
 			});
 
@@ -209,7 +209,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, `${slug}Locales`, {
+				await adapterUtil.insertTableRecord(db, tables, schemaUtil.makeLocalesSlug(slug), {
 					...localizedData,
 					ownerId: docId,
 					locale: locale!
@@ -239,7 +239,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
 			const tableName = slug;
-			const tableLocalesName = `${slug}Locales`;
+			const tableLocalesName = schemaUtil.makeLocalesSlug(slug);
 
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -282,7 +282,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const versionsLocalesTable = `${versionsTable}Locales`;
+			const versionsLocalesTable = schemaUtil.makeLocalesSlug(versionsTable);
 
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(contentData, {
 				tables,
@@ -343,7 +343,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		const isVersioned = !!config.versions;
 
 		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined;
-		
+
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const params: Dic = {
@@ -357,7 +357,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			if (query) {
 				params.where = buildWhereParam({ query, slug, locale, db });
 			}
-			
+
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
@@ -406,7 +406,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				offset: offset,
 				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort })
 			};
-			
+
 			// Remove undefined properties
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 

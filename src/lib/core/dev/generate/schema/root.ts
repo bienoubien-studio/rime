@@ -7,6 +7,7 @@ import type { RelationFieldsMap } from './relations/definition.js';
 import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
+import { makeLocalesSlug } from '$lib/util/schema.js';
 const p = toPascalCase;
 
 type Args = {
@@ -152,7 +153,7 @@ const buildRootTable = ({
 	let table: string;
 
 	if (locales && locales.length && hasLocalizedField(incomingFields)) {
-		const tableNameLocales = `${tableName}Locales`;
+		const tableNameLocales = makeLocalesSlug(tableName);
 		const strLocalizedFields = generateFieldsTemplates(incomingFields, true);
 		relationsDic[tableName] = [...(relationsDic[tableName] || []), tableNameLocales];
 		const strUnlocalizedFields = generateFieldsTemplates(incomingFields, false);

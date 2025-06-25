@@ -8,7 +8,7 @@ import { isRelationField } from '$lib/util/field.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import type { ParsedQs } from 'qs';
 import { RizomError } from '$lib/core/errors/index.js';
-import { isDirectorySlug, isVersionsSlug } from '$lib/util/schema.js';
+import { isDirectorySlug, isVersionsSlug, makeLocalesSlug } from '$lib/util/schema.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
@@ -20,9 +20,9 @@ type BuildWhereArgs = {
 
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
 	const table = rizom.adapter.tables[slug];
-	const tableNameLocales = `${slug}Locales`;
+	const tableNameLocales = makeLocalesSlug(slug);
 	const tableLocales = rizom.adapter.tables[tableNameLocales];
-
+	
 	const localizedColumns =
 		locale && tableNameLocales in rizom.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
 	const unlocalizedColumns = Object.keys(getTableColumns(table));

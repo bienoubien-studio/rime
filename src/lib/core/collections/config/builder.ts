@@ -11,6 +11,7 @@ import { augmentNested } from './augment-nested.js';
 import { augmentVersions } from './augment-versions.js';
 import { augmentAuth } from './augment-auth.js';
 import { FileText } from '@lucide/svelte';
+import { augmentUrl } from './augment-url.js';
 
 const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>): Collection<S> => ({ ...config, slug });
 
@@ -25,7 +26,8 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 	({ config, fields } = augmentUpdload({ config, fields }));
 	({ config, fields } = augmentNested({ config, fields }));
 	({ config, fields } = augmentVersions({ config, fields }));
-
+	({ config, fields } = augmentUrl({ config, fields }));
+	
 	if (config.auth && slug !== PANEL_USERS) {
 		({ config, fields } = augmentAuth({ config, fields }));
 	}

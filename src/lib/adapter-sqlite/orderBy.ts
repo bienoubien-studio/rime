@@ -3,7 +3,7 @@ import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import { makeVersionsSlug, pathToDatabaseColumn } from '../util/schema.js';
+import { makeLocalesSlug, makeVersionsSlug, pathToDatabaseColumn } from '../util/schema.js';
 
 type Args = {
 	slug: PrototypeSlug;
@@ -56,7 +56,7 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 
 		// Check if it's a localized field in a non-versioned collection
 		if (locale) {
-			const localeTableName = `${slug}Locales` as keyof typeof tables;
+			const localeTableName = makeLocalesSlug(slug) as keyof typeof tables;
 			if (localeTableName in tables) {
 				const localeTable = tables[localeTableName];
 				const localizedColumns = getTableColumns(localeTable);
@@ -96,7 +96,7 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 
 		// Check if it's a localized field in a versioned collection
 		if (locale) {
-			const versionsLocaleTableName = `${versionTableName}Locales` as keyof typeof tables;
+			const versionsLocaleTableName = makeLocalesSlug(versionTableName) as keyof typeof tables;
 			if (versionsLocaleTableName in tables) {
 				const localeTable = tables[versionsLocaleTableName];
 				const localizedColumns = getTableColumns(localeTable);

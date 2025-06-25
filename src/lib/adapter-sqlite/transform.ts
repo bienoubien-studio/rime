@@ -14,6 +14,9 @@ import { logger } from '../core/logger/index.server.js';
 import {
 	getBlocksTableNames,
 	getTreeTableNames,
+	makeBlockTableSlug,
+	makeLocalesSlug,
+	makeTreeTableSlug,
 	makeVersionsSlug,
 	transformDatabaseColumnsToPaths
 } from '../util/schema.js';
@@ -56,7 +59,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		const isVersioned = !!config.versions;
 		const tableName = isVersioned ? makeVersionsSlug(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
-		const tableNameLocales = `${tableName}Locales`;
+		const tableNameLocales = makeLocalesSlug(tableName);
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
@@ -91,7 +94,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 
 		/** Place each block in its path */
 		for (let block of blocks) {
-			const blockLocaleTableName = `${tableName}Blocks${toPascalCase(block.type)}Locales`;
+			const blockLocaleTableName = makeLocalesSlug(makeBlockTableSlug(tableName, block.type));
 			if (locale && blockLocaleTableName in tables) {
 				block = {
 					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
@@ -126,7 +129,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		for (let block of treeBlocks) {
 			try {
 				const [fieldName] = extractFieldName(block.path);
-				const treeBlockLocaleTableName = `${tableName}Tree${toPascalCase(fieldName)}Locales`;
+				const treeBlockLocaleTableName = makeLocalesSlug(makeTreeTableSlug(tableName, fieldName));
 
 				if (locale && treeBlockLocaleTableName in tables) {
 					block = {

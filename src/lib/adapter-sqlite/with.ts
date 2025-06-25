@@ -1,7 +1,7 @@
 import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 import type { Dic } from '$lib/util/types';
 import type { ConfigInterface } from '$lib/core/config/index.server';
-import { getBlocksTableNames, getTreeTableNames } from '$lib/util/schema';
+import { getBlocksTableNames, getTreeTableNames, makeLocalesSlug } from '$lib/util/schema';
 import { getFieldConfigByPath } from '$lib/util/config';
 import { isBlocksFieldRaw, isRelationField, isTreeFieldRaw } from '$lib/util/field';
 
@@ -64,12 +64,13 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 					withParam[blocksTable] = params;
 
 					// Handle localized blocks
-					if (locale && `${blocksTable}Locales` in tables) {
+					const localesBlockTable = makeLocalesSlug(blocksTable)
+					if (locale && localesBlockTable in tables) {
 						withParam[blocksTable] = {
 							...withParam[blocksTable],
 							with: {
-								[`${blocksTable}Locales`]: {
-									where: eq(tables[`${blocksTable}Locales`].locale, locale)
+								[localesBlockTable]: {
+									where: eq(tables[localesBlockTable].locale, locale)
 								}
 							}
 						};
@@ -94,12 +95,13 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 					withParam[treeTable] = params;
 
 					// Handle localized trees
-					if (locale && `${treeTable}Locales` in tables) {
+					const localesTreeTables = makeLocalesSlug(treeTable)
+					if (locale && localesTreeTables in tables) {
 						withParam[treeTable] = {
 							...withParam[treeTable],
 							with: {
-								[`${treeTable}Locales`]: {
-									where: eq(tables[`${treeTable}Locales`].locale, locale)
+								[localesTreeTables]: {
+									where: eq(tables[localesTreeTables].locale, locale)
 								}
 							}
 						};
@@ -109,7 +111,7 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 		} else if (fieldConfig) {
 			// Handle regular fields
 			if (fieldConfig.localized && locale) {
-				const localesTableName = `${slug}Locales`;
+				const localesTableName = makeLocalesSlug(slug);
 				if (localesTableName in tables) {
 					const tableLocales = tables[localesTableName];
 					if (withParam[localesTableName]) {
@@ -189,12 +191,13 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 				};
 
 				// Handle localized trees
-				if (locale && `${treeTable}Locales` in tables) {
+				const localesTreeTable = makeLocalesSlug(treeTable)
+				if (locale && localesTreeTable in tables) {
 					withParam[treeTable] = {
 						...withParam[treeTable],
 						with: {
-							[`${treeTable}Locales`]: {
-								where: eq(tables[`${treeTable}Locales`].locale, locale)
+							[localesTreeTable]: {
+								where: eq(tables[localesTreeTable].locale, locale)
 							}
 						}
 					};
@@ -221,12 +224,13 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 				};
 
 				// Handle localized blocks
-				if (locale && `${blocksTable}Locales` in tables) {
+				const localesBlockTable = makeLocalesSlug(blocksTable)
+				if (locale && localesBlockTable in tables) {
 					withParam[blocksTable] = {
 						...withParam[blocksTable],
 						with: {
-							[`${blocksTable}Locales`]: {
-								where: eq(tables[`${blocksTable}Locales`].locale, locale)
+							[localesBlockTable]: {
+								where: eq(tables[localesBlockTable].locale, locale)
 							}
 						}
 					};
@@ -262,30 +266,32 @@ const buildFullWithParam = ({ slug, locale, tables }: { slug: string; locale?: s
 	);
 
 	if (locale) {
-		const localesTableName = `${slug}Locales`;
+		const localesTableName = makeLocalesSlug(slug);
 		if (localesTableName in tables) {
 			const tableLocales = tables[localesTableName];
 			withParam[localesTableName] = { where: eq(tableLocales.locale, locale) };
 		}
 		for (const blocksTable of blocksTables) {
-			if (`${blocksTable}Locales` in tables) {
+			const localesBlockTable = makeLocalesSlug(blocksTable)
+			if (localesBlockTable in tables) {
 				withParam[blocksTable] = {
 					...withParam[blocksTable],
 					with: {
-						[`${blocksTable}Locales`]: {
-							where: eq(tables[`${blocksTable}Locales`].locale, locale)
+						[localesBlockTable]: {
+							where: eq(tables[localesBlockTable].locale, locale)
 						}
 					}
 				};
 			}
 		}
 		for (const treeTable of treeTables) {
-			if (`${treeTable}Locales` in tables) {
+			const localesTreeTable = makeLocalesSlug(treeTable)
+			if (localesTreeTable in tables) {
 				withParam[treeTable] = {
 					...withParam[treeTable],
 					with: {
-						[`${treeTable}Locales`]: {
-							where: eq(tables[`${treeTable}Locales`].locale, locale)
+						[localesTreeTable]: {
+							where: eq(tables[localesTreeTable].locale, locale)
 						}
 					}
 				};

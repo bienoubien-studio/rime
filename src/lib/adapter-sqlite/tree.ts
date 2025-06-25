@@ -5,7 +5,7 @@ import type { TreeBlock } from '$lib/core/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
 import type { WithRequired } from '$lib/util/types.js';
 import { extractFieldName } from '$lib/fields/tree/util.js';
-import { transformDataToSchema } from '../util/schema.js';
+import { makeLocalesSlug, transformDataToSchema } from '../util/schema.js';
 import { generatePK } from './util.js';
 
 const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
@@ -25,17 +25,17 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 		if (Object.keys(values).length) {
 			await db.update(tables[tableName]).set(values).where(eq(tables[tableName].id, block.id));
 		}
-
-		const keyTableLocales = `${tableName}Locales` as KeyOfTables;
-		if (locale && keyTableLocales in tables) {
-			const tableLocales = tables[keyTableLocales];
+		
+		const tableLocalesName = makeLocalesSlug(tableName);
+		if (locale && tableLocalesName in tables) {
+			const tableLocales = tables[tableLocalesName];
 			const localizedColumns = getTableColumns(tableLocales);
 			const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
 
 			if (!Object.keys(localizedValues).length) return true;
 
-			//@ts-expect-error keyTableLocales is key of db.query
-			const localizedRow = await db.query[keyTableLocales].findFirst({
+			//@ts-expect-error tableLocalesName is key of db.query
+			const localizedRow = await db.query[tableLocalesName].findFirst({
 				where: and(eq(tableLocales.ownerId, block.id), eq(tableLocales.locale, locale))
 			});
 
@@ -65,7 +65,7 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 	const create: CreateBlock = async ({ parentSlug, block, ownerId, locale }) => {
 		const table = buildBlockTableName(parentSlug, block.path);
 		const blockId = generatePK();
-		const tableLocales = `${table}Locales`;
+		const tableLocales = makeLocalesSlug(table);
 
 		if (locale && tableLocales in tables) {
 			const unlocalizedColumns = getTableColumns(tables[table]);

@@ -161,7 +161,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
 				tables,
 				mainTableName: versionsTableName,
-				localesTableName: `${versionsTableName}Locales`,
+				localesTableName: schemaUtil.makeLocalesSlug(versionsTableName),
 				locale
 			});
 
@@ -179,7 +179,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, `${versionsTableName}Locales`, {
+				await adapterUtil.insertTableRecord(db, tables, schemaUtil.makeLocalesSlug(versionsTableName), {
 					...localizedData,
 					ownerId: versionId,
 					locale: locale!
@@ -192,7 +192,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				versionId
 			};
 		} else {
-			const tableLocales = `${slug}Locales`;
+			const tableLocales = schemaUtil.makeLocalesSlug(slug);
 
 			// Prepare data for insertion using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
@@ -263,7 +263,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		// Simple update for non-versioned areas
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Original implementation for non-versioned areas
-			const keyTableLocales = `${slug}Locales`;
+			const keyTableLocales = schemaUtil.makeLocalesSlug(slug);
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -303,7 +303,8 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				.where(eq(tables[slug].id, area.id));
 
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const versionsLocalesTable = `${versionsTable}Locales`;
+			const versionsLocalesTable = schemaUtil.makeLocalesSlug(versionsTable);
+			
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,

@@ -1,27 +1,30 @@
 import type { CollectionSlug } from '../types.js';
+import { toPascalCase } from './string.js';
 
 /**
  * Gets all tree table names for a specific collection in the database schema.
  * Tree tables store hierarchical document relationships.
  *
- * @param slug - The collection slug to find tree tables for
- * @param tables - The database schema tables object
- * @returns An array of table names that store tree data for the collection
- *
  * @example
- * // Returns ['pagesTree', 'pagesTreeRelations']
+ * // Returns ['pagesTreeBaz', 'pagesTreeFoo']
  * getTreeTableNames('pages', dbSchema.tables);
  */
 export const getTreeTableNames = (slug: string, tables: Record<string, any>): string[] =>
 	Object.keys(tables).filter((key) => key.startsWith(`${slug}Tree`) && !key.endsWith('Locales'));
 
 /**
+ * Make a Tree table name given a root table slug and the Tree field name
+ * 
+ * @example
+ * // Returns 'pagesTreeBaz'
+ * makeTreeTableSlug('pages', 'baz')
+ */
+export const makeTreeTableSlug = (slug: string, fieldName: string): string =>
+		`${slug}Tree${toPascalCase(fieldName)}`
+
+/**
  * Gets all blocks table names for a specific collection in the database schema.
  * Blocks tables store flexible content blocks data.
- *
- * @param slug - The collection slug to find blocks tables for
- * @param tables - The database schema tables object
- * @returns An array of table names that store blocks data for the collection
  *
  * @example
  * // Returns ['pagesBlocks', 'pagesBlocksContent']
@@ -29,6 +32,17 @@ export const getTreeTableNames = (slug: string, tables: Record<string, any>): st
  */
 export const getBlocksTableNames = (slug: string, tables: Record<string, any>): string[] =>
 	Object.keys(tables).filter((key) => key.startsWith(`${slug}Blocks`) && !key.endsWith('Locales'));
+
+/**
+ * Make a Block table name given a root table slug and the block.type
+ * 
+ * @example
+ * // Returns 'pagesBlocksBaz'
+ * makeBlockTableSlug('pages', 'baz')
+ */
+export const makeBlockTableSlug = (slug: string, blockType: string): string =>
+	`${slug}Blocks${toPascalCase(blockType)}`
+
 
 /**
  * Creates a upload_directories table name for a given table name.
@@ -69,6 +83,19 @@ export const makeVersionsSlug = (tableName: string) => `${tableName}_versions` a
  *
  */
 export const isVersionsSlug = (slug: string) => slug.endsWith('_versions');
+
+
+/**
+ * Creates a i18n table name for a given table.
+ * handling of versions table name should done separately 
+ *
+ * @example
+ * // Returns 'pagesLocales'
+ * makeLocalesSlug('pages');
+ * // Returns 'pages_versionsLocales'
+ * makeLocalesSlug('pages_versions');
+ */
+export const makeLocalesSlug = (tableName: string) => `${tableName}Locales`;
 
 /**
  * Utility functions for handling path transformations between document paths (dot notation)
