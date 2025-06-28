@@ -122,6 +122,7 @@
 </div>
 
 <style type="postcss">
+	
 	.rz-ressource-input {
 		position: relative;
 		width: 100%;
@@ -170,11 +171,11 @@
 
 	.rz-ressource-input__wrapper:global([data-focused]) {
 		/* --rz-ring-offset: 1px; */
-		@mixin ring var(--rz-color-primary);
+		@mixin ring var(--rz-color-spot);
 		z-index: 20;
 	}
 
 	.rz-ressource-input__wrapper:global([data-error]) {
-		@mixin ring var(--rz-color-error);
+		@mixin ring var(--rz-color-alert);
 	}
 </style>

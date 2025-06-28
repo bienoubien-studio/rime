@@ -1,45 +1,31 @@
 :root {
-	--rz-ground-0: 30deg 4% 4%;
-	--rz-ground-1: 30deg 4% 21%;
-	--rz-ground-2: 30deg 2% 72%;
-	--rz-ground-3: 30deg 7% 86%;
-	--rz-ground-4: 30deg 3% 90%;
-	--rz-ground-5: 30deg 3% 94%;
-	--rz-ground-6: 30deg 1% 98%;
-	--rz-ground-7: 30deg 0% 100%;
+	--rz-gray-0: 0 0% 2.03%;
+	--rz-gray-1: 0 0% 4.52%;
+	--rz-gray-2: 0 0% 7.94%;
+	--rz-gray-3: 0 0% 12.21%;
+	--rz-gray-4: 0 0% 17.26%;
+	--rz-gray-5: 0 0% 22.97%;
+	--rz-gray-6: 0 0% 29.23%;
+	--rz-gray-7: 0 0% 35.91%;
+	--rz-gray-8: 0 0% 42.88%;
+	--rz-gray-9: 0 0% 50%;
+	--rz-gray-10: 0 0% 57.12%;
+	--rz-gray-11: 0 0% 64.09%;
+	--rz-gray-12: 0 0% 70.77%;
+	--rz-gray-13: 0 0% 77.03%;
+	--rz-gray-14: 0 0% 82.74%;
+	--rz-gray-15: 0 0% 87.79%;
+	--rz-gray-16: 0 0% 92.06%;
+	--rz-gray-17: 0 0% 95.48%;
+	--rz-gray-18: 0 0% 97.97%;
+	--rz-gray-19: 0 0% 99.49%;
+	
+	/* --rz-color-spot: 160deg 72% 49%; */
+	--rz-color-spot: 229deg 89% 60%;
+	--rz-color-spot-fg: 229deg 72% 19%;
 
-	--rz-color-fg: var(--rz-ground-0);
-
-	--rz-color-error: 4deg 100% 69%;
-	--rz-color-input: var(--rz-ground-7);
-
-	/* --rz-color-primary: 238deg 94% 64%; */
-	--rz-color-primary: var(--rz-ground-0);
-	--rz-color-primary-fg: var(--rz-ground-6);
-
-	--rz-color-secondary: 155% 59% 94%;
-	--rz-color-secondary-fg: var(--rz-ground-1);
-
-	--rz-color-accent: var(--rz-ground-3);
-	--rz-color-accent-fg: var(--rz-ground-6);
-
-	--rz-color-border: var(--rz-ground-3);
-	--rz-color-ring: var(--rz-color-primary);
-
-	@media (prefers-color-scheme: dark) {
-		--rz-color-primary: 138deg 94% 74%;
-		--rz-color-primary-fg: 200 4% 2%;
-
-		--rz-ground-0: 240 10% 0%;
-		--rz-ground-1: 240 10% 4%;
-		--rz-ground-2: 240 10% 6%;
-		--rz-ground-3: 240 10% 14%;
-		--rz-ground-4: 240 10% 17%;
-		--rz-ground-5: 240 10% 20%;
-		--rz-ground-6: 240 10% 22%;
-		--rz-ground-7: 240 0% 24%;
-
-		--rz-color-input: var(--rz-ground-7);
-		--rz-color-fg: 240 0% 84%;
-	}
+	--rz-color-success: 160deg 72% 49%;
+	--rz-color-warn: 14deg, 80%, 60%;
+	--rz-color-alert: 4deg 100% 69%;
+	
 }

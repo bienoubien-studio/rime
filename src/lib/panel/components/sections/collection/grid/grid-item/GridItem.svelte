@@ -82,8 +82,8 @@
 		text-align: left;
 	}
 	.rz-grid-item {
-		--checkbox-border: hsl(var(--rz-ground-6));
-		--rz-card-color-bg: var(--rz-ground-6);
+		--checkbox-border: hsl(var(--rz-gray-10));
+		--rz-card-color-bg: var(--rz-gray-10);
 		display: block;
 		position: relative;
 
@@ -128,8 +128,6 @@
 	}
 
 	.rz-grid-item__metadata {
-		margin-top: var(--rz-size-1);
-		margin-bottom: var(--rz-size-1);
 		font-size: var(--rz-text-xs);
 		display: none;
 		@container collection-area (min-width:420px) {

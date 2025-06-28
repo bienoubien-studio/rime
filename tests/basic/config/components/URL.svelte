@@ -14,8 +14,8 @@
 
 <style>
 	.rz-comp-url {
-		background-color: hsl(var(--rz-ground-4) / 1);
-		color: hsl(var(--rz-ground-1) / 1);
+		background-color: hsl(var(--rz-gray-13) / 1);
+		color: hsl(var(--rz-color-fg) / 1);
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
 		display: inline-flex;
@@ -25,6 +25,6 @@
 		letter-spacing: 0.02em;
 		font-size: var(--rz-text-sm);
 		padding: var(--rz-size-1) var(--rz-size-3);
-		border: 1px solid hsl(var(--rz-ground-2) / 0.2);
+		border: 1px solid hsl(var(--rz-gray-12));
 	}
 </style>

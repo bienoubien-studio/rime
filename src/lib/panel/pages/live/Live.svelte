@@ -143,7 +143,7 @@
 		transform-origin: 0 0;
 	}
 	.rz-live-container__overlay {
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-gray-10));
 		opacity: 0.8;
 		position: absolute;
 		inset: 0;

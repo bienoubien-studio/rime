@@ -12,6 +12,7 @@
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 
 	const {
 		isFull,
@@ -80,17 +81,9 @@
 			class:rz-relation__list--readonly={readOnly}
 		>
 			{#each selectedItems as item (item.documentId)}
-				<div class="rz-relation__item" class:rz-relation__item--readonly={readOnly}>
-					<span>{item.label}</span>
-					<button
-						class="rz-relation__remove-button"
-						class:rz-relation__remove-button--readonly={readOnly}
-						type="button"
-						onclick={() => removeValue(item.documentId)}
-					>
-						<X size={13} />
-					</button>
-				</div>
+				<Tag onRemove={() => removeValue(item.documentId)} {readOnly}>
+					{item.label}
+				</Tag>
 			{/each}
 
 			{#if nothingToSelect}
@@ -164,32 +157,33 @@
 	.rz-relation {
 		position: relative;
 
-		:global(> * + *) {
-			margin-top: var(--rz-size-2);
-		}
-
-		:global(.rz-command) {
-			width: 100%;
-			border-radius: var(--rz-radius-md);
-
-			:global(.rz-command-input-select--with-items) {
-				margin-left: var(--rz-size-2);
+		:global {
+			> * + * {
+				margin-top: var(--rz-size-2);
 			}
-
-			:global(.rz-command-list) {
-				background-color: hsl(var(--rz-color-input));
-				border: var(--rz-border);
-				position: absolute;
-				left: 0;
-				right: 0;
-				top: var(--rz-size-12);
-				z-index: 10;
+			.rz-command {
+				width: 100%;
 				border-radius: var(--rz-radius-md);
-				box-shadow: var(--rz-shadow-md);
-			}
 
-			:global(.rz-command-item) {
-				height: var(--rz-size-11);
+				.rz-command-input-select--with-items {
+					margin-left: var(--rz-size-2);
+				}
+				
+				.rz-command-list {
+					background-color: hsl(var(--rz-color-input));
+					border: var(--rz-border);
+					position: absolute;
+					left: 0;
+					right: 0;
+					top: var(--rz-size-12);
+					z-index: 10;
+					border-radius: var(--rz-radius-md);
+					box-shadow: var(--rz-shadow-md);
+				}
+
+				.rz-command-item {
+					height: var(--rz-size-11);
+				}
 			}
 		}
 
@@ -218,34 +212,10 @@
 		}
 
 		.rz-relation__list:global([data-error]) {
-			@mixin ring var(--rz-color-error);
+			@mixin ring var(--rz-color-alert);
 		}
 
 		.rz-relation__list--readonly {
-			cursor: no-drop;
-		}
-
-		.rz-relation__item {
-			background-color: hsl(var(--rz-ground-0));
-			color: hsl(var(--rz-ground-4));
-			display: flex;
-			align-items: center;
-			gap: var(--rz-size-2);
-			border-radius: var(--rz-radius-sm);
-			padding: 0.18rem var(--rz-size-2);
-			font-size: var(--rz-text-xs);
-		}
-
-		.rz-relation__item--readonly {
-			opacity: 0.3;
-			cursor: no-drop;
-		}
-
-		.rz-relation__remove-button {
-			cursor: pointer;
-		}
-
-		.rz-relation__remove-button--readonly {
 			cursor: no-drop;
 		}
 	}

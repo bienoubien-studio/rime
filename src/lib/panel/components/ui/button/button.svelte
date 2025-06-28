@@ -47,6 +47,51 @@
 {/if}
 
 <style type="postcss">
+	:root {
+		/* Default variant */
+		--rz-button-default-bg: light-dark(hsl(var(--rz-gray-0)), hsl(var(--rz-gray-15)));
+		--rz-button-default-bg-hover: light-dark(hsl(var(--rz-gray-2)), hsl(var(--rz-gray-19)));
+		--rz-button-default-bg-disabled: light-dark(hsl(var(--rz-gray-3)), hsl(var(--rz-gray-12)));
+		--rz-button-default-fg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-2)));
+		
+		/* Success variant */
+		--rz-button-success-bg: hsl(var(--rz-color-spot) / 1);
+		--rz-button-success-bg-hover: hsl(var(--rz-color-spot) / 0.6);
+		--rz-button-success-bg-disabled: hsl(var(--rz-color-spot) / 0.3);
+		--rz-button-success-fg: hsl(var(--rz-color-spot-fg) / 1);
+		
+		/* Outline variant */
+		--rz-button-outline-bg: transparent;
+		--rz-button-outline-fg: light-dark(hsl(var(--rz-gray-4)), hsl(var(--rz-gray-12))) ;
+		--rz-button-outline-border: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-8)));
+		--rz-button-outline-bg-hover: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-4)));;
+		/* --rz-button-outline-border-hover: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-15))); */
+
+		/* Ghost variant */
+		--rz-button-ghost-bg: transparent;
+		--rz-button-ghost-bg-hover: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-4)));
+		--rz-button-ghost-fg: hsl(var(--rz-color-fg));
+		
+		/* Secondary variant */
+		--rz-button-secondary-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+		--rz-button-secondary-bg-hover: light-dark(
+			hsl(var(--rz-gray-13)),
+			color-mix( in hsl, white 3%, hsl(var(--rz-gray-3)))
+		);
+		--rz-button-secondary-fg: hsl(var(--rz-color-fg));
+
+		/* Link variant */
+		--rz-button-link-bg: transparent;
+		--rz-button-link-bg-hover: transparent;
+		--rz-button-link-fg: hsl(var(--rz-color-fg));
+
+		/* Text variant */
+		--rz-button-text-bg: transparent;
+		--rz-button-text-fg: hsl(var(--rz-color-fg) / 0.6);
+		--rz-button-text-fg-hover: hsl(var(--rz-color-fg) / 1);
+		--rz-button-text-fg-disabled: hsl(var(--rz-color-fg) / 0.4);
+	}
+
 	.rz-button {
 		flex-shrink: var(--rz-flex-shrink, unset);
 		display: inline-flex;
@@ -58,6 +103,7 @@
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color, fill, stroke;
 		transition-duration: 0.25s;
 		gap: var(--rz-size-2);
+		fiil: currentColor;
 	}
 
 	.rz-button:focus-visible {
@@ -68,7 +114,7 @@
 
 	.rz-button:disabled,
 	.rz-button[disabled='true'] {
-		opacity: 0.7;
+		opacity: 0.5;
 		cursor: no-drop !important;
 	}
 
@@ -77,6 +123,7 @@
 	/**************************************/
 
 	.rz-button--size-default {
+		font-size: var(--rz-text-md);
 		height: var(--rz-size-9);
 		padding: var(--rz-size-2) var(--rz-size-4);
 	}
@@ -89,12 +136,14 @@
 	}
 
 	.rz-button--size-sm {
+		font-size: var(--rz-text-md);
 		height: var(--rz-size-8);
 		padding: var(--rz-size-2) var(--rz-size-3);
 		border-radius: var(--rz-radius-md);
 	}
 
 	.rz-button--size-lg {
+		font-size: var(--rz-text-md);
 		height: var(--rz-size-12);
 		padding: var(--rz-size-2) var(--rz-size-8);
 		border-radius: var(--rz-radius-md);
@@ -123,64 +172,89 @@
 	/* Variants */
 	/**************************************/
 
+	/** Default */
 	.rz-button--default {
-		background-color: hsl(var(--rz-color-primary) / 1);
-		color: hsl(var(--rz-color-primary-fg) / 1);
+		background-color: var(--rz-button-default-bg);
+		color: var(--rz-button-default-fg);
+		&:hover:not(:disabled) {
+			background-color: var(--rz-button-default-bg-hover);
+		}
+		&:disabled {
+			background-color: var(--rz-button-default-bg-disabled);
+		}
 	}
 
-	.rz-button--default:hover {
-		background-color: hsl(var(--rz-color-primary) / 0.9);
+	/** Success */
+	.rz-button--success {
+		background-color: var(--rz-button-success-bg);
+		color: var(--rz-button-success-fg);
+		&:hover {
+			background-color: var(--rz-button-success-bg-hover);
+		}
+		&:disabled:not(:disabled) {
+			background-color: var(--rz-button-success-bg-disabled);
+		}
 	}
 
-	.rz-button--default:disabled {
-		background-color: hsl(var(--rz-ground-2) / 1);
-	}
-
+	/** Outline */
 	.rz-button--outline {
-		border: 1px solid hsl(var(--rz-ground-3));
-		background-color: hsl(var(--rz-ground-5) / 0);
+		border:  1px solid  var(--rz-button-outline-border);
+		background-color: var(--rz-button-outline-bg);
+		color: var(--rz-button-outline-fg);
 
-		&:hover {
-			background-color: hsl(var(--rz-ground-5) / 1);
+		&:hover:not(:disabled) {
+			/* border-color: var(--rz-button-outline-border-hover); */
+			background-color: var(--rz-button-outline-bg-hover);
 		}
 	}
 
+	/** Ghost */
 	.rz-button--ghost {
-		background-color: hsl(var(--rz-ground-4) / 0);
+		background-color: var(--rz-button-ghost-bg);
+		color: var(--rz-button-ghost-fg);
 
-		&:hover {
-			background-color: hsl(var(--rz-ground-4) / 1);
+		&:hover:not(:disabled) {
+			background-color: var(--rz-button-ghost-bg-hover);
 		}
 	}
 
+	/** Secondary */
 	.rz-button--secondary {
-		background-color: hsl(var(--rz-ground-4));
-		&:hover {
-			background-color: hsl(var(--rz-ground-3));
+		background-color: var(--rz-button-secondary-bg);
+		color: var(--rz-button-secondary-fg);
+
+		&:hover:not(:disabled) {
+			background-color: var(--rz-button-secondary-bg-hover);
 		}
 	}
 
+	/** Link */
 	.rz-button--link {
-		background: none;
+		background: var(--rz-button-link-bg);
+		color: var(--rz-button-link-fg);
 		text-underline-offset: 4px;
-		&:hover {
+
+		&:hover:not(:disabled) {
+			background-color: var(--rz-button-link-bg-hover);
 			text-decoration: underline;
 		}
 	}
 
+	/** Text */
 	.rz-button--text {
-		--opacity: 0.6;
 		padding-left: 0;
 		padding-right: 0;
-		background-color: transparent;
-		color: hsl(var(--rz-color-fg) / var(--opacity));
+		background-color: var(--rz-button-text-bg);
+		color: var(--rz-button-text-fg);
 		@mixin font-semibold;
 		gap: var(-rz-size-2);
+
 		&:hover {
-			--opacity: 1;
+			color: var(--rz-button-text-fg-hover);
 		}
+
 		&:disabled {
-			--opacity: 0.4;
+			color: var(--rz-button-text-fg-disabled);
 		}
 	}
 

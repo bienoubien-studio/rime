@@ -134,7 +134,6 @@
 		<Command.Empty>No results found.</Command.Empty>
 		{#each availableItems as item, index (index)}
 			<Command.Item
-				class="rz-relation-upload__command-item"
 				value={item.filename}
 				onSelect={() => {
 					addValue(item.documentId);

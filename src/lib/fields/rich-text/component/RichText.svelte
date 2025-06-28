@@ -80,12 +80,20 @@
 		position: relative;
 	}
 
+	.rz-field-rich-text {
+		:global {
+			.ProseMirror-gapcursor:after {
+				border-top: 1px solid hsl(var(--rz-color-fg));
+			}
+		}
+	}
 	.rz-field-rich-text--standalone {
 		margin-bottom: var(--rz-size-20);
 		.rz-rich-text__editor {
 			border: none;
 		}
 	}
+
 	.rz-field-rich-text--standalone :global {
 		.rz-field-label {
 			display: none;

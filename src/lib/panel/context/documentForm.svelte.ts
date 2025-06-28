@@ -103,7 +103,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 
 	function setValue(path: string, value: any) {
-		doc = setValueAtPath(doc, path, value);
+		doc = setValueAtPath(path, doc, value);
 		if (collection && operation === 'update') collection.updateDoc(doc);
 		if (onDataChange) onDataChange({ path, value });
 	}
@@ -135,7 +135,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const assignItemsToDoc = (items: TreeBlock[]) => {
-			doc = setValueAtPath(doc, path, items);
+			doc = setValueAtPath(path, doc, items);
 			if (onDataChange) onDataChange({ path, value: snapshot(items) });
 			/** update stamp to rerender */
 			stamp = new Date().getTime().toString();

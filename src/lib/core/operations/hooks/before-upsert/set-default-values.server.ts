@@ -27,7 +27,7 @@ export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (
 		}
 		if (shouldAddDefault && isEmpty && hasProp('defaultValue', config)) {
 			value = await getDefaultValue({ key, config, adapter: rizom.adapter });
-			output = setValueAtPath(output, key, value);
+			output = setValueAtPath(key, output, value);
 		}
 	}
 

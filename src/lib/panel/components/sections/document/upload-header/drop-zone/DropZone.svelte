@@ -1,14 +1,14 @@
 <script lang="ts">
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import type { Collection } from '$lib/types.js';
+	import type { Collection, CompiledCollection } from '$lib/types.js';
 	import type { WithUpload } from '$lib/util/types';
 	import { toast } from 'svelte-sonner';
 
 	import type { ChangeEventHandler } from 'svelte/elements';
 
 	type Props = {
-		accept: WithUpload<Collection<any>>['accept'] | undefined;
+		accept: WithUpload<CompiledCollection>['upload']['accept'] | undefined;
 		preview: string | null;
 		file: File | null;
 		onGeneratingPreviewStart: () => void;
@@ -110,13 +110,14 @@
 </label>
 
 <style type="postcss">
+	
 	.rz-doc-upload-dropzone {
 		display: grid;
 		cursor: pointer;
 		height: var(--rz-size-32);
 		place-content: center;
 		border-radius: var(--rz-radius-lg);
-		border: 2px dashed hsl(var(--rz-ground-3) / 1);
+		border: 2px dashed light-dark(hsl(var(--rz-gray-12)), hsl(var(--rz-gray-6)));
 		background: transparent;
 		text-align: center;
 		font-size: var(--rz-text-sm);

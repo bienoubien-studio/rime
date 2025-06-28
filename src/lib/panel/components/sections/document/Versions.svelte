@@ -79,7 +79,7 @@
 		display: flex;
 		border-radius: var(--rz-radius-lg);
 		align-items: center;
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-gray-10));
 		justify-content: space-between;
 	}
 

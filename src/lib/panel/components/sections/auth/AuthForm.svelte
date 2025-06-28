@@ -27,9 +27,11 @@
 		}
 		height: 100vh;
 		width: 100vw;
-		background-color: hsl(var(--rz-ground-7));
+		background-color: hsl(var(--rz-color-bg));
 
 		.rz-auth__right {
+			--rz-input-height: var(--rz-size-14);
+
 			display: flex;
 			flex-direction: column;
 			justify-content: center;

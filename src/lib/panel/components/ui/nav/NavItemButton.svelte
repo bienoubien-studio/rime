@@ -30,7 +30,7 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		height: calc(var(--rz-size-12) - 1px);
+		height: calc(var(--rz-input-height) - 1px);
 		padding: var(--rz-size-2) 0px;
 		white-space: nowrap;
 		@mixin font-normal;
@@ -40,7 +40,7 @@
 
 		gap: var(--rz-size-3);
 		&:not(:last-child) {
-			border-bottom: 1px solid hsl(var(--rz-ground-3));
+			border-bottom: 1px solid var(--rz-nav-group-border-color);
 		}
 	}
 

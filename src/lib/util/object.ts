@@ -267,12 +267,12 @@ export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
  *
  * @example
  * // Returns { user: { address: { city: "Boston" } } }
- * setValueAtPath({ user: { address: { city: "New York" } } }, 'user.address.city', 'Boston');
+ * setValueAtPath('user.address.city', { user: { address: { city: "New York" } } }, 'Boston');
  *
  * // Creates missing path and returns { user: { phone: "555-1234" } }
- * setValueAtPath({ user: {} }, 'user.phone', '555-1234');
+ * setValueAtPath('user.phone', { user: {} }, '555-1234');
  */
-export const setValueAtPath = <T extends Dic>(obj: T, path: string, value: unknown): T => {
+export const setValueAtPath = <T extends Dic>(path: string, obj: T, value: unknown): T => {
 	const parts = path.split('.');
 
 	// Create a shallow copy of the root object

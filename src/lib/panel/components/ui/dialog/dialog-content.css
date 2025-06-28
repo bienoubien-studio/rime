@@ -1,13 +1,12 @@
 .rz-dialog-content {
 	--gutter: var(--rz-size-4);
-	@mixin bg color-bg;
+	background-color: hsl(var(--rz-color-bg));
 	position: fixed;
 	left: calc(50% - var(--gutter));
 	top: 40%;
 	z-index: 1010;
 	display: grid;
 	width: calc(100% - 2 * var(--gutter));
-	background-color: hsl(var(--rz-ground-5));
 	transform: translate(-50%, -50%);
 	gap: var(--rz-size-4);
 	border: var(--rz-border);

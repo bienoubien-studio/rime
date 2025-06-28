@@ -16,14 +16,20 @@
 </div>
 
 <style type="postcss" global>
+	
+	:root{
+		--tag-color-bg: hsl(var(--rz-gray-0));
+		--tag-color-fg: hsl(var(--rz-gray-13));
+	}
+
 	.rz-tag {
-		background-color: hsl(var(--rz-ground-0));
-		color: hsl(var(--rz-ground-6));
+		background-color: var(--tag-color-bg);
+		color: var(--tag-color-fg);
 		border-radius: var(--rz-radius-sm);
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-2);
-		font-size: var(--rz-text-xs);
+		font-size: var(--rz-text-sm);
 		padding: 0.2rem var(--rz-size-2);
 	}
 
@@ -39,7 +45,7 @@
 
 	.rz-tag__button:focus-visible {
 		outline: none;
-		@mixin bg color-ring;
+		background-color: hsl(var(--rz-color-ring));
 	}
 
 	.rz-tag__button--readonly {

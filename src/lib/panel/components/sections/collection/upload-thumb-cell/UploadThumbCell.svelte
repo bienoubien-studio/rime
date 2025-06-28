@@ -29,6 +29,12 @@
 </div>
 
 <style type="postcss">
+
+	:root{
+		--rz-upload-preview-cell-bg: light-dark(hsl(var(--rz-gray-11)), hsl(var(--rz-gray-0)));
+		--rz-upload-preview-cell-fit: contain;
+	}
+	
 	.rz-upload-preview-cell {
 		--size: var(--rz-upload-preview-cell-size, var(--rz-size-9));
 		display: flex;
@@ -45,7 +51,7 @@
 			height: 100%;
 			border-radius: var(--rz-radius-sm);
 			overflow: hidden;
-			background: hsl(var(--rz-ground-6));
+			background: var(--rz-upload-preview-cell-bg);
 			display: flex;
 			place-content: center;
 		}
@@ -54,7 +60,7 @@
 	.rz-upload-preview-cell__image {
 		height: 100%;
 		width: 100%;
-		object-fit: cover;
+		object-fit: var(--rz-upload-preview-cell-fit);
 	}
 
 	.rz-upload-preview-cell__placeholder {

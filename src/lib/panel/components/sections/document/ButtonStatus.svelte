@@ -8,7 +8,6 @@
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Label from '../../ui/label/label.svelte';
 	import { env } from '$env/dynamic/public';
-	import { doc } from '$lib/util/index.js';
 	import { toast } from 'svelte-sonner';
 	import { invalidateAll } from '$app/navigation';
 	type Props = { form: DocumentFormContext };

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowUpRight, Eye, Home } from '@lucide/svelte';
+	import { Eye } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
@@ -52,7 +52,6 @@
 							<div>
 								<header>
 									<h2>{entry.title}</h2>
-									<ArrowUpRight strokeWidth="1" size="18" />
 								</header>
 								{#if entry.description}
 									<p class="rz-dashboard__entry-description">{entry.description}</p>
@@ -68,32 +67,28 @@
 
 <style type="postcss">
 	.rz-dashboard {
-		background-color: hsl(var(--rz-ground-5) / 0.4);
+		background-color: hsl(var(--rz-color-bg));
 		min-height: 100vh;
 
 		h2 {
-			font-size: var(--rz-text-xl);
+			font-size: var(--rz-text-lg);
 			@mixin font-medium;
 		}
 	}
 	.rz-dashboard__entry {
 		height: 100%;
-		background-color: hsl(var(--rz-ground-6));
-		border-radius: var(--rz-radius-sm);
+		background-color: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+		border-radius: var(--rz-radius-md);
 		padding: var(--rz-size-4);
 		position: relative;
-		min-height: 180px;
+		min-height: 130px;
 		display: flex;
 		flex-direction: column;
 		gap: var(--rz-size-4);
 		transition: background-color 0.3s ease-out;
-
-		--rz-ring-offset-bg: var(--rz-ground-5);
-		--rz-ring-offset: 4px;
-		@mixin ring var(--rz-ground-4);
-
+		
 		&:hover {
-			background-color: hsl(var(--rz-ground-7) / 0.7);
+			background-color: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-4)));
 		}
 
 		:global(svg) {
@@ -108,9 +103,9 @@
 		}
 	}
 	.rz-dashboard__entry-icon {
-		width: var(--rz-size-10);
-		height: var(--rz-size-10);
-		background-color: hsl(var(--rz-ground-7));
+		width: var(--rz-size-8);
+		height: var(--rz-size-8);
+		background-color: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-0)));
 		border-radius: var(--rz-size-10);
 		display: flex;
 		align-items: center;
@@ -124,7 +119,7 @@
 
 	.rz-dashboard__content {
 		display: grid;
-		gap: var(--rz-size-7);
+		gap: var(--rz-size-6);
 		padding: var(--rz-size-8) var(--rz-page-gutter);
 		height: 100%;
 		grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));

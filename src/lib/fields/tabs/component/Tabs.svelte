@@ -12,7 +12,7 @@
 
 	const { config, path: initialPath, form }: Props = $props();
 
-	const cookieKey = `Tabs:${initialPath}:${config.tabs.map((t) => t.name).join('-')}`;
+	const cookieKey = `Tabs:${form.doc.id || 'create'}:${initialPath}:${config.tabs.map((t) => t.name).join('-')}`;
 	let activeTabName = $state(Cookies.get(cookieKey) || config.tabs[0].name);
 
 	// Prevent localStorage opened tab to open

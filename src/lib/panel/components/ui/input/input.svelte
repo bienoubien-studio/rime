@@ -15,8 +15,12 @@
 <input bind:this={ref} class="rz-input {className}" bind:value {...restProps} />
 
 <style type="postcss">
+	:root{
+		--rz-input-border-color: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-6) / 0.6));
+	}
+	
 	.rz-input {
-		border: var(--rz-border);
+		border: 1px solid var(--rz-input-border-color);
 		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		height: var(--rz-input-height);
@@ -28,14 +32,14 @@
 	}
 
 	input.rz-input:is(:-webkit-autofill, :autofill) {
-		--color: color-mix(in lch, hsl(var(--rz-color-input)), hsl(var(--rz-color-primary)) 12%);
+		--color: color-mix(in lch, hsl(var(--rz-color-input)), hsl(var(--rz-color-spot)) 12%);
 		background-color: var(--color) !important;
 		box-shadow: 0 0 0 1000px var(--color) inset !important;
 		color: hsl(var(--rz-color-fg) / 1) !important;
 		-webkit-text-fill-color: hsl(var(--rz-color-fg) / 1) !important;
 	}
 	input.rz-input:is(:-webkit-autofill, :autofill):focus {
-		--color: color-mix(in lch, hsl(var(--rz-color-input)), hsl(var(--rz-color-primary)) 24%);
+		--color: color-mix(in lch, hsl(var(--rz-color-input)), hsl(var(--rz-color-spot)) 24%);
 		background-color: var(--color) !important;
 		box-shadow: 0 0 0 1000px var(--color) inset !important;
 		color: hsl(var(--rz-color-fg) / 1) !important;
@@ -58,7 +62,7 @@
 
 	.rz-input[data-error] {
 		outline: none;
-		@mixin ring var(--rz-color-error);
+		@mixin ring var(--rz-color-alert);
 	}
 
 	/* .rz-input:-internal-autofill-selected {

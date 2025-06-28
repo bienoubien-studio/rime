@@ -10,7 +10,7 @@
 </script>
 
 <div class="rz-tree-item-actions">
-	<Button variant="outline" size="icon" onclick={deleteItem}>
+	<Button variant="ghost" size="icon-sm" onclick={deleteItem}>
 		<Trash2 size={11} />
 	</Button>
 </div>

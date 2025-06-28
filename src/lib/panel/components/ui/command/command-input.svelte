@@ -20,7 +20,8 @@
 		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		align-items: center;
-		border-radius: var(--rz-radius-md);
+		border-top-left-radius: var(--rz-radius-md);
+		border-top-right-radius: var(--rz-radius-md);
 		@mixin px var(--rz-size-3);
 		@mixin py var(--rz-size-1);
 
@@ -29,7 +30,7 @@
 		}
 
 		&:global([data-error]) {
-			@mixin ring var(--rz-color-error);
+			@mixin ring var(--rz-color-alert);
 		}
 
 		& :global(.rz-command-input__icon) {

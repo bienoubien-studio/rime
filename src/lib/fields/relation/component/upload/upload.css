@@ -72,14 +72,8 @@
 	padding: var(--rz-size-2);
 }
 
-.rz-relation-upload__command-item {
-	display: flex;
-	gap: var(--rz-size-3);
-	border-radius: var(--rz-radius-2xl);
-}
-
 .rz-relation-upload__command-item[aria-selected='true'] {
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-gray-5));
 }
 
 .rz-relation-upload__grid-item {

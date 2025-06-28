@@ -37,7 +37,7 @@
 <style>
 	:global(.prosemirror-dropcursor-block) {
 		opacity: 0.4;
-		border: 1px solid hsl(var(--rz-color-primary));
+		border: 1px solid hsl(var(--rz-color-spot));
 	}
 	:global(.rz-field-rich-text--standalone .rz-rich-text__editor .ProseMirror > *) {
 		padding-left: 1rem;

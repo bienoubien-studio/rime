@@ -54,7 +54,6 @@
 		.rz-input {
 			font-size: var(--rz-text-md);
 			padding: 0 var(--rz-size-5);
-			height: var(--rz-size-14);
 		}
 	}
 

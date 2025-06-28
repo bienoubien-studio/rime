@@ -5,20 +5,20 @@
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--rz-radius-lg);
-	padding: var(--rz-size-2);
+	/* padding: var(--rz-size-2); */
 	color: hsl(var(--rz-color-fg));
 }
 
 .rz-icon-button:hover,
 .rz-icon-button--active {
-	background-color: hsl(var(--rz-ground-5));
+	/* background-color: hsl(var(--rz-gray-2)); */
 }
 
 .rz-icon-button__icon {
-	opacity: 0.8;
+	opacity: 0.3;
 }
 
 .rz-icon-button__icon--active {
-	color: hsl(var(--rz-color-primary));
+	color: hsl(var(--rz-color-spot));
 	opacity: 1;
 }

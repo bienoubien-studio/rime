@@ -107,7 +107,7 @@
 	}
 
 	.rz-number-field__chevron:hover {
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-gray-9));
 	}
 
 	.rz-number-field__chevron:focus-visible {

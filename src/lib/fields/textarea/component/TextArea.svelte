@@ -42,7 +42,7 @@
 
 		&:global([data-error]) {
 			outline: none;
-			@mixin ring var(--rz-color-error);
+			@mixin ring var(--rz-color-alert);
 		}
 	}
 

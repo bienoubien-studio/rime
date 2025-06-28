@@ -73,6 +73,15 @@
 </div>
 
 <style type="postcss">
+	:root{
+		--rz-nav-button-height: var(--rz-size-12);
+		--rz-nav-bg: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-0)));
+		
+		--rz-nav-button-bg: light-dark( hsl(var(--rz-gray-19)), hsl(var(--rz-gray-3)));
+		--rz-nav-group-bg: light-dark( hsl(var(--rz-gray-17)), hsl(var(--rz-gray-2)));
+		--rz-nav-group-border-color: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+	}
+
 	.rz-nav {
 		position: fixed;
 		z-index: 100;
@@ -80,7 +89,7 @@
 		left: 0;
 		top: 0;
 		padding: var(--rz-size-2) var(--rz-size-5);
-		background-color: hsl(var(--rz-ground-4) / 0.5);
+		background-color: var(--rz-nav-bg);
 		border-right: var(--rz-border);
 		width: var(--rz-size-72);
 

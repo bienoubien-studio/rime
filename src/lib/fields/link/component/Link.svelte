@@ -106,7 +106,7 @@
 		class="rz-link-field"
 		data-error={field.error ? 'true' : 'false'}
 	>
-		<div class="rz-link-field__bottom" style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}">
+		<div class="rz-link-field__row" style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}">
 			<!-- Type -->
 			{#if linkTypes.length === 1}
 				<Button class="rz-link__type-single" variant="secondary">
@@ -115,11 +115,12 @@
 				</Button>
 			{:else}
 				<DropdownMenu.Root>
+
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}
 							<Button variant="secondary" {...props}>
 								<Icon class="rz-link__type-icon" size={12} />
-								<p class="rz-link__type-text">{capitalize(linkType)}</p>
+								{capitalize(linkType)}
 								<ChevronDown class="rz-link__type-icon" size={12} />
 							</Button>
 						{/snippet}
@@ -168,6 +169,7 @@
 
 <style type="postcss">
 	.rz-link-field {
+		height: var(--rz-input-height);
 		:global(.rz-input) {
 			border-bottom-left-radius: 0;
 			border-bottom-right-radius: var(--rz-corner-radius);
@@ -183,11 +185,12 @@
 		top: -1.3rem;
 	}
 
-	.rz-link-field__bottom {
+	.rz-link-field__row {
 		display: flex;
 		position: relative;
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-lg);
+		
 		.rz-link__type-text {
 			display: none;
 		}
@@ -201,7 +204,7 @@
 			border-top-left-radius: var(--rz-radius-md);
 			border-top-right-radius: 0;
 			border-bottom-right-radius: 0;
-			height: var(--rz-size-11);
+			height: var(--rz-input-height);
 			justify-content: start;
 			font-size: var(--rz-text-sm);
 
@@ -234,7 +237,8 @@
 	}
 
 	.rz-link__target {
-		background-color: hsl(var(--rz-ground-5));
+		height: var(--rz-input-height);
+		background-color: light-dark(hsl(var(--rz-gray-14)),hsl(var(--rz-gray-5)));
 		border-bottom-right-radius: var(--rz-radius-md);
 		border-top-right-radius: var(--rz-radius-md);
 		display: flex;

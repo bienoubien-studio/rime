@@ -64,7 +64,7 @@
 	</Button>
 
 	<Dialog.Root bind:open={dialogOpen}>
-		<Dialog.Content class="rz-date__dialog-content">
+		<Dialog.Content size="sm" class="rz-date__dialog-content">
 			<Calendar type="single" value={calendarDate} onValueChange={handleCalendarChange} initialFocus />
 		</Dialog.Content>
 	</Dialog.Root>
@@ -79,8 +79,6 @@
 			padding: 12rem;
 		}
 		.rz-date__button.rz-button {
-			background-color: hsl(var(--rz-color-input));
-			height: var(--rz-size-11);
 			width: 200px;
 			justify-content: flex-start;
 			border: var(--rz-border);
@@ -95,7 +93,7 @@
 		}
 
 		.rz-date__button[data-error] {
-			border-color: var(--rz-color-error);
+			border-color: var(--rz-color-alert);
 		}
 
 		.rz-date__icon {

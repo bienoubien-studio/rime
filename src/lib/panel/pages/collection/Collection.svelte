@@ -114,11 +114,11 @@
 		}
 		& :global(.rz-scroll-area--grid) {
 			height: calc(100vh - 3.5rem);
-			background-color: hsl(var(--rz-ground-6));
+			background-color: hsl(var(--rz-gray-10));
 		}
 		& :global(.rz-scroll-area--nested) {
 			height: calc(100vh - 3.5rem);
-			background-color: hsl(var(--rz-ground-6));
+			background-color: hsl(var(--rz-gray-10));
 		}
 	}
 </style>

@@ -38,14 +38,15 @@
 
 <div style={gridTemplateColumn} class="rz-list-row">
 	<div class="rz-list-row__main">
+		
 		{#if collection.selectMode}
-			<Checkbox class="rz-list-row__checkbox" {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
+			<Checkbox id="checkbox-{doc.id}" class="rz-list-row__checkbox" {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
 			{#if isUploadConfig(collection.config)}
 				{#key doc.filename}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 				{/key}
 			{/if}
-			<span class="rz-list-row__title">{doc.title || '[untitled]'}</span>
+			<label for="checkbox-{doc.id}" class="rz-list-row__title">{doc.title || '[untitled]'}</label>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
 				{#if isUploadConfig(collection.config)}
@@ -85,11 +86,11 @@
 <style type="postcss">
 	.rz-list-row {
 		display: grid;
-		height: var(--rz-size-14);
+		height: var(--rz-row-height);
 		align-items: center;
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-row-color));
 		.rz-list-row__icon {
 			height: var(--rz-size-10);
 			width: var(--rz-size-10);
@@ -97,7 +98,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			background-color: hsl(var(--rz-ground-4));
+			background-color: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-1)));
 		}
 		:global {
 			.rz-list-row__checkbox {
@@ -110,7 +111,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-3);
-		padding-left: var(--rz-size-2);
+		padding-left: var(--rz-size-1);
 		padding-right: var(--rz-size-5);
 	}
 
@@ -126,6 +127,9 @@
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		word-break: break-all;
+	}
+	label.rz-list-row__title{
+		cursor: pointer;
 	}
 
 	.rz-list-row__cell {

@@ -1,9 +1,10 @@
 import type { FieldBuilder } from '$lib/fields/builders';
 import type { Field } from './fields';
 import type { GenericDoc, ImageSizesConfig, RelationValue } from '$lib/types';
-import type { UploadConfig } from '$lib/core/config/types/index.js';
+import type { Area, Collection, UploadConfig } from '$lib/core/config/types/index.js';
 
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
+
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
 export type WithOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
@@ -26,8 +27,7 @@ export type DeepPartial<T> = {
 };
 
 export type WithRelationPopulated<T> = {
-	[K in keyof T]: // Check for primitive types first
-	Required<T>[K] extends string
+	[K in keyof T]: Required<T>[K] extends string // Check for primitive types first
 		? T[K]
 		: Required<T>[K] extends number
 			? T[K]

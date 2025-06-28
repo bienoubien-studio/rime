@@ -68,7 +68,7 @@
 			--rz-page-gutter: var(--rz-size-4);
 			--rz-tabs-list-top: 0;
 			height: 100vh;
-			background-color: hsl(var(--rz-ground-5));
+			background-color: hsl(var(--rz-color-bg));
 
 			.rz-document__fields:has(.rz-render-fields > .rz-render-fields__field[data-type='tabs']:first-child) {
 				padding-top: var(--rz-size-2);

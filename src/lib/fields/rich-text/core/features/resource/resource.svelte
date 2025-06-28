@@ -91,13 +91,14 @@
 			title: selected.title,
 			_type: extension.options.slug
 		} as NodeAttributes);
+
 	}
 </script>
 
 <NodeViewWrapper>
-	<div data-drag-handle class="rz-richtext-media" class:rz-richtext-media--selected={!!selected}>
+	<div data-drag-handle class="rz-richtext-resource" class:rz-richtext-resource--selected={!!selected}>
 		{#if !selected}
-			<Button variant="outline" onclick={handleClick}>Add a resource</Button>
+			<Button variant="outline" size="sm" onclick={handleClick}>Add a resource</Button>
 		{:else}
 			<CardResource resource={selected as RequiredNodeAttributes} onCloseClick={removeResource} />
 		{/if}
@@ -123,17 +124,19 @@
 </Command.Dialog>
 
 <style lang="postcss">
-	:global(.ProseMirror-selectednode .rz-richtext-media) {
+	:global(.ProseMirror-selectednode .rz-richtext-resource .rz-card-resource)
+	 {
+		position: relative;
 		&::after {
 			content: '';
 			position: absolute;
 			inset: 0;
 			mix-blend-mode: screen;
-			background-color: hsl(var(--rz-color-primary) / 0.6);
+			background-color: hsl(var(--rz-color-spot) / 0.6);
 			pointer-events: none;
 		}
 	}
-	.rz-richtext-media {
+	.rz-richtext-resource {
 		position: relative;
 	}
 </style>

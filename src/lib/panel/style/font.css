@@ -31,7 +31,7 @@
 	--rz-text-2xs: calc(var(--rz-font-scale) * 0.625rem);
 	--rz-text-xs: calc(var(--rz-font-scale) * 0.75rem);
 	--rz-text-sm: calc(var(--rz-font-scale) * 0.875rem);
-	--rz-text-base: calc(var(--rz-font-scale) * 1rem);
+	--rz-text-md: calc(var(--rz-font-scale) * 1rem);
 	--rz-text-lg: calc(var(--rz-font-scale) * 1.125rem);
 	--rz-text-xl: calc(var(--rz-font-scale) * 1.25rem);
 	--rz-text-2xl: calc(var(--rz-font-scale) * 1.5rem);

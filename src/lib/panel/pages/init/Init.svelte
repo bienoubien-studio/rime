@@ -35,3 +35,9 @@
 		<Button type="submit" size="xl">{t__('common.create')}</Button>
 	</form>
 </AuthForm>
+
+<style>
+	:root{
+		--rz-text-field-height: var(--size-14);
+	}
+</style>

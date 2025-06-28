@@ -6,7 +6,7 @@ import type { HTMLAnchorAttributes } from 'svelte/elements';
 type PrimitiveAnchorAttributes = WithElementRef<HTMLAnchorAttributes>;
 type PrimitiveButtonAttributes = WithElementRef<HTMLButtonAttributes>;
 
-export type ButtonVariant = 'default' | 'ghost' | 'link' | 'text' | 'secondary' | 'outline';
+export type ButtonVariant = 'success' | 'default' | 'ghost' | 'link' | 'text' | 'secondary' | 'outline';
 export type ButtonSize = 'default' | 'xs' | 'sm' | 'lg' | 'xl' | 'icon' | 'icon-sm';
 
 type Props = PrimitiveButtonAttributes &

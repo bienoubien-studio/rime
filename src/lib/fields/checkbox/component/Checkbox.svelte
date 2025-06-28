@@ -42,6 +42,6 @@
 	}
 
 	.rz-checkbox--error {
-		@mixin bg color-error;
+		background-color: hsl(var(--rz-color-alert));
 	}
 </style>

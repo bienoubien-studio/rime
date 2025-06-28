@@ -1,24 +1,42 @@
 @import '@bien-bien/css-reset';
-@import './font.css';
 @import './size.css';
+@import './font.css';
+@import './radius.css';
 @import './palette.css';
 @import './shadow.css';
 @import './util.css';
 
 :root {
-	--rz-opacity-border: 1;
-	--rz-opacity-bg: 1;
-	--rz-opacity-fg: 1;
-	--rz-opacity-ring: 1;
-	--rz-base-radius: 0.165rem;
-	--rz-radius-none: 0;
-	--rz-radius-sm: calc(var(--rz-base-radius) * 1);
-	--rz-radius-md: calc(var(--rz-base-radius) * 1.5);
-	--rz-radius-lg: calc(var(--rz-base-radius) * 2);
-	--rz-radius-xl: calc(var(--rz-base-radius) * 4);
-	--rz-radius-full: 999999px;
-	--rz-border: 1px solid hsl(var(--rz-color-border) / 1);
-	--rz-input-height: var(--rz-size-12);
+	
+	color-scheme: light dark;
+	
+	--rz-border: 1px solid hsl(var(--rz-color-border));
+	--rz-input-height: var(--rz-size-11);
+	--rz-row-height: var(--rz-size-12);
+	
+	--rz-overlay-color: hsl(var(--rz-gray-11) / 0.4);
+	--rz-overlay-blur: 6px;
+	--rz-row-color: hsl(var(--rz-gray-18));
+
+	--rz-color-fg: var(--rz-gray-0);
+	--rz-color-bg: var(--rz-gray-17);
+	
+	--rz-color-input: var(--rz-gray-19);
+	
+	--rz-color-border: var(--rz-gray-15);
+	--rz-color-ring: var(--rz-color-spot);
+	
+	--rz-collapse-fields-content-bg: light-dark(hsl(var(--rz-color-input)), hsl(var(--rz-color-bg)));
+
+	@media (prefers-color-scheme: dark) {
+		--rz-overlay-color: hsl(var(--rz-gray-0) / 0.7);
+		--rz-color-fg: var(--rz-gray-17);
+		--rz-color-border: var(--rz-gray-4);
+		--rz-color-bg: var(--rz-gray-2);
+		--rz-color-input: var(--rz-gray-4);
+		--rz-row-color: var(--rz-gray-3);
+	}
+	
 }
 
 body:has(.rz-root) {
@@ -27,12 +45,12 @@ body:has(.rz-root) {
 }
 
 .rz-root {
-	background-color: hsl(var(--rz-ground-6));
+	background-color: hsl(var(--rz-color-bg));
 	color: hsl(var(--rz-color-fg));
-	font-size: var(--rz-text-base);
+	font-size: var(--rz-text-md);
 	min-height: 100vh;
 	::selection {
-		background-color: hsl(var(--rz-color-primary) / 0.5);
+		background-color: hsl(var(--rz-color-spot) / 0.5);
 		color: hsl(var(--rz-color-fg));
 	}
 
@@ -52,7 +70,7 @@ body:has(.rz-root) {
 		margin-bottom: var(--rz-size-4);
 	}
 	color: hsl(var(--rz-color-fg));
-	font-size: var(--rz-text-base);
+	font-size: var(--rz-text-md);
 }
 
 .rz-sr-only {

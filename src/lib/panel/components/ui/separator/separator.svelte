@@ -20,7 +20,7 @@
 	:global {
 		.rz-separator {
 			flex-shrink: 0;
-			@mixin bg color-border;
+			background-color: hsl(var(--rz-color-border));
 		}
 		.rz-separator--vertical {
 			width: 1px;

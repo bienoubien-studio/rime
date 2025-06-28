@@ -18,7 +18,7 @@
   
 	.rz-page-collection__empty {
 		height: var(--rz-input-height);
-		background-color: hsl(var(--rz-ground-4));
+		background-color: light-dark( hsl(var(--rz-gray-13)), hsl(var(--rz-gray-3)));
 		display: flex;
 		align-items: center;
 		border-radius: var(--rz-radius-md);

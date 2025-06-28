@@ -23,7 +23,7 @@ export const processDocumentFields: HookBeforeRead<Prototype, GenericDoc> = asyn
 			if (value) {
 				for (const hook of config.hooks.beforeRead) {
 					value = await hook(value, { event, config, documentId: doc.id });
-					doc = setValueAtPath(doc, key, value);
+					doc = setValueAtPath(key, doc, value);
 				}
 			}
 		}

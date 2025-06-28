@@ -192,7 +192,7 @@
 	}
 
 	.rz-select__list[data-error] {
-		@mixin ring var(--rz-color-error);
+		@mixin ring var(--rz-color-alert);
 	}
 
 	.rz-select__list--readonly {

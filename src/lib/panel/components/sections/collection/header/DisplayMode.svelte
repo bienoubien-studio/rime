@@ -10,8 +10,9 @@
 	const gridIconClass = $derived(collection.isGrid() ? 'rz-header-display-mode__icon--active' : '');
 	const nestedIconClass = $derived(collection.isNested() ? 'rz-header-display-mode__icon--active' : '');
 
-	const isActive = (mode: DisplayMode) => (mode === collection.display ? 'secondary' : 'ghost');
-		
+	const setVariant = (mode: DisplayMode) => (mode === collection.display ? 'secondary' : 'ghost');
+	const isActive = (mode: DisplayMode) => (mode === collection.display);
+	
 	function handleListClick() {
 		collection.display = DISPLAY_MODE.LIST;
 	}
@@ -24,17 +25,17 @@
 </script>
 
 <div class="rz-header-display-mode">
-	<Button size="icon-sm" variant={isActive(DISPLAY_MODE.LIST)} onclick={handleListClick}>
+	<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.LIST)} inert={isActive(DISPLAY_MODE.LIST)} onclick={handleListClick}>
 		<List size={17} class="rz-header-display-mode__icon {listIconClass}" />
 	</Button>
 
 	{#if collection.config.upload}
-		<Button size="icon-sm" variant={isActive(DISPLAY_MODE.GRID)} onclick={handleGridClick}>
+		<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.GRID)} inert={isActive(DISPLAY_MODE.GRID)} onclick={handleGridClick}>
 			<LayoutGrid size={17} class="rz-header-display-mode__icon {gridIconClass}" />
 		</Button>
 	{/if}
 	{#if collection.config.nested}
-		<Button size="icon-sm" variant={isActive(DISPLAY_MODE.NESTED)} onclick={handleNestedClick}>
+		<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.NESTED)} inert={isActive(DISPLAY_MODE.NESTED)} onclick={handleNestedClick}>
 			<TextQuote size={17} class="rz-header-display-mode__icon {nestedIconClass}" />
 		</Button>
 	{/if}
@@ -46,7 +47,7 @@
 		gap: var(--rz-size-2);
 
 		:global(.rz-header-display-mode__icon--active) {
-			color: hsl(var(--rz-color-primary));
+			color: hsl(229, 89%, 60%);
 		}
 	}
 </style>

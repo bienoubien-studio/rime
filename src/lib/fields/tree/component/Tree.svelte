@@ -130,6 +130,11 @@
 </fieldset>
 
 <style lang="postcss">
+	.rz-field-tree{
+		:global( > .rz-label){
+			margin-bottom: var(--rz-size-5);
+		}
+	}
 	.rz-tree__list {
 		display: grid;
 		margin-left: 1rem;

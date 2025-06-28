@@ -1,10 +1,10 @@
 .rz-context-menu-content {
 	position: relative;
-	border-radius: var(--rz-radius-xl);
+	border-radius: var(--rz-radius-lg);
 	border: var(--rz-border);
 	box-shadow: var(--rz-shadow-md);
 	outline: none;
-	background-color: hsl(var(--rz-ground-6));
+	background-color: hsl(var(--rz-color-bg));
   z-index: 120;
   min-width: var(--min-width, 8rem);
   border-radius: var(--rz-radius-lg);

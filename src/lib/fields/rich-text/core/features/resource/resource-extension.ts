@@ -3,13 +3,23 @@ import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
 import CounterComponent from './resource.svelte';
 import type { Dic } from '$lib/util/types';
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    resource: {
+      insertResource: (attributes:Dic) => ReturnType
+    }
+  }
+}
+
 export const Resource = Node.create({
 	name: 'resource',
 	group: 'block',
 	atom: true,
 	draggable: true, // Optional: to make the node draggable
 	inline: false,
+	
 
+	
 	addOptions() {
 		return {
 			query: null,
@@ -23,13 +33,11 @@ export const Resource = Node.create({
 			return acc;
 		}, {});
 	},
-
-	//@ts-expect-error boring
+	
 	addCommands() {
 		return {
 			insertResource:
 				(attributes = {}) =>
-				//@ts-expect-error boring
 				({ commands }) => {
 					return commands.insertContent({
 						type: this.name,

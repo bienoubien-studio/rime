@@ -2,10 +2,10 @@
 	z-index: 500000;
 	position: relative;
 	/* width: var(--rz-size-72); */
-	border-radius: var(--rz-radius-xl);
+	border-radius: var(--rz-radius-lg);
 	border: var(--rz-border);
 	/* padding: var(--rz-size-4); */
 	box-shadow: var(--rz-shadow-md);
 	outline: none;
-	background-color: hsl(var(--rz-ground-6));
+	background-color: hsl(var(--rz-color-bg));
 }

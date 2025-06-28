@@ -45,7 +45,7 @@
 
 		:global {
 			.rz-header-select__icon--active {
-				color: hsl(var(--rz-color-primary));
+				color: hsl(var(--rz-color-spot));
 			}
 		}
 	}

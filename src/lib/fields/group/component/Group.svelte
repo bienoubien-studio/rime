@@ -37,8 +37,8 @@
 		onclick={handleClick}
 		type="button"
 		class:open={groupOpen}
-		class:rz-group-field__title--live={form.isLive}
-		class="rz-group-field__title"
+		class:rz-group-field__trigger--live={form.isLive}
+		class="rz-group-field__trigger"
 	>
 		<span>
 			{#if groupOpen}
@@ -63,16 +63,25 @@
 </div>
 
 <style lang="postcss">
+
+	:root{
+		--rz-group-trigger-bg: hsl(var(--rz-row-color));
+		--rz-group-preview-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+		--rz-group-content-bg: var(--rz-collapse-fields-content-bg);
+	}
+	
 	.rz-group-field__wrapper {
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
-		background-color: hsl(var(--rz-ground-6));
+		background-color: var(--rz-group-trigger-bg);
 		&:global(:has(.rz-field-error)) {
-			@mixin ring var(--rz-color-error);
+			@mixin ring var(--rz-color-alert);
 		}
 	}
+
 	.rz-group-field__preview {
 		display: block;
+		background-color: var(--rz-group-preview-bg);
 		width: 100%;
 		text-align: left;
 	}
@@ -81,10 +90,10 @@
 		--rz-fields-padding: var(--rz-size-5);
 		padding-top: var(--rz-fields-padding);
 		padding-bottom: var(--rz-fields-padding);
-		background-color: hsl(var(--rz-ground-6));
+		background-color: var(--rz-group-content-bg);
 	}
 
-	.rz-group-field__title {
+	.rz-group-field__trigger {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -95,6 +104,7 @@
 		width: 100%;
 		text-align: left;
 		border-bottom: var(--rz-border);
+		background-color: var(--rz-group-trigger-bg);
 		@mixin font-semibold;
 		> span {
 			gap: var(--rz-size-2);
@@ -106,7 +116,7 @@
 			rotate: -180deg;
 		}
 	}
-	.rz-group-field__title--live {
+	.rz-group-field__trigger--live {
 		font-size: var(--rz-text-md);
 	}
 </style>

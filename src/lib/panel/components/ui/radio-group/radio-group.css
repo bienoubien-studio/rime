@@ -13,10 +13,10 @@
 }
 
 .rz-radio-group-item {
-	--border-color: var(--rz-ground-3);
+	--border-color: var(--rz-gray-3);
 	--border-opacity: 1;
 	border: 1px solid hsl(var(--border-color) / var(--border-opacity));
-	background-color: hsl(var(--rz-ground-3));
+	background-color: hsl(var(--rz-gray-3));
 	border-radius: var(--rz-radius-full);
 	transition: all 0.1s ease-in-out;
 	@mixin size var(--rz-size-5);
@@ -24,7 +24,7 @@
 	cursor: pointer;
 }
 .rz-radio-group-item:hover {
-	--border-color: var(--rz-ground-2);
+	--border-color: var(--rz-gray-2);
 	--border-opacity: 0.3;
 	border-width: 4px;
 }
@@ -32,5 +32,5 @@
 	--border-color: var(--rz-color-primary);
 	--border-opacity: 1;
 	border-width: 6px;
-	background-color: hsl(var(--rz-ground-6));
+	background-color: hsl(var(--rz-gray-6));
 }

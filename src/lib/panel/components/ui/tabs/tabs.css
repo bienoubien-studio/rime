@@ -1,3 +1,5 @@
+
+
 .rz-tabs[data-tabs-root] {
 	margin-left: calc(-1 * var(--rz-fields-padding));
 	margin-right: calc(-1 * var(--rz-fields-padding));
@@ -18,18 +20,19 @@
 	border-bottom: 2px solid transparent;
 	--rz-ring-opacity: 0;
 	@mixin ring var(--rz-color-ring);
-	/* @mixin px var(--rz-size-3); */
 	@mixin font-semibold;
 }
+
 .rz-tabs-trigger[data-state='active'] {
-	border-color: hsl(var(--rz-ground-1));
+	border-color: hsl(var(--rz-color-fg));
 	position: relative;
 }
+
 .rz-tabs-trigger[data-state='active']:not([data-error='true']) {
 	color: hsl(var(--rz-color-fg));
 }
 .rz-tabs-trigger[data-error='true'] {
-	@mixin color color-error;
+	@mixin color color-alert;
 }
 .rz-tabs-trigger[data-state='inactive'] {
 	opacity: 0.8;
@@ -56,6 +59,7 @@
 	outline: none;
 	border-radius: var(--rz-radius-sm);
 	--rz-ring-offset: 8px;
+	--rz-ring-offset-bg: var(--rz-color-bg);
 	@mixin ring var(--rz-color-ring);
 }
 
@@ -66,7 +70,7 @@
 .rz-tabs-list {
 	overflow-x: auto;
 	overflow-y: visible;
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-color-bg));
 	@mixin color ground-2;
 	height: var(--rz-size-10);
 	width: 100%;

@@ -57,7 +57,7 @@
 	}
 
 	.rz-user-button {
-		background-color: hsl(var(--rz-ground-6));
+		background-color: var(--rz-nav-button-bg);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -66,6 +66,7 @@
 		padding: var(--rz-size-2);
 		height: var(--rz-input-height);
 	}
+
 	.rz-user-button__left {
 		display: flex;
 		flex: 1;
@@ -73,9 +74,9 @@
 		gap: var(--rz-size-2);
 	}
 	.rz-user-button__left a {
-		background-color: hsl(var(--rz-ground-4));
-		@mixin color ground-0;
-		@mixin size var(--rz-size-8);
+		background-color: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-0)));
+		height: var(--rz-size-8);
+		width: var(--rz-size-8);
 		display: flex;
 		flex-shrink: 0;
 		align-items: center;

@@ -16,7 +16,7 @@
 	let sortingInitialized = $state(false);
 	let sortableInstances = $state<ReturnType<typeof Sortable.create>[]>([]);
 	const shouldInit = $derived(!sortingInitialized && collection.docs.length > 0);
-	
+
 	const sortableOptions: Sortable.Options = {
 		handle: '.rz-collection-node__grip',
 		animation: 150,
@@ -92,16 +92,16 @@
 
 {#key `${collectionStamp}`}
 	{#if collection.docs.length}
-	<div
-		class="rz-collection-sortable rz-collection-sortable--root"
-		data-id="root"
-		style="--data-rows-count={countRows(collection.nested)}"
-		data-empty={collection.nested.length === 0 ? '' : null}
-	>
-		{#each collection.nested as doc, index (index)}
-			<CollectionTreeNode {collection} parentId="root" {doc} />
-		{/each}
-	</div>
+		<div
+			class="rz-collection-sortable rz-collection-sortable--root"
+			data-id="root"
+			style="--data-rows-count={countRows(collection.nested)}"
+			data-empty={collection.nested.length === 0 ? '' : null}
+		>
+			{#each collection.nested as doc, index (index)}
+				<CollectionTreeNode {collection} parentId="root" {doc} />
+			{/each}
+		</div>
 	{:else}
 		<Empty {collection} />
 	{/if}
@@ -109,8 +109,12 @@
 
 <style lang="postcss">
 	.rz-collection-sortable {
+		--gap: var(--rz-size-4);
+		--h: var(--rz-row-height);
+		--half-h: calc(var(--rz-row-height) / 2);
+		
 		height: 100%;
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-color-bg));
 		background-position: 0 0;
 		position: relative;
 
@@ -118,19 +122,21 @@
 			.rz-collection-sortable {
 				display: grid;
 				margin-left: var(--rz-size-12);
-				min-height: var(--rz-size-4);
+				min-height: var(--gap);
 			}
 			.rz-collection-sortable:has(.rz-collection-node) {
+				--rows: var(--data-rows-count);
 				&::before {
+					border-bottom-left-radius: 1rem;
 					content: '';
 					border-left: var(--rz-border);
-					translate: calc(-1 * var(--rz-size-6)) calc(-1 * var(--rz-size-4));
+					translate: calc(-1 * var(--rz-size-6)) calc(-1 * var(--gap));
 					position: absolute;
 					top: 0;
-					height: calc(var(--rz-size-4) + var(--rz-size-6) + (var(--data-rows-count) - 1) * var(--rz-size-16));
+					height: calc(var(--gap) + var(--half-h) + (var(--rows) - 1) * calc(var(--h) + var(--gap)));
 					left: 0;
 				}
-				margin-top: var(--rz-size-4);
+				margin-top: var(--gap);
 				position: relative;
 			}
 		}

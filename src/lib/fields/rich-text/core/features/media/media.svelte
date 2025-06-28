@@ -194,7 +194,7 @@
 			position: absolute;
 			inset: 0;
 			mix-blend-mode: screen;
-			background-color: hsl(var(--rz-color-primary) / 0.6);
+			background-color: hsl(var(--rz-color-spot) / 0.6);
 			pointer-events: none;
 		}
 
@@ -221,7 +221,7 @@
 	.rz-richtext-media__button {
 		padding: 0 var(--rz-size-2);
 		border: var(--rz-border);
-		background-color: hsl(var(--rz-ground-6));
+		background-color: hsl(var(--rz-gray-10));
 		border-radius: 1rem;
 		height: var(--rz-size-5);
 		display: flex;

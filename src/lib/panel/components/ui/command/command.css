@@ -1,6 +1,4 @@
 .rz-command {
-	@mixin bg color-popover;
-	@mixin color color-popover-fg;
 	display: flex;
 	height: 100%;
 	width: 100%;

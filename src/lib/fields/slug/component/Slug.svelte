@@ -72,7 +72,7 @@
 		/>
 
 		{#if config.slugify}
-			<Button disabled={!field.editable} onclick={generateFromField} type="button" size="sm" variant="outline">
+			<Button disabled={!field.editable} onclick={generateFromField} type="button" size="sm" variant="secondary">
 				{t__('fields.generate_from', config.slugify)}
 			</Button>
 		{/if}
@@ -92,7 +92,7 @@
 		:global(.rz-button) {
 			position: absolute;
 			right: var(--rz-size-1-5);
-			top: var(--rz-size-2);
+			top: var(--rz-size-1-5);
 		}
 
 		:global(.rz-slug__icon) {

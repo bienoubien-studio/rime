@@ -53,7 +53,7 @@
 				opacity: 0.5;
 			}
 			& .rz-dropdown-checkbox[data-highlighted] {
-				background-color: hsl(var(--rz-color-accent));
+				background-color: hsl(var(--rz-gray-4));
 				@mixin color color-accent-fg;
 			}
 		}

@@ -49,7 +49,7 @@
 }
 
 .rz-number__chevron:hover {
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-gray-5));
 }
 
 .rz-number__chevron:focus-visible {

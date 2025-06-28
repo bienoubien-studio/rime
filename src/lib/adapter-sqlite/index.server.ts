@@ -11,7 +11,7 @@ import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import type { Schema } from '$lib/server/schema.js';
 import { updateTableRecord } from './util.js';
 import type { Dic } from '$lib/util/types.js';
-import type { PrototypeSlug } from '../types.js';
+import { updateDocumentUrl } from './url.server.js';
 
 type CreateAdapterArgs = {
 	schema: any;
@@ -24,13 +24,14 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
 
+	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
+	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
+	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
 	const auth = createAdapterAuthInterface({
 		db,
 		schema,
 		configInterface
 	});
-	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
-	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
 	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({
 		db,
 		tables,
@@ -41,12 +42,11 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		tables,
 		configInterface
 	});
-	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
 	const transform: AdapterTransformInterface = databaseTransformInterface({
 		tables,
 		configInterface
 	});
-
+	
 	return {
 		collection,
 		area,
@@ -60,6 +60,15 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 
 		async updateRecord(id: string, tableName: string, data: Dic) {
 			return await updateTableRecord(db, tables, tableName, { recordId: id, data });
+		},
+
+		async updateDocumentUrl(url: string, params: Omit<Parameters<typeof updateDocumentUrl>[1], 'db' | 'tables'>) {
+			
+			return await updateDocumentUrl(url, {
+				...params,
+				db,
+				tables
+			});
 		},
 
 		get schema() {

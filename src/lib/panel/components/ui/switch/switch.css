@@ -1,3 +1,9 @@
+:root {
+	--rz-switch-color-thumb: light-dark(hsl(var(--rz-gray-19)), hsl(var(--rz-gray-16)));
+	--rz-switch-color-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-color-input)));
+	--rz-switch-color-bg--active: hsl(var(--rz-color-spot));
+}
+
 .rz-switch {
 	/* --rz-ring-offset: 1px; */
 	display: inline-flex;
@@ -12,20 +18,23 @@
 	transition: all 0.1s ease;
 	outline: none;
 }
+
 .rz-switch[data-state='checked'] {
-	background-color: hsl(var(--rz-color-primary));
+	background-color: var(--rz-switch-color-bg--active);
 }
+
 .rz-switch[data-state='unchecked'] {
-	background-color: hsl(var(--rz-ground-2));
+	background-color: var(--rz-switch-color-bg);
 }
 
 .rz-switch[data-error] {
-	@mixin bg color-error;
+	background-color: hsl(var(--rz-color-alert));
 }
 
 .rz-switch:focus-visible {
 	@mixin ring var(--rz-color-ring);
 }
+
 .rz-switch:disabled {
 	cursor: not-allowed;
 	opacity: 0.5;
@@ -39,12 +48,14 @@
 	transition: translate 0.25s ease;
 	border-radius: var(--rz-radius-full);
 	box-shadow: var(--rz-shadow-lg);
-	background-color: hsl(var(--rz-ground-6));
+	background-color: var(--rz-switch-color-thumb);
 	@mixin ring var(--rz-color-ring), 0;
 }
+
 .rz-switch__thumb[data-state='checked'] {
 	translate: 10px;
 }
+
 .rz-switch__thumb[data-state='unchecked'] {
 	translate: 0px;
 }

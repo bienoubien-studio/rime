@@ -59,7 +59,7 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
       if (value) {
         for (const hook of config.hooks.beforeValidate) {
           value = await hook(value, { config, event });
-          output = setValueAtPath(output, key, value);
+          output = setValueAtPath(key, output, value);
         }
       }
     }
@@ -95,7 +95,7 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
       if (value) {
         for (const hook of config.hooks.beforeSave) {
           value = await hook(value, { config, event });
-          output = setValueAtPath(output, key, value);
+          output = setValueAtPath(key, output, value);
         }
       }
     }

@@ -1,25 +1,25 @@
 :root {
-	--checkbox-bg: hsl(var(--rz-ground-3));
-	--checkbox-fg: hsl(var(--rz-ground-6));
-	--checkbox-border: transparent;
-	--checkbox--checked-bg: hsl(var(--rz-color-primary));
-	--checkbox--focus-ring: hsl(var(--rz-color-ring));
-	--checkbox-size: var(--rz-size-4);
+	--rz-checkbox-bg: hsl(var(--rz-color-input));
+	--rz-checkbox-fg: hsl(var(--rz-gray-19));
+	--rz-checkbox-border: transparent;
+	--rz-checkbox--checked-bg: hsl(var(--rz-color-spot));
+	--rz-checkbox--focus-ring: hsl(var(--rz-color-ring));
+	--rz-checkbox-size: var(--rz-size-4);
 }
 
 .rz-checkbox {
 	box-sizing: content-box;
 	flex-shrink: 0;
-	background-color: var(--checkbox-bg);
-	width: var(--checkbox-size);
-	height: var(--checkbox-size);
+	background-color: var(--rz-checkbox-bg);
+	width: var(--rz-checkbox-size);
+	height: var(--rz-checkbox-size);
 	border-radius: var(--rz-radius-sm);
-	border: 1px solid var(--checkbox-border);
+	border: 1px solid var(--rz-checkbox-border);
 }
 
 .rz-checkbox:focus-visible {
 	outline: none;
-	@mixin ring var(--checkbox--focus-ring);
+	@mixin ring var(--rz-checkbox--focus-ring);
 }
 
 .rz-checkbox:disabled,
@@ -29,8 +29,8 @@
 }
 
 .rz-checkbox[data-state='checked'] {
-	background-color: var(--checkbox--checked-bg);
-	color: var(--checkbox-fg);
+	background-color: var(--rz-checkbox--checked-bg);
+	color: var(--rz-checkbox-fg);
 }
 
 .rz-checkbox__indicator {

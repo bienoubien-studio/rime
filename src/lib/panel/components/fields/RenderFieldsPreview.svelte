@@ -84,7 +84,7 @@
 	}
 	.rz-render-fields-preview__name {
 		height: calc(var(--rz-input-height) - 1px);
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-color-bg));
 		padding: 0 var(--rz-size-4);
 		border-right: var(--rz-border);
 		align-items: center;

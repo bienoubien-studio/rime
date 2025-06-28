@@ -5,7 +5,7 @@ import { RizomError } from '$lib/core/errors/index.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
-import type { DeepPartial, Dic, Pretty } from '$lib/util/types.js';
+import type { DeepPartial } from '$lib/util/types.js';
 import type { HookContext } from '$lib/core/config/types/hooks.js';
 
 type UpdateArgs<T> = {

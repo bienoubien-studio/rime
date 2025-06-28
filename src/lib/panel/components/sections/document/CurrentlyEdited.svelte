@@ -41,7 +41,7 @@
 		position: absolute;
 		inset: 0;
 		z-index: 100;
-		background: hsl(var(--rz-ground-7) / 0.8);
+		background: hsl(var(--rz-gray-11) / 0.8);
 		backdrop-filter: blur(2px);
 	}
 </style>

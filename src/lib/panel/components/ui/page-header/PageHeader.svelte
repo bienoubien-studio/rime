@@ -87,14 +87,14 @@
 		top: 0;
 		z-index: 100;
 		height: var(--rz-size-14);
-		background: hsl(var(--rz-ground-5));
+		background: hsl(var(--rz-color-bg));
 		align-items: flex-end;
 		border-bottom: var(--rz-border);
 		padding-bottom: var(--rz-size-2);
 	}
 	.rz-page-header__row-top {
 		height: var(--rz-size-14);
-		background: hsl(var(--rz-ground-5));
+		background: hsl(var(--rz-color-bg));
 		margin-bottom: var(--rz-size-16);
 	}
 </style>

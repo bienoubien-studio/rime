@@ -99,16 +99,14 @@
 	async function handleDrop(e: DragEvent) {
 		e.preventDefault(); // prevent default browser behavior
 		rootElement?.classList.remove('rz-folder--dragover');
-
 		// Get the document ID from dataTransfer
 		const docId = e.dataTransfer?.getData('text/plain');
 		if (!docId) return;
-
 		// This is a folder move so update folder path
 		if (docId.includes(':')) {
 			return handleDropFolder(docId);
 		}
-
+		// Handle a drop document
 		return handleDropDocument(docId);
 	}
 
@@ -198,6 +196,12 @@
 </Dialog.Root>
 
 <style lang="postcss">
+	:root{
+		--rz-folder-light: light-dark(hsl(var(--rz-gray-12)), hsl(var(--rz-gray-6)));
+		--rz-folder-dark: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
+		--rz-folder-hover-bg: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-1)));
+	}
+
 	.rz-folder {
 		width: 100%;
 		aspect-ratio: 5/4;
@@ -214,20 +218,20 @@
 		}
 		:global {
 			path:first-child {
-				fill: hsl(var(--rz-ground-2));
+				fill: var(--rz-folder-dark);
 			}
 			path:last-child {
-				fill: hsl(var(--rz-ground-3));
+				fill: var(--rz-folder-light);
 			}
 		}
 		:global {
 			&.rz-folder--dragover {
-				background-color: hsl(var(--rz-ground-4) / 0.7);
+				background-color: var(--rz-folder-hover-bg);
 			}
 		}
 	}
 
 	.rz-folder:hover {
-		background-color: hsl(var(--rz-ground-4) / 0.7);
+		background-color: var(--rz-folder-hover-bg);
 	}
 </style>

@@ -29,11 +29,11 @@
 }
 
 .rz-rich-text__editor:has(.ProseMirror-focused) {
-	@mixin ring var(--rz-color-primary) /* border: 1px solid hsl(var(--rz-color-fg)); */;
+	@mixin ring var(--rz-color-spot);
 }
 
 .rz-rich-text__editor[data-error]:has(.ProseMirror-focused) {
-	border-color: hsl(var(--rz-color-error));
+	border-color: hsl(var(--rz-color-alert));
 }
 
 .rz-rich-text__editor .ProseMirror-trailingBreak {
@@ -47,7 +47,7 @@
 
 .rz-rich-text__editor .ProseMirror .is-empty::before {
 	content: attr(data-placeholder);
-	color: hsl(var(--rz-ground-2));
+	color: hsl(var(--rz-color-fg));
 	float: left;
 	pointer-events: none;
 	height: 0;

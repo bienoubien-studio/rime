@@ -5,6 +5,7 @@
 	import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types.js';
 	import { onMount, onDestroy } from 'svelte';
 	import './node-selector.css';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 
 	type Props = { editor: Editor; isMenuOpen: boolean; items: RichTextFeatureNode[] };
 	let { editor, items, isMenuOpen }: Props = $props();
@@ -63,8 +64,12 @@
 
 <Popover.Root bind:open>
 	<Popover.Trigger class="rz-node-selector__trigger" type="button">
-		<p>{activeItem.label || activeItem.name}</p>
-		<ChevronDown size={16} />
+		{#snippet child({props})}
+			<Button size="sm" variant="ghost" {...props}>
+				{activeItem.label || activeItem.name}
+				<ChevronDown size={16} />
+			</Button>
+		{/snippet}
 	</Popover.Trigger>
 
 	<Popover.Content align="start" class="rz-node-selector__content">

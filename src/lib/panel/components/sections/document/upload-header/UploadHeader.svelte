@@ -140,8 +140,8 @@
 	.rz-doc-upload-header__prewiew-grid {
 		width: 100%;
 		height: 100%;
-		--dark: hsl(var(--rz-ground-6) / 1);
-		--light: hsl(var(--rz-ground-4) / 1);
+		--dark: hsl(var(--rz-gray-11) / 1);
+		--light: hsl(var(--rz-gray-14) / 1);
 		--size: 16px;
 		--half-size: calc(var(--size) / 2);
 		background-size: var(--size) var(--size);
@@ -174,7 +174,6 @@
 		font-size: var(--rz-text-xs);
 	}
 	.rz-doc-upload-header__info a {
-		color: hsl(var(--rz-color-primary));
 		margin-bottom: var(--rz-size-3);
 		display: block;
 		text-decoration: underline;

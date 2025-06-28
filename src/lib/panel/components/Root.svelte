@@ -11,6 +11,7 @@
 	import type { User } from '$lib/core/collections/auth/types.js';
 	import type { Route } from '$lib/panel/types.js';
 	import type { BrowserConfig } from '$lib/core/config/types/index.js';
+	import { toast } from 'svelte-sonner';
 
 	type Props = {
 		routes: Record<string, Route[]>;
@@ -79,7 +80,7 @@
 		container-type: inline-size;
 		container-name: rz-panel;
 		font-family: var(--rz-font-sans);
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-color-bg));
 		min-height: 100vh;
 	}
 

@@ -12,10 +12,12 @@
 </div>
 
 <style type="postcss">
+	:root{
+		--rz-card-color-bg: hsl(var(--rz-color-bg));
+	}
 	.rz-card {
-		--bg: var(--rz-card-color-bg, var(--rz-ground-5));
 		width: var(--rz-card-width, auto);
-		background-color: hsl(var(--bg));
+		background-color: var(--rz-card-color-bg);
 		border-radius: var(--rz-radius-lg);
 		border: var(--rz-border);
 	}

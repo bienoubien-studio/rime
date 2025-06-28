@@ -41,7 +41,7 @@
 		}
 
 		.rz-dropdown-radio[data-highlighted] {
-			background-color: hsl(var(--rz-ground-5));
+			background-color: var(--rz-dropdown-item-bg);
 			@mixin color color-fg;
 		}
 

@@ -4,8 +4,8 @@
 	type Props = { status: VersionsStatus };
 
 	const { status }: Props = $props();
-	const colorDraft = 'hsl(14deg, 80%, 60%)';
-	const colorPublished = 'hsl(140deg, 40%, 60%)';
+	const colorDraft = 'var(--rz-color-warn)';
+	const colorPublished = 'var(--rz-color-success)';
 	const color = $derived(status === VERSIONS_STATUS.DRAFT ? colorDraft : colorPublished);
 </script>
 

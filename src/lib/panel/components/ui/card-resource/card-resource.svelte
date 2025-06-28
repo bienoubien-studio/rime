@@ -45,25 +45,30 @@
 </div>
 
 <style lang="postcss">
+
+:root{
+		--rz-ressource-card-bg: light-dark(hsl(var(--rz-gray-18)), hsl(var(--rz-gray-4)));
+	}
+
 	.rz-card-resource {
-		--rz-internal-padding: var(--rz-card-padding, var(--rz-size-2));
-		--rz-internal-thumbnail-size: var(--rz-thumbnail-size, var(--rz-size-20));
-		background-color: hsl(var(--rz-ground-6));
+		--padding: var(--rz-card-padding, var(--rz-size-2));
+		--rz-size: var(--rz-thumbnail-size, var(--rz-size-20));
+		background-color: var(--rz-ressource-card-bg);
 		position: relative;
 		display: flex;
 		gap: var(--rz-size-6);
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
-		padding: var(--rz-internal-padding);
+		padding: var(--padding);
 		max-width: 400px;
 	}
 
 	.rz-card-resource__thumbnail {
-		width: var(--rz-internal-thumbnail-size);
-		height: var(--rz-internal-thumbnail-size);
+		width: var(--rz-size);
+		height: var(--rz-size);
 		flex-shrink: 0;
 		overflow: hidden;
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-gray-15));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -101,7 +106,7 @@
 		right: var(--rz-size-3);
 		top: var(--rz-size-3);
 		border: var(--rz-border);
-		background-color: hsl(var(--rz-ground-6));
+		/* background-color: hsl(var(--rz-gray-1)); */
 		border-radius: 1rem;
 		height: var(--rz-size-4);
 		width: var(--rz-size-4);

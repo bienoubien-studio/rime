@@ -2,7 +2,7 @@
 
 <style>
 	.button-nav__caret {
-		background-color: hsl(var(--rz-color-primary));
+		background-color: hsl(var(--rz-color-spot));
 		position: absolute;
 		left: calc(-1 * var(--rz-size-4));
 		bottom: 0;

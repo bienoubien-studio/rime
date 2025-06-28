@@ -8,7 +8,7 @@ export type User = {
 	isSuperAdmin?: boolean;
 };
 
-type AccessOptions = { id?: string, event: RequestEvent };
+type AccessOptions = { id?: string, event?: RequestEvent };
 
 export type Access = {
 	create?: (user?: User, options: AccessOptions) => boolean;

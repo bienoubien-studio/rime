@@ -1,5 +1,5 @@
 .rz-calendar {
-	background-color: hsl(var(--rz-ground-7));
+	background-color: hsl(var(--rz-color-bg));
 	border-radius: var(--rz-radius-lg);
 	padding: var(--rz-size-3);
 }
@@ -14,21 +14,19 @@
 .rz-calendar-cell {
 	position: relative;
 	padding: 0;
+	flex:1;
 	text-align: center;
 	font-size: var(--rz-text-sm);
 	&:has([data-selected][data-outside-month]) {
-		@mixin bg color-accent, 0.5;
+		background-color: hsl(var(--rz-color-spot) / 0.5);
 	}
 	&:focus-within {
 		position: relative;
 		z-index: 20;
 	}
 	&:has([data-selected]) {
-		background-color: hsl(var(--rz-color-accent));
+		background-color: hsl(var(--rz-color-spot));
 		border-radius: var(--rz-radius-md);
-	}
-	&:has([data-selected][data-outside-month]) {
-		@mixin bg color-accent, 0.5;
 	}
 }
 
@@ -56,47 +54,46 @@
 }
 
 .rz-calendar-day:hover {
-	background-color: hsl(var(--rz-ground-5));
+	background-color: hsl(var(--rz-gray-13));
 	color: hsl(var(--rz-color-fg));
-	/* @mixin color ground-6; */
 }
 
 .rz-calendar-day[data-today]:not([data-selected]) {
-	border: 1px solid hsl(var(--rz-ground-2));
+	border: 1px solid hsl(var(--rz-color-border));
 	color: hsl(var(--rz-color-fg));
 }
 
 .rz-calendar-day[data-selected] {
-	background-color: hsl(var(--rz-color-primary));
+	background-color: hsl(var(--rz-color-spot));
 	color: hsl(var(--rz-color-primary-fg));
 	opacity: 1;
 }
 
 .rz-calendar-day[data-selected]:hover,
 .rz-calendar-day[data-selected]:focus {
-	background-color: hsl(var(--rz-color-primary));
+	background-color: hsl(var(--rz-color-spot));
 	color: hsl(var(--rz-color-primary-fg));
 }
 
 .rz-calendar-day[data-disabled] {
-	@mixin color color-fg, 0.7;
+	color: hsl(var(--rz-color-fg) / 0.7);
 	opacity: 0.5;
 }
 
 .rz-calendar-day[data-unavailable] {
-	@mixin color color-fg, 0.5;
+	color: hsl(var(--rz-color-fg) / 0.5);
 	text-decoration: line-through;
 }
 
 .rz-calendar-day[data-outside-month] {
-	@mixin color color-fg, 0.7;
+	color: hsl(var(--rz-color-fg) / 0.7);
 	pointer-events: none;
 	opacity: 0.5;
 }
 
 .rz-calendar-day[data-outside-month][data-selected] {
-	@mixin bg color-accent, 0.5;
-	@mixin color color-fg, 0.7;
+	background-color: hsl(var(--rz-color-spot) / 0.5);
+	color: hsl(var(--rz-color-fg));
 	opacity: 0.3;
 }
 
@@ -138,8 +135,8 @@
 /**************************************/
 
 .rz-calendar-head-cell {
-	@mixin color color-fg, 0.7;
-	width: var(--rz-size-8);
+	color: hsl(var(--rz-color-fg) / 0.7);
+	flex:1;
 	font-size: var(--rz-text-xs);
 	@mixin font-normal;
 }

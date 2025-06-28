@@ -29,7 +29,7 @@ export const setValuesFromOriginal = async <T extends Dic>(args: {
 
 		if (isEmpty) {
 			value = await getValueAtPath(key, original);
-			output = setValueAtPath(output, key, value);
+			output = setValueAtPath(key, output, value);
 		}
 	}
 

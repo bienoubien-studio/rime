@@ -126,10 +126,7 @@
 			gap: var(--rz-size-3);
 			border-radius: var(--rz-radius-md);
 		}
-		.rz-add-block-button__item[aria-selected='true'] {
-			background-color: hsl(var(--rz-ground-5));
-		}
-
+		
 		.rz-add-block-button__preview-wrap {
 			display: flex;
 			align-items: center;
@@ -148,7 +145,6 @@
 	}
 
 	.rz-add-block-button__icon-wrapper {
-		@mixin bg foreground, 0.9;
 		display: flex;
 		width: var(--rz-size-12);
 		height: var(--rz-size-12);
@@ -163,7 +159,7 @@
 	}
 
 	.rz-add-block-button__description {
-		color: hsl(var(--rz-ground-2));
+		color: hsl(var(--rz-gray-2));
 		margin-top: var(--rz-size-1);
 		font-size: var(--rz-text-sm);
 	}

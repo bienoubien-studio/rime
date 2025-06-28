@@ -69,7 +69,7 @@
 		margin-left: var(--rz-size-2);
 		margin-right: var(--rz-size-2);
 		height: var(--rz-size-14);
-		background-color: hsl(var(--rz-ground-5));
+		background-color: hsl(var(--rz-color-bg));
 		padding: var(--rz-size-2);
 		border-radius: var(--rz-radius-md);
 		z-index: 1000;

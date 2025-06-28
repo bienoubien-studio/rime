@@ -34,7 +34,7 @@
 }
 
 .rz-scroll-area-scroll-bar__thumb {
-	@mixin bg color-border;
+	background-color: hsl(var(--rz-color-border));
 	position: relative;
 	border-radius: var(--raidus-full);
 }
