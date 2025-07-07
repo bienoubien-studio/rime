@@ -22,8 +22,7 @@ class RizomError extends Error {
 	status: number;
 
 	constructor(code: string, message?: string, ...args: any) {
-		// message = `${t__(`errors.${code}`)} ${message}`;
-		message = `${code} — ${message || ''}`;
+		message = message ? `${code} — ${message}` : code;
 		super(message, ...args);
 		this.code = code;
 		const statusCodes = {

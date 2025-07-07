@@ -108,7 +108,7 @@
 				</DropdownMenu.Item>
 			{/if}
 
-			{#if form.config.type === "collection"}
+			{#if form.config.type === 'collection'}
 				{#if !form.config.upload}
 					<DropdownMenu.Item onclick={handleDuplicate}>
 						<Copy size="12" />

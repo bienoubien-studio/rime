@@ -15,8 +15,9 @@
 	let initialized = false;
 
 	const field = $derived(form.useField(path, config));
-
+	
 	let options = $state(config.options);
+	
 	let isFull = $derived.by(() => {
 		if (!field.value) return false;
 		const notManyAndOneSelected = !config.many && typeof field.value === 'string';
@@ -86,6 +87,7 @@
 			field.value = null;
 		}
 	};
+	
 </script>
 
 <fieldset class="rz-field-select {config.className || ''}" use:root={field}>
@@ -103,10 +105,12 @@
 			>
 				{#if config.many}
 					{#each field.value as val (val)}
-						{@const option = config.options.filter((o) => o.value === val)[0]}
-						<Tag onRemove={() => removeValue(option.value)} readOnly={form.readOnly}>
-							{option.label}
-						</Tag>
+						{@const option = config.options.find((o) => o.value === val)}
+						{#if option}
+							<Tag onRemove={() => removeValue(option.value)} readOnly={form.readOnly}>
+								{option.label}
+							</Tag>
+						{/if}
 					{/each}
 				{:else if field.value}
 					{@const option = config.options.filter((o) => o.value === field.value)[0]}

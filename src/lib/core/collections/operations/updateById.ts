@@ -17,6 +17,7 @@ type Args<T> = {
 	config: CompiledCollection;
 	event: RequestEvent;
 	isFallbackLocale?: boolean;
+	isSystemOperation?: boolean
 };
 
 /**
@@ -24,7 +25,7 @@ type Args<T> = {
  */
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
 	//
-	const { event, locale, id, draft, isFallbackLocale = false } = args;
+	const { event, locale, id, draft, isFallbackLocale = false, isSystemOperation } = args;
 	const { rizom } = event.locals;
 	let { data } = args;
 	let config = args.config;
@@ -37,6 +38,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 			draft,
 			locale
 		},
+		isSystemOperation,
 		isFallbackLocale
 	};
 
@@ -87,7 +89,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		locale: locale,
 		versionOperation: context.versionOperation
 	});
-
+	
 	const blocksDiff = await saveBlocks({
 		ownerId: context.params.versionId,
 		configMap: context.configMap,

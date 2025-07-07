@@ -8,9 +8,9 @@
 
 	const { path, config, form }: EmailFieldProps = $props();
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField(path || config.name, config));
 	let showError = $state(false);
-
+	
 	// Actions
 	const onInput = (event: Event) => {
 		showError = false;

@@ -1,4 +1,6 @@
 export default {
+	api_key_dialog_title: 'Your API Key',
+	api_key_dialog_text: 'This API key will only be shown once and cannot be retrieved later. Please copy it and store it securely on your server.',
 	browse: 'browse',
 	close: 'Close',
 	confirmPassword: 'Confirm password',
@@ -19,6 +21,7 @@ export default {
 	forgotPassword: 'Forgot password',
 	generatingPreview: 'Generating preview',
 	generic_error: 'An error occured $1',
+	generic_success: 'Operation successfull',
 	last_update: 'Last update',
 	live_in_sync: 'Establishing connection with container',
 	newPassword: 'New password',

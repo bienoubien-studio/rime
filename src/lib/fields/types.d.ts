@@ -12,7 +12,7 @@ export type { CheckboxField } from './checkbox/index.js';
 export type { ComboBoxField } from './combobox/index.js';
 export type { ComponentField } from './component/index.js';
 export type { DateField } from './date/index.js';
-export type { EmailField } from './email/index.js';
+export type { EmailField } from './email/index.server.js';
 export type { GroupField } from './group/index.js';
 export type { LinkField } from './link/index.js';
 export type { NumberField } from './number/index.js';
@@ -23,7 +23,7 @@ export type { SelectField } from './select/index.js';
 export type { SeparatorField } from './separator/index.js';
 export type { SlugField } from './slug/index.js';
 export type { TabsField } from './tabs/index.js';
-export type { TextField } from './text/index.js';
+export type { TextField } from './text/index.server.js';
 export type { TimeField } from './time/index.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { ToggleField } from './toggle/index.js';
@@ -62,6 +62,7 @@ export type Field = {
 export type FormField = Field & {
 	name: string;
 	hidden?: boolean;
+	readonly?: boolean;
 	validate?: FieldValidationFunc<this, GenericDoc>;
 	required?: boolean;
 	localized?: boolean;
@@ -71,6 +72,8 @@ export type FormField = Field & {
 	defaultValue?: unknown;
 	isEmpty: (value: unknown) => boolean;
 };
+
+export type DefaultValueFn<T> = ({ event }: { event: RequestEvent}) => T
 
 type FieldHookContext<T extends AnyFormField = AnyFormField> = {
 	event: RequestEvent;

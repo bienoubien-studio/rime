@@ -1,11 +1,12 @@
 import { validate } from '$lib/util/index.js';
 import { access } from '$lib/util/access/index.js';
-import { email } from '$lib/fields/email/index.js';
+import { email } from '$lib/fields/email/index.server.js';
 import { select } from '$lib/fields/select/index.js';
-import { text } from '$lib/fields/text/index.js';
+import { text } from '$lib/fields/text/index.server.js';
 
 const emailField = email('email')
 	.access({
+		create: () => true,
 		read: (user) => !!user,
 		update: () => false
 	})
@@ -14,19 +15,19 @@ const emailField = email('email')
 
 const name = text('name')
 	.access({
-		create: (user) => !!user,
-		read: () => true,
+		create: () => true,
+		read: (user) => !!user,
 		update: () => false
 	})
 	.required();
 
 const roles = select('roles')
-	.options({ value: 'admin', label: 'Admin' }, { value: 'user', label: 'User' })
+	.options({ value: 'admin', label: 'Admin' }, { value: 'staff', label: 'Staff' })
 	.many()
-	.defaultValue('user')
+	.defaultValue(['staff'])
 	.required()
 	.access({
-		create: (user) => !!user && access.isAdmin(user),
+		create: () => true,
 		read: (user) => !!user && access.isAdmin(user),
 		update: (user) => !!user && access.isAdmin(user)
 	});
@@ -34,7 +35,7 @@ const roles = select('roles')
 const password = text('password')
 	.required()
 	.access({
-		create: (user) => !!user && access.isAdmin(user),
+		create: () => true,
 		read: () => false,
 		update: () => false
 	})

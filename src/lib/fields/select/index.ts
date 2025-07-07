@@ -1,9 +1,9 @@
-import type { FormField, Option } from '$lib/fields/types.js';
-import { SelectFieldBuilder } from '../builders/index.js';
+import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
 import Select from './component/Select.svelte';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import { PickManyFieldBuilder } from '../builders/select.js';
 
-class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
+class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
 	get component() {
 		return Select;
 	}
@@ -22,18 +22,9 @@ class SelectManyFieldBuilder extends SelectFieldBuilder<SelectField> {
 		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
 	}
 
-	many() {
-		this.field.many = true;
-		return this;
-	}
-
-	defaultValue(...value: string[]) {
-		this.field.defaultValue = value;
-		return this;
-	}
 }
 
-export const select = (name: string) => new SelectManyFieldBuilder(name, 'select');
+export const select = (name: string) => new SelectFieldBuilder(name, 'select');
 
 /****************************************************/
 /* Type
@@ -42,7 +33,7 @@ export const select = (name: string) => new SelectManyFieldBuilder(name, 'select
 export type SelectField = FormField & {
 	type: 'select';
 	options: Option[];
-	defaultValue?: string | string[];
+	defaultValue?: string[] | DefaultValueFn<string[]>;
 	many?: boolean;
 };
 

@@ -10,8 +10,11 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 		return json({ success: true });
 	}
 
+	const isSignInRoute = event.url.pathname === '/panel/sign-in';
+	const isPanelRoute = event.url.pathname.startsWith('/panel') && !isSignInRoute;
+
 	// build panel navigation
-	if (event.url.pathname?.startsWith('/panel') && event.request.method === 'GET') {
+	if (isPanelRoute && event.request.method === 'GET') {
 		event.locals.routes = buildNavigation(rizom.config.raw, user);
 	}
 

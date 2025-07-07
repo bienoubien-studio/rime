@@ -18,7 +18,7 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 		if (collection.versions) {
 			const versionedCollection: CompiledCollection = {
 				slug: makeVersionsSlug(collection.slug) as CollectionSlug,
-				versions: false,
+				versions: undefined,
 				access: collection.access,
 				hooks: collection.hooks,
 				fields: collection.fields,
@@ -37,7 +37,7 @@ export function makeVersionsCollectionsAliases(config: CompiledConfig) {
 		if (area.versions) {
 			let versionedCollection: CompiledCollection = {
 				slug: makeVersionsSlug(area.slug) as CollectionSlug,
-				versions: false,
+				versions: undefined,
 				access: area.access,
 				asTitle: area.asTitle,
 				hooks: area.hooks,

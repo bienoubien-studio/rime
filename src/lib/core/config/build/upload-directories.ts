@@ -5,7 +5,7 @@ import {
 	updateDirectoryChildren
 } from '$lib/core/collections/upload/hooks/update-directory-children.js';
 import { date } from '$lib/fields/date/index.js';
-import { text } from '$lib/fields/text/index.js';
+import { text } from '$lib/fields/text/index.server.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { uploadPath } from '$lib/util/validate.js';
 import type { CollectionSlug } from '../../../types.js';
@@ -26,7 +26,7 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 			// else create the directory collection
 			let directoriesCollection: CompiledCollection = {
 				slug: slug as CollectionSlug,
-				versions: false,
+				versions: undefined,
 				access: collection.access,
 				fields: [
 					text('id').validate(uploadPath).unique().required().compile(),

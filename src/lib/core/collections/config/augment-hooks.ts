@@ -21,6 +21,8 @@ import { addChildrenProperty } from '../nested/hooks/index.server.js';
 import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
 import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
+import { removeAPIKey } from '../auth/hooks/before-read/remove-api-key.server.js';
+import { populateAPIKey } from '../auth/hooks/after-create/populate-api-key.server.js';
 
 type PartialConfig = {
 	upload?: Collection<any>['upload'];
@@ -35,12 +37,11 @@ type PartialConfig = {
  * upload, url, nesting, auth
  */
 export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
+	const IS_API_AUTH = collection.auth && typeof collection.auth !== 'boolean' && collection.auth.type === 'apiKey';
 	//
 	let hooks: Required<CollectionHooks<GenericDoc>> = {
 		//
-		beforeOperation: [
-			authorize,
-		],
+		beforeOperation: [authorize],
 
 		beforeRead: [
 			processDocumentFields,
@@ -50,6 +51,7 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 			...(collection.upload ? [populateSizes] : []),
 			...(collection.url ? [populateURL] : []),
 			...(collection.nested ? [addChildrenProperty] : []),
+			...(IS_API_AUTH ? [removeAPIKey] : []),
 			sortDocumentProps
 		],
 
@@ -83,11 +85,13 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 			...(collection.auth ? [authHooks.createBetterAuthUser] : []),
 			...(collection.upload ? [castBase64ToFile, processFileUpload] : [])
 		],
-
-		afterCreate: [...(collection.auth ? [authHooks.afterCreateSetAuthUserRole] : [])],
+		
+		afterCreate: [
+			...(IS_API_AUTH ? [populateAPIKey] : [])
+		],
 
 		beforeDelete: [
-			...(collection.auth ? [authHooks.preventSupperAdminToBeDeleted] : []),
+			...(collection.auth ? [authHooks.preventSupperAdminDeletion] : []),
 			...(collection.upload ? [cleanUpFiles] : [])
 		],
 

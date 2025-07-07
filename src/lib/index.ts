@@ -3,10 +3,10 @@ import handlers from '$lib/core/handlers/index.js';
 import type { Config } from '$lib/core/config/types/index.js';
 
 export { rizom, handlers };
-export { FormFieldBuilder, FieldBuilder } from '$lib/fields/builders/field.js';
+export { FormFieldBuilder, FieldBuilder } from '$lib/fields/builders/field.server.js';
 export { area } from '$lib/core/areas/config/builder.js';
 export { collection } from '$lib/core/collections/config/builder.js';
-export const defineConfig = (config: Config) => config;
+export const defineConfig = (config: Config): Config => config;
 
 declare module 'rizom' {
 	// Register interfaces for plugin architecture

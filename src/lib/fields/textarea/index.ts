@@ -1,6 +1,6 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import TextArea from './component/TextArea.svelte';
 import { capitalize } from '$lib/util/string.js';
 
@@ -25,7 +25,7 @@ class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
 		return `${this.field.name}${this.field.required ? '' : '?'}: string`;
 	}
 
-	defaultValue(value: string) {
+	defaultValue(value: string | DefaultValueFn<string>) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -60,7 +60,7 @@ class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
 /****************************************************/
 export type TextAreaField = FormField & {
 	type: 'textarea';
-	defaultValue?: string;
+	defaultValue?: string | DefaultValueFn<string>;
 	isTitle?: true;
 	placeholder: string;
 };

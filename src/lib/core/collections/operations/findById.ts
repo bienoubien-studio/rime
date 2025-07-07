@@ -13,10 +13,11 @@ type Args = {
 	depth?: number;
 	select?: string[];
 	draft?: boolean;
+	isSystemOperation?: boolean;
 };
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
-	const { config, event, id, versionId, locale, depth, select, draft } = args;
+	const { config, event, id, versionId, locale, depth, select, draft, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
 	let context: HookContext = {
@@ -25,8 +26,9 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 				versionId,
 				locale,
 				draft,
-				select
-			}
+				select,
+			},
+			isSystemOperation
 		};
 	
 	for (const hook of config.hooks?.beforeOperation || []) {

@@ -9,10 +9,11 @@ import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
-import { PANEL_USERS } from '$lib/core/constant.js';
+import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
-import { mergePanelUsersCollectionWithDefault } from '$lib/core/collections/auth/config/usersConfig.server.js';
+import { buildStaffCollection } from '$lib/core/collections/auth/config/staffConfig.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
+import { apiInit } from '$lib/core/plugins/api-init/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -25,8 +26,8 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	const icons: Dic = {};
 
 	// Retrieve Default Users collection and merge with defined panel user config
-	const panelUsersCollection = mergePanelUsersCollectionWithDefault(config.panel?.users);
-	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), panelUsersCollection];
+	const staffCollection = buildStaffCollection(config.panel?.users);
+	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), staffCollection];
 
 	// Add icons
 	for (const collection of config.collections) {
@@ -75,8 +76,8 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			},
 			css: config.panel?.css
 		},
-		collections: config.collections.map((c) => ({ ...c, type: 'collection' })) as BuiltCollection[],
-		areas: config.areas.map((c) => ({ ...c, type: 'area' })) as BuiltArea[],
+		collections: config.collections,
+		areas: config.areas,
 		plugins: {},
 		trustedOrigins,
 		icons
@@ -95,7 +96,10 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	 * because the config is built from inside the first handler
 	 * if a plugin includes a handler, the handler should be register there before...
 	 */
-	const corePlugins = [cache(config.cache || {})];
+	const corePlugins = [
+		cache(config.cache || {}),
+		...(dev ? [apiInit()] : []),
+	];
 	if (hasProp('smtp', config)) {
 		corePlugins.push(mailer(config.smtp));
 	}
@@ -129,10 +133,10 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			}
 
 			if (generateFiles) {
-				const generateSchema = await import('rizom/core/dev/generate/schema/index.js').then((m) => m.default);
+				const generateSchema = await import('$lib/core/dev/generate/schema/index.server.js').then((m) => m.default);
 				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then((m) => m.default);
 				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then((m) => m.default);
-				const generateBrowserConfig = await import('rizom/core/dev/generate/browser/index.js').then((m) => m.default);
+				const generateBrowserConfig = await import('$lib/core/dev/generate/browser/index.server.js').then((m) => m.default);
 
 				generateBrowserConfig({
 					...compiledConfig,

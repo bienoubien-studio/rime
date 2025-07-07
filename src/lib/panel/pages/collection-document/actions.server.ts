@@ -4,10 +4,10 @@ import type { CollectionSlug } from '$lib/core/types/doc';
 import { handleError } from '$lib/core/errors/handler.server';
 import { trycatch } from '$lib/util/trycatch.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
+import { t__ } from '../../../core/i18n/index.js';
 
 export default function (slug: CollectionSlug) {
 	const actions: Actions = {
-		
 		/**
 		 * Create a document.
 		 * Action called when posting a form from the panel :
@@ -15,33 +15,36 @@ export default function (slug: CollectionSlug) {
 		 */
 		create: async (event: RequestEvent) => {
 			const { rizom, locale } = event.locals;
-
-			// A redirect parameter equals to 0 can be present if we're in a nested form
-			// to prevent redirection after entry creation
-			// ex: for relation creation
+			// Get the redirect parameter ex: ?redirect=0 that can be present if we're in a nested form
+			// to prevent redirection after entry creation ex: for relation creation
 			const withoutRedirect = event.url.searchParams.get(PARAMS.REDIRECT) === '0';
+
 			const data = await extractData(event.request);
+
 			const collection = rizom.collection(slug);
-			
-			const [error, document] = await trycatch(
-				collection.create({
-					data,
-					locale
-				})
-			);
+
+			const [error, document] = await trycatch(collection.create({ data, locale }));
 
 			if (error) {
 				return handleError(error, { context: 'action' });
 			}
 
 			if (withoutRedirect) {
-				return document;
+				return {
+					document,
+					message: t__('common.doc_created')
+				};
 			}
 
 			// Redirect to proper upload directory if collection.upload
 			const params = collection.config.upload ? `?${PARAMS.UPLOAD_PATH}=${data._path || UPLOAD_PATH.ROOT_NAME}` : '';
+			const redirectUrl = `/panel/${slug}/${document.id}${params}`;
 
-			return redirect(303, `/panel/${slug}/${document.id}${params}`);
+			return {
+				redirectUrl,
+				document,
+				message: t__('common.doc_created')
+			};
 		},
 
 		/**
@@ -54,11 +57,12 @@ export default function (slug: CollectionSlug) {
 			const id = event.params.id || '';
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
+			const data = await extractData(event.request);
 
 			const [error, document] = await trycatch(
 				rizom.collection(slug).updateById({
 					id,
-					data: await extractData(event.request),
+					data,
 					versionId,
 					draft,
 					locale
@@ -73,7 +77,10 @@ export default function (slug: CollectionSlug) {
 				return redirect(303, `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`);
 			}
 
-			return document;
+			return {
+				document,
+				message: t__('common.doc_updated')
+			};
 		}
 	};
 

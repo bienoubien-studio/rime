@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { logger, taskLogger } from '$lib/core/logger/index.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 /**
  * Injects a custom CSS link into the layout file
@@ -31,7 +31,7 @@ export function injectCustomCSS(layoutFilePath: string, cssPath: string): void {
 
 				// Write the updated content back to the file
 				fs.writeFileSync(layoutFilePath, newContent, 'utf8');
-				taskLogger.done(`Custom CSS link added in ${layoutFilePath}`);
+				logger.info(`Custom CSS link added in ${layoutFilePath}`);
 			} else {
 				// No svelte:head tag, so insert one after the script tag
 				const scriptEndIndex = content.indexOf('</script>') + '</script>'.length;
@@ -44,7 +44,7 @@ export function injectCustomCSS(layoutFilePath: string, cssPath: string): void {
 
 					// Write the updated content back to the file
 					fs.writeFileSync(layoutFilePath, newContent, 'utf8');
-					taskLogger.done(`Custom CSS link added in ${layoutFilePath}`);
+					logger.info(`Custom CSS link added in ${layoutFilePath}`);
 				} else {
 					logger.error(`Could not find insertion point in ${layoutFilePath}`);
 				}
@@ -78,7 +78,7 @@ export function removeCustomCSS(layoutFilePath: string): void {
 
 				// Write the updated content back to the file
 				fs.writeFileSync(layoutFilePath, content, 'utf8');
-				taskLogger.done(`Custom CSS link removed from ${layoutFilePath}`);
+				logger.info(`[✓] Custom CSS link removed from ${layoutFilePath}`);
 			}
 		} else {
 			logger.error(`Layout file not found: ${layoutFilePath}`);

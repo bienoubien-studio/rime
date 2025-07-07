@@ -3,25 +3,36 @@
 	import Button from '../button/button.svelte';
 	import { LogOut } from '@lucide/svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
-	import { PANEL_USERS } from '$lib/core/constant';
-
+	import { authClient } from '$lib/panel/util/auth.js';
+	import { env } from '$env/dynamic/public';
+	import { toast } from 'svelte-sonner';
+	
 	type Props = { navCollapsed: boolean };
 	const { navCollapsed }: Props = $props();
 
 	const user = getUserContext();
+
+	async function signout() {
+		const result = await authClient.signOut()
+		if(result.data?.success){
+			window.location.href = `${env.PUBLIC_RIZOM_URL}/panel/sign-in`
+		}else{
+			toast.error(`Can't sign-out, please try again`)
+		}
+	}
 </script>
 
-<form class="rz-logout-form" class:rz-logout-form--nav-collapsed={navCollapsed} action="/logout" method="POST">
+<div class="rz-signout" class:rz-signout--nav-collapsed={navCollapsed}>
 	{#if !navCollapsed}
 		<div class="rz-user-button">
 			<div class="rz-user-button__left">
-				<a href="/panel/{PANEL_USERS}/{user.attributes.id}">
+				<a href="/panel/staff/{user.attributes.id}">
 					{user.attributes.name?.charAt(0) || ''}
 				</a>
 				<div class="rz-user-button__name">{user.attributes.name}</div>
 			</div>
 
-			<Button type="submit" variant="ghost" size="icon-sm">
+			<Button onclick={signout} variant="ghost" size="icon-sm">
 				<LogOut size="12" />
 			</Button>
 		</div>
@@ -30,7 +41,7 @@
 			<Tooltip.Root>
 				<Tooltip.Trigger>
 					{#snippet child({ props })}
-						<Button {...props} type="submit" variant="ghost" size="icon-sm">
+						<Button {...props} onclick={signout} variant="ghost" size="icon-sm">
 							<LogOut size="12" />
 						</Button>
 					{/snippet}
@@ -40,10 +51,10 @@
 			</Tooltip.Root>
 		</Tooltip.Provider>
 	{/if}
-</form>
+</div>
 
 <style type="postcss">
-	.rz-logout-form {
+	.rz-signout {
 		:global(.rz-button[type='submit']) {
 			width: var(--rz-size-10);
 			height: var(--rz-size-10);
@@ -51,7 +62,7 @@
 			border-radius: var(--rz-radius-md);
 		}
 	}
-	.rz-logout-form--nav-collapsed {
+	.rz-signout--nav-collapsed {
 		display: flex;
 		justify-content: center;
 	}

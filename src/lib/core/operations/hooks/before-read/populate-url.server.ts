@@ -7,7 +7,6 @@ import { getValueAtPath } from '$lib/util/object.js';
  * Hook to populate _children property on document from a nested collection
  */
 export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
-  logger.debug('@populate url for : ' + args.doc.id)
   
 	const select =
 		args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];

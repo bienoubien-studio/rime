@@ -1,6 +1,6 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
 
@@ -39,11 +39,11 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 		return `${camel}: integer('${snake}', { mode : 'timestamp_ms' })${suffix}`;
 	}
 
-	defaultValue(value: Date) {
+	defaultValue(value: Date | DefaultValueFn<Date>) {
 		this.field.defaultValue = value;
 		return this;
 	}
-
+	
 	isTitle() {
 		this.field.isTitle = true;
 		return this;
@@ -67,7 +67,7 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 /****************************************************/
 export type DateField = FormField & {
 	type: 'date';
-	defaultValue?: Date | (() => Date);
+	defaultValue?: Date | DefaultValueFn<Date>;
 	unique?: boolean;
 	isTitle?: true;
 };

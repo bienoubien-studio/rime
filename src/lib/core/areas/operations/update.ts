@@ -15,11 +15,12 @@ type UpdateArgs<T> = {
 	event: RequestEvent;
 	versionId?: string;
 	draft?: boolean;
+	isSystemOperation?: boolean
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, locale, draft } = args;
+	const { config, event, locale, draft, isSystemOperation } = args;
 	let { versionId } = args;
 	const { rizom } = event.locals;
 	let data = args.data;
@@ -29,7 +30,8 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			locale,
 			versionId,
 			draft
-		}
+		},
+		isSystemOperation
 	};
 
 	for (const hook of config.hooks?.beforeOperation || []) {

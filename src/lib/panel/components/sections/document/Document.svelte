@@ -3,7 +3,7 @@
 	import UploadHeader from './upload-header/UploadHeader.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import Header from './Header.svelte';
-	import { setDocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { setDocumentFormContext, type FormSuccessData } from '$lib/panel/context/documentForm.svelte';
 	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
@@ -14,6 +14,7 @@
 	import { t__ } from '$lib/core/i18n/index.js';
 	import AuthFooter from './AuthFooter.svelte';
 	import type { GenericDoc } from '$lib/core/types/doc';
+	import AuthApiKeyDialog from './AuthAPIKeyDialog.svelte';
 
 	type Props = {
 		doc: GenericDoc;
@@ -44,10 +45,11 @@
 		prototype: initial._prototype,
 		slug: initial._type
 	});
+	
 	const user = getUserContext();
 	const title = getContext<{ value: string }>('title');
 	let formElement = $state<HTMLFormElement>();
-	
+
 	beforeNavigate(async () => {
 		// if (
 		// 	operation === 'update' &&
@@ -71,7 +73,8 @@
 		onNestedDocumentCreated,
 		onDataChange,
 		onFieldFocus,
-		key: `${initial._type}_${nestedLevel}`
+		key: `${initial._type}_${nestedLevel}`,
+		beforeRedirect: beforeRedirect
 	});
 
 	const locale = getLocaleContext();
@@ -82,7 +85,7 @@
 	});
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if(!formElement) throw Error('formElement is not defined')
+		if (!formElement) throw Error('formElement is not defined');
 		if ((event.ctrlKey || event.metaKey) && event.key === 's') {
 			event.preventDefault();
 			if (!form.canSubmit) return;
@@ -94,6 +97,25 @@
 				formElement.requestSubmit();
 			}
 		}
+	}
+
+	let apiKey = $state<string | null>('');
+
+	async function beforeRedirect(data?: FormSuccessData) {
+		const IS_API_AUTH = config.type === 'collection' && config.auth?.type === 'apiKey';
+		if (IS_API_AUTH) {
+			apiKey = data?.document?.apiKey || null;
+			return new Promise<boolean>((resolve) => {
+				function checkAndResolve() {
+					if (!apiKey) {
+						resolve(true);
+						clearInterval(intervalId);
+					}
+				}
+				const intervalId = setInterval(checkAndResolve, 100);
+			});
+		}
+		return true;
 	}
 </script>
 
@@ -128,7 +150,7 @@
 		{/if}
 		<RenderFields fields={config.fields} {form} />
 		{#if config.type === 'collection' && isAuthConfig(config)}
-			<AuthFooter {operation} {form} />
+			<AuthFooter collection={config} {operation} {form} />
 		{/if}
 	</div>
 
@@ -149,6 +171,11 @@
 		</div>
 	{:else}
 		<FloatingUI {form} {onClose} />
+	{/if}
+
+	<!-- This shows the create API Key after creation, for apiKey auth type collection -->
+	{#if !form.isLive && apiKey}
+		<AuthApiKeyDialog bind:apiKey />
 	{/if}
 </form>
 

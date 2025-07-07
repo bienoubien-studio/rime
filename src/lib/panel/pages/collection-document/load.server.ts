@@ -26,7 +26,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		let readOnly = false;
 		const collection = rizom.collection<any>(slug);
 		const operation = id === 'create' ? 'create' : 'update';
-
+		
 		if (id === 'create') {
 			/** Check for authorizations */
 			const authorized = collection.config.access.create(user, {});
@@ -95,8 +95,10 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			}
 			data = { ...data, versions: result.docs };
 		}
-
+		
 		return data;
+
 	};
+
 	return load;
 }

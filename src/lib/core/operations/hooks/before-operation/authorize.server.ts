@@ -11,6 +11,8 @@ export const authorize: HookBeforeOperation<Prototype> = async (args) => {
 		id: context.params.id
 	};
 	
+	if(args.context.isSystemOperation) return args
+
 	switch (operation) {
 		case 'create':
 			authorized = config.access.create(event.locals.user, params);

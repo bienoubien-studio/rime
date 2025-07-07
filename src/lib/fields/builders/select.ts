@@ -1,5 +1,5 @@
-import type { FieldsType, FieldValidationFunc, FormField, Option } from '$lib/fields/types.js';
-import { FormFieldBuilder } from './field.js';
+import type { DefaultValueFn, FieldsType, FieldValidationFunc, FormField, Option } from '$lib/fields/types.js';
+import { FormFieldBuilder } from './field.server.js';
 import { capitalize } from '$lib/util/string.js';
 
 const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { config }) => {
@@ -21,17 +21,17 @@ const ensureSelectIsOption: FieldValidationFunc<FieldWithOptions> = (value, { co
 
 type FieldWithOptions = FormField & {
 	options: Option[];
-	defaultValue?: any;
+	defaultValue?: (string | DefaultValueFn<string>) | (string[] | DefaultValueFn<string[]>);
 	many?: boolean;
 };
 
-export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBuilder<T> {
+class PickFieldBuilder<T extends FieldWithOptions = FieldWithOptions> extends FormFieldBuilder<T> {
 	constructor(name: string, type: FieldsType) {
 		super(name, type);
 		this.field.validate = ensureSelectIsOption;
 	}
 
-	options(...options: T['options'] | string[]) {
+	options(...options: (Option | string)[]) {
 		this.field.options = options.map((option) => {
 			if (typeof option === 'string') {
 				return { label: capitalize(option), value: option };
@@ -50,13 +50,8 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 		return this;
 	}
 
-	defaultValue(value: string) {
-		this.field.defaultValue = value;
-		return this;
-	}
-
 	compile() {
-		if (!this.field.options) {
+		if (!this.field.options || !this.field.options.length) {
 			throw new Error(`${this.field.name} should at least have one option`);
 		}
 		if (!this.field.defaultValue) {
@@ -71,5 +66,24 @@ export class SelectFieldBuilder<T extends FieldWithOptions> extends FormFieldBui
 			}
 		}
 		return super.compile();
+	}
+}
+
+export class PickOneFieldBuilder<T extends FieldWithOptions = FieldWithOptions> extends PickFieldBuilder<T> {
+	defaultValue(value: string | DefaultValueFn<string>) {
+		this.field.defaultValue = value;
+		return this;
+	}
+}
+
+export class PickManyFieldBuilder<T extends FieldWithOptions = FieldWithOptions> extends PickFieldBuilder<T> {
+	defaultValue(value: string[] | DefaultValueFn<string[]>) {
+		this.field.defaultValue = value;
+		return this;
+	}
+
+	many() {
+		this.field.many = true;
+		return this;
 	}
 }

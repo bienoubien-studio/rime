@@ -56,7 +56,7 @@ const rootLayout = () => `
  */
 const rootLayoutServer = () => `
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import { registerTranslation } from 'rizom/i18n/register.server.js';
+import { registerTranslation } from '${PACKAGE_NAME}/i18n/register.server.js';
 
 export const ssr = false;
 
@@ -68,35 +68,25 @@ export const load = async ({ locals }: ServerLoadEvent) => {
 
 /**
  * Login page template
- * (rizom)/login/+page.svelte
+ * (rizom)/panel/sign-in/+page.svelte
  */
-const loginPage = () => `
+const signInPage = () => `
 <script lang="ts">
-  import { Login } from 'rizom/panel';
+  import { SignIn } from '${PACKAGE_NAME}/panel/auth/client';
   const { data } = $props();
 </script>
 
-<Login {data} />`;
+<SignIn {data} />`;
 
 /**
  * Login page server template
- * (rizom)/login/+page.server.ts
+ * (rizom)/auth/sign-in/+page@(rizom).server.ts
  */
-const loginPageServer = () => `
-import { pagesLoad, pagesActions } from 'rizom/panel/pages';
+const signInPageServer = () => `
+import { authLoads, authActions } from '${PACKAGE_NAME}/panel/auth';
 
-export const load = pagesLoad.login;
-export const actions = pagesActions.login;
-`;
-
-/**
- * Logout page server template
- * (rizom)/logout/+page.server.ts
- */
-const logoutPageServer = () => `
-import { pagesActions } from 'rizom/panel/pages';
-
-export const actions = pagesActions.logout;
+export const load = authLoads.signIn;
+export const actions = authActions.signIn;
 `;
 
 /**
@@ -105,7 +95,7 @@ export const actions = pagesActions.logout;
  */
 const forgotPasswordPage = () => `
 <script>
-  import { ForgotPassword } from '${PACKAGE_NAME}/panel'
+  import { ForgotPassword } from '${PACKAGE_NAME}/panel/auth/client'
 </script>
 <ForgotPassword />`;
 
@@ -114,9 +104,9 @@ const forgotPasswordPage = () => `
  * (rizom)/forgot-password/+page.server.ts
  */
 const forgotPasswordPageServer = () => `
-import { pagesLoad } from 'rizom/panel/pages';
+import { authLoads } from '${PACKAGE_NAME}/panel/auth';
 
-export const load = pagesLoad.forgotPassword;
+export const load = authLoads.forgotPassword;
 `;
 
 /**
@@ -125,7 +115,7 @@ export const load = pagesLoad.forgotPassword;
  */
 const resetPasswordPage = () => `
 <script lang="ts">
-  import { ResetPassword } from 'rizom/panel';
+  import { ResetPassword } from '${PACKAGE_NAME}/panel';
   const { data } = $props();
 </script>
 
@@ -136,7 +126,7 @@ const resetPasswordPage = () => `
  * (rizom)/reset-password/+page.server.ts
  */
 const resetPasswordPageServer = () => `
-import { pagesLoad } from 'rizom/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
 
 export const load = pagesLoad.resetPassword;
 `;
@@ -147,7 +137,7 @@ export const load = pagesLoad.resetPassword;
  */
 const panelLayout = () => `
 <script>
-	import { Panel } from 'rizom/panel';
+	import { Panel } from '${PACKAGE_NAME}/panel';
 	//@ts-ignore
 	import config from 'virtual:browser-config';
 	const { children, data } = $props();
@@ -178,7 +168,7 @@ export const load = async ({ locals }: ServerLoadEvent) => {
  */
 const panelPage = () => `
 <script>
-  import { Dashboard } from 'rizom/panel';
+  import { Dashboard } from '${PACKAGE_NAME}/panel';
   const { data } = $props();
 </script>
 
@@ -189,31 +179,9 @@ const panelPage = () => `
  * (rizom)/panel/+page.server.ts
  */
 const panelPageServer = () => `
-import { pagesLoad } from 'rizom/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
 
 export const load = pagesLoad.dashboard;`;
-
-/**
- * Init page template
- * (rizom)/init/+page.svelte
- */
-const initPage = () => `
-<script lang="ts">
-	import { Init } from 'rizom/panel';
-	const { data } = $props();
-</script>
-
-<Init form={data.form} />`;
-
-/**
- * Init page server template
- * (rizom)/init/+page.server.ts
- */
-const initPageServer = () => `
-import { pagesLoad, pagesActions } from 'rizom/panel/pages';
-
-export const load = pagesLoad.init;
-export const actions = pagesActions.init;`;
 
 /**
  * Live page template
@@ -221,7 +189,7 @@ export const actions = pagesActions.init;`;
  */
 const livePage = () => `
 <script lang="ts">
-  import { Live } from 'rizom/panel';
+  import { Live } from '${PACKAGE_NAME}/panel';
   //@ts-ignore
   import config from 'virtual:browser-config';
 
@@ -236,7 +204,7 @@ const livePage = () => `
  * (rizom)/live/+page.server.ts
  */
 const livePageServer = () => `
-import { pagesLoad } from 'rizom/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
 
 export const load = pagesLoad.live;`;
 
@@ -288,12 +256,9 @@ export const commonRoutes: Routes = {
 		layoutServer: rootLayoutServer,
 		error: error
 	},
-	'(rizom)/login': {
-		page: loginPage,
-		pageServer: loginPageServer
-	},
-	'(rizom)/logout': {
-		pageServer: logoutPageServer
+	'(rizom)/panel/sign-in': {
+		'page@(rizom)': signInPage,
+		'pageServer': signInPageServer
 	},
 	'(rizom)/forgot-password': {
 		page: forgotPasswordPage,
@@ -308,10 +273,6 @@ export const commonRoutes: Routes = {
 		layoutServer: panelLayoutServer,
 		page: panelPage,
 		pageServer: panelPageServer
-	},
-	'(rizom)/init': {
-		page: initPage,
-		pageServer: initPageServer
 	},
 	'(rizom)/live': {
 		page: livePage,

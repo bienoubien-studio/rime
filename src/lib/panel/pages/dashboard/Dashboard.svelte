@@ -119,7 +119,7 @@
 
 	.rz-dashboard__content {
 		display: grid;
-		gap: var(--rz-size-6);
+		gap: var(--rz-size-4);
 		padding: var(--rz-size-8) var(--rz-page-gutter);
 		height: 100%;
 		grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));

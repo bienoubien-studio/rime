@@ -1,9 +1,9 @@
-import type { FormField, Option } from '$lib/fields/types.js';
-import { SelectFieldBuilder } from '../builders/index.js';
+import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
 import Radio from './component/Radio.svelte';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import { PickOneFieldBuilder } from '../builders/select.js';
 
-class RadioFieldBuilder extends SelectFieldBuilder<RadioField> {
+class RadioFieldBuilder extends PickOneFieldBuilder<RadioField> {
 	constructor(name: string) {
 		super(name, 'radio');
 		this.field.many = false;
@@ -34,7 +34,7 @@ export const radio = (name: string) => new RadioFieldBuilder(name);
 export type RadioField = FormField & {
 	type: 'radio';
 	options: Option[];
-	defaultValue: string;
+	defaultValue: string | DefaultValueFn<string>;
 	many: false;
 };
 

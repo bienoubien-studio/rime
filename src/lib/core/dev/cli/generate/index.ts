@@ -1,15 +1,25 @@
 import path from 'path';
 import { existsSync, mkdirSync, rmSync } from 'fs';
 import { logger } from '$lib/core/logger/index.server.js';
+import type { ViteDevServer } from 'vite';
+import type { CompiledConfig } from '$lib/core/config/types/index.js';
 
-export const generate = async (force?: boolean) => {
+export const generate = async (args: {
+	force?: boolean, 
+	afterGenerate?: (vite:ViteDevServer, config:CompiledConfig) => Promise<void> 
+}) => {
+	
+	const { afterGenerate, force } = args
+
 	if (force) {
+		// Remove cache
 		try {
 			rmSync(path.join(process.cwd(), '.rizom'), { recursive: true, force: true });
 			mkdirSync(path.join(process.cwd(), '.rizom'));
 		} catch (err: any) {
 			logger.error(err.message);
 		}
+		// Remove routes
 		try {
 			rmSync(path.join(process.cwd(), 'src', 'routes', '(rizom)'), { recursive: true, force: true });
 		} catch (err: any) {
@@ -47,11 +57,16 @@ export const generate = async (force?: boolean) => {
 			const buildModule = await vite.ssrLoadModule('rizom/core/config/build/index.js');
 			const configModule = await vite.ssrLoadModule(configPathJS);
 			const config = configModule.default;
-
+			
 			// Build the config
 			await buildModule.buildConfig(config, { generateFiles: true });
 
-			logger.info('Generation completed successfully');
+			logger.info('[✓] Generation completed successfully');
+
+			// if(afterGenerate){
+			// 	await afterGenerate(vite, config)
+			// }
+			
 		} finally {
 			// Always close the Vite server
 			await vite.close();

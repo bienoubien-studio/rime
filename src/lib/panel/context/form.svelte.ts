@@ -1,10 +1,11 @@
 import { diff } from 'deep-object-diff';
-import type { ActionResult, SubmitFunction } from '@sveltejs/kit';
+import type { SubmitFunction } from '@sveltejs/kit';
 import { applyAction } from '$app/forms';
 import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte';
-import type { AnyFormField } from '$lib/fields/types.js';
+import type { FormField } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types';
+import type { ClientField } from '../forms/types.js';
 
 function createFormStore(initial: Dic, key: string) {
 	//
@@ -27,7 +28,7 @@ function createFormStore(initial: Dic, key: string) {
 		form = { ...form, [path]: value };
 	}
 
-	function useField(path: string | undefined, config: AnyFormField) {
+	function useField(path: string | undefined, config: ClientField<FormField>) {
 		path = path || config.name;
 		//
 		const validate = (value: any) => {

@@ -1,6 +1,6 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import Slug from './component/Slug.svelte';
 import Cell from './component/Cell.svelte';
 import { validate } from '$lib/util/index.js';
@@ -42,8 +42,13 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 		return this;
 	}
 
-	unique() {
-		this.field.unique = true;
+	defaultValue(value: string | DefaultValueFn<string>) {
+		this.field.defaultValue = value;
+		return this;
+	}
+	
+	unique(bool?:boolean) {
+		this.field.unique = typeof bool === 'boolean' ? bool : true;
 		return this;
 	}
 
@@ -74,6 +79,7 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 export type SlugField = FormField & {
 	type: 'slug';
 	slugify?: string;
+	defaultValue?: string | DefaultValueFn<string>;
 	unique?: boolean;
 	isTitle?: true;
 	placeholder: string;

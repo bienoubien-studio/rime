@@ -1,7 +1,7 @@
 import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import path from 'path';
-import { PANEL_USERS } from 'rizom/core/constant';
+import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 
 const API_BASE_URL = `${process.env.PUBLIC_RIZOM_URL}/api`;
 
@@ -29,17 +29,17 @@ test('Second init should return 404', async ({ request }) => {
 let adminUserId: string;
 
 test('Login should not be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: '12345678'
 		}
 	});
-	expect(response.status()).toBe(400);
+	expect(response.status()).toBe(401);
 });
 
 test('Login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -53,10 +53,6 @@ test('Login should be successfull', async ({ request }) => {
 	const json = await response.json();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	expect(json.user).toBeDefined();
-	expect(json.user.id).toBeDefined();
-	expect(json.user.roles).toBeDefined();
-	expect(json.user.roles[0]).toBe('admin');
 	adminUserId = json.user.id;
 });
 
@@ -73,18 +69,18 @@ let pageId: string;
 test('Should get correct offset / limit', async ({ request }) => {
 	const headers = {
 		Authorization: `Bearer ${token}`
-	}
+	};
 
-	const to3digits = (n: number) => n.toString().padStart(3, '0')
+	const to3digits = (n: number) => n.toString().padStart(3, '0');
 
-	// Create 100 pages 
+	// Create 100 pages
 	for (let i = 1; i < 100; i++) {
 		await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
 				attributes: {
 					title: 'Page ' + to3digits(i),
-					slug: 'page-' + to3digits(i),
+					slug: 'page-' + to3digits(i)
 				}
 			}
 		});
@@ -92,45 +88,50 @@ test('Should get correct offset / limit', async ({ request }) => {
 
 	// Check findAll
 	for (let i = 1; i < 10; i++) {
-		const pagination = i
-		const offset = (pagination - 1) * 10
-		const response = await request.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=attributes.title`).then((response) => {
-			return response.json();
-		});
+		const pagination = i;
+		const offset = (pagination - 1) * 10;
+		const response = await request
+			.get(`${API_BASE_URL}/pages?limit=10&offset=${offset}&sort=attributes.title`)
+			.then((response) => {
+				return response.json();
+			});
 		expect(response.docs).toBeDefined();
 		expect(response.docs.length).toBe(10);
 		expect(response.docs.at(0).title).toBe('Page ' + to3digits(offset + 1));
 		expect(response.docs.at(9).title).toBe('Page ' + to3digits(offset + 10));
 	}
 
-	// Create 100 other pages 
+	// Create 100 other pages
 	for (let i = 1; i < 100; i++) {
-		const { doc } = await request.post(`${API_BASE_URL}/pages`, {
-			headers,
-			data: {
-				attributes: {
-					title: 'Other ' + to3digits(i),
-					slug: 'other-' + to3digits(i),
+		const { doc } = await request
+			.post(`${API_BASE_URL}/pages`, {
+				headers,
+				data: {
+					attributes: {
+						title: 'Other ' + to3digits(i),
+						slug: 'other-' + to3digits(i)
+					}
 				}
-			}
-		}).then(r => r.json());
+			})
+			.then((r) => r.json());
 
 		await request.patch(`${API_BASE_URL}/pages/${doc.id}`, {
 			headers,
 			data: {
-				createdAt: new Date(new Date('2025-05-22T06:58:35.000Z').getTime() + (i * 1000))
+				createdAt: new Date(new Date('2025-05-22T06:58:35.000Z').getTime() + i * 1000)
 			}
 		});
-
 	}
 
 	// Check with query
 	for (let i = 1; i < 10; i++) {
-		const pagination = i
-		const offset = (pagination - 1) * 10
-		const response = await request.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`).then((response) => {
-			return response.json();
-		});
+		const pagination = i;
+		const offset = (pagination - 1) * 10;
+		const response = await request
+			.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`)
+			.then((response) => {
+				return response.json();
+			});
 		expect(response.docs).toBeDefined();
 		expect(response.docs.length).toBe(10);
 		expect(response.docs.at(0).title).toBe('Other ' + to3digits(offset + 1));
@@ -138,32 +139,37 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Clean, delete all pages
-	let allPages = await request.get(`${API_BASE_URL}/pages`)
-		.then(r => r.json())
-		.then(r => r.docs)
-		.catch(err => {
-			console.log(err)
-			expect(false).toBe(true)
-		})
+	let allPages = await request
+		.get(`${API_BASE_URL}/pages`)
+		.then((r) => r.json())
+		.then((r) => r.docs)
+		.catch((err) => {
+			console.log(err);
+			expect(false).toBe(true);
+		});
 
-	expect(allPages.toBeDefined)
-	expect(allPages.length).toBe(198)
+	expect(allPages.toBeDefined);
+	expect(allPages.length).toBe(198);
 
 	await Promise.all(
-		allPages.map((doc: any) => request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			},
-		}))
-	).catch(err => {
-		console.log(err)
-		expect(false).toBe(true)
-	})
+		allPages.map((doc: any) =>
+			request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			})
+		)
+	).catch((err) => {
+		console.log(err);
+		expect(false).toBe(true);
+	});
 
-	allPages = await request.get(`${API_BASE_URL}/pages`).then(r => r.json()).then(r => r.docs)
-	expect(allPages).toBeDefined()
-	expect(allPages.length).toBe(0)
-
+	allPages = await request
+		.get(`${API_BASE_URL}/pages`)
+		.then((r) => r.json())
+		.then((r) => r.docs);
+	expect(allPages).toBeDefined();
+	expect(allPages.length).toBe(0);
 });
 
 test('Should create Home', async ({ request }) => {
@@ -291,10 +297,10 @@ test('Should get only the layout page prop', async ({ request }) => {
 	});
 	expect(response.status()).toBe(200);
 	const { docs } = await response.json();
-	const doc = docs[0]
+	const doc = docs[0];
 	expect(Object.keys(doc).length).toBe(2);
 	expect(doc.id).toBeDefined();
-	expect(doc.layout).toBeDefined()
+	expect(doc.layout).toBeDefined();
 	expect(doc.layout.components).toBeDefined();
 	expect(doc.layout.components.length).toBe(2);
 	expect(doc.layout.components.at(0).text).toBe('Foo');
@@ -320,9 +326,9 @@ test('Should return 2 pages', async ({ request }) => {
 	expect(response.docs.length).toBe(2);
 });
 
-/** 
+/**
  *  Queries
-*/
+ */
 test('Should return home EN (query)', async ({ request }) => {
 	const url = `${API_BASE_URL}/pages?where[attributes.title][equals]=Home&locale=en`;
 	const response = await request.get(url).then((response) => {
@@ -371,7 +377,7 @@ test('Should return home FR (query) with select', async ({ request }) => {
 /*  Upload Collection
 /****************************************************/
 
-let imageID: string
+let imageID: string;
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
@@ -390,7 +396,7 @@ test('Should create a Media', async ({ request }) => {
 	expect(doc.alt).toBe('alt');
 	expect(doc.filename).toBe('landscape-3.jpg');
 	expect(doc.mimeType).toBe('image/jpeg');
-	imageID = doc.id
+	imageID = doc.id;
 });
 
 let pageWithAuthorId: string;
@@ -478,9 +484,11 @@ test('Should return 2 pages with only attributes.slug and id prop', async ({ req
 });
 
 test('Should return 2 pages with only attributes slug, title and id prop', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug,attributes.title`).then((response) => {
-		return response.json();
-	});
+	const response = await request
+		.get(`${API_BASE_URL}/pages?select=attributes.slug,attributes.title`)
+		.then((response) => {
+			return response.json();
+		});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(2);
 	expect(response.docs[0].id).toBeDefined();
@@ -495,12 +503,11 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 	expect(response.docs[1]._parent).toBeUndefined();
 });
 
-
 /****************************************************
 /* BLOCKS Localized
 /****************************************************/
 
-let pageWithBlockID: string
+let pageWithBlockID: string;
 test('Should create a page with blocks', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: {
@@ -509,13 +516,13 @@ test('Should create a page with blocks', async ({ request }) => {
 		data: {
 			attributes: {
 				title: 'Page with blocks',
-				slug: 'page-with-blocks',
+				slug: 'page-with-blocks'
 			},
 			layout: {
 				components: [
 					{ type: 'paragraph', text: 'paragraph text' },
 					{ type: 'slider', image: 'image value' },
-					{ type: 'image', image: [imageID], legend: 'légende' },
+					{ type: 'image', image: [imageID], legend: 'légende' }
 				]
 			}
 		}
@@ -547,7 +554,7 @@ test('Should get the FR content of page with blocks (fallback)', async ({ reques
 	expect(doc.layout.components[2].legend).toBe('légende');
 	expect(doc.layout.components[2].image).toBeDefined();
 	expect(doc.locale).toBe('en');
-})
+});
 
 test('Should update EN content of page with blocks', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${pageWithBlockID}?locale=en`, {
@@ -556,15 +563,15 @@ test('Should update EN content of page with blocks', async ({ request }) => {
 		},
 		data: {
 			attributes: {
-				title: "Page with blocks but EN",
-				slug: 'page-with-blocks-en',
+				title: 'Page with blocks but EN',
+				slug: 'page-with-blocks-en'
 			},
 			layout: {
 				components: [
 					{ type: 'slider', image: 'image value en' },
 					{ type: 'paragraph', text: 'paragraph text' },
 					{ type: 'image', image: [imageID], legend: 'legend EN' },
-					{ type: 'slider', image: 'image value but en' },
+					{ type: 'slider', image: 'image value but en' }
 				]
 			}
 		}
@@ -604,7 +611,7 @@ test('Should still get the FR content of page with blocks', async ({ request }) 
 	expect(doc.layout.components[2].legend).toBe('légende');
 	expect(doc.layout.components[2].image).toBeDefined();
 	expect(doc.locale).toBe('fr');
-})
+});
 
 /****************************************************
 /* TREE Localized
@@ -656,7 +663,7 @@ test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
 	expect(doc.mainNav[1].link.value).toBe('http://fooo-2.baz');
 	expect(doc.mainNav[1].link.target).toBe('_blank');
 	expect(doc.locale).toBe('en');
-})
+});
 
 test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/menu`, {
@@ -669,7 +676,7 @@ test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) 
 	expect(doc.nav[0].link).toBeDefined();
 	expect(doc.mainNav).toHaveLength(0);
 	expect(doc.locale).toBe('fr');
-})
+});
 
 test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/menu`, {
@@ -697,7 +704,7 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 	expect(doc.mainNav[0].link.value).toBe('http://fooo-fr.baz');
 	expect(doc.mainNav[0].link.target).toBe('_self');
 	expect(doc.locale).toBe('fr');
-})
+});
 
 /****************************************************
 /* AUTH Collection
@@ -727,14 +734,14 @@ test('Should create a user editor', async ({ request }) => {
 
 test('Should logout user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
+		.post(`${API_BASE_URL}/auth/sign-out`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
 		})
 		.then((r) => r.json());
 
-	expect(response).toBe('successfully logout');
+	expect(response.success).toBe(true);
 });
 
 test('Should not update Home', async ({ request }) => {
@@ -781,7 +788,7 @@ test('Should not create a page', async ({ request }) => {
 /****************************************************/
 
 test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -1147,18 +1154,18 @@ test('Should delete test page', async ({ request }) => {
 
 test('Should logout admin user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
+		.post(`${API_BASE_URL}/auth/sign-out`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
 		})
 		.then((r) => r.json());
 
-	expect(response).toBe('successfully logout');
+	expect(response.success).toBe(true);
 });
 
 test('Should login editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -1221,32 +1228,12 @@ test('Editor should update home', async ({ request }) => {
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
+		.post(`${API_BASE_URL}/auth/sign-out`, {
 			headers: {
 				Authorization: `Bearer ${token}`
 			}
 		})
 		.then((r) => r.json());
 
-	expect(response).toBe('successfully logout');
-});
-
-test('Should lock user', async ({ request }) => {
-	for (let i = 0; i < 4; i++) {
-		const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
-			data: {
-				email: 'editor@bienoubien.com',
-				password: 'fooooooooooo'
-			}
-		});
-		expect(response.status()).toBe(400);
-	}
-
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
-		data: {
-			email: 'editor@bienoubien.com',
-			password: 'fooooooooooo'
-		}
-	});
-	expect(response.status()).toBe(403);
+	expect(response.success).toBe(true);
 });

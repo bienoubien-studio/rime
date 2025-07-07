@@ -1,7 +1,7 @@
 import { capitalize } from '$lib/util/string.js';
 import { augmentTitle } from './augment-title.js';
 import { augmentMetas } from './augment-metas.js';
-import type { Area } from '$lib/core/config/types/index.js';
+import type { Area, BuiltArea } from '$lib/core/config/types/index.js';
 import type { AreaWithoutSlug } from './types.js';
 import { augmentVersions } from './augment-versions.js';
 import { FileText } from '@lucide/svelte';
@@ -13,32 +13,28 @@ const addSlug = <S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S>
 /**
  * Function to define an Area
  */
-export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): Area<S> {
-	
-	let config = addSlug(slug, incomingConfig);
-	let fields: typeof config.fields = [...config.fields];
-	
-	config = augmentTitle(config);
-	
-	({ config, fields } = augmentMetas({ config, fields }));
-	({ config, fields } = augmentVersions({ config, fields }));
-	({ config, fields } = augmentUrl({ config, fields }));
-	
-	config = augmentHooks(config);
+export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): BuiltArea {
+	const withSlug = addSlug(slug, incomingConfig);
 
+	const withTitle = augmentTitle(withSlug);
+	const withMetas = augmentMetas(withTitle);
+	const withVersions = augmentVersions(withMetas);
+	const withUrl = augmentUrl(withVersions);
+	const output = augmentHooks(withUrl);
+		
 	return {
-		...config,
-		slug,
-		icon: config.icon || FileText,
-		label: config.label ? config.label : capitalize(slug),
-		fields: fields,
+		...output,
+		type: 'area',
+		slug: output.slug as BuiltArea['slug'],
+		url: output.url as BuiltArea['url'],
+		icon: output.icon || FileText,
+		label: output.label ? output.label : capitalize(slug),
 		access: {
 			create: (user) => !!user,
 			read: (user) => !!user,
 			update: (user) => !!user,
 			delete: (user) => !!user,
-			...config.access
+			...output.access
 		}
-	}
+	};
 }
-

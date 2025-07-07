@@ -1,7 +1,7 @@
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Blocks from './component/Blocks.svelte';
 import Cell from './component/Cell.svelte';
-import { text } from '../text/index.js';
+import { text } from '../text/index.server.js';
 import { number } from '../number/index.js';
 import { toPascalCase } from '$lib/util/string.js';
 import type { Component } from 'svelte';

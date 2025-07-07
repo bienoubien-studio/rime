@@ -1,19 +1,13 @@
 import test, { expect } from '@playwright/test';
 import { except } from 'drizzle-orm/mysql-core';
-import { PANEL_USERS } from 'rizom/core/constant';
+import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 
 const BASE_URL = 'http://rizom.test:5173';
-
-test('Init Form', async ({ page }) => {
-	await page.goto(`${BASE_URL}/init`);
-	const title = page.locator('h1');
-	await expect(title).toHaveText('Error: 404');
-});
 
 test.describe('Login form', () => {
 	test('should login successfully with valid credentials', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 		await page.waitForLoadState();
 
 		const submitButton = page.locator('button[type="submit"]');
@@ -40,7 +34,7 @@ test.describe('Login form', () => {
 	});
 
 	test('should show error with invalid credentials', async ({ page }) => {
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 
 		const submitButton = page.locator('button[type="submit"]');
 		await expect(submitButton).toBeDisabled();
@@ -65,7 +59,7 @@ test.describe('Login form', () => {
 	});
 
 	test('should not display forgot password link', async ({ page }) => {
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 		await expect(page.locator(`a[href="/forgot-password?slug=${PANEL_USERS}"]`)).toHaveCount(0);
 	});
 
@@ -74,7 +68,7 @@ test.describe('Login form', () => {
 test.describe('Admin panel', () => {
 	test('Should visit all collections', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 
 		const submitButton = page.locator('button[type="submit"]');
 		// Fill in the credentials
@@ -145,7 +139,7 @@ test.describe('Admin panel', () => {
 		}
 	});
 	test('Should visit all globals', async ({ page }) => {
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 
 		const submitButton = page.locator('button[type="submit"]');
 		// Fill in the credentials
@@ -182,16 +176,16 @@ test.describe('Admin panel', () => {
 			await expect(saveButton).toBeDisabled();
 		}
 
-		await page.click('form.rz-logout-form button[type="submit"]');
+		await page.click('.rz-signout button');
 		await page.waitForNavigation();
-		expect(page.url()).toBe(`${BASE_URL}/login`);
+		expect(page.url()).toBe(`${BASE_URL}/panel/sign-in`);
 	});
 });
 
 test.describe('Live Edit', () => {
 	test('Should go to Live Panel', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/login');
+		await page.goto('/panel/sign-in');
 
 		const submitButton = page.locator('button[type="submit"]');
 		await expect(submitButton).toBeDisabled();
@@ -238,39 +232,5 @@ test.describe('Live Edit', () => {
 		const liveContainer = page.locator('.rz-live-container');
 		await expect(liveContainer).toBeVisible({ timeout: 1000 });
 		expect(liveContainer).toHaveCount(1);
-	});
-});
-
-test.describe('Lock user', () => {
-	test('should lock user after 5 login failed', async ({ page }) => {
-		// Navigate to the login page
-		await page.goto('/login');
-
-		const submitButton = page.locator('button[type="submit"]');
-		await expect(submitButton).toBeDisabled();
-
-		const emailInput = page.locator('input[name="email"]');
-		const passwordInput = page.locator('input[name="password"]');
-
-		// Fill in the credentials 5 times
-		for (let i = 0; i < 5; i++) {
-			if (i === 0) {
-				await emailInput.pressSequentially('admin@bienoubien.studio', { delay: 100 });
-			}
-			await passwordInput.pressSequentially('password', { delay: 100 });
-			await expect(submitButton).toBeEnabled();
-			// Submit the form
-			await submitButton.click();
-			
-			// here wait for submitButton to be disabled
-			await page.waitForLoadState('networkidle')
-			if(i < 4){
-				await expect(submitButton).toBeDisabled({ timeout: 2000 });
-			}
-		}
-		
-		const p = page.locator('p.rz-locked');
-		expect(p).toBeDefined();
-
 	});
 });

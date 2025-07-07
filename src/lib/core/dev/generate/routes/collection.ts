@@ -85,23 +85,6 @@ export const PATCH = api.collection.updateById(${TScastVersionSlug(slug)})
 export const DELETE = api.collection.deleteById(${TScastVersionSlug(slug)})
 `;
 
-/**
- * API collection auth document login
- * (rizom)/api/{collection.slug}/login/+server.ts
- */
-const apiCollectionDocLoginServer = (slug: string) => `
-import * as api from '${PACKAGE_NAME}/api';
-export const POST = api.collection.login('${slug}')
-`;
-
-/**
- * API collection auth document logout
- * (rizom)/api/{collection.slug}/login/+server.ts
- */
-const apiCollectionDocLogoutServer = (slug: string) => `
-import * as api from '${PACKAGE_NAME}/api';
-export const POST = api.collection.logout
-`;
 
 /****************************************************/
 /* Routes 
@@ -143,14 +126,3 @@ export const collectionAPIRoutes: Routes = {
 	}
 };
 
-/**
- * Collection Auth API routes
- */
-export const collectionAPIAuthRoutes: Routes = {
-	'(rizom)/api/{collection.slug}/login': {
-		server: apiCollectionDocLoginServer
-	},
-	'(rizom)/api/{collection.slug}/logout': {
-		server: apiCollectionDocLogoutServer
-	}
-};

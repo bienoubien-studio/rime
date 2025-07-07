@@ -1,7 +1,8 @@
 import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
-import { PANEL_USERS, PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
+import { PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
+import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js'
 
 const BASE_URL = process.env.PUBLIC_RIZOM_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -11,7 +12,7 @@ let superAdminToken: string;
 let superAdminHeaders: { Authorization: string }
 
 test('Superadmin login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -22,8 +23,6 @@ test('Superadmin login should be successfull', async ({ request }) => {
 	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	expect(json.user.roles).toBeDefined();
-	expect(json.user.roles[0]).toBe('admin');
 	superAdminToken = headerToken;
 	superAdminHeaders = { Authorization: `Bearer ${superAdminToken}` }
 	superAdminId = json.user.id;

@@ -1,10 +1,10 @@
 import type { GetRegisterType } from '$lib/index.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
-import type { FormField, FieldHook } from '$lib/fields/types.js';
+import type { FormField, FieldHook, DefaultValueFn } from '$lib/fields/types.js';
 import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 
 // Before save populate ressource URL
 const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, documentId }) => {
@@ -83,13 +83,8 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		const suffix = templateUniqueRequired(this.field);
 		return `${camel}: text('${snake}', { mode: 'json'})${suffix}`;
 	}
-
-	unique() {
-		this.field.unique = true;
-		return this;
-	}
-
-	defaultValue(value: Link) {
+	
+	defaultValue(value: Link | DefaultValueFn<Link>) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -115,9 +110,8 @@ export const link = (name: string) => new LinkFieldBuilder(name);
 
 export type LinkField = FormField & {
 	type: 'link';
-	defaultValue?: Link;
+	defaultValue?: Link | DefaultValueFn<Link>;
 	layout: 'compact' | 'default';
-	unique?: boolean;
 	types?: LinkType[];
 };
 

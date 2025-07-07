@@ -1,16 +1,20 @@
-import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from '../../util/field.js';
+import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isSelectField, isTabsFieldRaw, isTreeFieldRaw } from '../../util/field.js';
 import { isAuthConfig } from '$lib/util/config.js';
 import cache from '$lib/core/dev/cache/index.js';
 import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/core/config/types/index.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-import { PANEL_USERS } from '$lib/core/constant.js';
+import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 
 function hasDuplicates(arr: string[]): string[] {
 	return [...new Set(arr.filter((e, i, a) => a.indexOf(e) !== i))];
 }
 
+/**
+ * Check if there are multiple occurences
+ * of the same slug inside collections and areas
+ */
 function hasDuplicateSlug(config: CompiledConfig) {
 	const slugs: PrototypeSlug[] = [];
 	for (const collection of config.collections) {
@@ -27,6 +31,10 @@ function hasDuplicateSlug(config: CompiledConfig) {
 	return [];
 }
 
+/**
+ * Prevent the panel user collection slug
+ * to be used elsewhere
+ */
 function hasUsersSlug(config: CompiledConfig) {
 	const invalid = config.collections.filter((collection) => collection.slug === PANEL_USERS).length > 1;
 	if (invalid) {
@@ -35,6 +43,10 @@ function hasUsersSlug(config: CompiledConfig) {
 	return [];
 }
 
+/**
+ * Validate documents fields for each collections
+ * and areas
+ */
 const validateFields = (config: CompiledConfig) => {
 	let errors: string[] = [];
 	for (const collection of config.collections) {
@@ -50,6 +62,9 @@ const validateFields = (config: CompiledConfig) => {
 
 type UnknownConfig = CompiledCollection | CompiledArea;
 
+/**
+ * 
+ */
 const validateDocumentFields = (config: UnknownConfig) => {
 	const errors: string[] = [];
 	const isCollection = (config: UnknownConfig): config is CompiledCollection => config.type === 'collection';
@@ -57,12 +72,16 @@ const validateDocumentFields = (config: UnknownConfig) => {
 	const registeredBlocks: Record<string, BlocksFieldRaw['blocks'][number]> = {};
 
 	if (isAuth) {
-		const hasRolesField = config.fields.filter(isFormField).find((f) => f.name === 'roles' && f.type === 'select');
-		const hasEmailField = config.fields
+		const rolesField = config.fields.filter(isFormField).filter(f => f.name === 'roles').filter((f) => isSelectField(f))[0];
+		const nameField = config.fields.filter(isFormField).filter(f => f.name === 'name')[0];
+		const emailField = config.fields
 			.filter(isFormField)
 			.find((f: FormField) => f.name === 'email' && f.type === 'email');
-		if (!hasRolesField) errors.push(`Field roles is missing in collection ${config.slug}`);
-		if (!hasEmailField) errors.push(`Field email is missing in collection ${config.slug}`);
+
+		if (!rolesField) errors.push(`Field roles is missing in collection ${config.slug}`);
+		if (!emailField && config.auth.type !== 'apiKey') errors.push(`Field email is missing in collection ${config.slug}`);
+		if (!nameField) errors.push(`Field name is missing in collection ${config.slug}`);
+		if(!rolesField.many) errors.push(`Field roles must have "many" enabled : select('roles').options(...).many(), even with a single option`);
 	}
 
 	const validateBlockField = (fields: FormField[], blockType: string) => {
@@ -79,7 +98,7 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		const duplicates = hasDuplicates(fields.map((f) => f.name));
 		if (duplicates.length) {
 			for (const duplicate of duplicates) {
-				errors.push(`Duplicate schema field ${duplicate} in ${config.type} ${config.slug}`);
+				errors.push(`Duplicate field '${duplicate}' in ${config.type} '${config.slug}'`);
 			}
 		}
 
@@ -141,29 +160,24 @@ const hasDatabase = (config: CompiledConfig) => {
 	return [];
 };
 
-// function validateUploadCollections(config: CompiledConfig) {
-// 	let errors = [];
-// 	const uploadCollections = config.collections.filter(isUploadConfig);
-// 	for (const collection of uploadCollections) {
-// 		const hasImageSizes = 'imageSizes' in collection;
-// 		const hasPanelThumbnail = 'panelThumbnail' in collection;
-// 		if (!hasImageSizes) {
-// 			errors.push(`collection.imagesSizes of ${collection.slug} should be defined`);
-// 		}
-// 		if (!hasPanelThumbnail) {
-// 			errors.push(`collection.hasPanelThumbnail of ${collection.slug} should be defined`);
-// 		}
-// 	}
-// 	return errors;
-// }
+function validateAuthCollections(config: CompiledConfig) {
+	let errors = [];
+	const authCollections = config.collections.filter(isAuthConfig);
+	for (const collection of authCollections) {
+		if (collection.versions) {
+			errors.push(`Auth collections can't be versionned (${collection.slug})`);
+		}
+	}
+	return errors;
+}
 
 function validate(config: CompiledConfig): boolean {
 	const validateFunctions = [
 		hasDuplicateSlug,
 		hasUsersSlug,
 		validateFields,
-		hasDatabase
-		// validateUploadCollections
+		hasDatabase,
+		validateAuthCollections
 	];
 
 	for (const isValid of validateFunctions) {

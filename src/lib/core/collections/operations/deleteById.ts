@@ -10,12 +10,17 @@ type DeleteArgs = {
 	id: string;
 	config: CompiledCollection;
 	event: RequestEvent & { locals: App.Locals };
+	isSystemOperation?: boolean;
 };
 
 export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promise<string> => {
-	const { event, id, config } = args;
+	const { event, id, config, isSystemOperation } = args;
 	const { rizom } = event.locals;
-	let context: HookContext = { params : { id }}
+
+	let context: HookContext = { 
+		params: { id }, 
+		isSystemOperation 
+	};
 
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
@@ -25,7 +30,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			event,
 			context
 		});
-		context = result.context
+		context = result.context;
 	}
 
 	const document = (await rizom.adapter.collection.findById({ slug: config.slug, id, draft: true })) as T;
@@ -42,7 +47,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			event,
 			context
 		});
-		context = result.context
+		context = result.context;
 	}
 
 	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
@@ -56,7 +61,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 			event,
 			context
 		});
-		context = result.context
+		context = result.context;
 	}
 
 	return args.id;

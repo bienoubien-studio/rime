@@ -5,10 +5,14 @@ export type User = {
 	name: string;
 	email: string;
 	roles: string[];
+	isStaff?: boolean;
 	isSuperAdmin?: boolean;
 };
 
-type AccessOptions = { id?: string, event?: RequestEvent };
+type AccessOptions = { 
+	id?: string, 
+	event?: RequestEvent 
+};
 
 export type Access = {
 	create?: (user?: User, options: AccessOptions) => boolean;

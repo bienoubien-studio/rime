@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import cache from '../../cache/index.js';
 import { slugify } from '$lib/util/string.js';
-import type { BuiltConfig } from '$lib/core/config/types/index.js';
+import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types/index.js';
 import { isDirectorySlug, isVersionsSlug } from '$lib/util/schema.js';
 
 /**
@@ -23,7 +23,7 @@ export type Routes = Record<string, RouteDefinition>;
  */
 export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
 	const versionsSuffix = (document: any) => (document.versions ? '.v' : '');
-	const authSuffix = (collection: (typeof config.collections)[number]) => (collection.auth ? '.auth' : '');
+	const authSuffix = (collection: BuiltCollection) => (collection.auth ? `.${collection.auth.type}` : '');
 
 	const memo = `
     areas:${config.areas.map((area) => `${area.slug}${versionsSuffix(area)}`).join(',')}
@@ -82,20 +82,38 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
 	ensureDir(dir);
 
 	let fileName: string;
-	if (fileType === 'layout') {
+	let baseType = fileType;
+	let groupName = '';
+	
+	// Check if fileType contains a group name after @
+	if (fileType.includes('@')) {
+		const parts = fileType.split('@');
+		baseType = parts[0];
+		groupName = parts[1];
+	}
+	
+	if (baseType === 'layout') {
 		fileName = '+layout.svelte';
-	} else if (fileType === 'layoutServer') {
+	} else if (baseType === 'layoutServer') {
 		fileName = '+layout.server.ts';
-	} else if (fileType === 'page') {
+	} else if (baseType === 'page') {
 		fileName = '+page.svelte';
-	} else if (fileType === 'pageServer') {
+	} else if (baseType === 'pageServer') {
 		fileName = '+page.server.ts';
-	} else if (fileType === 'error') {
+	} else if (baseType === 'error') {
 		fileName = '+error.svelte';
-	} else if (fileType === 'server') {
+	} else if (baseType === 'server') {
 		fileName = '+server.ts';
 	} else {
-		fileName = `+${fileType}.svelte`;
+		fileName = `+${baseType}.svelte`;
+	}
+	
+	// Insert group name before the first dot if a group name exists
+	if (groupName) {
+		const dotIndex = fileName.indexOf('.');
+		if (dotIndex !== -1) {
+			fileName = fileName.substring(0, dotIndex) + '@' + groupName + fileName.substring(dotIndex);
+		}
 	}
 
 	fs.writeFileSync(path.join(dir, fileName), content);

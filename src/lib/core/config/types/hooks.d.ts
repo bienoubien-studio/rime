@@ -17,6 +17,7 @@ type ConfigTypeMap = {
 };
 
 type HookContext = Dic & {
+	/** Parameters passed to the original operation method */
 	params: {
 		id?: string;
 		versionId?: string;
@@ -30,12 +31,18 @@ type HookContext = Dic & {
 		query?: OperationQuery;
 		draft?: boolean
 	};
-	/** parameter passed to an update operation when creating locale document fallback */
+	/** Parameter passed to an update operation when creating locale document fallback */
 	isFallbackLocale?: boolean;
+	/** Type of version operation */
 	versionOperation?: VersionOperation;
+	/** The original document if on an update operation */
 	originalDoc?: GenericDoc;
+	/** An map to get a field config by path on the original doc */
 	originalConfigMap?: ConfigMap;
+	/** An map to get a field config by path on incoming data */
 	configMap?: ConfigMap;
+	/** Add super descriptive stuff here */
+	isSystemOperation?:boolean
 };
 
 /**

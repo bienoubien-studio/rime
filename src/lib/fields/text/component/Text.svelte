@@ -3,6 +3,7 @@
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import type { TextFieldProps } from './props.js';
+	import { capitalize } from '$lib/util/string.js';
 
 	const { path, config, type = 'text', form, icon: Icon }: TextFieldProps = $props();
 	const field = $derived(form.useField(path || config.name, config));
@@ -26,7 +27,7 @@
 		<Input
 			id={path || config.name}
 			name={path || config.name}
-			placeholder={config.placeholder}
+			placeholder={config.placeholder || capitalize(config.name)}
 			data-error={field.error ? '' : null}
 			{type}
 			value={field.value}

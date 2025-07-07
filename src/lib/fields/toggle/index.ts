@@ -1,8 +1,8 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { BooleanFieldBuilder } from '../builders/boolean.js';
 import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 
 export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	constructor(name: string) {
@@ -28,7 +28,7 @@ export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 		return `${this.field.name}: boolean`;
 	}
 
-	defaultValue(value: boolean) {
+	defaultValue(value: boolean | DefaultValueFn<boolean>) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -51,7 +51,7 @@ export const toggle = (name: string) => new ToggleFieldBuilder(name);
 
 export interface ToggleField extends FormField {
 	type: 'toggle';
-	defaultValue?: boolean;
+	defaultValue?: boolean | DefaultValueFn<boolean>;
 }
 
 /****************************************************/

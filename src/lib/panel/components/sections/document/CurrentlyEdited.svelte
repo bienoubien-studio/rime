@@ -2,9 +2,8 @@
 	import { Button } from '../../ui/button';
 	import { onMount } from 'svelte';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import type { User } from '$lib/types/auth.js';
-	import { PANEL_USERS } from '$lib/core/constant';
-
+	import type { User } from '$lib/core/collections/auth/types.js';
+	
 	type Props = { by: string; user: User; doc: GenericDoc };
 	const { by, user, doc }: Props = $props();
 
@@ -23,7 +22,7 @@
 	let email = $state();
 
 	onMount(async () => {
-		const { doc } = await fetch(`/api/${PANEL_USERS}/${by}`).then((r) => r.json());
+		const { doc } = await fetch(`/api/staff/${by}`).then((r) => r.json());
 		email = doc.email;
 	});
 </script>

@@ -1,4 +1,5 @@
 import type { CollectionSlug } from '../types.js';
+import { randomId } from './random.js';
 import { toPascalCase } from './string.js';
 
 /**
@@ -210,6 +211,12 @@ export const transformDataToSchema = (
 
 		// Case 3: Add placeholders for missing or null values in not-null columns
 		if (params.fillNotNull && columnConfig.notNull) {
+
+			if(column === 'id') {
+				result[column] = randomId(32)
+				continue
+			}
+			
 			console.warn(`No default value provided for ${column}, setting it with a placeholder`);
 			// Add default values for not-null columns without defaults
 			switch (columnConfig.dataType) {

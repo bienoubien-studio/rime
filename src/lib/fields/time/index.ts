@@ -1,6 +1,6 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import TimeComponent from './component/Time.svelte';
 
 export const time = (name: string) => new TimeFieldBuilder(name);
@@ -32,10 +32,10 @@ class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
 		return `${camel}: text('${snake}')${suffix}`;
 	}
 
-	defaultValue(value: string) {
-		this.field.defaultValue = value;
-		return this;
-	}
+		defaultValue(value: string | DefaultValueFn<string>) {
+			this.field.defaultValue = value;
+			return this;
+		}
 }
 
 /****************************************************/
@@ -43,7 +43,7 @@ class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
 /****************************************************/
 export type TimeField = FormField & {
 	type: 'time';
-	defaultValue?: string | (() => string);
+	defaultValue?: string | DefaultValueFn<string>;
 	unique?: boolean;
 	isTitle?: true;
 };

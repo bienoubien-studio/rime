@@ -144,7 +144,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		// Populate relations / link
 		const processedValue = await populate(data.value);
 		// Update the document
-		doc = setValueAtPath(doc, data.path, processedValue) as T;
+		doc = setValueAtPath( data.path, doc, processedValue) as T;
 	};
 
 	/**

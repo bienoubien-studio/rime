@@ -1,7 +1,6 @@
 import { RizomError, RizomFormError } from './errors/index.js';
 import { CollectionInterface } from './collections/local-api.server.js';
 import { AreaInterface } from './areas/local-api.server.js';
-import { email as validateEmail, password as validatePassword } from '$lib/util/validate.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterArea, RegisterCollection, RegisterPlugins } from '$lib/index.js';
 import type { FormErrors } from '$lib/panel/types.js';
@@ -55,7 +54,7 @@ export class Rizom {
 			defaultLocale: this.config.getDefaultLocale()
 		});
 	}
-
+	
 	area<Slug extends keyof RegisterArea>(slug: Slug) {
 		const areaConfig = this.config.getArea(slug);
 
@@ -64,40 +63,6 @@ export class Rizom {
 			config: areaConfig,
 			defaultLocale: this.config.getDefaultLocale()
 		});
-	}
-
-	async createFirstPanelUser({ email, name, password }: CreateFirstPanelUserArgs) {
-		const errors: FormErrors = {};
-
-		if (!email) {
-			errors.email = RizomFormError.REQUIRED_FIELD;
-		}
-		if (!name) {
-			errors.name = RizomFormError.REQUIRED_FIELD;
-		}
-		if (!password) {
-			errors.password = RizomFormError.REQUIRED_FIELD;
-		}
-
-		const emailValidation = validateEmail(email);
-		if (typeof emailValidation === 'string') {
-			errors.email = RizomFormError.INVALID_FIELD;
-		}
-
-		if (typeof name !== 'string') {
-			errors.name = RizomFormError.INVALID_FIELD;
-		}
-
-		const passwordValidation = validatePassword(password);
-		if (typeof passwordValidation === 'string') {
-			errors.name = RizomFormError.INVALID_FIELD;
-		}
-
-		if (Object.keys(errors).length > 0) {
-			throw new RizomFormError(errors);
-		}
-
-		await this.adapter.auth.createFirstUser({ email, name, password });
 	}
 
 	/**
@@ -148,5 +113,3 @@ export class Rizom {
 		return this.#plugins.mailer as CorePlugins['mailer'];
 	}
 }
-
-type CreateFirstPanelUserArgs = { email: string; name: string; password: string };

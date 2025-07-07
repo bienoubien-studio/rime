@@ -2,7 +2,7 @@ import fs from 'fs';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import cache from '../../cache/index.js';
 import type { Field } from '$lib/fields/types.js';
-import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.js';
+import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
@@ -11,7 +11,7 @@ import { makeVersionsSlug } from '../../../../util/schema.js';
 import { BlocksBuilder } from '$lib/fields/blocks/index.js';
 import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.js';
-import { taskLogger } from '$lib/core/logger/index.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 // Relation  type
 const relationValueType = `
@@ -211,12 +211,47 @@ export function generateTypesString(config: BuiltConfig) {
 	const locals = `declare global {
   namespace App {
     interface Locals {
+			/** Flag only ON when create the first panel user */
+			isInit?: boolean;
+			/** The better auth session */
       session: Session | undefined;
+			/** The rizom user document when authenticated */
       user: User | undefined;
+			/** 
+			 * Flag enabled when a create operation is triggered
+			 * by a auth/sign-up api call.
+			 */
+			isAutoSignIn?: boolean;
+			/** The full better-auth user */
+			betterAuthUser:
+			| {
+					id: string;
+					name: string;
+					email: string;
+					emailVerified: boolean;
+					createdAt: Date;
+					updatedAt: Date;
+					role?: string | null | undefined;
+					banned: boolean | null | undefined;
+					banReason?: string | null | undefined;
+					banExpires?: Date | null | undefined;
+					type: string;
+				}
+			| undefined;
+			/** Singleton providing access to auth, config and local-api */
       rizom: Rizom;
+			/** Flag enabled by the core plugin rizom.cache when the API cache is ON */
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;
+			/** 
+			 * Current locale if applicable 
+			 * set following this prioroty :
+			 * - locale inside the url from your front-end ex: /en/foo
+			 * - locale from searchParams ex : ?locale=en
+			 * - locale from cookie
+			 * - default locale
+			*/
       locale: string | undefined;
     }
   }
@@ -258,7 +293,7 @@ function write(content: string) {
 		if (err) {
 			console.error(err);
 		} else {
-			taskLogger.done('Types: generated at src/app.generated.d.ts');
+			logger.info('[✓] Types: generated at src/app.generated.d.ts');
 		}
 	});
 }

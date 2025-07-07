@@ -1,10 +1,10 @@
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { isFormField, isGroupField } from '$lib/util/field.js';
-import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.js';
+import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
 import type { DateField } from '$lib/fields/date/index.js';
-import type { EmailField } from '$lib/fields/email/index.js';
+import type { EmailField } from '$lib/fields/email/index.server.js';
 import type { SlugField } from '$lib/fields/slug/index.js';
-import type { TextField } from '$lib/fields/text/index.js';
+import type { TextField } from '$lib/fields/text/index.server.js';
 import type { FormField, Field } from '$lib/fields/types.js';
 
 export const hasMaybeTitle = (field: Field): field is TextField | DateField | SlugField | EmailField =>

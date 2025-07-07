@@ -16,14 +16,16 @@ type FindArgs = {
 	offset?: number;
 	select?: string[];
 	draft?: boolean;
+	isSystemOperation?: boolean;
 };
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> => {
 	//
-	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [] } = args;
+	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [], isSystemOperation } = args;
 	const { rizom } = event.locals;
 	
 	let context: HookContext = {
+		isSystemOperation,
 		params: {
 			query,
 			sort,

@@ -17,14 +17,14 @@
 {/if}
 
 {#if collection.config.upload && collection.isGrid()}
-<div class="rz-collection-header__separator"></div>
+	<div class="rz-collection-header__separator"></div>
 	<CreateUploadFolder {collection} />
 {/if}
 
 {#if showSelectUI}
 	<div class="rz-collection-header__separator"></div>
 	<SelectUI />
-	{/if}
+{/if}
 
 <style type="postcss">
 	.rz-collection-header__separator {

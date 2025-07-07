@@ -4,6 +4,7 @@ import type { AreaSlug } from '$lib/core/types/doc';
 import { trycatch } from '$lib/util/trycatch.js';
 import { ERROR_CONTEXT, handleError } from '$lib/core/errors/handler.server';
 import { PARAMS } from '$lib/core/constant.js';
+import { t__ } from '../../../core/i18n/index.js';
 
 export default function (slug: AreaSlug) {
 	const actions = {
@@ -13,7 +14,7 @@ export default function (slug: AreaSlug) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 
-			const [error, doc] = await trycatch(
+			const [error, document] = await trycatch(
 				rizom.area(slug).update({
 					data: await extractData(event.request),
 					versionId,
@@ -26,16 +27,16 @@ export default function (slug: AreaSlug) {
 				return handleError(error, { context: ERROR_CONTEXT.ACTION });
 			}
 
-			if (draft && 'versionId' in doc) {
+			if (draft && 'versionId' in document) {
 				const referer = event.request.headers.get('referer');
 				if (referer && referer.includes('/versions')) {
-					return redirect(303, `/panel/${slug}/versions?versionId=${doc.versionId}`);
+					return redirect(303, `/panel/${slug}/versions?versionId=${document.versionId}`);
 				} else {
-					return redirect(303, `/panel/${slug}?versionId=${doc.versionId}`);
+					return redirect(303, `/panel/${slug}?versionId=${document.versionId}`);
 				}
 			}
 
-			return { doc };
+			return { document, message: t__('common.doc_updated') };
 		}
 	};
 	return actions;

@@ -33,7 +33,7 @@
 	const { data, slug }: Props = $props();
 	const config = getConfigContext();
 	const collectionConfig = config.getCollection(slug);
-
+	
 	const collection = setCollectionContext({
 		initial: data.docs,
 		config: collectionConfig,

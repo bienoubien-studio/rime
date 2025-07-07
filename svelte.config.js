@@ -8,6 +8,8 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
+			'rizom/panel/auth/client': './src/lib/panel/pages/auth/index.js',
+			'rizom/panel/auth': './src/lib/panel/pages/auth/index.server.js',
 			'rizom/i18n': './src/lib/core/i18n',
 			'rizom/api': './src/lib/api.js',
 			'$lib': './src/lib',

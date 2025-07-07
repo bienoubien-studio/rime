@@ -7,7 +7,7 @@ import type { Dic } from '$lib/util/types';
 /**
  * Extracts data from a request based on its content type
  * Handles both multipart/form-data, form-urlencoded and JSON requests
- * 
+ *
  * @example
  * // In a route handler
  * const [error, data] = await trycatch(extractData(event.request));
@@ -15,7 +15,7 @@ import type { Dic } from '$lib/util/types';
  *   return handleError(error, { context: 'api' });
  * }
  */
-export const extractData = async <T extends Dic = GenericDoc>(request: RequestEvent['request']) => {
+export const extractData = async <T extends object>(request: RequestEvent['request']) => {
 	let data;
 	try {
 		const contentType = request.headers.get('content-type');
@@ -30,16 +30,17 @@ export const extractData = async <T extends Dic = GenericDoc>(request: RequestEv
 			const jsonData = await request.json();
 			data = jsonDataToData(jsonData);
 		}
-	} catch (err:any){
+	} catch (err: any) {
 		throw new RizomFormError({ _form: err.message });
 	}
-	return data as Partial<T>;
+	
+	return data as T;
 };
 
 /**
  * Converts FormData to a structured document object
  * Normalizes form values and handles flattened key structures
- * 
+ *
  * @example
  * const formData = new FormData();
  * formData.append('user.name', 'John');
@@ -58,7 +59,7 @@ export const formDataToData = (formData: FormData) => {
 /**
  * Converts a JSON object to a structured document object
  * Normalizes values and ensures consistent data structure
- * 
+ *
  * @example
  * const jsonData = { user: { name: 'John', active: 'true' } };
  * const data = jsonDataToData(jsonData);
@@ -86,6 +87,9 @@ const normalizeValue = (value: any) => {
 	}
 	if (value === 'undefined') {
 		return undefined;
+	}
+	if (value === '[]') {
+		return [];
 	}
 	// For time values return raw value
 	if (/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value)) {

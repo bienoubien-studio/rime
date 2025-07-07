@@ -22,6 +22,7 @@
 
 	const onCloseIsDefined = !!onClose;
 	const titleContext = getContext<{ value: string }>('title');
+	const buttonLabel = $derived(form.doc.id ? t__('common.save') : t__('common.create'))
 </script>
 
 {#snippet topLeft()}
@@ -55,12 +56,12 @@
 
 		{#if !form.config.versions}
 			<!-- scenario 1: no versions -->
-			<ButtonSave size="sm" label={t__('common.save')} disabled={!form.canSubmit} processing={form.processing} />
+			<ButtonSave size="sm" label={buttonLabel} disabled={!form.canSubmit} processing={form.processing} />
 		{:else if form.config.versions && !form.config.versions.draft}
 			<!-- scenario 2: versions without draft -->
 			<ButtonSave
 				size="sm"
-				label={t__('common.save')}
+				label={buttonLabel}
 				disabled={!form.canSubmit}
 				processing={form.processing}
 				data-draft
@@ -77,7 +78,7 @@
 				size="sm"
 				disabled={!form.canSubmit}
 				processing={form.processing}
-				label={t__('common.save')}
+				label={buttonLabel}
 				data-status="published"
 				data-submit
 			/>
@@ -92,7 +93,7 @@
 				size="sm"
 				disabled={form.readOnly}
 				processing={form.processing}
-				label={t__('common.save')}
+				label={buttonLabel}
 				data-submit
 			/>
 		{/if}

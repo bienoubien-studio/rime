@@ -1,11 +1,11 @@
-import type { FieldsType, FieldValidationFunc, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from './field.js';
+import type { DefaultValueFn, FieldsType, FieldValidationFunc, FormField } from '$lib/fields/types.js';
+import { FormFieldBuilder } from './field.server.js';
 import type { WithoutBuilders } from '$lib/util/types.js';
 
 type BooleanField = FormField & {
 	type: any;
 	name: any;
-	defaultValue?: any;
+	defaultValue?: boolean | DefaultValueFn<boolean>;
 	validate?: FieldValidationFunc<BooleanField>;
 };
 
@@ -15,7 +15,7 @@ export class BooleanFieldBuilder<T extends BooleanField> extends FormFieldBuilde
 		this.field.defaultValue = false;
 	}
 
-	defaultValue(value: boolean) {
+	defaultValue(value: boolean | DefaultValueFn<boolean>) {
 		this.field.defaultValue = value;
 		return this;
 	}

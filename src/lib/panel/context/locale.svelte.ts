@@ -5,7 +5,6 @@ const LOCALE_KEY = Symbol('rizom.locale');
 
 function createStore(initial?: string) {
 	let code = $state<string>();
-	let bcp47 = $state<string>();
 	let label = $state<string>();
 
 	const config = getConfigContext();
@@ -13,7 +12,6 @@ function createStore(initial?: string) {
 	const setValue = (value?: string) => {
 		if (config.raw.localization && value) {
 			code = value;
-			bcp47 = config.raw.localization.locales.find((l) => l.code === code)?.bcp47;
 			label = config.raw.localization.locales.find((l) => l.code === code)?.label;
 		}
 	};
@@ -43,10 +41,10 @@ function createStore(initial?: string) {
 			options.second = undefined;
 			options.hour12 = false; // Use 24-hour format
 		}
-		if (bcp47) {
-			return date.toLocaleDateString(bcp47, options);
+		if (code) {
+			return date.toLocaleDateString(code, options);
 		} else {
-			return date.toLocaleDateString('en-US', options);
+			return date.toLocaleDateString('en', options);
 		}
 	};
 
@@ -60,9 +58,6 @@ function createStore(initial?: string) {
 		},
 		get label() {
 			return label;
-		},
-		get bcp47() {
-			return bcp47;
 		},
 		set code(v: string | undefined) {
 			setValue(v);

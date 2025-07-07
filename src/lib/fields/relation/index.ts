@@ -2,10 +2,10 @@ import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import RelationComponent from './component/Relation.svelte';
 import { FormFieldBuilder } from '../builders/index.js';
-import type { FieldHook, FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FieldHook, FormField } from '$lib/fields/types.js';
 import { capitalize } from '$lib/util/string';
 import type { Relation } from '$lib/adapter-sqlite/relations';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import { RizomError } from '$lib/core/errors';
 import { logger } from '$lib/core/logger/index.server';
 import Cell from './component/Cell.svelte';
@@ -91,7 +91,7 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 		this.field.many = true;
 		return this;
 	}
-	defaultValue(...value: string[]) {
+	defaultValue(value: string | string[] | DefaultValueFn<string | string[]>) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -107,7 +107,7 @@ export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	relationTo: CollectionSlug;
 	layout?: 'tags' | 'list';
 	many?: boolean;
-	defaultValue?: string | string[];
+	defaultValue?: string | string[] | DefaultValueFn<string | string[]>;
 	query?: string | ((doc: Doc) => string);
 };
 

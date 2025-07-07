@@ -4,7 +4,7 @@ import Email from '$lib/fields/email/component/Email.svelte';
 import Text from '$lib/fields/text/component/Text.svelte';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
-import type { FieldBuilder } from '$lib/fields/builders/field.js';
+import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
 import type { FieldsComponents } from '$lib/panel/types';
 import type { Field } from '$lib/fields/types.js';
 

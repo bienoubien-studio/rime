@@ -1,6 +1,5 @@
 export const PACKAGE_NAME = 'rizom';
 
-export const PANEL_USERS = 'staff';
 
 export const VERSIONS_STATUS = {
 	DRAFT: 'draft',

@@ -6,13 +6,13 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { usersFields } from '$lib/core/collections/auth/config/usersFields';
-	import { text } from '$lib/fields/text/index.js';
 	import validate from '$lib/util/validate';
-	import { PANEL_USERS } from '$lib/core/constant';
-
-	type Props = { operation: string; form: DocumentFormContext };
-	const { operation, form }: Props = $props();
+	import type { TextField } from '$lib/fields/types.js';
+	import type { CompiledCollection } from '$lib/core/config/types/index.js';
+	import { isAuthConfig } from '$lib/util/config.js';
+	
+	type Props = { operation: string; form: DocumentFormContext; collection: CompiledCollection };
+	const { operation, form, collection }: Props = $props();
 
 	const user = getUserContext();
 	const config = getConfigContext();
@@ -28,7 +28,7 @@
 	async function sendPasswordResetLink() {
 		const { data, error } = await authClient.forgetPassword({
 			email: form.doc.email,
-			redirectTo: `/reset-password?slug=${PANEL_USERS}`
+			redirectTo: `/reset-password?slug=staff`
 		});
 		if (error && error.message) {
 			toast.error(error.message);
@@ -39,18 +39,56 @@
 	}
 
 	const Text = config.raw.blueprints.text.component;
+
+	const passwordConfig: ClientField<TextField> = {
+		name: 'password',
+		type: 'text',
+		placeholder: t__('fields.password'),
+		required: true,
+		isEmpty: (value) => !value,
+		validate: validate.password,
+		access: {
+			create: () => true,
+			read: () => true,
+			update: () => true
+		}
+	};
+
+	const confirmPasswordConfig: ClientField<TextField> = {
+		name: 'confirmPassword',
+		type: 'text',
+		label: t__('common.confirmPassword'),
+		placeholder: t__('common.confirmPassword'),
+		required: true,
+		isEmpty: (value) => !value,
+		access: {
+			create: () => true,
+			read: () => true,
+			update: () => true
+		},
+		validate: (value, metas) => {
+			if (metas.data.password !== value) {
+				return 'password_mismatch';
+			}
+			return true;
+		}
+	};
 </script>
 
 <div class="rz-document-auth">
 	{#if operation === 'create'}
-		<Text {form} type="password" config={text('password').validate(validate.password).required().raw} path="password" />
-		<Text {form} type="password" config={usersFields.confirmPassword.raw} path="confirmPassword" />
+		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
+			<Text {form} type="password" config={passwordConfig} path="password" />
+			<Text {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
+		{/if}
 	{:else if user.attributes.roles.includes('admin')}
-		<div>
-			<Button onclick={sendPasswordResetLink} variant="outline">
-				{t__('common.sendPasswordResetLink')}
-			</Button>
-		</div>
+		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
+			<div>
+				<Button onclick={sendPasswordResetLink} variant="outline">
+					{t__('common.sendPasswordResetLink')}
+				</Button>
+			</div>
+		{/if}
 	{/if}
 </div>
 

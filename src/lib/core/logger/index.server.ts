@@ -180,17 +180,5 @@ const logger = {
 	}
 };
 
-// Task logger for generator
-export const taskLogger = {
-	info: (...args: unknown[]) => {
-		console.info(chalk.yellow('[rizom]'), ...args);
-	},
-	done: (...args: unknown[]) => {
-		console.info(chalk.green('[rizom] ✓'), ...args);
-	},
-	error: (...args: unknown[]) => {
-		console.error(chalk.red('[rizom] ✗'), ...args);
-	}
-};
 
 export { logger };

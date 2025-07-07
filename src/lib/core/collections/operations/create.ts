@@ -14,19 +14,20 @@ type Args<T> = {
 	data: DeepPartial<T>;
 	locale?: string | undefined;
 	config: CompiledCollection;
+	isSystemOperation?: boolean;
 	event: RequestEvent & {
 		locals: App.Locals;
 	};
 };
 
 export const create = async <T extends GenericDoc>(args: Args<T>) => {
-	const { config, event, locale } = args;
+	const { config, event, locale, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
 	let data = args.data;
 	const incomingData = cloneDeep(data);
 
-	let context: HookContext = { params: { locale } };
+	let context: HookContext = { params: { locale }, isSystemOperation };
 
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
@@ -38,7 +39,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		});
 		context = result.context;
 	}
-	
+
 	for (const hook of config.hooks?.beforeCreate || []) {
 		const result = await hook({
 			data,
@@ -95,6 +96,20 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		treeDiff
 	});
 
+	/**
+	 * Auto sign-in user after a success sign-up
+	 */
+	if (config.auth && event.locals.isAutoSignIn) {
+		if (typeof data.name !== 'string' || typeof data.email !== 'string' || typeof args.data.authUserId !== 'string') {
+			throw new RizomError(RizomError.OPERATION_ERROR, 'unable to signin user');
+		}
+		
+		event.locals.user = await rizom.auth.getUserAttributes({
+			authUserId: args.data.authUserId,
+			slug: config.slug
+		});
+	}
+
 	// Use the document ID to find the created document
 	let document = (await rizom
 		.collection(config.slug)
@@ -121,13 +136,16 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
 				rizom.setLocale(otherLocale);
-				await rizom.collection(config.slug).updateById({
-					id: created.id,
-					versionId: created.versionId,
-					data: incomingData as DeepPartial<RegisterCollection[CollectionSlug]>,
-					locale: otherLocale,
-					isFallbackLocale: true
-				});
+				await rizom
+					.collection(config.slug)
+					.system()
+					.updateById({
+						id: created.id,
+						versionId: created.versionId,
+						data: incomingData as DeepPartial<RegisterCollection[CollectionSlug]>,
+						locale: otherLocale,
+						isFallbackLocale: true
+					});
 			}
 		}
 		rizom.setLocale(locale);
@@ -143,6 +161,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			context
 		});
 		context = result.context;
+		document = result.doc;
 	}
 
 	return document;

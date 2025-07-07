@@ -36,15 +36,10 @@ import type { HookAfterUpsert, HookBeforeUpsert } from 'rizom/core/config/types/
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
-import { apiInit } from './api-init/index.js';
-
 
 const tabSEO = tab('metas')
 	.label('SEO')
-	.fields(
-		text('title').label('Meta title').layout('compact'),
-		textarea('description').label('Meta description')
-	)
+	.fields(text('title').label('Meta title').layout('compact'), textarea('description').label('Meta description'))
 	.live(false);
 
 const tabAttributes = tab('attributes')
@@ -60,11 +55,13 @@ const tabAttributes = tab('attributes')
 		separator(),
 		group('summary').fields(relation('thumbnail').to('medias'), richText('intro')),
 		separator(),
-		select('template').options('basic', 'large').access({
-			create: (user) => access.isAdmin(user),
-			update: (user) => access.isAdmin(user),
-			read: () => true
-		})
+		select('template')
+			.options('basic', 'large')
+			.access({
+				create: (user) => access.isAdmin(user),
+				update: (user) => access.isAdmin(user),
+				read: () => true
+			})
 	);
 
 const blockKeyFacts = block('keyFacts').fields(
@@ -104,7 +101,7 @@ const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	const { data, rizom } = args;
 
 	if (data?.attributes?.isHome) {
-		const query = `where[attributes.isHome][equals]=true`
+		const query = `where[attributes.isHome][equals]=true`;
 
 		const pagesIsHome = await rizom.collection('pages').find({ query });
 
@@ -123,7 +120,7 @@ const Pages = collection('pages', {
 	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
 	panel: {
 		group: 'content',
-		description: "Edit and create your website pages",
+		description: 'Edit and create your website pages'
 	},
 	icon: Newspaper,
 	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
@@ -147,16 +144,13 @@ const Pages = collection('pages', {
 	}
 });
 
-const Link = [
-	text('label').layout('compact'),
-	link('link').types('pages', 'url').layout('compact')
-];
+const Link = [text('label').layout('compact'), link('link').types('pages', 'url').layout('compact')];
 
 const Navigation = area('navigation', {
 	icon: Menu,
 	panel: {
 		group: 'global',
-		description: "Define your website navigation",
+		description: 'Define your website navigation'
 	},
 	fields: [
 		//
@@ -180,7 +174,7 @@ const Settings = area('settings', {
 	icon: Settings2,
 	panel: {
 		group: 'system',
-		description: "System settings, maintenance and more",
+		description: 'System settings, maintenance and more'
 	},
 	fields: [toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
 	access: {
@@ -192,7 +186,7 @@ const Informations = area('infos', {
 	icon: Contact,
 	panel: {
 		group: 'global',
-		description: "Update your website information, email, name of the website,...",
+		description: 'Update your website information, email, name of the website,...'
 	},
 	fields: [email('email'), slug('instagram').placeholder('nom-du-compte'), textarea('address').label('Adresse')],
 	access: {
@@ -201,17 +195,20 @@ const Informations = area('infos', {
 });
 
 const tabWriter = tab('writer').fields(
-	richText('text').features('bold', 'italic', LoremFeature, 'resource:pages', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
-)
+	richText('text').features(
+		'bold',
+		'italic',
+		LoremFeature,
+		'resource:pages',
+		'media:medias?where[mimeType][like]=image',
+		'heading:2,3',
+		'link'
+	)
+);
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
-	slug('slug')
-		.slugify('attributes.title')
-		.live(false)
-		.table({ position: 3, sort: true })
-		.localized()
-		.required(),
+	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
 	richText('intro').features('bold', 'link'),
 	date('published')
 );
@@ -219,7 +216,7 @@ const tabNewsAttributes = tab('attributes').fields(
 const News = collection('news', {
 	icon: NotebookText,
 	panel: {
-		description: "Create article for your readers",
+		description: 'Create article for your readers',
 		group: 'content'
 	},
 	fields: [tabs(tabNewsAttributes, tabWriter)],
@@ -230,12 +227,12 @@ const News = collection('news', {
 		create: (user) => access.isAdmin(user),
 		update: (user) => access.hasRoles(user, 'admin', 'editor')
 	}
-})
+});
 
 const Medias = collection('medias', {
 	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
 	panel: {
-		description: "Manage images, video, audio, documents,...",
+		description: 'Manage images, video, audio, documents,...',
 		group: 'content'
 	},
 	upload: {
@@ -253,9 +250,37 @@ const Medias = collection('medias', {
 	}
 });
 
+const Users = collection('users', {
+	auth: {
+		type: 'password',
+		roles: ['user']
+	},
+	fields: [text('website')],
+	access: {
+		create: () => true,
+		read: () => true,
+		update: (user, { id }) => access.isAdminOrMe(user, id),
+		delete: (user, { id }) => access.isAdminOrMe(user, id),
+	}
+});
+
+const Apps = collection('apps', {
+	auth: {
+		type: 'apiKey',
+		roles: ['apps']
+	},
+	fields: [],
+	access: {
+		create: (user) => access.isAdmin(user),
+		read: (user) => access.isAdmin(user),
+		update: (user, { id }) => access.isAdmin(user),
+		delete: (user, { id }) => access.isAdmin(user),
+	}
+});
+
 export default defineConfig({
 	database: 'basic.sqlite',
-	collections: [Pages, Medias, News],
+	collections: [Pages, Medias, News, Users, Apps],
 	areas: [Settings, Navigation, Informations],
 	smtp: {
 		from: process.env.RIZOM_SMTP_USER,
@@ -266,7 +291,7 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
-	plugins: [apiInit(), regenerateImages()],
+	plugins: [regenerateImages()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

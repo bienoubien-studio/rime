@@ -5,25 +5,24 @@ import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { HookBeforeCreate } from '../../../../types.js';
 
 export const mergeWithBlankDocument: HookBeforeCreate<GenericDoc> = async (args) => {
-  const { config } = args
-  let data = args.data
+	const { config } = args;
+	let data = args.data;
 
-  let file;
-  if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {
-    file = data.file;
-    delete data.file;
-  }
+	let file;
+	if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {
+		file = data.file;
+		delete data.file;
+	}
 
-  const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config), data);
+	const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config), data, { arrayMerge: (_, y) => y });
 
-  // Add file after merge
-  if (file) {
-    (dataMergedWithBlankDocument as any).file = file;
-  }
+	// Add file after merge
+	if (file) {
+		(dataMergedWithBlankDocument as any).file = file;
+	}
 
-  return {
-    ...args,
-    data: dataMergedWithBlankDocument
-  }
-
+	return {
+		...args,
+		data: dataMergedWithBlankDocument
+	};
 };

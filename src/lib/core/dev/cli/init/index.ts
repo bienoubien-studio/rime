@@ -1,11 +1,14 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import * as templates from './templates.js';
-import { intro, outro, text, log, isCancel } from '@clack/prompts';
 import { getPackageInfoByKey } from './getPackageName.js';
 import { randomId } from '$lib/util/random.js';
 import { fileURLToPath } from 'url';
 import { cp, mkdir } from 'fs/promises';
+import { generate } from '../generate/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import { prompt } from '../util.server.js';
+
 
 type Args = {
 	force?: boolean;
@@ -18,6 +21,8 @@ type EnvVarConfig = {
 };
 
 const PACKAGE = 'rizom';
+
+
 
 export const init = async ({ force, name: incomingName }: Args) => {
 	const projectRoot = process.cwd();
@@ -51,10 +56,10 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			});
 
 			writeFileSync(envPath, envContent);
-			log.info('.env file populated');
+			logger.info('[✓] .env file populated');
 		} else {
 			writeFileSync(envPath, templates.env());
-			log.info('.env file created');
+			logger.info('[✓] .env file created');
 		}
 	}
 
@@ -68,7 +73,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			writeFileSync(configPath, templates.defaultConfig(name.toString()));
 		}
-		log.info('rizom.config.ts created');
+		logger.info('[✓] Created src/config/rizom.config.ts');
 	}
 
 	function setDatabase() {
@@ -76,7 +81,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
 		}
-		log.info('Created db folder');
+		logger.info('[✓] Created db folder');
 	}
 
 	function setDrizzle(name: string) {
@@ -84,19 +89,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
 		}
-		log.info('Drizzle config added');
-	}
-
-	function setSchema() {
-		const schemaPath = path.join(process.cwd(), 'src', 'lib', 'server', 'schema.ts');
-		if (!existsSync(schemaPath)) {
-			const libServerPath = path.join(process.cwd(), 'src', 'lib', 'server');
-			if (!existsSync(libServerPath)) {
-				mkdirSync(libServerPath);
-			}
-			writeFileSync(schemaPath, templates.defaultSchema);
-		}
-		log.info('schema added');
+		logger.info('[✓] Added Drizzle config');
 	}
 
 	function configureVite() {
@@ -124,7 +117,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			});
 			writeFileSync(configPath, updatedContent);
 		}
-		log.info('Vite plugin added');
+		logger.info('[✓] Added Vite plugin');
 	}
 
 	function setHooks() {
@@ -139,9 +132,9 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			// Create hooks.server.ts with template content
 			writeFileSync(hooksPath, templates.hooks, 'utf-8');
-			log.info('Created src/hooks.server.ts');
+			logger.info('[✓] Created src/hooks.server.ts');
 		} else {
-			log.info('hooks.server.ts already exists');
+			logger.warn('hooks.server.ts already exists (skip)');
 		}
 	}
 
@@ -152,7 +145,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 	// 		const packageManager = getPackageManager();
 	// 		const command = getInstallCommand(packageManager);
 	// 		execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
-	// 		log.info('drizzle-kit & better-sqlite3 installed');
+	// 		logger.info('drizzle-kit & better-sqlite3 installed');
 	// 	} else {
 	// 		const packageManager = await select({
 	// 			message: 'Which package manager do you want to install dependencies with?',
@@ -189,9 +182,9 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			await cp(path.join(currentDir, '../../../../panel/fonts'), path.resolve(process.cwd(), 'static/panel/fonts'), {
 				recursive: true
 			});
-			log.info('copied assets');
+			logger.info('[✓] Copied assets');
 		} catch (err) {
-			console.error('Error copying fonts:', err);
+			console.error('[!] Error copying fonts:', err);
 		}
 	}
 
@@ -201,31 +194,21 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
-		setSchema();
-
+		// setSchema();
 		setHooks();
 		configureVite();
-		copyAssets();
+		await copyAssets();
+		await generate({
+			force: true
+		});
 		// if (!skipInstall) {
 		// 	await installDeps(true);
 		// }
 	} else {
-		intro('This will setup configuration files and install dependencies');
+		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
 
-		const name = (await text({
-			message: 'What is your project name ? (It will be use as default database name)',
-			placeholder: packageName,
-			initialValue: packageName,
-			validate(value) {
-				const regex = /^[A-Za-z][A-Za-z0-9\-_]*$/;
-				if (!regex.test(value)) {
-					return 'Can only contains letters, underscores and hyphens.';
-				}
-			}
-		})) as string;
-
-		if (isCancel(name)) {
-			outro('Operation cancelled');
+		if (!name) {
+			logger.error('Operation cancelled');
 			process.exit(0);
 		}
 
@@ -233,14 +216,16 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
-		setSchema();
+		// setSchema();
 
 		setHooks();
 		configureVite();
-		copyAssets();
+		await copyAssets();
+		await generate({ force: true });
+
 		// if (!skipInstall) {
 		// 	await installDeps();
 		// }
-		outro('done');
+		logger.info('[✓] done');
 	}
 };

@@ -1,11 +1,11 @@
 import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Tree from './component/Tree.svelte';
 import Cell from './component/Cell.svelte';
-import { text } from '../text/index.js';
+import { text } from '../text/index.server.js';
 import { number } from '../number/index.js';
 import cloneDeep from 'clone-deep';
 import { snapshot } from '$lib/util/state.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import type { FormField, Field } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';

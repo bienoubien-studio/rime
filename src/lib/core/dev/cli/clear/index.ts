@@ -3,13 +3,14 @@ import { rmSync } from 'fs';
 import path from 'path';
 
 const clearMessage = `Are you sure you want to delete all related rizom files, including : 
-- routes/(rizom) 
-- static/medias folder 
-- database folder
-- src/lib/server/schema.ts
-- src/app.generated.d.ts
-- src/hooks.server.ts
-- drizzle.config.ts
+- ./static/medias 
+- ./db
+- ./src/routes/(rizom) 
+- ./src/config
+- ./src/lib/server/schema.ts
+- ./src/app.generated.d.ts
+- ./src/hooks.server.ts
+- ./drizzle.config.ts
 `;
 
 export const clear = async (args: { force?: boolean }) => {
@@ -26,6 +27,7 @@ export const clear = async (args: { force?: boolean }) => {
 	// Remove directories
 	rmSync(path.join('.rizom'), { recursive: true, force: true });
 	rmSync(path.join('src', 'routes', '(rizom)'), { recursive: true, force: true });
+	rmSync(path.join('src', 'config'), { recursive: true, force: true });
 	rmSync(path.join('db'), { recursive: true, force: true });
 	rmSync(path.join('static', 'medias'), { recursive: true, force: true });
 	// Remove files

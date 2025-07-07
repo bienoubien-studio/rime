@@ -14,10 +14,15 @@ import { getOriginalDocument } from '$lib/core/operations/hooks/before-update/ge
 import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
 
+type PartialConfig = {
+	hooks?: AreaHooks<any>;
+	url?: Area<any>['url'];
+};
+
 /**
  * Augment an area config with hooks
  */
-export const augmentHooks = (area: Area<any>): Area<any> => {
+export const augmentHooks = <T extends PartialConfig>(area: T): T => {
 	let hooks: Required<AreaHooks<any>> = {
 		beforeOperation: [authorize],
 

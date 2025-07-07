@@ -1,7 +1,7 @@
 import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
-import { PANEL_USERS } from 'rizom/core/constant';
+import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 
 const BASE_URL = process.env.PUBLIC_RIZOM_URL;
 const API_BASE_URL = `${BASE_URL}/api`;
@@ -13,6 +13,8 @@ let adminId: string;
 let adminToken: string;
 let superAdminId: string;
 let superAdminToken: string;
+let AppApiKey: string
+let authorId: string
 
 /****************************************************/
 /* Init
@@ -34,17 +36,17 @@ test('Second init should return 404', async ({ request }) => {
 /****************************************************/
 
 test('Login should not be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: '12345678'
 		}
 	});
-	expect(response.status()).toBe(400);
+	expect(response.status()).toBe(401);
 });
 
 test('Superadmin login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -55,8 +57,6 @@ test('Superadmin login should be successfull', async ({ request }) => {
 	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	expect(json.user.roles).toBeDefined();
-	expect(json.user.roles[0]).toBe('admin');
 	superAdminToken = headerToken;
 	superAdminId = json.user.id;
 });
@@ -359,9 +359,6 @@ test('Should get super admin user', async ({ request }) => {
 	expect(data.doc.roles).toContain('admin');
 	expect(data.doc.name).toBe('Admin');
 	expect(data.doc.isSuperAdmin).toBeUndefined();
-	expect(data.doc.locked).toBeUndefined();
-	expect(data.doc.lockedAt).toBeUndefined();
-	expect(data.doc.loginAttempts).toBeUndefined();
 });
 
 test('Should create a user editor', async ({ request }) => {
@@ -434,21 +431,20 @@ test('Should get editor user', async ({ request }) => {
 	expect(data.doc.roles).toContain('editor');
 	expect(data.doc.roles).not.toContain('admin');
 	expect(data.doc.name).toBe('Chesster');
-	expect(data.doc.locked).toBeUndefined();
-	expect(data.doc.lockedAt).toBeUndefined();
-	expect(data.doc.loginAttempts).toBeUndefined();
+	
 });
 
 test('Should logout super admin', async ({ request }) => {
+	
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
+		.post(`${API_BASE_URL}/auth/sign-out`, {
 			headers: {
 				Authorization: `Bearer ${superAdminToken}`
 			}
 		})
 		.then((r) => r.json());
 
-	expect(response).toBe('successfully logout');
+		expect(response.success).toBe(true);
 });
 
 test('Should not update Home', async ({ request }) => {
@@ -503,7 +499,7 @@ test('Should not update area', async ({ request }) => {
 });
 
 test('Admin login should be successfull', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin2@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -602,7 +598,7 @@ test('Admin should not change superAdmin roles', async ({ request }) => {
 /****************************************************/
 
 test('SuperAdmin login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
@@ -674,12 +670,12 @@ test('Should get settings with only id and maintenance', async ({ request }) => 
 
 test('Should not logout admin user', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`)
-	expect(response.status()).toBe(401);
+		.post(`${API_BASE_URL}/auth/sign-out`)
+	expect(response.status()).toBe(400);
 });
 
 test('Should login editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'editor@bienoubien.com',
 			password: 'a&1Aa&1A'
@@ -824,6 +820,50 @@ test('Editor should not update other editors', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
+/****************************************************/
+/* Users access 
+/****************************************************/
+
+test('Should not create a user', async ({ request }) => {
+	const response = await request
+		.post(`${API_BASE_URL}/users`, {
+			data: {
+				name: 'Anonymous',
+				email: 'anonym@gmail.com',
+				password: 'zé2Zzé2Z'
+			}
+		})
+	expect(response.status()).toBe(403);	
+});
+
+test('Should create a user', async ({ request }) => {
+	const response = await request
+		.post(`${API_BASE_URL}/users`, {
+			headers: {
+				Authorization: `Bearer ${adminToken}`
+			},
+			data: {
+				name: 'Anonymous',
+				email: 'anonym@gmail.com',
+				password: 'zé2Zzé2Z'
+			}
+		})
+	expect(response.status()).toBe(200);
+});
+
+test('Should login user', async ({ request }) => {
+	const response = await request
+		.post(`${API_BASE_URL}/auth/sign-in/email`, {
+			data: {
+				email: 'anonym@gmail.com',
+				password: 'zé2Zzé2Z'
+			}
+		})
+	expect(response.status()).toBe(200);
+});
+
+
+
 
 /****************************************************/
 /* Auth Lock
@@ -831,44 +871,25 @@ test('Editor should not update other editors', async ({ request }) => {
 
 test('Should not logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`)
-	expect(response.status()).toBe(401);
+		.post(`${API_BASE_URL}/auth/sign-out`)
+	expect(response.status()).toBe(400);
 });
 
 test('Should logout editor', async ({ request }) => {
 	const response = await request
-		.post(`${API_BASE_URL}/${PANEL_USERS}/logout`, {
+		.post(`${API_BASE_URL}/auth/sign-out`, {
 			headers: {
 				Authorization: `Bearer ${editorToken}`
 			}
 		})
 		.then((r) => r.json());
 
-	expect(response).toBe('successfully logout');
+		expect(response.success).toBe(true);
 });
 
-test('Should lock user', async ({ request }) => {
-	for (let i = 0; i < 4; i++) {
-		const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
-			data: {
-				email: 'editor@bienoubien.com',
-				password: 'fooooooooooo'
-			}
-		});
-		expect(response.status()).toBe(400);
-	}
-
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
-		data: {
-			email: 'editor@bienoubien.com',
-			password: 'fooooooooooo'
-		}
-	});
-	expect(response.status()).toBe(403);
-});
 
 test('Admin should delete user editor', async ({ request }) => {
-	const signin = await request.post(`${API_BASE_URL}/${PANEL_USERS}/login`, {
+	const signin = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'

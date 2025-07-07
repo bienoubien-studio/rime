@@ -1,7 +1,6 @@
 import { relation, richText, text, toggle, slug, tabs, tab, date, group } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import { collection, area, defineConfig } from '$lib/index.js';
-import { apiInit } from './api-init/index.js';
 
 const Settings = area('settings', {
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
@@ -99,12 +98,11 @@ export default defineConfig({
 	database: 'versions-multilang.sqlite',
 	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
-	plugins: [apiInit()],
 	localization: {
 		locales: [
-			{ code: 'fr', label: 'Français', bcp47: 'fr-FR' },
-			{ code: 'en', label: 'English', bcp47: 'en-US' },
-			{ code: 'de', label: 'German', bcp47: 'de-DE' }
+			{ code: 'fr', label: 'Français' },
+			{ code: 'en', label: 'English' },
+			{ code: 'de', label: 'German' }
 		],
 		default: 'en'
 	},

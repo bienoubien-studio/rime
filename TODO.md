@@ -27,21 +27,21 @@
 [x] Field hook onChange
 [x] Update document url on save hook (ex: when parent change for nested collection)
 [x] handle Area with required field without default value
-[ ] Move URLS from config.url(...) to a separate table  with columns : documentId, locale, url, because all versions should have the same url, localised...
+[x] Lazy store document URL
 [x] Move api <-> rizom
 [x] core plugins as direct props of rizom, ex rizom.cache
 [ ] fix missing edited_by
 [ ] Add select feature to findById collection
 [x] Check that url encoded string queries are well handled
 [ ] Better junction table naming
-[ ] Remove locales bcp47
+[x] Remove locales bcp47
 
 # V1
 [x] collection nested
 [ ] Batch offset/update
 [ ] Add fields hint/description
 [ ] Put bin commands in a separate package ex: @rizom/kit ?
-[ ] page versions
+[x] page versions
 [ ] page modification not saved message + changes saved to a page draft
 [ ] more better-auth integration
 [ ] configurable medias/config/panel path

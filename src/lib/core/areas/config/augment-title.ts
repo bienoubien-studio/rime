@@ -1,10 +1,15 @@
-import { findTitleField } from "$lib/core/config/build/fields/findTitle.js";
-import type { Area } from "../../../types.js";
+import { findTitleField } from '$lib/core/config/build/fields/findTitle.js';
+import type { Area } from '../../../types.js';
 
-export const augmentTitle = ( config: Area<any> ) => {
-  const fieldTitle = findTitleField(config.fields);
-  return {
-    ...config,
-    asTitle: fieldTitle ? fieldTitle.path : 'id',
-  }
-}
+type Input = {
+	fields: Area<any>['fields'];
+};
+type WithAsTitle<T> = T & { asTitle: string };
+
+export const augmentTitle = <T extends Input>(config: T): WithAsTitle<T> => {
+	const fieldTitle = findTitleField(config.fields);
+	return {
+		...config,
+		asTitle: fieldTitle ? fieldTitle.path : 'id'
+	};
+};

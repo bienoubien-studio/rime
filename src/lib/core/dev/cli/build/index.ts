@@ -2,7 +2,7 @@
 import { spawnSync } from 'child_process';
 import { copyFileSync, cpSync, existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { polkaServer } from './templates.js';
-import { taskLogger } from '$lib/core/logger/index.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 export const build = (args: { withDatabase?: boolean }) => {
 	// Delete app folder if it exists
@@ -16,22 +16,22 @@ export const build = (args: { withDatabase?: boolean }) => {
 	mkdirSync('./app', { recursive: true });
 	// Move build folder
 	renameSync('./build', './app/build');
-	taskLogger.done('/app folder created');
+	logger.info('[✓] /app folder created');
 	// Copy package.json
 	copyFileSync('./package.json', './app/package.json');
-	taskLogger.done('package.json copied');
+	logger.info('[✓] package.json copied');
 	// Copy db folder if flag is set
 	if (args.withDatabase) {
 		cpSync('./db', './app/db', { recursive: true });
-		taskLogger.done('database copied');
+		logger.info('[✓] database copied');
 	}
 	writeFileSync('./app/index.js', polkaServer);
-	taskLogger.done('polka server created at app/index.js');
+	logger.info('[✓] polka server created at app/index.js');
 	console.log('');
-	taskLogger.info('Next steps :');
-	taskLogger.info('create a /app/.env file with ORIGIN HOST and PORT variables');
-	taskLogger.info('cd ./app');
-	taskLogger.info('pnpm install --prod');
-	taskLogger.info('pnpm install polka sharp serve-static');
-	taskLogger.info('node --env-file=.env index.js');
+	logger.info('Next steps :');
+	logger.info('create a /app/.env file with ORIGIN HOST and PORT variables');
+	logger.info('cd ./app');
+	logger.info('pnpm install --prod');
+	logger.info('pnpm install polka sharp serve-static');
+	logger.info('node --env-file=.env index.js');
 };

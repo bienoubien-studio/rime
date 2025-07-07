@@ -2,7 +2,7 @@ import createAdapterCollectionInterface, { type AdapterCollectionInterface } fro
 import createAdapterAreaInterface, { type AdapterAreaInterface } from './area.js';
 import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blocks.js';
 import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
-import createAdapterAuthInterface from './auth.server.js';
+import createAdapterAuthInterface from './auth/index.server.js';
 import Database from 'better-sqlite3';
 import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
@@ -12,15 +12,18 @@ import type { Schema } from '$lib/server/schema.js';
 import { updateTableRecord } from './util.js';
 import type { Dic } from '$lib/util/types.js';
 import { updateDocumentUrl } from './url.server.js';
+import path from 'path'
 
 type CreateAdapterArgs = {
-	schema: any;
+	schema: { tables: any, default: Schema, relationFieldsMap: any };
 	configInterface: ConfigInterface;
 };
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
-	const sqlite = new Database(`./db/${configInterface.raw.database}`);
-
+	
+	const dbPath = path.join(process.cwd(), 'db', configInterface.raw.database)
+	const sqlite = new Database(dbPath);
+	
 	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
 	const tables = schema.tables;
 
@@ -32,16 +35,19 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		schema,
 		configInterface
 	});
+	
 	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({
 		db,
 		tables,
 		configInterface
 	});
+	
 	const area: AdapterAreaInterface = createAdapterAreaInterface({
 		db,
 		tables,
 		configInterface
 	});
+	
 	const transform: AdapterTransformInterface = databaseTransformInterface({
 		tables,
 		configInterface
@@ -56,7 +62,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		transform,
 		auth,
 		db,
-		tables,
+		tables: tables as typeof schema.tables,
 
 		async updateRecord(id: string, tableName: string, data: Dic) {
 			return await updateTableRecord(db, tables, tableName, { recordId: id, data });

@@ -1,11 +1,18 @@
 import { findTitleField } from '$lib/core/config/build/fields/findTitle.js';
-import type { CollectionWithoutSlug } from './types.js';
+import type { AuthConfig, UploadConfig } from '$lib/core/config/types/index.js';
+import type { Collection } from '../../../types.js';
 
+type Input = { 
+	upload?: UploadConfig; 
+	auth?: false | AuthConfig; 
+	fields: Collection<any>['fields'] 
+};
+type WithAsTitle<T> = T & { asTitle : string }
 /**
  * Set asTitle to the defined one, or fallback to
  * filename for upload, email for auth, or default to id
  */
-export const augmentTitle = <T extends CollectionWithoutSlug<any>>(config: T) => {
+export const augmentTitle = <T extends Input>(config: T): WithAsTitle<T> => {
 	const addAsTitle = () => {
 		const titleField = findTitleField(config.fields);
 
@@ -14,8 +21,10 @@ export const augmentTitle = <T extends CollectionWithoutSlug<any>>(config: T) =>
 				return titleField.path;
 			case !!config.upload:
 				return 'filename';
-			case !!config.auth:
+			case typeof config.auth === "boolean" && config.auth || typeof config.auth !== "boolean" && config.auth?.type === "password":
 				return 'email';
+			case typeof config.auth !== "boolean" && config.auth?.type === "apiKey":
+				return 'name';
 			default:
 				return 'id';
 		}

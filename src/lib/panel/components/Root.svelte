@@ -11,8 +11,7 @@
 	import type { User } from '$lib/core/collections/auth/types.js';
 	import type { Route } from '$lib/panel/types.js';
 	import type { BrowserConfig } from '$lib/core/config/types/index.js';
-	import { toast } from 'svelte-sonner';
-
+	
 	type Props = {
 		routes: Record<string, Route[]>;
 		children: Snippet;
@@ -21,10 +20,10 @@
 		user: User;
 	};
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();
-
+	
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
-
+	
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');

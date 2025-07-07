@@ -1,4 +1,4 @@
-import type { FormField } from '$lib/fields/types.js';
+import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
@@ -8,6 +8,7 @@ import type {
 	PredefinedFeatureName,
 	RichTextFeature
 } from './core/types.js';
+import type { JSONContent } from '@tiptap/core';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -100,7 +101,7 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return value;
 	};
 
-	defaultValue(value: { type: 'doc'; content: any[] }) {
+	defaultValue(value: RichTextContent | DefaultValueFn<RichTextContent>) {
 		this.field.defaultValue = value;
 		return this;
 	}
@@ -108,10 +109,12 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 
 export const richText = (name: string) => new RichTextFieldBuilder(name);
 
+type RichTextContent = { type: 'doc'; content: JSONContent[] };
+
 export type RichTextField = FormField & {
 	type: 'richText';
 	features?: Array<MediaFeatureDefinition | ResourceFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
-	defaultValue?: { type: 'doc'; content: any[] };
+	defaultValue?: RichTextContent | DefaultValueFn<RichTextContent>;
 };
 
 /****************************************************/

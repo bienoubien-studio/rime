@@ -1,16 +1,11 @@
 import fs from 'fs';
 import path from 'path';
 import { writeRouteFile, ensureDir, shouldRegenerateRoutes, type Routes } from './util.js';
-import {
-	collectionAPIAuthRoutes,
-	collectionAPIRoutes,
-	collectionPanelRoutes,
-	collectionVersionsPanelRoutes
-} from './collection.js';
+import { collectionAPIRoutes, collectionPanelRoutes, collectionVersionsPanelRoutes } from './collection.js';
 import { areaAPIRoutes, areaRoutes, areaVersionsPanelRoutes } from './area.js';
 import { commonRoutes, customRoute } from './common.js';
 import { injectCustomCSS, removeCustomCSS } from './custom-css.js';
-import { taskLogger } from '$lib/core/logger/index.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import type { BuiltConfig } from '$lib/core/config/types/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
@@ -30,6 +25,8 @@ function generateRoutes(config: BuiltConfig): void {
 	const rootRoutes = path.resolve(projectRoot, 'src', 'routes');
 	const rizomRoutes = path.join(rootRoutes, '(rizom)');
 	const panelRoute = path.join(rizomRoutes, 'panel');
+
+	fs.rmSync(rizomRoutes, { recursive: true, force: true });
 
 	ensureDir(rootRoutes);
 	ensureDir(rizomRoutes);
@@ -83,7 +80,6 @@ function generateRoutes(config: BuiltConfig): void {
 		// Panel routes
 		processRoutes(collection.slug, collectionPanelRoutes);
 		processRoutes(collection.slug, collectionAPIRoutes);
-		processRoutes(collection.slug, collectionAPIAuthRoutes);
 
 		if (collection.versions) {
 			processRoutes(collection.slug, collectionVersionsPanelRoutes);
@@ -93,7 +89,7 @@ function generateRoutes(config: BuiltConfig): void {
 			processRoutes(makeUploadDirectoriesSlug(collection.slug), collectionAPIRoutes);
 		}
 	}
-
+	
 	// 6. Handle custom routes from config
 	const customRoutes: Dic = config.panel?.routes;
 	if (customRoutes) {
@@ -113,7 +109,7 @@ function generateRoutes(config: BuiltConfig): void {
 		}
 	}
 
-	taskLogger.done('Routes generated');
+	logger.info('[✓] Routes generated');
 }
 
 export default generateRoutes;

@@ -34,6 +34,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
+	_isSystemOperation: boolean
 
 	/**
 	 * Initializes the collection interface
@@ -48,7 +49,20 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.findById = this.findById.bind(this);
 		this.updateById = this.updateById.bind(this);
 		this.deleteById = this.deleteById.bind(this);
+		this._isSystemOperation = false
 	}
+
+	system(isSytem:boolean = true) {
+		if(isSytem === false ) return this
+    // Return a proxy or new instance with system flag
+    const systemCollection = new CollectionInterface({
+			config: this.config,
+			defaultLocale: this.defaultLocale,
+			event: this.#event
+		});
+    systemCollection._isSystemOperation = true;
+    return systemCollection;
+  }
 
 	/**
 	 * Returns the locale to use, with fallback logic
@@ -109,7 +123,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
-			event: this.#event
+			event: this.#event,
+			isSystemOperation: this._isSystemOperation
 		});
 	}
 
@@ -125,6 +140,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
+		
 		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
 		this.#rizom.preventOperationLoop();
 
@@ -138,10 +154,11 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			depth,
 			limit,
 			draft,
-			offset
+			offset,
+			isSystemOperation: this._isSystemOperation
 		};
 
-		if (this.#event.locals.cacheEnabled) {
+		if (this.#event.locals.cacheEnabled && !this._isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
 				slug: this.config.slug,
 				select: args.select,
@@ -200,10 +217,11 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			config: this.config,
 			event: this.#event,
 			draft,
-			depth
+			depth,
+			isSystemOperation: this._isSystemOperation
 		};
 
-		if (this.#event.locals.cacheEnabled) {
+		if (this.#event.locals.cacheEnabled && !this._isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.findById', {
 				slug: this.config.slug,
 				userRoles: this.#event.locals.user?.roles,
@@ -215,7 +233,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			});
 			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
 		}
-
+		
 		return findById<Doc>(params);
 	}
 
@@ -261,7 +279,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			...args,
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
-			event: this.#event
+			event: this.#event,
+			isSystemOperation: this._isSystemOperation
 		});
 	}
 
@@ -276,7 +295,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return deleteById({
 			id,
 			config: this.config,
-			event: this.#event
+			event: this.#event,
+			isSystemOperation: this._isSystemOperation
 		});
 	};
 
@@ -294,6 +314,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return deleteDocs({
 			config: this.config,
 			event: this.#event,
+			isSystemOperation: this._isSystemOperation,
 			...args
 		});
 	};

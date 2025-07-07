@@ -7,11 +7,12 @@ import { hasProp, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc, HookBeforeUpsert, Prototype } from '../../../../types.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { getRequestEvent } from '$app/server';
 
 export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
 	const { rizom, operation } = args;
 	const configMap = args.context.configMap;
-
+	
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @setDefaultValues');
 
 	let output = { ...args.data };
@@ -79,7 +80,7 @@ export const getDefaultValue: GetDefaultValue = async ({ key, config, adapter })
 		return await defaultRelationValue(config, key, adapter);
 	} else {
 		if (typeof config.defaultValue === 'function') {
-			return config.defaultValue();
+			return config.defaultValue({ event: getRequestEvent() });
 		}
 		return config.defaultValue;
 	}

@@ -40,7 +40,15 @@
 			"types": "./dist/util/index.d.ts",
 			"import": "./dist/util/index.js"
 		},
-		"./panel": {
+		"./panel/auth": {
+			"types": "./dist/panel/pages/auth/index.server.d.ts",
+			"import": "./dist/panel/pages/auth/index.server.js"
+		},
+		"./panel/auth/client": {
+			"types": "./dist/panel/pages/auth/index.d.ts",
+			"import": "./dist/panel/pages/auth/index.js"
+		},
+		"./panel/client": {
 			"types": "./dist/panel/index.d.ts",
 			"import": "./dist/panel/index.js"
 		},
@@ -48,7 +56,7 @@
 			"types": "./dist/panel/ui.d.ts",
 			"import": "./dist/panel/ui.js"
 		},
-		"./panel/server": {
+		"./panel": {
 			"types": "./dist/panel/index.server.d.ts",
 			"import": "./dist/panel/index.server.js"
 		},
@@ -208,7 +216,8 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"better-sqlite3",
-			"sharp"
+			"sharp",
+			"true"
 		]
 	}
 }

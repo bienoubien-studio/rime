@@ -55,10 +55,9 @@ const writeMemo = (config: CompiledConfig) => {
 
 	if (cached !== memoStr) {
 		cache.set('config', memoStr);
-		// taskLogger.done('Config: config cached');
+
 		return true;
 	} else {
-		// taskLogger.info('-  config   :: No change detected');
 		return false;
 	}
 };

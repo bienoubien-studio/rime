@@ -11,14 +11,18 @@ type DeleteArgs = {
 	sort?: string;
 	limit?: number;
 	offset?: number;
+	isSystemOperation?: boolean;
 };
 
 export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
-	const { config, event, locale, limit, offset, sort, query } = args;
+	const { config, event, locale, limit, offset, sort, query, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
-	let context: HookContext = { params: { locale, limit, offset, sort, query } };
-
+	let context: HookContext = {
+		params: { locale, limit, offset, sort, query },
+		isSystemOperation
+	};
+	
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

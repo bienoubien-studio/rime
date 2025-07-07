@@ -1,7 +1,6 @@
 import { relation, richText, text, toggle, slug, tabs, tab, date, group } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import { collection, area, defineConfig } from '$lib/index.js';
-import { apiInit } from './api-init/index.js';
 
 const Settings = area('settings', {
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
@@ -78,12 +77,7 @@ const Pages = collection('pages', {
 	panel: {
 		group: 'content'
 	},
-	fields: [
-		group('attributes').fields(
-			text('title').isTitle(), 
-			slug('slug'),
-			toggle('isHome'),
-		)],
+	fields: [group('attributes').fields(text('title').isTitle(), slug('slug'), toggle('isHome'))],
 	url: (doc) => '/',
 	nested: true,
 	access: {
@@ -96,7 +90,7 @@ export default defineConfig({
 	database: 'versions.sqlite',
 	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
-	plugins: [apiInit()],
+
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

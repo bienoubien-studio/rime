@@ -1,8 +1,7 @@
 <script lang="ts">
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import Input from '$lib/fields/text/component/Text.svelte';
-	import { text } from '$lib/fields/text/index.js';
+	import { type TextField } from '$lib/fields/text/index.server.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { FolderPlus } from '@lucide/svelte';
 	import { t__ } from '../../../../../core/i18n/index.js';
@@ -11,21 +10,26 @@
 	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { toast } from 'svelte-sonner';
+	import type { ClientField } from '$lib/panel/forms/types.js';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();
 
 	const createFolderForm = setFormContext({ name: '' }, 'new-folder');
 
-	const inputConfig = text('name')
-		.validate((value) => {
+	const inputConfig: ClientField<TextField> = {
+		type: 'text',
+		name: 'name',
+		isEmpty: (value) => !value,
+		validate: (value) => {
 			const pattern = /^[a-zA-Z0-9-_ ]+$/;
 			if (typeof value !== 'string' || !pattern.test(value)) {
 				return 'error';
 			}
 			return true;
-		})
-		.compile();
+		}
+	}
+		
 
 	let dialogOpen = $state(false);
 

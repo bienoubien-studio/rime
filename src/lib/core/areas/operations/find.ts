@@ -14,11 +14,12 @@ type FindArgs = {
 	select?: string[];
 	versionId?: string;
 	draft?: boolean;
+	isSystemOperation?: boolean
 };
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
 	//
-	const { config, event, locale, depth, select, versionId, draft } = args;
+	const { config, event, locale, depth, select, versionId, draft, isSystemOperation } = args;
 
 	let context: HookContext = {
 		params: {
@@ -27,9 +28,10 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			select,
 			versionId,
 			draft
-		}
+		},
+		isSystemOperation
 	};
-
+	
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

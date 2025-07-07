@@ -18,8 +18,6 @@ import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
 import type { HookBeforeUpsert } from '$lib/types';
 import { collection, area, defineConfig } from '$lib';
-import { apiInit } from './api-init/index.js';
-
 
 /****************************************************
 /* Settings
@@ -48,7 +46,6 @@ const Settings = area('settings', {
 
 const linkField = link('link').types('pages', 'infos', 'url').required();
 
-
 const nav = tree('nav').fields(linkField);
 const mainNav = tree('mainNav').fields(linkField).localized();
 
@@ -72,12 +69,7 @@ const Informations = area('infos', {
 	panel: {
 		group: 'informations'
 	},
-	fields: [
-		richText('about').localized(),
-		text('email').required(),
-		text('instagram'),
-		link('legals').localized()
-	],
+	fields: [richText('about').localized(), text('email').required(), text('instagram'), link('legals').localized()],
 	access: {
 		read: () => true
 	},
@@ -177,12 +169,7 @@ const tabHero = tab('hero').fields(
 const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	toggle('isHome').table({ position: 2, sort: true }).live(false),
-	slug('slug')
-		.slugify('attributes.title')
-		.live(false)
-		.table({ position: 3, sort: true })
-		.localized()
-		.required(),
+	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
 
 	relation('related').to('pages').many(),
 	relation('author').to('staff'),
@@ -195,10 +182,7 @@ const tabContent = tab('layout').fields(
 	blocks('components', [blockParagraph, blockSlider, blockImage]).table().localized()
 );
 
-const tabSeo = tab('seo').fields(
-	text('metaTitle').localized(),
-	text('metaDescription').localized()
-);
+const tabSeo = tab('seo').fields(text('metaTitle').localized(), text('metaDescription').localized());
 
 const tabFooter = tab('footer').fields(text('slider').localized());
 
@@ -238,7 +222,7 @@ const Medias = collection('medias', {
 			{ name: 'small', width: 720, out: ['webp'] },
 			{ name: 'medium', width: 720, height: 1024, out: ['webp'] },
 			{ name: 'large', width: 1080, out: ['webp'] }
-		],
+		]
 	},
 	fields: [text('alt').required()],
 	access: {
@@ -256,14 +240,14 @@ export default defineConfig({
 
 	localization: {
 		locales: [
-			{ code: 'fr', label: 'Français', bcp47: 'fr-FR' },
-			{ code: 'en', label: 'English', bcp47: 'en-US' }
+			{ code: 'fr', label: 'Français' },
+			{ code: 'en', label: 'English' }
 		],
 		default: 'fr'
 	},
 
 	// cors: ['localhost:5173', 'rizom.test:5173'],
-	plugins: [apiInit()],
+
 	panel: {
 		language: 'fr',
 		access: (user) => access.hasRoles(user, 'admin', 'editor'),
