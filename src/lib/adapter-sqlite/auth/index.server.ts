@@ -1,16 +1,13 @@
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import validate from '../../util/validate.js';
 import type { User } from '$lib/core/collections/auth/types.js';
-import type { CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
-import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
-import { BETTER_AUTH_ROLES, PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
+import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import { configureBetterAuth } from './better-auth.server.js';
-
-const dev = process.env.NODE_ENV === 'development';
+import type { GetRegisterType } from 'rizom';
+import type { GenericTable } from '../types.js';
 
 /**
  * Creates and configures the authentication interface for the SQLite adapter
@@ -22,8 +19,10 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 	const betterAuth = configureBetterAuth({ db, schema, configInterface });
 	
+	const getTable = (name:string) => schema[name as keyof typeof schema] as unknown as GenericTable
+
 	const isSuperAdmin = async (userId: string) => {
-		const panelUsersTable = schema[PANEL_USERS];
+		const panelUsersTable = getTable(PANEL_USERS);
 		const [user] = await db
 			.select({ isSuperAdmin: panelUsersTable.isSuperAdmin })
 			.from(panelUsersTable)
@@ -36,8 +35,8 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * Retrieves the BetterAuth user ID from a collection row
 	 * @returns BetterAuth user ID or null if not found
 	 */
-	const getAuthUserId = async ({ slug, id }: { slug: string; id: string }) => {
-		const userTable = schema[slug];
+	const getAuthUserId = async ({ slug, id }: { slug: CollectionSlug; id: string }) => {
+		const userTable = getTable(slug);
 		//@ts-expect-error slug is key of query
 		const user = await db.query[slug].findFirst({ where: eq(userTable.id, id) });
 		if (user) {
@@ -51,7 +50,6 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * @returns Array of all auth users
 	 */
 	const getAuthUsers = () => {
-		//@ts-expect-error will fix it
 		return db.query.authUsers.findMany();
 	};
 
@@ -74,7 +72,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 * @returns User object or undefined if not found
 	 */
 	const getUserAttributes = async ({ authUserId, slug }: GetUserAttributesArgs): Promise<User | undefined> => {
-		const table = schema[slug];
+		const table = getTable(slug);
 
 		const columns: Dic = {
 			id: table.id,
@@ -109,32 +107,14 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 export default createAdapterAuthInterface;
 
-type LoginArgs = {
-	email?: string;
-	password?: string;
-	slug: PrototypeSlug;
-};
 
 type GetUserAttributesArgs = {
 	authUserId: string;
 	slug: CollectionSlug;
 };
 
-export type AuthDatabaseInterfaceArgs = {
-	db: BetterSQLite3Database<any>;
-	schema: any;
+type AuthDatabaseInterfaceArgs = {
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	schema: GetRegisterType<'Schema'>;
 	configInterface: ConfigInterface;
-};
-
-type CreateFirstUserArgs = {
-	name: string;
-	email: string;
-	password: string;
-};
-
-type CreateAuthUserArgs = {
-	slug: CollectionSlug;
-	email: string;
-	password: string;
-	name: string;
 };

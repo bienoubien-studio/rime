@@ -6,6 +6,7 @@ import type { DocumentFormContext } from '$lib/panel';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
 import type { IconProps } from '@lucide/svelte';
+import type { WithRequired } from '$lib/util/types.js';
 
 export type { BlocksField, BlocksFieldBlock } from './blocks/index.js';
 export type { CheckboxField } from './checkbox/index.js';
@@ -118,3 +119,8 @@ export type RelationValue<T> = T[] | { id?: string; relationTo: string; document
 export type AnyFormField = GetRegisterType<'AnyFormField'>;
 export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;
 export type FieldsType = GetRegisterType<'FieldsType'>;
+
+export type ClientField<T extends FormField> = WithRequired<
+  Partial<T>,
+  'name' | 'isEmpty' | 'type'
+>

@@ -1,5 +1,5 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import { asc, eq } from 'drizzle-orm';
 
 /**
@@ -15,7 +15,7 @@ export const addChildrenProperty: HookBeforeRead<'collection', GenericDoc> = asy
 	// Else populate _children
 	const { rizom } = args.event.locals;
 	const tableName = args.config.slug;
-	const table = rizom.adapter.tables[tableName];
+	const table = rizom.adapter.getTable(tableName);
 
 	//@ts-ignore
 	const children = await rizom.adapter.db.query[tableName].findMany({

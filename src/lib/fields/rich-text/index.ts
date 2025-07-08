@@ -2,12 +2,14 @@ import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
+
 import type {
 	MediaFeatureDefinition,
 	ResourceFeatureDefinition,
 	PredefinedFeatureName,
 	RichTextFeature
 } from './core/types.js';
+
 import type { JSONContent } from '@tiptap/core';
 
 const isEmpty = (value: unknown) => {

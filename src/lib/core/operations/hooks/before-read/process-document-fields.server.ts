@@ -1,5 +1,5 @@
 import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import { buildConfigMap } from '../../configMap/index.server.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 

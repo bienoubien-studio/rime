@@ -1,12 +1,12 @@
-import { RizomError, RizomFormError } from './errors/index.js';
+import { RizomError } from './errors/index.js';
 import { CollectionInterface } from './collections/local-api.server.js';
 import { AreaInterface } from './areas/local-api.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterArea, RegisterCollection, RegisterPlugins } from '$lib/index.js';
-import type { FormErrors } from '$lib/panel/types.js';
-import type { Adapter, CompiledCollection } from '$lib/types.js';
+import type { CompiledCollection } from '$lib/types.js';
 import type { ConfigInterface } from './config/index.server.js';
 import type { CorePlugins, Plugins } from './types/plugins.js';
+import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 
 export type RizomConstructorArgs = {
 	adapter: Adapter;

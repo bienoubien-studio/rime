@@ -8,7 +8,7 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;

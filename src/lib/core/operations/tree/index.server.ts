@@ -2,11 +2,11 @@ import { extractTreeBlocks } from './extract.server';
 import type { TreeBlock } from '$lib/core/types/doc';
 import type { Dic, WithRequired } from '$lib/util/types';
 import { defineTreeBlocksDiff } from './diff.server';
-import type { Adapter, CompiledArea, CompiledCollection } from '$lib/types';
+import type { CompiledArea, CompiledCollection } from '$lib/types';
 import type { ConfigMap } from '../configMap/types';
-
 import { RizomError } from '$lib/core/errors/index.js';
 import { makeVersionsSlug } from '$lib/util/schema';
+import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 
 export const saveTreeBlocks = async (args: {
 	configMap: ConfigMap;

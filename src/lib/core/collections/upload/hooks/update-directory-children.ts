@@ -1,4 +1,4 @@
-import type { HookAfterUpdate, HookBeforeUpdate } from '$lib/core/config/types/hooks.js';
+import type { HookAfterUpdate, HookBeforeUpdate } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/trycatch.js';
@@ -16,7 +16,7 @@ export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc
 	const db = event.locals.rizom.adapter.db;
 
 	if (data.id) {
-		const table = event.locals.rizom.adapter.tables[config.slug];
+		const table = event.locals.rizom.adapter.getTable(config.slug);
 
 		//@ts-ignore
 		const children = await db.query[config.slug].findMany({

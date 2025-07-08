@@ -11,7 +11,7 @@ import { buildDataConfigMap } from '$lib/core/operations/hooks/before-upsert/dat
 import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
 import { defineVersionOperation } from '$lib/core/operations/hooks/before-update/define-version-operation.server.js';
 import { getOriginalDocument } from '$lib/core/operations/hooks/before-update/get-original-document.server.js';
-import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
+import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server.js';
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
 
 type PartialConfig = {

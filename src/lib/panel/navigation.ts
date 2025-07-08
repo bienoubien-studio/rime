@@ -1,6 +1,5 @@
 import type { User } from '$lib/core/collections/auth/types';
 import type { CompiledConfig } from '$lib/core/config/types';
-import { isVersionsSlug } from '$lib/util/schema.js';
 import type { Dic } from '$lib/util/types';
 
 interface Route {

@@ -8,7 +8,7 @@ import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { uploadPath } from '$lib/util/validate.js';
-import type { CollectionSlug } from '../../../types.js';
+import type { GetRegisterType } from 'rizom';
 import type { CompiledCollection, CompiledConfig } from '../types/index.js';
 
 /**
@@ -25,7 +25,7 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 			if (config.collections.filter((c) => c.slug === slug).length) continue;
 			// else create the directory collection
 			let directoriesCollection: CompiledCollection = {
-				slug: slug as CollectionSlug,
+				slug: slug as GetRegisterType<'CollectionSlug'>,
 				versions: undefined,
 				access: collection.access,
 				fields: [

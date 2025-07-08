@@ -1,13 +1,28 @@
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { GetRegisterType } from 'rizom';
+import type { PrototypeSlug } from '../types.js';
+import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
+import type { ColumnBaseConfig, ColumnDataType } from 'drizzle-orm';
 
-export type { Adapter } from './index.server.js';
-export type { AdapterBlocksInterface } from './blocks.js';
-export type { AdapterCollectionInterface } from './collection.js';
-export type { AdapterAreaInterface } from './area.js';
-export type { AdapterRelationsInterface } from './relations.js';
-export type { AdapterTransformInterface } from './transform.js';
-
+// Basic types needed across multiple files
 export type GenericAdapterInterfaceArgs = {
-	db: BetterSQLite3Database<any>;
-	tables: any;
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	tables: GenericTables;
 };
+
+type GenericColumn = SQLiteColumn<
+	ColumnBaseConfig<ColumnDataType, string>,
+	Record<string, unknown>
+>;
+type GenericColumns = {
+	[x: string]: GenericColumn;
+};
+export type GenericTable = SQLiteTableWithColumns<{
+	columns: GenericColumns;
+	dialect: string;
+	name: string;
+	schema: undefined;
+}>;
+export type GenericTables = Record<string, GenericTable | SQLiteTableWithColumns<any>>;
+
+export type TableLocaleName = `${PrototypeSlug}Locales`

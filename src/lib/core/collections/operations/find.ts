@@ -3,7 +3,7 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 
 type FindArgs = {
 	query?: OperationQuery;

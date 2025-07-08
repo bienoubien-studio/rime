@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { isFile } from '$lib/util/file.js';
 import { jsonFileToFile } from '$lib/core/collections/upload/util/converter.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 import type { UploadDoc } from '$lib/core/types/doc.js';
 
 /**

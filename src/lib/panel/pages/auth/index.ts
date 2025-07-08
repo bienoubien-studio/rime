@@ -6,7 +6,4 @@ import type { FormField } from '$lib/fields/types.js';
 
 export { ForgotPassword, SignIn, ResetPassword };
 
-export type ClientField<T extends FormField> = WithRequired<
-  Partial<T>,
-  'name' | 'isEmpty' | 'type'
->
+

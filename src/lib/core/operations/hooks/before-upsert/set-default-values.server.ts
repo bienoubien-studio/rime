@@ -1,13 +1,14 @@
 import { eq, inArray } from 'drizzle-orm';
-import type { Adapter } from '$lib/adapter-sqlite/types.js';
 import { isRelationField } from '$lib/util/field.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RelationField } from '$lib/fields/types.js';
 import { hasProp, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { GenericDoc, HookBeforeUpsert, Prototype } from '../../../../types.js';
+import type { GenericDoc, Prototype } from '../../../../types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { getRequestEvent } from '$app/server';
+import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 
 export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
 	const { rizom, operation } = args;

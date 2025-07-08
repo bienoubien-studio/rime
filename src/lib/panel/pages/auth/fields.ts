@@ -1,6 +1,6 @@
 import type { EmailField, TextField } from "$lib/fields/types.js"
 import { email as validateEmail } from "$lib/util/validate.js"
-import type { ClientField } from "./index.js"
+import type { ClientField } from '$lib/fields/types.js';
 
 export const passwordField: ClientField<TextField> = {
   name: 'password',

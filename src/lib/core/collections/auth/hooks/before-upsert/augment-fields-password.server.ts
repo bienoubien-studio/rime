@@ -1,4 +1,4 @@
-import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { usersFields } from '../../fields.server.js';
 

@@ -5,7 +5,7 @@ import { getContext, setContext } from 'svelte';
 import { setErrorsContext } from './errors.svelte';
 import type { FormField } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types';
-import type { ClientField } from '../forms/types.js';
+import type { ClientField } from '$lib/fields/types.js';
 
 function createFormStore(initial: Dic, key: string) {
 	//

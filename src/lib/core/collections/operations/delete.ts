@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 
 type DeleteArgs = {
 	query?: OperationQuery;

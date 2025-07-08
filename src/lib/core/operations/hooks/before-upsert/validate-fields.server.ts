@@ -4,7 +4,7 @@ import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
 import type { Prototype } from '../../../../types.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 
 export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
 	const errors: FormErrors = {};

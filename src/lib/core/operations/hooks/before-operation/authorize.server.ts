@@ -1,6 +1,6 @@
 import type { Prototype } from '$lib/core/types/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { HookBeforeOperation } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeOperation } from '$lib/core/config/types/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 
 export const authorize: HookBeforeOperation<Prototype> = async (args) => {

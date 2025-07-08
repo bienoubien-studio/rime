@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import type { HookBeforeCreate } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeCreate } from '$lib/core/config/types/index.js';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import access from '$lib/util/access/index.js';

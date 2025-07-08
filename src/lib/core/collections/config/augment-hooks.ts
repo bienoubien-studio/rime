@@ -18,7 +18,7 @@ import { defineVersionOperation } from '$lib/core/operations/hooks/before-update
 import { augmentFieldsPassword } from '../auth/hooks/before-upsert/augment-fields-password.server.js';
 import { getOriginalDocument } from '$lib/core/operations/hooks/before-update/get-original-document.server.js';
 import { addChildrenProperty } from '../nested/hooks/index.server.js';
-import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server copy.js';
+import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server.js';
 import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
 import { removeAPIKey } from '../auth/hooks/before-read/remove-api-key.server.js';

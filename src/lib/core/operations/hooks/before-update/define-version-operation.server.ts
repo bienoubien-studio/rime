@@ -1,6 +1,7 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { HookBeforeUpdate, Prototype } from '../../../../types.js';
+import type { Prototype } from '../../../../types.js';
 import { getVersionUpdateOperation } from '$lib/core/collections/versions/operations.js';
+import type { HookBeforeUpdate } from '$lib/core/config/types/index.js';
 
 export const defineVersionOperation: HookBeforeUpdate<Prototype, GenericDoc> = async (args) => {
   const { config } = args

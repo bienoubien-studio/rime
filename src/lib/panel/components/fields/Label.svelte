@@ -4,7 +4,7 @@
 	import { Label } from '../ui/label/index.js';
 	import type { Snippet } from 'svelte';
 	import type { FormField } from '$lib/fields/types.js';
-	import type { ClientField } from '$lib/panel/forms/types.js';
+	import type { ClientField } from '$lib/fields/types.js';
 
 	type Props = { config?: ClientField<FormField>; children?: Snippet; for?: string };
 	const { config, children, for: forAttribute, ...rest }: Props = $props();

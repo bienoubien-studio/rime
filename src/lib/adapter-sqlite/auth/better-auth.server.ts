@@ -2,11 +2,19 @@ import type { CorePlugins } from '$lib/core/types/plugins.js';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin as adminPlugin, apiKey, magicLink } from 'better-auth/plugins';
-import type { AuthDatabaseInterfaceArgs } from './index.server.js';
 import { accessControl, admin, user, staff } from '$lib/core/collections/auth/better-auth-permissions.js';
 import { betterAuthAfterHook, betterAuthBeforeHook } from './better-auth-hooks.server.js';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { GetRegisterType } from 'rizom';
+import type { ConfigInterface } from '$lib/core/config/index.server.js';
 
-export const configureBetterAuth = ({ db, schema, configInterface }: AuthDatabaseInterfaceArgs) => {
+type Args = {
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	schema: GetRegisterType<'Schema'>;
+	configInterface: ConfigInterface;
+};
+
+export const configureBetterAuth = ({ db, schema, configInterface }: Args) => {
 	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
 
 	return betterAuth({
@@ -68,7 +76,7 @@ export const configureBetterAuth = ({ db, schema, configInterface }: AuthDatabas
 	});
 };
 
-const configurePlugins = (configInterface: AuthDatabaseInterfaceArgs['configInterface']) => {
+const configurePlugins = (configInterface: ConfigInterface) => {
 	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
 
 	const HAS_MAGIC_LINK = Boolean(configInterface.raw.auth?.magicLink);

@@ -225,21 +225,6 @@ export const templateExportRelationsFieldsToTable = (relationFieldsDic: Record<s
  */
 export const templateExportTables = (tables: string[]): string => dedent`
 
-  type GenericColumn = SQLiteColumn<
-    ColumnBaseConfig<ColumnDataType, string>,
-    Record<string, unknown>
-  >;
-  type GenericColumns = {
-    [x: string]: GenericColumn;
-  };
-  export type GenericTable = SQLiteTableWithColumns<{
-    columns: GenericColumns;
-    dialect: string;
-    name: string;
-    schema: undefined;
-  }>;
-  type Tables = Record<string, GenericTable | SQLiteTableWithColumns<any>>;
-
   export const tables: Tables = {
     ${tables.join(',\n    ')},
     authUsers,
@@ -335,7 +320,7 @@ export const apikey = sqliteTable("apikey", {
 	permissions: text('permissions'),
 	metadata: text('metadata')
 });
-`
+`;
 
 /**
  * Generates the final schema export with all tables and relations
@@ -354,22 +339,30 @@ export const apikey = sqliteTable("apikey", {
  *   authSessions
  * }
  *
- * export type Schema = typeof schema
+ * declare module 'rizom' {
+ *   export interface RegisterSchema {
+ *      schema: typeof schema;
+ * 	 }
+ * }
  * export default schema
  * ```
  */
 export const templateExportSchema = ({ enumTables, enumRelations }: TemplateExportSchemaArgs) => `
-   const schema = {
-     ${enumTables.join(',\n      ')},
-     ${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
-     authUsers,
-     authAccounts,
-     authVerifications,
-     authSessions
- }
+const schema = {
+	${enumTables.join(',\n      ')},
+	${enumRelations.length ? enumRelations.join(',\n      ') + ',' : ''}
+	authUsers,
+	authAccounts,
+	authVerifications,
+	authSessions
+}
 
- export type Schema = typeof schema
- export default schema
+declare module 'rizom' {
+	export interface RegisterSchema {
+			schema: typeof schema;
+	}
+}
+export default schema
  `;
 
 /**
@@ -379,8 +372,7 @@ export const templateExportSchema = ({ enumTables, enumRelations }: TemplateExpo
 export const templateHead = (slug: string) => dedent`
   /** ${slug} ============================================== **/`;
 
-
-export const templateDirectories = (slug:string) => `
+export const templateDirectories = (slug: string) => `
 export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDirectoriesSlug(slug))}', {
   id: text('id').notNull().primaryKey(),
   parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, { 
@@ -391,7 +383,7 @@ export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDir
   createdAt: integer('created_at', { mode: 'timestamp_ms' }),
 	updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
 })
-`
+`;
 
 type RelationOneArgs = {
 	name: string;

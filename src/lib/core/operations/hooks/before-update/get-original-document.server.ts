@@ -1,7 +1,8 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { HookBeforeUpdate, Prototype } from '../../../../types.js';
+import type { Prototype } from '../../../../types.js';
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import type { HookBeforeUpdate } from '$lib/core/config/types/index.js';
 
 export const getOriginalDocument: HookBeforeUpdate<Prototype, GenericDoc> = async (args) => {
 	const { rizom, config, context } = args;

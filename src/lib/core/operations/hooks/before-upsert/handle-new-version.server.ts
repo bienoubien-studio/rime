@@ -1,13 +1,14 @@
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import type { Dic } from '$lib/util/types.js';
 import path from 'path';
-import type { CompiledArea, CompiledCollection, GenericDoc, HookBeforeUpsert, Prototype } from '../../../../types.js';
+import type { CompiledArea, CompiledCollection, GenericDoc, Prototype } from '../../../../types.js';
 import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
 import { setValuesFromOriginal } from '../../shared/setValuesFromOriginal.js';
 import type { ConfigMap } from '../../configMap/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 
 /**
  * Handles version-related operations for document updates

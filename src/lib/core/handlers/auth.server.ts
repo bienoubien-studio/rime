@@ -1,9 +1,8 @@
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
 import { logger } from '../logger/index.server.js';
-import { prompt } from '../dev/cli/util.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -41,7 +40,6 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	}
 
 	
-	// Get user attributes
 	const { session, user: authUser } = authenticated;
 	
 	// Get CMS user attributes

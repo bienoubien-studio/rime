@@ -1,21 +1,21 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from '../../collections/auth/types.js';
 import type { Field, FieldsType, Option } from '$lib/fields/types.js';
-import type { AreaSlug, CollectionSlug } from '../../types/doc.js';
-import type { CollectionHooks, AreaHooks } from './hooks.js';
-import type { AtLeastOne, Dic, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
+import type { AreaSlug, CollectionSlug, GenericDoc, Prototype } from '../../types/doc.js';
+import type { AtLeastOne, DeepPartial, Dic, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
 import type { FieldsComponents } from '../../../panel/types.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
-import type { CorePlugins, Plugin } from '$lib/core/types/plugins.js';
-import type { IconProps, Upload } from '@lucide/svelte';
+import type { Plugin } from '$lib/core/types/plugins.js';
+import type { IconProps } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
-import type { BetterAuthOptions, BetterAuthPlugin } from 'better-auth';
 import type { Rizom } from '$lib/core/rizom.server.js';
-import type { Adapter } from '$lib/adapter-sqlite/types.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
+import type { ConfigMap } from '$lib/core/operations/configMap/types.js';
 
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
@@ -245,7 +245,7 @@ export type BuiltConfig = {
 	icons: Record<string, any>;
 	trustedOrigins: string[];
 	routes?: Record<string, RouteConfig>;
-	plugins?: Record<string, Plugin['actions']>;
+	plugins?: Record<string, ReturnType<Plugin>['actions']>;
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
 		navigation: NavigationConfig;
@@ -319,11 +319,269 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
-type CompiledCollection = Pretty<WithoutBuilders<BuiltCollection>>;
-type CompiledArea = Pretty<WithoutBuilders<BuiltArea>>;
-type CompiledConfig = Pretty<
+export type CompiledCollection = Pretty<WithoutBuilders<BuiltCollection>>;
+export type CompiledArea = Pretty<WithoutBuilders<BuiltArea>>;
+export type CompiledConfig = Pretty<
 	Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
 		collections: Array<CompiledCollection>;
 		areas: Array<CompiledArea>;
 	}
 >;
+
+/****************************************************/
+/* Hooks 
+/****************************************************/
+
+/**
+ * Maps prototype to its corresponding config type
+ */
+type ConfigTypeMap = {
+	collection: CompiledCollection;
+	area: CompiledArea;
+};
+
+export type HookContext = Dic & {
+	/** Parameters passed to the original operation method */
+	params: {
+		id?: string;
+		versionId?: string;
+		sort?: string;
+		locale?: string;
+		offset?: number;
+		limit?: number;
+		depth?: number;
+		select?: string[];
+		query?: OperationQuery;
+		draft?: boolean
+	};
+	/** Parameter passed to an update operation when creating locale document fallback */
+	isFallbackLocale?: boolean;
+	/** Type of version operation */
+	versionOperation?: VersionOperation;
+	/** The original document if on an update operation */
+	originalDoc?: GenericDoc;
+	/** An map to get a field config by path on the original doc */
+	originalConfigMap?: ConfigMap;
+	/** An map to get a field config by path on incoming data */
+	configMap?: ConfigMap;
+	/** Add super descriptive stuff here */
+	isSystemOperation?:boolean
+};
+
+/**
+ * Base hook context with prototype parameter
+ */
+export type HookParams<P extends Prototype, T extends Partial<GenericDoc>> = {
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	/** Object that can be used to pass data from one hook to another */
+	context: HookContext;
+};
+
+// Shared hooks for operations supported by both collections and areas
+
+/**
+ * Hook executed before any operation
+ */
+export type HookBeforeOperation<P extends Prototype> = (args: {
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	operation: 'create' | 'read' | 'update' | 'delete';
+	context: HookContext;
+}) => Promise<{
+	rizom: Rizom;
+	event: Pretty<RequestEvent & { locals: App.Locals }>;
+	config: Pretty<ConfigTypeMap[P]>;
+	operation: 'create' | 'read' | 'update' | 'delete';
+	context: HookContext;
+}>;
+
+/**
+ * Hook executed before reading a document
+ */
+export type HookBeforeRead<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'read';
+			doc: T;
+		}
+	>
+) => Promise<
+	HookParams<P, T> & {
+		operation: 'read';
+		doc: T;
+	}
+>;
+
+/**
+ * Hook executed before updating a document
+ */
+export type HookBeforeUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'update';
+			data: DeepPartial<T>;
+		}
+	>
+) => Promise<
+	HookParams<P, T> & {
+		operation: 'update';
+		data: DeepPartial<T>;
+	}
+>;
+
+/**
+ * Hook executed after updating a document
+ */
+export type HookAfterUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<P, T> & {
+			operation: 'update';
+			doc: T;
+		}
+	>
+) => Promise<
+	HookParams<P, T> & {
+		operation: 'update';
+		doc: T;
+	}
+>;
+
+// Collection-only hooks
+/**
+ * Hook executed before creating a document (collection only)
+ */
+export type HookBeforeCreate<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'create';
+			data: DeepPartial<T>;
+		}
+	>
+) => Promise<
+	HookParams<'collection', T> & {
+		operation: 'create';
+		data: DeepPartial<T>;
+	}
+>;
+
+/**
+ * Hook executed after creating a document (collection only)
+ */
+export type HookAfterCreate<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'create';
+			doc: T;
+		}
+	>
+) => Promise<
+	HookParams<'collection', T> & {
+		operation: 'create';
+		doc: T;
+	}
+>;
+
+/**
+ * Hook executed before upserting a document
+ * Works with both collections and areas
+ * For collections: handles both create and update operations
+ * For areas: handles only update operations
+ */
+export type HookBeforeUpsert<P extends Prototype, T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		P extends 'collection'
+			? HookParams<P, T> &
+					(
+						| {
+								operation: 'create';
+								data: DeepPartial<T>;
+						  }
+						| {
+								operation: 'update';
+								data: DeepPartial<T>;
+						  }
+					)
+			: HookParams<P, T> & {
+					operation: 'update';
+					data: DeepPartial<T>;
+				}
+	>
+) => Promise<
+	P extends 'collection'
+		? HookParams<P, T> &
+				(
+					| {
+							operation: 'create';
+							data: DeepPartial<T>;
+					  }
+					| {
+							operation: 'update';
+							data: DeepPartial<T>;
+					  }
+				)
+		: HookParams<P, T> & {
+				operation: 'update';
+				data: DeepPartial<T>;
+			}
+>;
+
+/**
+ * Hook executed after upserting a document (collection only)
+ */
+export type HookAfterUpsert<T extends Partial<GenericDoc>> = (
+	args: Pretty<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>
+) => Promise<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>;
+
+/**
+ * Hook executed before deleting a document (collection only)
+ */
+export type HookBeforeDelete<T extends Partial<GenericDoc>> = (
+	args: Pretty<
+		HookParams<'collection', T> & {
+			operation: 'delete';
+			doc: T;
+		}
+	>
+) => Promise<
+	HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
+>;
+
+/**
+ * Hook executed after deleting a document (collection only)
+ */
+export type HookAfterDelete<T extends Partial<GenericDoc>> = (
+	args: HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
+) => Promise<
+	HookParams<'collection', T> & {
+		operation: 'delete';
+		doc: T;
+	}
+>;
+
+// Hook collections
+export type CollectionHooks<T> = {
+	beforeOperation?: HookBeforeOperation<any>[];
+	beforeCreate?: (HookBeforeCreate<any> | HookBeforeUpsert<any, any>)[];
+	afterCreate?: (HookAfterCreate<any> | HookAfterUpsert<any>)[];
+	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
+	afterUpdate?: (HookAfterUpdate<any, any> | HookAfterUpsert<any>)[];
+	beforeRead?: HookBeforeRead<any, any>[];
+	beforeDelete?: HookBeforeDelete<any>[];
+	afterDelete?: HookAfterDelete<any>[];
+};
+
+export type AreaHooks<T> = {
+	beforeOperation?: HookBeforeOperation<any>[];
+	beforeRead?: HookBeforeRead<any, any>[];
+	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
+	afterUpdate?: HookAfterUpdate<any, any>[];
+};

@@ -6,7 +6,7 @@ import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { DeepPartial } from '$lib/util/types.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;

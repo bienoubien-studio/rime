@@ -1,7 +1,6 @@
 import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
-import { mergeWithBlankDocument } from '$lib/core/operations/hooks/before-create/merge-with-blank.server.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
-import type { CollectionSlug } from '../../../types.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { CompiledCollection, CompiledConfig } from '../types/index.js';
 
 /**

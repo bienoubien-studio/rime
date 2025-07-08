@@ -3,7 +3,7 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 
 type DeleteArgs = {

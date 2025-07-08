@@ -1,13 +1,3 @@
-// Adapter types
-export type {
-	Adapter,
-	AdapterBlocksInterface,
-	AdapterCollectionInterface,
-	AdapterAreaInterface,
-	AdapterRelationsInterface,
-	AdapterTransformInterface,
-	GenericAdapterInterfaceArgs
-} from './adapter-sqlite/types.js';
 
 // API types
 export type { Rizom } from './core/rizom.server.js';
@@ -64,7 +54,7 @@ export type {
 	HookAfterDelete,
 	HookBeforeRead,
 	AreaHooks
-} from './core/config/types/hooks.js';
+} from './core/config/types/index.js';
 
 // Panel types
 export type { CollectionProps, FieldPanelTableConfig, FormErrors, Route } from './panel/types.js';

@@ -1,6 +1,6 @@
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import type { WithUpload } from '$lib/util/types.js';
 
 export const populateSizes: HookBeforeRead<'collection', GenericDoc> = async (args) => {

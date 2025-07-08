@@ -1,4 +1,4 @@
-import type { CollectionSlug } from '../types.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { randomId } from './random.js';
 import { toPascalCase } from './string.js';
 

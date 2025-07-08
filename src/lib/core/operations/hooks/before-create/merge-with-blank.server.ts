@@ -2,7 +2,8 @@ import deepmerge from 'deepmerge';
 import { isUploadConfig } from '$lib/util/config.js';
 import { createBlankDocument } from '$lib/util/doc.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { HookBeforeCreate } from '../../../../types.js';
+import type { HookBeforeCreate } from '$lib/core/config/types/index.js';
+
 
 export const mergeWithBlankDocument: HookBeforeCreate<GenericDoc> = async (args) => {
 	const { config } = args;

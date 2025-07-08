@@ -3,10 +3,10 @@ import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { DeepPartial, Dic } from '$lib/util/types.js';
-import type { CompiledCollection } from '../../../types.js';
+import type { DeepPartial } from '$lib/util/types.js';
+import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { HookBeforeUpdate, HookContext } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpdate, HookContext } from '$lib/core/config/types/index.js';
 
 type Args<T> = {
 	id: string;

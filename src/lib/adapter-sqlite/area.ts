@@ -1,6 +1,6 @@
-import { desc, eq, getTableColumns } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
-import type { GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
+import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import type { ConfigInterface } from '../core/config/index.server.js';
@@ -10,10 +10,12 @@ import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import type { GetRegisterType } from 'rizom';
+import type { GenericTables } from './types.js';
 
 type AreaInterfaceArgs = {
-	db: BetterSQLite3Database<any>;
-	tables: any;
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	tables: GenericTables;
 	configInterface: ConfigInterface;
 };
 
@@ -141,7 +143,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 *
 	 * @returns For versioned areas, returns object with id and versionId
 	 */
-	const createArea = async (slug: string, values: Partial<GenericDoc>, locale?: string) => {
+	const createArea = async (slug: AreaSlug, values: Partial<GenericDoc>, locale?: string) => {
 		const now = new Date();
 		const config = configInterface.getArea(slug);
 
@@ -364,7 +366,7 @@ export type AdapterAreaInterface = ReturnType<typeof createAdapterAreaInterface>
 /****************************************************/
 
 type Get = (args: {
-	slug: PrototypeSlug;
+	slug: AreaSlug;
 	locale?: string;
 	depth?: number;
 	select?: string[];
@@ -378,7 +380,7 @@ type Get = (args: {
 }) => Promise<RawDoc>;
 
 type Update = (args: {
-	slug: PrototypeSlug;
+	slug: AreaSlug;
 	data: DeepPartial<GenericDoc>;
 	locale?: string;
 	/** Optional parameter to specify direct version update */

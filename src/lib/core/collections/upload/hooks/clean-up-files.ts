@@ -1,5 +1,5 @@
 import { cleanupStoredFiles } from '$lib/core/collections/upload/disk/delete.js';
-import type { HookBeforeDelete } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeDelete } from '$lib/core/config/types/index.js';
 import type { WithUpload } from '$lib/util/types.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';

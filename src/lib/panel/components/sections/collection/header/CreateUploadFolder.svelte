@@ -10,7 +10,7 @@
 	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { toast } from 'svelte-sonner';
-	import type { ClientField } from '$lib/panel/forms/types.js';
+	import type { ClientField } from '$lib/fields/types.js';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();

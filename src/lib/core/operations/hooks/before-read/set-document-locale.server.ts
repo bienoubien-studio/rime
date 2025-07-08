@@ -1,5 +1,5 @@
 import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 
 export const setDocumentLocale: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
 	let doc = args.doc;

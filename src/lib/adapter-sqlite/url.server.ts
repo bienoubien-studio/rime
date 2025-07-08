@@ -1,18 +1,19 @@
 import { makeLocalesSlug, makeVersionsSlug } from '$lib/util/schema.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { CompiledArea, CompiledCollection } from '../types.js';
-import type { GenericTable, Schema } from '$lib/server/schema.js';
 import { and, eq } from 'drizzle-orm';
 import { logger } from '$lib/core/logger/index.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import type { GetRegisterType } from 'rizom';
+import type { GenericTables } from './types.js';
 
 type Params = {
 	id: string;
 	versionId?: string;
 	config: CompiledArea | CompiledCollection;
 	locale?: string;
-	db: BetterSQLite3Database<Schema>;
-	tables: Record<keyof BetterSQLite3Database<Schema>['query'], GenericTable>;
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	tables: GenericTables;
 };
 
 const OPERATION = {

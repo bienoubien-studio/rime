@@ -25,7 +25,7 @@ import { env } from '$env/dynamic/public';
 import { random } from '$lib/util/index.js';
 import { page } from '$app/state';
 import { PARAMS } from '$lib/core/constant.js';
-import type { ClientField } from '../forms/types.js';
+import type { ClientField } from '$lib/fields/types.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,

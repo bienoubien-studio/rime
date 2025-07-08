@@ -1,15 +1,13 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { Rizom } from '../../rizom.server.js';
-import { rizom, type RegisterArea } from '$lib/index.js';
-import type { HookContext } from '$lib/core/config/types/hooks.js';
+import { type RegisterArea } from '$lib/index.js';
+import type { HookContext } from '$lib/core/config/types/index.js';
 
 type FindArgs = {
 	locale?: string | undefined;
 	config: CompiledArea;
 	event: RequestEvent;
-	rizom: Rizom;
 	depth?: number;
 	select?: string[];
 	versionId?: string;
@@ -43,7 +41,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		context = result.context;
 	}
 
-	const documentRaw = await rizom.adapter.area.get({
+	const documentRaw = await event.locals.rizom.adapter.area.get({
 		slug: config.slug,
 		locale,
 		select,

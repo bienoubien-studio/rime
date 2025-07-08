@@ -3,7 +3,7 @@ import type { TextField } from '../index.server.js';
 import type { FormContext } from '$lib/panel/context/form.svelte.js';
 import type { Component } from 'svelte';
 import type { IconProps } from '@lucide/svelte';
-import type { ClientField } from '$lib/panel/forms/types.js';
+import type { ClientField } from '$lib/fields/types.js';
 
 export type TextFieldProps = {
 	path?: string;

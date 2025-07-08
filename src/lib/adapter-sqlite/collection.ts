@@ -1,4 +1,4 @@
-import { and, desc, eq, getTableColumns } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { buildWithParam } from './with.js';
 import { buildWhereParam } from './where.js';
 import { buildOrderByParam } from './orderBy.js';
@@ -12,10 +12,11 @@ import * as adapterUtil from './util.js';
 import * as schemaUtil from '$lib/util/schema.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import type { Schema } from '$lib/server/schema.js';
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
+import type { GetRegisterType } from 'rizom';
 
+type Schema = GetRegisterType<'Schema'>
 type Args = {
 	db: BetterSQLite3Database<Schema>;
 	tables: any;

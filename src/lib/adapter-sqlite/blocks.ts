@@ -18,7 +18,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 			await db.update(tables[table]).set(values).where(eq(tables[table].id, block.id));
 		}
 		
-		const keyTableLocales = makeLocalesSlug(table) as keyof typeof tables;
+		const keyTableLocales = makeLocalesSlug(table);
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
 			const localizedColumns = getTableColumns(tableLocales);

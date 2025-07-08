@@ -22,6 +22,8 @@ declare module 'rizom' {
 	export interface RegisterCollection {}
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface RegisterArea {}
+	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+	export interface RegisterSchema {}
 
 	// Main Register interface that combines all registrations
 	export interface Register {
@@ -32,6 +34,8 @@ declare module 'rizom' {
 		FieldsType: keyof RegisterFieldsType;
 		AnyFormField: RegisterFormFields[keyof RegisterFormFields];
 		AnyField: RegisterFields[keyof RegisterFields];
+		Schema: RegisterSchema['schema'];
+		Tables: RegisterSchema['tables'];
 	}
 }
 

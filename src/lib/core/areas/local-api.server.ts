@@ -4,8 +4,7 @@ import { find } from './operations/find.js';
 import { update } from './operations/update.js';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { Rizom } from '../rizom.server.js';
-import type { DeepPartial, Pretty } from '$lib/util/types.js';
+import type { Pretty } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledArea;
@@ -22,7 +21,6 @@ type Args = {
  */
 class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	#event: RequestEvent;
-	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledArea;
 	isSystemOperation: boolean
@@ -39,7 +37,6 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	constructor({ config, defaultLocale, event }: Args) {
 		this.config = config;
 		this.#event = event;
-		this.#rizom = event.locals.rizom;
 		this.defaultLocale = defaultLocale;
 		this.find = this.find.bind(this);
 		this.update = this.update.bind(this);
@@ -87,7 +84,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 */
 	find(args:APIMethodArgs<typeof find>): Promise<Doc> {
 		const { locale, select = [], depth = 0, versionId, draft } = args
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
@@ -95,7 +92,6 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			versionId,
 			config: this.config,
 			event: this.#event,
-			rizom: this.#rizom,
 			depth,
 			draft,
 			isSystemOperation: this.isSystemOperation
@@ -135,7 +131,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 */
 	update(args: APIMethodArgs<typeof update>): Promise<Doc> {
 		const { data, locale, versionId, draft } = args
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 
 		return update<Doc>({
 			data,

@@ -14,7 +14,6 @@ import type { CollectionSlug } from '../types/doc.js';
 import type { CompiledCollection } from '../config/types/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { Rizom } from '../rizom.server.js';
 import type { Pretty } from '$lib/util/types.js';
 import { PRIVATE_FIELDS } from './auth/constant.server.js';
 
@@ -32,7 +31,6 @@ type Args = {
  */
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
-	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
 	isSystemOperation: boolean
@@ -44,7 +42,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.config = config;
 		this.defaultLocale = defaultLocale;
 		this.#event = event;
-		this.#rizom = event.locals.rizom;
 		this.create = this.create.bind(this);
 		this.find = this.find.bind(this);
 		this.findById = this.findById.bind(this);
@@ -143,7 +140,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
 		
 		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 
 		const params = {
 			select: args.select,
@@ -206,7 +203,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	findById(args: APIMethodArgs<typeof findById>): Promise<Doc> {
 		const { id, versionId, locale, draft, depth = 0 } = args;
 
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 
 		if (!id) {
 			throw new RizomError(RizomError.NOT_FOUND);
@@ -275,7 +272,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	updateById(args: APIMethodArgs<typeof updateById>): Promise<Doc> {
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 		return updateById<Doc>({
 			...args,
 			locale: this.#fallbackLocale(args.locale),
@@ -292,7 +289,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * const post = await rizom.collection('posts').deleteById('12345');
 	 */
 	deleteById = ({ id }: APIMethodArgs<typeof deleteById>) => {
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 		return deleteById({
 			id,
 			config: this.config,
@@ -311,7 +308,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	delete = (args: APIMethodArgs<typeof deleteDocs>) => {
-		this.#rizom.preventOperationLoop();
+		this.#event.locals.rizom.preventOperationLoop();
 		return deleteDocs({
 			config: this.config,
 			event: this.#event,

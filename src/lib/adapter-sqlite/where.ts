@@ -1,6 +1,6 @@
 import { and, or, eq, getTableColumns, inArray } from 'drizzle-orm';
 import * as drizzleORM from 'drizzle-orm';
-import { rizom } from '$lib/index.js';
+import { rizom, type GetRegisterType } from '$lib/index.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { Dic } from '$lib/util/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
@@ -8,20 +8,21 @@ import { isRelationField } from '$lib/util/field.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import type { ParsedQs } from 'qs';
 import { RizomError } from '$lib/core/errors/index.js';
-import { isDirectorySlug, isVersionsSlug, makeLocalesSlug } from '$lib/util/schema.js';
+import { isVersionsSlug, makeLocalesSlug } from '$lib/util/schema.js';
+import type { PrototypeSlug } from '../types.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
-	slug: string;
+	slug: PrototypeSlug;
 	locale?: string;
-	db: BetterSQLite3Database<any>;
+	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
 	draft?: boolean;
 };
 
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
-	const table = rizom.adapter.tables[slug];
+	const table = rizom.adapter.getTable(slug);
 	const tableNameLocales = makeLocalesSlug(slug);
-	const tableLocales = rizom.adapter.tables[tableNameLocales];
+	const tableLocales =  rizom.adapter.getTable(tableNameLocales);
 	
 	const localizedColumns =
 		locale && tableNameLocales in rizom.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
@@ -71,7 +72,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		if (isVersionsSlug(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
-			const rootTable = rizom.adapter.tables[rootSlug];
+			const rootTable = rizom.adapter.getTable(rootSlug);
 
 			// Query the root table for the hierarchy field
 			return inArray(
@@ -125,9 +126,9 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
 		const relationTableName = `${slug}Rels`;
-		const relationTable = rizom.adapter.tables[relationTableName];
+		const relationTable = rizom.adapter.getTable(relationTableName);
 		const conditions = [fn(relationTable[`${to}Id`], value)];
-
+		
 		if (localized) {
 			conditions.push(eq(relationTable.locale, locale));
 		}

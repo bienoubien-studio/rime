@@ -1,12 +1,9 @@
 import type { IconProps } from '@lucide/svelte';
 import type { Editor, EditorOptions, Range, Extension, Node, Mark } from '@tiptap/core';
 import type { Component } from 'svelte';
-import type { RichTextField } from '../index.js';
 import type { Snippet } from 'svelte';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { RichTextContext } from '../component/context.svelte.js';
-
-export type SetEditorConfig = (args: { config: RichTextField; element: HTMLElement }) => RichTextEditorConfig;
 
 export type RichTextFeatureType = 'mark' | 'node';
 

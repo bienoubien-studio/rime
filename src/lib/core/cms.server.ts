@@ -91,7 +91,7 @@ function createCMS() {
 		get adapter() {
 			return adapter;
 		},
-
+		
 		/**
 		 * Gets the configuration interface for this CMS instance
 		 * @returns The configuration interface

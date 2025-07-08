@@ -3,7 +3,7 @@ import { toCamelCase } from '$lib/util/string.js';
 import { cleanupStoredFiles } from '$lib/core/collections/upload/disk/delete.js';
 import { saveFile } from '$lib/core/collections/upload/disk/save.js';
 import { isUploadConfig } from '$lib/util/config.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/hooks.js';
+import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 
 /**
