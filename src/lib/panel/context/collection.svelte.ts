@@ -15,7 +15,7 @@ import { env } from '$env/dynamic/public';
 import cloneDeep from 'clone-deep';
 import { toNestedStructure } from '$lib/util/doc.js';
 import { PARAMS } from '$lib/core/constant.js';
-import { trycatch } from '$lib/util/trycatch.js';
+import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
 
 type SortMode = 'asc' | 'dsc';
@@ -89,10 +89,9 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		}
 		return columns;
 	};
-
+	
 	const columns = buildFieldColumns(config.fields)
 		.map((col) => {
-			// @TODO : do it when building config ?
 			// Set column position
 			let tableConfig: FieldPanelTableConfig = { position: 99 };
 			if (typeof col.table === 'number') {
@@ -130,40 +129,21 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	};
 
 	const deleteDocs = async (ids: string[]) => {
-		let errorsCount = 0;
-
 		const toDelete = [...docs].filter((doc) => ids.includes(doc.id));
 		docs = docs.filter((doc) => !ids.includes(doc.id));
 		initialDocs = docs;
 
-		// Build the promise for each doc
-		const promises = ids.map(async (id) => {
-			return fetch(`/api/${config.slug}/${id}`, {
-				method: 'DELETE',
-				headers: {
-					'content-type': 'application/json'
-				}
-			}).then((response) => {
-				if (response.status !== 200) {
-					const docError = toDelete.find((doc) => doc.id === id);
-					docs.push(docError!);
-					initialDocs = docs;
-				}
-				return response;
-			});
+		const deleteUrl = `/api/${config.slug}?where[id][in_array]=${toDelete.map((d) => d.id).join(',')}`;
+		const [error, _] = await trycatchFetch(deleteUrl, {
+			method: 'DELETE'
 		});
 
-		await Promise.all(promises);
-
-		// Inform user if all delete succeed
-		let message = `Successfully deleted ${ids.length} docs`;
-		if (errorsCount > 0) {
-			message = `Successfully deleted ${ids.length - errorsCount} docs, ${errorsCount} errors`;
-			toast.warning(message);
+		if (error) {
+			console.error(error);
+			toast.error('An error occured while deleting documents');
 		} else {
-			toast.success(message);
+			toast.success(`Successfully deleted ${ids.length} docs`);
 		}
-
 		await invalidateAll();
 	};
 
