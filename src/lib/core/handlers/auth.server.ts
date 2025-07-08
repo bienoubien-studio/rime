@@ -21,8 +21,6 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		headers: event.request.headers
 	});
 	
-	// Redirect to the proper route
-
 	// for /panel request
 	if (isPanelRoute) {
 		const users = await rizom.auth.getAuthUsers();

@@ -103,7 +103,7 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 		if (typeof data.name !== 'string' || typeof data.email !== 'string' || typeof args.data.authUserId !== 'string') {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'unable to signin user');
 		}
-		
+
 		event.locals.user = await rizom.auth.getUserAttributes({
 			authUserId: args.data.authUserId,
 			slug: config.slug

@@ -22,13 +22,14 @@ class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 		return this;
 	}
 
-	toSchema(parentPath?: string) {
-		const { camel, snake } = this.getSchemaName(parentPath);
+	_toSchema(parentPath?: string) {
+		const { camel, snake } = this._getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
+		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
 		return `${camel}: text('${snake}')${suffix}`;
 	}
 
-	toType() {
+	_toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: string`;
 	}
 

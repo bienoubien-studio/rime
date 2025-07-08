@@ -10,12 +10,12 @@ import type { Dic } from '$lib/util/types';
  *
  * @example
  * // In a route handler
- * const [error, data] = await trycatch(extractData(event.request));
+ * const [error, data] = await trycatch(() => extractData(event.request));
  * if (error) {
  *   return handleError(error, { context: 'api' });
  * }
  */
-export const extractData = async <T extends object>(request: RequestEvent['request']) => {
+export const extractData = async <T extends Record<string, any>>(request: RequestEvent['request']) => {
 	let data;
 	try {
 		const contentType = request.headers.get('content-type');

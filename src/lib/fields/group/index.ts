@@ -31,10 +31,10 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 		return this;
 	}
 
-	toType() {
+	_toType() {
 		const fieldsTypes = this.field.fields
 			.filter((field) => field instanceof FormFieldBuilder)
-			.map((field) => field.toType())
+			.map((field) => field._toType())
 			.join(',\n\t');
 		return `${this.field.name}: {${fieldsTypes}}`;
 	}

@@ -10,11 +10,11 @@ export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) =
   
 	const select =
 		args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
-	const emptySelect = select.length === 0;
+	const HAS_SELECT = select.length > 0;
 
 	// If there is a select param, populate url only if included
-	if (!emptySelect && !select.includes('url')) return args;
-
+	if (HAS_SELECT) return args;
+	
 	// Else populate url
 	const { config, event, context } = args;
 	const locale = context.params.locale;

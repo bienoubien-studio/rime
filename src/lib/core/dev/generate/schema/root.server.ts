@@ -143,7 +143,7 @@ const buildRootTable = ({
 				}
 			} else if (field instanceof FormFieldBuilder) {
 				if (checkLocalized(field)) {
-					templates.push(field.toSchema(parentPath) + ',');
+					templates.push(field._toSchema(parentPath) + ',');
 				}
 			}
 		}

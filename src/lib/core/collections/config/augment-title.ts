@@ -1,4 +1,4 @@
-import { findTitleField } from '$lib/core/config/build/fields/findTitle.js';
+import { findTitleField } from '$lib/core/config/build/fields/find-title.js';
 import type { AuthConfig, UploadConfig } from '$lib/core/config/types/index.js';
 import type { Collection } from '../../../types.js';
 

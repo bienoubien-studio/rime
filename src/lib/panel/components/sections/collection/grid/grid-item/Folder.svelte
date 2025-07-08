@@ -49,7 +49,7 @@
 
 	async function handleDelete() {
 		const url = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folder.id}`;
-		const [error, _] = await trycatch(fetch(url, { method: 'DELETE' }).then((r) => r.json()));
+		const [error, _] = await trycatchFetch(url, { method: 'DELETE' }).then((r) => r.json());
 		if (error) {
 			return toast.error('Error deleting folder');
 		}

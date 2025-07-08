@@ -29,7 +29,7 @@ export default function (slug: CollectionSlug) {
 			select: params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined
 		};
 		
-		const [error, docs] = await trycatch(rizom.collection(slug).find(apiParams));
+		const [error, docs] = await trycatch(() => rizom.collection(slug).find(apiParams));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

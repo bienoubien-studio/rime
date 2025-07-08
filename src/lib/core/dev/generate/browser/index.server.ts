@@ -1,11 +1,11 @@
 import { logger } from '$lib/core/logger/index.server.js';
 import cache from '../../cache/index.js';
 import type { CompiledConfig } from '$lib/core/config/types/index.js';
-import { privateFieldNames } from '$lib/core/collections/auth/config/privateFields.server.js';
 import type { FieldsComponents } from '$lib/panel/types.js';
 import type { FieldsType } from '$lib/fields/types.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
 import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.server.js';
+import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 
 let functionRegistry = new Map<string, string>();
 let importRegistry = new Map<string, string>();
@@ -50,11 +50,11 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 	if (excludePatterns.some((pattern) => new RegExp(pattern).test(fullPath))) {
 		return false;
 	}
-
-	// Rest of your existing checks for objects
+	
+	// Rest of existing checks for objects
 	if (typeof value === 'object' && value !== null) {
 		if ('name' in value && 'type' in value) {
-			if (privateFieldNames.includes(value.name)) {
+			if (PRIVATE_FIELDS.includes(value.name)) {
 				return false;
 			}
 		}

@@ -2,8 +2,6 @@ import { spawnSync } from 'node:child_process';
 import fs from 'fs';
 import cache from '../../cache/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
 
 const write = (schema: string) => {
 	const cachedSchema = cache.get('schema');
@@ -27,8 +25,6 @@ const write = (schema: string) => {
 			console.log('\n ⚡︎ npx drizzle-kit push \n');
 			spawnSync('npx', ['drizzle-kit', 'push'], { stdio: 'inherit' });
 			console.log('\n============================================================');
-
-			console.log(readFileSync(path.join(process.cwd(), 'src/lib/server/schema.ts'), { encoding: 'utf-8'}))
 		}
 	});
 };

@@ -4,12 +4,14 @@ import { createBetterAuthUser } from "./before-create/create-better-auth-user.se
 import { preventSupperAdminDeletion } from "./before-delete/prevent-superadmin-deletion.server.js";
 import { forwardRolesToBetterAuth } from "./before-update/forward-roles.server.js";
 import { preventSuperAdminMutation } from "./before-update/prevent-superadmin-mutation.server.js";
+import { preventUserMutations } from "./before-update/prevent-user-mutations.server.js";
 import { augmentFieldsPassword } from "./before-upsert/augment-fields-password.server.js";
 
 export {
 	// afterCreateSetAdminRole,
 	deleteBetterAuthUser,
 	createBetterAuthUser,
+	preventUserMutations,
 	forwardRolesToBetterAuth,
 	augmentFieldsPassword,
 	preventSuperAdminMutation,

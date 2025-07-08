@@ -45,7 +45,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 
 			/** Get doc */
-			const [error, document] = await trycatch(collection.findById({ id, locale, versionId, draft: true }));
+			const [error, document] = await trycatch(() => collection.findById({ id, locale, versionId, draft: true }));
 			doc = document;
 
 			if (error) {
@@ -89,7 +89,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		if (withVersion) {
 			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = event.fetch(url).then((r) => r.json());
-			const [error, result] = await trycatch(promise);
+			const [error, result] = await trycatch(() => promise);
 			if (error || !Array.isArray(result.docs)) {
 				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}

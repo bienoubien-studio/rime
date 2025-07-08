@@ -25,7 +25,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledArea;
-	_isSystemOperation: boolean
+	isSystemOperation: boolean
 
 	/**
 	 * Creates a new AreaInterface instance
@@ -43,7 +43,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		this.defaultLocale = defaultLocale;
 		this.find = this.find.bind(this);
 		this.update = this.update.bind(this);
-		this._isSystemOperation = false
+		this.isSystemOperation = false
 	}
 
 	/**
@@ -98,10 +98,10 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			rizom: this.#rizom,
 			depth,
 			draft,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		};
 
-		if (this.#event.locals.cacheEnabled && !this._isSystemOperation) {
+		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('area.find', {
 				slug: this.config.slug,
 				select,
@@ -144,7 +144,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 			draft,
 			config: this.config,
 			event: this.#event,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		});
 	}
 }

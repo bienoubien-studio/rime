@@ -14,17 +14,17 @@ export default function (slug: AreaSlug) {
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
 			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
 			: undefined;
-		
-		const [extractError, data] = await trycatch(extractData(event.request));
+
+		const [extractError, data] = await trycatch(() => extractData(event.request));
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
 
-		if(data.locale){
-			rizom.setLocale(data.locale)
+		if (data.locale) {
+			rizom.setLocale(data.locale);
 		}
 
-		const [error, doc] = await trycatch(
+		const [error, doc] = await trycatch(() =>
 			rizom.area(slug).update({
 				data,
 				versionId,

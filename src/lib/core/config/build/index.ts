@@ -4,14 +4,14 @@ import { RizomError } from '$lib/core/errors/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { registerPlugins } from './plugins.server.js';
 import { compileConfig } from '../compile.server.js';
-import { buildComponentsMap } from './fields/componentMap.js';
+import { buildComponentsMap } from './fields/component-map.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
-import { buildStaffCollection } from '$lib/core/collections/auth/config/staffConfig.server.js';
+import { buildStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.js';
 

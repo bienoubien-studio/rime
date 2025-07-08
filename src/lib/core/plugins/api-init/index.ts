@@ -30,7 +30,7 @@ export const apiInit: Plugin<never> = () => {
 
 		event.locals.isInit = true;
 
-		const [signUpError, __] = await trycatch(
+		const [signUpError, __] = await trycatch(() =>
 			event.locals.rizom.auth.betterAuth.api.signUpEmail({
 				body: {
 					email: data.email,

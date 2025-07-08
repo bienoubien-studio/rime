@@ -9,12 +9,13 @@ import type { Collection } from '../../../types.js';
  */
 export const augmentNested = <T extends { nested?: boolean; fields: Collection<any>['fields'] }>(config: T): T => {
 	let fields = [...config.fields];
-	
+
 	if (config.nested) {
-		const _parentField = text('_parent').hidden()._root();
-		// @TODO For now overwrite the toSchema method, it is ugly but it works
-		// Later maybe add a field specific method to set a schema output
-		_parentField.toSchema = () => `_parent: text('_parent').references((): any => pages.id, {onDelete: 'set null'})`;
+		const _parentField = text('_parent')
+			.generateSchema(() => `_parent: text('_parent').references((): any => pages.id, {onDelete: 'set null'})`)
+			.hidden()
+			._root();
+		
 		fields.push(_parentField);
 		fields.push(number('_position').defaultValue(0).hidden()._root());
 	}

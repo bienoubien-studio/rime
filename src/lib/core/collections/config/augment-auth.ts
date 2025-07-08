@@ -1,6 +1,6 @@
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { text } from '$lib/fields/text/index.server.js';
-import { usersFields } from '../auth/config/usersFields.js';
+import { usersFields } from '../auth/fields.server.js';
 import type { AugmentCollectionFn } from './types.js';
 import { select } from '$lib/fields/select/index.js';
 import type { Collection } from '../../../types.js';
@@ -55,18 +55,19 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 				return true;
 			})
 		: roles;
-	
+
 	const rolesField = select('roles')
 		.options(...roles)
 		.many()
 		.required();
-	
+
 	if (IS_GENERIC_COLLECTION) {
 		rolesField.access({
 			create: () => true,
 			read: (user) => !!user,
 			update: (user) => !!user
 		});
+		
 	} else {
 		rolesField.access({
 			create: (user) => !!user && access.isAdmin(user),
@@ -82,14 +83,16 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 		rolesField,
 		...normalizedAuthConfig.fields,
 		// Add apiKeyId for api key auth type.
-		...(IS_API_AUTH ? [text('apiKeyId').hidden().readonly()] : []),
+		...(IS_API_AUTH ? [text('apiKeyId').hidden().readonly()] : [])
 	];
 
-	if(IS_API_AUTH){
-		const ownerIdField = text('ownerId').hidden().readonly()
-		ownerIdField.toSchema = () => `ownerId: text('onwer_id').references(() => staff.id, {onDelete: 'cascade'})`;
-		fields.push(ownerIdField)
+	if (IS_API_AUTH) {
+		const ownerIdField = text('ownerId')
+			.hidden()
+			.readonly()
+			.generateSchema(() => `ownerId: text('onwer_id').references(() => staff.id, {onDelete: 'cascade'})`);
+		fields.push(ownerIdField);
 	}
-	
+
 	return { ...normalizedAuthConfig, fields };
 };

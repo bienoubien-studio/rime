@@ -1,4 +1,4 @@
-import { privateFieldNames } from './auth/config/privateFields.server.js';
+
 import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
 import { isFormField } from '../../util/field.js';
@@ -16,6 +16,7 @@ import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { Rizom } from '../rizom.server.js';
 import type { Pretty } from '$lib/util/types.js';
+import { PRIVATE_FIELDS } from './auth/constant.server.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -34,7 +35,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#rizom: Rizom;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
-	_isSystemOperation: boolean
+	isSystemOperation: boolean
 
 	/**
 	 * Initializes the collection interface
@@ -49,7 +50,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.findById = this.findById.bind(this);
 		this.updateById = this.updateById.bind(this);
 		this.deleteById = this.deleteById.bind(this);
-		this._isSystemOperation = false
+		this.isSystemOperation = false
 	}
 
 	system(isSytem:boolean = true) {
@@ -60,7 +61,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			defaultLocale: this.defaultLocale,
 			event: this.#event
 		});
-    systemCollection._isSystemOperation = true;
+    systemCollection.isSystemOperation = true;
     return systemCollection;
   }
 
@@ -88,7 +89,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
-				.filter((field: FormField) => !privateFieldNames.includes(field.name));
+				.filter((field: FormField) => !PRIVATE_FIELDS.includes(field.name));
 
 			return createBlankDocument({
 				...this.config,
@@ -124,7 +125,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
 			event: this.#event,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		});
 	}
 
@@ -155,10 +156,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			limit,
 			draft,
 			offset,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		};
 
-		if (this.#event.locals.cacheEnabled && !this._isSystemOperation) {
+		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
 				slug: this.config.slug,
 				select: args.select,
@@ -218,10 +219,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			event: this.#event,
 			draft,
 			depth,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		};
 
-		if (this.#event.locals.cacheEnabled && !this._isSystemOperation) {
+		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.findById', {
 				slug: this.config.slug,
 				userRoles: this.#event.locals.user?.roles,
@@ -233,7 +234,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			});
 			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
 		}
-		
+
 		return findById<Doc>(params);
 	}
 
@@ -280,7 +281,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
 			event: this.#event,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		});
 	}
 
@@ -296,7 +297,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			id,
 			config: this.config,
 			event: this.#event,
-			isSystemOperation: this._isSystemOperation
+			isSystemOperation: this.isSystemOperation
 		});
 	};
 
@@ -314,7 +315,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		return deleteDocs({
 			config: this.config,
 			event: this.#event,
-			isSystemOperation: this._isSystemOperation,
+			isSystemOperation: this.isSystemOperation,
 			...args
 		});
 	};

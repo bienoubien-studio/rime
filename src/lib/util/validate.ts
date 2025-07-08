@@ -187,7 +187,8 @@ export const uploadPath = (value: unknown): string | true => {
 	}
 
 	// Check if path starts with ROOT_NAME
-	if (!value.startsWith(UPLOAD_PATH.ROOT_NAME)) {
+	const STARTS_WITH_ROOT = value === UPLOAD_PATH.ROOT_NAME || value.startsWith(`${UPLOAD_PATH.ROOT_NAME}:`)
+	if (!STARTS_WITH_ROOT) {
 		return `Path must start with "${UPLOAD_PATH.ROOT_NAME}"`;
 	}
 

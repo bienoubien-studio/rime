@@ -1,5 +1,6 @@
-
 export const PANEL_USERS = 'staff';
+
+export const PRIVATE_FIELDS = ['password', 'token', 'isSuperAdmin'];
 
 export const BETTER_AUTH_ROLES = {
   /** Panel users admin */

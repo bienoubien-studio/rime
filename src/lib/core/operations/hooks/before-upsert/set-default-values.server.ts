@@ -12,14 +12,16 @@ import { getRequestEvent } from '$app/server';
 export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
 	const { rizom, operation } = args;
 	const configMap = args.context.configMap;
-	
+
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @setDefaultValues');
 
 	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
 		let value = getValueAtPath(key, output);
+
 		let isEmpty;
 		const shouldAddDefault = operation === 'create' || (operation === 'update' && config.required);
+
 		try {
 			isEmpty = config.isEmpty(value);
 		} catch {

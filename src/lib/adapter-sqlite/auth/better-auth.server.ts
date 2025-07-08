@@ -1,10 +1,10 @@
 import type { CorePlugins } from '$lib/core/types/plugins.js';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { admin as adminPlugin, apiKey, bearer, magicLink } from 'better-auth/plugins';
+import { admin as adminPlugin, apiKey, magicLink } from 'better-auth/plugins';
 import type { AuthDatabaseInterfaceArgs } from './index.server.js';
 import { accessControl, admin, user, staff } from '$lib/core/collections/auth/better-auth-permissions.js';
-import { betterAuthAfterHook } from './better-auth-hooks.server.js';
+import { betterAuthAfterHook, betterAuthBeforeHook } from './better-auth-hooks.server.js';
 
 export const configureBetterAuth = ({ db, schema, configInterface }: AuthDatabaseInterfaceArgs) => {
 	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
@@ -52,6 +52,7 @@ export const configureBetterAuth = ({ db, schema, configInterface }: AuthDatabas
 			}
 		},
 		hooks: {
+			before: betterAuthBeforeHook,
 			after: betterAuthAfterHook
 		},
 		emailAndPassword: {
@@ -83,8 +84,6 @@ const configurePlugins = (configInterface: AuthDatabaseInterfaceArgs['configInte
 			}
 		});
 
-	const bearerPlugin = bearer();
-
 	const makeApiKeyPlugin = () =>
 		apiKey({
 			defaultKeyLength: 48,
@@ -95,12 +94,12 @@ const configurePlugins = (configInterface: AuthDatabaseInterfaceArgs['configInte
 				}
 			}
 		});
-	
+
 	// Should return separate list of plugins to preserve type inference
 	if (HAS_API_KEY && HAS_MAGIC_LINK) {
 		return [
 			makeAdminPlugin(),
-			bearerPlugin,
+
 			magicLink({
 				sendMagicLink: ({ email, url, token }) => {
 					mailer.sendMail({
@@ -113,11 +112,11 @@ const configurePlugins = (configInterface: AuthDatabaseInterfaceArgs['configInte
 			makeApiKeyPlugin()
 		];
 	} else if (HAS_API_KEY) {
-		return [makeAdminPlugin(), bearerPlugin, makeApiKeyPlugin()];
+		return [makeAdminPlugin(), makeApiKeyPlugin()];
 	} else if (HAS_MAGIC_LINK) {
 		return [
 			makeAdminPlugin(),
-			bearerPlugin,
+
 			magicLink({
 				sendMagicLink: ({ email, url, token }) => {
 					mailer.sendMail({
@@ -129,6 +128,6 @@ const configurePlugins = (configInterface: AuthDatabaseInterfaceArgs['configInte
 			})
 		];
 	} else {
-		return [makeAdminPlugin(), bearerPlugin];
+		return [makeAdminPlugin()];
 	}
 };

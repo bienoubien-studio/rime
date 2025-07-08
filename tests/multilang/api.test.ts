@@ -2,10 +2,11 @@ import test, { expect } from '@playwright/test';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import path from 'path';
 import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
+import { API_BASE_URL, signIn } from '../util.js';
 
-const API_BASE_URL = `${process.env.PUBLIC_RIZOM_URL}/api`;
 
-let token: string;
+const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
+const signInEditor = signIn('editor@bienoubien.com', 'a&1Aa&1A');
 
 /****************************************************
 /* Init
@@ -45,11 +46,6 @@ test('Login should be successfull', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-
-	const headerToken = response.headers()['set-auth-token'];
-	expect(headerToken).toBeDefined();
-	token = headerToken;
-
 	const json = await response.json();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
@@ -67,14 +63,12 @@ let pageId: string;
  * Offset limit
  */
 test('Should get correct offset / limit', async ({ request }) => {
-	const headers = {
-		Authorization: `Bearer ${token}`
-	};
-
+	const headers = await signInSuperAdmin(request);
 	const to3digits = (n: number) => n.toString().padStart(3, '0');
 
 	// Create 100 pages
 	for (let i = 1; i < 100; i++) {
+		
 		await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
@@ -88,6 +82,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 
 	// Check findAll
 	for (let i = 1; i < 10; i++) {
+		
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
@@ -101,8 +96,10 @@ test('Should get correct offset / limit', async ({ request }) => {
 		expect(response.docs.at(9).title).toBe('Page ' + to3digits(offset + 10));
 	}
 
+	
 	// Create 100 other pages
 	for (let i = 1; i < 100; i++) {
+		
 		const { doc } = await request
 			.post(`${API_BASE_URL}/pages`, {
 				headers,
@@ -114,17 +111,11 @@ test('Should get correct offset / limit', async ({ request }) => {
 				}
 			})
 			.then((r) => r.json());
-
-		await request.patch(`${API_BASE_URL}/pages/${doc.id}`, {
-			headers,
-			data: {
-				createdAt: new Date(new Date('2025-05-22T06:58:35.000Z').getTime() + i * 1000)
-			}
-		});
 	}
 
 	// Check with query
 	for (let i = 1; i < 10; i++) {
+		
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
@@ -142,26 +133,15 @@ test('Should get correct offset / limit', async ({ request }) => {
 	let allPages = await request
 		.get(`${API_BASE_URL}/pages`)
 		.then((r) => r.json())
-		.then((r) => r.docs)
-		.catch((err) => {
-			console.log(err);
-			expect(false).toBe(true);
-		});
+		.then((r) => r.docs);
 
+	
 	expect(allPages.toBeDefined);
 	expect(allPages.length).toBe(198);
-
-	await Promise.all(
-		allPages.map((doc: any) =>
-			request.delete(`${API_BASE_URL}/pages/${doc.id}`, {
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			})
-		)
-	).catch((err) => {
-		console.log(err);
-		expect(false).toBe(true);
+	
+	const ids = allPages.map((p: { id: string }) => p.id).join(',');
+	await request.delete(`${API_BASE_URL}/pages?where[id][in_array]=${ids}`, {
+		headers
 	});
 
 	allPages = await request
@@ -174,9 +154,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 
 test('Should create Home', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Accueil',
@@ -213,9 +191,7 @@ test('Should get Home EN with FR data', async ({ request }) => {
 
 test('Should set Home title/slug EN to Home/home', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Home',
@@ -255,9 +231,7 @@ test('Should get Home EN with EN data', async ({ request }) => {
 
 test('Should create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Page',
@@ -291,9 +265,7 @@ test('Should create a page', async ({ request }) => {
 
 test('Should get only the layout page prop', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/?where[id][equals]=${pageId}&select=layout.components`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const { docs } = await response.json();
@@ -381,9 +353,7 @@ let imageID: string;
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/basic/landscape.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			file: { base64, filename: 'Land$scape -3.JPG' },
 			alt: 'alt'
@@ -402,9 +372,7 @@ test('Should create a Media', async ({ request }) => {
 let pageWithAuthorId: string;
 test('Should create an other page with author', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Page 2',
@@ -423,9 +391,7 @@ test('Should create an other page with author', async ({ request }) => {
 
 test('Should return last created page with author depth', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${pageWithAuthorId}?depth=1`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Page 2');
@@ -448,9 +414,7 @@ test('Should return Page 2 (query)', async ({ request }) => {
 
 test('Should delete page', async ({ request }) => {
 	const response = await request.delete(`${API_BASE_URL}/pages/${pageId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 });
@@ -510,9 +474,7 @@ test('Should return 2 pages with only attributes slug, title and id prop', async
 let pageWithBlockID: string;
 test('Should create a page with blocks', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Page with blocks',
@@ -538,9 +500,7 @@ test('Should create a page with blocks', async ({ request }) => {
 
 test('Should get the FR content of page with blocks (fallback)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${pageWithBlockID}?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Page with blocks');
@@ -558,9 +518,7 @@ test('Should get the FR content of page with blocks (fallback)', async ({ reques
 
 test('Should update EN content of page with blocks', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${pageWithBlockID}?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'Page with blocks but EN',
@@ -595,9 +553,7 @@ test('Should update EN content of page with blocks', async ({ request }) => {
 
 test('Should still get the FR content of page with blocks', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/pages/${pageWithBlockID}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	const { doc } = await response.json();
 	expect(doc.attributes.title).toBe('Page with blocks');
@@ -619,9 +575,7 @@ test('Should still get the FR content of page with blocks', async ({ request }) 
 
 test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/menu?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			nav: [
 				{
@@ -667,9 +621,7 @@ test('Should create some treeBlocks in Area Menu EN', async ({ request }) => {
 
 test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/menu`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	const { doc } = await response.json();
 	expect(doc.nav).toHaveLength(1);
@@ -680,9 +632,7 @@ test('Should not get localized treeBlocks in Area Menu FR', async ({ request }) 
 
 test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/menu`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			mainNav: [
 				{
@@ -712,11 +662,9 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 
 let editorId: string;
 
-test('Should create a user editor', async ({ request }) => {
+test('Should create a staff editor', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor@bienoubien.com',
 			name: 'Chesster',
@@ -732,23 +680,8 @@ test('Should create a user editor', async ({ request }) => {
 	editorId = data.doc.id;
 });
 
-test('Should logout user', async ({ request }) => {
-	const response = await request
-		.post(`${API_BASE_URL}/auth/sign-out`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
-		})
-		.then((r) => r.json());
-
-	expect(response.success).toBe(true);
-});
-
 test('Should not update Home', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
 		data: {
 			attributes: {
 				title: 'Accueil',
@@ -760,19 +693,12 @@ test('Should not update Home', async ({ request }) => {
 });
 
 test('Should not delete home', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
-	});
+	const response = await request.delete(`${API_BASE_URL}/pages/${homeId}`);
 	expect(response.status()).toBe(403);
 });
 
 test('Should not create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
 		data: {
 			attributes: {
 				title: 'Page 3',
@@ -787,33 +713,16 @@ test('Should not create a page', async ({ request }) => {
 /* Area
 /****************************************************/
 
-test('Login should be successfull (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
-		data: {
-			email: 'admin@bienoubien.studio',
-			password: 'a&1Aa&1A'
-		}
-	});
-
-	const headerToken = response.headers()['set-auth-token'];
-	expect(headerToken).toBeDefined();
-	token = headerToken;
-});
-
 test('Should get settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 });
 
 test('Should update settings', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/settings`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			maintenance: true,
 			legalMention: 'mentions légales'
@@ -826,9 +735,7 @@ test('Should update settings', async ({ request }) => {
 
 test('Should update settings EN', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/settings?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			legalMention: 'legals'
 		}
@@ -840,9 +747,7 @@ test('Should update settings EN', async ({ request }) => {
 
 test('Should get settings FR with still FR data', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings?locale=fr`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const { doc } = await response.json();
@@ -851,9 +756,7 @@ test('Should get settings FR with still FR data', async ({ request }) => {
 
 test('Should update infos', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			instagram: '@fooo',
 			legals: {
@@ -873,9 +776,7 @@ test('Should update infos', async ({ request }) => {
 
 test('Should update infos EN', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			legals: {
 				label: 'Google-en',
@@ -925,9 +826,7 @@ let editor2Id: string;
 
 test('Should create editor user for testing', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor2@bienoubien.com',
 			name: 'Editor2',
@@ -952,9 +851,7 @@ test('Should create page with multiple relations', async ({ request }) => {
 	};
 
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: payload
 	});
 
@@ -975,9 +872,7 @@ test('Should create page with multiple relations', async ({ request }) => {
 
 test('Should empty author relation', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: { author: [] }
 		}
@@ -993,9 +888,7 @@ test('Should empty author relation', async ({ request }) => {
 
 test('Should reduce contributors array', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: { contributors: [adminUserId] }
 		}
@@ -1011,9 +904,7 @@ test('Should reduce contributors array', async ({ request }) => {
 test('Should handle localized relations', async ({ request }) => {
 	// First set FR locale
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: { ambassadors: [adminUserId] },
 			locale: 'fr'
@@ -1022,9 +913,7 @@ test('Should handle localized relations', async ({ request }) => {
 
 	// Then set EN locale
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: { ambassadors: [editor2Id] },
 			locale: 'en'
@@ -1044,7 +933,7 @@ test('Should handle localized relations', async ({ request }) => {
 
 test('Should handle multiple locales with different relations', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=fr`, {
-		headers: { Authorization: `Bearer ${token}` },
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				ambassadors: adminUserId
@@ -1054,7 +943,7 @@ test('Should handle multiple locales with different relations', async ({ request
 	});
 
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: { Authorization: `Bearer ${token}` },
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				ambassadors: [editor2Id]
@@ -1075,7 +964,7 @@ test('Should handle multiple locales with different relations', async ({ request
 
 test('Should handle mixed localized and non-localized updates', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}?locale=en`, {
-		headers: { Authorization: `Bearer ${token}` },
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				ambassadors: [editor2Id],
@@ -1099,7 +988,7 @@ test('Should handle mixed localized and non-localized updates', async ({ request
 
 test('Should handle emptying relations in specific locale', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: { Authorization: `Bearer ${token}` },
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				ambassadors: []
@@ -1121,7 +1010,7 @@ test('Should handle emptying relations in specific locale', async ({ request }) 
 
 test('Should handle updates with missing locale', async ({ request }) => {
 	await request.patch(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: { Authorization: `Bearer ${token}` },
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				contributors: [editor2Id]
@@ -1141,9 +1030,7 @@ test('Should handle updates with missing locale', async ({ request }) => {
 
 test('Should delete test page', async ({ request }) => {
 	const response = await request.delete(`${API_BASE_URL}/pages/${page2Id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		}
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 });
@@ -1155,9 +1042,7 @@ test('Should delete test page', async ({ request }) => {
 test('Should logout admin user', async ({ request }) => {
 	const response = await request
 		.post(`${API_BASE_URL}/auth/sign-out`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
+			headers: await signInSuperAdmin(request)
 		})
 		.then((r) => r.json());
 
@@ -1174,16 +1059,11 @@ test('Should login editor', async ({ request }) => {
 
 	const status = response.status();
 	expect(status).toBe(200);
-	const headerToken = response.headers()['set-auth-token'];
-	expect(headerToken).toBeDefined();
-	token = headerToken;
 });
 
 test('Editor should not update admin password', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${adminUserId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInEditor(request),
 		data: {
 			password: 'a&1Aa&1A'
 		}
@@ -1193,9 +1073,7 @@ test('Editor should not update admin password', async ({ request }) => {
 
 test('Editor should not create a page', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/pages`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInEditor(request),
 		data: {
 			attributes: {
 				title: 'Page that will not be created',
@@ -1208,9 +1086,7 @@ test('Editor should not create a page', async ({ request }) => {
 
 test('Editor should update home', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/pages/${homeId}`, {
-		headers: {
-			Authorization: `Bearer ${token}`
-		},
+		headers: await signInEditor(request),
 		data: {
 			attributes: {
 				title: 'Home edited by editor'
@@ -1222,16 +1098,10 @@ test('Editor should update home', async ({ request }) => {
 	expect(data.doc.attributes.title).toBe('Home edited by editor');
 });
 
-/****************************************************
-/* Auth Lock
-/****************************************************/
-
 test('Should logout editor', async ({ request }) => {
 	const response = await request
 		.post(`${API_BASE_URL}/auth/sign-out`, {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
+			headers: await signInEditor(request)
 		})
 		.then((r) => r.json());
 

@@ -2,9 +2,9 @@ import { UsersRound } from '@lucide/svelte';
 import { access } from '$lib/util/access/index.js';
 import { collection } from '$lib/core/collections/config/builder.js';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import type { Option, PanelUsersConfig } from '../../../../types.js';
+import type { Option, PanelUsersConfig } from '../../../types.js';
 import { FormFieldBuilder } from '$lib/fields/builders/field.server.js';
-import { usersFields } from './usersFields.js';
+import { usersFields } from './fields.server.js';
 
 export const staffCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },

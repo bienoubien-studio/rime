@@ -30,10 +30,10 @@ export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<
 		icon: output.icon || FileText,
 		label: output.label ? output.label : capitalize(slug),
 		access: {
-			create: (user) => !!user,
-			read: (user) => !!user,
-			update: (user) => !!user,
-			delete: (user) => !!user,
+			create: (user) => !!user && !!user.isStaff,
+			read: (user) => !!user && !!user.isStaff,
+			update: (user) => !!user && !!user.isStaff,
+			delete: (user) => !!user && !!user.isStaff,
 			...output.access
 		}
 	};

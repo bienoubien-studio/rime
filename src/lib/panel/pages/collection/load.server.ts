@@ -51,7 +51,7 @@ export function collectionLoad(slug: CollectionSlug) {
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
 			const directoryCollection = rizom.collection(makeUploadDirectoriesSlug(slug));
 			// Check if dir exists
-			let [error, currentDirectory] = await trycatch(
+			let [error, currentDirectory] = await trycatch(() =>
 				directoryCollection.findById({
 					id: currentDirectoryPath
 				})
@@ -76,7 +76,7 @@ export function collectionLoad(slug: CollectionSlug) {
 			let parentDirectory;
 
 			if (parentPath) {
-				const [parentError, result] = await trycatch(
+				const [parentError, result] = await trycatch(() =>
 					directoryCollection.findById({
 						id: parentPath
 					})

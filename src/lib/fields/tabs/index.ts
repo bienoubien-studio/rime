@@ -17,12 +17,12 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 		return Tabs;
 	}
 
-	toType() {
+	_toType() {
 		return this.field.tabs
 			.map((tab) => {
 				const fieldsTypes = tab.raw.fields
 					.filter((field) => field instanceof FormFieldBuilder)
-					.map((field) => field.toType())
+					.map((field) => field._toType())
 					.join(',\n\t\t');
 				return `${tab.raw.name}: {${fieldsTypes}}`;
 			})

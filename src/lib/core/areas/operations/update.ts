@@ -33,7 +33,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		},
 		isSystemOperation
 	};
-
+	
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

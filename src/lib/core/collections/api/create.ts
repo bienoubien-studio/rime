@@ -11,7 +11,7 @@ export default function (slug: CollectionSlug) {
 		const { rizom } = event.locals;
 
 		const collection = rizom.collection(slug);
-		const [extractError, data] = await trycatch(extractData(event.request));
+		const [extractError, data] = await trycatch(() => extractData(event.request));
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
@@ -25,7 +25,7 @@ export default function (slug: CollectionSlug) {
 			rizom.setLocale(data.locale)
 		}
 
-		const [error, document] = await trycatch(collection.create({ data, locale: rizom.getLocale() }));
+		const [error, document] = await trycatch(() => collection.create({ data, locale: rizom.getLocale() }));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

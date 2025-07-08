@@ -29,19 +29,20 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		return Cell;
 	}
 
-	toType() {
+	_toType() {
 		const fieldsTypes = this.field.fields
 			.filter((field) => field instanceof FormFieldBuilder)
-			.map((field) => field.toType())
+			.map((field) => field._toType())
 			.join(',\n');
 		return `${this.field.name}: Array<{${fieldsTypes}}>`;
 	}
 
-	toSchema() {
-		const { camel, snake } = super.getSchemaName();
-		const suffix = templateUniqueRequired(this.field);
-		return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
-	}
+	// _toSchema() {
+	// 	const { camel, snake } = super._getSchemaName();
+	// 	const suffix = templateUniqueRequired(this.field);
+	// 	if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
+	// 	return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
+	// }
 
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = [...(this.field.fields || []), ...fields];

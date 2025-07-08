@@ -123,9 +123,9 @@ const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
 
 	for (const field of fields) {
 		if (field instanceof FormFieldBuilder) {
-			strFields.push(field.toType());
+			strFields.push(field._toType());
 		} else if (field instanceof TabsBuilder) {
-			strFields.push(field.toType());
+			strFields.push(field._toType());
 		}
 	}
 	return strFields;

@@ -1,10 +1,11 @@
 import type { Prototype } from '$lib/core/types/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { HookBeforeOperation } from '$lib/core/config/types/hooks.js';
+import { logger } from '$lib/core/logger/index.server.js';
 
 export const authorize: HookBeforeOperation<Prototype> = async (args) => {
 	const { config, event, operation, context } = args;
-	let authorized;
+	let authorized = false;
 
 	const params = {
 		event,
@@ -12,7 +13,7 @@ export const authorize: HookBeforeOperation<Prototype> = async (args) => {
 	};
 	
 	if(args.context.isSystemOperation) return args
-
+	
 	switch (operation) {
 		case 'create':
 			authorized = config.access.create(event.locals.user, params);
@@ -27,9 +28,10 @@ export const authorize: HookBeforeOperation<Prototype> = async (args) => {
 			authorized = config.access.delete(event.locals.user, params);
 			break;
 	}
-
+	
 	if (!authorized) {
-		throw new RizomError(RizomError.UNAUTHORIZED, `${operation} ${config.slug}`);
+		logger.error(RizomError.UNAUTHORIZED)
+		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 	return args;
 };

@@ -19,7 +19,7 @@ export default function (slug: CollectionSlug) {
 			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
 			: undefined;
 
-		const [extractError, data] = await trycatch(extractData(event.request));
+		const [extractError, data] = await trycatch(() => extractData(event.request));
 		
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
@@ -29,7 +29,7 @@ export default function (slug: CollectionSlug) {
 			rizom.setLocale(data.locale)
 		}
 		
-		const [error, document] = await trycatch(
+		const [error, document] = await trycatch(() => 
 			rizom.collection(slug).updateById({
 				id,
 				data,

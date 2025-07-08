@@ -23,8 +23,8 @@ export type Plugin<T = void> = (options?: T) => {
 		type: string;
 		component: Component;
 		cell: Component | null;
-		toSchema: () => string;
-		toType: () => string;
+		_toSchema: () => string;
+		_toType: () => string;
 	}>;
 };
 

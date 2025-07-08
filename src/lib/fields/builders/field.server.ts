@@ -57,8 +57,12 @@ export class FieldBuilder<T extends Field = Field> {
 	}
 }
 
+type GenerateSchemaFn = (args:{ camel:string, snake:string, suffix:string }) => string
+
 export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
-	//
+	
+	_generateSchema: null | GenerateSchemaFn = null
+	
 	constructor(name: string, type: FieldsType) {
 		super(type);
 		this.field.name = name;
@@ -77,12 +81,12 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this.field.name;
 	}
 
-	toType() {
+	_toType() {
 		console.warn(this.field.type + ' missing toType not implementated');
 		return '';
 	}
 
-	getSchemaName(parentPath?: string) {
+	_getSchemaName(parentPath?: string) {
 		const name = parentPath ? `${parentPath}__${this.field.name}` : this.field.name;
 
 		// Preserve leading underscore if present
@@ -102,11 +106,16 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		};
 	}
 
-	toSchema(parentPath?: string): string {
+	_toSchema(parentPath: string): string {
 		console.warn(
 			`${this.field.type} ${parentPath ? `@${parentPath}/${this.field.name}` : ''}missing toSchema not implementated`
 		);
 		return '';
+	}
+
+	generateSchema(fn:GenerateSchemaFn){
+		this._generateSchema = fn
+		return this
 	}
 
 	label(label: string) {

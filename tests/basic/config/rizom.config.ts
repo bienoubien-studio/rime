@@ -37,6 +37,7 @@ import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 
+
 const tabSEO = tab('metas')
 	.label('SEO')
 	.fields(text('title').label('Meta title').layout('compact'), textarea('description').label('Meta description'))
@@ -130,7 +131,6 @@ const Pages = collection('pages', {
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
 			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
-	// versions: true,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),

@@ -1,5 +1,4 @@
 import test, { expect } from '@playwright/test';
-import { except } from 'drizzle-orm/mysql-core';
 import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 
 const BASE_URL = 'http://rizom.test:5173';

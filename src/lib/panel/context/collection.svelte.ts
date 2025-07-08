@@ -299,7 +299,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 				headers: { 'Content-Type': 'application/json' }
 			});
 		});
-		const [error, _] = await trycatch(Promise.all(promises));
+		const [error, _] = await trycatch(() => Promise.all(promises));
 
 		if (error) {
 			console.error('API update failed:', error);

@@ -14,9 +14,11 @@ export default function (slug: AreaSlug) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 
-			const [error, document] = await trycatch(
+			const data = await extractData(event.request)
+			
+			const [error, document] = await trycatch(() =>
 				rizom.area(slug).update({
-					data: await extractData(event.request),
+					data,
 					versionId,
 					draft,
 					locale

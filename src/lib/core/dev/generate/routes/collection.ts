@@ -71,6 +71,7 @@ import * as api from '${PACKAGE_NAME}/api';
 
 export const GET = api.collection.get(${TScastVersionSlug(slug)})
 export const POST = api.collection.create(${TScastVersionSlug(slug)})
+export const DELETE = api.collection.delete(${TScastVersionSlug(slug)})
 `;
 
 /**

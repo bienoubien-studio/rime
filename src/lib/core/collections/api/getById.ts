@@ -16,7 +16,7 @@ export default function (slug: CollectionSlug) {
 		const draft = paramDraft ? paramDraft === 'true' : undefined;
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
-		const [error, document] = await trycatch(
+		const [error, document] = await trycatch(() =>
 			rizom.collection(slug).findById({
 				id,
 				locale: rizom.getLocale(),

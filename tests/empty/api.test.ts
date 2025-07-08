@@ -1,10 +1,5 @@
 import test, { expect } from '@playwright/test';
-import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
-
-const BASE_URL = process.env.PUBLIC_RIZOM_URL;
-const API_BASE_URL = `${BASE_URL}/api`;
-
-let token: string;
+import { API_BASE_URL } from '../util.js';
 
 /****************************************************
 /* Init
@@ -25,20 +20,16 @@ test('Second init should return 404', async ({ request }) => {
 /* Login
 /****************************************************/
 
-let adminUserId: string;
-
-test('Login should be successfull', async ({ request }) => {
+test('Login should be successfull', async ({ page, request }) => {
 	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
 		data: {
 			email: 'admin@bienoubien.studio',
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = response.headers()['set-auth-token'];
+	const cookie = response.headers()['set-cookie'];
 	const json = await response.json();
-	expect(headerToken).toBeDefined();
+	expect(cookie).toBeDefined();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	token = headerToken;
-	adminUserId = json.user.id;
 });

@@ -166,7 +166,7 @@ export function generateSchemaString(config: BuiltConfig) {
 
 			const baseRootFields = [date('createdAt').hidden(), date('updatedAt').hidden()];
 
-			schema.push(templateTable(areaSlug, baseRootFields.map((field) => field.toSchema()).join(',\n')));
+			schema.push(templateTable(areaSlug, baseRootFields.map((field) => field._toSchema()).join(',\n')));
 
 			versionsRelationsDefinitions = [
 				templateRelationOne({

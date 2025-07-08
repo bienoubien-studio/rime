@@ -44,10 +44,15 @@ export const augmentUpdload = <T extends Collection<any>>(config: T): WithUpload
 			};
 		}
 
-		const pathField = text('_path')._root().hidden().validate(validate.uploadPath);
-		pathField.toSchema = () =>
-			`_path: text('_path').references(() => ${makeUploadDirectoriesSlug(config.slug)}.id, {onDelete: 'cascade', onUpdate: 'cascade'})`;
-
+		const pathField = text('_path')
+			._root()
+			.hidden()
+			.validate(validate.uploadPath)
+			.generateSchema(
+				() =>
+					`_path: text('_path').references(() => ${makeUploadDirectoriesSlug(config.slug)}.id, {onDelete: 'cascade', onUpdate: 'cascade'})`
+			);
+		
 		// Add hidden fields
 		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden(), pathField);
 	}

@@ -23,7 +23,7 @@ export default function (slug: CollectionSlug) {
 
 			const collection = rizom.collection(slug);
 
-			const [error, document] = await trycatch(collection.create({ data, locale }));
+			const [error, document] = await trycatch(() => collection.create({ data, locale }));
 
 			if (error) {
 				return handleError(error, { context: 'action' });
@@ -59,7 +59,7 @@ export default function (slug: CollectionSlug) {
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 			const data = await extractData(event.request);
 
-			const [error, document] = await trycatch(
+			const [error, document] = await trycatch(() =>
 				rizom.collection(slug).updateById({
 					id,
 					data,

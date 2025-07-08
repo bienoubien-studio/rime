@@ -37,10 +37,10 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 		label: output.label ? output.label : { singular: capitalize(slug), plural: capitalize(slug), gender: 'm' },
 		icon: output.icon || FileText,
 		access: {
-			create: (user?: User) => !!user,
-			read: (user?: User) => !!user,
-			update: (user?: User) => !!user,
-			delete: (user?: User) => !!user,
+			create: (user) => !!user && !!user.isStaff,
+			read: (user) => !!user && !!user.isStaff,
+			update: (user) => !!user && !!user.isStaff,
+			delete: (user) => !!user && !!user.isStaff,
 			...output.access
 		} 
 	};

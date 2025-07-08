@@ -7,7 +7,6 @@ import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug,
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
 import type { Dic } from '$lib/util/types.js';
 import { extractFieldName } from '../fields/tree/util.js';
-import { privateFieldNames } from '../core/collections/auth/config/privateFields.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { logger } from '../core/logger/index.server.js';
 
@@ -20,6 +19,7 @@ import {
 	makeVersionsSlug,
 	transformDatabaseColumnsToPaths
 } from '../util/schema.js';
+import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 
 /****************************************************/
 /* Types
@@ -215,7 +215,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 			keysToDelete.push('authUserId', 'editedBy');
 		}
 
-		keysToDelete.push(...privateFieldNames);
+		keysToDelete.push(...PRIVATE_FIELDS);
 
 		if (withBlank) {
 			output = omit(keysToDelete, deepmerge(blankDocument, output, { arrayMerge: (_, y) => y }));

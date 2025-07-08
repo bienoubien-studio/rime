@@ -43,7 +43,7 @@ export const updateDirectoryChildren: HookAfterUpdate<'collection', GenericDoc> 
 	const updates: Update[] = args.context.directoriesUpdates || [];
 
 	for (const update of updates) {
-		const [error, _] = await trycatch(collection.updateById(update));
+		const [error, _] = await trycatch(() => collection.updateById(update));
 		if (error) {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'Error when updating child directories');
 		}

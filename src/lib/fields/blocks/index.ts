@@ -23,7 +23,7 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		};
 	}
 
-	toType() {
+	_toType() {
 		const blockNames = this.field.blocks.map((block) => `Block${toPascalCase(block.raw.name)}`);
 		return `${this.field.name}: Array<${blockNames.join(' | ')}>,`;
 	}

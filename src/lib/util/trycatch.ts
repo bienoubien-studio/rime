@@ -7,7 +7,7 @@
  *
  * @example
  * // Using safe to handle API calls without try/catch
- * const [error, data] = await trycatch(fetchData());
+ * const [error, data] = await trycatch(() => fetchData());
  * if (error) {
  *   // Handle error case
  *   console.error(error);
@@ -16,13 +16,15 @@
  *   processData(data);
  * }
  */
-export const trycatch = async <T>(promise: Promise<T>): Promise<[Error, never] | [never, T]> => {
-	try {
-		const result = await promise;
-		return [null, result] as [never, T];
-	} catch (error) {
-		return [error as Error, null] as [Error, never];
-	}
+export const trycatch = async <T>(promiseOrFn: Promise<T> | (() => Promise<T>)): Promise<[Error, never] | [never, T]> => {
+  try {
+    // If it's a function, execute it inside the try/catch
+    const promise = typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn;
+    const result = await promise;
+    return [null, result] as [never, T];
+  } catch (error) {
+    return [error as Error, null] as [Error, never];
+  }
 };
 
 /**

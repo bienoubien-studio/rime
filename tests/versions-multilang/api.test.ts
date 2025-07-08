@@ -2,14 +2,9 @@ import test, { expect } from '@playwright/test';
 import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import { PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
-import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js'
+import { API_BASE_URL, signIn } from '../util.js';
 
-const BASE_URL = process.env.PUBLIC_RIZOM_URL;
-const API_BASE_URL = `${BASE_URL}/api`;
-
-let superAdminId: string;
-let superAdminToken: string;
-let superAdminHeaders: { Authorization: string }
+const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
 
 test('Superadmin login should be successfull', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/auth/sign-in/email`, {
@@ -18,14 +13,9 @@ test('Superadmin login should be successfull', async ({ request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	const headerToken = response.headers()['set-auth-token'];
 	const json = await response.json();
-	expect(headerToken).toBeDefined();
 	expect(json.user).toBeDefined();
 	expect(json.user.id).toBeDefined();
-	superAdminToken = headerToken;
-	superAdminHeaders = { Authorization: `Bearer ${superAdminToken}` }
-	superAdminId = json.user.id;
 });
 
 /*********************************************************
@@ -40,7 +30,7 @@ let mediaId: string
 test('Should create a Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/versions/landscape.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			file: { base64, filename: ' Land$scape+. +-3.JPG' },
 			alt: 'alt en'
@@ -62,7 +52,7 @@ test('Should create a Media', async ({ request }) => {
 
 test('Should update a Media (by creating a new version)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/medias/${mediaId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			alt: 'alt-1.2 en'
 		}
@@ -81,7 +71,7 @@ test('Should update a Media (by creating a new version)', async ({ request }) =>
 
 test('Should update (again) a Media (by creating a new version)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/medias/${mediaId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			alt: 'alt-1.3 en'
 		}
@@ -101,7 +91,7 @@ test('Should update (again) a Media (by creating a new version)', async ({ reque
 
 test('Should get the latest Media', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias/${mediaId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -118,7 +108,7 @@ test('Should get the latest Media', async ({ request }) => {
 
 test('Should update the first created version of Media', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/medias/${mediaId}?versionId=${mediaVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			alt: 'alt-1.1 en'
 		}
@@ -137,7 +127,7 @@ test('Should update the first created version of Media', async ({ request }) => 
 
 test('Should then get the first created version of Media (latest updated)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias/${mediaId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -153,7 +143,7 @@ test('Should then get the first created version of Media (latest updated)', asyn
 
 test('Should get a 404 when fetching a wrong Medias version', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias/${mediaId}?versionId=123`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(404);
@@ -163,7 +153,7 @@ let secondMediaId: string
 test('Should create an other Media', async ({ request }) => {
 	const base64 = await filePathToBase64(path.resolve(process.cwd(), 'tests/versions/leaves.jpg'));
 	const response = await request.post(`${API_BASE_URL}/medias`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			file: { base64, filename: ' Leav$e+s..JPG' },
 			alt: 'alt-2.1 en'
@@ -184,7 +174,7 @@ test('Should create an other Media', async ({ request }) => {
 
 test('Should get 2 docs FR', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: { locale: 'fr' }
 	});
 	const status = response.status();
@@ -198,7 +188,7 @@ test('Should get 2 docs FR', async ({ request }) => {
 
 test('Should get 2 docs DE', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: { locale: 'de' }
 	});
 	const status = response.status();
@@ -212,7 +202,7 @@ test('Should get 2 docs DE', async ({ request }) => {
 
 test('Should get 2 docs EN', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -225,7 +215,7 @@ test('Should get 2 docs EN', async ({ request }) => {
 
 test('Should update 1st media created in DE', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/medias/${mediaId}?${PARAMS.VERSION_ID}=${mediaVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			alt: 'alt-1.1 de',
 			locale: 'de'
@@ -245,7 +235,7 @@ test('Should update 1st media created in DE', async ({ request }) => {
 
 test('Should update 1st media created in FR', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/medias/${mediaId}?${PARAMS.VERSION_ID}=${mediaVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			alt: 'alt-1.1 fr',
 			locale: 'fr'
@@ -265,7 +255,7 @@ test('Should update 1st media created in FR', async ({ request }) => {
 
 test('Should still 1st media EN alt', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias/${mediaId}?${PARAMS.VERSION_ID}=${mediaVersionId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -281,7 +271,7 @@ test('Should still 1st media EN alt', async ({ request }) => {
 
 test('Should get 3 versions of 1st media (EN)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias_versions?where[ownerId][equals]=${mediaId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -298,7 +288,7 @@ test('Should get 3 versions of 1st media (EN)', async ({ request }) => {
 
 test('Should get 3 versions of 1st media (FR)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/medias_versions?where[ownerId][equals]=${mediaId}&locale=fr`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -321,7 +311,7 @@ let infoVersionId: string
 let infosId: string
 test('Should get infos', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -334,7 +324,7 @@ test('Should get infos', async ({ request }) => {
 
 test('Should update infos (creating a new version)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'latest'
 		}
@@ -346,7 +336,7 @@ test('Should update infos (creating a new version)', async ({ request }) => {
 	expect(responseData.doc.title).toBe('latest')
 
 	const verify = await request.get(`${API_BASE_URL}/infos`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const verifyData = await verify.json()
@@ -361,7 +351,7 @@ test('Should update infos (creating a new version)', async ({ request }) => {
 
 test('Should get the first infos version', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -374,7 +364,7 @@ test('Should get the first infos version', async ({ request }) => {
 
 test('Should update the 1st infos version (FR)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'newer than latest (FR)',
 			email: 'hello@gmail.fr',
@@ -384,7 +374,7 @@ test('Should update the 1st infos version (FR)', async ({ request }) => {
 	expect(response.status()).toBe(200);
 
 	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const data = await verify.json()
@@ -397,7 +387,7 @@ test('Should update the 1st infos version (FR)', async ({ request }) => {
 
 test('Should update the 1st infos version (DE)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'newer than latest (DE)',
 			email: 'hello@gmail.de',
@@ -407,7 +397,7 @@ test('Should update the 1st infos version (DE)', async ({ request }) => {
 	expect(response.status()).toBe(200);
 
 	const verify = await request.get(`${API_BASE_URL}/infos?locale=de`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const data = await verify.json()
@@ -420,7 +410,7 @@ test('Should update the 1st infos version (DE)', async ({ request }) => {
 
 test('Should return 2 versions of infos (EN)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos_versions`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -432,7 +422,7 @@ test('Should return 2 versions of infos (EN)', async ({ request }) => {
 
 test('Should return 2 versions of infos (FR)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos_versions?locale=fr`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -445,7 +435,7 @@ test('Should return 2 versions of infos (FR)', async ({ request }) => {
 
 test('Should return 2 versions of infos (DE)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos_versions?locale=de`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -458,7 +448,7 @@ test('Should return 2 versions of infos (DE)', async ({ request }) => {
 
 test('Should update the 1st infos version (EN)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos?versionId=${infoVersionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'newer than latest (EN)',
 			email: 'hello@gmail.com'
@@ -467,7 +457,7 @@ test('Should update the 1st infos version (EN)', async ({ request }) => {
 	expect(response.status()).toBe(200);
 
 	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const data = await verify.json()
@@ -485,7 +475,7 @@ test('Should not return infos versions without credentials', async ({ request })
 
 test('Should return versions with only id versionId and email', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos?select=email`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -498,7 +488,7 @@ test('Should return versions with only id versionId and email', async ({ request
 
 test('Should get a 404 when fetching a wrong Infos version', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/infos/?versionId=123`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(404);
@@ -506,7 +496,7 @@ test('Should get a 404 when fetching a wrong Infos version', async ({ request })
 
 test('Should update infos (creating a new version) (FR)', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/infos`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'newer than newer'
 		}
@@ -518,7 +508,7 @@ test('Should update infos (creating a new version) (FR)', async ({ request }) =>
 	expect(responseData.doc.title).toBe('newer than newer')
 
 	const verify = await request.get(`${API_BASE_URL}/infos?locale=fr`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const verifyData = await verify.json()
@@ -540,7 +530,7 @@ let settingsId: string
 
 test('Should get settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -553,7 +543,7 @@ test('Should get settings', async ({ request }) => {
 
 test('Should update the published settings', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/settings`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'initial settings',
 			logo: [ mediaId ]
@@ -568,7 +558,7 @@ test('Should update the published settings', async ({ request }) => {
 	expect(responseData.doc.versionId).toBe(settingVersionId)
 
 	const verify = await request.get(`${API_BASE_URL}/settings`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(verify.status()).toBe(200);
 	const verifyData = await verify.json()
@@ -583,7 +573,7 @@ test('Should update the published settings', async ({ request }) => {
 
 test('Should update the settings and create a second settings version', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/settings?${PARAMS.DRAFT}=true`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			title: 'second settings version'
 		}
@@ -600,7 +590,7 @@ test('Should update the settings and create a second settings version', async ({
 
 test('Should get the published settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	expect(response.status()).toBe(200);
 	const responseData = await response.json()
@@ -612,7 +602,7 @@ test('Should get the published settings', async ({ request }) => {
 
 test('Should get the latest settings draft and publish it', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings?${PARAMS.DRAFT}=true`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	expect(response.status()).toBe(200);
 	const responseData = await response.json()
@@ -622,7 +612,7 @@ test('Should get the latest settings draft and publish it', async ({ request }) 
 	expect(responseData.doc.versionId).not.toBe(settingVersionId)
 
 	const publishResponse = await request.patch(`${API_BASE_URL}/settings?versionId=${responseData.doc.versionId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			status: VERSIONS_STATUS.PUBLISHED,
 			maintenance: true,
@@ -638,7 +628,7 @@ test('Should get the latest settings draft and publish it', async ({ request }) 
 
 test('Should get the initial settings as a draft', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings?versionId=${settingVersionId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	expect(response.status()).toBe(200);
 	const responseData = await response.json()
@@ -649,7 +639,7 @@ test('Should get the initial settings as a draft', async ({ request }) => {
 
 test('Should return 2 versions of settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings_versions`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 	const data = await response.json()
@@ -668,7 +658,7 @@ test('Should not return settings versions without credentials', async ({ request
 
 test('Should get a 404 when fetching a wrong Settings version', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings?versionId=123`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(404);
@@ -676,7 +666,7 @@ test('Should get a 404 when fetching a wrong Settings version', async ({ request
 
 test('Should get only maintenance field on published Settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings?select=maintenance`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	const status = response.status();
 	expect(status).toBe(200);
@@ -701,7 +691,7 @@ let secondNewsVersionId: string
 
 test('Should create a News and publish it', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/news`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'News 1.1',
@@ -728,7 +718,7 @@ test('Should create a News and publish it', async ({ request }) => {
 
 test('Should update the initial News by creating a new version', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/news/${newsId}?${PARAMS.DRAFT}=true`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes:{
 				title: 'News 1.2 draft',
@@ -749,7 +739,7 @@ test('Should update the initial News by creating a new version', async ({ reques
 
 test('Should get the published news', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news/${newsId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	expect(response.status()).toBe(200);
 	const responseData = await response.json()
@@ -761,7 +751,7 @@ test('Should get the published news', async ({ request }) => {
 
 test('Should get the draft news', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news/${newsId}?${PARAMS.DRAFT}=true`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	expect(response.status()).toBe(200);
 	const responseData = await response.json()
@@ -774,7 +764,7 @@ test('Should get the draft news', async ({ request }) => {
 
 test('Should update the initial News and unpublish it', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/news/${newsId}`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'News 1.1 unpublished',
@@ -794,7 +784,7 @@ test('Should update the initial News and unpublish it', async ({ request }) => {
 
 test('Should not return any news (collection query)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news?where[attributes.slug][equals]=news-1`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 	})
 	const status = response.status();
 	expect(status).toBe(200);
@@ -805,7 +795,7 @@ test('Should not return any news (collection query)', async ({ request }) => {
 
 test('News should have 2 versions', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news_versions`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	const status = response.status();
 	expect(status).toBe(200);
@@ -820,7 +810,7 @@ test('News should have 2 versions', async ({ request }) => {
 
 test('None should be published and 404 should be returned', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news/${newsId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	const status = response.status();
 	expect(status).toBe(404);
@@ -828,7 +818,7 @@ test('None should be published and 404 should be returned', async ({ request }) 
 
 test('Should get second news version and publish it', async ({ request }) => {
 	const response = await request.patch(`${API_BASE_URL}/news/${newsId}?${PARAMS.VERSION_ID}=${secondNewsVersionId}&{PARAMS.DRAFT}=true`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 		data: {
 			attributes: {
 				title: 'News 1.2 now published'
@@ -844,7 +834,7 @@ test('Should get second news version and publish it', async ({ request }) => {
 	expect(doc.versionId).toBe(secondNewsVersionId)
 
 	const verify = await request.get(`${API_BASE_URL}/news/${newsId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	});
 	
 	expect(verify.status()).toBe(200);
@@ -856,7 +846,7 @@ test('Should get second news version and publish it', async ({ request }) => {
 
 test('Now news by id should returned the 1.2 version', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news/${newsId}`, {
-		headers: superAdminHeaders
+		headers: await signInSuperAdmin(request)
 	})
 	const status = response.status();
 	expect(status).toBe(200);
@@ -869,7 +859,7 @@ test('Now news by id should returned the 1.2 version', async ({ request }) => {
 
 test('Should return one news (collection query)', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/news?where[attributes.slug][equals]=news-1`, {
-		headers: superAdminHeaders,
+		headers: await signInSuperAdmin(request),
 	})
 	const status = response.status();
 	expect(status).toBe(200);

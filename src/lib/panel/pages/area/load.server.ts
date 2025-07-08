@@ -46,7 +46,7 @@ export default function (slug: AreaSlug, withVersions?: boolean) {
 		if (withVersions) {
 			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = fetch(url).then((r) => r.json());
-			const [error, result] = await trycatch(promise);
+			const [error, result] = await trycatch(() => promise);
 			if (error || !Array.isArray(result.docs)) {
 				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
 			}

@@ -23,6 +23,7 @@ import { authorize } from '$lib/core/operations/hooks/before-operation/authorize
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
 import { removeAPIKey } from '../auth/hooks/before-read/remove-api-key.server.js';
 import { populateAPIKey } from '../auth/hooks/after-create/populate-api-key.server.js';
+import { handlePathCreation } from '../upload/hooks/handle-path-creation.js';
 
 type PartialConfig = {
 	upload?: Collection<any>['upload'];
@@ -65,13 +66,18 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 						//
 						augmentFieldsPassword,
 						authHooks.preventSuperAdminMutation,
+						authHooks.preventUserMutations,
 						authHooks.forwardRolesToBetterAuth
 					]
 				: []),
 			buildDataConfigMap,
 			setDefaultValues,
 			validateFields,
-			...(collection.upload ? [castBase64ToFile, processFileUpload] : [])
+			...(collection.upload ? [
+				handlePathCreation,
+				castBase64ToFile, 
+				processFileUpload
+			] : [])
 		],
 
 		afterUpdate: [],
@@ -83,7 +89,11 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 			setDefaultValues,
 			validateFields,
 			...(collection.auth ? [authHooks.createBetterAuthUser] : []),
-			...(collection.upload ? [castBase64ToFile, processFileUpload] : [])
+			...(collection.upload ? [
+				handlePathCreation,
+				castBase64ToFile, 
+				processFileUpload
+			] : [])
 		],
 		
 		afterCreate: [

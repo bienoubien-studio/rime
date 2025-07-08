@@ -8,16 +8,18 @@ class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
 		return Select;
 	}
 
-	toSchema(parentPath?: string) {
-		const { camel, snake } = this.getSchemaName(parentPath);
+	_toSchema(parentPath?: string) {
+		const { camel, snake } = this._getSchemaName(parentPath);
+		const suffix = templateUniqueRequired(this.field)
+		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
 		if (this.field.many) {
-			return `${camel}: text('${snake}', { mode: 'json' })${templateUniqueRequired(this.field)}`;
+			return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
 		} else {
-			return `${camel}: text('${snake}')${templateUniqueRequired(this.field)}`;
+			return `${camel}: text('${snake}')${suffix}`;
 		}
 	}
-
-	toType() {
+	
+	_toType() {
 		const optionsJoinedType = this.field.options.map((o) => o.value).join(' | ');
 		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
 	}

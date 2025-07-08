@@ -1,4 +1,5 @@
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
+import { RizomError } from '$lib/core/errors/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import type { WithRequired } from '$lib/util/types.js';
@@ -40,9 +41,9 @@ export function getSegments(path?: UploadPath | null): {
 	// Validate and normalize the path
 	const isValid = validatePath(safePath);
 	if (typeof isValid === 'string') {
-		throw Error(isValid);
+		throw new RizomError(RizomError.BAD_REQUEST, isValid);
 	}
-
+	
 	const segments = safePath.split(UPLOAD_PATH.SEPARATOR);
 
 	if (segments.length <= 1) {
@@ -78,9 +79,9 @@ export function getParentPath(path: UploadPath) {
 
 /**
  * Build an array of route based on the path param
- * for a given collection slug. 
+ * for a given collection slug.
  * This omiting the root path wich is the collection path and do not add the path to the last
- * @example 
+ * @example
  * buildUploadAria('root:foo')
  * // return [{ title: 'foo' }]
  * buildUploadAria('root:foo:bar')
@@ -96,7 +97,7 @@ export function buildUploadAria({
 	const segments = path.split(':');
 	const result: Aria[] = [];
 	let currentPath = '';
-	
+
 	for (const segment of segments) {
 		if (!segment) continue;
 		currentPath = currentPath ? `${currentPath}:${segment}` : segment;
@@ -105,19 +106,17 @@ export function buildUploadAria({
 				title: segment,
 				path: `/panel/${slug}?${PARAMS.UPLOAD_PATH}=${currentPath}`
 			});
-			
 		}
 	}
 
 	return result;
 }
 
-
-export function removePathFromLastAria(aria:WithRequired<Partial<Route>, 'title'>[] ){
+export function removePathFromLastAria(aria: WithRequired<Partial<Route>, 'title'>[]) {
 	return aria.map((route, index) => {
-		if(index === aria.length - 1){
-			return { title: route.title }
+		if (index === aria.length - 1) {
+			return { title: route.title };
 		}
-		return route
-	})
+		return route;
+	});
 }

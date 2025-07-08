@@ -29,7 +29,7 @@ export default function (slug: AreaSlug) {
 			params.select = paramSelect.split(',');
 		}
 
-		const [error, doc] = await trycatch(rizom.area(slug).find(params));
+		const [error, doc] = await trycatch(() => rizom.area(slug).find(params));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

@@ -67,13 +67,14 @@ class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<Rela
 		return Cell;
 	}
 
-	toType() {
+	_toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: RelationValue<${capitalize(this.field.relationTo)}Doc>`;
 	}
 
-	toSchema() {
-		const { camel, snake } = super.getSchemaName();
+	_toSchema() {
+		const { camel, snake } = super._getSchemaName();
 		const suffix = templateUniqueRequired(this.field);
+		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
 		return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
 	}
 

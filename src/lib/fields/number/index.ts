@@ -29,13 +29,14 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 		return Number;
 	}
 
-	toType() {
+	_toType() {
 		return `${this.field.name}${this.field.required ? '' : '?'}: number`;
 	}
 
-	toSchema(parentPath?: string) {
-		const { camel, snake } = this.getSchemaName(parentPath);
+	_toSchema(parentPath?: string) {
+		const { camel, snake } = this._getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
+		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
 		return `${camel}: real('${snake}')${suffix}`;
 	}
 
