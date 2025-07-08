@@ -161,7 +161,6 @@
 	},
 	"dependencies": {
 		"@bien-bien/css-reset": "^0.1.0",
-		"@clack/prompts": "^0.7.0",
 		"@internationalized/date": "^3.7.0",
 		"@lucide/svelte": "^0.479.0",
 		"@playwright/test": "^1.52.0",

@@ -9,7 +9,6 @@ import { generate } from '../generate/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { prompt } from '../util.server.js';
 
-
 type Args = {
 	force?: boolean;
 	name?: string;
@@ -21,8 +20,6 @@ type EnvVarConfig = {
 };
 
 const PACKAGE = 'rizom';
-
-
 
 export const init = async ({ force, name: incomingName }: Args) => {
 	const projectRoot = process.cwd();
@@ -194,19 +191,16 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
-		// setSchema();
 		setHooks();
 		configureVite();
 		await copyAssets();
-		await generate({
-			force: true
-		});
+		await generate({ force: true });
 		// if (!skipInstall) {
 		// 	await installDeps(true);
 		// }
 	} else {
 		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
-
+		
 		if (!name) {
 			logger.error('Operation cancelled');
 			process.exit(0);
@@ -216,13 +210,10 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
-		// setSchema();
-
 		setHooks();
 		configureVite();
 		await copyAssets();
 		await generate({ force: true });
-
 		// if (!skipInstall) {
 		// 	await installDeps();
 		// }

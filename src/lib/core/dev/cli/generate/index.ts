@@ -1,16 +1,13 @@
 import path from 'path';
 import { existsSync, mkdirSync, rmSync } from 'fs';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { ViteDevServer } from 'vite';
-import type { CompiledConfig } from '$lib/core/config/types/index.js';
 
 export const generate = async (args: {
-	force?: boolean, 
-	afterGenerate?: (vite:ViteDevServer, config:CompiledConfig) => Promise<void> 
+	force?: boolean
 }) => {
 	
-	const { afterGenerate, force } = args
-
+	const { force } = args
+	
 	if (force) {
 		// Remove cache
 		try {

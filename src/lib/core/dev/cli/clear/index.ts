@@ -1,8 +1,8 @@
-import { confirm, outro } from '@clack/prompts';
+import { logger } from '$lib/core/logger/index.server.js';
 import { rmSync } from 'fs';
 import path from 'path';
 
-const clearMessage = `Are you sure you want to delete all related rizom files, including : 
+const clearMessage = `Are you sure you want to delete all related rizom files (Y/n): 
 - ./static/medias 
 - ./db
 - ./src/routes/(rizom) 
@@ -16,13 +16,11 @@ const clearMessage = `Are you sure you want to delete all related rizom files, i
 export const clear = async (args: { force?: boolean }) => {
 	let shouldProceed = true;
 	if (!args.force) {
-		const response = await confirm({
-			message: clearMessage
-		});
-		shouldProceed = response === true;
+		const response = prompt(clearMessage, 'n');
+		shouldProceed = response === 'Y';
 	}
 	if (!shouldProceed) {
-		return outro('Operation cancelled. Great!');
+		return logger.info('Operation cancelled. Great!');
 	}
 	// Remove directories
 	rmSync(path.join('.rizom'), { recursive: true, force: true });
@@ -36,8 +34,8 @@ export const clear = async (args: { force?: boolean }) => {
 	rmSync(path.join('src', 'lib', 'server', 'schema.ts'), { force: true });
 	rmSync(path.join('drizzle.config.ts'), { force: true });
 	if (args.force) {
-		return console.info('rizom cleared');
+		return logger.info('rizom cleared');
 	} else {
-		return outro('rizom cleared');
+		return logger.info('rizom cleared');
 	}
 };
