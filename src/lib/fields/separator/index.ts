@@ -16,15 +16,3 @@ export const separator = () => new SeparatorFieldBuilder('separator');
 export type SeparatorField = Field & {
 	type: 'separator';
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		separator: any;
-	}
-	interface RegisterFields {
-		SeparatorField: SeparatorField; // register the field type
-	}
-}

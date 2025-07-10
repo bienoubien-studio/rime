@@ -1,12 +1,12 @@
-import type { HookAfterUpdate, HookBeforeUpdate } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/trycatch.js';
 import { eq } from 'drizzle-orm';
 
 type Update = { id: string; data: { parent: string } };
 
-export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
+export const prepareDirectoryChildren = Hooks.beforeUpdate<'directory'>( async (args) => {
 	let data = args.data;
 	const { event, config, context } = args;
 	const originalDoc = context.originalDoc
@@ -35,9 +35,9 @@ export const prepareDirectoryChildren: HookBeforeUpdate<'collection', GenericDoc
 	}
 
 	return args;
-};
+});
 
-export const updateDirectoryChildren: HookAfterUpdate<'collection', GenericDoc> = async (args) => {
+export const updateDirectoryChildren = Hooks.afterUpdate<'directory'>( async (args) => {
 	const { event, config } = args;
 	const collection = event.locals.rizom.collection(config.slug);
 	const updates: Update[] = args.context.directoriesUpdates || [];
@@ -50,4 +50,4 @@ export const updateDirectoryChildren: HookAfterUpdate<'collection', GenericDoc> 
 	}
 
 	return args;
-};
+});

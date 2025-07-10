@@ -4,14 +4,15 @@ import type { FormField } from '$lib/fields/types.js';
 import type { RelationField } from '$lib/fields/types.js';
 import { hasProp, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { GenericDoc, Prototype } from '../../../../types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { getRequestEvent } from '$app/server';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
+import { Hooks } from '../index.js';
 
-export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
-	const { rizom, operation } = args;
+export const setDefaultValues = Hooks.beforeUpsert(async (args) => {
+	const { operation, event } = args;
+	const { rizom } = event.locals;
+
 	const configMap = args.context.configMap;
 
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @setDefaultValues');
@@ -39,7 +40,7 @@ export const setDefaultValues: HookBeforeUpsert<Prototype, GenericDoc> = async (
 		...args,
 		data: output
 	};
-};
+});
 
 type GetDefaultValue = (args: {
 	key: string;

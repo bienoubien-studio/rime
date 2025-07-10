@@ -1,8 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { isFile } from '$lib/util/file.js';
 import { jsonFileToFile } from '$lib/core/collections/upload/util/converter.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
-import type { UploadDoc } from '$lib/core/types/doc.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 
 /**
  * Hook executed before save/update operations to convert base64 encoded files to File objects.
@@ -16,7 +15,7 @@ import type { UploadDoc } from '$lib/core/types/doc.js';
  * @param args Hook arguments containing the document to process
  * @returns Updated args object with converted file data
  */
-export const castBase64ToFile: HookBeforeUpsert<'collection', UploadDoc> = async (args) => {
+export const castBase64ToFile = Hooks.beforeUpsert<'upload'>( async (args) => {
 	let data = args.data;
 	if (data?.file && !isFile(data.file)) {
 		try {
@@ -33,4 +32,4 @@ export const castBase64ToFile: HookBeforeUpsert<'collection', UploadDoc> = async
 		}
 	}
 	return { ...args, data };
-};
+});

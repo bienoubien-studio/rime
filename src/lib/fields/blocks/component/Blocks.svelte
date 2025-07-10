@@ -110,7 +110,7 @@
 					{form}
 					{sorting}
 					path="{path}.{index}"
-					config={getConfigByBlockType(block.type, block)}
+					config={getConfigByBlockType(block.type)}
 				/>
 			{/each}
 		{/if}

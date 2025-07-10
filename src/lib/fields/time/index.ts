@@ -48,15 +48,3 @@ export type TimeField = FormField & {
 	unique?: boolean;
 	isTitle?: true;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		time: any;
-	}
-	interface RegisterFormFields {
-		TimeField: TimeField; // register the field type
-	}
-}

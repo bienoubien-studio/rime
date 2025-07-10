@@ -1,8 +1,7 @@
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 import { usersFields } from '../../fields.server.js';
 
-export const augmentFieldsPassword: HookBeforeUpsert<'collection', GenericDoc> = async (args) => {
+export const augmentFieldsPassword = Hooks.beforeUpsert<'auth'>(async (args) => {
 	let { config } = args;
 
 	const IS_PASSWORD_AUTH = config.auth && typeof config.auth !== 'boolean' && config.auth.type === 'password';
@@ -13,9 +12,9 @@ export const augmentFieldsPassword: HookBeforeUpsert<'collection', GenericDoc> =
 			fields: [...config.fields, usersFields.password.raw, usersFields.confirmPassword.raw]
 		};
 	}
-	
+
 	return {
 		...args,
 		config
 	};
-};
+});

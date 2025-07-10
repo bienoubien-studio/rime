@@ -39,14 +39,3 @@ export type ComboBoxField = FormField & {
 	unique?: boolean;
 };
 
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		combobox: any;
-	}
-	interface RegisterFormFields {
-		ComboBoxField: ComboBoxField; // register the field type
-	}
-}

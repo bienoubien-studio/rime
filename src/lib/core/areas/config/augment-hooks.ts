@@ -23,7 +23,7 @@ type PartialConfig = {
  * Augment an area config with hooks
  */
 export const augmentHooks = <T extends PartialConfig>(area: T): T => {
-	let hooks: Required<AreaHooks<any>> = {
+	let hooks = {
 		beforeOperation: [authorize],
 
 		beforeRead: [

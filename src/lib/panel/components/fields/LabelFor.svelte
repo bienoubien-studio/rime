@@ -1,10 +1,10 @@
 <script lang="ts">
+	import type { FormField } from '$lib/fields/types.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { capitalize } from '$lib/util/string.js';
 	import { Label } from '../ui/label/index.js';
-	import type { AnyFormField } from '$lib/fields/types.js';
 
-	type Props = { config: AnyFormField; for: string };
+	type Props = { config: FormField; for: string };
 	const { config, for: labelFor }: Props = $props();
 
 	const locale = getLocaleContext();

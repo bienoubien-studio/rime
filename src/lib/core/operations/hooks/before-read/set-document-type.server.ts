@@ -1,12 +1,11 @@
-import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/index.js';
+import { Hooks } from '../index.js';
 
-export const setDocumentType: HookBeforeRead<Prototype, Omit<GenericDoc, 'title'>> = async (args) => {
+export const setDocumentType = Hooks.beforeRead<'generic'>(async (args) => {
 	const config = args.config;
 	let doc = args.doc;
 
-	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length
-	
+	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length;
+
 	if (!hasSelect) {
 		doc = {
 			...doc,
@@ -16,4 +15,4 @@ export const setDocumentType: HookBeforeRead<Prototype, Omit<GenericDoc, 'title'
 	}
 
 	return { ...args, doc };
-};
+});

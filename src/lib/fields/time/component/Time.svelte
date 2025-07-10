@@ -6,7 +6,7 @@
 	import { Clock } from '@lucide/svelte';
 
 	const { path, config, form }: TimeFieldProps = $props();
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField(path || config.name, config));
 
 	const onInput = (event: Event) => {
 		field.value = (event.target as HTMLInputElement).value;

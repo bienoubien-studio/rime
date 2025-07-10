@@ -7,16 +7,17 @@
 	import { X } from '@lucide/svelte';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import StatusDot from '../collection/StatusDot.svelte';
+	import type { VersionsStatus } from '$lib/core/constant.js';
 
 	type Props = {
 		doc: GenericDoc;
-		versions: VersionDoc[];
+		versions: { id:string, updatedAt: Date, status: VersionsStatus }[];
 	};
 	const { doc, versions }: Props = $props();
 
 	const locale = getLocaleContext();
 
-	const makeVersionUrl = (version: VersionDoc) => {
+	const makeVersionUrl = (version: Props['versions'][number]) => {
 		if (doc._prototype === 'collection') {
 			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/${doc.id}/versions?versionId=${version.id}`;
 		} else {

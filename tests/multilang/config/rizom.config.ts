@@ -16,8 +16,7 @@ import {
 } from '$lib/fields/index.js';
 import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
 import { Images, Text } from '@lucide/svelte';
-import type { HookBeforeUpsert } from '$lib/types';
-import { collection, area, defineConfig } from '$lib';
+import { collection, area, defineConfig, Hooks } from '$lib';
 
 /****************************************************
 /* Settings
@@ -83,22 +82,16 @@ const Informations = area('infos', {
 /* Pages
 /****************************************************/
 
-const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
-	const { data, rizom } = args;
+const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
+	const { data, event } = args;
 
 	if (data?.attributes?.isHome) {
-		const query = {
-			where: {
-				'attributes.isHome': {
-					equals: true
-				}
-			}
-		};
+		const query = `where[attributes.isHome][equals]=true`;
 
-		const pagesIsHome = await rizom.collection('pages').find({ query });
+		const pagesIsHome = await event.locals.rizom.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await rizom.collection('pages').updateById({
+			await event.locals.rizom.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});
@@ -106,15 +99,15 @@ const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	}
 
 	return args;
-};
+});
 
-const formatslug: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
-	const { rizom, operation, event } = args;
+const formatslug = Hooks.beforeUpsert<'pages'>( async (args) => {
+	const { operation, event } = args;
 	let data = args.data;
 
 	const queryPagesWithSlug = async ({ slug }: { slug: string }) => {
 		const query = `where[attributes.slug][equals]=${slug}`;
-		return rizom.collection('pages').find({
+		return event.locals.rizom.collection('pages').find({
 			query,
 			locale: event.locals.locale
 		});
@@ -146,7 +139,7 @@ const formatslug: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 		};
 	}
 	return args;
-};
+});
 
 const blockParagraph = block('paragraph')
 	.icon(Text)

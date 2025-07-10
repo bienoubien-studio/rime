@@ -119,16 +119,3 @@ export type RichTextField = FormField & {
 	features?: Array<MediaFeatureDefinition | ResourceFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
 	defaultValue?: RichTextContent | DefaultValueFn<RichTextContent>;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		richText: any;
-	}
-	interface RegisterFormFields {
-		RichTextField: RichTextField;
-	}
-}

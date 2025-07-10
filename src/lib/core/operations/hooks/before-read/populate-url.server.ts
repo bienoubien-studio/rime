@@ -1,12 +1,11 @@
-import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { getValueAtPath } from '$lib/util/object.js';
+import { Hooks } from '../index.js';
 
 /**
  * Hook to populate _children property on document from a nested collection
  */
-export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
+export const populateURL = Hooks.beforeRead<'generic'>( async (args) => {
   
 	const select =
 		args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
@@ -93,7 +92,7 @@ export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) =
 		// Add the url if successfully generated
 		if (url) {
       if(args.doc.url !== url){
-        args.rizom.adapter.updateDocumentUrl(url, { 
+        args.event.locals.rizom.adapter.updateDocumentUrl(url, { 
           id: args.doc.id,
           versionId: args.doc.versionId,
           config, 
@@ -111,4 +110,4 @@ export const populateURL: HookBeforeRead<Prototype, GenericDoc> = async (args) =
 	}
 
 	return args;
-};
+});

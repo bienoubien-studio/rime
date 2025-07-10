@@ -1,12 +1,11 @@
-import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import { getValueAtPath } from '$lib/util/object.js';
+import { Hooks } from '../index.js';
 
-export const setDocumentTitle: HookBeforeRead<Prototype, Partial<GenericDoc>> = async (args) => {
+export const setDocumentTitle = Hooks.beforeRead<'raw'>(async (args) => {
 	const config = args.config;
 	let doc = args.doc;
-	
-	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length
+
+	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length;
 	const shouldSetTitle = !doc.title && !hasSelect;
 
 	if (shouldSetTitle) {
@@ -15,6 +14,6 @@ export const setDocumentTitle: HookBeforeRead<Prototype, Partial<GenericDoc>> = 
 			...doc
 		};
 	}
-  
+
 	return { ...args, doc };
-};
+});

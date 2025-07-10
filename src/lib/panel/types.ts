@@ -33,7 +33,7 @@ export type PanelActionFailure<T extends Dic = Dic> = {
 	form?: {
 		[K in keyof T]: T[K];
 	};
-	errors?: Partial<FormErrors<keyof T>>;
+	errors?: Partial<FormErrors<string>>;
 };
 
 export type Aria = Pretty<WithRequired<Partial<Route>, 'title'>>[];

@@ -1,7 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CollectionSlug } from '../../../types.js';
 
 type DeleteArgs = {
 	query?: OperationQuery;
@@ -18,7 +19,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 	const { config, event, locale, limit, offset, sort, query, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
-	let context: HookContext = {
+	let context: OperationContext<CollectionSlug> = {
 		params: { locale, limit, offset, sort, query },
 		isSystemOperation
 	};
@@ -27,7 +28,6 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 		const result = await hook({
 			config,
 			operation: 'delete',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});

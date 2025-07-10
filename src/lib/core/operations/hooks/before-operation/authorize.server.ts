@@ -1,12 +1,11 @@
-import type { Prototype } from '$lib/core/types/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { HookBeforeOperation } from '$lib/core/config/types/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { Hooks } from '../index.js';
 
-export const authorize: HookBeforeOperation<Prototype> = async (args) => {
+export const authorize = Hooks.beforeOperation( async (args) => {
 	const { config, event, operation, context } = args;
 	let authorized = false;
-
+	
 	const params = {
 		event,
 		id: context.params.id
@@ -34,4 +33,4 @@ export const authorize: HookBeforeOperation<Prototype> = async (args) => {
 		throw new RizomError(RizomError.UNAUTHORIZED);
 	}
 	return args;
-};
+});

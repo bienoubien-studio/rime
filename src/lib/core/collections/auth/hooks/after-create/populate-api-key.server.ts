@@ -1,12 +1,11 @@
-import type { HookAfterCreate } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 
 /**
  * After create populate the created API key
  * on document so user can see it once.
  */
-export const populateAPIKey: HookAfterCreate<GenericDoc> = async (args) => {
+export const populateAPIKey = Hooks.afterCreate<'auth'>( async (args) => {
 	const { config } = args;
 
 	const IS_API_AUTH = config.auth && config.auth.type === 'apiKey';
@@ -23,4 +22,4 @@ export const populateAPIKey: HookAfterCreate<GenericDoc> = async (args) => {
 	}
 
 	return args;
-};
+});

@@ -1,7 +1,6 @@
 import { dev } from '$app/environment';
-import type { HookBeforeCreate } from '$lib/core/config/types/index.js';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 import access from '$lib/util/access/index.js';
 import { cases } from '$lib/util/cases.js';
 import { BETTER_AUTH_ROLES, PANEL_USERS } from '../../constant.server.js';
@@ -9,8 +8,9 @@ import { BETTER_AUTH_ROLES, PANEL_USERS } from '../../constant.server.js';
 /**
  * Create a better-auth user before a document creation
  */
-export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) => {
-	const { rizom, config, event } = args;
+export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
+	const { config, event } = args;
+	const { rizom } = event.locals;
 
 	if (!Boolean(config.auth)) return args;
 
@@ -21,67 +21,69 @@ export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) =
 	const IS_STAFF_CREATION = config.slug === PANEL_USERS;
 	const ADMIN_ROLE_ALLOWED = IS_STAFF_CREATION && Boolean(config.auth?.roles?.includes('admin'));
 
-	const CASE = cases({
-		/**
-		 * 1. First-time Setup (Init)
-		 * 	- Description: Creating the first admin user when the system is initialized
-		 *		- Actor: No authenticated user exists yet
-		 *			- Auth Flow:
-		 *				- event.locals.isInit = true is set
-		 *				- use admin plugin to creates user with "admin" role
-		 *				- this will be the only isSuperAdmin user
-		 */
-		INIT: Boolean(event.locals.isInit) && dev,
+	const CASE = cases(
+		{
+			/**
+			 * 1. First-time Setup (Init)
+			 * 	- Description: Creating the first admin user when the system is initialized
+			 *		- Actor: No authenticated user exists yet
+			 *			- Auth Flow:
+			 *				- event.locals.isInit = true is set
+			 *				- use admin plugin to creates user with "admin" role
+			 *				- this will be the only isSuperAdmin user
+			 */
+			INIT: Boolean(event.locals.isInit) && dev,
 
-		/**
-		 *	2. Admin Creating Users
-		 *		- Description: Admin creates any users through the panel
-		 *		- Actor: Authenticated admin user
-		 *		- Auth Flow:
-		 *			- Use the admin plugin to create a user
-		 */
-		ADMIN_CREATE_USER: IS_CURRENT_USER_ADMIN && !IS_API_KEY_OPERATION,
+			/**
+			 *	2. Admin Creating Users
+			 *		- Description: Admin creates any users through the panel
+			 *		- Actor: Authenticated admin user
+			 *		- Auth Flow:
+			 *			- Use the admin plugin to create a user
+			 */
+			ADMIN_CREATE_USER: IS_CURRENT_USER_ADMIN && !IS_API_KEY_OPERATION,
 
-		/*
-		 * 3. Staff Creating users
-		 *		- Description: Any panel user (staff collection) non admin, creating other users
-		 *		- Actor: Authenticated staff user
-		 *		- Auth Flow:
-		 *			- ??
-		 */
-		STAFF_CREATE_USER: IS_CURRENT_USER_STAFF && !IS_API_KEY_OPERATION,
+			/*
+			 * 3. Staff Creating users
+			 *		- Description: Any panel user (staff collection) non admin, creating other users
+			 *		- Actor: Authenticated staff user
+			 *		- Auth Flow:
+			 *			- ??
+			 */
+			STAFF_CREATE_USER: IS_CURRENT_USER_STAFF && !IS_API_KEY_OPERATION,
 
-		/*
-		 * 4. Public User Signup
-		 * 	- Description: End users registering themselves or sigin with social Provider
-		 * 	- Actor: Unauthenticated visitor
-		 * 	- Auth Flow:
-		 * 		- User submits signup form
-		 * 		- Better-Auth creates user with 'user' role
-		 * 		- Better-Auth hook call rizom.collection(slug).create to create the document
-		 */
-		PUBLIC_SIGNUP: args.data.authUserId,
+			/*
+			 * 4. Public User Signup
+			 * 	- Description: End users registering themselves or sigin with social Provider
+			 * 	- Actor: Unauthenticated visitor
+			 * 	- Auth Flow:
+			 * 		- User submits signup form
+			 * 		- Better-Auth creates user with 'user' role
+			 * 		- Better-Auth hook call rizom.collection(slug).create to create the document
+			 */
+			PUBLIC_SIGNUP: Boolean(args.data.authUserId),
 
-		/**
-		 * 6. API Key Creation
-		 * 	- Description: Creating an API KEY
-		 * 	- Actor: Authenticated user
-		 * 	-	Auth Flow:
-		 * 		- Admin creates API key user that forward current authneticated user
-		 * 		- API key generated and send by email
-		 */
-		API_KEY_CREATION: IS_API_KEY_OPERATION && Boolean(event.locals.user) && Boolean(event.locals.betterAuthUser?.id)
+			/**
+			 * 6. API Key Creation
+			 * 	- Description: Creating an API KEY
+			 * 	- Actor: Authenticated user
+			 * 	-	Auth Flow:
+			 * 		- Admin creates API key user that forward current authneticated user
+			 * 		- API key generated and send by email
+			 */
+			API_KEY_CREATION: IS_API_KEY_OPERATION && Boolean(event.locals.user) && Boolean(event.locals.betterAuthUser?.id)
 
-		/**
-		 * 7. Programmatic User Creation : API_KEY APP create user
-		 * 	- Description: Creating an API KEY
-		 * 	- Actor: Authenticated user related to the API_KEY
-		 * 	- equivalent to ADMIN_CREATE_USER or STAFF_CREATE_USER
-		 *
-		 * Not implemented :
-		 * 8. Invitation-based User Creation
-		 */
-	});
+			/**
+			 * 7. Programmatic User Creation : API_KEY APP create user
+			 * 	- Description: Creating an API KEY
+			 * 	- Actor: Authenticated user related to the API_KEY
+			 * 	- equivalent to ADMIN_CREATE_USER or STAFF_CREATE_USER
+			 *
+			 * Not implemented :
+			 * 8. Invitation-based User Creation
+			 */
+		}
+	);
 
 	// Prevent superAdmin value to be set on creation
 	if ('isSuperAdmin' in args.data && CASE.value !== CASE.INIT) {
@@ -147,7 +149,7 @@ export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) =
 			if (!event.locals.betterAuthUser || !event.locals.user) {
 				throw new RizomError(RizomError.UNAUTHORIZED);
 			}
-			if (!args.rizom.mailer) {
+			if (!rizom.mailer) {
 				throw new RizomError(RizomError.OPERATION_ERROR, `Can't create API KEY without smtp config`);
 			}
 			if (!args.data.name) {
@@ -159,13 +161,13 @@ export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) =
 					name: args.data.name,
 					userId: event.locals.betterAuthUser.id,
 					permissions: {
-						roles: args.data.roles
+						roles: args.data.roles || [BETTER_AUTH_ROLES.USER]
 					}
 				}
 			});
 
 			// Send api key by email to the user
-			await args.rizom.mailer.sendMail({
+			await rizom.mailer.sendMail({
 				to: event.locals.user!.email,
 				subject: 'Your API Key',
 				text: `Your ${args.data.name} apiKey : ${apiKey}, keep it safe, only server-side`
@@ -204,4 +206,4 @@ export const createBetterAuthUser: HookBeforeCreate<GenericDoc> = async (args) =
 			authUserId: authUserId
 		}
 	};
-};
+});

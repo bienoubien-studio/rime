@@ -1,19 +1,18 @@
-import type { HookBeforeUpdate } from "$lib/core/config/types/index.js";
 import { RizomError } from "$lib/core/errors/index.js";
-import type { GenericDoc } from "$lib/core/types/doc.js";
+import { Hooks } from "$lib/core/operations/hooks/index.js";
 
 /**
 * Before update :
 * - prevent superadmin to be changed by someone else
 */
-export const preventSuperAdminMutation: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
-	const { rizom, event, context } = args;
+export const preventSuperAdminMutation = Hooks.beforeUpdate( async (args) => {
+	const { event, context } = args;
 	const originalDoc = context.originalDoc
 	
 	if(!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @preventSuperAdminMutation')
 		
 	const IS_ROLES_MUTATION = 'roles' in args.data && Array.isArray(args.data.roles);
-	const IS_SUPERADMIN_MUTATION = await rizom.auth.isSuperAdmin(originalDoc.id);
+	const IS_SUPERADMIN_MUTATION = await event.locals.rizom.auth.isSuperAdmin(originalDoc.id);
 
 	// Prevent super admin user to be changed by someone
 	if (IS_SUPERADMIN_MUTATION && !event.locals.user?.isSuperAdmin) {
@@ -31,4 +30,4 @@ export const preventSuperAdminMutation: HookBeforeUpdate<'collection', GenericDo
 	}
 	
 	return args;
-};
+});

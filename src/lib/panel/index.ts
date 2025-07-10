@@ -10,24 +10,15 @@ import Panel from './components/Root.svelte';
 import Dashboard from './pages/dashboard/Dashboard.svelte';
 import Doc from './components/sections/document/Document.svelte';
 import { Field } from './components/fields/index.js';
+import type { VersionsStatus } from '$lib/core/constant.js';
+import type { WithRequired } from '$lib/util/types.js';
+import type { Route } from './types.js';
 
-export {
-	Area,
-	AreaVersionsDoc,
-	CollectionDocVersions,
-	CollectionDoc,
-	Collection,
-	Live,
-	Panel,
-	Dashboard,
-	Doc,
-	Field
-};
+export { Area, AreaVersionsDoc, CollectionDocVersions, CollectionDoc, Collection, Live, Panel, Dashboard, Doc, Field };
 
 export type { DocumentFormContext } from './context/documentForm.svelte.js';
 
 export type CollectionProps = {
-	slug: CollectionSlug;
 	data: {
 		docs: GenericDoc[];
 		status: number;
@@ -36,13 +27,22 @@ export type CollectionProps = {
 	children: Snippet;
 };
 
-export type CollectionDocProps = {
-	slug: CollectionSlug;
-	data: {
-		docs: GenericDoc[];
-		doc: GenericDoc;
-		status: number;
-		readOnly: boolean;
-		operation: 'create' | 'update';
-	};
-};
+export type DocVersion = { id: string; updatedAt: Date; status: VersionsStatus };
+
+type BaseDocData = 
+	| {
+			aria: WithRequired<Partial<Route>, 'title'>[];
+			doc: GenericDoc;
+			status: 200;
+			readOnly: boolean;
+	  }
+	| {
+			aria: WithRequired<Partial<Route>, 'title'>[];
+			doc: {};
+			status: 401;
+			readOnly: true;
+	  };
+type DocVersions<V> = (V extends true ? { versions: DocVersion[] } : {})
+
+export type CollectionDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation : 'create' | 'update' };
+export type AreaDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation : 'update' };

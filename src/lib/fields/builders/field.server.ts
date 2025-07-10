@@ -1,6 +1,5 @@
 import type { FieldPanelTableConfig } from '$lib/panel/types';
 import type {
-	AnyFormField,
 	Field,
 	FieldAccess,
 	FieldValidationFunc,
@@ -8,7 +7,6 @@ import type {
 	FieldHook,
 	FormField,
 	FieldHookOnChange,
-	FieldsType
 } from '$lib/fields/types.js';
 import { toSnakeCase } from '$lib/util/string.js';
 import { toCamelCase } from 'drizzle-orm/casing';
@@ -19,7 +17,7 @@ import cloneDeep from 'clone-deep';
 export class FieldBuilder<T extends Field = Field> {
 	field: T;
 
-	constructor(type: FieldsType) {
+	constructor(type: string) {
 		this.field = {
 			type,
 			live: true
@@ -63,7 +61,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	
 	_generateSchema: null | GenerateSchemaFn = null
 	
-	constructor(name: string, type: FieldsType) {
+	constructor(name: string, type: string) {
 		super(type);
 		this.field.name = name;
 		this.field.hooks = {};
@@ -139,7 +137,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	}
 
 	validate(validateFunction: FieldValidationFunc<T>) {
-		this.field.validate = validateFunction as FieldValidationFunc<AnyFormField>;
+		this.field.validate = validateFunction as FieldValidationFunc<FormField>;
 		return this;
 	}
 

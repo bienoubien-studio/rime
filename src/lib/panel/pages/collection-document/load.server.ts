@@ -1,22 +1,22 @@
-import { error, type ServerLoad } from '@sveltejs/kit';
+import { error, type ServerLoadEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server';
-import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
 import { trycatch } from '$lib/util/trycatch.js';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
-import type { Dic, WithRequired } from '$lib/util/types.js';
-import type { Route } from '$lib/panel/types.js';
 import { env } from '$env/dynamic/public';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { Dic, WithRequired } from '$lib/util/types.js';
+import type { Route } from '$lib/panel/types.js';
+import type { CollectionDocData } from '$lib/panel/index.js';
 
 /****************************************************/
 /* Document Load
 /****************************************************/
 export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 	//
-	const load: ServerLoad = async (event) => {
+	const load = async <V extends boolean = boolean>(event: ServerLoadEvent) => {
 		const { locale, user, rizom } = event.locals;
 		const { id } = event.params;
 
@@ -31,7 +31,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			/** Check for authorizations */
 			const authorized = collection.config.access.create(user, {});
 			if (!authorized) {
-				return { doc: {}, operation, status: 401 };
+				return { doc: {}, operation, status: 401, readOnly: true } as CollectionDocData<false>;
 			}
 			doc = collection.blank();
 		} else {
@@ -39,7 +39,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			const authorizedRead = collection.config.access.read(user, { id });
 			const authorizedUpdate = collection.config.access.update(user, { id });
 			if (!authorizedRead && !authorizedUpdate) {
-				return { doc: {}, operation, status: 401 };
+				return { doc: {}, operation, status: 401, readOnly: true } as CollectionDocData<false>;
 			}
 
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
@@ -49,7 +49,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			doc = document;
 
 			if (error) {
-				return handleError(error, { context: 'load' });
+				throw handleError(error, { context: 'load' });
 			}
 
 			/** If update not allowed set doc as readOnly  */
@@ -78,7 +78,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			];
 		}
 
-		let data: Dic = {
+		let data: CollectionDocData = {
 			aria,
 			doc,
 			operation,
@@ -96,7 +96,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			data = { ...data, versions: result.docs };
 		}
 		
-		return data;
+		return data as CollectionDocData<V>;
 
 	};
 

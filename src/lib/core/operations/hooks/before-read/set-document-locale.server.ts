@@ -1,7 +1,6 @@
-import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/index.js';
+import { Hooks } from '../index.js';
 
-export const setDocumentLocale: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
+export const setDocumentLocale = Hooks.beforeRead<'generic'>( async (args) => {
 	let doc = args.doc;
 	
 	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length
@@ -13,4 +12,4 @@ export const setDocumentLocale: HookBeforeRead<Prototype, GenericDoc> = async (a
 	}
 	
 	return { ...args, doc };
-};
+});

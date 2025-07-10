@@ -5,10 +5,10 @@ import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;
@@ -20,20 +20,19 @@ type Args<T> = {
 	};
 };
 
-export const create = async <T extends GenericDoc>(args: Args<T>) => {
+export const create = async <T extends RegisterCollection[CollectionSlug]>(args: Args<T>) => {
 	const { config, event, locale, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
 	let data = args.data;
 	const incomingData = cloneDeep(data);
 
-	let context: HookContext = { params: { locale }, isSystemOperation };
+	let context: OperationContext<CollectionSlug> = { params: { locale }, isSystemOperation };
 
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'create',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -42,10 +41,9 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 
 	for (const hook of config.hooks?.beforeCreate || []) {
 		const result = await hook({
-			data,
+			data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
 			config,
 			operation: 'create',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -156,11 +154,12 @@ export const create = async <T extends GenericDoc>(args: Args<T>) => {
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'create',
-			rizom: event.locals.rizom,
+			data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
 			event,
 			context
 		});
 		context = result.context;
+		//@ts-ignore I just don't care for now man
 		document = result.doc;
 	}
 

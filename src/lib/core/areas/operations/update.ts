@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
 import type { DeepPartial } from '$lib/util/types.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -15,7 +15,7 @@ type UpdateArgs<T> = {
 	event: RequestEvent;
 	versionId?: string;
 	draft?: boolean;
-	isSystemOperation?: boolean
+	isSystemOperation?: boolean;
 };
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
@@ -25,7 +25,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	const { rizom } = event.locals;
 	let data = args.data;
 
-	let context: HookContext = {
+	let context: OperationContext<AreaSlug> = {
 		params: {
 			locale,
 			versionId,
@@ -33,16 +33,15 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		},
 		isSystemOperation
 	};
-	
+
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'update',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
-		context = result.context
+		context = result.context;
 	}
 
 	for (const hook of config.hooks?.beforeUpdate || []) {
@@ -50,7 +49,6 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			data,
 			config,
 			operation: 'update',
-			rizom,
 			event,
 			context
 		});
@@ -125,9 +123,9 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 			doc: document,
 			config,
 			operation: 'update',
-			rizom,
 			event,
-			context
+			context,
+			data
 		});
 		context = result.context;
 	}

@@ -113,15 +113,3 @@ export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 };
 
 type QueryResolver<Doc extends GenericDoc = GenericDoc> = (doc: Doc) => string;
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		relation: any;
-	}
-	interface RegisterFormFields {
-		RelationField: RelationField<GenericDoc>; // register the field type
-	}
-}

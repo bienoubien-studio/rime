@@ -6,7 +6,7 @@
 	import ContextMenu from '$lib/panel/components/ui/context-menu/ContextMenu.svelte';
 	import ContextMenuItem from '$lib/panel/components/ui/context-menu/ContextMenuItem.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
+	import { trycatchFetch } from '$lib/util/trycatch.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../../../core/i18n/index.js';
 	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
@@ -49,7 +49,7 @@
 
 	async function handleDelete() {
 		const url = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folder.id}`;
-		const [error, _] = await trycatchFetch(url, { method: 'DELETE' }).then((r) => r.json());
+		const [error, _] = await trycatchFetch(url, { method: 'DELETE' })
 		if (error) {
 			return toast.error('Error deleting folder');
 		}

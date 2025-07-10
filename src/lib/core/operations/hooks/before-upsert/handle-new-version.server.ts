@@ -8,14 +8,16 @@ import type { ConfigMap } from '../../configMap/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
+import { Hooks } from '../index.js';
 
 /**
  * Handles version-related operations for document updates
  * Manages specific version updates and new version creation
  */
-export const handleNewVersion: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
-	const { config, rizom } = args;
+export const handleNewVersion = Hooks.beforeUpsert( async (args) => {
+	const { config, event } = args;
+	const { rizom } = event.locals
+
 	const { versionOperation, originalDoc, originalConfigMap, params } = args.context;
 
 	if (!originalConfigMap)
@@ -64,7 +66,7 @@ export const handleNewVersion: HookBeforeUpsert<Prototype, GenericDoc> = async (
 			}
 		}
 	};
-};
+});
 
 async function prepareDataForNewVersion(args: {
 	data: Dic;

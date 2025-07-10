@@ -38,15 +38,3 @@ export type SelectField = FormField & {
 	defaultValue?: string[] | DefaultValueFn<string[]>;
 	many?: boolean;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		select: any;
-	}
-	interface RegisterFormFields {
-		SelectField: SelectField; // register the field type
-	}
-}

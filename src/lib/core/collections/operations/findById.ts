@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 
 type Args = {
 	id: string;
@@ -20,7 +20,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, versionId, locale, depth, select, draft, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
-	let context: HookContext = {
+	let context: OperationContext<CollectionSlug> = {
 			params: {
 				id,
 				versionId,
@@ -35,7 +35,6 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		const result = await hook({
 			config,
 			operation: 'read',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -64,7 +63,6 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 			doc: document as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'read',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});

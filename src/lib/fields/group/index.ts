@@ -63,15 +63,3 @@ export type GroupFieldRaw = FormField & {
 	label?: string;
 	fields: Field[];
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		group: Record<string, any>;
-	}
-	interface RegisterFields {
-		GroupField: GroupField;
-	}
-}

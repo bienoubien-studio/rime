@@ -54,15 +54,3 @@ export interface ToggleField extends FormField {
 	type: 'toggle';
 	defaultValue?: boolean | DefaultValueFn<boolean>;
 }
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		toggle: any;
-	}
-	interface RegisterFormFields {
-		ToggleField: ToggleField; // register the field type
-	}
-}

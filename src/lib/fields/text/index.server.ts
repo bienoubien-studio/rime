@@ -91,15 +91,3 @@ export type TextField = FormField & {
 	 */
 	_root?: boolean;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		text: any;
-	}
-	interface RegisterFormFields {
-		TextField: TextField; // register the field type
-	}
-}

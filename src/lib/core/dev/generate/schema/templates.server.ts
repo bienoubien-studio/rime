@@ -10,8 +10,7 @@ const s = toSnakeCase;
  */
 export const templateImports = `
 import { text, integer, sqliteTable, real } from "drizzle-orm/sqlite-core";
-import { relations, type ColumnBaseConfig, type ColumnDataType } from 'drizzle-orm';
-import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 
 const pk = () => text("id").primaryKey().$defaultFn(() => crypto.randomUUID());
 `;
@@ -212,7 +211,7 @@ export const templateExportRelationsFieldsToTable = (relationFieldsDic: Record<s
  *
  * @example
  * ```typescript
- * export const tables: Tables = {
+ * export const tables = {
  *   pages,
  *   pagesBlocksParagraph,
  *   pagesBlocksImage,
@@ -225,7 +224,7 @@ export const templateExportRelationsFieldsToTable = (relationFieldsDic: Record<s
  */
 export const templateExportTables = (tables: string[]): string => dedent`
 
-  export const tables: Tables = {
+  export const tables = {
     ${tables.join(',\n    ')},
     authUsers,
     authAccounts,
@@ -360,6 +359,7 @@ const schema = {
 declare module 'rizom' {
 	export interface RegisterSchema {
 			schema: typeof schema;
+			tables: typeof tables;
 	}
 }
 export default schema

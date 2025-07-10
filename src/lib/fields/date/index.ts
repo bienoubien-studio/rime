@@ -72,15 +72,3 @@ export type DateField = FormField & {
 	unique?: boolean;
 	isTitle?: true;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		date: any;
-	}
-	interface RegisterFormFields {
-		DateField: DateField; // register the field type
-	}
-}

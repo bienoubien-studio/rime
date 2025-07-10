@@ -1,23 +1,14 @@
 <script lang="ts">
+	import type { VersionsStatus } from '$lib/core/constant.js';
+	import type { VersionDoc } from '$lib/core/types/doc.js';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';
-	import Versions, { type Version } from '$lib/panel/components/sections/document/Versions.svelte';
+	import Versions from '$lib/panel/components/sections/document/Versions.svelte';
 	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
 	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
 	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
-	import type { GenericDoc, PrototypeSlug } from '$lib/types';
+	import type { CollectionDocData } from '$lib/panel/index.js';
 
-	type Props = {
-		slug: PrototypeSlug;
-		data: {
-			doc: GenericDoc;
-			status: number;
-			readOnly: boolean;
-			operation: 'create' | 'update';
-			versions: Version[];
-		};
-	};
-
-	const { data }: Props = $props();
+	const { data }: { data: CollectionDocData<true> } = $props();
 
 	setAPIProxyContext(API_PROXY.DOCUMENT);
 </script>

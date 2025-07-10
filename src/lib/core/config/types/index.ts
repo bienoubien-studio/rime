@@ -1,9 +1,8 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 import type { Access, User } from '../../collections/auth/types.js';
-import type { Field, FieldsType, Option } from '$lib/fields/types.js';
-import type { AreaSlug, CollectionSlug, GenericDoc, Prototype } from '../../types/doc.js';
-import type { AtLeastOne, DeepPartial, Dic, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
-import type { RegisterArea, RegisterCollection } from '$lib/index.js';
+import type { Field, Option } from '$lib/fields/types.js';
+import type { AreaSlug, CollectionSlug, DocType } from '../../types/doc.js';
+import type { AtLeastOne, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
 import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
 import type { FieldsComponents } from '../../../panel/types.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
@@ -12,10 +11,8 @@ import type { Plugin } from '$lib/core/types/plugins.js';
 import type { IconProps } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
-import type { Rizom } from '$lib/core/rizom.server.js';
-import type { OperationQuery } from '$lib/core/types/index.js';
-import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
-import type { ConfigMap } from '$lib/core/operations/configMap/types.js';
+import type { RegisterArea, RegisterCollection } from 'rizom';
+import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.js';
 
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
@@ -165,7 +162,7 @@ type BaseDocConfig<S extends string = string> = {
 		  };
 };
 
-type UploadConfig = {
+export type UploadConfig = {
 	/**
 	 * Define image sizes that will be generated when an image is uploaded.
 	 * A 'thumbnail' size will be added, if none provided with this name.
@@ -198,14 +195,14 @@ type UploadConfig = {
 	accept?: string[];
 };
 
-type AuthConfig = (
+export type AuthConfig = (
 	| {
 			type: 'password';
 	  }
 	| { type: 'apiKey' }
 ) & {
 	isBetterAuthAdmin?: boolean;
-	roles?: (string|Option)[];
+	roles?: (string | Option)[];
 };
 
 export type Collection<S> = {
@@ -213,17 +210,17 @@ export type Collection<S> = {
 	/** The collection label */
 	label?: CollectionLabel;
 	auth?: boolean | AuthConfig;
-	hooks?: CollectionHooks<RegisterCollection[S]>;
+	hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>;
 	/** A function to generate the document URL */
-	url?: (doc: RegisterCollection[S]) => string;
+	url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
 	nested?: boolean;
 	upload?: boolean | UploadConfig;
 } & BaseDocConfig;
 
 export type Area<S> = BaseDocConfig & {
 	/** A function to generate the document URL */
-	url?: (doc: RegisterArea[S]) => string;
-	hooks?: AreaHooks<RegisterArea[S]>;
+	url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
+	hooks?: AreaHooks<S extends keyof RegisterArea ? S : any>;
 	/** The area label */
 	label?: string;
 };
@@ -266,7 +263,7 @@ export type BuiltConfig = {
 };
 
 export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | 'smtp'> & {
-	blueprints: Record<FieldsType, FieldsComponents>;
+	blueprints: Record<string, FieldsComponents>;
 	panel: {
 		language: 'fr' | 'en';
 		navigation: NavigationConfig;
@@ -287,7 +284,7 @@ export type CustomPanelRoute = {
 	component: Component;
 };
 
-export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions' | 'upload' | 'auth'> & {
+export type BuiltCollection = Omit<Collection<string>, 'versions' | 'upload' | 'auth'> & {
 	type: 'collection';
 	auth?: AuthConfig;
 	label: CollectionLabel;
@@ -298,7 +295,7 @@ export type BuiltCollection = Omit<Collection<CollectionSlug>, 'versions' | 'upl
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
-export type BuiltArea = Omit<Area<AreaSlug>, 'versions'> & {
+export type BuiltArea = Omit<Area<string>, 'versions'> & {
 	type: 'area';
 	label: string;
 	slug: AreaSlug;
@@ -328,260 +325,22 @@ export type CompiledConfig = Pretty<
 	}
 >;
 
-/****************************************************/
-/* Hooks 
-/****************************************************/
-
-/**
- * Maps prototype to its corresponding config type
- */
-type ConfigTypeMap = {
-	collection: CompiledCollection;
-	area: CompiledArea;
-};
-
-export type HookContext = Dic & {
-	/** Parameters passed to the original operation method */
-	params: {
-		id?: string;
-		versionId?: string;
-		sort?: string;
-		locale?: string;
-		offset?: number;
-		limit?: number;
-		depth?: number;
-		select?: string[];
-		query?: OperationQuery;
-		draft?: boolean
-	};
-	/** Parameter passed to an update operation when creating locale document fallback */
-	isFallbackLocale?: boolean;
-	/** Type of version operation */
-	versionOperation?: VersionOperation;
-	/** The original document if on an update operation */
-	originalDoc?: GenericDoc;
-	/** An map to get a field config by path on the original doc */
-	originalConfigMap?: ConfigMap;
-	/** An map to get a field config by path on incoming data */
-	configMap?: ConfigMap;
-	/** Add super descriptive stuff here */
-	isSystemOperation?:boolean
-};
-
-/**
- * Base hook context with prototype parameter
- */
-export type HookParams<P extends Prototype, T extends Partial<GenericDoc>> = {
-	rizom: Rizom;
-	event: Pretty<RequestEvent & { locals: App.Locals }>;
-	config: Pretty<ConfigTypeMap[P]>;
-	/** Object that can be used to pass data from one hook to another */
-	context: HookContext;
-};
-
-// Shared hooks for operations supported by both collections and areas
-
-/**
- * Hook executed before any operation
- */
-export type HookBeforeOperation<P extends Prototype> = (args: {
-	rizom: Rizom;
-	event: Pretty<RequestEvent & { locals: App.Locals }>;
-	config: Pretty<ConfigTypeMap[P]>;
-	operation: 'create' | 'read' | 'update' | 'delete';
-	context: HookContext;
-}) => Promise<{
-	rizom: Rizom;
-	event: Pretty<RequestEvent & { locals: App.Locals }>;
-	config: Pretty<ConfigTypeMap[P]>;
-	operation: 'create' | 'read' | 'update' | 'delete';
-	context: HookContext;
-}>;
-
-/**
- * Hook executed before reading a document
- */
-export type HookBeforeRead<P extends Prototype, T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<P, T> & {
-			operation: 'read';
-			doc: T;
-		}
-	>
-) => Promise<
-	HookParams<P, T> & {
-		operation: 'read';
-		doc: T;
-	}
->;
-
-/**
- * Hook executed before updating a document
- */
-export type HookBeforeUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<P, T> & {
-			operation: 'update';
-			data: DeepPartial<T>;
-		}
-	>
-) => Promise<
-	HookParams<P, T> & {
-		operation: 'update';
-		data: DeepPartial<T>;
-	}
->;
-
-/**
- * Hook executed after updating a document
- */
-export type HookAfterUpdate<P extends Prototype, T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<P, T> & {
-			operation: 'update';
-			doc: T;
-		}
-	>
-) => Promise<
-	HookParams<P, T> & {
-		operation: 'update';
-		doc: T;
-	}
->;
-
-// Collection-only hooks
-/**
- * Hook executed before creating a document (collection only)
- */
-export type HookBeforeCreate<T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<'collection', T> & {
-			operation: 'create';
-			data: DeepPartial<T>;
-		}
-	>
-) => Promise<
-	HookParams<'collection', T> & {
-		operation: 'create';
-		data: DeepPartial<T>;
-	}
->;
-
-/**
- * Hook executed after creating a document (collection only)
- */
-export type HookAfterCreate<T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<'collection', T> & {
-			operation: 'create';
-			doc: T;
-		}
-	>
-) => Promise<
-	HookParams<'collection', T> & {
-		operation: 'create';
-		doc: T;
-	}
->;
-
-/**
- * Hook executed before upserting a document
- * Works with both collections and areas
- * For collections: handles both create and update operations
- * For areas: handles only update operations
- */
-export type HookBeforeUpsert<P extends Prototype, T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		P extends 'collection'
-			? HookParams<P, T> &
-					(
-						| {
-								operation: 'create';
-								data: DeepPartial<T>;
-						  }
-						| {
-								operation: 'update';
-								data: DeepPartial<T>;
-						  }
-					)
-			: HookParams<P, T> & {
-					operation: 'update';
-					data: DeepPartial<T>;
-				}
-	>
-) => Promise<
-	P extends 'collection'
-		? HookParams<P, T> &
-				(
-					| {
-							operation: 'create';
-							data: DeepPartial<T>;
-					  }
-					| {
-							operation: 'update';
-							data: DeepPartial<T>;
-					  }
-				)
-		: HookParams<P, T> & {
-				operation: 'update';
-				data: DeepPartial<T>;
-			}
->;
-
-/**
- * Hook executed after upserting a document (collection only)
- */
-export type HookAfterUpsert<T extends Partial<GenericDoc>> = (
-	args: Pretty<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>
-) => Promise<HookParams<'collection', T> & ({ operation: 'create'; doc: T } | { operation: 'update'; doc: T })>;
-
-/**
- * Hook executed before deleting a document (collection only)
- */
-export type HookBeforeDelete<T extends Partial<GenericDoc>> = (
-	args: Pretty<
-		HookParams<'collection', T> & {
-			operation: 'delete';
-			doc: T;
-		}
-	>
-) => Promise<
-	HookParams<'collection', T> & {
-		operation: 'delete';
-		doc: T;
-	}
->;
-
-/**
- * Hook executed after deleting a document (collection only)
- */
-export type HookAfterDelete<T extends Partial<GenericDoc>> = (
-	args: HookParams<'collection', T> & {
-		operation: 'delete';
-		doc: T;
-	}
-) => Promise<
-	HookParams<'collection', T> & {
-		operation: 'delete';
-		doc: T;
-	}
->;
-
 // Hook collections
-export type CollectionHooks<T> = {
-	beforeOperation?: HookBeforeOperation<any>[];
-	beforeCreate?: (HookBeforeCreate<any> | HookBeforeUpsert<any, any>)[];
-	afterCreate?: (HookAfterCreate<any> | HookAfterUpsert<any>)[];
-	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
-	afterUpdate?: (HookAfterUpdate<any, any> | HookAfterUpsert<any>)[];
-	beforeRead?: HookBeforeRead<any, any>[];
-	beforeDelete?: HookBeforeDelete<any>[];
-	afterDelete?: HookAfterDelete<any>[];
+export type CollectionHooks<S extends DocType> = {
+	beforeOperation?: HookBeforeOperation<S>[];
+	beforeCreate?: (Hook<S, 'create', 'before'> | Hook<S, 'update' | 'create', 'before'>)[];
+	beforeRead?: Hook<S, 'read', 'before'>[];
+	beforeUpdate?: (Hook<S, 'update', 'before'> | Hook<S, 'update' | 'create', 'before'>)[];
+	beforeDelete?: Hook<S, 'delete', 'before'>[];
+
+	afterCreate?: (Hook<S, 'create', 'after'> | Hook<S, 'update' | 'create', 'after'>)[];
+	afterUpdate?: (Hook<S, 'update', 'after'> | Hook<S, 'update' | 'create', 'after'>)[];
+	afterDelete?: Hook<S, 'delete', 'after'>[];
 };
 
-export type AreaHooks<T> = {
-	beforeOperation?: HookBeforeOperation<any>[];
-	beforeRead?: HookBeforeRead<any, any>[];
-	beforeUpdate?: (HookBeforeUpdate<any, any> | HookBeforeUpsert<any, any>)[];
-	afterUpdate?: HookAfterUpdate<any, any>[];
+export type AreaHooks<S extends DocType> = {
+	beforeOperation?: HookBeforeOperation<S>[];
+	beforeRead?: Hook<S, 'read', 'before'>[];
+	beforeUpdate?: (Hook<S, 'update', 'before'> | Hook<S, 'update' | 'create', 'before'>)[];
+	afterUpdate?: Hook<S, 'update', 'after'>[];
 };

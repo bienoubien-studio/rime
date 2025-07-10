@@ -36,10 +36,7 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 /****************************************************/
 
 export const databaseTransformInterface = ({ configInterface, tables }: CreateTransformInterfaceArgs) => {
-	type Transformed<T> = Omit<T, '_url' | '_type' | '_prototype'> & {
-		title?: string;
-	};
-
+	
 	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
 		doc: RawDoc;
 		slug: AreaSlug | CollectionSlug;
@@ -47,7 +44,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		event: RequestEvent;
 		depth?: number;
 		withBlank?: boolean;
-	}): Promise<Transformed<T>> => {
+	}): Promise<T> => {
 		//
 
 		const { slug, locale, event, withBlank = true, depth = 0 } = args;
@@ -212,11 +209,9 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		}
 
 		if (!isPanel || !event.locals.user) {
-			keysToDelete.push('authUserId', 'editedBy');
+			keysToDelete.push('editedBy');
 		}
-
-		keysToDelete.push(...PRIVATE_FIELDS);
-
+		
 		if (withBlank) {
 			output = omit(keysToDelete, deepmerge(blankDocument, output, { arrayMerge: (_, y) => y }));
 		} else {

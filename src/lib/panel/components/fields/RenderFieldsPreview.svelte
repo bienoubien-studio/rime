@@ -2,7 +2,7 @@
 	import { isFormField, isLiveField, isNotHidden, isTabsField } from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, FieldsType } from '$lib/fields/types.js';
+	import type { Field } from '$lib/fields/types.js';
 	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 	import { capitalize } from '$lib/util/string.js';
 
@@ -14,7 +14,7 @@
 
 	const config = getConfigContext();
 
-	const getCellComponent = (fieldType: FieldsType) => {
+	const getCellComponent = (fieldType: string) => {
 		return config.raw.blueprints[fieldType].cell || null;
 	};
 

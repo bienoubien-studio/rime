@@ -7,7 +7,6 @@
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import { getValueAtPath } from '$lib/util/object';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import type { FieldsType } from '$lib/fields/types.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import StatusDot from '../../StatusDot.svelte';
 
@@ -22,7 +21,7 @@
 	const locale = getLocaleContext();
 	const config = getConfigContext();
 
-	const getCellComponent = (fieldType: FieldsType) => {
+	const getCellComponent = (fieldType: string) => {
 		return config.raw.blueprints[fieldType].cell || null;
 	};
 

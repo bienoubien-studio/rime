@@ -115,15 +115,3 @@ export type LinkField = FormField & {
 	layout: 'compact' | 'default';
 	types?: LinkType[];
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		link: any;
-	}
-	interface RegisterFormFields {
-		LinkField: LinkField;
-	}
-}

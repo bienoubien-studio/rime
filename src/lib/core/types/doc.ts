@@ -1,17 +1,18 @@
-import { GetRegisterType } from '$lib/index.js';
+import type { GetRegisterType, RegisterArea, RegisterCollection } from '$lib/index.js';
 
 export type CollectionSlug = GetRegisterType<'CollectionSlug'>;
 export type AreaSlug = GetRegisterType<'AreaSlug'>;
 export type PrototypeSlug = CollectionSlug | AreaSlug;
 
 import type { Dic, Pretty } from '$lib/util/types.js';
+import type { UploadPath } from '../collections/upload/util/path.js';
 import type { VersionsStatus } from '../constant.js';
 
 export type Prototype = 'area' | 'collection';
 
 export type RawDoc = Dic & { id: string };
 
-type BaseDoc = {
+export type BaseDoc = {
 	id: string;
 	title: string;
 	updatedAt?: Date;
@@ -23,12 +24,19 @@ type BaseDoc = {
 	_live?: string;
 };
 
-export type GenericDoc = Pretty<BaseDoc & Dic>;
+export type GenericDoc = BaseDoc & Dic;
 export type GenericNestedDoc = Pretty<
 	BaseDoc & {
 		_children: string[];
 		_parent: string | null;
 		_position: number;
+	} & Dic
+>;
+export type GenericAuthDoc = Pretty<
+	BaseDoc & {
+		apiKeyId?: string;
+		authUserId?: string;
+		roles?: string[];
 	} & Dic
 >;
 
@@ -59,3 +67,15 @@ export type UploadDoc = BaseDoc & {
 export type VersionDoc = BaseDoc & {
 	status: VersionsStatus;
 };
+
+export type Docs = {
+	raw: RawDoc;
+	generic: GenericDoc;
+	upload: UploadDoc;
+	version: VersionDoc;
+	auth: GenericAuthDoc;
+	directory: { id: UploadPath; parent: string | null; name: string; createdAt: Date; updatedAt: Date };
+} & RegisterCollection &
+	RegisterArea;
+
+export type DocType = keyof Docs;

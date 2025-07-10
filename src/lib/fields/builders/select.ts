@@ -1,4 +1,4 @@
-import type { DefaultValueFn, FieldsType, FieldValidationFunc, FormField, Option } from '$lib/fields/types.js';
+import type { DefaultValueFn, FieldValidationFunc, FormField, Option } from '$lib/fields/types.js';
 import { FormFieldBuilder } from './field.server.js';
 import { capitalize } from '$lib/util/string.js';
 
@@ -26,7 +26,7 @@ type FieldWithOptions = FormField & {
 };
 
 class PickFieldBuilder<T extends FieldWithOptions = FieldWithOptions> extends FormFieldBuilder<T> {
-	constructor(name: string, type: FieldsType) {
+	constructor(name: string, type: string) {
 		super(name, type);
 		this.field.validate = ensureSelectIsOption;
 	}

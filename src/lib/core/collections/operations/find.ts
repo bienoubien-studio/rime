@@ -1,9 +1,10 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { RegisterCollection } from 'rizom';
 
 type FindArgs = {
 	query?: OperationQuery;
@@ -24,7 +25,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [], isSystemOperation } = args;
 	const { rizom } = event.locals;
 	
-	let context: HookContext = {
+	let context: OperationContext<CollectionSlug> = {
 		isSystemOperation,
 		params: {
 			query,
@@ -41,7 +42,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		const result = await hook({
 			config,
 			operation: 'read',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -73,10 +73,9 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 
 		for (const hook of config.hooks?.beforeRead || []) {
 			const result = await hook({
-				doc: document,
+				doc: document as RegisterCollection[CollectionSlug],
 				config,
 				operation: 'read',
-				rizom: event.locals.rizom,
 				event,
 				context
 			});

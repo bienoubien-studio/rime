@@ -103,7 +103,7 @@
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color, fill, stroke;
 		transition-duration: 0.25s;
 		gap: var(--rz-size-2);
-		fiil: currentColor;
+		fill: currentColor;
 	}
 
 	.rz-button:focus-visible {

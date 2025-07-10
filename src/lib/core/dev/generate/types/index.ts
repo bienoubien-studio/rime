@@ -40,7 +40,8 @@ const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
  */
 const templateDocType = (slug: string, content: string, upload?: boolean): string => `
 export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''} {
-  ${content}
+  ${content};
+	[x: string]: unknown;
 }`;
 
 /**

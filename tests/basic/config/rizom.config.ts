@@ -31,12 +31,10 @@ import {
 	NotebookText
 } from '@lucide/svelte';
 
-import { collection, area, defineConfig } from '$lib/index.js';
-import type { HookAfterUpsert, HookBeforeUpsert } from 'rizom/core/config/types/index.js';
+import { collection, area, defineConfig, Hooks } from '$lib/index.js';
 import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
-
 
 const tabSEO = tab('metas')
 	.label('SEO')
@@ -93,21 +91,21 @@ const tabLayout = tab('layout')
 		blocks('sections', [blockParagraph, blockImage, blockSlider, blockKeyFacts, blockBlack])
 	);
 
-const clearCacheHook: HookAfterUpsert<PagesDoc> = async (args) => {
-	args.rizom.cache.clear();
+const clearCacheHook = Hooks.afterUpsert<'pages'>(async (args) => {
+	args.event.locals.rizom.cache.clear();
 	return args;
-};
+});
 
-const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
-	const { data, rizom } = args;
+const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
+	const { data, event } = args;
 
 	if (data?.attributes?.isHome) {
 		const query = `where[attributes.isHome][equals]=true`;
 
-		const pagesIsHome = await rizom.collection('pages').find({ query });
+		const pagesIsHome = await event.locals.rizom.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await rizom.collection('pages').updateById({
+			await event.locals.rizom.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});
@@ -115,7 +113,7 @@ const setHome: HookBeforeUpsert<'collection', PagesDoc> = async (args) => {
 	}
 
 	return args;
-};
+});
 
 const Pages = collection('pages', {
 	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
@@ -260,7 +258,7 @@ const Users = collection('users', {
 		create: () => true,
 		read: () => true,
 		update: (user, { id }) => access.isAdminOrMe(user, id),
-		delete: (user, { id }) => access.isAdminOrMe(user, id),
+		delete: (user, { id }) => access.isAdminOrMe(user, id)
 	}
 });
 
@@ -274,7 +272,7 @@ const Apps = collection('apps', {
 		create: (user) => access.isAdmin(user),
 		read: (user) => access.isAdmin(user),
 		update: (user, { id }) => access.isAdmin(user),
-		delete: (user, { id }) => access.isAdmin(user),
+		delete: (user, { id }) => access.isAdmin(user)
 	}
 });
 

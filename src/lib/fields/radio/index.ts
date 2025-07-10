@@ -38,15 +38,3 @@ export type RadioField = FormField & {
 	defaultValue: string | DefaultValueFn<string>;
 	many: false;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		radio: any;
-	}
-	interface RegisterFormFields {
-		RadioField: RadioField; // register the field type
-	}
-}

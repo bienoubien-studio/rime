@@ -12,10 +12,10 @@
  * }
  */
 export const cases = <T extends Record<string, boolean>>(map: T): { 
-  value: keyof T | 'default';
+  value: ExtractTrueKeys<T> extends never ? (keyof T | undefined) : keyof T;
 } & { [K in keyof T]: K } => {
   // Find the first matching key
-  let value: keyof T | 'default' = 'default';
+  let value;
   for (const [key, condition] of Object.entries(map)) {
     if (condition) {
       value = key as keyof T;
@@ -24,7 +24,7 @@ export const cases = <T extends Record<string, boolean>>(map: T): {
   }
   
   // Create the result object with value and all keys
-  const result = { value } as { value: keyof T | 'default' } & { [K in keyof T]: K };
+  const result = { value } as any;
   
   // Add each key as a property
   for (const key of Object.keys(map)) {
@@ -33,6 +33,11 @@ export const cases = <T extends Record<string, boolean>>(map: T): {
   
   return result;
 };
+
+// Type helper to extract keys with literal true values
+type ExtractTrueKeys<T> = {
+  [K in keyof T]: T[K] extends true ? K : never
+}[keyof T];
 
 /**
  * Executes the action associated with the given key

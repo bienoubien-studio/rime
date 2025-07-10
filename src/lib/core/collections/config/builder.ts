@@ -11,15 +11,19 @@ import { augmentVersions } from './augment-versions.js';
 import { augmentAuth } from './augment-auth.js';
 import { FileText } from '@lucide/svelte';
 import { augmentUrl } from './augment-url.js';
+import type { CollectionSlug } from '../../../types.js';
 
-const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>) => ({ ...config, slug });
+const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>) => ({
+	...config,
+	slug
+});
 
 /**
  * Function to define a collection
  */
 export function collection<S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection {
-	const withSlug = addSlug(slug, incomingConfig);
-	
+	const withSlug = addSlug(slug, incomingConfig) as Collection<CollectionSlug>;
+
 	const withUpload = augmentUpdload(withSlug);
 	const withNested = augmentNested(withUpload);
 	const withVersions = augmentVersions(withNested);
@@ -28,7 +32,7 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 	const withMetas = augmentMetas(withAuth);
 	const withHooks = augmentHooks(withMetas);
 	const output = augmentTitle(withHooks);
-	
+
 	return {
 		...output,
 		url: output.url as BuiltCollection['url'],
@@ -42,6 +46,6 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 			update: (user) => !!user && !!user.isStaff,
 			delete: (user) => !!user && !!user.isStaff,
 			...output.access
-		} 
+		}
 	};
 }

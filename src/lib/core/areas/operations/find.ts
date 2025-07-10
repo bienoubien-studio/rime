@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { type RegisterArea } from '$lib/index.js';
-import type { HookContext } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 
 type FindArgs = {
 	locale?: string | undefined;
@@ -19,7 +19,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 	//
 	const { config, event, locale, depth, select, versionId, draft, isSystemOperation } = args;
 
-	let context: HookContext = {
+	let context: OperationContext<AreaSlug> = {
 		params: {
 			locale,
 			depth,
@@ -34,7 +34,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		const result = await hook({
 			config,
 			operation: 'read',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -65,7 +64,6 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 			doc: document as unknown as RegisterArea[AreaSlug],
 			config,
 			operation: 'read',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});

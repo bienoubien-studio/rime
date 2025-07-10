@@ -115,20 +115,19 @@ export const load = authLoads.forgotPassword;
  */
 const resetPasswordPage = () => `
 <script lang="ts">
-  import { ResetPassword } from '${PACKAGE_NAME}/panel';
-  const { data } = $props();
+  import { ResetPassword } from '${PACKAGE_NAME}/panel/auth/client';
 </script>
 
-<ResetPassword slug={data.slug} token={data.token} />`;
+<ResetPassword />`;
 
 /**
  * Reset password page server template
  * (rizom)/reset-password/+page.server.ts
  */
 const resetPasswordPageServer = () => `
-import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
+import { authLoads } from '${PACKAGE_NAME}/panel/auth';
 
-export const load = pagesLoad.resetPassword;
+export const load = authLoads.resetPassword;
 `;
 
 /**

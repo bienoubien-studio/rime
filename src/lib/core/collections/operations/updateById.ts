@@ -2,11 +2,12 @@ import { RizomError } from '$lib/core/errors/index.js';
 import { saveBlocks } from '../../operations/blocks/index.server.js';
 import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 import { saveRelations } from '../../operations/relations/index.server.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { HookBeforeUpdate, HookContext } from '$lib/core/config/types/index.js';
+import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { RegisterCollection } from 'rizom';
 
 type Args<T> = {
 	id: string;
@@ -17,7 +18,7 @@ type Args<T> = {
 	config: CompiledCollection;
 	event: RequestEvent;
 	isFallbackLocale?: boolean;
-	isSystemOperation?: boolean
+	isSystemOperation?: boolean;
 };
 
 /**
@@ -31,7 +32,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	let config = args.config;
 
 	// Set hooks context
-	let context: HookContext = {
+	let context: OperationContext<CollectionSlug> = {
 		params: {
 			id,
 			versionId: args.versionId,
@@ -46,23 +47,18 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		const result = await hook({
 			config,
 			operation: 'update',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
 		context = result.context;
 	}
 
-	const hooksBeforeUpdates = (config.hooks?.beforeUpdate
-		? config.hooks.beforeUpdate
-		: []) as unknown as HookBeforeUpdate<'collection', T>[];
-
-	for (const hook of hooksBeforeUpdates) {
+	const hooksBeforeUpdate = config.hooks?.beforeUpdate as Hook<CollectionSlug>[]
+	for (const hook of hooksBeforeUpdate || []) {
 		const result = await hook({
-			data: data,
+			data: data as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'update',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});
@@ -89,7 +85,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		locale: locale,
 		versionOperation: context.versionOperation
 	});
-	
+
 	const blocksDiff = await saveBlocks({
 		ownerId: context.params.versionId,
 		configMap: context.configMap,
@@ -125,7 +121,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		blocksDiff,
 		treeDiff
 	});
-	
+
 	let document = await rizom.collection(config.slug).findById({
 		//
 		id: updatedId,
@@ -136,9 +132,9 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	for (const hook of config.hooks?.afterUpdate || []) {
 		await hook({
 			doc: document,
+			data: data as RegisterCollection[CollectionSlug],
 			config,
 			operation: 'update',
-			rizom: event.locals.rizom,
 			event,
 			context
 		});

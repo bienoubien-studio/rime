@@ -6,16 +6,12 @@ export { rizom, handlers };
 export { FormFieldBuilder, FieldBuilder } from '$lib/fields/builders/field.server.js';
 export { area } from '$lib/core/areas/config/builder.js';
 export { collection } from '$lib/core/collections/config/builder.js';
+export { Hooks } from '$lib/core/operations/hooks/index.js';
+
 export const defineConfig = (config: Config): Config => config;
 
 declare module 'rizom' {
 	// Register interfaces for plugin architecture
-	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-	export interface RegisterFieldsType {}
-	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-	export interface RegisterFormFields {}
-	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-	export interface RegisterFields {}
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface RegisterPlugins {}
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -31,9 +27,6 @@ declare module 'rizom' {
 		CollectionSlug: keyof RegisterCollection;
 		AreaSlug: keyof RegisterArea;
 		Plugins: RegisterPlugins;
-		FieldsType: keyof RegisterFieldsType;
-		AnyFormField: RegisterFormFields[keyof RegisterFormFields];
-		AnyField: RegisterFields[keyof RegisterFields];
 		Schema: RegisterSchema['schema'];
 		Tables: RegisterSchema['tables'];
 	}

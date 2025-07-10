@@ -56,15 +56,3 @@ export type EmailField = FormField & {
 	unique?: boolean;
 	isTitle?: true;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		email: any;
-	}
-	interface RegisterFormFields {
-		EmailField: EmailField; // register the field type
-	}
-}

@@ -37,15 +37,3 @@ export type ComponentField = Field & {
 	type: 'component';
 	component: TypedComponent;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		component: any;
-	}
-	interface RegisterFields {
-		ComponentField: ComponentField; // register the field type
-	}
-}

@@ -6,7 +6,7 @@
 
 	const { path, config, form }: TextAreaFieldProps = $props();
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField(path || config.name, config));
 
 	// Actions
 	const onInput = (event: Event) => {

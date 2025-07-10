@@ -1,5 +1,5 @@
-import { redirect, type ServerLoad } from '@sveltejs/kit';
-import type { CollectionSlug } from '$lib/core/types/doc.js';
+import { redirect, type ServerLoad, type ServerLoadEvent } from '@sveltejs/kit';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import type { WithRequired } from 'better-auth/svelte';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
@@ -14,6 +14,15 @@ import {
 import { logger } from '$lib/core/logger/index.server.js';
 import { trycatch } from '$lib/util/trycatch.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
+import type { Directory } from '$lib/core/collections/upload/upload.js';
+
+type Data = {
+	aria: WithRequired<Partial<Route>, 'title'>[],
+	docs: GenericDoc[],
+	canCreate: boolean;
+	status: number;
+	upload?: { directories: Directory[]; currentPath: UploadPath; parentDirectory : Directory }
+}
 
 /****************************************************
 /* Layout load
@@ -21,7 +30,7 @@ import { handleError } from '$lib/core/errors/handler.server.js';
 
 export function collectionLoad(slug: CollectionSlug) {
 	//
-	const load: ServerLoad = async (event) => {
+	const load = async (event: ServerLoadEvent): Promise<Data> => {
 		const { rizom, locale, user } = event.locals;
 
 		const collection = rizom.collection(slug);
@@ -37,19 +46,19 @@ export function collectionLoad(slug: CollectionSlug) {
 			{ title: collection.config.label.plural }
 		];
 
-		let data: Dic = {
+		
+		let data: Data = {
 			aria,
 			docs,
 			canCreate: authorizedCreate,
-			slug,
 			status: 200
 		};
-
+		
 		if (collection.config.upload) {
 			let directories: any[] = [];
 			const paramUploadPath = event.url.searchParams.get('uploadPath') as UploadPath | null;
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
-			const directoryCollection = rizom.collection(makeUploadDirectoriesSlug(slug));
+			const directoryCollection = rizom.collection<any>(makeUploadDirectoriesSlug(slug));
 			// Check if dir exists
 			let [error, currentDirectory] = await trycatch(() =>
 				directoryCollection.findById({
@@ -83,7 +92,7 @@ export function collectionLoad(slug: CollectionSlug) {
 				);
 
 				if (parentError) {
-					return handleError(parentError, { context: 'load' });
+					throw handleError(parentError, { context: 'load' });
 				}
 				parentDirectory = result;
 

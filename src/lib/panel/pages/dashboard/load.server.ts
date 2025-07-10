@@ -1,7 +1,6 @@
-import type { ServerLoadEvent } from '@sveltejs/kit';
 import { capitalize } from '$lib/util/string.js';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { DashboardEntry } from './types';
-import { isVersionsSlug } from '$lib/util/schema.js';
 import type { CompiledCollection, Route } from '../../../types.js';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {

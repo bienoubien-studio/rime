@@ -2,7 +2,6 @@ import { logger } from '$lib/core/logger/index.server.js';
 import cache from '../../cache/index.js';
 import type { CompiledConfig } from '$lib/core/config/types/index.js';
 import type { FieldsComponents } from '$lib/panel/types.js';
-import type { FieldsType } from '$lib/fields/types.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
 import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.server.js';
 import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
@@ -212,7 +211,7 @@ function parseValue(key: string, value: any, parentKey: string = ''): string | b
 }
 
 type CompiledConfigWithBluePrints = CompiledConfig & {
-	blueprints: Record<FieldsType, FieldsComponents>;
+	blueprints: Record<string, FieldsComponents>;
 };
 
 // Main build function

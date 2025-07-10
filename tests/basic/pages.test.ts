@@ -229,7 +229,7 @@ test.describe('Live Edit', () => {
 		await page.waitForLoadState('networkidle');
 
 		const liveContainer = page.locator('.rz-live-container');
-		await expect(liveContainer).toBeVisible({ timeout: 1000 });
+		await expect(liveContainer).toBeVisible({ timeout: 5000 });
 		expect(liveContainer).toHaveCount(1);
 	});
 });

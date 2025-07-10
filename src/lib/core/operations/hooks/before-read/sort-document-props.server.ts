@@ -1,11 +1,10 @@
-import type { GenericDoc, Prototype } from '$lib/core/types/doc.js';
-import type { HookBeforeRead } from '$lib/core/config/types/index.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
+import { Hooks } from '../index.js';
 
-export const sortDocumentProps: HookBeforeRead<Prototype, GenericDoc> = async (args) => {
+export const sortDocumentProps = Hooks.beforeRead<'generic'>( async (args) => {
 	return { ...args, doc: sortDocumentKeys(args.doc) };
-};
+});
 
 function sortDocumentKeys<T extends Dic>(obj: T): T {
 	const specificOrder = ['id', 'title', 'status'];

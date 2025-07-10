@@ -27,10 +27,11 @@ const page = (slug: string) => `
  */
 const docPage = (slug: string) => `
 <script lang="ts">
-  import { CollectionDoc, type CollectionDocProps } from '${PACKAGE_NAME}/panel'
-  const { data }: CollectionDocProps = $props()
+	import { CollectionDoc, type CollectionDocData } from 'rizom/panel';
+	const { data }: { data: CollectionDocData<false> } = $props();
 </script>
-<CollectionDoc {data} slug='${slug}' />`;
+
+<CollectionDoc {data} />`;
 
 /**
  * Document page server template
@@ -57,10 +58,11 @@ export const actions = pagesActions.collection.doc('${slug}')`;
  */
 const docPageVersions = (slug: string) => `
 <script lang="ts">
-  import { CollectionDocVersions, type CollectionDocVersionsProps } from '${PACKAGE_NAME}/panel'
-  const { data }: CollectionDocVersionsProps = $props()
+	import { CollectionDocVersions, type CollectionDocData } from 'rizom/panel';
+	const { data }: { data: CollectionDocData<true> } = $props();
 </script>
-<CollectionDocVersions {data} slug='${slug}' />`;
+
+<CollectionDocVersions {data} />`;
 
 /**
  * API collection list operations

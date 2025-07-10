@@ -65,15 +65,3 @@ export type TextAreaField = FormField & {
 	isTitle?: true;
 	placeholder: string;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		textarea: any;
-	}
-	interface RegisterFormFields {
-		TextAreaField: TextAreaField; // register the field type
-	}
-}

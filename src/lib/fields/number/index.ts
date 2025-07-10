@@ -77,6 +77,7 @@ export type NumberField = FormField & {
 	min?: number;
 	max?: number;
 	defaultValue?: number | DefaultValueFn<number>;
+	validate?: FieldValidationFunc<NumberField>
 	/**
 	 * Force the field to be on the root table
 	 * usefull for fields that should not be versioned
@@ -85,15 +86,3 @@ export type NumberField = FormField & {
 	 */
 	_root?: boolean;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		number: any;
-	}
-	interface RegisterFormFields {
-		NumberField: NumberField;
-	}
-}

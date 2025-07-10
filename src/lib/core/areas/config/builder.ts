@@ -7,6 +7,7 @@ import { augmentVersions } from './augment-versions.js';
 import { FileText } from '@lucide/svelte';
 import { augmentHooks } from './augment-hooks.js';
 import { augmentUrl } from './augment-url.js';
+import type { AreaSlug } from '../../../types.js';
 
 const addSlug = <S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S> => ({ ...config, slug });
 
@@ -14,8 +15,8 @@ const addSlug = <S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S>
  * Function to define an Area
  */
 export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): BuiltArea {
-	const withSlug = addSlug(slug, incomingConfig);
-
+	const withSlug = addSlug(slug, incomingConfig) as Area<AreaSlug>;
+	
 	const withTitle = augmentTitle(withSlug);
 	const withMetas = augmentMetas(withTitle);
 	const withVersions = augmentVersions(withMetas);

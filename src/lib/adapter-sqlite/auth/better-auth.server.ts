@@ -16,7 +16,7 @@ type Args = {
 
 export const configureBetterAuth = ({ db, schema, configInterface }: Args) => {
 	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
-
+	
 	return betterAuth({
 		plugins: configurePlugins(configInterface),
 		rateLimit: {
@@ -82,7 +82,7 @@ const configurePlugins = (configInterface: ConfigInterface) => {
 	const HAS_MAGIC_LINK = Boolean(configInterface.raw.auth?.magicLink);
 	const HAS_API_KEY = configInterface.collections.filter((c) => c.auth?.type === 'apiKey').length;
 
-	const makeAdminPlugin = () =>
+	return [
 		adminPlugin({
 			accessControl,
 			roles: {
@@ -90,52 +90,28 @@ const configurePlugins = (configInterface: ConfigInterface) => {
 				user,
 				staff
 			}
-		});
-
-	const makeApiKeyPlugin = () =>
+		}),
 		apiKey({
 			defaultKeyLength: 48,
 			enableMetadata: true,
 			permissions: {
 				defaultPermissions: {
-					roles: ['user']
+					roles: HAS_API_KEY ? ['user'] : ['none']
 				}
 			}
-		});
-
-	// Should return separate list of plugins to preserve type inference
-	if (HAS_API_KEY && HAS_MAGIC_LINK) {
-		return [
-			makeAdminPlugin(),
-
-			magicLink({
-				sendMagicLink: ({ email, url, token }) => {
-					mailer.sendMail({
-						to: email,
-						subject: 'Rizom signin link',
-						text: `click this link to signin ${url}`
-					});
+		}),
+		magicLink({
+			sendMagicLink: ({ email, url, token }) => {
+				if(!HAS_MAGIC_LINK) {
+					return
 				}
-			}),
-			makeApiKeyPlugin()
-		];
-	} else if (HAS_API_KEY) {
-		return [makeAdminPlugin(), makeApiKeyPlugin()];
-	} else if (HAS_MAGIC_LINK) {
-		return [
-			makeAdminPlugin(),
-
-			magicLink({
-				sendMagicLink: ({ email, url, token }) => {
-					mailer.sendMail({
-						to: email,
-						subject: 'Rizom signin link',
-						text: `click this link to signin ${url}`
-					});
-				}
-			})
-		];
-	} else {
-		return [makeAdminPlugin()];
-	}
+				mailer.sendMail({
+					to: email,
+					subject: 'Rizom signin link',
+					text: `click this link to signin ${url}`
+				});
+			}
+		})
+	]
+	
 };

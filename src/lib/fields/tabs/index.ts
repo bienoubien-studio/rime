@@ -91,15 +91,3 @@ export type TabsFieldRaw = Field & {
 	label?: string;
 	tabs: Array<Omit<TabsFieldTab, 'fields'> & { fields: Field[] }>;
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		tabs: Record<string, Record<string, any>>;
-	}
-	interface RegisterFields {
-		TabsField: TabsField;
-	}
-}

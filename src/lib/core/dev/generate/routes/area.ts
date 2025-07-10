@@ -10,7 +10,7 @@ const pageTemplate = (slug: string): string => `
   import { Area } from '${PACKAGE_NAME}/panel'
   const { data } = $props()
 </script>
-<Area {data} slug='${slug}' />`;
+<Area {data} />`;
 
 /**
  * Page server template for area
@@ -47,10 +47,11 @@ export const PATCH = api.area.update(${TScastVersionSlug(slug)})
  */
 const pageVersions = (slug: string) => `
 <script lang="ts">
-  import { AreaVersionsDoc, type AreaVersionsDocProps } from '${PACKAGE_NAME}/panel'
-  const { data }: AreaVersionsDocProps = $props()
+	import { AreaVersionsDoc, type AreaDocData } from 'rizom/panel';
+	const { data }: { data: AreaDocData<true> } = $props();
 </script>
-<AreaVersionsDoc {data} slug='${slug}' />`;
+
+<AreaVersionsDoc {data} />`;
 
 /**
  * Area routes dictionary defining route patterns and their corresponding templates

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { FormErrors } from '$lib/panel/types.js';
 	import { setFormContext } from '$lib/panel/context/form.svelte';
 	import Text from '$lib/fields/text/component/Text.svelte';
 	import { toast } from 'svelte-sonner';
@@ -8,15 +7,10 @@
 	import { t__ } from '$lib/core/i18n';
 	import { authClient } from '$lib/panel/util/auth';
 	import { passwordField } from '$lib/panel/pages/auth/fields.js';
-
-	interface Props {
-		form?: { errors?: FormErrors };
-	}
-
-	const { form }: Props = $props();
+	
 	let success = $state(false);
 
-	const context = setFormContext(form || {}, 'reset-password');
+	const context = setFormContext({}, 'reset-password');
 
 	const passwordConfig = {
 		...passwordField,

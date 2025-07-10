@@ -3,13 +3,12 @@ import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/obj
 import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
-import type { Prototype } from '../../../../types.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
+import { Hooks } from '../index.js';
 
-export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (args) => {
+export const validateFields = Hooks.beforeUpsert( async (args) => {
 	const errors: FormErrors = {};
-	const { event, operation, rizom } = args;
-	const { user } = event.locals;
+	const { event, operation } = args;
+	const { rizom, user } = event.locals;
 	const configMap = args.context.configMap;
 	const locale = args.context.params.locale || args.event.locals.locale;
 	const slug = args.config.slug;
@@ -144,4 +143,4 @@ export const validateFields: HookBeforeUpsert<Prototype, GenericDoc> = async (ar
 		...args,
 		data: output
 	};
-};
+});

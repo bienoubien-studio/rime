@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { isComponentField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
+	import { isComponentField, isFormField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, FieldsType, FormField, AnyField } from '$lib/fields/types.js';
+	import type { Field, FormField } from '$lib/fields/types.js';
 	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
 	import type { Component } from 'svelte';
 
@@ -17,7 +17,7 @@
 	const user = getUserContext();
 	const config = getConfigContext();
 
-	const fieldComponent = (type: FieldsType): Component<{ path: string; config: Field; form: typeof form }> => {
+	const fieldComponent = (type: string): Component<{ path: string; config: Field; form: typeof form }> => {
 		return config.raw.blueprints[type].component || null;
 	};
 
@@ -28,7 +28,7 @@
 				return field.access.read(user.attributes, { id: form.doc.id });
 			}
 			return true;
-		}) as AnyField[]
+		})
 	);
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
@@ -56,7 +56,7 @@
 				<div data-type="tabs" class="rz-render-fields__field rz-render-fields__field--full">
 					<Tabs config={field} {path} {form} />
 				</div>
-			{:else if isNotHidden(field)}
+			{:else if isFormField(field) && isNotHidden(field)}
 				{@const FieldComponent = fieldComponent(field.type)}
 				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
 					<FieldComponent path={path + field.name} config={field} {form} />

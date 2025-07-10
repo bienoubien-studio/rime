@@ -156,15 +156,3 @@ export type TreeField = FormField & {
 export type TreeFieldBlockRenderTitle = (args: { values: Dic }) => string;
 
 export type TreeFieldRaw = FormField & Omit<TreeField, 'fields'> & { fields: Field[] };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		tree: any;
-	}
-	interface RegisterFormFields {
-		TreeField: TreeField | TreeFieldRaw;
-	}
-}

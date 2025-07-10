@@ -7,7 +7,7 @@
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import validate from '$lib/util/validate';
-	import type { TextField } from '$lib/fields/types.js';
+	import type { ClientField, TextField } from '$lib/fields/types.js';
 	import type { CompiledCollection } from '$lib/core/config/types/index.js';
 	import { isAuthConfig } from '$lib/util/config.js';
 	

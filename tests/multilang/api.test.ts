@@ -69,7 +69,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	// Create 100 pages
 	for (let i = 1; i < 100; i++) {
 		
-		await request.post(`${API_BASE_URL}/pages`, {
+		const response = await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
 				attributes: {
@@ -78,6 +78,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 				}
 			}
 		});
+		expect(response.status()).toBe(200)
 	}
 
 	// Check findAll

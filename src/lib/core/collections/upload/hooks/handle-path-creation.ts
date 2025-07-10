@@ -1,19 +1,16 @@
-import { RizomError } from '$lib/core/errors/index.js';
-import type { HookBeforeUpsert } from '$lib/core/config/types/index.js';
-import { trycatch, trycatchSync } from '$lib/util/trycatch.js';
-import { getSegments, type UploadPath } from '../util/path.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import { trycatch } from '$lib/util/trycatch.js';
+import { getSegments } from '../util/path.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
-import { cases } from '$lib/util/cases.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 
 /**
  * Hook executed before save/update operations on an upload collections
  * the function get the document _path and check if it exists,
  * if it doesn't it create {upload_slug}_directories entries recursively
  */
-export const handlePathCreation: HookBeforeUpsert<'collection', GenericDoc & { id: UploadPath }> = async (args) => {
+export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 	const { rizom } = args.event.locals;
 	let data = args.data;
 
@@ -26,7 +23,7 @@ export const handlePathCreation: HookBeforeUpsert<'collection', GenericDoc & { i
 	if (args.data._path) {
 		const directorySlug = makeUploadDirectoriesSlug(args.config.slug);
 
-		const [error, dir] = await trycatch(() => 
+		const [error, dir] = await trycatch(() =>
 			rizom.collection(directorySlug).findById({
 				select: ['id'],
 				id: data._path
@@ -52,7 +49,7 @@ export const handlePathCreation: HookBeforeUpsert<'collection', GenericDoc & { i
 			currentPath = currentPath ? `${currentPath}${UPLOAD_PATH.SEPARATOR}${segment}` : segment;
 
 			// Check if this segment exists
-			const [segError, segExists] = await trycatch(() => 
+			const [segError, segExists] = await trycatch(() =>
 				rizom.collection(directorySlug).findById({
 					select: ['id'],
 					id: currentPath
@@ -61,7 +58,7 @@ export const handlePathCreation: HookBeforeUpsert<'collection', GenericDoc & { i
 
 			// If the segment doesn't exist, create it
 			if (!segExists) {
-				const [createError] = await trycatch(() => 
+				const [createError] = await trycatch(() =>
 					rizom.collection(directorySlug).create({
 						data: {
 							id: currentPath,
@@ -84,4 +81,4 @@ export const handlePathCreation: HookBeforeUpsert<'collection', GenericDoc & { i
 	}
 
 	return args;
-};
+});

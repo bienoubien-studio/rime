@@ -1,6 +1,5 @@
-import type { HookBeforeUpdate } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
+import { Hooks } from '$lib/core/operations/hooks/index.js';
 import access from '$lib/util/access/index.js';
 import { cases } from '$lib/util/cases.js';
 import { BETTER_AUTH_ROLES, PANEL_USERS } from '../../constant.server.js';
@@ -8,10 +7,11 @@ import { BETTER_AUTH_ROLES, PANEL_USERS } from '../../constant.server.js';
 /**
  *  Before update : set proper better-auth role
  */
-export const forwardRolesToBetterAuth: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
+export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>( async (args) => {
 	
-	const { rizom, event, config, context } = args;
-	
+	const { event, config, context } = args;
+	const { rizom } = event.locals
+
 	if(args.context.isFallbackLocale) return args
 	
 	const IS_ROLES_MUTATION = 'roles' in args.data && Array.isArray(args.data.roles);
@@ -53,4 +53,4 @@ export const forwardRolesToBetterAuth: HookBeforeUpdate<'collection', GenericDoc
 	}
 
 	return args;
-};
+});

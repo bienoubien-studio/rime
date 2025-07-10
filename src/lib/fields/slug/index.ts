@@ -86,15 +86,3 @@ export type SlugField = FormField & {
 	placeholder: string;
 	layout: 'compact' | 'default';
 };
-
-/****************************************************/
-/* Register
-/****************************************************/
-declare module 'rizom' {
-	interface RegisterFieldsType {
-		slug: any;
-	}
-	interface RegisterFormFields {
-		SlugField: SlugField; // register the field type
-	}
-}

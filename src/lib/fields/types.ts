@@ -6,7 +6,7 @@ import type { DocumentFormContext } from '$lib/panel';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
 import type { IconProps } from '@lucide/svelte';
-import type { WithRequired } from '$lib/util/types.js';
+import type { Dic, WithOptional, WithRequired } from '$lib/util/types.js';
 
 export type { BlocksField, BlocksFieldBlock } from './blocks/index.js';
 export type { CheckboxField } from './checkbox/index.js';
@@ -29,7 +29,8 @@ export type { TimeField } from './time/index.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { ToggleField } from './toggle/index.js';
 
-export type FieldValidationFunc<TConfig extends FormField, TData extends GenericDoc = GenericDoc> = (
+
+export type FieldValidationFunc<TConfig extends FormField, TData extends Dic = Dic> = (
 	value: unknown,
 	metas: {
 		data: Partial<TData>;
@@ -37,7 +38,7 @@ export type FieldValidationFunc<TConfig extends FormField, TData extends Generic
 		id: string | undefined;
 		user: User | undefined;
 		locale: string | undefined;
-		config: TConfig;
+		config: TConfig extends FormField ? TConfig : FormField;
 	}
 ) => true | string;
 
@@ -47,7 +48,7 @@ export type FieldWidth = '1/3' | '1/2' | '2/3';
 
 // Base type for all fields
 export type Field = {
-	type: FieldsType;
+	type: string;
 	live?: boolean;
 	condition?: (doc: any, siblings: any) => boolean;
 	width?: FieldWidth;
@@ -64,7 +65,7 @@ export type FormField = Field & {
 	name: string;
 	hidden?: boolean;
 	readonly?: boolean;
-	validate?: FieldValidationFunc<this, GenericDoc>;
+	validate?: FieldValidationFunc<any>;
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
@@ -76,7 +77,7 @@ export type FormField = Field & {
 
 export type DefaultValueFn<T> = ({ event }: { event: RequestEvent}) => T
 
-type FieldHookContext<T extends AnyFormField = AnyFormField> = {
+type FieldHookContext<T extends FormField = FormField> = {
 	event: RequestEvent;
 	/** The document Id being processed */
 	documentId?: string;
@@ -116,9 +117,7 @@ export type OptionWithIcon = {
 
 export type RelationValue<T> = T[] | { id?: string; relationTo: string; documentId: string }[] | string[] | string;
 
-export type AnyFormField = GetRegisterType<'AnyFormField'>;
-export type AnyField = AnyFormField | GetRegisterType<'AnyField'>;
-export type FieldsType = GetRegisterType<'FieldsType'>;
+
 
 export type ClientField<T extends FormField> = WithRequired<
   Partial<T>,

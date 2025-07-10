@@ -1,4 +1,4 @@
-import type { Collection, CollectionHooks, GenericDoc } from '../../../types.js';
+import type { Collection, CollectionHooks } from '../../../types.js';
 import * as authHooks from '$lib/core/collections/auth/hooks/hooks.server.js';
 import { setDocumentTitle } from '$lib/core/operations/hooks/before-read/set-document-title.server.js';
 import { setDocumentLocale } from '$lib/core/operations/hooks/before-read/set-document-locale.server.js';
@@ -21,7 +21,7 @@ import { addChildrenProperty } from '../nested/hooks/index.server.js';
 import { buildOriginalDocConfigMap } from '$lib/core/operations/hooks/before-upsert/original-config-map.server.js';
 import { authorize } from '$lib/core/operations/hooks/before-operation/authorize.server.js';
 import { handleNewVersion } from '$lib/core/operations/hooks/before-upsert/handle-new-version.server.js';
-import { removeAPIKey } from '../auth/hooks/before-read/remove-api-key.server.js';
+import { removePrivateFields } from '../auth/hooks/before-read/remove-private-fields.server.js';
 import { populateAPIKey } from '../auth/hooks/after-create/populate-api-key.server.js';
 import { handlePathCreation } from '../upload/hooks/handle-path-creation.js';
 
@@ -40,7 +40,7 @@ type PartialConfig = {
 export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 	const IS_API_AUTH = collection.auth && typeof collection.auth !== 'boolean' && collection.auth.type === 'apiKey';
 	//
-	let hooks: Required<CollectionHooks<GenericDoc>> = {
+	let hooks = {
 		//
 		beforeOperation: [authorize],
 
@@ -52,7 +52,7 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 			...(collection.upload ? [populateSizes] : []),
 			...(collection.url ? [populateURL] : []),
 			...(collection.nested ? [addChildrenProperty] : []),
-			...(IS_API_AUTH ? [removeAPIKey] : []),
+			...(collection.auth ? [removePrivateFields] : []),
 			sortDocumentProps
 		],
 

@@ -1,12 +1,11 @@
-import type { HookBeforeUpdate } from "$lib/core/config/types/index.js";
 import { RizomError } from "$lib/core/errors/index.js";
-import type { GenericDoc } from "$lib/core/types/doc.js";
+import { Hooks } from "$lib/core/operations/hooks/index.js";
 
 /**
 * Before update :
 * - prevent email/name/password to be changed
 */
-export const preventUserMutations: HookBeforeUpdate<'collection', GenericDoc> = async (args) => {
+export const preventUserMutations  = Hooks.beforeUpdate<'auth'>( async (args) => {
 	
 	const IS_MUTATION_AUTH = 'email' in args.data || 'name' in args.data || 'password' in args.data
 	
@@ -19,4 +18,4 @@ export const preventUserMutations: HookBeforeUpdate<'collection', GenericDoc> = 
 	}
 	
 	return args;
-};
+});
