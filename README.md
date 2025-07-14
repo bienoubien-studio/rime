@@ -152,8 +152,8 @@ const Settings = area('settings', {
   icon: Settings2,
   group: 'settings',
   fields: [
-    toggle('maintenance').label('Sticky header'),
-    link('about').label('About'),
+    toggle('maintenance'),
+    link('about'),
     relation('logo').to('medias')
   ],
   access: {
@@ -250,11 +250,11 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 
 ### TO v1
 
-- [ ] Document version
-- [ ] Put bin commands in a separate package ex: @rizom/kit
+- [x] Document version
 - [x] collection nested
-- [ ] page version and auto-saved draft
-- [ ] more better-auth integration
+- [x] more better-auth integration
+- [ ] auto-saved draft
+- [ ] Put bin commands in a separate package ex: @rizom/kit
 - [ ] configurable medias/config path
 
 ## Acknowledgments
