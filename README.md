@@ -118,7 +118,12 @@ RIZOM_LOG_LEVEL=DEBUG
 ```bash
 npm run dev
 ```
-Navigate to `http://localhost:5173/panel` to create the first admin user.
+
+```bash
+curl -v POST http://localhost:5173/api/init \
+  -H "Content-Type: application/json" \
+  -d '{"email": "you@website.com", "password": "super-Secret+2000", "name": "Admin"}'
+```
 
 ## Configuration Example
 
