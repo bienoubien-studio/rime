@@ -10,6 +10,7 @@ const config = {
 		alias: {
 			'rizom/panel/auth/client': './src/lib/panel/pages/auth/index.js',
 			'rizom/panel/auth': './src/lib/panel/pages/auth/index.server.js',
+			'rizom/panel/client': './src/lib/panel/index.js',
 			'rizom/i18n': './src/lib/core/i18n',
 			'rizom/api': './src/lib/api.js',
 			'$lib': './src/lib',

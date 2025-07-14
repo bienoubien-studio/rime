@@ -7,7 +7,7 @@ import { TScastVersionSlug, type Routes } from './util.js';
  */
 const pageTemplate = (slug: string): string => `
 <script>
-  import { Area } from '${PACKAGE_NAME}/panel'
+  import { Area } from '${PACKAGE_NAME}/panel/client'
   const { data } = $props()
 </script>
 <Area {data} />`;
@@ -47,7 +47,7 @@ export const PATCH = api.area.update(${TScastVersionSlug(slug)})
  */
 const pageVersions = (slug: string) => `
 <script lang="ts">
-	import { AreaVersionsDoc, type AreaDocData } from 'rizom/panel';
+	import { AreaVersionsDoc, type AreaDocData } from '${PACKAGE_NAME}/panel/client';
 	const { data }: { data: AreaDocData<true> } = $props();
 </script>
 

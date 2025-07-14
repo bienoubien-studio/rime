@@ -16,7 +16,7 @@ export const load = pagesLoad.collection.list('${slug}')
  */
 const page = (slug: string) => `
 <script>
-  import { Collection } from '${PACKAGE_NAME}/panel'
+  import { Collection } from '${PACKAGE_NAME}/panel/client'
   const { data } = $props()
 </script>
 <Collection {data} slug='${slug}' />`;
@@ -27,7 +27,7 @@ const page = (slug: string) => `
  */
 const docPage = (slug: string) => `
 <script lang="ts">
-	import { CollectionDoc, type CollectionDocData } from 'rizom/panel';
+	import { CollectionDoc, type CollectionDocData } from '${PACKAGE_NAME}/panel/client';
 	const { data }: { data: CollectionDocData<false> } = $props();
 </script>
 
@@ -58,7 +58,7 @@ export const actions = pagesActions.collection.doc('${slug}')`;
  */
 const docPageVersions = (slug: string) => `
 <script lang="ts">
-	import { CollectionDocVersions, type CollectionDocData } from 'rizom/panel';
+	import { CollectionDocVersions, type CollectionDocData } from '${PACKAGE_NAME}/panel/client';
 	const { data }: { data: CollectionDocData<true> } = $props();
 </script>
 

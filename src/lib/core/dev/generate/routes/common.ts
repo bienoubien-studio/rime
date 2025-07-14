@@ -35,9 +35,9 @@ const error = (): string => `
 const rootLayout = () => `
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { Dictionaries } from 'rizom/i18n';
-	import i18n from 'rizom/i18n';
-	import 'rizom/panel/style/index.css';
+	import type { Dictionaries } from '${PACKAGE_NAME}/i18n';
+	import i18n from '${PACKAGE_NAME}/i18n';
+	import '${PACKAGE_NAME}/panel/style/index.css';
 
 	type Props = { children: Snippet; data: { translations: Dictionaries } };
 
@@ -136,7 +136,7 @@ export const load = authLoads.resetPassword;
  */
 const panelLayout = () => `
 <script>
-	import { Panel } from '${PACKAGE_NAME}/panel';
+	import { Panel } from '${PACKAGE_NAME}/panel/client';
 	//@ts-ignore
 	import config from 'virtual:browser-config';
 	const { children, data } = $props();
@@ -167,7 +167,7 @@ export const load = async ({ locals }: ServerLoadEvent) => {
  */
 const panelPage = () => `
 <script>
-  import { Dashboard } from '${PACKAGE_NAME}/panel';
+  import { Dashboard } from '${PACKAGE_NAME}/panel/client';
   const { data } = $props();
 </script>
 
@@ -188,7 +188,7 @@ export const load = pagesLoad.dashboard;`;
  */
 const livePage = () => `
 <script lang="ts">
-  import { Live } from '${PACKAGE_NAME}/panel';
+  import { Live } from '${PACKAGE_NAME}/panel/client';
   //@ts-ignore
   import config from 'virtual:browser-config';
 
