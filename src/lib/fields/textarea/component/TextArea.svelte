@@ -15,7 +15,7 @@
 </script>
 
 <fieldset use:root={field} class="rz-textarea-field {config.className || ''}">
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<textarea
 		use:dataError={!!field.error}
 		id={path || config.name}

@@ -56,7 +56,7 @@
 	class="rz-field-rich-text {config.className || ''}"
 	use:root={field}
 >
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<Field.Error error={field.error} />
 
 	<div class="rz-rich-text__editor-wrapper">

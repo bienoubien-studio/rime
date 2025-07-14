@@ -26,12 +26,13 @@
 </script>
 
 <fieldset class={classNames} use:root={field}>
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<div class="rz-email-field-wrapper">
 		<Mail class="rz-email-field__icon" size="12" />
 		<Input
 			id={path || config.name}
 			name={path || config.name}
+			autocomplete="off"
 			placeholder={capitalize(config.label || config.name)}
 			data-error={showError && field.error ? '' : null}
 			value={field.value}

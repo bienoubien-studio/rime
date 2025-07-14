@@ -15,9 +15,9 @@
 	let initialized = false;
 
 	const field = $derived(form.useField(path, config));
-	
+
 	let options = $state(config.options);
-	
+
 	let isFull = $derived.by(() => {
 		if (!field.value) return false;
 		const notManyAndOneSelected = !config.many && typeof field.value === 'string';
@@ -87,11 +87,10 @@
 			field.value = null;
 		}
 	};
-	
 </script>
 
 <fieldset class="rz-field-select {config.className || ''}" use:root={field}>
-	<Field.Label for={path} {config} />
+	<Field.Label for={path || config.name} {config} />
 	<Field.Error error={field.error} />
 
 	<div class="rz-select">
@@ -123,6 +122,8 @@
 
 				{#if !form.readOnly && !isFull}
 					<Command.InputSelect
+						name={path || config.name}
+						autocomplete="off"
 						onfocus={() => (inputFocused = true)}
 						onblur={() => setTimeout(() => (inputFocused = false), 200)}
 						bind:value={search}

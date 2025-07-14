@@ -57,17 +57,18 @@
 </script>
 
 <fieldset class={classNames} use:root={field}>
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 
 	<div class="rz-slug">
 		<Hash class="rz-slug__icon" size="14" />
 
 		<Input
+			id={path || config.name}
 			placeholder={config.placeholder}
 			data-error={field.error ? '' : null}
 			type="text"
 			value={field.value}
-			name={path}
+			name={path || config.name}
 			oninput={onInput}
 		/>
 

@@ -98,7 +98,7 @@
 
 <fieldset class={config.className} use:root={field}>
 	{#if config.layout !== 'compact'}
-		<Field.Label {config} />
+		<Field.Label {config} for={path || config.name} />
 	{/if}
 
 	<div

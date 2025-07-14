@@ -14,7 +14,7 @@
 </script>
 
 <fieldset class="rz-time-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<div class="rz-time-field__input-wrapper">
 		<Input
 			type="time"

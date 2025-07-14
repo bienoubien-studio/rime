@@ -13,7 +13,7 @@
 </script>
 
 <fieldset class="rz-field-radio {config.className || ''}" use:root={field}>
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<RadioGroup.Root bind:value={field.value} class="rz-radio" disabled={!field.editable}>
 		{#each config.options as option, index (index)}
 			<div class="rz-radio__option">

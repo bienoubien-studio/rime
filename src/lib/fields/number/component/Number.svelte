@@ -36,7 +36,7 @@
 {/snippet}
 
 <fieldset class="rz-number-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 
 	<div class="rz-number-field__input-wrapper">
 		<input

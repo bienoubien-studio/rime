@@ -19,13 +19,14 @@
 	class:rz-text-field--compact={config.layout === 'compact'}
 	use:root={field}
 >
-	<Field.Label {config} />
+	<Field.Label {config} for={path || config.name} />
 	<div class="rz-text-field__input-wrapper">
 		{#if Icon}
 			<Icon size="12" />
 		{/if}
 		<Input
 			id={path || config.name}
+			autocomplete="off"
 			name={path || config.name}
 			placeholder={config.placeholder || capitalize(config.name)}
 			data-error={field.error ? '' : null}

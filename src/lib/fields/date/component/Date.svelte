@@ -48,7 +48,7 @@
 </script>
 
 <fieldset class="rz-date-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} for="foo" />
+	<Field.Label {config} for={path || config.name} />
 
 	<Button
 		id="foo"
