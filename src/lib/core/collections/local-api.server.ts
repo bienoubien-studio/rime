@@ -91,11 +91,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			return createBlankDocument({
 				...this.config,
 				fields: [...withoutPrivateFields]
-
-			}) as Doc;
+			}, this.#event) as Doc;
 
 		}
-		return createBlankDocument(this.config) as Doc;
+		return createBlankDocument(this.config, this.#event) as Doc;
 	}
 
 	/**

@@ -12,6 +12,7 @@ import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/ve
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import type { GetRegisterType } from 'rizom';
 import type { GenericTables } from './types.js';
+import { getRequestEvent } from '$app/server';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
@@ -47,7 +48,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			let doc = await db.query[slug].findFirst(params);
 
 			if (!doc) {
-				await createArea(slug, createBlankDocument(areaConfig), locale);
+				await createArea(slug, createBlankDocument(areaConfig, getRequestEvent()), locale);
 				// @ts-expect-error
 				doc = await db.query[slug].findFirst(params);
 			}
@@ -62,7 +63,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// If no area exists yet, create it
 			if (!area) {
-				await createArea(slug, createBlankDocument(areaConfig), locale);
+				await createArea(slug, createBlankDocument(areaConfig, getRequestEvent()), locale);
 			}
 
 			// Implementation for versioned areas

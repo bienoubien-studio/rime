@@ -4,7 +4,6 @@ import type { Dic } from '$lib/util/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { snapshot } from './state.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import { getRequestEvent } from '$app/server';
 
 /**
  * Creates a blank document based on a collection or area configuration.
@@ -19,6 +18,7 @@ import { getRequestEvent } from '$app/server';
  */
 export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 	config: CompiledCollection | CompiledArea,
+	event?: RequestEvent
 ): T => {
 	/**
 	 * Recursively processes field definitions to create a blank document structure.
@@ -37,7 +37,7 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 			} else {
 				if (curr.defaultValue !== undefined) {
 					if (typeof curr.defaultValue === 'function') {
-						prev[curr.name] = curr.defaultValue({ event: getRequestEvent() });
+						prev[curr.name] = curr.defaultValue({ event });
 					} else {
 						prev[curr.name] = curr.defaultValue;
 					}

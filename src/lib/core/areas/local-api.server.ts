@@ -55,9 +55,9 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	}
 
 	blank(): Doc {
-		return createBlankDocument(this.config) as Doc;
+		return createBlankDocument(this.config, this.#event) as Doc;
 	}
-
+	
 	/**
 	 * Retrieves an area document with optional filtering and selection
 	 *

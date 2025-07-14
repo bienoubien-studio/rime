@@ -75,7 +75,7 @@ export type FormField = Field & {
 	isEmpty: (value: unknown) => boolean;
 };
 
-export type DefaultValueFn<T> = ({ event }: { event: RequestEvent}) => T
+export type DefaultValueFn<T> = ({ event }: { event?: RequestEvent}) => T
 
 type FieldHookContext<T extends FormField = FormField> = {
 	event: RequestEvent;
