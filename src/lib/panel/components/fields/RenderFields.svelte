@@ -83,11 +83,11 @@
 	}
 
 	/** hide fields that doesn't have any data-visible children */
-	/* .rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
+	.rz-render-fields__field:not(.rz-render-fields__field[data-type='component']):not(
 			.rz-render-fields__field[data-type='separator']
-		):not(:has(.rz-field-root[data-visible])) {
+		):not(:has([data-visible])) {
 		display: none;
-	} */
+	}
 
 	.rz-render-fields__field--full,
 	.rz-render-fields__field--1\/2,

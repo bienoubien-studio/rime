@@ -45,7 +45,7 @@
 		{#if !form.isLive || (form.isLive && isLiveField(fieldConfig))}
 			{#if isNotHidden(fieldConfig)}
 				{@const field = form.useField(path + fieldConfig.name)}
-				<div class="rz-render-fields-preview__row">
+				<div class="rz-render-fields-preview__row" data-visible={field.visible || null}>
 					<div class="rz-render-fields-preview__name">
 						<p>
 							{fieldConfig.label || capitalize(fieldConfig.name)}
