@@ -16,7 +16,7 @@
 	
 	--rz-overlay-color: hsl(var(--rz-gray-11) / 0.4);
 	--rz-overlay-blur: 6px;
-	--rz-row-color: hsl(var(--rz-gray-18));
+	--rz-row-color: var(--rz-gray-18);
 
 	--rz-color-fg: var(--rz-gray-0);
 	--rz-color-bg: var(--rz-gray-17);

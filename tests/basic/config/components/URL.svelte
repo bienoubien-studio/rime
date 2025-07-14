@@ -13,8 +13,11 @@
 {/if}
 
 <style>
+	:root{
+		--rz-comp-url-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-4)))
+	}
 	.rz-comp-url {
-		background-color: hsl(var(--rz-gray-13) / 1);
+		background-color: var(--rz-comp-url-bg);
 		color: hsl(var(--rz-color-fg) / 1);
 		border-radius: var(--rz-radius-md);
 		border: var(--rz-border);
@@ -23,8 +26,7 @@
 		justify-content: flex-start;
 		align-items: center;
 		letter-spacing: 0.02em;
-		font-size: var(--rz-text-sm);
 		padding: var(--rz-size-1) var(--rz-size-3);
-		border: 1px solid hsl(var(--rz-gray-12));
+		border: 1px solid hsl(var(--rz-input-border-color));
 	}
 </style>

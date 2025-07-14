@@ -79,7 +79,7 @@
 	{#if operation === 'create'}
 		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
 			<Text {form} type="password" config={passwordConfig} path="password" />
-			<Text {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
+			<Text id="confirm-password" {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
 		{/if}
 	{:else if user.attributes.roles.includes('admin')}
 		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
@@ -95,7 +95,12 @@
 <style>
 	.rz-document-auth {
 		display: grid;
-		gap: var(--rz-size-6);
+		padding: var(--rz-size-5) var(--rz-size-5) var(--rz-size-6);
+		border-radius: var(--rz-radius-lg);
+		background-color: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+		border: var(--rz-border);
+		gap: var(--rz-size-8);
+		margin-top: var(--rz-size-4);
 
 		& > :global(*) {
 			padding: 0 var(--rz-fields-padding);
