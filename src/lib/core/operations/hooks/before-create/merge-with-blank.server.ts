@@ -13,7 +13,7 @@ export const mergeWithBlankDocument = Hooks.beforeCreate(async (args) => {
 		delete data.file;
 	}
 
-	const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config), data, { arrayMerge: (_, y) => y });
+	const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config, args.event), data, { arrayMerge: (_, y) => y });
 
 	// Add file after merge
 	if (file) {
