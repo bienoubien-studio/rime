@@ -65,14 +65,14 @@
 
 .rz-calendar-day[data-selected] {
 	background-color: hsl(var(--rz-color-spot));
-	color: hsl(var(--rz-color-primary-fg));
+	color: hsl(var(--rz-color-spot-fg));
 	opacity: 1;
 }
 
 .rz-calendar-day[data-selected]:hover,
 .rz-calendar-day[data-selected]:focus {
 	background-color: hsl(var(--rz-color-spot));
-	color: hsl(var(--rz-color-primary-fg));
+	color: hsl(var(--rz-color-spot-fg));
 }
 
 .rz-calendar-day[data-disabled] {

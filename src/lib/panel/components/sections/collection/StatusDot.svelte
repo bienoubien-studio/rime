@@ -16,7 +16,7 @@
 		flex-shrink: 0;
 		width: var(--rz-dot-size, 0.7rem);
 		height: var(--rz-dot-size, 0.7rem);
-		background-color: var(--rz-status-color);
+		background-color: hsl(var(--rz-status-color));
 		border-radius: 0.7rem;
 	}
 </style>

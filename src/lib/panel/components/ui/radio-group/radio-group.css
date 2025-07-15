@@ -29,7 +29,7 @@
 	border-width: 4px;
 }
 .rz-radio-group-item[data-state='checked'] {
-	--border-color: var(--rz-color-primary);
+	--border-color: var(--rz-color-spot);
 	--border-opacity: 1;
 	border-width: 6px;
 	background-color: hsl(var(--rz-gray-6));

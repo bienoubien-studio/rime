@@ -38,7 +38,7 @@
 		}
 
 		& :global(.rz-command-input-select__input::placeholder) {
-			@mixin color color-fg, 0.7;
+			@mixin color color-fg, 0.4;
 		}
 
 		& :global(.rz-command-input-select__input:disabled) {

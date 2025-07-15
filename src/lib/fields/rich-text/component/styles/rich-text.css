@@ -47,7 +47,7 @@
 
 .rz-rich-text__editor .ProseMirror .is-empty::before {
 	content: attr(data-placeholder);
-	color: hsl(var(--rz-color-fg));
+	color: hsl(var(--rz-color-fg) / 0.3);
 	float: left;
 	pointer-events: none;
 	height: 0;
