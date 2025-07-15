@@ -1,12 +1,10 @@
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { usersFields } from '../auth/fields.server.js';
-import type { AugmentCollectionFn } from './types.js';
 import { select } from '$lib/fields/select/index.js';
 import type { Collection } from '../../../types.js';
 import type { AuthConfig } from '$lib/core/config/types/index.js';
 import access from '$lib/util/access/index.js';
-import { email } from '$lib/fields/email/index.server.js';
 
 type Input = { slug: string; auth?: boolean | AuthConfig; fields: Collection<any>['fields'] };
 type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: AuthConfig };
@@ -67,7 +65,6 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 			read: (user) => !!user,
 			update: (user) => !!user
 		});
-		
 	} else {
 		rolesField.access({
 			create: (user) => !!user && access.isAdmin(user),

@@ -3,6 +3,7 @@ import path from 'path';
 import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 import { API_BASE_URL, signIn } from '../util.js';
+import { logToFile } from '../../src/log.js';
 
 const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
 const signInAdmin = signIn('admin2@bienoubien.com', 'a&1Aa&1A');
@@ -310,6 +311,12 @@ test('Should create a Media', async ({ request }) => {
 	expect(doc.alt).toBe('alt');
 	expect(doc.filename).toBe('landscape-3.jpg');
 	expect(doc.mimeType).toBe('image/jpeg');
+	expect(doc.sizes).toBeDefined();
+	expect(doc.sizes.sm).toBe('/medias/landscape-3-sm-640.webp');
+	expect(doc.sizes.md).toBe('/medias/landscape-3-md-1024.webp');
+	expect(doc.sizes.lg).toBe('/medias/landscape-3-lg-1536.webp');
+	expect(doc.sizes.xl).toBe('/medias/landscape-3-xl-2048.webp');
+	expect(doc.sizes.thumbnail).toBe('/medias/landscape-3-thumbnail-400.jpg');
 	expect(doc._path).toBe('root');
 });
 
