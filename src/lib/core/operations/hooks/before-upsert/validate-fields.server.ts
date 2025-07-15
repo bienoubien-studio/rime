@@ -19,8 +19,10 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @validateFields');
 
   // Skip validation on locale fallback as the validation has already been done on creation
-  if(args.context.isFallbackLocale) return args
-		
+  const skipUnique = args.context.isFallbackLocale
+  const skipValidate = args.context.isFallbackLocale
+  const skipAccess = args.context.isFallbackLocale || args.context.isSystemOperation
+	
 	for (const [key, config] of Object.entries(configMap)) {
 		let value: any = getValueAtPath(key, output);
 
@@ -31,7 +33,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		
 		// Unique
 		/** @TODO better unique check like relations, locale,... */
-		if ('unique' in config && config.unique && isCollection) {
+		if ('unique' in config && config.unique && isCollection && !skipUnique) {
 			let query;
 			switch (operation) {
 				case 'create':
@@ -69,7 +71,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		/* Validate
     /****************************************************/
 
-		if (config.validate && value) {
+		if (config.validate && value && !skipValidate) {
 			try {
 				const valid = config.validate(value, {
 					data: output as Partial<GenericDoc>,
@@ -93,10 +95,14 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
     /****************************************************/
 
 		if (config.hooks?.beforeSave) {
+			console.log('----------------------------')
+			console.log(config.name)
+			console.log(config.hooks.beforeSave.toString())
 			if (value) {
 				for (const hook of config.hooks.beforeSave) {
 					value = await hook(value, { config, event });
 					output = setValueAtPath(key, output, value);
+					console.log(typeof getValueAtPath(key, output))
 				}
 			}
 		}
@@ -106,7 +112,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
     /****************************************************/
 
 
-		if (config.access && config.access.update && operation === 'update') {
+		if (config.access && config.access.update && operation === 'update' && !skipAccess) {
 			const authorizedFieldUpdate = config.access.update(user, {
 				id: args.context.originalDoc?.id
 			});
@@ -117,7 +123,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		}
 
 		
-		if (config.access && config.access.create && operation === 'create') {
+		if (config.access && config.access.create && operation === 'create' && !skipAccess) {
 			const authorizedFieldCreate = config.access.create(user, {
 				id: undefined
 			});
@@ -138,6 +144,8 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 	if (Object.keys(errors).length) {
 		throw new RizomFormError(errors);
 	}
+
+	console.log(output)
 
 	return {
 		...args,
