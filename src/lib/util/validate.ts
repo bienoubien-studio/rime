@@ -150,7 +150,8 @@ export const slug = (value: unknown) => {
  */
 export const link = (link: any) => {
 	const { type, value } = link;
-
+	if(value === '') return true
+	
 	if (type === 'tel') {
 		const valid = validate.tel(value);
 		return typeof valid === 'string' ? `tel::${valid}` : true;
