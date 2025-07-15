@@ -32,7 +32,6 @@ import {
 } from '@lucide/svelte';
 
 import { collection, area, defineConfig, Hooks } from '$lib/index.js';
-import { regenerateImages } from '@rizom/regenerate-images';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 
@@ -289,7 +288,6 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
-	plugins: [regenerateImages()],
 	panel: {
 		users: {
 			roles: [{ value: 'editor' }]

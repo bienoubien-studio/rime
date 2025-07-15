@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { type Props } from './index.js';
-
+	import type { Props } from './index.js';
+	
 	let {
 		class: className,
 		variant = 'default',
