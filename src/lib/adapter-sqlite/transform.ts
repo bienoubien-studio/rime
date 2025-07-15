@@ -163,6 +163,11 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				)[0] as PrototypeSlug;
 
 				const relationToId = relation[relationToIdKey];
+				if(!relationToId){
+					logger.warn(`orphean ${config.slug} relation : ${relation.id}`)
+					continue
+				}
+				
 				const relationPath = relation.path;
 				let relationOutput: Relation | GenericDoc | null;
 
