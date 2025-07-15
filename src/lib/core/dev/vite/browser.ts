@@ -3,13 +3,16 @@ import fs from 'fs';
 import path from 'path';
 import { logger } from '../../logger/index.server.js';
 
+type Args = { replace: [string,string][] }
+
 /**
  * Vite plugin that serves the browser config as a virtual module
  * This way file imports works without package.json export error
  * Caveats : Vite will not optimize imported modules, so if an error
  * occured, the module should be added to vite config optimizeDeps.include
  */
-export function browserConfig(): Plugin {
+export function browserConfig(args?:Args): Plugin {
+
 	const virtualModuleId = 'virtual:browser-config';
 	const resolvedVirtualModuleId = '\0' + virtualModuleId;
 
@@ -46,7 +49,13 @@ export function browserConfig(): Plugin {
 
 					if (fs.existsSync(configPath)) {
 						// Read and return the content of the browser config
-						return fs.readFileSync(configPath, 'utf-8');
+						let content = fs.readFileSync(configPath, 'utf-8');
+						if(args?.replace){
+							for(const pattern of args.replace){
+								content = content.replaceAll(pattern[0], pattern[1])
+							}
+						}
+						return content
 					} else {
 						logger.warn('Browser config file not found at:', configPath);
 						return 'export default {}';

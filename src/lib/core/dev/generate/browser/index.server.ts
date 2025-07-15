@@ -80,7 +80,7 @@ function createImportStatement(pathInfo: string | { path: string; exportName: st
 	importPath = normalizeFilePath(importPath);
 	importPath = removeLeadingSlash(importPath);
 	importPath = normalizeRizomImport(importPath);
-	if (!importPath.startsWith('rizom')) {
+	if (!importPath.startsWith('rizom') && !importPath.startsWith('@rizom') ) {
 		importPath = `./${importPath}`;
 	}
 

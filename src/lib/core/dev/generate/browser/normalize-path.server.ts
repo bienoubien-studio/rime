@@ -28,7 +28,10 @@ export function normalizeFilePath(importPath: string) {
 }
 
 export function normalizeRizomImport(importPath: string): string {
-	if (importPath.includes('node_modules/rizom')) {
+	if (importPath.includes('node_modules/@rizom')) {
+		// Replace node_modules/@rizom/anything/dist/ with @rizom/anything/
+		importPath = importPath.replace(/node_modules\/@rizom\/(.+?)\/dist\/(.+)$/, '@rizom/$1/$2');
+	} else if (importPath.includes('node_modules/rizom')) {
 		// Replace node_modules/rizom/dist/ with rizom/
 		importPath = importPath.replace(/node_modules\/rizom\/dist\/(.+)$/, 'rizom/$1');
 	}
