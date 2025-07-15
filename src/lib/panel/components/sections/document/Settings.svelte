@@ -135,7 +135,7 @@
 				{#if !form.config.upload}
 					<DropdownMenu.Item onclick={handleDuplicate}>
 						<Copy size="12" />
-						{t__('common.dupilcate')}
+						{t__('common.duplicate')}
 					</DropdownMenu.Item>
 				{/if}
 				<DropdownMenu.Item onclick={() => (deleteConfirmOpen = true)}>
