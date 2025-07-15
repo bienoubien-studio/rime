@@ -66,11 +66,33 @@
 		});
 	}
 
+	const prepareDuplicate = (obj: any): any => {
+		if (Array.isArray(obj)) {
+			return obj.map((item) => prepareDuplicate(item));
+		}
+		if (obj && typeof obj === 'object') {
+			return Object.entries(obj)
+				.filter(([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'locale')
+				.reduce(
+					(acc, [key, value]) => ({
+						...acc,
+						[key]: prepareDuplicate(value)
+					}),
+					{}
+				);
+		}
+		return obj;
+	};
+
 	async function duplicate() {
-		let data = omitId(form.doc);
+		
+		let data = prepareDuplicate(form.doc);
+
 		const title = getValueAtPath(form.config.asTitle, data);
 		data = setValueAtPath(form.config.asTitle, data, title + ' (copy)');
 		const url = `/api/${form.config.slug}`;
+		// console.log(data);
+		// return;
 		const [error, success] = await trycatchFetch(url, {
 			body: JSON.stringify(data),
 			method: 'POST'
@@ -85,6 +107,7 @@
 	}
 </script>
 
+{#if form.config.versions || form.config.type === 'collection'}
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
@@ -149,3 +172,4 @@
 		</Dialog.Footer>
 	</Dialog.Content>
 </Dialog.Root>
+{/if}
