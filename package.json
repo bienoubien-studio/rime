@@ -162,7 +162,7 @@
 	},
 	"dependencies": {
 		"@bien-bien/css-reset": "^0.1.0",
-		"@internationalized/date": "^3.7.0",
+		"@internationalized/date": "^3.8.2",
 		"@lucide/svelte": "^0.479.0",
 		"@playwright/test": "^1.52.0",
 		"@tiptap/core": "2.26.1",
@@ -205,7 +205,6 @@
 		"drizzle-orm": "^0.44.2",
 		"flat": "^6.0.1",
 		"js-cookie": "^3.0.5",
-		"loglevel-plugin-prefix": "^0.8.4",
 		"nodemailer": "^6.10.0",
 		"paneforge": "^0.0.6",
 		"polka": "^0.5.2",
@@ -217,8 +216,7 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"better-sqlite3",
-			"sharp",
-			"true"
+			"sharp"
 		]
 	}
 }
