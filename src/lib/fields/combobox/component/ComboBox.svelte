@@ -84,7 +84,7 @@
 			min-width: 200px;
 			height: var(--rz-size-11);
 			justify-content: space-between;
-			border: var(--rz-border);
+			border: 1px solid var(--rz-input-border-color);
 			background-color: hsl(var(--rz-color-input));
 		}
 	}

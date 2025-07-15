@@ -77,6 +77,7 @@
 		.rz-dialog-content.rz-date__dialog-content {
 			width: 100px;
 			padding: 12rem;
+			
 		}
 		.rz-date__button.rz-button {
 			width: 200px;
@@ -84,6 +85,7 @@
 			border: var(--rz-border);
 			padding-left: var(--rz-size-3);
 			padding-right: var(--rz-size-3);
+			height: var(--rz-input-height);
 			text-align: left;
 			font-weight: normal;
 		}
