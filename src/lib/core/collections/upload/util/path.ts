@@ -93,7 +93,7 @@ export function buildUploadAria({
 }: {
 	path: UploadPath;
 	slug: CollectionSlug;
-}): WithRequired<Partial<Route>, 'title'>[] {
+}): Partial<Route>[] {
 	const segments = path.split(':');
 	const result: Aria[] = [];
 	let currentPath = '';
@@ -112,7 +112,7 @@ export function buildUploadAria({
 	return result;
 }
 
-export function removePathFromLastAria(aria: WithRequired<Partial<Route>, 'title'>[]) {
+export function removePathFromLastAria(aria: Partial<Route>[]) {
 	return aria.map((route, index) => {
 		if (index === aria.length - 1) {
 			return { title: route.title };

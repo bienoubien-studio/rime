@@ -17,7 +17,7 @@ import { handleError } from '$lib/core/errors/handler.server.js';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
 
 type Data = {
-	aria: WithRequired<Partial<Route>, 'title'>[],
+	aria: Partial<Route>[],
 	docs: GenericDoc[],
 	canCreate: boolean;
 	status: number;
@@ -41,7 +41,7 @@ export function collectionLoad(slug: CollectionSlug) {
 			draft: true
 		});
 
-		let aria: WithRequired<Partial<Route>, 'title'>[] = [
+		let aria: Partial<Route>[] = [
 			{ title: 'Dashboard', path: `/panel` },
 			{ title: collection.config.label.plural }
 		];

@@ -58,7 +58,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			}
 		}
 
-		let aria: WithRequired<Partial<Route>, 'title'>[];
+		let aria: Partial<Route>[];
 
 		const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` };
 		if (collection.config.upload) {
@@ -68,13 +68,13 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
 				collectionAria,
 				...buildUploadAria({ path: currentDirectoryPath, slug }),
-				{ title: doc.title }
+				{ title: undefined } // Will be populated by title context
 			];
 		} else {
 			aria = [
 				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
 				{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
-				{ title: doc.title }
+				{ title: undefined } // Will be populated by title context
 			];
 		}
 

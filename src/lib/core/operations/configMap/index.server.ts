@@ -7,10 +7,10 @@ import type { ConfigMap } from './types.js';
 
 export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Field[]) => {
 	let map: ConfigMap = {};
-
+	
 	const traverseData = (data: Dic | undefined, fields: Field[], basePath: string) => {
 		if (!data) return;
-
+		
 		basePath = basePath === '' ? basePath : `${basePath}.`;
 
 		for (const field of fields) {

@@ -19,7 +19,7 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 		const authorizedRead = area.config.access.read(locals.user, {});
 		const authorizedUpdate = area.config.access.update(locals.user, {});
 
-		const aria: WithRequired<Partial<Route>, 'title'>[] = [
+		const aria: Partial<Route>[] = [
 			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
 			{ title: area.config.label }
 		];

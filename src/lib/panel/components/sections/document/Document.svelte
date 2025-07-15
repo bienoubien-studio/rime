@@ -47,7 +47,7 @@
 	});
 	
 	const user = getUserContext();
-	const title = getContext<{ value: string }>('title');
+	
 	let formElement = $state<HTMLFormElement>();
 
 	beforeNavigate(async () => {
@@ -79,10 +79,6 @@
 
 	const locale = getLocaleContext();
 	const liveEditing = !!onDataChange;
-
-	$effect(() => {
-		title.value = form.title;
-	});
 
 	function handleKeyDown(event: KeyboardEvent) {
 		if (!formElement) throw Error('formElement is not defined');

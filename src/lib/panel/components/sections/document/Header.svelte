@@ -21,8 +21,8 @@
 	const { form, onClose, config }: Props = $props();
 
 	const onCloseIsDefined = !!onClose;
-	const titleContext = getContext<{ value: string }>('title');
 	const buttonLabel = $derived(form.doc.id ? t__('common.save') : t__('common.create'))
+	
 </script>
 
 {#snippet topLeft()}
@@ -31,7 +31,7 @@
 
 <PageHeader topLeft={onCloseIsDefined ? topLeft : undefined}>
 	{#snippet title()}
-		{titleContext.value}
+		{form.title}
 	{/snippet}
 
 	{#snippet bottomRight()}

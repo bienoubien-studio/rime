@@ -31,13 +31,13 @@ export type DocVersion = { id: string; updatedAt: Date; status: VersionsStatus }
 
 type BaseDocData = 
 	| {
-			aria: WithRequired<Partial<Route>, 'title'>[];
+			aria: Partial<Route>[];
 			doc: GenericDoc;
 			status: 200;
 			readOnly: boolean;
 	  }
 	| {
-			aria: WithRequired<Partial<Route>, 'title'>[];
+			aria: Partial<Route>[];
 			doc: {};
 			status: 401;
 			readOnly: true;

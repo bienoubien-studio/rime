@@ -54,11 +54,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const hasError = $derived(errors.length);
 	const canSubmit = $derived(!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError);
 	const nestedLevel = initLevel();
-	const initialTitle = initTitle();
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
+	const titleContext = getContext<{ value: string }>('title')
+	const initialTitle = initTitle();
 	let title = $state(initialTitle);
-	
+
+
 	const apiProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 
 	function initLevel() {
@@ -69,10 +71,14 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 	function initTitle() {
 		if (documentConfig.type === 'area') {
+			titleContext.value = documentConfig.label
 			return documentConfig.label;
 		} else {
 			$effect(() => {
 				title = getValueAtPath(documentConfig.asTitle, doc) || '[untitled]';
+				if(nestedLevel === 0){
+					titleContext.value = title
+				}
 			});
 			const initialTitle = getValueAtPath<string>(documentConfig.asTitle, doc);
 			return doc && initialTitle ? initialTitle : '[untitled]';

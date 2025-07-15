@@ -53,7 +53,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		context = result.context;
 	}
 
-	const hooksBeforeUpdate = config.hooks?.beforeUpdate as Hook<CollectionSlug>[]
+	const hooksBeforeUpdate = config.hooks?.beforeUpdate as Hook<CollectionSlug>[];
 	for (const hook of hooksBeforeUpdate || []) {
 		const result = await hook({
 			data: data as RegisterCollection[CollectionSlug],
