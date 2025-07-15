@@ -7,7 +7,7 @@ import { makeVersionsSlug } from '$lib/util/schema.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { Dic, WithRequired } from '$lib/util/types.js';
+import type { WithRequired } from '$lib/util/types.js';
 import type { Route } from '$lib/panel/types.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
 
