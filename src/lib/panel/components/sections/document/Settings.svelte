@@ -91,8 +91,6 @@
 		const title = getValueAtPath(form.config.asTitle, data);
 		data = setValueAtPath(form.config.asTitle, data, title + ' (copy)');
 		const url = `/api/${form.config.slug}`;
-		// console.log(data);
-		// return;
 		const [error, success] = await trycatchFetch(url, {
 			body: JSON.stringify(data),
 			method: 'POST'

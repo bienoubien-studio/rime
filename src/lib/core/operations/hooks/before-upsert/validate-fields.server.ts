@@ -95,14 +95,10 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
     /****************************************************/
 
 		if (config.hooks?.beforeSave) {
-			console.log('----------------------------')
-			console.log(config.name)
-			console.log(config.hooks.beforeSave.toString())
 			if (value) {
 				for (const hook of config.hooks.beforeSave) {
 					value = await hook(value, { config, event });
 					output = setValueAtPath(key, output, value);
-					console.log(typeof getValueAtPath(key, output))
 				}
 			}
 		}
@@ -144,8 +140,6 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 	if (Object.keys(errors).length) {
 		throw new RizomFormError(errors);
 	}
-
-	console.log(output)
 
 	return {
 		...args,
