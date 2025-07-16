@@ -23,7 +23,6 @@ const write = (schema: string) => {
 			console.log('\n ⚡︎ npx drizzle-kit generate \n');
 			spawnSync('npx', ['drizzle-kit', 'generate'], { stdio: 'inherit' });
 			console.log('\n============================================================');
-			console.log('============================================================');
 			console.log('\n ⚡︎ npx drizzle-kit migrate \n');
 			spawnSync('npx', ['drizzle-kit', 'migrate'], { stdio: 'inherit' });
 			console.log('\n============================================================');
