@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
-	import type { GenericDoc, VersionDoc } from '$lib/core/types/doc.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
@@ -80,7 +80,7 @@
 		display: flex;
 		border-radius: var(--rz-radius-lg);
 		align-items: center;
-		background-color: hsl(var(--rz-gray-10));
+		background-color: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
 		justify-content: space-between;
 	}
 
