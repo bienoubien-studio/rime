@@ -21,10 +21,14 @@ const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>) =>
 /**
  * Function to define a collection
  */
-export function collection<S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection {
-	const withSlug = addSlug(slug, incomingConfig) as Collection<CollectionSlug>;
+export function collection<S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): Collection<S> {
+	return addSlug(slug, incomingConfig);
+}
 
-	const withUpload = augmentUpdload(withSlug);
+export function buildCollection(collection: Collection<CollectionSlug>): BuiltCollection {
+
+	const initial = { ...collection }
+	const withUpload = augmentUpdload(initial);
 	const withNested = augmentNested(withUpload);
 	const withVersions = augmentVersions(withNested);
 	const withUrl = augmentUrl(withVersions);
@@ -32,13 +36,13 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 	const withMetas = augmentMetas(withAuth);
 	const withHooks = augmentHooks(withMetas);
 	const output = augmentTitle(withHooks);
-
+	
 	return {
 		...output,
 		url: output.url as BuiltCollection['url'],
 		slug: output.slug as BuiltCollection['slug'],
 		type: 'collection',
-		label: output.label ? output.label : { singular: capitalize(slug), plural: capitalize(slug), gender: 'm' },
+		label: output.label ? output.label : { singular: capitalize(collection.slug), plural: capitalize(collection.slug), gender: 'm' },
 		icon: output.icon || FileText,
 		access: {
 			create: (user) => !!user && !!user.isStaff,

@@ -1,4 +1,3 @@
-import type { AugmentCollectionFn } from './types.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { number } from '$lib/fields/number/index.js';
 import type { Collection } from '../../../types.js';
@@ -10,6 +9,7 @@ import type { Collection } from '../../../types.js';
 export const augmentNested = <T extends { nested?: boolean; fields: Collection<any>['fields'] }>(config: T): T => {
 	let fields = [...config.fields];
 
+	
 	if (config.nested) {
 		const _parentField = text('_parent')
 			.generateSchema(() => `_parent: text('_parent').references((): any => pages.id, {onDelete: 'set null'})`)

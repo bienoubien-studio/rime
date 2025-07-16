@@ -14,10 +14,13 @@ const addSlug = <S extends string>(slug: S, config: AreaWithoutSlug<S>): Area<S>
 /**
  * Function to define an Area
  */
-export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): BuiltArea {
-	const withSlug = addSlug(slug, incomingConfig) as Area<AreaSlug>;
-	
-	const withTitle = augmentTitle(withSlug);
+export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): Area<S> {
+	return addSlug(slug, incomingConfig) as Area<S>;
+}
+
+export function buildArea(area: Area<AreaSlug>): BuiltArea {
+
+	const withTitle = augmentTitle(area);
 	const withMetas = augmentMetas(withTitle);
 	const withVersions = augmentVersions(withMetas);
 	const withUrl = augmentUrl(withVersions);
@@ -29,7 +32,7 @@ export function area<S extends string>(slug: S, incomingConfig: AreaWithoutSlug<
 		slug: output.slug as BuiltArea['slug'],
 		url: output.url as BuiltArea['url'],
 		icon: output.icon || FileText,
-		label: output.label ? output.label : capitalize(slug),
+		label: output.label ? output.label : capitalize(area.slug),
 		access: {
 			create: (user) => !!user && !!user.isStaff,
 			read: (user) => !!user && !!user.isStaff,

@@ -2,7 +2,7 @@ import { UsersRound } from '@lucide/svelte';
 import { access } from '$lib/util/access/index.js';
 import { collection } from '$lib/core/collections/config/builder.js';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import type { Option, PanelUsersConfig } from '../../../types.js';
+import type { BuiltCollection, Collection, Option, PanelUsersConfig } from '../../../types.js';
 import { FormFieldBuilder } from '$lib/fields/builders/field.server.js';
 import { usersFields } from './fields.server.js';
 
@@ -14,7 +14,7 @@ export const staffCollection = collection(PANEL_USERS, {
 	},
 	auth: {
 		type: 'password',
-		roles: [ 'admin', 'staff' ]
+		roles: ['admin', 'staff']
 	},
 	icon: UsersRound,
 	fields: [],
@@ -26,13 +26,13 @@ export const staffCollection = collection(PANEL_USERS, {
 	}
 });
 
-export const buildStaffCollection = ({
+export const mergeStaffCollection = ({
 	roles: incomingRoles = [],
 	fields,
 	access,
 	panel,
 	label
-}: PanelUsersConfig = {}) => {
+}: PanelUsersConfig = {}): Collection<any> => {
 	const collection = { ...staffCollection };
 	let roles: Option[] = incomingRoles.map((role) => (typeof role === 'string' ? { value: role } : role));
 
@@ -50,25 +50,24 @@ export const buildStaffCollection = ({
 			roles.push({ value: 'staff' });
 		}
 
-		const defaultRole = roles.filter((role) => role.value !== 'admin')[0].value;
-
-		const roleField = usersFields.roles.options(...roles).defaultValue([defaultRole]);
-
-		collection.fields = [
-			...collection.fields
-				.filter((field) => field instanceof FormFieldBuilder)
-				.filter((field) => field.raw.name !== 'roles'),
-			roleField
-		];
+		// const defaultRole = roles.filter((role) => role.value !== 'admin')[0].value;
 		
-		if( !collection.auth || typeof collection.auth === 'boolean' ){
-			throw Error('predefined staff collection should have an auth:AuthConfig property')
+		// const roleField = usersFields.roles.options(...roles).defaultValue([defaultRole]);
+
+		// collection.fields = [
+		// 	...collection.fields
+		// 		.filter((field) => field instanceof FormFieldBuilder)
+		// 		.filter((field) => field.raw.name !== 'roles'),
+		// 	roleField
+		// ];
+
+		if (!collection.auth || typeof collection.auth === 'boolean') {
+			throw Error('predefined staff collection should have an auth:AuthConfig property');
 		}
 
-		collection.auth.roles = roles.map(role => role.value)
+		collection.auth.roles = roles.map((role) => role.value);
 	}
 
-	
 	if (fields) {
 		collection.fields.push(...fields);
 	}
@@ -85,5 +84,7 @@ export const buildStaffCollection = ({
 		collection.label = label;
 	}
 
-	return collection;
+	return {
+		...collection
+	};
 };

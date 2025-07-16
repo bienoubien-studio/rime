@@ -1,5 +1,5 @@
 import { access } from '$lib/util/access/index.js';
-import type { BuiltCollection, BuiltConfig, BuiltArea, CompiledConfig, Config } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, CompiledConfig, Config } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { registerPlugins } from './plugins.server.js';
@@ -11,9 +11,11 @@ import { hasProp } from '$lib/util/object.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
-import { buildStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
+import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.js';
+import { buildCollection } from '$lib/core/collections/config/builder.js';
+import { buildArea } from '$lib/core/areas/config/builder.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -22,13 +24,17 @@ const dev = process.env.NODE_ENV === 'development';
  * - Optionnal generate schema / routes / types
  */
 const buildConfig = async (config: Config, options: { generateFiles?: boolean }): Promise<CompiledConfig> => {
+
 	const generateFiles = options?.generateFiles || false;
 	const icons: Dic = {};
 
 	// Retrieve Default Users collection and merge with defined panel user config
-	const staffCollection = buildStaffCollection(config.panel?.users);
-	config.collections = [...config.collections.filter((c) => c.slug !== PANEL_USERS), staffCollection];
-
+	const staffCollection = mergeStaffCollection(config.panel?.users);
+	
+	// Build collections / areas
+	config.collections = [...config.collections.map(c => buildCollection(c)), buildCollection(staffCollection)]
+	config.areas = config.areas.map(a => buildArea(a))
+	
 	// Add icons
 	for (const collection of config.collections) {
 		icons[collection.slug] = collection.icon;
@@ -122,10 +128,12 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	let compiledConfig = compileConfig(builtConfig);
 
 	if (dev || generateFiles) {
+		
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
-
+		
 		if (changed) {
+			
 			const validate = await import('../validate.js').then((module) => module.default);
 			const valid = validate(compiledConfig);
 			if (!valid) {
@@ -133,6 +141,7 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			}
 
 			if (generateFiles) {
+				console.log('- valid and has changed')
 				const generateSchema = await import('$lib/core/dev/generate/schema/index.server.js').then((m) => m.default);
 				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then((m) => m.default);
 				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then((m) => m.default);

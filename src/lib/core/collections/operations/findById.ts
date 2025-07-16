@@ -21,16 +21,16 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { rizom } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {
-			params: {
-				id,
-				versionId,
-				locale,
-				draft,
-				select,
-			},
-			isSystemOperation
-		};
-	
+		params: {
+			id,
+			versionId,
+			locale,
+			draft,
+			select
+		},
+		isSystemOperation
+	};
+
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

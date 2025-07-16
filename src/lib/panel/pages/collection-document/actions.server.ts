@@ -72,11 +72,15 @@ export default function (slug: CollectionSlug) {
 			if (error) {
 				return handleError(error, { context: 'action' });
 			}
-
+			
 			if (draft && 'versionId' in document) {
-				return redirect(303, `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`);
+				return {
+					document,
+					message: t__('common.version_created'),
+					redirectUrl:  `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`
+				};
 			}
-
+			
 			return {
 				document,
 				message: t__('common.doc_updated')

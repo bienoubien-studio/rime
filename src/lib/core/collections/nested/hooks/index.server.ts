@@ -5,6 +5,9 @@ import { Hooks } from '$lib/core/operations/hooks/index.js';
  * Hook to populate _children property on document from a nested collection
  */
 export const addChildrenProperty = Hooks.beforeRead( async (args) => {
+
+	if(args.config.type !== 'collection' || !args.config.nested) return args
+	
 	const select = args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
 	const emptySelect = select.length === 0;
 
@@ -15,7 +18,7 @@ export const addChildrenProperty = Hooks.beforeRead( async (args) => {
 	const { rizom } = args.event.locals;
 	const tableName = args.config.slug;
 	const table = rizom.adapter.getTable(tableName);
-
+	
 	//@ts-ignore
 	const children = await rizom.adapter.db.query[tableName].findMany({
 		where: eq(table._parent, args.doc.id),
