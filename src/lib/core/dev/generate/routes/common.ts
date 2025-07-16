@@ -7,8 +7,14 @@ import type { Routes } from './util.js';
  */
 const mainLayout = (): string => `
 import type { ServerLoadEvent } from '@sveltejs/kit';
-export const load = async ({ locals }: ServerLoadEvent) => {
-  return { user: locals.user };
+export const load = async ({ locals, url }: ServerLoadEvent) => {
+	const user = { ...locals.user }
+	const isPanelRoute = url.pathname.startsWith('/panel')
+	if(!isPanelRoute){
+		delete user.isSuperAdmin
+		delete user.isStaff
+	}
+  return { user };
 };`;
 
 /**

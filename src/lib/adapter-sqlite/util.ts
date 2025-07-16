@@ -4,11 +4,10 @@ import { RizomError } from '$lib/core/errors';
 import { isObjectLiteral, omit, pick } from '$lib/util/object';
 import { transformDataToSchema } from '$lib/util/schema';
 import type { RawDoc } from '$lib/core/types/doc';
-import type { BuiltArea, BuiltCollection, CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
-import type { GenericTable, GenericTables } from './types.js';
 
 /**
  * Main function to generated primaryKeys
