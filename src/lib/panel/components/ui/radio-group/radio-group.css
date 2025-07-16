@@ -13,12 +13,10 @@
 }
 
 .rz-radio-group-item {
-	--border-color: var(--rz-gray-3);
-	--border-opacity: 1;
-	border: 1px solid hsl(var(--border-color) / var(--border-opacity));
-	background-color: hsl(var(--rz-gray-3));
+	border: 1px solid var(--rz-input-border-color);
+	background-color: var(--rz-color-input);
 	border-radius: var(--rz-radius-full);
-	transition: all 0.1s ease-in-out;
+	transition: all 0.066s ease-in-out;
 	@mixin size var(--rz-size-5);
 	flex-shrink: 0;
 	cursor: pointer;
@@ -26,11 +24,9 @@
 .rz-radio-group-item:hover {
 	--border-color: var(--rz-gray-2);
 	--border-opacity: 0.3;
-	border-width: 4px;
+	border-width: 6px;
 }
 .rz-radio-group-item[data-state='checked'] {
-	--border-color: var(--rz-color-spot);
-	--border-opacity: 1;
-	border-width: 6px;
-	background-color: hsl(var(--rz-gray-6));
+	border: 6px solid hsl(var(--rz-color-spot));
+	background-color: hsl(var(--rz-gray-19));
 }

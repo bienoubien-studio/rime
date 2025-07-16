@@ -20,7 +20,8 @@
 	let deleteConfirmOpen = $state(false);
 	let dupplicateConfirmOpen = $state(false);
 	const isCollection = $derived(form.config.type === 'collection');
-
+	const allowDuplicate = $derived(form.config.type === 'collection' && !form.config.auth && !form.config.upload)
+	
 	function handleNewDraft() {
 		if (form.readOnly || !form.element) return;
 		const saveButton = form.element.querySelector('button[data-submit]') as HTMLButtonElement;
@@ -130,7 +131,7 @@
 			{/if}
 
 			{#if form.config.type === 'collection'}
-				{#if !form.config.upload}
+				{#if allowDuplicate}
 					<DropdownMenu.Item onclick={handleDuplicate}>
 						<Copy size="12" />
 						{t__('common.duplicate')}

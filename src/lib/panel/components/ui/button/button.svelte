@@ -75,7 +75,7 @@
 		/* Secondary variant */
 		--rz-button-secondary-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
 		--rz-button-secondary-bg-hover: light-dark(
-			hsl(var(--rz-gray-13)),
+			hsl(var(--rz-gray-15)),
 			color-mix( in hsl, white 3%, hsl(var(--rz-gray-3)))
 		);
 		--rz-button-secondary-fg: hsl(var(--rz-color-fg));

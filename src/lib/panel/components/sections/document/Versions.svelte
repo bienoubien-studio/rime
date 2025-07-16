@@ -80,7 +80,7 @@
 		display: flex;
 		border-radius: var(--rz-radius-lg);
 		align-items: center;
-		background-color: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
+		background-color: light-dark(hsl(var(--rz-gray-19)), hsl(var(--rz-gray-4)));
 		justify-content: space-between;
 	}
 

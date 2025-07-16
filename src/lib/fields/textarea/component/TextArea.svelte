@@ -30,7 +30,7 @@
 <style type="postcss">
 	textarea {
 		field-sizing: content;
-		border: var(--rz-border);
+		border: 1px solid var(--rz-input-border-color);
 		background-color: hsl(var(--rz-color-input));
 		display: flex;
 		width: 100%;

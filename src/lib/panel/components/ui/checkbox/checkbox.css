@@ -30,7 +30,7 @@
 
 .rz-checkbox[data-state='checked'] {
 	background-color: var(--rz-checkbox--checked-bg);
-	color: var(--rz-checkbox-fg);
+	color: hsl(var(--rz-color-fg));
 }
 
 .rz-checkbox__indicator {

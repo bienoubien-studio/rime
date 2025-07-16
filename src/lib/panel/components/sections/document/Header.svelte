@@ -21,8 +21,7 @@
 	const { form, onClose, config }: Props = $props();
 
 	const onCloseIsDefined = !!onClose;
-	const buttonLabel = $derived(form.doc.id ? t__('common.save') : t__('common.create'))
-	
+	const buttonLabel = $derived(form.doc.id ? t__('common.save') : t__('common.create'));
 </script>
 
 {#snippet topLeft()}
@@ -68,7 +67,6 @@
 				data-submit
 			/>
 		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
-			
 			{#if form.doc.id}
 				<ButtonStatus {form} />
 			{/if}
@@ -89,18 +87,11 @@
 			<!-- scenario 4: versions and draft, on a draft doc -->
 
 			<!-- PUBLISH -->
-			<ButtonSave
-				size="sm"
-				disabled={form.readOnly}
-				processing={form.processing}
-				label={buttonLabel}
-				data-submit
-			/>
+			<ButtonSave size="sm" disabled={!form.canSubmit} processing={form.processing} label={buttonLabel} data-submit />
 		{/if}
 	{/snippet}
 
 	{#snippet topRight()}
 		<LanguageSwitcher onLocalClick={invalidateAll} />
 	{/snippet}
-	
 </PageHeader>

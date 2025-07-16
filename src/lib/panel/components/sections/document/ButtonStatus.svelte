@@ -88,7 +88,6 @@
 		}
 	}
 	p {
-		color: hsl(var(--rz-color-fg) / 0.5);
 		@mixin font-normal;
 	}
 </style>
