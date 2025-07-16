@@ -74,31 +74,24 @@
 </script>
 
 <div data-sorting={sorting} class="rz-block">
-	<button onclick={toggleBlock} type="button" class="rz-block__ghost-toggle" aria-label="toggle"> </button>
 	<div class="rz-block__content" class:rz-block__content--closed={!isOpen}>
 		<header class="rz-block__header">
-			{#if !isOpen}
-				<button type="button" onclick={toggleBlock} class="rz-block__title-button">
-					<div class="rz-block__title">
-						<div class="rz-block__icon">
-							<BlockIcon size={12} />
-						</div>
-						<h3 class="rz-block__heading">
-							{renderBlockTitle()}
-						</h3>
+			<button type="button" onclick={toggleBlock} class="rz-block__title-button">
+				<div class="rz-block__title">
+					<div class="rz-block__icon">
+						<BlockIcon size={12} />
 					</div>
-				</button>
-			{/if}
+					<h3 class="rz-block__heading">
+						{renderBlockTitle()}
+					</h3>
+				</div>
+			</button>
+
+			<BlockActions {duplicateBlock} {deleteBlock} />
 
 			<div class="rz-block__grip">
 				<GripVertical size={15} />
 			</div>
-
-			{#if isOpen}
-				<div></div>
-			{/if}
-
-			<BlockActions {duplicateBlock} {deleteBlock} />
 		</header>
 
 		<div class="rz-block__fields" class:rz-block__fields--hidden={!isOpen}>
@@ -126,34 +119,31 @@
 
 	.rz-block__content {
 		background-color: var(--rz-collapse-fields-content-bg);
-		display: flex;
-		flex-direction: row-reverse;
 	}
 
 	.rz-block__header {
 		display: flex;
 		position: relative;
-		flex-direction: column;
-		width: var(--rz-size-8);
 		align-items: center;
 		justify-content: space-between;
-		border-left: var(--rz-border);
-		padding: var(--rz-size-2);
-		
+		width: 100%;
+		border-bottom: var(--rz-border);
+		padding-right: var(--rz-size-2);
 	}
-	
+
+	.rz-block__title-button {
+		flex: 1;
+		justify-content: flex-start;
+		flex-direction: row;
+		padding: var(--rz-size-1);
+	}
+
 	.rz-block__content--closed {
 		border-radius: var(--rz-radius-md);
 		.rz-block__header {
 			height: var(--rz-size-8);
-			flex-direction: row;
 			border-color: transparent;
 			width: 100%;
-		}
-		.rz-block__title-button {
-			flex: 1;
-			justify-content: flex-start;
-			flex-direction: row;
 		}
 
 		:global(.rz-block-actions) {
@@ -166,13 +156,6 @@
 		&:global(:has(.rz-field-error)) {
 			@mixin ring var(--rz-color-alert);
 		}
-	}
-
-	.rz-block__title-button {
-		display: flex;
-		align-items: center;
-		padding: var(--rz-size-1);
-		flex-direction: column;
 	}
 
 	.rz-block__title {
@@ -190,7 +173,6 @@
 	}
 
 	.rz-block__fields {
-		/* background-color: hsl(var(--rz-gray-11)); */
 		flex: 1;
 		padding: var(--rz-size-6) 0;
 	}
@@ -209,14 +191,5 @@
 		pointer-events: none;
 		top: var(--rz-size-1);
 		right: var(--rz-size-11);
-	}
-	.rz-block__ghost-toggle {
-		position: absolute;
-		left: 0;
-		right: var(--rz-size-8);
-		height: var(--rz-size-4);
-		&:hover {
-			background-color: hsl(var(--rz-color-bg) / 0.6);
-		}
 	}
 </style>

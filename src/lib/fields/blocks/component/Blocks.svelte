@@ -117,8 +117,8 @@
 	</div>
 
 	<div class="rz-blocks__actions-bottom">
-		<AddBlockButton addBlock={add} class="rz-blocks__add-button" size={nested ? 'sm' : 'default'} {config} />
-
+		<AddBlockButton addBlock={add} {config} />
+		
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
 			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
 				Get <span class="uz-upper">{locale.defaultCode}</span> data

@@ -25,7 +25,6 @@
 	}
 	.rz-block-action {
 		border: var(--rz-border);
-		background-color: hsl(var(--rz-gray-14));
 		border-radius: 1rem;
 		height: var(--rz-size-6);
 		width: var(--rz-size-6);

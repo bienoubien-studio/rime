@@ -13,12 +13,10 @@
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
-		size: 'default' | 'sm';
-		class: string;
 		config: BlocksFieldRaw;
 		addBlock: AddBlock;
 	};
-	const { class: className, config, addBlock, size }: Props = $props();
+	const { config, addBlock }: Props = $props();
 
 	let open = $state(false);
 	let ariaSelected = $state('');
@@ -159,7 +157,7 @@
 	}
 
 	.rz-add-block-button__description {
-		color: hsl(var(--rz-gray-2));
+		color: hsl(var(--rz-color-fg) / 0.5);
 		margin-top: var(--rz-size-1);
 		font-size: var(--rz-text-sm);
 	}
