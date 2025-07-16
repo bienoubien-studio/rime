@@ -43,8 +43,8 @@
 <div class="rz-render-fields-preview">
 	{#each previewFields as fieldConfig, index (index)}
 		{#if !form.isLive || (form.isLive && isLiveField(fieldConfig))}
-			{#if isNotHidden(fieldConfig)}
-				{@const field = form.useField(path + fieldConfig.name)}
+			{@const field = form.useField(path + fieldConfig.name)}
+			{#if isNotHidden(fieldConfig) && field.visible}
 				<div class="rz-render-fields-preview__row" data-visible={field.visible || null}>
 					<div class="rz-render-fields-preview__name">
 						<p>
