@@ -28,8 +28,8 @@ export const isAuthConfig = <T extends { auth?: boolean | AuthConfig }>(
 ): config is T & { auth: true | AuthConfig } => !!config.auth;
 
 /**
- * Utility function to includes a module with internals imports in the config
- * the browser config is re-writed and sanitized, that way imports of external modules should be tracked
+ * Utility function to includes a module with internals imports in the config.
+ * The browser config is re-writed and sanitized, that way imports of external modules can be tracked
  * like for example a tiptap extensions
  * @returns The original module with external metadata attached
  * @example

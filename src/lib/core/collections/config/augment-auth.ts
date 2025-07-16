@@ -4,7 +4,7 @@ import { usersFields } from '../auth/fields.server.js';
 import { select } from '$lib/fields/select/index.js';
 import type { Collection } from '../../../types.js';
 import type { AuthConfig } from '$lib/core/config/types/index.js';
-import access from '$lib/util/access/index.js';
+import { access } from '$lib/util/access/index.js';
 
 type Input = { slug: string; auth?: boolean | AuthConfig; fields: Collection<any>['fields'] };
 type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: AuthConfig };

@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.js';
-import access from '$lib/util/access/index.js';
+import { access } from '$lib/util/access/index.js';
 import { cases } from '$lib/util/cases.js';
 import { BETTER_AUTH_ROLES, PANEL_USERS } from '../../constant.server.js';
 

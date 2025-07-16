@@ -25,6 +25,6 @@ import * as state from './state.js';
 import * as string from './string.js';
 import * as validate from './validate.js';
 import * as file from './file.js';
-import * as access from './access/index.js';
+import { access } from './access/index.js';
 
 export { access, array, file, config, doc, field, object, random, state, string, validate };
