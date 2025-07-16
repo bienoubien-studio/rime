@@ -1,9 +1,14 @@
-import { logger } from '$lib/core/logger/index.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import cache from '../../cache/index.js';
 import type { CompiledConfig } from '$lib/core/config/types/index.js';
 import type { FieldsComponents } from '$lib/panel/types.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
-import { normalizeFilePath, normalizePnpmPath, normalizeRizomImport, removeLeadingSlash } from './normalize-path.server.js';
+import {
+	normalizeFilePath,
+	normalizePnpmPath,
+	normalizeRizomImport,
+	removeLeadingSlash
+} from './normalize-path.server.js';
 import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 
 let functionRegistry = new Map<string, string>();
@@ -27,7 +32,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'^routes$',
 		'^plugins$',
 		'^cache',
-		
+
 		// Exclude critical panel properties
 		'^panel.access',
 		'^panel.routes',
@@ -37,19 +42,20 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		'^collections..hooks',
 		'^areas..hooks',
 
-		// exclude fields hooks
-		'fields..hooks',
-		
+		// exclude fields hooks (allow client hook : fields..hooks.onChange)
+		'fields..hooks.beforeValidate',
+		'fields..hooks.beforeSave',
+		'fields..hooks.beforeRead',
+
 		// Generic patterns
-		'.*.server', // Exclude any path ending with server
-		
+		'.*.server' // Exclude any path ending with server
 	];
 	
 	// Check if path matches any exclude pattern
 	if (excludePatterns.some((pattern) => new RegExp(pattern).test(fullPath))) {
 		return false;
 	}
-	
+
 	// Rest of existing checks for objects
 	if (typeof value === 'object' && value !== null) {
 		if ('name' in value && 'type' in value) {
@@ -80,7 +86,7 @@ function createImportStatement(pathInfo: string | { path: string; exportName: st
 	importPath = normalizeFilePath(importPath);
 	importPath = removeLeadingSlash(importPath);
 	importPath = normalizeRizomImport(importPath);
-	if (!importPath.startsWith('rizom') && !importPath.startsWith('@rizom') ) {
+	if (!importPath.startsWith('rizom') && !importPath.startsWith('@rizom')) {
 		importPath = `./${importPath}`;
 	}
 
