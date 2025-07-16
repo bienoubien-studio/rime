@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { logger } from '../../logger/index.server.js';
 
-type Args = { replace: [string,string][] }
+type Args = { replace?: [string,string][] }
 
 /**
  * Vite plugin that serves the browser config as a virtual module

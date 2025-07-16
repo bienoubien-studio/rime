@@ -8,11 +8,11 @@ import { hasRunInitCommand } from '../cli/util.server.js';
 dotenv.config({ override: true });
 const dev = process.env.NODE_ENV === 'development';
 
-type Args = { browser: {
-	replace: [string, string][]
+type Args = { browser?: {
+	replace?: [string, string][]
 }}
 
-export function rizom(args:Args): Plugin[] {
+export function rizom(args?:Args): Plugin[] {
 	return [
 		{
 			name: 'rizom',
