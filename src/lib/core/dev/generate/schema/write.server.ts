@@ -8,9 +8,7 @@ const write = (schema: string) => {
 
 	if (cachedSchema && cachedSchema === schema) {
 		return;
-	} else {
-		cache.set('schema', schema);
-	}
+	} 
 
 	if (!fs.existsSync('./src/lib/server')) {
 		fs.mkdirSync('./src/lib/server');
@@ -22,13 +20,16 @@ const write = (schema: string) => {
 		} else {
 			logger.info('[✓] Schema: generated at src/lib/server/schema.ts');
 			console.log('============================================================');
-			console.log('\n ⚡︎ npx drizzle-kit push \n');
-			spawnSync('npx', ['drizzle-kit', 'push'], { stdio: 'inherit' });
+			console.log('\n ⚡︎ npx drizzle-kit generate \n');
+			spawnSync('npx', ['drizzle-kit', 'generate'], { stdio: 'inherit' });
 			console.log('\n============================================================');
+			console.log('============================================================');
+			console.log('\n ⚡︎ npx drizzle-kit migrate \n');
+			spawnSync('npx', ['drizzle-kit', 'migrate'], { stdio: 'inherit' });
+			console.log('\n============================================================');
+			cache.set('schema', schema);
 		}
 	});
 };
 
 export default write;
-
-// type Args = { drizzleContent: string[]; zodContent: string[] };
