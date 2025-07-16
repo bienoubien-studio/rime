@@ -48,7 +48,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		slug: authUser.type as CollectionSlug
 	});
 	
-	// If the user doesn't exsits, there is no associated CMS user
+	// Throw error if the user doesn't exsits, that means there is no associated CMS user
 	// to the current better-auth account, this should never happend
 	if (!user) {
 		logger.error(RizomError.UNAUTHORIZED);
@@ -78,6 +78,12 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 			logger.error(RizomError.UNAUTHORIZED, 'Invalid api key');
 			throw error(401, RizomError.UNAUTHORIZED);
 		}
+	}
+	
+	// Filter out properties for non-panel route
+	if(!isPanelRoute){
+		delete user.isSuperAdmin
+		delete user.isStaff
 	}
 	
 	// Populate locals
