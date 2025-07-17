@@ -47,11 +47,13 @@
 	display: flex;
 	margin-top: var(--rz-size-3);
 	:first-child {
-		border-radius: var(--rz-radius-md) 0 0 var(--rz-radius-md);
-		border-right: 0;
+		--rz-button-tr-radius: 0;
+		--rz-button-br-radius: 0;
+		--rz-button-outline-border-right-width: 0;
 	}
 	:last-child {
-		border-radius: 0 var(--rz-radius-md) var(--rz-radius-md) 0;
+		--rz-button-tl-radius: 0;
+		--rz-button-bl-radius: 0;
 	}
 }
 .rz-relation-upload__actions.rz-relation-upload__actions--list-empty {

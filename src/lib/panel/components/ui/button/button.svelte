@@ -48,6 +48,12 @@
 
 <style type="postcss">
 	:root {
+
+		--rz-button-tl-radius: var(--rz-radius-md);
+		--rz-button-tr-radius: var(--rz-radius-md);
+		--rz-button-br-radius: var(--rz-radius-md);
+		--rz-button-bl-radius: var(--rz-radius-md);
+
 		/* Default variant */
 		--rz-button-default-bg: light-dark(hsl(var(--rz-gray-0)), hsl(var(--rz-gray-15)));
 		--rz-button-default-bg-hover: light-dark(hsl(var(--rz-gray-2)), hsl(var(--rz-gray-19)));
@@ -64,9 +70,13 @@
 		--rz-button-outline-bg: transparent;
 		--rz-button-outline-fg: light-dark(hsl(var(--rz-gray-4)), hsl(var(--rz-gray-12))) ;
 		--rz-button-outline-border: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-8)));
-		--rz-button-outline-bg-hover: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-4)));;
-		/* --rz-button-outline-border-hover: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-15))); */
-
+		--rz-button-outline-bg-hover: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-4)));
+		/* border-width */
+		--rz-button-outline-border-left-width: 1px;
+		--rz-button-outline-border-top-width: 1px;
+		--rz-button-outline-border-right-width: 1px;
+		--rz-button-outline-border-bottom-width: 1px;
+		
 		/* Ghost variant */
 		--rz-button-ghost-bg: transparent;
 		--rz-button-ghost-bg-hover: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-4)));
@@ -97,7 +107,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: var(--rz-radius-md);
+		border-radius: var(--rz-button-tl-radius) var(--rz-button-tr-radius) var(--rz-button-br-radius) var(--rz-button-bl-radius);
 		white-space: nowrap;
 		@mixin font-medium;
 		transition-property: box-shadow, color, background-color, border-color, text-decoration-color, fill, stroke;
@@ -198,10 +208,17 @@
 
 	/** Outline */
 	.rz-button--outline {
-		border:  1px solid  var(--rz-button-outline-border);
+		border-style: solid;
+		border-color: var(--rz-button-outline-border);
+		
+		border-left-width: var(--rz-button-outline-border-left-width);
+		border-top-width: var(--rz-button-outline-border-top-width);
+		border-right-width: var(--rz-button-outline-border-right-width);
+		border-bottom-width: var(--rz-button-outline-border-bottom-width);
+		
 		background-color: var(--rz-button-outline-bg);
 		color: var(--rz-button-outline-fg);
-
+		
 		&:hover:not(:disabled) {
 			/* border-color: var(--rz-button-outline-border-hover); */
 			background-color: var(--rz-button-outline-bg-hover);
