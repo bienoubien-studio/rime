@@ -1,7 +1,7 @@
-import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
-import Select from './component/Select.svelte';
 import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
 import { PickManyFieldBuilder } from '../builders/select.js';
+import Select from './component/Select.svelte';
 
 class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
 	get component() {
@@ -20,7 +20,7 @@ class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
 	}
 	
 	_toType() {
-		const optionsJoinedType = this.field.options.map((o) => o.value).join(' | ');
+		const optionsJoinedType = this.field.options.map((o) => `'${o.value}'`).join(' | ');
 		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
 	}
 

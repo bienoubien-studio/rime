@@ -1,17 +1,17 @@
-import fs from 'fs';
-import { capitalize, toPascalCase } from '$lib/util/string.js';
-import cache from '../../cache/index.js';
-import type { Field } from '$lib/fields/types.js';
-import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
-import { isUploadConfig } from '$lib/util/config.js';
-import { TabsBuilder } from '$lib/fields/tabs/index.js';
-import { TreeBuilder } from '$lib/fields/tree/index.js';
-import { GroupFieldBuilder } from '$lib/fields/group/index.js';
-import { makeVersionsSlug } from '../../../../util/schema.js';
-import { BlocksBuilder } from '$lib/fields/blocks/index.js';
-import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { BlocksBuilder } from '$lib/fields/blocks/index.js';
+import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
+import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { TabsBuilder } from '$lib/fields/tabs/index.js';
+import { TreeBuilder } from '$lib/fields/tree/index.js';
+import type { Field } from '$lib/fields/types.js';
+import { isUploadConfig } from '$lib/util/config.js';
+import { capitalize, toPascalCase } from '$lib/util/string.js';
+import fs from 'fs';
+import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
+import { makeVersionsSlug } from '../../../../util/schema.js';
+import cache from '../../cache/index.js';
 
 // Relation  type
 const relationValueType = `
@@ -58,6 +58,22 @@ export type Block${toPascalCase(slug)} = {
   id: string
   type: '${slug}'
   ${content}
+}`;
+
+/**
+ * Generates a type for a treeBlock with the given slug and content
+ * @param name the type name ex: TreeSomething
+ * @param content The string representation of the treeBlock's fields
+ * @returns A string containing the block type definition
+ * @example
+ * makeTreeBlockType('nav', 'title: string\nimage: string')
+ * // returns a type definition for TreeNav
+ */
+const makeTreeBlockType = (name: string, content: string): string => `
+export type ${name} = {
+  id: string;
+  ${content};
+	_children: ${name}[]
 }`;
 
 /**
@@ -121,9 +137,10 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
  */
 export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
+	const treeBlocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
+	const registeredTreeBlocks: string[] = [];
 	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rizom']);
-	let headers: string[] = [];
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
@@ -140,10 +157,6 @@ export function generateTypesString(config: BuiltConfig) {
 		for (const field of fields) {
 			if (field instanceof FormFieldBuilder) {
 				strFields.push(field._toType());
-				const header = field._toTypeHeader();
-				if (header) {
-					headers = [...headers, header];
-				}
 			} else if (field instanceof TabsBuilder) {
 				strFields.push(field._toType());
 			}
@@ -175,6 +188,30 @@ export function generateTypesString(config: BuiltConfig) {
 		}
 	};
 
+	const buildTreeBlockTypes = (fields: FieldBuilder<Field>[]) => {
+		for (const field of fields) {
+			if (field instanceof BlocksBuilder) {
+				for (const block of field.raw.blocks) {
+					buildTreeBlockTypes(block.raw.fields)
+				}
+			} else if (field instanceof TabsBuilder) {
+				for (const tab of field.raw.tabs) {
+					buildTreeBlockTypes(tab.raw.fields);
+				}
+			} else if (field instanceof GroupFieldBuilder) {
+				buildTreeBlockTypes(field.raw.fields);
+			} else if (field instanceof TreeBuilder) {
+				const treeBlockTypeName = `Tree${toPascalCase(field.name)}`
+				if (!registeredTreeBlocks.includes(treeBlockTypeName)) {
+					const treeFieldsTypes = buildFieldsTypes(field.raw.fields.filter((field) => field instanceof FormFieldBuilder))
+					const treeBlockType = makeTreeBlockType(treeBlockTypeName, treeFieldsTypes.join('\n'))
+					treeBlocksTypes.push(treeBlockType)
+					registeredTreeBlocks.push(treeBlockTypeName);
+				}
+			}
+		}
+	};
+
 	const processCollection = (collection: (typeof config.collections)[number]) => {
 		let fields = collection.fields;
 		if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
@@ -187,6 +224,7 @@ export function generateTypesString(config: BuiltConfig) {
 			fieldsTypesList.push('versionId: string');
 		}
 		let fieldsContent = fieldsTypesList.join('\n\t');
+		buildTreeBlockTypes(fields);
 		buildblocksTypes(fields);
 		if (isUploadConfig(collection)) {
 			addImport('UploadDoc');
@@ -202,6 +240,7 @@ export function generateTypesString(config: BuiltConfig) {
 		if (area.versions) {
 			fieldsTypesList.push('versionId: string');
 		}
+		buildTreeBlockTypes(area.fields);
 		buildblocksTypes(area.fields);
 		return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
 	};
@@ -267,11 +306,12 @@ export function generateTypesString(config: BuiltConfig) {
 		`import '${PACKAGE_NAME}';`,
 		`import type { Session } from 'better-auth';`,
 		typeImports,
-		headers.join('\n'),
+		'',
 		relationValueType,
 		`declare global {`,
 		collectionsTypes,
 		areasTypes,
+		treeBlocksTypes.join('\n'),
 		blocksTypes.join('\n'),
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',

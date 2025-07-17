@@ -1,15 +1,14 @@
-import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
-import Tree from './component/Tree.svelte';
-import Cell from './component/Cell.svelte';
-import { text } from '../text/index.server.js';
-import { number } from '../number/index.js';
-import cloneDeep from 'clone-deep';
-import { snapshot } from '$lib/util/state.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
-import type { FormField, Field } from '$lib/fields/types.js';
-import type { Dic } from '$lib/util/types.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
+import type { Field, FormField } from '$lib/fields/types.js';
+import { snapshot } from '$lib/util/state.js';
 import { toPascalCase } from '$lib/util/string.js';
+import type { Dic } from '$lib/util/types.js';
+import cloneDeep from 'clone-deep';
+import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
+import { number } from '../number/index.js';
+import { text } from '../text/index.server.js';
+import Cell from './component/Cell.svelte';
+import Tree from './component/Tree.svelte';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
@@ -29,28 +28,11 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	get cell() {
 		return Cell;
 	}
-
+	
 	_toType() {
-		const treeBlockTypeName = `Tree${toPascalCase(this.field.name)}`;
-		return `${this.field.name}: Array<{${treeBlockTypeName}}>`;
+		return `${this.field.name}: Array<Tree${toPascalCase(this.field.name)}>,`;
 	}
-
-	_toTypeHeader() {
-		const treeBlockTypeName = `Tree${toPascalCase(this.field.name)}`;
-		const fieldsTypes = this.field.fields
-			.filter((field) => field instanceof FormFieldBuilder)
-			.map((field) => field._toType());
-		fieldsTypes.push(`_children?: ${treeBlockTypeName}[]`);
-		return `type ${treeBlockTypeName} = {${fieldsTypes}}`;
-	}
-
-	// _toSchema() {
-	// 	const { camel, snake } = super._getSchemaName();
-	// 	const suffix = templateUniqueRequired(this.field);
-	// 	if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-	// 	return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
-	// }
-
+	
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = [...(this.field.fields || []), ...fields];
 		return this;

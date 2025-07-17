@@ -1,18 +1,18 @@
-import type { FieldPanelTableConfig } from '$lib/panel/types';
 import type {
 	Field,
 	FieldAccess,
+	FieldHook,
+	FieldHookOnChange,
 	FieldValidationFunc,
 	FieldWidth,
-	FieldHook,
-	FormField,
-	FieldHookOnChange
+	FormField
 } from '$lib/fields/types.js';
+import type { FieldPanelTableConfig } from '$lib/panel/types';
 import { toSnakeCase } from '$lib/util/string.js';
-import { toCamelCase } from 'drizzle-orm/casing';
 import type { Dic, WithoutBuilders } from '$lib/util/types';
-import type { Component } from 'svelte';
 import cloneDeep from 'clone-deep';
+import { toCamelCase } from 'drizzle-orm/casing';
+import type { Component } from 'svelte';
 
 export class FieldBuilder<T extends Field = Field> {
 	field: T;
@@ -81,10 +81,6 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	_toType() {
 		console.warn(this.field.type + ' missing toType not implementated');
 		return '';
-	}
-
-	_toTypeHeader(): string | null {
-		return null;
 	}
 
 	_getSchemaName(parentPath?: string) {
