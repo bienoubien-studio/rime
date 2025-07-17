@@ -9,7 +9,6 @@ import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
 import { hasProp } from '$lib/util/object.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
-import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
@@ -24,17 +23,16 @@ const dev = process.env.NODE_ENV === 'development';
  * - Optionnal generate schema / routes / types
  */
 const buildConfig = async (config: Config, options: { generateFiles?: boolean }): Promise<CompiledConfig> => {
-
 	const generateFiles = options?.generateFiles || false;
 	const icons: Dic = {};
 
 	// Retrieve Default Users collection and merge with defined panel user config
 	const staffCollection = mergeStaffCollection(config.panel?.users);
-	
+
 	// Build collections / areas
-	config.collections = [...config.collections.map(c => buildCollection(c)), buildCollection(staffCollection)]
-	config.areas = config.areas.map(a => buildArea(a))
-	
+	config.collections = [...config.collections.map((c) => buildCollection(c)), buildCollection(staffCollection)];
+	config.areas = config.areas.map((a) => buildArea(a));
+
 	// Add icons
 	for (const collection of config.collections) {
 		icons[collection.slug] = collection.icon;
@@ -59,15 +57,15 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			: [process.env.PUBLIC_RIZOM_URL as string];
 
 	const panelNavigationGroups = [
-			...(config.panel?.navigation?.groups || []),
-			{ label: 'content', icon: BookType },
-			{ label: 'system', icon: SlidersVertical },
-			{ label: 'collections', icon: BookCopy },
-			{ label: 'areas', icon: Book }
-		]
-	
+		...(config.panel?.navigation?.groups || []),
+		{ label: 'content', icon: BookType },
+		{ label: 'system', icon: SlidersVertical },
+		{ label: 'collections', icon: BookCopy },
+		{ label: 'areas', icon: Book }
+	];
+
 	/****************************************************/
-	/* Base Config 
+	/* Base Config
 	/****************************************************/
 	let builtConfig: BuiltConfig = {
 		...config,
@@ -75,7 +73,7 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			access: config.panel?.access ? config.panel.access : (user) => access.isAdmin(user),
 			routes: config.panel?.routes ? config.panel.routes : {},
 			language: config.panel?.language || 'en',
-			navigation: { groups : panelNavigationGroups},
+			navigation: { groups: panelNavigationGroups },
 			components: {
 				header: config.panel?.components?.header || [],
 				...(config.panel?.components?.dashboard && { dashboard: config.panel.components.dashboard })
@@ -102,10 +100,7 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	 * because the config is built from inside the first handler
 	 * if a plugin includes a handler, the handler should be register there before...
 	 */
-	const corePlugins = [
-		cache(config.cache || {}),
-		...(dev ? [apiInit()] : []),
-	];
+	const corePlugins = [cache(config.cache || {}), ...(dev ? [apiInit()] : [])];
 	if (hasProp('smtp', config)) {
 		corePlugins.push(mailer(config.smtp));
 	}
@@ -128,12 +123,10 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	let compiledConfig = compileConfig(builtConfig);
 
 	if (dev || generateFiles) {
-		
 		const writeMemo = await import('./write.js').then((module) => module.default);
 		const changed = writeMemo(compiledConfig);
-		
+
 		if (changed) {
-			
 			const validate = await import('../validate.js').then((module) => module.default);
 			const valid = validate(compiledConfig);
 			if (!valid) {
@@ -141,11 +134,13 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			}
 
 			if (generateFiles) {
-				console.log('- valid and has changed')
+				console.log('- valid and has changed');
 				const generateSchema = await import('$lib/core/dev/generate/schema/index.server.js').then((m) => m.default);
 				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then((m) => m.default);
 				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then((m) => m.default);
-				const generateBrowserConfig = await import('$lib/core/dev/generate/browser/index.server.js').then((m) => m.default);
+				const generateBrowserConfig = await import('$lib/core/dev/generate/browser/index.server.js').then(
+					(m) => m.default
+				);
 
 				generateBrowserConfig({
 					...compiledConfig,
@@ -158,12 +153,12 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 		}
 	}
 
-	// Versions collection aliases 
+	// Versions collection aliases
 	// create {slug}_versions collections
 	compiledConfig = makeVersionsCollectionsAliases(compiledConfig);
-	// Upload collection directories 
+	// Upload collection directories
 	// create {slug}_directories collections
-	compiledConfig = makeUploadDirectoriesCollections(compiledConfig)
+	compiledConfig = makeUploadDirectoriesCollections(compiledConfig);
 
 	return compiledConfig;
 };

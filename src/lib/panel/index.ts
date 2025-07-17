@@ -11,7 +11,6 @@ import Dashboard from './pages/dashboard/Dashboard.svelte';
 import Doc from './components/sections/document/Document.svelte';
 import { Field } from './components/fields/index.js';
 import type { VersionsStatus } from '$lib/core/constant.js';
-import type { WithRequired } from '$lib/util/types.js';
 import type { Route } from './types.js';
 
 export { Area, AreaVersionsDoc, CollectionDocVersions, CollectionDoc, Collection, Live, Panel, Dashboard, Doc, Field };
@@ -29,7 +28,7 @@ export type CollectionProps = {
 
 export type DocVersion = { id: string; updatedAt: Date; status: VersionsStatus };
 
-type BaseDocData = 
+type BaseDocData =
 	| {
 			aria: Partial<Route>[];
 			doc: GenericDoc;
@@ -42,7 +41,8 @@ type BaseDocData =
 			status: 401;
 			readOnly: true;
 	  };
-type DocVersions<V> = (V extends true ? { versions: DocVersion[] } : {})
+type DocVersions<V> = V extends true ? { versions: DocVersion[] } : {};
 
-export type CollectionDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation : 'create' | 'update' };
-export type AreaDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation : 'update' };
+export type CollectionDocData<V extends boolean = boolean> = DocVersions<V> &
+	BaseDocData & { operation: 'create' | 'update' };
+export type AreaDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation: 'update' };

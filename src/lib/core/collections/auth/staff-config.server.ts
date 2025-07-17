@@ -3,6 +3,7 @@ import { access } from '$lib/util/access/index.js';
 import { collection } from '$lib/core/collections/config/builder.js';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import type { Collection, Option, PanelUsersConfig } from '../../../types.js';
+import cloneDeep from 'clone-deep';
 
 export const staffCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
@@ -31,7 +32,7 @@ export const mergeStaffCollection = ({
 	panel,
 	label
 }: PanelUsersConfig = {}): Collection<any> => {
-	const collection = { ...staffCollection };
+	const collection = cloneDeep(staffCollection);
 	let roles: Option[] = incomingRoles.map((role) => (typeof role === 'string' ? { value: role } : role));
 
 	if (roles) {
@@ -49,7 +50,7 @@ export const mergeStaffCollection = ({
 		}
 
 		if (!collection.auth || typeof collection.auth === 'boolean') {
-			throw Error('predefined staff collection should have an auth:AuthConfig property');
+			throw Error('predefined staff collection should have an auth:AuthConfig property, should never throw');
 		}
 
 		collection.auth.roles = roles.map((role) => role.value);

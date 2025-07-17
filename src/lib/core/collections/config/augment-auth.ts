@@ -2,7 +2,7 @@ import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { usersFields } from '../auth/fields.server.js';
 import { select } from '$lib/fields/select/index.js';
-import type { Collection } from '../../../types.js';
+import type { Collection, Option } from '../../../types.js';
 import type { AuthConfig } from '$lib/core/config/types/index.js';
 import { access } from '$lib/util/access/index.js';
 
@@ -44,18 +44,21 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 	const IS_API_AUTH = normalizedAuthConfig.auth.type === 'apiKey';
 
 	let roles = [...(normalizedAuthConfig.auth.roles || ['user'])];
+	let normalizedRoles: Option[] = roles.map((r) => (typeof r === 'string' ? { value: r } : r));
 
 	// Filter out 'admin' roles for non staff collection
-	roles = IS_GENERIC_COLLECTION
-		? roles.filter((role) => {
-				if (typeof role === 'string' && role === 'admin') return false;
-				if (typeof role !== 'string' && role.value === 'admin') return false;
-				return true;
-			})
-		: roles;
+	normalizedRoles = IS_GENERIC_COLLECTION ? normalizedRoles.filter((role) => role.value !== 'admin') : normalizedRoles;
 
+	const defaultRole = normalizedRoles.filter((r) => r.value !== 'admin')[0];
+
+	if (!defaultRole) {
+		throw Error('Missing default role');
+	}
+
+	// Define role field
 	const rolesField = select('roles')
 		.options(...roles)
+		.defaultValue([defaultRole.value])
 		.many()
 		.required();
 
