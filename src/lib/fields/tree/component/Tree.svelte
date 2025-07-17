@@ -103,7 +103,7 @@
 		<div
 			class="rz-tree__list rz-tree__list--root"
 			data-tree-key={key}
-			data-tree-depth="1"
+			data-tree-depth="0"
 			data-path={path}
 			data-empty={!hasBlocks ? '' : null}
 		>
