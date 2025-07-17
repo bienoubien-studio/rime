@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { watch } from 'runed';
-	import { onDestroy } from 'svelte';
-	import { capitalize } from '$lib/util/string.js';
-	import AddItemButton from './AddItemButton.svelte';
-	import TreeBlockItem from './TreeBlockItem.svelte';
 	import { Field } from '$lib/panel/components/fields/index.js';
-	import Sortable from 'sortablejs';
-	import type { TreeProps } from './props.js';
-	import type { Dic } from '$lib/util/types.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import type { Dic } from '$lib/util/types.js';
+	import { watch } from 'runed';
+	import Sortable from 'sortablejs';
+	import { onDestroy } from 'svelte';
+	import AddItemButton from './AddItemButton.svelte';
+	import type { TreeProps } from './props.js';
+	import TreeBlockItem from './TreeBlockItem.svelte';
 
 	const { path, config, form }: TreeProps = $props();
 

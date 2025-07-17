@@ -4,7 +4,7 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import StatusDot from '../collection/StatusDot.svelte';
 	import * as Radio from '$lib/panel/components/ui/radio-group/index.js';
-	import { PARAMS, VERSIONS_STATUS, type VersionsStatus } from '$lib/core/constant.js';
+	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Label from '../../ui/label/label.svelte';
 	import { env } from '$env/dynamic/public';
