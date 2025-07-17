@@ -9,6 +9,7 @@ import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.
 import type { FormField, Field } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
+import { toPascalCase } from '$lib/util/string.js';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
@@ -30,11 +31,17 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	}
 
 	_toType() {
+		const treeBlockTypeName = `Tree${toPascalCase(this.field.name)}`;
+		return `${this.field.name}: Array<{${treeBlockTypeName}}>`;
+	}
+
+	_toTypeHeader() {
+		const treeBlockTypeName = `Tree${toPascalCase(this.field.name)}`;
 		const fieldsTypes = this.field.fields
 			.filter((field) => field instanceof FormFieldBuilder)
-			.map((field) => field._toType())
-			.join(',\n');
-		return `${this.field.name}: Array<{${fieldsTypes}}>`;
+			.map((field) => field._toType());
+		fieldsTypes.push(`_children?: ${treeBlockTypeName}[]`);
+		return `type ${treeBlockTypeName} = {${fieldsTypes}}`;
 	}
 
 	// _toSchema() {

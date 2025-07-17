@@ -115,24 +115,6 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 }
 
 /**
- * Generates fields type definitions string based on a list of field
- * @param fields A fields configurations list
- * @returns An array of string containing fields type definitions
- */
-const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
-	const strFields: string[] = [];
-
-	for (const field of fields) {
-		if (field instanceof FormFieldBuilder) {
-			strFields.push(field._toType());
-		} else if (field instanceof TabsBuilder) {
-			strFields.push(field._toType());
-		}
-	}
-	return strFields;
-};
-
-/**
  * Generates the complete TypeScript type definitions string based on the built configuration
  * @param config The built configuration containing collections, areas, and fields
  * @returns A string containing all type definitions
@@ -141,9 +123,32 @@ export function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
 	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rizom']);
+	let headers: string[] = [];
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
+	};
+
+	/**
+	 * Generates fields type definitions string based on a list of field
+	 * @param fields A fields configurations list
+	 * @returns An array of string containing fields type definitions
+	 */
+	const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
+		const strFields: string[] = [];
+
+		for (const field of fields) {
+			if (field instanceof FormFieldBuilder) {
+				strFields.push(field._toType());
+				const header = field._toTypeHeader();
+				if (header) {
+					headers = [...headers, header];
+				}
+			} else if (field instanceof TabsBuilder) {
+				strFields.push(field._toType());
+			}
+		}
+		return strFields;
 	};
 
 	const buildblocksTypes = (fields: FieldBuilder<Field>[]) => {
@@ -218,7 +223,7 @@ export function generateTypesString(config: BuiltConfig) {
       session: Session | undefined;
 			/** The rizom user document when authenticated */
       user: User | undefined;
-			/** 
+			/**
 			 * Flag enabled when a create operation is triggered
 			 * by a auth/sign-up api call.
 			 */
@@ -245,8 +250,8 @@ export function generateTypesString(config: BuiltConfig) {
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;
-			/** 
-			 * Current locale if applicable 
+			/**
+			 * Current locale if applicable
 			 * set following this prioroty :
 			 * - locale inside the url from your front-end ex: /en/foo
 			 * - locale from searchParams ex : ?locale=en
@@ -262,6 +267,7 @@ export function generateTypesString(config: BuiltConfig) {
 		`import '${PACKAGE_NAME}';`,
 		`import type { Session } from 'better-auth';`,
 		typeImports,
+		headers.join('\n'),
 		relationValueType,
 		`declare global {`,
 		collectionsTypes,

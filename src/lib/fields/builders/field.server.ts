@@ -6,7 +6,7 @@ import type {
 	FieldWidth,
 	FieldHook,
 	FormField,
-	FieldHookOnChange,
+	FieldHookOnChange
 } from '$lib/fields/types.js';
 import { toSnakeCase } from '$lib/util/string.js';
 import { toCamelCase } from 'drizzle-orm/casing';
@@ -55,12 +55,11 @@ export class FieldBuilder<T extends Field = Field> {
 	}
 }
 
-type GenerateSchemaFn = (args:{ camel:string, snake:string, suffix:string }) => string
+type GenerateSchemaFn = (args: { camel: string; snake: string; suffix: string }) => string;
 
 export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
-	
-	_generateSchema: null | GenerateSchemaFn = null
-	
+	_generateSchema: null | GenerateSchemaFn = null;
+
 	constructor(name: string, type: string) {
 		super(type);
 		this.field.name = name;
@@ -82,6 +81,10 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 	_toType() {
 		console.warn(this.field.type + ' missing toType not implementated');
 		return '';
+	}
+
+	_toTypeHeader(): string | null {
+		return null;
 	}
 
 	_getSchemaName(parentPath?: string) {
@@ -111,9 +114,9 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return '';
 	}
 
-	generateSchema(fn:GenerateSchemaFn){
-		this._generateSchema = fn
-		return this
+	generateSchema(fn: GenerateSchemaFn) {
+		this._generateSchema = fn;
+		return this;
 	}
 
 	label(label: string) {
@@ -125,12 +128,12 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		this.field.hidden = true;
 		return this;
 	}
-	
+
 	readonly() {
 		this.field.readonly = true;
 		return this;
 	}
-	
+
 	localized() {
 		this.field.localized = true;
 		return this;
