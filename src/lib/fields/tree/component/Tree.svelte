@@ -130,8 +130,13 @@
 </fieldset>
 
 <style lang="postcss">
-	.rz-field-tree{
-		:global( > .rz-label){
+	
+	.rz-tree__list :global(.rz-tree__list) {
+		margin-left: 2rem;
+	}
+
+	.rz-field-tree {
+		:global(> .rz-label) {
 			margin-bottom: var(--rz-size-5);
 		}
 	}
