@@ -26,9 +26,9 @@ export interface Config {
 	/** The database name inside ./db folder */
 	database: string;
 	/** List of Collection  */
-	collections: BuiltCollection[];
+	collections: Collection<string>[];
 	/** List of Area  */
-	areas: BuiltArea[];
+	areas: Area<string>[];
 	/** List of locales for document i18£n
 	 * @example
 	 * localization: {
