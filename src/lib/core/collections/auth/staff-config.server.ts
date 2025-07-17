@@ -2,9 +2,7 @@ import { UsersRound } from '@lucide/svelte';
 import { access } from '$lib/util/access/index.js';
 import { collection } from '$lib/core/collections/config/builder.js';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import type { BuiltCollection, Collection, Option, PanelUsersConfig } from '../../../types.js';
-import { FormFieldBuilder } from '$lib/fields/builders/field.server.js';
-import { usersFields } from './fields.server.js';
+import type { Collection, Option, PanelUsersConfig } from '../../../types.js';
 
 export const staffCollection = collection(PANEL_USERS, {
 	label: { singular: 'User', plural: 'Users', gender: 'm' },
@@ -49,17 +47,6 @@ export const mergeStaffCollection = ({
 		if (otherRoles.length === 0) {
 			roles.push({ value: 'staff' });
 		}
-
-		// const defaultRole = roles.filter((role) => role.value !== 'admin')[0].value;
-		
-		// const roleField = usersFields.roles.options(...roles).defaultValue([defaultRole]);
-
-		// collection.fields = [
-		// 	...collection.fields
-		// 		.filter((field) => field instanceof FormFieldBuilder)
-		// 		.filter((field) => field.raw.name !== 'roles'),
-		// 	roleField
-		// ];
 
 		if (!collection.auth || typeof collection.auth === 'boolean') {
 			throw Error('predefined staff collection should have an auth:AuthConfig property');

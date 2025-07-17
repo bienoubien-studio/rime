@@ -1,6 +1,5 @@
 import { capitalize } from '$lib/util/string.js';
 import type { BuiltCollection, Collection } from '$lib/core/config/types/index.js';
-import type { User } from '$lib/core/collections/auth/types.js';
 import type { CollectionWithoutSlug } from './types.js';
 import { augmentHooks } from './augment-hooks.js';
 import { augmentMetas } from './augment-metas.js';
@@ -26,8 +25,7 @@ export function collection<S extends string>(slug: S, incomingConfig: Collection
 }
 
 export function buildCollection(collection: Collection<CollectionSlug>): BuiltCollection {
-
-	const initial = { ...collection }
+	const initial = { ...collection };
 	const withUpload = augmentUpdload(initial);
 	const withNested = augmentNested(withUpload);
 	const withVersions = augmentVersions(withNested);
@@ -36,13 +34,15 @@ export function buildCollection(collection: Collection<CollectionSlug>): BuiltCo
 	const withMetas = augmentMetas(withAuth);
 	const withHooks = augmentHooks(withMetas);
 	const output = augmentTitle(withHooks);
-	
+
 	return {
 		...output,
 		url: output.url as BuiltCollection['url'],
 		slug: output.slug as BuiltCollection['slug'],
 		type: 'collection',
-		label: output.label ? output.label : { singular: capitalize(collection.slug), plural: capitalize(collection.slug), gender: 'm' },
+		label: output.label
+			? output.label
+			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug), gender: 'm' },
 		icon: output.icon || FileText,
 		access: {
 			create: (user) => !!user && !!user.isStaff,
