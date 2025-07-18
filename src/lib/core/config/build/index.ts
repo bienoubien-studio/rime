@@ -1,20 +1,20 @@
-import { access } from '$lib/util/access/index.js';
+import { buildArea } from '$lib/core/areas/config/builder.js';
+import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
+import { buildCollection } from '$lib/core/collections/config/builder.js';
 import type { BuiltConfig, CompiledConfig, Config } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { Dic } from '$lib/util/types.js';
-import { registerPlugins } from './plugins.server.js';
-import { compileConfig } from '../compile.server.js';
-import { buildComponentsMap } from './fields/component-map.js';
+import { apiInit } from '$lib/core/plugins/api-init/index.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
+import { access } from '$lib/util/access/index.js';
 import { hasProp } from '$lib/util/object.js';
+import type { Dic } from '$lib/util/types.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
-import { makeVersionsCollectionsAliases } from './versions-alias.js';
-import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
+import { compileConfig } from '../compile.server.js';
+import { buildComponentsMap } from './fields/component-map.js';
+import { registerPlugins } from './plugins.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
-import { apiInit } from '$lib/core/plugins/api-init/index.js';
-import { buildCollection } from '$lib/core/collections/config/builder.js';
-import { buildArea } from '$lib/core/areas/config/builder.js';
+import { makeVersionsCollectionsAliases } from './versions-alias.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -134,7 +134,6 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			}
 
 			if (generateFiles) {
-				console.log('- valid and has changed');
 				const generateSchema = await import('$lib/core/dev/generate/schema/index.server.js').then((m) => m.default);
 				const generateRoutes = await import('rizom/core/dev/generate/routes/index.js').then((m) => m.default);
 				const generateTypes = await import('rizom/core/dev/generate/types/index.js').then((m) => m.default);
