@@ -1,20 +1,20 @@
-import { and, desc, eq } from 'drizzle-orm';
-import { buildWithParam } from './with.js';
-import { buildWhereParam } from './where.js';
-import { buildOrderByParam } from './orderBy.js';
-import type { GenericDoc, CollectionSlug, RawDoc } from '$lib/core/types/doc.js';
-import type { OperationQuery } from '$lib/core/types/index.js';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { DeepPartial, Dic } from '$lib/util/types.js';
-import type { ConfigInterface } from '../core/config/index.server.js';
-import { RizomError } from '../core/errors/index.js';
-import * as adapterUtil from './util.js';
-import * as schemaUtil from '$lib/util/schema.js';
+import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { getSegments } from '$lib/core/collections/upload/util/path.js';
+import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+import * as schemaUtil from '$lib/util/schema.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
+import type { DeepPartial, Dic } from '$lib/util/types.js';
+import { and, desc, eq } from 'drizzle-orm';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { GetRegisterType } from 'rizom';
+import type { ConfigInterface } from '../core/config/index.server.js';
+import { RizomError } from '../core/errors/index.js';
+import { buildOrderByParam } from './orderBy.js';
+import * as adapterUtil from './util.js';
+import { buildWhereParam } from './where.js';
+import { buildWithParam } from './with.js';
 
 type Schema = GetRegisterType<'Schema'>
 type Args = {
@@ -295,7 +295,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// if draft is enabled on the collection
 			if (config.versions && config.versions.draft && mainData.status === 'published') {
 				// update all rows first to draft
-				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT });
+				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT }).where(eq(tables[versionsTable].ownerId, id));
 			}
 
 			// Update version directly
