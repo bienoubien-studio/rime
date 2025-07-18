@@ -1,54 +1,58 @@
-import type { GetRegisterType } from '$lib/index.js';
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import type { DefaultValueFn, FieldHook, FormField } from '$lib/fields/types.js';
+import { trycatch } from '$lib/util/trycatch.js';
+import validate from '$lib/util/validate.js';
+import type { AreaSlug, CollectionSlug, PrototypeSlug } from '../../types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import LinkComp from './component/Link.svelte';
-import type { FormField, FieldHook, DefaultValueFn } from '$lib/fields/types.js';
-import validate from '$lib/util/validate.js';
 import type { Link, LinkType } from './types.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 
-// Before save populate ressource URL
-const populateRessourceURL: FieldHook<LinkField> = async (value: Link, { event, documentId }) => {
-	const hasValue = !!value;
-	const isResourceLinkType = (type: LinkType): type is GetRegisterType<'PrototypeSlug'> =>
-		!['url', 'email', 'tel', 'anchor'].includes(type);
+// Before read populate ressource URL
+const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, documentId }) => {
+	if (!link) return link;
 
-	if (hasValue && isResourceLinkType(value.type)) {
-		const link = value;
+	// if not a resource return original value
+	if (['url', 'email', 'tel', 'anchor'].includes(link.type)) return link;
 
-		// Compare with the current document beign processed to prevent infinite loop
-		if (link.value !== documentId) {
-			try {
-				let doc;
-				if (event.locals.rizom.config.isCollection(link.type)) {
-					doc = await event
-						.fetch(
-							`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?where[id][equals]=${link.value}&locale=${event.locals.locale}&select=url`
-						)
-						.then((r) => r.json())
-						.then((r) => r.docs[0]);
-				} else if (event.locals.rizom.config.isArea(link.type)) {
-					doc = await event
-						.fetch(`${process.env.PUBLIC_RIZOM_URL}/api/${value.type}?locale=${event.locals.locale}&select=url`)
-						.then((r) => r.json())
-						.then((r) => r.doc);
-				}
-				if (!doc) {
-					link.value = null;
-					return value;
-				}
-				if (doc.url) value.url = doc.url;
-			} catch (err: any) {
-				if (err.code === 'not_found') {
-					console.warn(`Link field : ${link.type} ${documentId} not found`);
-					return null;
-				}
-				// catch 404
-				console.error(err);
-			}
+	// Compare with the current document beign processed to prevent infinite loop
+	if (link.value === documentId) return link;
+
+	// If falsy value return link
+	if (!link.value) return link;
+
+	const { rizom, locale } = event.locals;
+
+	async function getRessource(slug: PrototypeSlug) {
+		switch (true) {
+			case rizom.config.isCollection(slug):
+				return await rizom.collection(slug as CollectionSlug).findById({
+					id: link.value || '',
+					locale: locale,
+					select: ['url']
+				});
+			case rizom.config.isArea(slug):
+				return await rizom.area(slug as AreaSlug).find({
+					locale: locale,
+					select: ['url']
+				});
 		}
 	}
+	
+	const [error, doc] = await trycatch(getRessource(link.type as PrototypeSlug));
 
-	return value;
+	if (doc && doc.url) {
+		link.url = doc.url;
+		return link;
+	}
+
+	if (error instanceof RizomError && error.code === RizomError.NOT_FOUND) {
+		logger.warn(`Link field : ${link.type} ${link.value || '?' } not found`);
+		return link;
+	}
+
+	return link;
 };
 
 class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
@@ -81,10 +85,10 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 	_toSchema(parentPath?: string) {
 		const { camel, snake } = this._getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
+		if (this._generateSchema) return this._generateSchema({ camel, snake, suffix });
 		return `${camel}: text('${snake}', { mode: 'json'})${suffix}`;
 	}
-	
+
 	defaultValue(value: Link | DefaultValueFn<Link>) {
 		this.field.defaultValue = value;
 		return this;
