@@ -1,14 +1,14 @@
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { RegisterCollection } from '$lib/index.js';
-import RelationComponent from './component/Relation.svelte';
-import { FormFieldBuilder } from '../builders/index.js';
-import type { DefaultValueFn, FieldHook, FormField } from '$lib/fields/types.js';
-import { capitalize } from '$lib/util/string';
 import type { Relation } from '$lib/adapter-sqlite/relations';
 import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import { RizomError } from '$lib/core/errors';
 import { logger } from '$lib/core/logger/index.server';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { DefaultValueFn, FieldHook, FormField } from '$lib/fields/types.js';
+import type { RegisterCollection } from '$lib/index.js';
+import { capitalize } from '$lib/util/string';
+import { FormFieldBuilder } from '../builders/index.js';
 import Cell from './component/Cell.svelte';
+import RelationComponent from './component/Relation.svelte';
 
 type RelationValue = string | Array<Relation | string>;
 
@@ -17,7 +17,7 @@ const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async (value:
 
 	const retrieveRelation = async (id: string) => {
 		try {
-			return await event.locals.rizom.collection(config.relationTo).findById({ id });
+			return await event.locals.rizom.collection(config.relationTo).findById({ id, select: ['id'] });
 		} catch (err: any) {
 			logger.error('Error in relation beforValidate hook : ' + err.message);
 			throw new RizomError(RizomError.OPERATION_ERROR, err.message);
