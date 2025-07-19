@@ -1,7 +1,7 @@
 import { buildArea } from '$lib/core/areas/config/builder.js';
 import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
 import { buildCollection } from '$lib/core/collections/config/builder.js';
-import type { BuiltConfig, CompiledConfig, Config } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, Collection, CompiledConfig, Config } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
@@ -30,14 +30,17 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	const staffCollection = mergeStaffCollection(config.panel?.users);
 
 	// Build collections / areas
-	config.collections = [...config.collections.map((c) => buildCollection(c)), buildCollection(staffCollection)];
-	config.areas = config.areas.map((a) => buildArea(a));
+	const builtCollections = (config.collections = [
+		...config.collections.map((c) => buildCollection(c as Collection<any>)),
+		buildCollection(staffCollection)
+	]);
+	const builtAreas = (config.areas = config.areas.map((a) => buildArea(a)));
 
 	// Add icons
-	for (const collection of config.collections) {
+	for (const collection of builtCollections) {
 		icons[collection.slug] = collection.icon;
 	}
-	for (const area of config.areas) {
+	for (const area of builtAreas) {
 		icons[area.slug] = area.icon;
 	}
 
@@ -80,8 +83,8 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 			},
 			css: config.panel?.css
 		},
-		collections: config.collections,
-		areas: config.areas,
+		collections: builtCollections,
+		areas: builtAreas,
 		plugins: {},
 		trustedOrigins,
 		icons
