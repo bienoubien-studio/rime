@@ -6,5 +6,6 @@ export default {
 	no_block: 'Aucun bloc',
 	delete_block: 'Supprimer le bloc',
 	create_one: 'Créer {un|une} $1',
-	generate_from: 'Générer à partir du champs $1'
+	generate_from: 'Générer à partir du champs $1',
+	get_data_from: 'Importer les données'
 };

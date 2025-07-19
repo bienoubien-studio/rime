@@ -10,6 +10,7 @@
 	import AddItemButton from './AddItemButton.svelte';
 	import type { TreeProps } from './props.js';
 	import TreeBlockItem from './TreeBlockItem.svelte';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -122,14 +123,14 @@
 
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
 			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
-				Get <span class="uz-upper">{locale.defaultCode}</span> data
+				{t__('fields.get_data_from')}
+				{locale.defaultCode}
 			</Button>
 		{/if}
 	</div>
 </fieldset>
 
 <style lang="postcss">
-	
 	.rz-tree__list :global(.rz-tree__list) {
 		margin-left: 2rem;
 	}

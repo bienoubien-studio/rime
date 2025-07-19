@@ -12,6 +12,7 @@
 	import type { BlocksProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -118,10 +119,11 @@
 
 	<div class="rz-blocks__actions-bottom">
 		<AddBlockButton addBlock={add} {config} />
-		
+
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
-			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
-				Get <span class="uz-upper">{locale.defaultCode}</span> data
+			<Button size="sm" onclick={field.setValueFromDefaultLocale} variant="secondary">
+				{t__('fields.get_data_from')}
+				{locale.defaultCode}
 			</Button>
 		{/if}
 	</div>
