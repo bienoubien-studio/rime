@@ -89,7 +89,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		}
 		return columns;
 	};
-	
+
 	const columns = buildFieldColumns(config.fields)
 		.map((col) => {
 			// Set column position
@@ -333,7 +333,11 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 			}
 			const results = scores.sort(function (a, b) {
 				if (a.score === b.score) {
-					return a.doc[config.asTitle].localeCompare(b.doc[config.asTitle]);
+					const titleA = getValueAtPath<string>(config.asTitle, a.doc);
+					const titleB = getValueAtPath<string>(config.asTitle, b.doc);
+					if (titleA && titleB) {
+						return titleA.localeCompare(titleB);
+					}
 				}
 				return b.score - a.score;
 			});
