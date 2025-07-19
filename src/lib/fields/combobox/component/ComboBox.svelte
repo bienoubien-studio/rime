@@ -31,7 +31,7 @@
 {/snippet}
 
 <fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} for={path || config.name} />
+	<Field.Label {config} for={path || config.name} />
 	<Popover.Root bind:open>
 		<Popover.Trigger>
 			{#snippet child({ props })}

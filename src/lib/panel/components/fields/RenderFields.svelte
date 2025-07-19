@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { isComponentField, isFormField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
+	import {
+		isComponentField,
+		isFormField,
+		isLiveField,
+		isNotHidden,
+		isPresentative,
+		isTabsField
+	} from '$lib/util/field.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import type { Field, FormField } from '$lib/fields/types.js';
@@ -57,8 +64,13 @@
 					<Tabs config={field} {path} {form} />
 				</div>
 			{:else if isFormField(field) && isNotHidden(field)}
+				{@const isCompact = 'layout' in field && field.layout === 'compact'}
 				{@const FieldComponent = fieldComponent(field.type)}
-				<div class="rz-render-fields__field {widthClassModifier(field)}" data-type={field.type}>
+				<div
+					class="rz-render-fields__field {widthClassModifier(field)}"
+					data-type={field.type}
+					data-compact={isCompact ? '' : null}
+				>
 					<FieldComponent path={path + field.name} config={field} {form} />
 				</div>
 			{/if}
@@ -80,6 +92,11 @@
 		& > * {
 			position: relative;
 		}
+	}
+
+	/** minimize gap when all fields have no label **/
+	.rz-render-fields:not(:has(> :not(.rz-render-fields__field[data-compact]))) {
+		gap: var(--rz-size-4);
 	}
 
 	/** hide fields that doesn't have any data-visible children */

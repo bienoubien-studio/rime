@@ -10,7 +10,7 @@
 
 	const field = $derived(form.useField(path || config.name, config));
 	let showError = $state(false);
-	
+
 	// Actions
 	const onInput = (event: Event) => {
 		showError = false;
@@ -20,13 +20,14 @@
 	const onBlur = () => {
 		showError = true;
 	};
-
-	const classNameCompact = config.layout === 'compact' ? 'rz-email-field--compact' : '';
-	const classNames = `${config.className} rz-email-field ${classNameCompact || ''}`;
 </script>
 
-<fieldset class={classNames} use:root={field}>
-	<Field.Label {config} for={path || config.name} />
+<fieldset
+	data-compact={config.layout === 'compact' ? '' : null}
+	class="{config.className} rz-email-field"
+	use:root={field}
+>
+	<Field.Label {config} for={path || config.name} />
 	<div class="rz-email-field-wrapper">
 		<Mail class="rz-email-field__icon" size="12" />
 		<Input
@@ -44,7 +45,7 @@
 </fieldset>
 
 <style>
-	.rz-email-field--compact :global {
+	.rz-email-field[data-compact] :global {
 		label {
 			display: none;
 		}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu as DropdownMenuPrimitive, type WithoutChild } from 'bits-ui';
 	import { Check } from '@lucide/svelte';
+	import './dropdown-menu-radio-item.css';
 
 	let {
 		ref = $bindable(null),
@@ -20,34 +21,3 @@
 		{@render childrenProp?.({ checked })}
 	{/snippet}
 </DropdownMenuPrimitive.RadioItem>
-
-<style type="postcss">
-	:global {
-		.rz-dropdown-radio {
-			position: relative;
-			display: flex;
-			cursor: pointer;
-			user-select: none;
-			align-items: center;
-			border-radius: var(--rz-radius-md);
-			padding-left: var(--rz-size-8);
-			font-size: var(--rz-text-sm);
-			outline: none;
-			@mixin py var(--rz-size-1-5);
-		}
-		.rz-dropdown-radio[data-disabled] {
-			pointer-events: none;
-			opacity: 0.5;
-		}
-
-		.rz-dropdown-radio[data-highlighted] {
-			background-color: var(--rz-dropdown-item-bg);
-			@mixin color color-fg;
-		}
-
-		.rz-dropdown-radio__indicator {
-			position: absolute;
-			left: var(--rz-size-2);
-		}
-	}
-</style>

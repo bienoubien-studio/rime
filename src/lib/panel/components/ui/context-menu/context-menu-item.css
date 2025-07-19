@@ -11,7 +11,7 @@
 	@mixin py var(--rz-size-1);
 	@mixin px var(--rz-size-2);
 	&[data-highlighted] {
-		background-color: hsl(var(--rz-gray-4));
+		background-color: var(--rz-popover-highlight-bg);
 	}
 	&[data-disabled] {
 		pointer-events: none;

@@ -13,7 +13,8 @@
 }
 
 .rz-command-item[aria-selected='true'] {
-	background-color: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-3)));
+	border-radius: var(--rz-radius-sm);
+	background-color: var(--rz-popover-highlight-bg);
 	color: hsl(var(--rz-color-fg));
 }
 

@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { X } from '@lucide/svelte';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
+	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
+	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
-	import { createBlankDocument } from '$lib/util/doc.js';
 	import { dataError } from '$lib/panel/util/dataError.js';
 	import { dataFocused } from '$lib/panel/util/dataFocused.js';
 	import { useSortable } from '$lib/panel/util/Sortable.js';
-	import { t__ } from '$lib/core/i18n/index.js';
+	import { createBlankDocument } from '$lib/util/doc.js';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 
 	const {
 		isFull,
@@ -168,9 +167,8 @@
 				.rz-command-input-select--with-items {
 					margin-left: var(--rz-size-2);
 				}
-				
+
 				.rz-command-list {
-					background-color: hsl(var(--rz-color-input));
 					border: var(--rz-border);
 					position: absolute;
 					left: 0;

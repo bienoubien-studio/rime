@@ -75,7 +75,8 @@
 }
 
 .rz-relation-upload__command-item[aria-selected='true'] {
-	background-color: hsl(var(--rz-gray-5));
+	/* background-color: hsl(var(--rz-gray-5)); */
+	background-color: var(--rz-popover-high-light-bg);
 }
 
 .rz-relation-upload__grid-item {

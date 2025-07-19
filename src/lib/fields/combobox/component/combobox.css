@@ -9,7 +9,7 @@
 .rz-combobox__content {
 	width: 200px;
 	border-radius: var(--rz-radius-md);
-	background-color: hsl(var(--rz-color-input));
+	background-color: var(--rz-popover-bg);
 	padding: 0;
 }
 

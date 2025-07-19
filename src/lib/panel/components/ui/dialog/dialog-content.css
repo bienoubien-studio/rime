@@ -1,6 +1,6 @@
 .rz-dialog-content {
 	--gutter: var(--rz-size-4);
-	background-color: hsl(var(--rz-color-bg));
+	background-color: var(--rz-popover-bg);
 	position: fixed;
 	left: calc(50% - var(--gutter));
 	top: 40%;

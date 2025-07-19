@@ -7,26 +7,34 @@
 @import './util.css';
 
 :root {
-	
 	color-scheme: light dark;
-	
+
 	--rz-border: 1px solid hsl(var(--rz-color-border));
+
+	/* Inputs */
 	--rz-input-height: var(--rz-size-11);
-	--rz-row-height: var(--rz-size-12);
-	
+	--rz-color-input: var(--rz-gray-19);
+
+	/* Overlay */
 	--rz-overlay-color: hsl(var(--rz-gray-11) / 0.4);
 	--rz-overlay-blur: 6px;
+
+	/* Rows */
+	--rz-row-height: var(--rz-size-12);
 	--rz-row-color: var(--rz-gray-18);
 
+	/* Colors */
 	--rz-color-fg: var(--rz-gray-0);
 	--rz-color-bg: var(--rz-gray-17);
-	
-	--rz-color-input: var(--rz-gray-19);
-	
 	--rz-color-border: var(--rz-gray-15);
 	--rz-color-ring: var(--rz-color-spot);
-	
+
+	/* Collapsible group, tree, blocks... */
 	--rz-collapse-fields-content-bg: light-dark(hsl(var(--rz-color-input)), hsl(var(--rz-color-bg)));
+
+	/* Popovers dropdown, dialog,... */
+	--rz-popover-bg: hsl(var(--rz-color-bg));
+	--rz-popover-highlight-bg: hsl(var(--rz-gray-15));
 
 	@media (prefers-color-scheme: dark) {
 		--rz-overlay-color: hsl(var(--rz-gray-0) / 0.7);
@@ -35,8 +43,8 @@
 		--rz-color-bg: var(--rz-gray-2);
 		--rz-color-input: var(--rz-gray-4);
 		--rz-row-color: var(--rz-gray-3);
+		--rz-popover-highlight-bg: hsl(var(--rz-gray-3));
 	}
-	
 }
 
 body:has(.rz-root) {

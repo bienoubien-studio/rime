@@ -96,16 +96,14 @@
 	});
 </script>
 
-<fieldset class={config.className} use:root={field}>
-	{#if config.layout !== 'compact'}
-		<Field.Label {config} for={path || config.name} />
-	{/if}
+<fieldset
+	class="rz-link-field {config.className}"
+	data-compact={config.layout === 'compact' ? '' : null}
+	use:root={field}
+>
+	<Field.Label {config} for={path || config.name} />
 
-	<div
-		class:rz-link-field--compact={config.layout === 'compact'}
-		class="rz-link-field"
-		data-error={field.error ? 'true' : 'false'}
-	>
+	<div class="rz-link-field__wrap">
 		<div class="rz-link-field__row" style="--rz-corner-radius:{hasTarget ? 0 : 'var(--rz-radius-md)'}">
 			<!-- Type -->
 			{#if linkTypes.length === 1}
@@ -115,7 +113,6 @@
 				</Button>
 			{:else}
 				<DropdownMenu.Root>
-
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}
 							<Button variant="secondary" {...props}>
@@ -168,52 +165,70 @@
 </fieldset>
 
 <style type="postcss">
-	.rz-link-field {
-		height: var(--rz-input-height);
-		:global(.rz-input) {
-			border-bottom-left-radius: 0;
-			border-bottom-right-radius: var(--rz-corner-radius);
+	.rz-link-field[data-compact] :global {
+		.rz-link-field__wrap + .rz-field-error {
+			top: -1.3rem;
 		}
-
-		:global(:focus-visible),
-		:global([data-error]) {
-			position: relative;
-			z-index: 10;
+		.rz-field-label {
+			display: none;
 		}
-	}
-	.rz-link-field--compact + :global(.rz-field-error) {
-		top: -1.3rem;
 	}
 
 	.rz-link-field__row {
 		display: flex;
 		position: relative;
-		border: var(--rz-border);
+		border: 1px solid var(--rz-input-border-color);
 		border-radius: var(--rz-radius-lg);
-		
+		height: var(--rz-input-height);
+
 		.rz-link__type-text {
 			display: none;
 		}
 
-		:global(.rz-link__type-single) {
-			pointer-events: none;
-		}
-
-		:global(.rz-button) {
-			min-width: var(--rz-size-20);
-			border-top-left-radius: var(--rz-radius-md);
-			border-top-right-radius: 0;
-			border-bottom-right-radius: 0;
-			height: var(--rz-input-height);
-			justify-content: start;
-			font-size: var(--rz-text-sm);
-
-			> * {
-				flex-shrink: 0;
+		:global {
+			:focus-visible {
+				position: relative;
+				z-index: 10;
+			}
+			.rz-input {
+				border-bottom-left-radius: 0;
+				border-bottom-right-radius: var(--rz-corner-radius);
+				position: relative;
+				z-index: 10;
 			}
 
-			:global(.rz-link__type-icon) {
-				width: var(--rz-size-6);
+			.rz-input,
+			.rz-ressource-input {
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+				border-top-right-radius: 0;
+				border: 0;
+				height: 100%;
+			}
+			.rz-link__type-single {
+				pointer-events: none;
+			}
+
+			.rz-button {
+				min-width: var(--rz-size-20);
+				border-top-left-radius: var(--rz-radius-md);
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+				height: 100%;
+				justify-content: start;
+				font-size: var(--rz-text-sm);
+
+				> * {
+					flex-shrink: 0;
+				}
+
+				.rz-link__type-icon {
+					width: var(--rz-size-6);
+				}
+
+				&[data-dropdown-menu-trigger] {
+					border-right: 1px solid var(--rz-input-border-color);
+				}
 			}
 		}
 
@@ -225,22 +240,14 @@
 				min-width: var(--rz-size-32);
 			}
 		}
-
-		:global(.rz-input),
-		:global(.rz-ressource-input) {
-			border-top-left-radius: 0;
-			border-bottom-left-radius: 0;
-			border-top-right-radius: 0;
-			border-top: 0;
-			border-bottom: 0;
-		}
 	}
 
 	.rz-link__target {
-		height: var(--rz-input-height);
-		background-color: light-dark(hsl(var(--rz-gray-14)),hsl(var(--rz-gray-5)));
+		height: 100%;
+		background-color: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-5)));
 		border-bottom-right-radius: var(--rz-radius-md);
 		border-top-right-radius: var(--rz-radius-md);
+		border-left: 1px solid var(--rz-input-border-color);
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-4);

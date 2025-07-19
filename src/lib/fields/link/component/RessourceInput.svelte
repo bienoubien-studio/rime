@@ -122,34 +122,33 @@
 </div>
 
 <style type="postcss">
-	
 	.rz-ressource-input {
 		position: relative;
 		width: 100%;
 
-		:global(.rz-command) {
-			width: 100%;
-			border-radius: var(--rz-radius-md);
-		}
+		:global {
+			.rz-command {
+				width: 100%;
+				border-radius: var(--rz-radius-md);
+			}
 
-		:global(.rz-command-list) {
-			background-color: hsl(var(--rz-color-input));
-			/* border: var(--rz-border); */
-			border-radius: var(--rz-radius-md);
-			position: absolute;
-			left: 0;
-			right: 0;
-			top: var(--rz-size-12);
-			z-index: 10;
-			box-shadow: var(--rz-shadow-md);
-		}
+			.rz-command-list {
+				border-radius: var(--rz-radius-md);
+				position: absolute;
+				left: 0;
+				right: 0;
+				top: var(--rz-size-12);
+				z-index: 10;
+				box-shadow: var(--rz-shadow-md);
+			}
 
-		:global(.rz-command-input-select) {
-			cursor: text;
-		}
+			.rz-command-input-select {
+				cursor: text;
+			}
 
-		:global(.rz-command-item) {
-			height: var(--rz-size-10);
+			.rz-command-item {
+				height: var(--rz-size-10);
+			}
 		}
 	}
 
@@ -160,7 +159,7 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: var(--rz-size-1);
-		border-left: var(--rz-border);
+
 		border-top: 0;
 		padding: var(--rz-size-2) var(--rz-size-3);
 	}
@@ -170,7 +169,6 @@
 	}
 
 	.rz-ressource-input__wrapper:global([data-focused]) {
-		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-spot);
 		z-index: 20;
 	}

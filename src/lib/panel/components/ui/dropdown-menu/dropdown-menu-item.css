@@ -1,6 +1,3 @@
-:root{
-	--rz-dropdown-item-bg: hsl(var(--rz-gray-2));
-}
 .rz-dropdown-item {
 	position: relative;
 	display: flex;
@@ -10,12 +7,13 @@
 	gap: var(--rz-size-2);
 	border-radius: var(--rz-radius-md);
 	outline: none;
-	color: hsl(var(--rz-gray-15));
 	@mixin py var(--rz-size-1-5);
 	@mixin px var(--rz-size-2);
+
 	&[data-highlighted] {
-		background-color: var(--rz-dropdown-item-bg);
+		background-color: var(--rz-popover-highlight-bg);
 	}
+
 	&[data-disabled] {
 		pointer-events: none;
 		opacity: 0.5;

@@ -16,7 +16,7 @@
 <fieldset
 	class="rz-text-field {config.className || ''}"
 	class:rz-text-field--with-icon={!!Icon}
-	class:rz-text-field--compact={config.layout === 'compact'}
+	data-compact={config.layout === 'compact' ? '' : null}
 	use:root={field}
 >
 	<Field.Label {config} for={path || config.name} />
@@ -39,9 +39,7 @@
 </fieldset>
 
 <style lang="postcss">
-	
-
-	.rz-text-field.rz-text-field--compact :global {
+	.rz-text-field[data-compact] :global {
 		.rz-label {
 			display: none;
 		}
