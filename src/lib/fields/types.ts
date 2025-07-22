@@ -1,12 +1,11 @@
-import type { User } from '../core/collections/auth/types';
-import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { GetRegisterType } from '$lib/index.js';
-import type { FieldPanelTableConfig } from '../panel/types';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 import type { DocumentFormContext } from '$lib/panel';
+import type { Dic, WithRequired } from '$lib/util/types.js';
+import type { IconProps } from '@lucide/svelte';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
-import type { IconProps } from '@lucide/svelte';
-import type { Dic, WithOptional, WithRequired } from '$lib/util/types.js';
+import type { User } from '../core/collections/auth/types';
+import type { FieldPanelTableConfig } from '../panel/types';
 
 export type { BlocksField, BlocksFieldBlock } from './blocks/index.js';
 export type { CheckboxField } from './checkbox/index.js';
@@ -25,8 +24,8 @@ export type { SeparatorField } from './separator/index.js';
 export type { SlugField } from './slug/index.js';
 export type { TabsField } from './tabs/index.js';
 export type { TextField } from './text/index.server.js';
-export type { TimeField } from './time/index.js';
 export type { TextAreaField } from './textarea/index.js';
+export type { TimeField } from './time/index.js';
 export type { ToggleField } from './toggle/index.js';
 
 
@@ -81,6 +80,8 @@ type FieldHookContext<T extends FormField = FormField> = {
 	event: RequestEvent;
 	/** The document Id being processed */
 	documentId?: string;
+	/** The full operation context */
+	operation: OperationContext;
 	/** The field config */
 	config: T;
 };

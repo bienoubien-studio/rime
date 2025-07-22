@@ -1,5 +1,5 @@
-import { buildConfigMap } from '../../configMap/index.server.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
+import { buildConfigMap } from '../../configMap/index.server.js';
 import { Hooks } from '../index.js';
 
 export const processDocumentFields = Hooks.beforeRead( async (args) => {
@@ -21,7 +21,7 @@ export const processDocumentFields = Hooks.beforeRead( async (args) => {
 			let value = getValueAtPath(key, doc);
 			if (value) {
 				for (const hook of config.hooks.beforeRead) {
-					value = await hook(value, { event, config, documentId: doc.id });
+					value = await hook(value, { event, config, operation: args.context, documentId: doc.id });
 					doc = setValueAtPath(key, doc, value);
 				}
 			}

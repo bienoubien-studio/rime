@@ -1,8 +1,8 @@
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import { Hooks } from '../index.js';
 
 export const validateFields = Hooks.beforeUpsert( async (args) => {
@@ -61,7 +61,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		if (config.hooks?.beforeValidate) {
 			if (value) {
 				for (const hook of config.hooks.beforeValidate) {
-					value = await hook(value, { config, event });
+					value = await hook(value, { config, event, operation: args.context });
 					output = setValueAtPath(key, output, value);
 				}
 			}
@@ -97,7 +97,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		if (config.hooks?.beforeSave) {
 			if (value) {
 				for (const hook of config.hooks.beforeSave) {
-					value = await hook(value, { config, event });
+					value = await hook(value, { config, event, operation: args.context });
 					output = setValueAtPath(key, output, value);
 				}
 			}

@@ -171,24 +171,24 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	beforeRead(hook: FieldHook) {
+	beforeRead(hook: FieldHook<T>) {
 		this.field.hooks!.beforeRead ??= [];
 		this.field.hooks!.beforeRead.push(hook);
 		return this;
 	}
 
-	beforeSave(hook: FieldHook) {
+	beforeSave(hook: FieldHook<T>) {
 		this.field.hooks!.beforeSave ??= [];
 		this.field.hooks!.beforeSave.push(hook);
 		return this;
 	}
 
-	beforeValidate(hook: FieldHook) {
+	beforeValidate(hook: FieldHook<T>) {
 		this.field.hooks!.beforeValidate ??= [];
 		this.field.hooks!.beforeValidate.push(hook);
 		return this;
 	}
-
+	
 	onChange(hook: FieldHookOnChange) {
 		this.field.hooks!.onChange ??= [];
 		this.field.hooks!.onChange.push(hook);
