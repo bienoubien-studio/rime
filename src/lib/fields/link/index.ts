@@ -10,7 +10,7 @@ import LinkComp from './component/Link.svelte';
 import type { Link, LinkType } from './types.js';
 
 // Before read populate ressource URL
-const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, documentId }) => {
+const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, documentId, operation }) => {
 	if (!link) return link;
 
 	// if not a resource return original value
@@ -21,6 +21,11 @@ const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, d
 
 	// If falsy value return link
 	if (!link.value) return link;
+
+	// 
+	if (!operation.params.depth || operation.params.depth === 0) {
+		return link;
+	}
 
 	const { rizom, locale } = event.locals;
 
@@ -39,7 +44,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, d
 				});
 		}
 	}
-	
+
 	const [error, doc] = await trycatch(getRessource(link.type as PrototypeSlug));
 
 	if (doc && doc.url) {
@@ -48,7 +53,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, d
 	}
 
 	if (error instanceof RizomError && error.code === RizomError.NOT_FOUND) {
-		logger.warn(`Link field : ${link.type} ${link.value || '?' } not found`);
+		logger.warn(`Link field : ${link.type} ${link.value || '?'} not found`);
 		return link;
 	}
 
