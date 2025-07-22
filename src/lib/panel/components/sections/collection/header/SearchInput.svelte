@@ -44,12 +44,12 @@
 		}
 	}
 
-	@container (min-width: 640px) {
+	@container (min-width: 720px) {
 		.rz-header-search-input {
 			display: flex;
 		}
 	}
-	
+
 	.rz-header-search-input__icon {
 		position: absolute;
 		left: var(--rz-size-3);

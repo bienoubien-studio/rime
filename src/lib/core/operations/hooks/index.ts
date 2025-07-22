@@ -1,11 +1,11 @@
-import type { RequestEvent } from '@sveltejs/kit';
-import type { PrototypeSlug } from '$lib/types.js';
-import type { Docs, DocType, RawDoc } from '$lib/core/types/doc.js';
-import type { DeepPartial, Dic } from '$lib/util/types.js';
-import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
-import type { RegisterArea, RegisterCollection } from 'rizom';
-import type { OperationQuery } from '$lib/core/types/index.js';
 import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { Docs, DocType, RawDoc } from '$lib/core/types/doc.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+import type { PrototypeSlug } from '$lib/types.js';
+import type { DeepPartial, Dic } from '$lib/util/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import type { RegisterArea, RegisterCollection } from 'rizom';
 import type { ConfigMap } from '../configMap/types.js';
 
 // Operation and timing types

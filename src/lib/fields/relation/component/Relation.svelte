@@ -1,22 +1,21 @@
 <script lang="ts">
-	import { moveItem } from '$lib/util/array.js';
-	import { isUploadConfig } from '$lib/util/config.js';
-	import Upload from './upload/Upload.svelte';
-	import Default from './default/Default.svelte';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { Field } from '$lib/panel/components/fields/index.js';
-	import { snapshot } from '$lib/util/state.js';
-	import { getValueAtPath } from '$lib/util/object.js';
-	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
-	import { getCollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import type { Relation } from '$lib/adapter-sqlite/relations.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { getCollectionContext } from '$lib/panel/context/collection.svelte.js';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { moveItem } from '$lib/util/array.js';
+	import { isUploadConfig } from '$lib/util/config.js';
+	import { getValueAtPath } from '$lib/util/object.js';
+	import { snapshot } from '$lib/util/state.js';
+	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
 	import type { RelationField } from '../index';
+	import Default from './default/Default.svelte';
 	import type { RelationFieldItem } from './types.js';
-	import type { RelationValue } from '$lib/fields/types.js';
+	import Upload from './upload/Upload.svelte';
 
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };

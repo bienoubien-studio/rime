@@ -122,7 +122,7 @@
 		</AddItemButton>
 
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
-			<Button onclick={field.setValueFromDefaultLocale} variant="secondary">
+			<Button size="sm" onclick={field.setValueFromDefaultLocale} variant="secondary">
 				{t__('fields.get_data_from')}
 				{locale.defaultCode}
 			</Button>
