@@ -1,8 +1,8 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { type RegisterArea } from '$lib/index.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 type FindArgs = {
 	locale?: string | undefined;

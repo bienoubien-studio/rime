@@ -1,9 +1,8 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { RawDoc } from '$lib/core/types/doc.js';
-import type { OperationQuery } from '$lib/core/types/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
+import type { OperationQuery } from '$lib/core/types/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
 import type { RegisterCollection } from 'rizom';
 
 type FindArgs = {
@@ -35,6 +34,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 			locale,
 			select,
 			draft,
+			depth
 		}
 	};
 	

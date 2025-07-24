@@ -1,8 +1,8 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
-import type { RegisterCollection } from '$lib/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { RegisterCollection } from '$lib/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 type Args = {
 	id: string;
@@ -25,6 +25,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 			id,
 			versionId,
 			locale,
+			depth,
 			draft,
 			select
 		},
