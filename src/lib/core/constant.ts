@@ -1,6 +1,3 @@
-export const PACKAGE_NAME = 'rizom';
-
-
 export const VERSIONS_STATUS = {
 	DRAFT: 'draft',
 	PUBLISHED: 'published'

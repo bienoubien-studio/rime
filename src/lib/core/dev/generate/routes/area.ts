@@ -1,4 +1,4 @@
-import { PACKAGE_NAME } from '$lib/core/constant.js';
+import { PACKAGE_NAME } from '$lib/core/constant.server.js';
 import { TScastVersionSlug, type Routes } from './util.js';
 
 /**

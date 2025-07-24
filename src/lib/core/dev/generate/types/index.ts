@@ -1,4 +1,4 @@
-import { PACKAGE_NAME } from '$lib/core/constant.js';
+import { PACKAGE_NAME } from '$lib/core/constant.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { BlocksBuilder } from '$lib/fields/blocks/index.js';
 import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';

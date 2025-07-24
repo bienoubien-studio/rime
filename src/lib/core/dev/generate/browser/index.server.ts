@@ -1,15 +1,17 @@
-import { logger } from '$lib/core/logger/index.server.js';
-import cache from '../../cache/index.js';
 import type { CompiledConfig } from '$lib/core/config/types/index.js';
-import type { FieldsComponents } from '$lib/panel/types.js';
+import * as CONSTANTS from '$lib/core/constant.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import type { FieldsComponents } from '$lib/panel/types.js';
+import cache from '../../cache/index.js';
+
+import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 import {
 	normalizeFilePath,
 	normalizePnpmPath,
 	normalizeRizomImport,
 	removeLeadingSlash
 } from './normalize-path.server.js';
-import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 
 let functionRegistry = new Map<string, string>();
 let importRegistry = new Map<string, string>();
@@ -50,7 +52,7 @@ function shouldIncludeInBrowser(key: string, value: any, parentKey: string = '')
 		// Generic patterns
 		'.*.server' // Exclude any path ending with server
 	];
-	
+
 	// Check if path matches any exclude pattern
 	if (excludePatterns.some((pattern) => new RegExp(pattern).test(fullPath))) {
 		return false;
@@ -115,6 +117,20 @@ function cleanViteImports(str: string) {
 		if (match.endsWith('.access')) needsAccess = true;
 		if (match.endsWith('.validate')) needsValidate = true;
 	});
+
+	// replace constants with property access
+	const constantsRegExp = new RegExp(`__vite_ssr_import_\\d+__\\.(${Object.keys(CONSTANTS).join('|')}).(\\w+)`, 'g');
+	str = str.replace(constantsRegExp, (_, constantKey, propertyKey) => {
+		const constantValue = CONSTANTS[constantKey as keyof typeof CONSTANTS];
+		if (constantValue && typeof constantValue === 'object' && propertyKey in constantValue) {
+			return JSON.stringify(constantValue[propertyKey as keyof typeof constantValue]);
+		}
+		return _; // Return original if property not found
+	});
+	
+	// replace constants without property access
+	const regExp = new RegExp(`__vite_ssr_import_\\d+__\\.(${Object.keys(CONSTANTS).join('|')})`, 'g');
+	str = str.replace(regExp, (_, key) => JSON.stringify(CONSTANTS[key as keyof typeof CONSTANTS]));
 
 	if (str.includes('validate.')) {
 		needsValidate = true;
@@ -223,6 +239,11 @@ type CompiledConfigWithBluePrints = CompiledConfig & {
 // Main build function
 const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
 	const content = buildConfigString(config);
+	if(content.includes('__vite_ssr_import')){
+		cache.delete('config')
+		console.log(content)
+		throw new Error('Unhandled module __vite_ssr_import_d+__')
+	}
 	if (cache.get('config.browser') !== content) {
 		cache.set('config.browser', content);
 		logger.info('[✓] Browser config built');
