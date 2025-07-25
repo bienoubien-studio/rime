@@ -1,17 +1,17 @@
 <script lang="ts">
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import Button from '../../ui/button/button.svelte';
-	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
-	import { Copy, History, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
-	import { t__ } from '../../../../core/i18n/index.js';
-	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { env } from '$env/dynamic/public';
-	import { goto } from '$app/navigation';
+	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { toast } from 'svelte-sonner';
-	import { getValueAtPath, omitId, setValueAtPath } from '$lib/util/object.js';
+	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { getValueAtPath, isObjectLiteral, setValueAtPath } from '$lib/util/object.js';
 	import { trycatchFetch } from '$lib/util/trycatch.js';
+	import { Copy, History, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
+	import { toast } from 'svelte-sonner';
+	import { t__ } from '../../../../core/i18n/index.js';
+	import Button from '../../ui/button/button.svelte';
 
 	type Props = { form: DocumentFormContext };
 
@@ -20,8 +20,8 @@
 	let deleteConfirmOpen = $state(false);
 	let dupplicateConfirmOpen = $state(false);
 	const isCollection = $derived(form.config.type === 'collection');
-	const allowDuplicate = $derived(form.config.type === 'collection' && !form.config.auth && !form.config.upload)
-	
+	const allowDuplicate = $derived(form.config.type === 'collection' && !form.config.auth && !form.config.upload);
+
 	function handleNewDraft() {
 		if (form.readOnly || !form.element) return;
 		const saveButton = form.element.querySelector('button[data-submit]') as HTMLButtonElement;
@@ -71,9 +71,12 @@
 		if (Array.isArray(obj)) {
 			return obj.map((item) => prepareDuplicate(item));
 		}
-		if (obj && typeof obj === 'object') {
+		
+		if (isObjectLiteral(obj)) {
 			return Object.entries(obj)
-				.filter(([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'locale')
+				.filter(
+					([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'locale'
+				)
 				.reduce(
 					(acc, [key, value]) => ({
 						...acc,
@@ -82,13 +85,13 @@
 					{}
 				);
 		}
+
 		return obj;
 	};
 
 	async function duplicate() {
-		
 		let data = prepareDuplicate(form.doc);
-
+		
 		const title = getValueAtPath(form.config.asTitle, data);
 		data = setValueAtPath(form.config.asTitle, data, title + ' (copy)');
 		const url = `/api/${form.config.slug}`;
@@ -107,68 +110,68 @@
 </script>
 
 {#if form.config.versions || form.config.type === 'collection'}
-<DropdownMenu.Root>
-	<DropdownMenu.Trigger>
-		{#snippet child({ props })}
-			<Button icon={Settings} size="icon-sm" variant="secondary" {...props} />
-		{/snippet}
-	</DropdownMenu.Trigger>
+	<DropdownMenu.Root>
+		<DropdownMenu.Trigger>
+			{#snippet child({ props })}
+				<Button icon={Settings} size="icon-sm" variant="secondary" {...props} />
+			{/snippet}
+		</DropdownMenu.Trigger>
 
-	<DropdownMenu.Portal>
-		<DropdownMenu.Content align="end">
-			{#if form.config.versions}
-				<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
-					<History size="12" />
-					{t__('common.versions_history')}
-				</DropdownMenu.Item>
-			{/if}
-
-			{#if form.config.versions && form.config.versions.draft && form.doc.status === VERSIONS_STATUS.PUBLISHED}
-				<DropdownMenu.Item onclick={() => handleNewDraft()}>
-					<Pickaxe size="12" />
-					{t__('common.save_new_draft')}
-				</DropdownMenu.Item>
-			{/if}
-
-			{#if form.config.type === 'collection'}
-				{#if allowDuplicate}
-					<DropdownMenu.Item onclick={handleDuplicate}>
-						<Copy size="12" />
-						{t__('common.duplicate')}
+		<DropdownMenu.Portal>
+			<DropdownMenu.Content align="end">
+				{#if form.config.versions}
+					<DropdownMenu.Item disabled={isVersionPage} onclick={() => handleViewVersion()}>
+						<History size="12" />
+						{t__('common.versions_history')}
 					</DropdownMenu.Item>
 				{/if}
-				<DropdownMenu.Item onclick={() => (deleteConfirmOpen = true)}>
-					<Trash2 size="12" />
-					{t__('common.delete')}
-				</DropdownMenu.Item>
-			{/if}
-		</DropdownMenu.Content>
-	</DropdownMenu.Portal>
-</DropdownMenu.Root>
 
-<Dialog.Root bind:open={deleteConfirmOpen}>
-	<Dialog.Content>
-		<Dialog.Header>
-			{t__('common.delete_dialog_title')}
-		</Dialog.Header>
-		<p>{t__('common.delete_dialog_text')}</p>
-		<Dialog.Footer --rz-justify-content="space-between">
-			<Button onclick={handleDelete}>Delete</Button>
-			<Button onclick={() => (deleteConfirmOpen = false)} variant="secondary">Cancel</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+				{#if form.config.versions && form.config.versions.draft && form.doc.status === VERSIONS_STATUS.PUBLISHED}
+					<DropdownMenu.Item onclick={() => handleNewDraft()}>
+						<Pickaxe size="12" />
+						{t__('common.save_new_draft')}
+					</DropdownMenu.Item>
+				{/if}
 
-<Dialog.Root bind:open={dupplicateConfirmOpen}>
-	<Dialog.Content>
-		<Dialog.Header>
-			{t__('common.unsaved_dialog_title')}
-		</Dialog.Header>
-		<p>{t__('common.unsaved_dialog_text')}</p>
-		<Dialog.Footer --rz-justify-content="space-between">
-			<Button onclick={duplicate}>Duplicate</Button>
-			<Button onclick={() => (dupplicateConfirmOpen = false)} variant="secondary">Cancel</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+				{#if form.config.type === 'collection'}
+					{#if allowDuplicate}
+						<DropdownMenu.Item onclick={handleDuplicate}>
+							<Copy size="12" />
+							{t__('common.duplicate')}
+						</DropdownMenu.Item>
+					{/if}
+					<DropdownMenu.Item onclick={() => (deleteConfirmOpen = true)}>
+						<Trash2 size="12" />
+						{t__('common.delete')}
+					</DropdownMenu.Item>
+				{/if}
+			</DropdownMenu.Content>
+		</DropdownMenu.Portal>
+	</DropdownMenu.Root>
+
+	<Dialog.Root bind:open={deleteConfirmOpen}>
+		<Dialog.Content>
+			<Dialog.Header>
+				{t__('common.delete_dialog_title')}
+			</Dialog.Header>
+			<p>{t__('common.delete_dialog_text')}</p>
+			<Dialog.Footer --rz-justify-content="space-between">
+				<Button onclick={handleDelete}>Delete</Button>
+				<Button onclick={() => (deleteConfirmOpen = false)} variant="secondary">Cancel</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
+
+	<Dialog.Root bind:open={dupplicateConfirmOpen}>
+		<Dialog.Content>
+			<Dialog.Header>
+				{t__('common.unsaved_dialog_title')}
+			</Dialog.Header>
+			<p>{t__('common.unsaved_dialog_text')}</p>
+			<Dialog.Footer --rz-justify-content="space-between">
+				<Button onclick={duplicate}>Duplicate</Button>
+				<Button onclick={() => (dupplicateConfirmOpen = false)} variant="secondary">Cancel</Button>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 {/if}
