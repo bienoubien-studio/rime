@@ -41,6 +41,8 @@ export default {
 	select_all: 'Tout sélectionner',
 	sendPasswordResetLink: 'Envoyer un lien de réinitialisation',
 	signin: 'Se connecter',
+	unsaved_dialog_title: 'Modification(s) non-enregistrée(s)',
+	unsaved_dialog_text: 'Il y a des modifications non-enregistrées pour ce document.',
 	versions_history: 'Historique des versions',
 	versions: 'Versions',
 	view_page: 'Voir la page',

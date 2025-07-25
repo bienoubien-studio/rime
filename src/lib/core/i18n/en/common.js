@@ -42,6 +42,8 @@ export default {
 	select_all: 'Select all',
 	sendPasswordResetLink: 'Send a password reset link',
 	signin: 'Sign In',
+	unsaved_dialog_title: 'Changes unsaved',
+	unsaved_dialog_text: 'There are unsaved modifications in the document.',
 	versions_history: 'Versions history',
 	view_page: 'View page',
 	view_site: 'View website',
