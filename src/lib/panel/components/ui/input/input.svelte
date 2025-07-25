@@ -17,6 +17,8 @@
 <style type="postcss">
 	:root{
 		--rz-input-border-color: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-6) / 0.6));
+		--rz-input-padding-x: var(--rz-size-3);
+		--rz-input-padding-y: var(--rz-size-1);
 	}
 	
 	.rz-input {
@@ -27,8 +29,7 @@
 		width: 100%;
 		border-radius: var(--rz-radius-lg);
 		transition: all 0.1s ease-in-out;
-		@mixin px var(--rz-size-3);
-		@mixin py var(--rz-size-1);
+		padding: var(--rz-input-padding-y) var(--rz-input-padding-x);	
 	}
 
 	input.rz-input:is(:-webkit-autofill, :autofill) {
@@ -65,7 +66,4 @@
 		@mixin ring var(--rz-color-alert);
 	}
 
-	/* .rz-input:-internal-autofill-selected {
-		background-color: hsl(var(--rz-color-input) / 100) !important;
-	} */
 </style>

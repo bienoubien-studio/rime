@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import type { TextFieldProps } from './props.js';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { capitalize } from '$lib/util/string.js';
+	import type { TextFieldProps } from './props.js';
 
 	const { path, config, type = 'text', form, icon: Icon }: TextFieldProps = $props();
 	const field = $derived(form.useField(path || config.name, config));
@@ -49,7 +49,6 @@
 		}
 		.rz-input {
 			font-size: var(--rz-text-md);
-			padding: 0 var(--rz-size-5);
 		}
 	}
 

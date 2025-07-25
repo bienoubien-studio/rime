@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { Mail } from '@lucide/svelte';
-	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
-	import type { EmailFieldProps } from './props';
-	import { capitalize } from '$lib/util/string.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { Mail } from '@lucide/svelte';
+	import type { EmailFieldProps } from './props';
 
 	const { path, config, form }: EmailFieldProps = $props();
 
@@ -55,7 +55,6 @@
 		}
 		.rz-input {
 			font-size: var(--rz-text-md);
-			padding: 0 var(--rz-size-5);
 		}
 	}
 
@@ -63,9 +62,8 @@
 		position: relative;
 		display: flex;
 		align-items: center;
-		:global(.rz-input) {
-			padding: 0 0 0 2rem;
-		}
+		--rz-input-padding-x: 2rem;
+		
 		:global(.rz-button) {
 			position: absolute;
 			right: var(--rz-size-1-5);
