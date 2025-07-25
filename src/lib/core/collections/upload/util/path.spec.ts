@@ -1,6 +1,6 @@
+import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { expect, test } from 'vitest';
 import { getSegments } from './path.js';
-import { UPLOAD_PATH } from '$lib/core/constant.js';
 
 test('should return root', () => {
   const res = getSegments(UPLOAD_PATH.ROOT_NAME)
@@ -39,17 +39,17 @@ test('should handle paths with hyphens', () => {
 })
 
 test('should handle paths with underscores', () => {
-  const res = getSegments('root:foo_caca:bar-boz')
-  expect(res.parent).toBe('root:foo_caca')
+  const res = getSegments('root:foo_ouep:bar-boz')
+  expect(res.parent).toBe('root:foo_ouep')
   expect(res.name).toBe('bar-boz')
-  expect(res.path).toBe('root:foo_caca:bar-boz')
+  expect(res.path).toBe('root:foo_ouep:bar-boz')
 })
 
 test('should handle paths with spaces', () => {
-  const res = getSegments('root:foo caca:bar-boz-biz_baz bez')
-  expect(res.parent).toBe('root:foo caca')
+  const res = getSegments('root:foo ouep:bar-boz-biz_baz bez')
+  expect(res.parent).toBe('root:foo ouep')
   expect(res.name).toBe('bar-boz-biz_baz bez')
-  expect(res.path).toBe('root:foo caca:bar-boz-biz_baz bez')
+  expect(res.path).toBe('root:foo ouep:bar-boz-biz_baz bez')
 })
 
 // Test for trailing separator handling

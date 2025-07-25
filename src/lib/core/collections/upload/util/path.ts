@@ -37,15 +37,17 @@ export function getSegments(path?: UploadPath | null): {
 } {
 	// Use nullish coalescing to handle both undefined and null
 	const safePath = path ?? UPLOAD_PATH.ROOT_NAME;
-
+	
 	// Validate and normalize the path
 	const isValid = validatePath(safePath);
 	if (typeof isValid === 'string') {
 		throw new RizomError(RizomError.BAD_REQUEST, isValid);
 	}
 	
-	const segments = safePath.split(UPLOAD_PATH.SEPARATOR);
-
+	const segments = safePath.split(UPLOAD_PATH.SEPARATOR)
+		.filter( s => s !== UPLOAD_PATH.SEPARATOR)
+		.filter( s => !!s )
+	
 	if (segments.length <= 1) {
 		return {
 			name: UPLOAD_PATH.ROOT_NAME,
@@ -57,11 +59,13 @@ export function getSegments(path?: UploadPath | null): {
 	const name = segments[segments.length - 1];
 	// Only create parent if we have more than one segment
 	const parent = segments.length > 1 ? segments.slice(0, -1).join(UPLOAD_PATH.SEPARATOR) : null;
-
+	// Reconstruct the normalized path from filtered segments
+	const normalizedPath = segments.join(UPLOAD_PATH.SEPARATOR) as UploadPath;
+	
 	return {
 		name,
 		parent: parent as UploadPath,
-		path: safePath
+		path: normalizedPath
 	};
 }
 
