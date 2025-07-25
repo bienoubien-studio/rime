@@ -1,10 +1,10 @@
 <script lang="ts">
-	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { t__ } from '$lib/core/i18n/index.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import type { PrototypeSlug } from '$lib/types';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	type Ressource = {
 		label: string;
@@ -138,7 +138,7 @@
 				left: 0;
 				right: 0;
 				top: var(--rz-size-12);
-				z-index: 10;
+				z-index: 20;
 				box-shadow: var(--rz-shadow-md);
 			}
 

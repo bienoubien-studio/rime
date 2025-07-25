@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { moveItem } from '$lib/util/array';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import { Field } from '$lib/panel/components/fields/index.js';
-	import { useSortable } from '$lib/panel/util/Sortable.js';
-	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
-	import type { SelectFieldProps } from './props.js';
 	import { t__ } from '$lib/core/i18n/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
+	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
+	import { useSortable } from '$lib/panel/util/Sortable.js';
+	import { moveItem } from '$lib/util/array';
+	import type { SelectFieldProps } from './props.js';
 
 	const { path, config, form }: SelectFieldProps = $props();
 
@@ -172,7 +172,7 @@
 			left: 0;
 			right: 0;
 			top: var(--rz-size-12);
-			z-index: 10;
+			z-index: 20;
 			box-shadow: var(--rz-shadow-md);
 		}
 

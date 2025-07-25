@@ -174,7 +174,7 @@
 					left: 0;
 					right: 0;
 					top: var(--rz-size-12);
-					z-index: 10;
+					z-index: 20;
 					border-radius: var(--rz-radius-md);
 					box-shadow: var(--rz-shadow-md);
 				}
