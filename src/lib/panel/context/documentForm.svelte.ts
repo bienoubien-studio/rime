@@ -1,31 +1,31 @@
-import { flatten } from 'flat';
+import { applyAction, deserialize } from '$app/forms';
+import { invalidateAll } from '$app/navigation';
+import { page } from '$app/state';
+import { env } from '$env/dynamic/public';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import { PARAMS } from '$lib/core/constant.js';
+import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';
+import type { ClientField, FormField } from '$lib/fields/types.js';
+import { getFieldConfigByPath } from '$lib/util/config.js';
+import { normalizeFieldPath } from '$lib/util/field.js';
+import { random } from '$lib/util/index.js';
+import { isObjectLiteral } from '$lib/util/object.js';
+import type { Dic } from '$lib/util/types';
+import type { ActionResult } from '@sveltejs/kit';
 import cloneDeep from 'clone-deep';
 import { diff } from 'deep-object-diff';
-import { applyAction, deserialize } from '$app/forms';
-import { toast } from 'svelte-sonner';
-import { moveItem } from '../../util/array.js';
-import { invalidateAll } from '$app/navigation';
+import { flatten } from 'flat';
 import { getContext, setContext } from 'svelte';
-import { setErrorsContext } from './errors.svelte.js';
-import { getCollectionContext } from './collection.svelte.js';
-import { getUserContext } from './user.svelte.js';
+import { toast } from 'svelte-sonner';
+import { t__ } from '../../core/i18n/index.js';
+import { moveItem } from '../../util/array.js';
 import { getValueAtPath, omit, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
-import { getLocaleContext } from './locale.svelte.js';
-import type { ActionResult } from '@sveltejs/kit';
-import type { FormField } from '$lib/fields/types.js';
-import type { Dic } from '$lib/util/types';
-import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
-import type { AreaSlug, TreeBlock, GenericDoc, GenericBlock } from '$lib/core/types/doc.js';
-import { isObjectLiteral } from '$lib/util/object.js';
 import { API_PROXY, getAPIProxyContext } from './api-proxy.svelte.js';
-import { t__ } from '../../core/i18n/index.js';
-import { getFieldConfigByPath } from '$lib/util/config.js';
-import { env } from '$env/dynamic/public';
-import { random } from '$lib/util/index.js';
-import { page } from '$app/state';
-import { PARAMS } from '$lib/core/constant.js';
-import type { ClientField } from '$lib/fields/types.js';
+import { getCollectionContext } from './collection.svelte.js';
+import { setErrorsContext } from './errors.svelte.js';
+import { getLocaleContext } from './locale.svelte.js';
+import { getUserContext } from './user.svelte.js';
 
 function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	initial,
@@ -56,10 +56,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const nestedLevel = initLevel();
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
-	const titleContext = getContext<{ value: string }>('title')
+	const titleContext = getContext<{ value: string }>('title');
 	const initialTitle = initTitle();
 	let title = $state(initialTitle);
-
 
 	const apiProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 
@@ -71,13 +70,13 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 	function initTitle() {
 		if (documentConfig.type === 'area') {
-			titleContext.value = documentConfig.label
+			titleContext.value = documentConfig.label;
 			return documentConfig.label;
 		} else {
 			$effect(() => {
 				title = getValueAtPath(documentConfig.asTitle, doc) || '[untitled]';
-				if(nestedLevel === 0){
-					titleContext.value = title
+				if (nestedLevel === 0) {
+					titleContext.value = title;
 				}
 			});
 			const initialTitle = getValueAtPath<string>(documentConfig.asTitle, doc);
@@ -182,7 +181,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			let items = cloneDeep(snapshot(getItems()));
 
 			const getArrayAndIndex = (path: string) => {
-				const parts = path.split('.');
+				const parts = normalizeFieldPath(path).split('.');
 				let current = items;
 				let parentArray = items;
 				const finalIndex = parseInt(parts[parts.length - 1]);
@@ -350,7 +349,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			if (!config) throw new Error(`can't find config for field : ${path}`);
 		}
 
-		path = path || config.name;
+		path = path ? normalizeFieldPath(path) : config.name;
 
 		const parts = $derived(path.split('.'));
 
@@ -540,8 +539,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return formData;
 	};
 
-	
-	
 	const submit = async (action: string) => {
 		if (processing) return;
 		processing = true;
@@ -551,22 +548,21 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			body: await prepareData()
 		}).then(async (r) => deserialize(await r.text()));
 
-		async function handleSuccess(data?:FormSuccessData) {
-
+		async function handleSuccess(data?: FormSuccessData) {
 			const redirect = data?.redirectUrl || false;
 			const message = data?.message || t__('common.generic_success');
-			
+
 			if (redirect) {
-				if(beforeRedirect){
-					const shouldRedirect = await beforeRedirect(data)
+				if (beforeRedirect) {
+					const shouldRedirect = await beforeRedirect(data);
 					toast.success(message);
-					if(!shouldRedirect) return
+					if (!shouldRedirect) return;
 				}
 				return applyAction({ type: 'redirect', location: redirect, status: 301 });
 			}
-			
+
 			toast.success(message);
-			
+
 			// Assign document
 			doc = (data?.document || doc) as T;
 
@@ -752,7 +748,7 @@ export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<
 
 type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
 type MoveBlock = (from: number, to: number) => void;
-export type FormSuccessData = { redirectUrl?: string; document?: GenericDoc; message?: string }
+export type FormSuccessData = { redirectUrl?: string; document?: GenericDoc; message?: string };
 
 type Args<T> = {
 	element: () => HTMLFormElement | undefined;

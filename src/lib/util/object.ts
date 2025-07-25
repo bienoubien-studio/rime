@@ -1,4 +1,5 @@
 import type { Dic, WithRequired } from '$lib/util/types';
+import { normalizeFieldPath } from './field.js';
 
 /**
  * Creates a new object with only the specified keys from the original object.
@@ -241,6 +242,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
  * getValueAtPath('user.phone', { user: { address: { city: "New York" } } });
  */
 export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
+	path = normalizeFieldPath(path)
 	const parts = path.split('.');
 	let current = obj;
 	for (const part of parts) {
@@ -273,6 +275,7 @@ export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
  * setValueAtPath('user.phone', { user: {} }, '555-1234');
  */
 export const setValueAtPath = <T extends Dic>(path: string, obj: T, value: unknown): T => {
+	path = normalizeFieldPath(path)
 	const parts = path.split('.');
 
 	// Create a shallow copy of the root object
@@ -338,6 +341,7 @@ export const setValueAtPath = <T extends Dic>(path: string, obj: T, value: unkno
  * deleteValueAtPath({ user: { name: "John", age: 30 } }, 'user.age');
  */
 export function deleteValueAtPath<T>(obj: T, path: string): T {
+	path = normalizeFieldPath(path)
 	const parts = path.split('.');
 	const last = parts.pop()!;
 

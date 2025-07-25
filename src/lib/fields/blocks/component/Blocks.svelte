@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { GenericBlock } from '$lib/core/types/doc.js';
+	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import { capitalize } from '$lib/util/string.js';
+	import Sortable from 'sortablejs';
+	import { onDestroy } from 'svelte';
 	import AddBlockButton from './AddBlockButton.svelte';
 	import Block from './Block.svelte';
-	import { Field } from '$lib/panel/components/fields/index.js';
-	import { useSortable } from '$lib/panel/util/Sortable.js';
-	import { onDestroy } from 'svelte';
-	import Sortable from 'sortablejs';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-	import type { GenericBlock } from '$lib/core/types/doc.js';
 	import type { BlocksProps } from './props.js';
-	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
 
 	const { path, config, form }: BlocksProps = $props();
 
@@ -110,7 +110,7 @@
 					duplicateBlock={() => blockState.duplicateBlock(index)}
 					{form}
 					{sorting}
-					path="{path}.{index}"
+					path="{path}.{index}:{block.type}"
 					config={getConfigByBlockType(block.type)}
 				/>
 			{/each}

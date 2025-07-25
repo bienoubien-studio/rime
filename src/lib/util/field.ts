@@ -1,10 +1,14 @@
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import type { Relation } from '../adapter-sqlite/relations.js';
-import { hasProps, isObjectLiteral } from './object.js';
+import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+import type { GroupFieldRaw } from '$lib/fields/group/index.js';
+import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
+import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
 import type {
 	BlocksField,
 	ComponentField,
 	DateField,
+	Field,
+	FormField,
 	GroupField,
 	RelationField,
 	SelectField,
@@ -12,12 +16,9 @@ import type {
 	TabsField
 } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types.js';
-import type { FormField, Field } from '$lib/fields/types.js';
-import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-import type { GroupFieldRaw } from '$lib/fields/group/index.js';
-import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
-import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
 import type { JSONContent } from '@tiptap/core';
+import type { Relation } from '../adapter-sqlite/relations.js';
+import { hasProps, isObjectLiteral } from './object.js';
 
 /**
  * Checks if a field is a presentative field (currently only separator fields).
@@ -260,3 +261,15 @@ export const emptyValuesFromFieldConfig = <T extends FormField>(arr: T[]): Dic =
 		})
 	);
 };
+
+/**
+ * Remove block type in path
+ * @example
+ * normalizePath('foo.bar.0:content.baz')
+ * 
+ * // return foo.bar.0.baz
+ */
+export const normalizeFieldPath = (path:string) => {
+	const regExpBlockType = /:[a-zA-Z0-9]+/g
+	return path.replace(regExpBlockType, '')
+}
