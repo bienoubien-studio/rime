@@ -1,20 +1,19 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import UploadHeader from './upload-header/UploadHeader.svelte';
-	import RenderFields from '../../fields/RenderFields.svelte';
-	import Header from './Header.svelte';
-	import { setDocumentFormContext, type FormSuccessData } from '$lib/panel/context/documentForm.svelte';
-	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import CurrentlyEdited from './CurrentlyEdited.svelte';
-	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { beforeNavigate } from '$app/navigation';
-	import FloatingUI from './FloatingUI.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import AuthFooter from './AuthFooter.svelte';
 	import type { GenericDoc } from '$lib/core/types/doc';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { setDocumentFormContext, type FormSuccessData } from '$lib/panel/context/documentForm.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { getUserContext } from '$lib/panel/context/user.svelte';
+	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
+	import RenderFields from '../../fields/RenderFields.svelte';
 	import AuthApiKeyDialog from './AuthAPIKeyDialog.svelte';
+	import AuthFooter from './AuthFooter.svelte';
+	import CurrentlyEdited from './CurrentlyEdited.svelte';
+	import FloatingUI from './FloatingUI.svelte';
+	import Header from './Header.svelte';
+	import UploadHeader from './upload-header/UploadHeader.svelte';
 
 	type Props = {
 		doc: GenericDoc;
@@ -189,6 +188,7 @@
 		margin-left: calc(-1 * var(--rz-fields-padding));
 		margin-right: calc(-1 * var(--rz-fields-padding));
 		padding: var(--rz-size-5) var(--rz-page-gutter);
+		padding-bottom: var(--rz-size-24);
 	}
 	.rz-document__infos {
 		border-top: var(--rz-border);
