@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import type { TimeFieldProps } from './props';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import { Clock } from '@lucide/svelte';
+	import type { TimeFieldProps } from './props';
 
 	const { path, config, form }: TimeFieldProps = $props();
 	const field = $derived(form.useField(path || config.name, config));
@@ -39,16 +39,6 @@
 		:global {
 			.rz-input {
 				display: block;
-			}
-			@media (prefers-color-scheme: dark) {
-				.rz-input {
-					color-scheme: light;
-				}
-			}
-			@media (prefers-color-scheme: light) {
-				.rz-input {
-					color-scheme: dark;
-				}
 			}
 		}
 	}
