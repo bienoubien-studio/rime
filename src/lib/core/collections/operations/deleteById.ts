@@ -1,9 +1,8 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { GenericDoc, CollectionSlug } from '$lib/core/types/doc.js';
-import type { RegisterCollection } from '$lib/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 type DeleteArgs = {
 	id: string;
@@ -16,9 +15,9 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 	const { event, id, config, isSystemOperation } = args;
 	const { rizom } = event.locals;
 
-	let context: OperationContext<CollectionSlug> = { 
-		params: { id }, 
-		isSystemOperation 
+	let context: OperationContext<CollectionSlug> = {
+		params: { id },
+		isSystemOperation
 	};
 
 	for (const hook of config.hooks?.beforeOperation || []) {
@@ -38,7 +37,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 
 	for (const hook of config.hooks?.beforeDelete || []) {
 		const result = await hook({
-			doc: document as RegisterCollection[CollectionSlug],
+			doc: document,
 			config,
 			operation: 'delete',
 			event,
@@ -51,7 +50,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 
 	for (const hook of config.hooks?.afterDelete || []) {
 		const result = await hook({
-			doc: document as RegisterCollection[CollectionSlug],
+			doc: document,
 			config,
 			operation: 'delete',
 			event,

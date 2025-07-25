@@ -1,10 +1,10 @@
+import type { CompiledCollection } from '$lib/core/config/types';
+import { logger } from '$lib/core/logger/index.server';
+import type { Rizom } from '$lib/core/rizom.server';
+import type { GenericDoc } from '$lib/core/types/doc';
+import type { WithUpload } from '$lib/util/types';
 import { existsSync, unlink, unlinkSync } from 'fs';
 import path from 'path';
-import type { GenericDoc } from '$lib/core/types/doc';
-import type { CompiledCollection } from '$lib/core/config/types';
-import type { WithUpload } from '$lib/util/types';
-import type { Rizom } from '$lib/core/rizom.server';
-import { logger } from '$lib/core/logger/index.server';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;
