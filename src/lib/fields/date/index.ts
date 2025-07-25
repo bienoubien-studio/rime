@@ -1,8 +1,8 @@
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
-import DateComponent from './component/Date.svelte';
 import Cell from './component/Cell.svelte';
+import DateComponent from './component/Date.svelte';
 
 export const date = (name: string) => new DateFieldBuilder(name);
 
@@ -50,17 +50,6 @@ class DateFieldBuilder extends FormFieldBuilder<DateField> {
 		return this;
 	}
 
-	compile(): DateField {
-		if (!this.field.defaultValue) {
-			this.field.defaultValue = () => {
-				const date = new Date();
-				date.setHours(0, 0, 0, 0);
-				return date;
-			};
-		}
-
-		return super.compile();
-	}
 }
 
 /****************************************************/
