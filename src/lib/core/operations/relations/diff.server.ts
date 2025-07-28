@@ -1,4 +1,5 @@
 import type { BeforeOperationRelation, Relation } from '$lib/adapter-sqlite/relations.js';
+import { pathToRegex } from '$lib/util/field.js';
 
 export type RelationDiff = {
 	toAdd: BeforeOperationRelation[];
@@ -11,6 +12,14 @@ type Args = {
 	incomingRelations: BeforeOperationRelation[];
 	locale?: string;
 };
+
+const needUpdate = (existing: Relation, incoming: BeforeOperationRelation) =>
+	!(
+		existing.position === incoming.position &&
+		existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
+		existing.path === incoming.path &&
+		(incoming.locale ? existing.locale === incoming.locale : existing.locale === null)
+	);
 
 export const defineRelationsDiff = ({ existingRelations, incomingRelations, locale }: Args): RelationDiff => {
 	const toAdd: BeforeOperationRelation[] = [];
@@ -25,12 +34,13 @@ export const defineRelationsDiff = ({ existingRelations, incomingRelations, loca
 				(incoming.id && existing.id === incoming.id) ||
 				(!incoming.id &&
 					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
+					pathToRegex(existing.path).test(incoming.path) &&
 					(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 		);
 
 		if (existingMatch) {
-			// Only add to toUpdate if we haven't processed this ID yet
-			if (!processedIds.has(existingMatch.id!)) {
+			// Only add to toUpdate if we haven't processed this ID yet and if not all props are the same
+			if (!processedIds.has(existingMatch.id!) && needUpdate(existingMatch, incoming)) {
 				toUpdate.push({
 					...existingMatch,
 					path: incoming.path,
@@ -57,6 +67,7 @@ export const defineRelationsDiff = ({ existingRelations, incomingRelations, loca
 					(incoming.id && existing.id === incoming.id) ||
 					(!incoming.id &&
 						existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
+						pathToRegex(existing.path).test(incoming.path) &&
 						(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 			);
 		})

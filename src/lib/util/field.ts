@@ -273,3 +273,25 @@ export const normalizeFieldPath = (path:string) => {
 	const regExpBlockType = /:[a-zA-Z0-9]+/g
 	return path.replace(regExpBlockType, '')
 }
+
+/**
+ * Converts a path with numeric indices to a regex pattern
+ * Numbers between dots or between dot and colon are converted to \d+
+ *
+ * @example
+ * pathToRegex('some.0.path3') // matches 'some.\\d+.path3'
+ * pathToRegex('some.0:bar.path3') // matches 'some.\\d+:bar.path3'  
+ * pathToRegex('some.31.baz.bar:foo.youhou12') // matches 'some.\\d+.baz.bar:foo.youhou12'
+ * pathToRegex('some.31.baz.bar:foo.4.youhou12') // matches 'some.\\d+.baz.bar:foo.\\d+.youhou12'
+ */
+export function pathToRegex(path: string): RegExp {
+	// Escape special regex characters except dots and colons
+	const escaped = path.replace(/[\\^$*+?{}[\]|()]/g, '\\$&');
+	
+	// Replace numeric indices that are:
+	// - preceded by a dot: \.123
+	// - followed by a dot or colon: 123\. or 123:
+	const pattern = escaped.replace(/(?<=\.)(\d+)(?=[\.:])|\b(\d+)(?=[\.:])/g, '\\d+');
+	
+	return new RegExp(`^${pattern}$`);
+}
