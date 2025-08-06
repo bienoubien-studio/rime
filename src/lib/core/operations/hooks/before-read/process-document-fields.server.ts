@@ -11,14 +11,19 @@ export const processDocumentFields = Hooks.beforeRead( async (args) => {
 	
 	for (const [key, config] of Object.entries(configMap)) {
 
-		// Filter out possible undefined block
-		// Case : When in dev mode, if a block table is deleted in a migration, a blocks array value could includes undefined ex : 
-		// blocks: [ { ... }, undefined, { ... } ]
-		// Because blocks are populated based on path.position
 		if(config.type === 'blocks'){
 			const value = getValueAtPath<(GenericBlock | undefined)[]>(key, doc);
-			if( value && value.includes(undefined) ){
-				const withoutFalsyBlock = value.filter( b => Boolean(b)).map( (b, index) => ({
+			// Filter out possible undefined block or residual
+			// Case undefined : When in dev mode, if a block table is deleted in a migration, a blocks array value could includes undefined ex : 
+			// * blocks: [ { ... }, undefined, { ... } ]
+			// * Because blocks are populated based on path.position
+			// Case residual : a block type has been removed including relation, ex :
+			// * blocks: [ { id:..., values,... }, { image: {...}} ] 
+			// * the image has been placed but the block doesn't exist anymore
+			if( value ){
+				const withoutFalsyBlock = value
+					.filter( b => b && 'id' in b) // get only blocks that have .id
+					.map( (b, index) => ({
 					...b,
 					position: index
 				}))
@@ -45,5 +50,6 @@ export const processDocumentFields = Hooks.beforeRead( async (args) => {
 		}
 	}
 
+	
 	return { ...args, doc };
 });
