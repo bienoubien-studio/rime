@@ -1,16 +1,17 @@
-import type { Field } from '$lib/fields/types.js';
-import { isBlocksFieldRaw, isFormField, isTreeFieldRaw, isTabsFieldRaw, isGroupFieldRaw } from '$lib/util/field.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { Field } from '$lib/fields/types.js';
+import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from '$lib/util/field.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { buildTreeFieldsMap } from './buildTreeMap.server.js';
 import type { ConfigMap } from './types.js';
 
 export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Field[]) => {
 	let map: ConfigMap = {};
-	
+
 	const traverseData = (data: Dic | undefined, fields: Field[], basePath: string) => {
 		if (!data) return;
-		
+
 		basePath = basePath === '' ? basePath : `${basePath}.`;
 
 		for (const field of fields) {
@@ -34,9 +35,13 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 			if (isBlocksFieldRaw(field) && value && Array.isArray(value)) {
 				const blocks = value;
 				for (const [index, block] of blocks.entries()) {
-					const blockConfig = field.blocks.find((b) => b.name === block.type);
-					if (blockConfig) {
-						traverseData(block, blockConfig.fields, `${path}.${index}`);
+					try{
+						const blockConfig = field.blocks.find((b) => b.name === block.type);
+						if (blockConfig) {
+							traverseData(block, blockConfig.fields, `${path}.${index}`);
+						}
+					}catch(err:any){
+						logger.warn(`block at path ${path} and postition ${index} has been deleted`)
 					}
 				}
 			} else if (isTreeFieldRaw(field) && value && Array.isArray(value)) {
