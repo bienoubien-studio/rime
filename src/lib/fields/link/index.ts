@@ -6,6 +6,7 @@ import { trycatch } from '$lib/util/trycatch.js';
 import validate from '$lib/util/validate.js';
 import type { AreaSlug, CollectionSlug, PrototypeSlug } from '../../types.js';
 import { FormFieldBuilder } from '../builders/index.js';
+import Cell from './component/Cell.svelte';
 import LinkComp from './component/Link.svelte';
 import type { Link, LinkType } from './types.js';
 
@@ -22,7 +23,7 @@ const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, d
 	// If falsy value return link
 	if (!link.value) return link;
 
-	// 
+	//
 	if (!operation.params.depth || operation.params.depth === 0) {
 		return link;
 	}
@@ -76,6 +77,10 @@ class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 	get component() {
 		return LinkComp;
+	}
+	
+	get cell() {
+		return Cell;
 	}
 
 	_toType() {
