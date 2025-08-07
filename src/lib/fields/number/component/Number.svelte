@@ -1,9 +1,9 @@
 <script lang="ts">
-	import './number.css';
 	import { Field } from '$lib/panel/components/fields/index.js';
-	import { ChevronDown, ChevronUp } from '@lucide/svelte';
-	import type { NumberFieldProps } from './props';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { ChevronDown, ChevronUp } from '@lucide/svelte';
+	import './number.css';
+	import type { NumberFieldProps } from './props';
 
 	const { path, config, form }: NumberFieldProps = $props();
 
@@ -36,7 +36,7 @@
 {/snippet}
 
 <fieldset class="rz-number-field {config.className || ''}" use:root={field}>
-	<Field.Label {config} for={path || config.name} />
+	<Field.Label {config} for={path || config.name} />
 
 	<div class="rz-number-field__input-wrapper">
 		<input
@@ -56,11 +56,9 @@
 </fieldset>
 
 <style lang="postcss">
-	.rz-number-field {
-		width: 6rem;
-	}
-
+	
 	.rz-number-field__input-wrapper {
+		width: 6rem;
 		display: flex;
 		height: var(--rz-size-11);
 		align-items: center;
@@ -75,14 +73,12 @@
 		justify-content: center;
 		border-top-left-radius: var(--rz-radius-lg);
 		border-bottom-left-radius: var(--rz-radius-lg);
-		border: var(--rz-border);
+		border: 1px solid var(--rz-input-border-color);
 		text-align: center;
-		font-size: var(--rz-text-sm);
 		transition: all 0.2s ease;
 	}
 
 	.rz-number-field__input:focus-visible {
-		/* --rz-ring-offset: 1px; */
 		position: relative;
 		z-index: 10;
 		@mixin ring var(--rz-color-ring);
@@ -102,7 +98,7 @@
 		justify-content: center;
 		width: var(--rz-size-8);
 		flex: 1;
-		border-right: var(--rz-border);
+		border-right: 1px solid var(--rz-input-border-color);
 		transition: all 0.2s ease;
 	}
 
@@ -111,7 +107,6 @@
 	}
 
 	.rz-number-field__chevron:focus-visible {
-		/* --rz-ring-offset: 1px; */
 		@mixin ring var(--rz-color-ring);
 		position: relative;
 		z-index: 10;
@@ -119,14 +114,14 @@
 	}
 
 	.rz-number-field__chevron--up {
-		border-top: var(--rz-border);
+		border-top: 1px solid var(--rz-input-border-color);
 		border-top-right-radius: var(--rz-radius-lg);
-		border-bottom: var(--rz-border);
+		border-bottom: 1px solid var(--rz-input-border-color);
 	}
 
 	.rz-number-field__chevron--down {
 		border-bottom-right-radius: var(--rz-radius-lg);
-		border-bottom: var(--rz-border);
+		border-bottom: 1px solid var(--rz-input-border-color);
 	}
 
 	/* Chrome, Safari, Edge, Opera */
