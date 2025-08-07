@@ -232,32 +232,47 @@ export function toFormFields(prev: any[], curr: any) {
 /**
  * Creates an object with empty values based on field configurations.
  * Uses defaultValue if specified, otherwise undefined.
+ * Handles nested fields like groups and tabs recursively.
  *
  * @param arr - Array of form field configurations
  * @returns An object with field names as keys and empty/default values
  *
  * @example
- * // Returns { title: '', description: null }
+ * // Returns { title: '', attributes: { name: '', description: '' } }
  * emptyValuesFromFieldConfig([
  *   { name: 'title', type: 'text', defaultValue: '' },
- *   { name: 'description', type: 'text', defaultValue: null }
+ *   { name: 'attributes', type: 'group', fields: [
+ *     { name: 'name', type: 'text', defaultValue: '' },
+ *     { name: 'description', type: 'text', defaultValue: '' }
+ *   ]}
  * ]);
  */
 export const emptyValuesFromFieldConfig = <T extends FormField>(arr: T[]): Dic => {
-	return Object.assign(
-		{},
-		...arr.map((config) => {
+	return Object.fromEntries(
+		arr.map((config) => {
 			let emptyValue;
-			if ('defaultValue' in config) {
-				if (typeof config.defaultValue === 'function') {
-					emptyValue = config.defaultValue();
-				} else {
-					emptyValue = config.defaultValue;
-				}
+
+			// Handle group fields - create nested object structure
+			if (isGroupFieldRaw(config)) {
+				emptyValue = emptyValuesFromFieldConfig(config.fields.filter(isFormField));
 			}
-			return {
-				[config.name]: emptyValue
-			};
+			// Handle tabs fields - create nested object structure for each tab
+			else if (isTabsFieldRaw(config)) {
+				const tabsValue: Dic = {};
+				const tabs = config.tabs;
+				for (const tab of tabs) {
+					if ('fields' in tab) {
+						tabsValue[tab.name] = emptyValuesFromFieldConfig(tab.fields.filter(isFormField));
+					}
+				}
+				emptyValue = tabsValue;
+			}
+			// Handle default values
+			else if ('defaultValue' in config) {
+				emptyValue = typeof config.defaultValue === 'function' ? config.defaultValue() : config.defaultValue;
+			}
+
+			return [config.name, emptyValue];
 		})
 	);
 };
@@ -266,13 +281,13 @@ export const emptyValuesFromFieldConfig = <T extends FormField>(arr: T[]): Dic =
  * Remove block type in path
  * @example
  * normalizePath('foo.bar.0:content.baz')
- * 
+ *
  * // return foo.bar.0.baz
  */
-export const normalizeFieldPath = (path:string) => {
-	const regExpBlockType = /:[a-zA-Z0-9]+/g
-	return path.replace(regExpBlockType, '')
-}
+export const normalizeFieldPath = (path: string) => {
+	const regExpBlockType = /:[a-zA-Z0-9]+/g;
+	return path.replace(regExpBlockType, '');
+};
 
 /**
  * Converts a path with numeric indices to a regex pattern
@@ -280,18 +295,18 @@ export const normalizeFieldPath = (path:string) => {
  *
  * @example
  * pathToRegex('some.0.path3') // matches 'some.\\d+.path3'
- * pathToRegex('some.0:bar.path3') // matches 'some.\\d+:bar.path3'  
+ * pathToRegex('some.0:bar.path3') // matches 'some.\\d+:bar.path3'
  * pathToRegex('some.31.baz.bar:foo.youhou12') // matches 'some.\\d+.baz.bar:foo.youhou12'
  * pathToRegex('some.31.baz.bar:foo.4.youhou12') // matches 'some.\\d+.baz.bar:foo.\\d+.youhou12'
  */
 export function pathToRegex(path: string): RegExp {
 	// Escape special regex characters except dots and colons
 	const escaped = path.replace(/[\\^$*+?{}[\]|()]/g, '\\$&');
-	
+
 	// Replace numeric indices that are:
 	// - preceded by a dot: \.123
 	// - followed by a dot or colon: 123\. or 123:
 	const pattern = escaped.replace(/(?<=\.)(\d+)(?=[\.:])|\b(\d+)(?=[\.:])/g, '\\d+');
-	
+
 	return new RegExp(`^${pattern}$`);
 }
