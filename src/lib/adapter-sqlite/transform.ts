@@ -1,14 +1,13 @@
-import { omit } from '../util/object.js';
-import { flatten, unflatten } from 'flat';
-import { toPascalCase } from '../util/string.js';
-import type { Relation } from './relations.js';
-import deepmerge from 'deepmerge';
-import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { ConfigInterface } from '$lib/core/config/index.server.js';
+import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
-import { extractFieldName } from '../fields/tree/util.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import deepmerge from 'deepmerge';
+import { flatten, unflatten } from 'flat';
 import { logger } from '../core/logger/index.server.js';
+import { extractFieldName } from '../fields/tree/util.js';
+import { omit } from '../util/object.js';
+import type { Relation } from './relations.js';
 
 import {
 	getBlocksTableNames,
@@ -19,7 +18,6 @@ import {
 	makeVersionsSlug,
 	transformDatabaseColumnsToPaths
 } from '../util/schema.js';
-import { PRIVATE_FIELDS } from '$lib/core/collections/auth/constant.server.js';
 
 /****************************************************/
 /* Types
@@ -98,6 +96,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 					...block
 				};
 			}
+			block = transformDatabaseColumnsToPaths(block)
 			/** Clean */
 			const { position, path } = block;
 			if (!isPanel) {
@@ -134,6 +133,9 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 						...block
 					};
 				}
+				
+				block = transformDatabaseColumnsToPaths(block)
+
 				/** Clean */
 				const { position, path } = block;
 				if (!block._children) block._children = [];
@@ -208,6 +210,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		let output: Dic = unflatten(flatDoc);
 		/** Remove tree/blocks table keys */
 		const keysToDelete: string[] = [...blocksTables, ...treeTables];
+
 		// Remove relation table keys
 		if (tableNameRelationFields in output) {
 			keysToDelete.push(tableNameRelationFields);
