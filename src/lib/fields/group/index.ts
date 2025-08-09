@@ -31,6 +31,17 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 		return this;
 	}
 
+	localized() {
+		this.field.localized = true;
+		this.field.fields = this.field.fields.map(field => {
+			if(field instanceof FormFieldBuilder){
+				return field.clone().localized()
+			}
+			return field
+		})
+		return this;
+	}
+
 	_toType() {
 		const fieldsTypes = this.field.fields
 			.filter((field) => field instanceof FormFieldBuilder)
