@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Calendar as CalendarIcon } from '@lucide/svelte';
-	import { CalendarDate, getLocalTimeZone, type DateValue } from '@internationalized/date';
+	import { Field } from '$lib/panel/components/fields/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Calendar } from '$lib/panel/components/ui/calendar/index.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { Field } from '$lib/panel/components/fields/index.js';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { CalendarDate, getLocalTimeZone, type DateValue } from '@internationalized/date';
+	import { Calendar as CalendarIcon } from '@lucide/svelte';
 	import type { DateField } from '../index.js';
-	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	type Props = { path: string; config: DateField; form: DocumentFormContext };
 
@@ -68,7 +68,7 @@
 			<Calendar type="single" value={calendarDate} onValueChange={handleCalendarChange} initialFocus />
 		</Dialog.Content>
 	</Dialog.Root>
-
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
-	import { Label } from '$lib/panel/components/ui/label/index.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { Label } from '$lib/panel/components/ui/label/index.js';
+	import * as RadioGroup from '$lib/panel/components/ui/radio-group/index.js';
 	import { capitalize, slugify } from '$lib/util/string.js';
 	import type { RadioFieldProps } from './props.js';
-	import { root } from '$lib/panel/components/fields/root.svelte.js';
 
 	const { path, config, form }: RadioFieldProps = $props();
 	const field = $derived(form.useField(path, config));
@@ -24,6 +24,7 @@
 			</div>
 		{/each}
 	</RadioGroup.Root>
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

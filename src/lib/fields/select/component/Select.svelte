@@ -148,11 +148,12 @@
 			</div>
 		</Command.Root>
 	</div>
+	<Field.Hint {config} />
 </fieldset>
 
 <style type="postcss">
 	.rz-select {
-		margin-bottom: var(--rz-size-3);
+		margin-bottom: var(--rz-size-2);
 		position: relative;
 
 		:global(.rz-command) {

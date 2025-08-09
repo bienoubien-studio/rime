@@ -25,6 +25,7 @@
 		oninput={onInput}
 	></textarea>
 	<Field.Error error={field.error} />
+	<Field.Hint {config} />
 </fieldset>
 
 <style type="postcss">

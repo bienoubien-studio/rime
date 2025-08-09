@@ -41,6 +41,7 @@
 			oninput={onInput}
 		/>
 	</div>
+	<Field.Hint {config} />
 	<Field.Error error={(showError && field.error) || false} />
 </fieldset>
 

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Checkbox } from '$lib/panel/components/ui/checkbox/index.js';
-	import { slugify } from '$lib/util/string.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { Checkbox } from '$lib/panel/components/ui/checkbox/index.js';
+	import { slugify } from '$lib/util/string.js';
 	import type { CheckboxProps } from './props';
 
 	const { path, config, form }: CheckboxProps = $props();
@@ -18,22 +18,42 @@
 </script>
 
 <fieldset class="rz-checkbox-field {config.className || ''}" use:root={field}>
-	<Checkbox
-		class="rz-checkbox-field__input {checkboxErrorClass}"
-		checked={field.value}
-		{onCheckedChange}
-		id={inputId}
-	/>
-	<Field.LabelFor {config} for={inputId} />
+	<div>
+		<Checkbox
+			class="rz-checkbox-field__input {checkboxErrorClass}"
+			checked={field.value}
+			{onCheckedChange}
+			id={inputId}
+		/>
+		<Field.LabelFor {config} for={inputId} />
+	</div>
+	<Field.Hint {config}/>
 </fieldset>
 
 <style lang="postcss">
 	.rz-checkbox-field {
+		margin-top: var(--rz-size-3);
+		margin-bottom: var(--rz-size-3);
+
+		:global{
+			.rz-field-hint{
+				margin-left: var(--rz-size-7);
+			}
+		}
+	}
+
+	.rz-checkbox-field > div {
 		display: flex;
 		align-items: center;
 		gap: var(--rz-size-2);
-		margin-top: var(--rz-size-3);
-		margin-bottom: var(--rz-size-3);
+	}
+
+	:global {
+		.rz-render-fields__field[data-type='checkbox'] + .rz-render-fields__field[data-type='checkbox'] {
+			.rz-checkbox-field {
+				margin-top: 0;
+			}
+		}
 	}
 
 	.rz-checkbox-field__input {

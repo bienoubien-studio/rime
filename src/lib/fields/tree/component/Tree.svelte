@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t__ } from '$lib/core/i18n/index.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -10,7 +11,6 @@
 	import AddItemButton from './AddItemButton.svelte';
 	import type { TreeProps } from './props.js';
 	import TreeBlockItem from './TreeBlockItem.svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -99,7 +99,7 @@
 	<Field.Error error={field.error} />
 
 	<Field.Label {config} />
-
+	<Field.Hint {config} />
 	{#key treeState.stamp}
 		<div
 			class="rz-tree__list rz-tree__list--root"

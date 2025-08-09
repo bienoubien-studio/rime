@@ -231,7 +231,8 @@
 
 <fieldset class="rz-field-relation {config.className || ''}" use:root={field}>
 	<Field.Label {config} for={path || config.name} />
-
+	<Field.Hint {config} />
+	
 	<RelationComponent
 		{path}
 		many={!!config.many}
@@ -252,5 +253,6 @@
 		{onOrderChange}
 	/>
 
+	
 	<Field.Error error={field.error} />
 </fieldset>

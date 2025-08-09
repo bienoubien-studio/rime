@@ -1,14 +1,14 @@
 <script lang="ts">
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { OptionWithIcon } from '$lib/fields/types.js';
 	import { Field } from '$lib/panel';
+	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Popover from '$lib/panel/components/ui/popover/index.js';
-	import { Button } from '$lib/panel/components/ui/button/index.js';
 	import { Check, ChevronsUpDown } from '@lucide/svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
-	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import type { ComboBoxProps } from './props';
-	import type { OptionWithIcon } from '$lib/fields/types.js';
 	import './combobox.css';
+	import type { ComboBoxProps } from './props';
 
 	const { path, config, form }: ComboBoxProps = $props();
 
@@ -32,6 +32,7 @@
 
 <fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} for={path || config.name} />
+	
 	<Popover.Root bind:open>
 		<Popover.Trigger>
 			{#snippet child({ props })}
@@ -75,7 +76,9 @@
 			</Popover.Content>
 		</Popover.Portal>
 	</Popover.Root>
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
+	
 </fieldset>
 
 <style lang="postcss">

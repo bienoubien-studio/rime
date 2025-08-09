@@ -1,16 +1,16 @@
 <script lang="ts">
-	import './styles/rich-text.css';
-	import { onMount } from 'svelte';
-	import { Editor } from '@tiptap/core';
-	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { buildEditorConfig } from '../core/config-builders.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
-	import type { RichTextFieldProps } from './props.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import { Editor } from '@tiptap/core';
+	import { onMount } from 'svelte';
+	import { buildEditorConfig } from '../core/config-builders.js';
 	import type { RichTextFeature } from '../core/types';
-	import DragHandler from './drag-handle/drag-handle.svelte';
-	import Suggestion from './suggestion/suggestion.svelte';
+	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
 	import { setRichTextContext } from './context.svelte';
+	import DragHandler from './drag-handle/drag-handle.svelte';
+	import type { RichTextFieldProps } from './props.js';
+	import './styles/rich-text.css';
+	import Suggestion from './suggestion/suggestion.svelte';
 
 	const { path, config, form, standAlone, class: className }: RichTextFieldProps = $props();
 
@@ -57,6 +57,9 @@
 	use:root={field}
 >
 	<Field.Label {config} for={path || config.name} />
+	{#if standAlone}
+		<Field.Hint {config} />
+	{/if}
 	<Field.Error error={field.error} />
 
 	<div class="rz-rich-text__editor-wrapper">
@@ -73,6 +76,11 @@
 			{/key}
 		{/if}
 	</div>
+
+	{#if !standAlone}
+		<Field.Hint {config} />
+	{/if}
+	
 </fieldset>
 
 <style type="postcss">

@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { Input } from '$lib/panel/components/ui/input/index.js';
-	import { slugify } from '$lib/util/string.js';
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import type { SlugField } from '../index';
-	import { Field } from '$lib/panel/components/fields/index.js';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import { getValueAtPath } from '$lib/util/object.js';
-	import { Hash } from '@lucide/svelte';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import { getValueAtPath } from '$lib/util/object.js';
+	import { slugify } from '$lib/util/string.js';
+	import { Hash } from '@lucide/svelte';
+	import type { SlugField } from '../index';
 
 	type Props = { path: string; config: SlugField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -78,6 +78,7 @@
 			</Button>
 		{/if}
 	</div>
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

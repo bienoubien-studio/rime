@@ -37,7 +37,6 @@
 
 <fieldset class="rz-number-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} for={path || config.name} />
-
 	<div class="rz-number-field__input-wrapper">
 		<input
 			class="rz-number-field__input"
@@ -51,7 +50,7 @@
 			{@render chevron(ChevronDown, decrease, 'rz-number-field__chevron--down')}
 		</div>
 	</div>
-
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

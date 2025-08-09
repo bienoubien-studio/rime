@@ -68,6 +68,7 @@ export type FormField = Field & {
 	required?: boolean;
 	localized?: boolean;
 	label?: string;
+	hint?: string;
 	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
 	defaultValue?: unknown;

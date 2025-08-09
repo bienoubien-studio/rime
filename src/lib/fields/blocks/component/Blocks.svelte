@@ -86,13 +86,15 @@
 	<Field.Error error={field.error} />
 
 	<header class="rz-blocks__header">
-		<h3 class="rz-blocks__title" class:rz-blocks__title--nested={nested || form.isLive}>
-			{config.label ? config.label : capitalize(config.name)}
-			{#if config.localized}
-				<sup>{locale.code}</sup>
-			{/if}
-		</h3>
-
+		<div>
+			<h3 class="rz-blocks__title">
+				{config.label ? config.label : capitalize(config.name)}
+				{#if config.localized}
+					<sup>{locale.code}</sup>
+				{/if}
+			</h3>
+			<Field.Hint {config} />
+		</div>
 		{#if hasBlocks}
 			<div class="rz-blocks__actions">
 				<Button onclick={collapseAll} size="xs" variant="outline">Collapse all</Button>
@@ -131,7 +133,6 @@
 
 <style lang="postcss">
 	.rz-blocks__title {
-		margin-bottom: var(--rz-size-4);
 		@mixin font-medium;
 	}
 
@@ -141,12 +142,11 @@
 	}
 
 	.rz-blocks__actions {
-		translate: 0 calc(-1 * var(--rz-size-2));
+		/* translate: 0 calc(-1 * var(--rz-size-2)); */
+		display: flex;
+		align-items: end;
+		gap: var(--rz-size-2);
 	}
-
-	/* .rz-blocks__title--nested {
-		font-size: var(--rz-text-sm);
-	} */
 
 	.rz-blocks__list {
 		display: grid;
@@ -160,6 +160,7 @@
 	.rz-blocks__header {
 		display: flex;
 		justify-content: space-between;
+		margin-bottom: var(--rz-size-4);
 	}
 	.rz-blocks__actions-bottom {
 		display: flex;

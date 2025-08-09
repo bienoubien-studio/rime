@@ -1,16 +1,19 @@
-type Field = {
+import type { ClientField, FormField } from "$lib/fields/types.js";
+
+type FieldState = {
 	value: any;
 	path: string;
+	config: ClientField<FormField>
 	readonly editable: boolean;
 	readonly visible: boolean;
 	readonly error: string | false;
 };
 
-export function root(node: HTMLElement, field: Field) {
+export function root(node: HTMLElement, field: FieldState) {
 	node.classList.add('rz-field-root');
 	node.setAttribute('style', 'position: relative; container: rz-field-root / inline-size');
 	node.setAttribute('data-path', field.path);
-
+	
 	$effect(() => {
 		if (field.visible) {
 			node.setAttribute('data-visible', '');

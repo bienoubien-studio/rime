@@ -195,6 +195,11 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
+	hint(hint:string){
+		this.field.hint = hint
+		return this
+	}
+	
 	clone(): typeof this {
 		// Create a new instance of the same class
 		const Constructor = this.constructor as new (...args: any[]) => typeof this;

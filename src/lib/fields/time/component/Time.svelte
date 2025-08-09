@@ -28,6 +28,7 @@
 			<Clock size="12" />
 		</span>
 	</div>
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

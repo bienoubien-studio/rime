@@ -11,6 +11,7 @@
 	const onInput = (event: Event) => {
 		field.value = (event.target as HTMLInputElement).value;
 	};
+	
 </script>
 
 <fieldset
@@ -35,6 +36,7 @@
 			oninput={onInput}
 		/>
 	</div>
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { Link2, Newspaper, Anchor, AtSign, Phone, ChevronDown } from '@lucide/svelte';
-	import { Switch } from '$lib/panel/components/ui/switch/index.js';
-	import { Input } from '$lib/panel/components/ui/input/index.js';
-	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
-	import { Field } from '$lib/panel/components/fields/index.js';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { capitalize } from '$lib/util/string.js';
-	import RessourceInput from './RessourceInput.svelte';
-	import Label from '$lib/panel/components/ui/label/label.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
+	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import type { LinkFieldProps } from './props';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
+	import { Input } from '$lib/panel/components/ui/input/index.js';
+	import Label from '$lib/panel/components/ui/label/label.svelte';
+	import { Switch } from '$lib/panel/components/ui/switch/index.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { Anchor, AtSign, ChevronDown, Link2, Newspaper, Phone } from '@lucide/svelte';
 	import type { Link } from '../types';
+	import type { LinkFieldProps } from './props';
+	import RessourceInput from './RessourceInput.svelte';
 
 	const { path, config, form }: LinkFieldProps = $props();
 
@@ -160,7 +160,7 @@
 			{/if}
 		</div>
 	</div>
-
+	<Field.Hint {config} />
 	<Field.Error error={field.error} />
 </fieldset>
 

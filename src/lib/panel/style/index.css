@@ -93,6 +93,17 @@ body:has(.rz-root) {
 	border-width: 0;
 }
 
+.rz-field-label + .rz-field-hint{
+	margin-bottom: var(--rz-size-2);
+	margin-top: 0;
+}
+
+.rz-field-root:has(.rz-label + .rz-field-hint){
+	.rz-field-label{
+		margin-bottom:0;
+	}
+}
+
 .rz-field-root[disabled] {
 	opacity: 0.5;
 	cursor: not-allowed;
