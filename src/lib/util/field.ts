@@ -296,8 +296,8 @@ export const normalizeFieldPath = (path: string) => {
  * @example
  * pathToRegex('some.0.path3') // matches 'some.\\d+.path3'
  * pathToRegex('some.0:bar.path3') // matches 'some.\\d+:bar.path3'
- * pathToRegex('some.31.baz.bar:foo.youhou12') // matches 'some.\\d+.baz.bar:foo.youhou12'
- * pathToRegex('some.31.baz.bar:foo.4.youhou12') // matches 'some.\\d+.baz.bar:foo.\\d+.youhou12'
+ * pathToRegex('some.31.baz.bar:foo.ouep12') // matches 'some.\\d+.baz.bar:foo.ouep12'
+ * pathToRegex('some.31.baz.bar:foo.4.ouep12') // matches 'some.\\d+.baz.bar:foo.\\d+.ouep12'
  */
 export function pathToRegex(path: string): RegExp {
 	// Escape special regex characters except dots and colons

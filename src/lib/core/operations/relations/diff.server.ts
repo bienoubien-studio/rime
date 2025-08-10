@@ -34,7 +34,7 @@ export const defineRelationsDiff = ({ existingRelations, incomingRelations, loca
 				(incoming.id && existing.id === incoming.id) ||
 				(!incoming.id &&
 					existing[`${incoming.relationTo}Id` as keyof typeof existing] === incoming.documentId &&
-					pathToRegex(existing.path).test(incoming.path) &&
+					existing.path === incoming.path &&
 					(incoming.locale ? existing.locale === incoming.locale : existing.locale === null))
 		);
 

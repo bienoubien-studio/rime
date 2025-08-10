@@ -1,8 +1,8 @@
-import { isRelationField } from '$lib/util/field.js';
 import type { BeforeOperationRelation } from '$lib/adapter-sqlite/relations.js';
+import { isRelationField } from '$lib/util/field.js';
+import { getValueAtPath } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
 import type { ConfigMap } from '../configMap/types.js';
-import { getValueAtPath } from '$lib/util/object.js';
 
 type Args = {
 	ownerId?: string;
@@ -38,6 +38,7 @@ export const extractRelations = ({ ownerId, data, configMap, locale }: Args) => 
 
 			const completeRelation = ({ value, position = 0 }: AugmentRelationArgs) => {
 				const result: BeforeOperationRelation = {
+					id: value.id || undefined,
 					position,
 					relationTo: config.relationTo,
 					documentId: value.documentId,
