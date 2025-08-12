@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { GripVertical, ToyBrick } from '@lucide/svelte';
-	import BlockActions from './BlockActions.svelte';
-	import { capitalize } from '$lib/util/string.js';
+	import type { GenericBlock } from '$lib/core/types/doc.js';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { useOnce } from '$lib/panel/util/once.svelte.js';
-	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
-	import type { BlocksFieldRaw } from '../index.ts';
-	import type { GenericBlock } from '$lib/core/types/doc.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { GripVertical, ToyBrick } from '@lucide/svelte';
 	import { watch } from 'runed';
+	import type { BlocksFieldRaw } from '../index.ts';
+	import BlockActions from './BlockActions.svelte';
 
 	type Props = {
 		config: BlocksFieldRaw['blocks'][number];
@@ -46,8 +46,12 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			const title = config.renderTitle({ values: blockValue || {}, position });
-			if (title) return title;
+			try{
+				const title = config.renderTitle({ values: blockValue || {}, position });
+				if (title) return title;
+			}catch(err){
+				console.error(`Can't render title in block`, err)
+			}
 		}
 		const title = config.label ? config.label : capitalize(config.name);
 		return title;

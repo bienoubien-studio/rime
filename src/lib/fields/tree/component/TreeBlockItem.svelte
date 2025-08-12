@@ -56,8 +56,12 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
+			try{
 			const title = config.renderTitle({ values: itemValue || {} });
 			if (title) return title;
+			}catch(err){
+				console.error(`Can't render title in treeBlock`, err)
+			}
 		}
 		return `${config.label || config.name}`;
 	};
