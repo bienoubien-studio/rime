@@ -138,7 +138,7 @@
 			}}
 		>
 			<Sheet.Trigger />
-			<Sheet.Content side="right" showCloseButton={false}>
+			<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" side="right" class="rz-relation-sheet" showCloseButton={false}>
 				<Document
 					doc={createBlankDocument(relationConfig)}
 					readOnly={false}
@@ -218,8 +218,4 @@
 		}
 	}
 
-	:global(.rz-sheet-content) {
-		width: 50%;
-		--rz-page-gutter: var(--rz-size-6);
-	}
 </style>

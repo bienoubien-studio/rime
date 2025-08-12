@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import Sortable from 'sortablejs';
-	import Doc from '$lib/panel/components/sections/document/Document.svelte';
-	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
-	import { getUserContext } from '$lib/panel/context/user.svelte.js';
-	import { createBlankDocument } from '$lib/util/doc.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
+	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
+	import Doc from '$lib/panel/components/sections/document/Document.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
+	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
+	import { getUserContext } from '$lib/panel/context/user.svelte.js';
+	import { createBlankDocument } from '$lib/util/doc.js';
 	import { Plus } from '@lucide/svelte';
+	import Sortable from 'sortablejs';
+	import { onDestroy } from 'svelte';
+	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
 	import './upload.css';
 
 	const {
@@ -155,7 +155,7 @@
 		}
 	}}
 >
-	<Sheet.Content showCloseButton={false} class="rz-relation-upload__sheet" side="right">
+	<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" showCloseButton={false} class="rz-relation-sheet" side="right">
 		<Doc
 			doc={createBlankDocument(relationConfig)}
 			readOnly={false}

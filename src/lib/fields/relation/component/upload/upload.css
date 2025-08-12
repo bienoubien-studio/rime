@@ -108,20 +108,3 @@
 .rz-relation-upload__grid-mimetype {
 	text-align: left;
 }
-
-.rz-relation-upload__sheet {
-	width: 100%;
-	padding: 0;
-}
-
-@media (min-width: 640px) {
-	.rz-relation-upload__sheet {
-		width: 75%;
-	}
-}
-
-@media (min-width: 1024px) {
-	.rz-relation-upload__sheet {
-		width: 50%;
-	}
-}

@@ -14,9 +14,10 @@
 	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
 	import type { RelationField } from '../index';
 	import Default from './default/Default.svelte';
+	import './relation.css';
 	import type { RelationFieldItem } from './types.js';
 	import Upload from './upload/Upload.svelte';
-
+	
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();
@@ -125,8 +126,8 @@
 			if (!initialized) {
 				const findItem = (relation: Relation) => {
 					return initialItems.find((item) => item.documentId === relation.documentId);
-				}
-				selectedItems = initialValue.map(findItem).filter(item => !!item);
+				};
+				selectedItems = initialValue.map(findItem).filter((item) => !!item);
 				initialized = true;
 			}
 		}
@@ -230,9 +231,9 @@
 </script>
 
 <fieldset class="rz-field-relation {config.className || ''}" use:root={field}>
-	<Field.Label {config} for={path || config.name} />
+	<Field.Label {config} for={path || config.name} />
 	<Field.Hint {config} />
-	
+
 	<RelationComponent
 		{path}
 		many={!!config.many}
@@ -253,6 +254,5 @@
 		{onOrderChange}
 	/>
 
-	
 	<Field.Error error={field.error} />
 </fieldset>
