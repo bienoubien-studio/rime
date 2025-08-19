@@ -41,7 +41,7 @@ export const openSse = (handler: SSEHandler): (() => void) => {
   // Listen for all rizom events
   const eventTypes = ['rizom:create', 'rizom:update', 'rizom:delete'];
   eventTypes.forEach(eventType => {
-    es.addEventListener(eventType, handleCustomEvent as EventListener);
+    es.addEventListener(eventType, handleCustomEvent);
   });
 
   es.onopen = () => console.log('[SSE Client] Connection opened');
@@ -50,7 +50,7 @@ export const openSse = (handler: SSEHandler): (() => void) => {
   return () => {
     console.log('[SSE Client] Closing connection');
     eventTypes.forEach(eventType => {
-      es.removeEventListener(eventType, handleCustomEvent as EventListener);
+      es.removeEventListener(eventType, handleCustomEvent);
     });
     es.close();
   };
