@@ -163,7 +163,7 @@
 	"dependencies": {
 		"@bien-bien/css-reset": "^0.1.0",
 		"@internationalized/date": "^3.8.2",
-		"@lucide/svelte": "^0.479.0",
+		"@lucide/svelte": "^0.540.0",
 		"@playwright/test": "^1.52.0",
 		"@tiptap/core": "2.26.1",
 		"@tiptap/extension-blockquote": "2.26.1",
