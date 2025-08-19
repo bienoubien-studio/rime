@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
-	import { onMount } from 'svelte';
-	import { isFormField } from '$lib/util/field.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import type { GroupField } from '$lib/fields/group/index.js';
 	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import RenderFieldsPreview from '$lib/panel/components/fields/RenderFieldsPreview.svelte';
-	import type { GroupField } from '$lib/fields/group/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import { isFormField } from '$lib/util/field.js';
 	import type { WithoutBuilders } from '$lib/util/types.js';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
+	import { onMount } from 'svelte';
 
 	type Props = {
 		path: string;
@@ -22,6 +22,8 @@
 		.map((f) => f.name)
 		.join('-')}`;
 
+	const field = $derived(form.useField(path))
+	
 	function handleClick() {
 		groupOpen = !groupOpen;
 		localStorage.setItem(key, groupOpen.toString());
@@ -32,7 +34,7 @@
 	});
 </script>
 
-<div class="rz-group-field__wrapper">
+<div class="rz-group-field__wrapper" class:rz-group-field__wrapper--hidden={!field.visible}>
 	<button
 		onclick={handleClick}
 		type="button"
@@ -77,6 +79,10 @@
 		&:global(:has(.rz-field-error)) {
 			@mixin ring var(--rz-color-alert);
 		}
+	}
+
+	.rz-group-field__wrapper--hidden{
+		display: none;
 	}
 
 	.rz-group-field__preview {
