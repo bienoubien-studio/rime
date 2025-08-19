@@ -1,12 +1,12 @@
-import { RizomError } from './errors/index.js';
-import { CollectionInterface } from './collections/local-api.server.js';
-import { AreaInterface } from './areas/local-api.server.js';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { RegisterArea, RegisterCollection, RegisterPlugins } from '$lib/index.js';
 import type { CompiledCollection } from '$lib/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { AreaInterface } from './areas/local-api.server.js';
+import { CollectionInterface } from './collections/local-api.server.js';
 import type { ConfigInterface } from './config/index.server.js';
+import { RizomError } from './errors/index.js';
 import type { CorePlugins, Plugins } from './types/plugins.js';
-import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 
 export type RizomConstructorArgs = {
 	adapter: Adapter;
@@ -107,6 +107,10 @@ export class Rizom {
 
 	get cache() {
 		return this.#plugins.cache as CorePlugins['cache'];
+	}
+	
+	get sse() {
+		return this.#plugins.sse as CorePlugins['sse'];
 	}
 
 	get mailer() {

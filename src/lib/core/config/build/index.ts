@@ -6,6 +6,7 @@ import { RizomError } from '$lib/core/errors/index.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
 import { mailer } from '$lib/core/plugins/mailer/index.server.js';
+import { sse } from '$lib/core/plugins/sse/index.js';
 import { access } from '$lib/util/access/index.js';
 import { hasProp } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
@@ -103,7 +104,12 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	 * because the config is built from inside the first handler
 	 * if a plugin includes a handler, the handler should be register there before...
 	 */
-	const corePlugins = [cache(config.cache || {}), ...(dev ? [apiInit()] : [])];
+	const corePlugins = [
+		cache(config.cache || {}), 
+		sse(),
+		// Add init plugins in dev mode
+		...(dev ? [apiInit()] : [])
+	];
 	if (hasProp('smtp', config)) {
 		corePlugins.push(mailer(config.smtp));
 	}

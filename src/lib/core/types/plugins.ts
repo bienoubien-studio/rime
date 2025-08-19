@@ -1,15 +1,17 @@
-import type { CacheActions } from '../plugins/cache/index.js';
+import type { BuiltConfig, RouteConfig } from '$lib/core/config/types/index.js';
+import type { GetRegisterType } from '$lib/index.js';
 import type { Handle } from '@sveltejs/kit';
 import type { Component } from 'svelte';
-import type { GetRegisterType } from '$lib/index.js';
-import type { BuiltConfig, RouteConfig } from '$lib/core/config/types/index.js';
+import type { CacheActions } from '../plugins/cache/index.js';
 import type { MailerActions } from '../plugins/mailer/types.js';
+import type { SSEActions } from '../plugins/sse/index.js';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 
 export type CorePlugins = {
 	cache: CacheActions;
 	mailer: MailerActions;
+	sse: SSEActions;
 };
 
 export type Plugin<T = void> = (options?: T) => {
