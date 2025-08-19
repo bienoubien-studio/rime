@@ -23,7 +23,6 @@ export const registerWriter = (writer: WritableStreamDefaultWriter<string>): (()
  */
 export const broadcast = (data: ContentUpdatePayload): void => {
 	const frame = `event: rizom:${data.operation}\ndata: ${JSON.stringify(data)}\n\n`;
-	console.log('send', frame)
 	for (const w of clients) {
 		void w.write(frame).catch(() => {
 			clients.delete(w);
