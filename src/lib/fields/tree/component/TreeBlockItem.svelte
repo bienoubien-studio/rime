@@ -54,16 +54,16 @@
 		}
 	};
 
-	const renderBlockTitle = () => {
+	const renderBlockTitle = (position:string) => {
 		if (config.renderTitle) {
 			try{
-			const title = config.renderTitle({ values: itemValue || {} });
+			const title = config.renderTitle({ position, values: itemValue || {} });
 			if (title) return title;
 			}catch(err){
 				console.error(`Can't render title in treeBlock`, err)
 			}
 		}
-		return `${config.label || config.name}`;
+		return `${position} - ${config.label || config.name}`;
 	};
 
 	$effect(() => {
@@ -82,7 +82,7 @@
 		<header class="rz-tree-item__header">
 			<button type="button" onclick={toggleBlock} class="rz-tree-item__title-button">
 				<div class="rz-tree-item__title">
-					{parentPathFormated}{position + 1}. {renderBlockTitle()}
+					{renderBlockTitle(`${parentPathFormated}${position + 1}`)}
 				</div>
 			</button>
 

@@ -142,6 +142,6 @@ export type TreeField = FormField & {
 	addItemLabel: string;
 };
 
-export type TreeFieldBlockRenderTitle = (args: { values: Dic }) => string;
+export type TreeFieldBlockRenderTitle = (args: { position:string, values: Dic }) => string;
 
 export type TreeFieldRaw = FormField & Omit<TreeField, 'fields'> & { fields: Field[] };
