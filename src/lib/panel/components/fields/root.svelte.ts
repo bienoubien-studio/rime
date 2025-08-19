@@ -1,9 +1,7 @@
-import type { ClientField, FormField } from "$lib/fields/types.js";
 
 type FieldState = {
 	value: any;
 	path: string;
-	config: ClientField<FormField>
 	readonly editable: boolean;
 	readonly visible: boolean;
 	readonly error: string | false;
