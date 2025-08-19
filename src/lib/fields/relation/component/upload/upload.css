@@ -7,7 +7,6 @@
 		width: calc(var(--rz-thumbnail-size) + 2.5 * var(--rz-card-padding));
 
 		@container relation-upload-list (min-width: 425px) {
-			--rz-card-padding: var(--rz-size-2);
 			--rz-thumbnail-size: var(--rz-size-28);
 		}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
-	import { X, Edit, FileIcon } from '@lucide/svelte';
+	import { Edit, FileIcon, X } from '@lucide/svelte';
 
 	type Resource = {
 		id: string;
@@ -103,11 +103,11 @@
 
 	.rz-card-resource__remove {
 		position: absolute;
-		right: var(--rz-size-3);
-		top: var(--rz-size-3);
-		border: var(--rz-border);
-		/* background-color: hsl(var(--rz-gray-1)); */
-		border-radius: 1rem;
+		color: hsl(var(--rz-color-fg));
+		right: var(--rz-size-2);
+		top: var(--rz-size-2);
+		background-color: hsl(var(--rz-color-bg));
+		border-radius: var(--rz-size-0-5);
 		height: var(--rz-size-4);
 		width: var(--rz-size-4);
 		display: flex;
