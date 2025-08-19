@@ -42,7 +42,7 @@
 }
 
 .rz-node-selector__node:hover {
-	background-color: light-dark(hsl(var(--rz-gray-5)), hsl(var(--rz-gray-3)));
+	background-color: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
 }
 
 .rz-node-selector__node-content {
