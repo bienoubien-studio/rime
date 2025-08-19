@@ -1,6 +1,7 @@
 .rz-command-group {
 	color: hsl(var(--rz-color-fg));
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	padding: var(--rz-size-1);
 }
 

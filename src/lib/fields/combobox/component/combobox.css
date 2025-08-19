@@ -8,9 +8,15 @@
 
 .rz-combobox__content {
 	width: 200px;
+	max-height: calc(var(--rz-size-80) - 2px);
+	overflow-y: auto;
 	border-radius: var(--rz-radius-md);
 	background-color: var(--rz-popover-bg);
 	padding: 0;
+	.rz-command-input {
+		padding-top: 0;
+		padding-bottom: 0;
+	}
 }
 
 .rz-combobox__item {
