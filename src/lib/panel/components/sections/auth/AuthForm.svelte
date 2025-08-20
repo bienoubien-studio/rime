@@ -5,13 +5,18 @@
 	type Props = {
 		children: Snippet;
 		title: string;
+		image: string | null;
 	};
-	const { children, title }: Props = $props();
+	const { image, children, title }: Props = $props();
 </script>
 
 <Toaster />
 <div class="rz-auth">
-	<div class="rz-auth__left"></div>
+	<div
+		class="rz-auth__left"
+		class:rz-auth__left--image={!!image}
+		style={!!image ? `background-image:url(${image})` : null}
+	></div>
 	<div class="rz-auth__right">
 		<h1>{title}</h1>
 		{@render children()}
@@ -78,5 +83,9 @@
 		@media (prefers-color-scheme: dark) {
 			background-image: linear-gradient(32deg, #006e6c 0%, #d9eddf 100%);
 		}
+	}
+
+	.rz-auth__left.rz-auth__left--image {
+		background-size: cover;
 	}
 </style>
