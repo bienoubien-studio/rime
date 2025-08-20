@@ -42,32 +42,36 @@
 		resource = APIProxy.getRessource(`/api/${ressourceType}`);
 	});
 
-	// Now this effect will run whenever resource.data changes
+	// Get resources
 	$effect(() => {
 		if (resource && resource.data) {
 			const docs = 'docs' in resource.data ? resource.data.docs : [resource.data.doc];
 			resources = docs.map(convertDocToResource);
-			if (!selected && ressourceId) {
-				selected = resources.find((ressource) => ressource.id === ressourceId);
-			}
 		}
 	});
 
+	// If none selected but it's an area resource, auto-select area
 	$effect(() => {
 		if (!selected && resources.length && resources[0]._prototype === 'area') {
 			selected = resources[0];
 		}
 	});
 
+	// On select set resourceId
 	$effect(() => {
 		if (selected) {
 			ressourceId = selected.id;
 		}
 	});
 
+	// Whenver bindable ressourceId change set internal selected
 	$effect(() => {
 		if (!ressourceId) {
 			selected = null;
+		} else {
+			if (!selected) {
+				selected = resources.find((ressource) => ressource.id === ressourceId) || null;
+			}
 		}
 	});
 
