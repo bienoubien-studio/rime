@@ -15,12 +15,12 @@
 <input bind:this={ref} class="rz-input {className}" bind:value {...restProps} />
 
 <style type="postcss">
-	:root{
-		--rz-input-border-color: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-6) / 0.6));
+	:root {
+		--rz-input-border-color: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-6) / 0.6));
 		--rz-input-padding-x: var(--rz-size-3);
 		--rz-input-padding-y: var(--rz-size-1);
 	}
-	
+
 	.rz-input {
 		border: 1px solid var(--rz-input-border-color);
 		background-color: hsl(var(--rz-color-input));
@@ -29,7 +29,7 @@
 		width: 100%;
 		border-radius: var(--rz-radius-lg);
 		transition: all 0.1s ease-in-out;
-		padding: var(--rz-input-padding-y) var(--rz-input-padding-x);	
+		padding: var(--rz-input-padding-y) var(--rz-input-padding-x);
 	}
 
 	input.rz-input:is(:-webkit-autofill, :autofill) {
@@ -65,5 +65,4 @@
 		outline: none;
 		@mixin ring var(--rz-color-alert);
 	}
-
 </style>
