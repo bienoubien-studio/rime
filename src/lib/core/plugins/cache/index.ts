@@ -1,8 +1,8 @@
+import type { Plugin } from '$lib/types';
+import { toHash } from '$lib/util/string.js';
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import { Cache } from './cache.server.js';
-import type { Plugin } from '$lib/types';
 import { handler } from './handler.server.js';
-import { toHash } from '$lib/util/string.js';
 import HeaderButton from './HeaderButton.svelte';
 
 export type CacheActions = {
@@ -13,7 +13,16 @@ export type CacheActions = {
 	createKey: (namespace: string, params: Record<string, unknown>) => string;
 };
 
-type CacheOptions = { isEnabled?: (event: RequestEvent) => boolean };
+type CacheOptions = {
+	/**
+	 * A function that define if cache should be enabled
+	 * Only GET request and non-panel routes are cached
+	 *
+	 * @example
+	 * isEnabled: (event) => !event.locals.user // default
+	 */
+	isEnabled?: (event: RequestEvent) => boolean;
+};
 
 export const cache: Plugin<CacheOptions> = (options) => {
 	async function getAction<T>(key: string, get: () => Promise<T>): Promise<T> {

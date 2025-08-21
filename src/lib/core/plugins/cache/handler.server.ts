@@ -3,19 +3,20 @@ import type { Handle } from '@sveltejs/kit';
 export const handler: Handle = async ({ event, resolve }) => {
 	const { rizom } = event.locals;
 
-	// return await resolve(event);
+	event.locals.cacheEnabled = false;
+
 	// Only cache GET requests
-	if (event.request.method !== 'GET' || !(process.env.RIZOM_CACHE_ENABLED === 'true')) {
+	if (event.request.method !== 'GET') {
+		return await resolve(event);
+	}
+
+	// Do not cache if env var is not 'true'
+	if (!(process.env.RIZOM_CACHE_ENABLED === 'true')) {
 		return await resolve(event);
 	}
 
 	// Do not cache panel routes
 	if (event.url.pathname.startsWith('/panel')) {
-		return await resolve(event);
-	}
-
-	// Never cache if there is a user
-	if (event.locals.user) {
 		return await resolve(event);
 	}
 

@@ -1,21 +1,20 @@
-
-import { isAuthConfig } from '../../util/config.js';
-import { createBlankDocument } from '../../util/doc.js';
-import { isFormField } from '../../util/field.js';
-import { create } from './operations/create.js';
-import { deleteById } from './operations/deleteById.js';
-import { find } from './operations/find.js';
-import { findById } from './operations/findById.js';
-import { deleteDocs } from './operations/delete.js';
-import { updateById } from './operations/updateById.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { RequestEvent } from '@sveltejs/kit';
-import type { CollectionSlug } from '../types/doc.js';
-import type { CompiledCollection } from '../config/types/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { Pretty } from '$lib/util/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { isAuthConfig } from '../../util/config.js';
+import { createBlankDocument } from '../../util/doc.js';
+import { isFormField } from '../../util/field.js';
+import type { CompiledCollection } from '../config/types/index.js';
+import type { CollectionSlug } from '../types/doc.js';
 import { PRIVATE_FIELDS } from './auth/constant.server.js';
+import { create } from './operations/create.js';
+import { deleteDocs } from './operations/delete.js';
+import { deleteById } from './operations/deleteById.js';
+import { find } from './operations/find.js';
+import { findById } from './operations/findById.js';
+import { updateById } from './operations/updateById.js';
 
 type Args = {
 	config: CompiledCollection;
@@ -33,7 +32,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
 	config: CompiledCollection;
-	isSystemOperation: boolean
+	isSystemOperation: boolean;
 
 	/**
 	 * Initializes the collection interface
@@ -47,20 +46,20 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		this.findById = this.findById.bind(this);
 		this.updateById = this.updateById.bind(this);
 		this.deleteById = this.deleteById.bind(this);
-		this.isSystemOperation = false
+		this.isSystemOperation = false;
 	}
 
-	system(isSytem:boolean = true) {
-		if(isSytem === false ) return this
-    // Return a proxy or new instance with system flag
-    const systemCollection = new CollectionInterface({
+	system(isSytem: boolean = true) {
+		if (isSytem === false) return this;
+		// Return a proxy or new instance with system flag
+		const systemCollection = new CollectionInterface({
 			config: this.config,
 			defaultLocale: this.defaultLocale,
 			event: this.#event
 		});
-    systemCollection.isSystemOperation = true;
-    return systemCollection;
-  }
+		systemCollection.isSystemOperation = true;
+		return systemCollection;
+	}
 
 	/**
 	 * Returns the locale to use, with fallback logic
@@ -83,16 +82,17 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 */
 	blank(): Doc {
 		if (isAuthConfig(this.config)) {
-			
 			const withoutPrivateFields = this.config.fields
 				.filter(isFormField)
 				.filter((field: FormField) => !PRIVATE_FIELDS.includes(field.name));
 
-			return createBlankDocument({
-				...this.config,
-				fields: [...withoutPrivateFields]
-			}, this.#event) as Doc;
-
+			return createBlankDocument(
+				{
+					...this.config,
+					fields: [...withoutPrivateFields]
+				},
+				this.#event
+			) as Doc;
 		}
 		return createBlankDocument(this.config, this.#event) as Doc;
 	}
@@ -138,7 +138,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
-		
 		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
 		this.#event.locals.rizom.preventOperationLoop();
 
@@ -160,6 +159,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
 				slug: this.config.slug,
 				select: args.select,
+				userEmail: this.#event.locals.user?.email,
 				userRoles: this.#event.locals.user?.roles,
 				sort,
 				depth,
@@ -186,14 +186,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * @example
 	 * // Get published version
 	 * const post = await rizom.collection('posts').findById({ id: '12345' });
-	 * 
+	 *
 	 * // Get specific version
-	 * const post = await rizom.collection('posts').findById({ 
+	 * const post = await rizom.collection('posts').findById({
 	 *   id: '12345',
 	 *   versionId: 'v2',
 	 *   locale: 'en'
 	 * });
-	 * 
+	 *
 	 * // Get latest draft version
 	 * const post = await rizom.collection('posts').findById({
 	 *   id: '12345',
@@ -222,6 +222,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
 			const key = this.#event.locals.rizom.cache.createKey('collection.findById', {
 				slug: this.config.slug,
+				userEmail: this.#event.locals.user?.email,
 				userRoles: this.#event.locals.user?.roles,
 				id,
 				versionId,
@@ -255,7 +256,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 *   data: { title: 'New title' },
 	 *   locale: 'en'
 	 * });
-	 * 
+	 *
 	 * // Update specific version
 	 * const post = await rizom.collection('posts').updateById({
 	 *   id: '12345',
@@ -263,7 +264,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 *   data: { title: 'New title' },
 	 *   locale: 'en'
 	 * });
-	 * 
+	 *
 	 * // Create or update draft version
 	 * const post = await rizom.collection('posts').updateById({
 	 *   id: '12345',
@@ -321,7 +322,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 export { CollectionInterface };
 
 /****************************************************
-/* Types 
+/* Types
 /****************************************************/
 
 type APIMethodArgs<T extends (...args: any) => any> = Pretty<

@@ -1,10 +1,10 @@
+import type { CompiledArea } from '$lib/core/config/types/index.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { Pretty } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createBlankDocument } from '../../util/doc.js';
 import { find } from './operations/find.js';
 import { update } from './operations/update.js';
-import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { Pretty } from '$lib/util/types.js';
 
 type Args = {
 	config: CompiledArea;
@@ -23,7 +23,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
 	config: CompiledArea;
-	isSystemOperation: boolean
+	isSystemOperation: boolean;
 
 	/**
 	 * Creates a new AreaInterface instance
@@ -40,7 +40,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		this.defaultLocale = defaultLocale;
 		this.find = this.find.bind(this);
 		this.update = this.update.bind(this);
-		this.isSystemOperation = false
+		this.isSystemOperation = false;
 	}
 
 	/**
@@ -57,7 +57,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	blank(): Doc {
 		return createBlankDocument(this.config, this.#event) as Doc;
 	}
-	
+
 	/**
 	 * Retrieves an area document with optional filtering and selection
 	 *
@@ -82,8 +82,8 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 * // Get the latest version including draft
 	 * const doc = await rizom.area('settings').find({ draft: true })
 	 */
-	find(args:APIMethodArgs<typeof find>): Promise<Doc> {
-		const { locale, select = [], depth = 0, versionId, draft } = args
+	find(args: APIMethodArgs<typeof find>): Promise<Doc> {
+		const { locale, select = [], depth = 0, versionId, draft } = args;
 		this.#event.locals.rizom.preventOperationLoop();
 
 		const params = {
@@ -102,6 +102,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 				slug: this.config.slug,
 				select,
 				versionId,
+				userEmail: this.#event.locals.user?.email,
 				userRoles: this.#event.locals.user?.roles,
 				depth,
 				draft,
@@ -130,7 +131,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 * rizom.area('settings').update({ data, locale })
 	 */
 	update(args: APIMethodArgs<typeof update>): Promise<Doc> {
-		const { data, locale, versionId, draft } = args
+		const { data, locale, versionId, draft } = args;
 		this.#event.locals.rizom.preventOperationLoop();
 
 		return update<Doc>({
@@ -148,7 +149,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 export { AreaInterface };
 
 /****************************************************
-/* Types 
+/* Types
 /****************************************************/
 
 type APIMethodArgs<T extends (...args: any) => any> = Pretty<

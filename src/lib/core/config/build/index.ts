@@ -105,14 +105,16 @@ const buildConfig = async (config: Config, options: { generateFiles?: boolean })
 	 * if a plugin includes a handler, the handler should be register there before...
 	 */
 	const corePlugins = [
-		cache(config.cache || {}), 
+		// Cache plugin with default enabled only if there is no user
+		cache(config.cache || {}),
+		// Server Sent Event
 		sse(),
 		// Add init plugins in dev mode
-		...(dev ? [apiInit()] : [])
+		...(dev ? [apiInit()] : []),
+		// Mailer plugin
+		...(hasProp('smtp', config) ? [mailer(config.smtp)] : [])
 	];
-	if (hasProp('smtp', config)) {
-		corePlugins.push(mailer(config.smtp));
-	}
+
 	const plugins = [...corePlugins, ...(config.plugins || [])];
 
 	const { pluginsFieldsComponents, builtConfigWithPlugins } = registerPlugins({
