@@ -1,21 +1,25 @@
 <script lang="ts">
-	import { setCollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import { getContext, setContext } from 'svelte';
-	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
-	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
-	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
 	import { invalidateAll } from '$app/navigation';
-	import CollectionTree from '$lib/panel/components/sections/collection/tree/CollectionTree.svelte';
+	import type { Directory } from '$lib/core/collections/upload/upload.js';
+	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
+	import BulkUploadDialog from '$lib/panel/components/sections/collection/bulk-upload/BulkUploadDialog.svelte';
+	import CollectionGrid from '$lib/panel/components/sections/collection/grid/CollectionGrid.svelte';
+	import ButtonCreate from '$lib/panel/components/sections/collection/header/ButtonCreate.svelte';
 	import CollectionHeader from '$lib/panel/components/sections/collection/header/Header.svelte';
 	import SearchInput from '$lib/panel/components/sections/collection/header/SearchInput.svelte';
-	import ButtonCreate from '$lib/panel/components/sections/collection/header/ButtonCreate.svelte';
-	import type { GenericDoc, PrototypeSlug } from '$lib/core/types/doc';
-	import CollectionGrid from '$lib/panel/components/sections/collection/grid/CollectionGrid.svelte';
-	import type { Directory } from '$lib/core/collections/upload/upload.js';
+	import Separator from '$lib/panel/components/sections/collection/header/Separator.svelte';
 	import CollectionList from '$lib/panel/components/sections/collection/list/CollectionList.svelte';
-	
+	import CollectionTree from '$lib/panel/components/sections/collection/tree/CollectionTree.svelte';
+	import Page from '$lib/panel/components/sections/page-layout/Page.svelte';
+	import Unauthorized from '$lib/panel/components/sections/unauthorized/Unauthorized.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import LanguageSwitcher from '$lib/panel/components/ui/language-switcher/LanguageSwitcher.svelte';
+	import PageHeader from '$lib/panel/components/ui/page-header/PageHeader.svelte';
+	import { setCollectionContext } from '$lib/panel/context/collection.svelte.js';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { CopyPlus } from '@lucide/svelte';
+	import { getContext, setContext } from 'svelte';
+
 	type Props = {
 		slug: PrototypeSlug;
 		data: {
@@ -33,7 +37,8 @@
 	const { data, slug }: Props = $props();
 	const config = getConfigContext();
 	const collectionConfig = config.getCollection(slug);
-	
+	let bulkDialogOpen = $state(false);
+
 	const collection = setCollectionContext({
 		initial: data.docs,
 		config: collectionConfig,
@@ -53,8 +58,8 @@
 	});
 
 	$effect(() => {
-		collection.docs = data.docs
-	})
+		collection.docs = data.docs;
+	});
 
 	const titleContext = getContext<{ value: string }>('title');
 	titleContext.value = collection.config.label.plural;
@@ -70,6 +75,12 @@
 
 				{#snippet bottomLeft()}
 					<ButtonCreate size="sm" />
+					{#if collection.isUpload}
+						<Separator />
+						<Button onclick={() => (bulkDialogOpen = true)} icon={CopyPlus} size="sm" variant="text">
+							Bulk upload
+						</Button>
+					{/if}
 					<CollectionHeader />
 				{/snippet}
 
@@ -77,9 +88,8 @@
 					{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent, index (index)}
 						<CustomHeaderComponent />
 					{/each}
-					
+
 					<LanguageSwitcher onLocalClick={() => invalidateAll()} />
-					
 				{/snippet}
 
 				{#snippet bottomRight()}
@@ -98,6 +108,8 @@
 			</div>
 		{/snippet}
 	</Page>
+
+	<BulkUploadDialog {collection} bind:open={bulkDialogOpen} />
 {:else}
 	<Unauthorized />
 {/if}

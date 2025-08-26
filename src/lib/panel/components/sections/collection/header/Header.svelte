@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { getContext } from 'svelte';
+	import CreateUploadFolder from './CreateUploadFolder.svelte';
 	import DisplayMode from './DisplayMode.svelte';
 	import SelectUI from './SelectUI.svelte';
-	import CreateUploadFolder from './CreateUploadFolder.svelte';
+	import Separator from './Separator.svelte';
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
@@ -12,23 +13,16 @@
 </script>
 
 {#if showDisplayMode}
-	<div class="rz-collection-header__separator"></div>
+	<Separator />
 	<DisplayMode />
 {/if}
 
 {#if collection.config.upload && collection.isGrid()}
-	<div class="rz-collection-header__separator"></div>
+	<Separator />
 	<CreateUploadFolder {collection} />
 {/if}
 
 {#if showSelectUI}
-	<div class="rz-collection-header__separator"></div>
+	<Separator />
 	<SelectUI />
 {/if}
-
-<style type="postcss">
-	.rz-collection-header__separator {
-		border-left: var(--rz-border);
-		height: 1rem;
-	}
-</style>
