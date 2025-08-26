@@ -1,22 +1,21 @@
 import { invalidateAll } from '$app/navigation';
+import { env } from '$env/dynamic/public';
+import type { Directory } from '$lib/core/collections/upload/upload.js';
+import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import { PARAMS } from '$lib/core/constant.js';
+import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
+import type { Field, FormField } from '$lib/fields/types.js';
+import type { FieldPanelTableConfig } from '$lib/panel/types.js';
+import { isUploadConfig } from '$lib/util/config.js';
+import { toNestedStructure } from '$lib/util/doc.js';
+import { getValueAtPath, hasProp } from '$lib/util/object.js';
+import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
+import type { WithRequired } from '$lib/util/types.js';
 import { getContext, onMount, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
-import { isUploadConfig } from '$lib/util/config.js';
 import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
-import { getValueAtPath, hasProp } from '$lib/util/object.js';
-import type { Field, FormField } from '$lib/fields/types.js';
-import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { FieldPanelTableConfig } from '$lib/panel/types.js';
-import type { WithRequired } from '$lib/util/types.js';
-import { env } from '$env/dynamic/public';
-import cloneDeep from 'clone-deep';
-import { toNestedStructure } from '$lib/util/doc.js';
-import { PARAMS } from '$lib/core/constant.js';
-import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
-import type { Directory } from '$lib/core/collections/upload/upload.js';
 
 type SortMode = 'asc' | 'dsc';
 export type DisplayMode = (typeof DISPLAY_MODE)[keyof typeof DISPLAY_MODE];
@@ -134,7 +133,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		initialDocs = docs;
 
 		const deleteUrl = `/api/${config.slug}?where[id][in_array]=${toDelete.map((d) => d.id).join(',')}`;
-		const [error, _] = await trycatchFetch(deleteUrl, {
+		const [error] = await trycatchFetch(deleteUrl, {
 			method: 'DELETE'
 		});
 
@@ -145,33 +144,6 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 			toast.success(`Successfully deleted ${ids.length} docs`);
 		}
 		await invalidateAll();
-	};
-
-	/**
-	 * Rebuilds nested positions for all documents in the hierarchy
-	 * @param documents Array of documents to process
-	 * @returns [orderedDocs, docsToUpdate] - Ordered documents and documents that need updating
-	 */
-	const rebuildNestedPositions = (documents: GenericDoc[]) => {
-		const docsToUpdate: GenericDoc[] = [];
-
-		// Process documents at current level
-		const orderedDocs = documents.map((doc, index) => {
-			const clone = cloneDeep(doc);
-			// Update position if needed
-			if (clone._position !== index) {
-				clone._position = index;
-				docsToUpdate.push(clone);
-			}
-			// Process children recursively if they exist
-			if (clone._children && clone._children.length) {
-				const [orderedChildren, childrenToUpdate] = rebuildNestedPositions(clone._children);
-				clone._children = orderedChildren;
-				docsToUpdate.push(...childrenToUpdate);
-			}
-			return clone;
-		});
-		return [orderedDocs, docsToUpdate];
 	};
 
 	/**
@@ -279,7 +251,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 				headers: { 'Content-Type': 'application/json' }
 			});
 		});
-		const [error, _] = await trycatch(() => Promise.all(promises));
+		const [error] = await trycatch(() => Promise.all(promises));
 
 		if (error) {
 			console.error('API update failed:', error);
@@ -308,7 +280,11 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	}
 
 	function selectAll() {
-		selected = docs.map((doc) => doc.id);
+		if (config.upload) {
+			selected = docs.filter((doc) => doc._path === upload.currentPath).map((doc) => doc.id);
+		} else {
+			selected = docs.map((doc) => doc.id);
+		}
 	}
 
 	async function deleteSelection() {
@@ -379,6 +355,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		get stamp() {
 			return stamp;
 		},
+
 		get title() {
 			return config.label.plural;
 		},
@@ -386,9 +363,11 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		get hasDraft() {
 			return hasDraft;
 		},
+
 		get hasVersions() {
 			return hasVersions;
 		},
+
 		config,
 		canCreate,
 		isList,
@@ -410,11 +389,14 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		get sortingOrder() {
 			return sortingOrder;
 		},
+
 		get sortingBy() {
 			return sortingBy;
 		},
+
 		toggleSelectOf,
 		selectAll,
+
 		get selected() {
 			return selected;
 		},
@@ -427,8 +409,15 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		set selectMode(bool) {
 			selectMode = bool;
 		},
-		deleteSelection,
+		get isAllSelected() {
+			if (config.upload) {
+				return selected.length === docs.filter((d) => d._path === upload.currentPath).length;
+			} else {
+				return selected.length === docs.length;
+			}
+		},
 
+		deleteSelection,
 		filterBy,
 
 		get isUpload() {
