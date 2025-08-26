@@ -1,3 +1,5 @@
+import type { UploadPath } from './util/path';
+
 export type JsonFile = {
 	base64: string;
 	filename?: string;
@@ -7,7 +9,7 @@ export type JsonFile = {
 };
 
 export type Directory = {
-	id: `root${string}`
-	name: string,
-	parent: string | null
-}
+	id: UploadPath;
+	name: string;
+	parent: UploadPath | null;
+};
