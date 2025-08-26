@@ -657,7 +657,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		}
 		// Add a redirect parameter if we're in a nested form ex: relation creation
 		// to prevent reidrect after creation
-		const redirectParam = nestedLevel > 0 ? `&${PARAMS.REDIRECT}=0` : '';
+		const redirectParam = nestedLevel > 0 ? `&${PARAMS.REDIRECT}=false` : '';
 		// Combine all parts to form the final action URL
 		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};

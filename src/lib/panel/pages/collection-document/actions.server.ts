@@ -1,9 +1,9 @@
-import { redirect, type Actions, type RequestEvent } from '@sveltejs/kit';
+import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
+import { handleError } from '$lib/core/errors/handler.server';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc';
-import { handleError } from '$lib/core/errors/handler.server';
 import { trycatch } from '$lib/util/trycatch.js';
-import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
+import { type Actions, type RequestEvent } from '@sveltejs/kit';
 import { t__ } from '../../../core/i18n/index.js';
 
 export default function (slug: CollectionSlug) {
@@ -17,7 +17,7 @@ export default function (slug: CollectionSlug) {
 			const { rizom, locale } = event.locals;
 			// Get the redirect parameter ex: ?redirect=0 that can be present if we're in a nested form
 			// to prevent redirection after entry creation ex: for relation creation
-			const withoutRedirect = event.url.searchParams.get(PARAMS.REDIRECT) === '0';
+			const withoutRedirect = event.url.searchParams.get(PARAMS.REDIRECT) === 'false';
 
 			const data = await extractData(event.request);
 
@@ -72,15 +72,15 @@ export default function (slug: CollectionSlug) {
 			if (error) {
 				return handleError(error, { context: 'action' });
 			}
-			
+
 			if (draft && 'versionId' in document) {
 				return {
 					document,
 					message: t__('common.version_created'),
-					redirectUrl:  `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`
+					redirectUrl: `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`
 				};
 			}
-			
+
 			return {
 				document,
 				message: t__('common.doc_updated')
