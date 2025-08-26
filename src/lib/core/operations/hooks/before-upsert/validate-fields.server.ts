@@ -1,3 +1,4 @@
+import { PARAMS } from '$lib/core/constant.js';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
@@ -5,7 +6,7 @@ import type { FormErrors } from '$lib/panel/types.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
 import { Hooks } from '../index.js';
 
-export const validateFields = Hooks.beforeUpsert( async (args) => {
+export const validateFields = Hooks.beforeUpsert(async (args) => {
 	const errors: FormErrors = {};
 	const { event, operation } = args;
 	const { rizom, user } = event.locals;
@@ -18,11 +19,15 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @validateFields');
 
-  // Skip validation on locale fallback as the validation has already been done on creation
-  const skipUnique = args.context.isFallbackLocale
-  const skipValidate = args.context.isFallbackLocale
-  const skipAccess = args.context.isFallbackLocale || args.context.isSystemOperation
-	
+	// Get the skip parameter from the url
+	const paramSkip = event.url.searchParams.get(PARAMS.SKIP_VALIDATION) === 'true' || false;
+
+	// Skip validation on locale fallback as the validation has already been done on creation
+	const skipUnique = args.context.isFallbackLocale || paramSkip;
+	const skipValidate = args.context.isFallbackLocale || paramSkip;
+	const skipRequired = args.context.isFallbackLocale || paramSkip;
+	const skipAccess = args.context.isFallbackLocale || args.context.isSystemOperation;
+
 	for (const [key, config] of Object.entries(configMap)) {
 		let value: any = getValueAtPath(key, output);
 
@@ -30,7 +35,6 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		/* Validation
     /****************************************************/
 
-		
 		// Unique
 		/** @TODO better unique check like relations, locale,... */
 		if ('unique' in config && config.unique && isCollection && !skipUnique) {
@@ -44,15 +48,16 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 						throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @validateFields');
 					query = `where[and][0][${key}][equals]=${value}&where[and][1][id][not_equals]=${args.context.originalDoc.id}&select=id`;
 			}
-			
-			const existing = await rizom.collection(slug).system().find({ locale, query, select: ['id'] });
-			
+
+			const existing = await rizom
+				.collection(slug)
+				.system()
+				.find({ locale, query, select: ['id'] });
+
 			if (existing.length) {
 				errors[key] = RizomFormError.UNIQUE_FIELD;
 			}
 		}
-
-		
 
 		/****************************************************/
 		/* Field hook before validate
@@ -66,7 +71,7 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 				}
 			}
 		}
-		
+
 		/****************************************************/
 		/* Validate
     /****************************************************/
@@ -107,35 +112,35 @@ export const validateFields = Hooks.beforeUpsert( async (args) => {
 		/* Access
     /****************************************************/
 
-
 		if (config.access && config.access.update && operation === 'update' && !skipAccess) {
 			const authorizedFieldUpdate = config.access.update(user, {
 				id: args.context.originalDoc?.id
 			});
 			if (!authorizedFieldUpdate) {
-        output = deleteValueAtPath(output, key);
-        value = undefined;
+				output = deleteValueAtPath(output, key);
+				value = undefined;
 			}
 		}
 
-		
 		if (config.access && config.access.create && operation === 'create' && !skipAccess) {
 			const authorizedFieldCreate = config.access.create(user, {
 				id: undefined
 			});
 			if (!authorizedFieldCreate) {
 				output = deleteValueAtPath(output, key);
-        value = undefined;
+				value = undefined;
 			}
 		}
-		
+
 		// Required
 		if (config.required && config.isEmpty(value)) {
-			errors[key] = RizomFormError.REQUIRED_FIELD;
+			if (skipRequired) {
+				output = setValueAtPath(key, output, '');
+			} else {
+				errors[key] = RizomFormError.REQUIRED_FIELD;
+			}
 		}
-		
 	}
-	
 
 	if (Object.keys(errors).length) {
 		throw new RizomFormError(errors);
