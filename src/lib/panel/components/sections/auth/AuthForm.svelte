@@ -15,7 +15,7 @@
 	<div
 		class="rz-auth__left"
 		class:rz-auth__left--image={!!image}
-		style={!!image ? `background-image:url(${image})` : null}
+		style={image ? `background-image:url(${image})` : null}
 	></div>
 	<div class="rz-auth__right">
 		<h1>{title}</h1>

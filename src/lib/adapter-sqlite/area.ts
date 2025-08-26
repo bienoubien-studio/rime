@@ -1,18 +1,18 @@
-import { eq } from 'drizzle-orm';
-import { buildWithParam } from './with.js';
-import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { DeepPartial, Dic } from '$lib/util/types.js';
-import type { ConfigInterface } from '../core/config/index.server.js';
-import { createBlankDocument } from '$lib/util/doc.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import * as adapterUtil from './util.js';
-import * as schemaUtil from '$lib/util/schema.js';
+import { getRequestEvent } from '$app/server';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import type { GetRegisterType } from 'rizom';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
+import type { GetRegisterType } from '$lib/index.js';
+import { createBlankDocument } from '$lib/util/doc.js';
+import * as schemaUtil from '$lib/util/schema.js';
+import type { DeepPartial, Dic } from '$lib/util/types.js';
+import { eq } from 'drizzle-orm';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { ConfigInterface } from '../core/config/index.server.js';
 import type { GenericTables } from './types.js';
-import { getRequestEvent } from '$app/server';
+import * as adapterUtil from './util.js';
+import { buildWithParam } from './with.js';
 
 type AreaInterfaceArgs = {
 	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
@@ -44,12 +44,12 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				with: buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
 			};
 
-			// @ts-expect-error
+			// @ts-expect-error slug is a tableName
 			let doc = await db.query[slug].findFirst(params);
 
 			if (!doc) {
 				await createArea(slug, createBlankDocument(areaConfig, getRequestEvent()), locale);
-				// @ts-expect-error
+				// @ts-expect-error slug is a tableName
 				doc = await db.query[slug].findFirst(params);
 			}
 			if (!doc) {
@@ -58,8 +58,8 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			return doc;
 		} else {
 			// First check for record presence
-			// @ts-expect-error
-			let area = await db.query[slug].findFirst({ id: true });
+			// @ts-expect-error slug is a tableName
+			const area = await db.query[slug].findFirst({ id: true });
 
 			// If no area exists yet, create it
 			if (!area) {
@@ -118,13 +118,13 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				};
 			}
 
-			// @ts-expect-error suck
-			let doc = await db.query[slug].findFirst(params);
+			// @ts-expect-error slug is a tableName
+			const doc = await db.query[slug].findFirst(params);
 
 			if (!doc) {
 				throw new RizomError(RizomError.OPERATION_ERROR);
 			}
-			
+
 			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
 		}
 	};
@@ -165,7 +165,8 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				tables,
 				mainTableName: versionsTableName,
 				localesTableName: schemaUtil.makeLocalesSlug(versionsTableName),
-				locale
+				locale,
+				fillNotNull: true
 			});
 
 			if (config.versions && config.versions.draft) {
@@ -307,7 +308,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			const versionsTable = schemaUtil.makeVersionsSlug(slug);
 			const versionsLocalesTable = schemaUtil.makeLocalesSlug(versionsTable);
-			
+
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,

@@ -1,14 +1,15 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
+import type { GetRegisterType } from '$lib/index.js';
 import * as schemaUtil from '$lib/util/schema.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { and, desc, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GetRegisterType } from 'rizom';
 import type { ConfigInterface } from '../core/config/index.server.js';
 import { RizomError } from '../core/errors/index.js';
 import { buildOrderByParam } from './orderBy.js';
@@ -16,7 +17,7 @@ import * as adapterUtil from './util.js';
 import { buildWhereParam } from './where.js';
 import { buildWithParam } from './with.js';
 
-type Schema = GetRegisterType<'Schema'>
+type Schema = GetRegisterType<'Schema'>;
 type Args = {
 	db: BetterSQLite3Database<Schema>;
 	tables: any;
@@ -40,7 +41,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const withParam = buildWithParam({ slug, locale, tables, configInterface });
-			//@ts-ignore
+			//@ts-expect-error slug is a table for sure
 			const doc = await db.query[slug].findFirst({
 				where: eq(table.id, id),
 				with: withParam
@@ -59,7 +60,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Build params based
 			// if version Id get the specifi version
 			// else get the published or the latest, depending on the draft param
-			let params = {
+			const params = {
 				where: eq(table.id, id),
 				with: {
 					[versionsTable]: {
@@ -77,7 +78,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				}
 			};
 
-			//@ts-ignore
+			//@ts-expect-error slug is a table for sure
 			const doc = await db.query[slug].findFirst(params);
 
 			// Throw 404 if not found
@@ -126,7 +127,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const table = tables[tableName];
 
 			// Check if there is already a folder with the path in the uploadDirectories
-			//@ts-ignore
+			//@ts-expect-error tableName is a table for sure
 			const uploadDir = await db.query[tableName].findFirst({
 				where: and(eq(table.id, data._path))
 			});
@@ -295,7 +296,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// if draft is enabled on the collection
 			if (config.versions && config.versions.draft && mainData.status === 'published') {
 				// update all rows first to draft
-				await db.update(tables[versionsTable]).set({ status: VERSIONS_STATUS.DRAFT }).where(eq(tables[versionsTable].ownerId, id));
+				await db
+					.update(tables[versionsTable])
+					.set({ status: VERSIONS_STATUS.DRAFT })
+					.where(eq(tables[versionsTable].ownerId, id));
 			}
 
 			// Update version directly
@@ -363,7 +367,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
 			const selectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
 
-			//@ts-ignore
+			//@ts-expect-error slug is a table for sure
 			return await db.query[slug].findMany({
 				columns: selectColumns,
 				...params
@@ -419,7 +423,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Handle select columns for root table
 			const rootSelectColumns = adapterUtil.columnsParams({ table: tables[slug], select });
 
-			//@ts-ignore
+			//@ts-expect-error slug is a table for sure
 			const rawDocs = await db.query[slug].findMany({
 				...params,
 				columns: rootSelectColumns,
@@ -438,12 +442,13 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const result = rawDocs
 				.map((doc: RawDoc) => {
 					// for documents that have no version try/catch the 404 and return false
+					// ... should probably check that it's a 404 error in a near future
 					try {
 						return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
-					} catch (err) {
+					} catch (err: any) {
+						logger.info(err.message);
 						return false;
 					}
-					// filter to get only retrieved docs with version
 				})
 				.filter(Boolean);
 

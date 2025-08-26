@@ -117,7 +117,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 */
 	create(args: APIMethodArgs<typeof create>): Promise<Doc> {
 		return create<Doc>({
-			//@ts-ignore args.data is DeepPartial<RegisterCollection[CollectionSlug]> and expect exactlly this
+			//@ts-expect-error args.data is DeepPartial<RegisterCollection[CollectionSlug]> and expect exactlly this
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
 			config: this.config,
