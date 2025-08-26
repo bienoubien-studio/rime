@@ -1,11 +1,14 @@
 export default {
 	api_key_dialog_title: 'Your API Key',
-	api_key_dialog_text: 'This API key will only be shown once and cannot be retrieved later. Please copy it and store it securely on your server.',
+	api_key_dialog_text:
+		'This API key will only be shown once and cannot be retrieved later. Please copy it and store it securely on your server.',
 	browse: 'browse',
+	bulk_upload_dialog_title: 'Bulk upload',
 	close: 'Close',
 	confirmPassword: 'Confirm password',
 	create_first: 'Create your first $1',
 	create_new: 'Create new $1',
+	create_folder: 'New folder',
 	create: 'Create',
 	created_at: 'Created',
 	delete: 'Delete $1',
@@ -18,6 +21,7 @@ export default {
 	draft_infos: 'The document is in draft mode, only panel user can read it',
 	draft: 'Draft',
 	drop_file: 'Drop your file here',
+	drop_files: 'Drop your files here',
 	edit_link: 'Edit link',
 	forgotPassword: 'Forgot password',
 	generatingPreview: 'Generating preview',
