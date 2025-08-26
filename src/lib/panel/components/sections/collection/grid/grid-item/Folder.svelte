@@ -1,55 +1,80 @@
 <script lang="ts">
+	import { goto, invalidateAll } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
+	import { directoryInput } from '$lib/core/collections/upload/directory-input-config.js';
 	import type { Directory } from '$lib/core/collections/upload/upload.js';
+	import type { UploadPath } from '$lib/core/collections/upload/util/path.js';
 	import { PARAMS } from '$lib/core/constant.js';
+	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import Input from '$lib/fields/text/component/Text.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import ContextMenu from '$lib/panel/components/ui/context-menu/ContextMenu.svelte';
 	import ContextMenuItem from '$lib/panel/components/ui/context-menu/ContextMenuItem.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
+	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
+	import { setFormContext } from '$lib/panel/context/form.svelte.js';
+	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 	import { trycatchFetch } from '$lib/util/trycatch.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../../../core/i18n/index.js';
-	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
-	import { goto, invalidateAll } from '$app/navigation';
-	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
 
 	type Props = {
 		folder: Directory;
 		slug: string;
 		onDelete?: (path: string) => void;
+		onRename?: (oldPath: UploadPath, newPath: UploadPath) => void;
 		onDocumentDrop: (args: { documentId: string; path: string }) => void;
 		draggable?: 'true';
 	};
-	const { folder, slug, onDelete, onDocumentDrop, draggable }: Props = $props();
+	const { folder, slug, onDelete, onRename, onDocumentDrop, draggable }: Props = $props();
 
 	let deleteConfirmOpen = $state(false);
+	let renameDialogOpen = $state(false);
 	let message = $state('');
-
-	const isRoot = $derived(folder.name === '...');
-
 	let rootElement = $state<HTMLButtonElement>();
-
+	const isRoot = $derived(folder.name === '...');
 	const APIProxy = getAPIProxyContext(API_PROXY.ROOT);
-
 	const childFilesURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${slug}?where[_path][equals]=${folder.id}&select=id`);
 	const childFiles = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFilesURL));
 	const childFilesCount = $derived(childFiles.data?.docs?.length || 0);
-
-	const childFoldersURL = $derived(
-		`${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}?where[parent][equals]=${folder.id}&select=id`
-	);
+	const baseFolderApiURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}`);
+	const childFoldersURL = $derived(`${baseFolderApiURL}?where[parent][equals]=${folder.id}&select=id`);
 	const childFolders = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFoldersURL));
 	const childFoldersCount = $derived(childFolders.data?.docs?.length || 0);
+	const renameFolderForm = setFormContext({ name: '' }, 'rename-folder');
+
+	const renameField = renameFolderForm.useField('name', directoryInput);
+
+	async function handleRename() {
+		const renameURL = `${baseFolderApiURL}/${folder.id}`;
+		const newPath = `${folder.parent}:${renameField.value}` as UploadPath;
+		const [error] = await trycatchFetch(renameURL, {
+			method: 'PATCH',
+			body: JSON.stringify({
+				id: newPath
+			})
+		});
+		if (error) {
+			return toast.error('Error renaming folder');
+		}
+		toast.success(t__('rename_success'));
+		renameDialogOpen = false;
+		if (onRename) {
+			onRename(folder.id, newPath);
+		}
+	}
 
 	async function handleGetDeleteInfos() {
-		message = t__('common.delete_dialog_text', `wich contains ${childFilesCount + childFoldersCount} elements`);
+		message = t__(
+			'common.delete_dialog_text',
+			`wich contains ${childFilesCount} file(s) and ${childFoldersCount} folder(s)`
+		);
 		deleteConfirmOpen = true;
 	}
 
 	async function handleDelete() {
-		const url = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folder.id}`;
-		const [error, _] = await trycatchFetch(url, { method: 'DELETE' })
+		const url = `${baseFolderApiURL}/${folder.id}`;
+		const [error] = await trycatchFetch(url, { method: 'DELETE' });
 		if (error) {
 			return toast.error('Error deleting folder');
 		}
@@ -63,8 +88,8 @@
 	async function handleDropFolder(folderId: string) {
 		const movedFolderPath = folderId;
 		const newFolderPath = `${folder.id}:${movedFolderPath.split(':').at(-1)}`;
-		const moveAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}/${folderId}`;
-		const [error, _] = await trycatchFetch(moveAPICallURL, {
+		const moveAPICallURL = `${baseFolderApiURL}/${folderId}`;
+		const [error] = await trycatchFetch(moveAPICallURL, {
 			method: 'PATCH',
 			body: JSON.stringify({ id: newFolderPath })
 		});
@@ -81,7 +106,7 @@
 
 	async function handleDropDocument(docId: string) {
 		const moveDocumentAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${slug}/${docId}`;
-		const [error, _] = await trycatchFetch(moveDocumentAPICallURL, {
+		const [error] = await trycatchFetch(moveDocumentAPICallURL, {
 			method: 'PATCH',
 			body: JSON.stringify({ _path: folder.id })
 		});
@@ -170,16 +195,14 @@
 			{/snippet}
 			{#snippet content()}
 				<ContextMenuItem onclick={handleGetDeleteInfos}>Delete</ContextMenuItem>
+				<ContextMenuItem onclick={() => (renameDialogOpen = true)}>Rename</ContextMenuItem>
 			{/snippet}
 		</ContextMenu>
 	{:else}
 		{@render folderContent()}
 	{/if}
-	{#if !isRoot}
-		<span>{childFilesCount + childFoldersCount} items</span>
-	{:else}
-		<span></span>
-	{/if}
+
+	<span></span>
 </button>
 
 <Dialog.Root bind:open={deleteConfirmOpen}>
@@ -195,8 +218,21 @@
 	</Dialog.Content>
 </Dialog.Root>
 
+<Dialog.Root bind:open={renameDialogOpen}>
+	<Dialog.Content>
+		<Dialog.Header>
+			{t__('common.rename_dialog_title', folder.name)}
+		</Dialog.Header>
+		<Input form={renameFolderForm} config={directoryInput} />
+		<Dialog.Footer --rz-justify-content="space-between">
+			<Button disabled={!renameFolderForm.canSubmit} onclick={handleRename}>Rename</Button>
+			<Button onclick={() => (renameDialogOpen = false)} variant="secondary">Cancel</Button>
+		</Dialog.Footer>
+	</Dialog.Content>
+</Dialog.Root>
+
 <style lang="postcss">
-	:root{
+	:root {
 		--rz-folder-light: light-dark(hsl(var(--rz-gray-12)), hsl(var(--rz-gray-6)));
 		--rz-folder-dark: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
 		--rz-folder-hover-bg: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-1)));

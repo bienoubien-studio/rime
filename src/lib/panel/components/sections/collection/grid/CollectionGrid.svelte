@@ -1,16 +1,27 @@
 <script lang="ts">
+	import type { UploadPath } from '$lib/core/collections/upload/util/path';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import GridItem from './grid-item/GridItem.svelte';
-	import Folder from './grid-item/Folder.svelte';
 	import Empty from '../Empty.svelte';
-	import { random } from '$lib/util/index.js';
+	import Folder from './grid-item/Folder.svelte';
+	import GridItem from './grid-item/GridItem.svelte';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();
 
 	const currentPathDocuments = $derived(collection.docs.filter((doc) => doc._path === collection.upload.currentPath));
+
 	function onDeleteFolder(path: string) {
 		collection.upload.directories = collection.upload.directories.filter((dir) => dir.id !== path);
+	}
+
+	function onRenameFolder(oldPath: UploadPath, newPath: UploadPath) {
+		collection.upload.directories = collection.upload.directories.map((dir) => {
+			if (dir.id === oldPath) {
+				dir.id = newPath;
+				dir.name = newPath.split(':').at(-1)!;
+			}
+			return dir;
+		});
 	}
 
 	/**
@@ -49,6 +60,7 @@
 				{folder}
 				slug={collection.config.slug}
 				onDelete={onDeleteFolder}
+				onRename={onRenameFolder}
 			/>
 		{/each}
 
