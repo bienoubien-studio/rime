@@ -1,10 +1,10 @@
+import { RizomError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import type { GetRegisterType } from '$lib/index.js';
 import { makeLocalesSlug, makeVersionsSlug } from '$lib/util/schema.js';
+import { and, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { CompiledArea, CompiledCollection } from '../types.js';
-import { and, eq } from 'drizzle-orm';
-import { logger } from '$lib/core/logger/index.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import type { GetRegisterType } from 'rizom';
 import type { GenericTables } from './types.js';
 
 type Params = {
@@ -26,18 +26,19 @@ const OPERATION = {
 export async function updateDocumentUrl(url: string, params: Params) {
 	//
 	const { config, id, versionId, tables, db } = params;
-  const operationType = defineOperation(params.locale, params.config)
-  let operation
+	const operationType = defineOperation(params.locale, params.config);
+	let operation;
 
 	switch (operationType) {
-		case OPERATION.ROOT:
+		case OPERATION.ROOT: {
 			const table = tables[config.slug];
 			operation = db.update(table).set({ url }).where(eq(table.id, id));
 			break;
+		}
 
-		case OPERATION.LOCALE:
+		case OPERATION.LOCALE: {
 			const tableLocale = tables[makeLocalesSlug(config.slug) as keyof typeof tables];
-      operation = db
+			operation = db
 				.update(tableLocale)
 				.set({ url })
 				.where(
@@ -48,8 +49,9 @@ export async function updateDocumentUrl(url: string, params: Params) {
 					)
 				);
 			break;
+		}
 
-		case OPERATION.VERSION:
+		case OPERATION.VERSION: {
 			const tableVersions = tables[makeVersionsSlug(config.slug)];
 			operation = db
 				.update(tableVersions)
@@ -62,8 +64,9 @@ export async function updateDocumentUrl(url: string, params: Params) {
 					)
 				);
 			break;
+		}
 
-		case OPERATION.VERSION_LOCALE:
+		case OPERATION.VERSION_LOCALE: {
 			const tableVersionsLocales = tables[makeLocalesSlug(makeVersionsSlug(config.slug)) as keyof typeof tables];
 			operation = db
 				.update(tableVersionsLocales)
@@ -72,22 +75,23 @@ export async function updateDocumentUrl(url: string, params: Params) {
 					and(
 						//
 						eq(tableVersionsLocales.ownerId, versionId),
-            eq(tableVersionsLocales.locale, params.locale),
+						eq(tableVersionsLocales.locale, params.locale)
 					)
 				);
 			break;
+		}
 
 		default:
 			logger.warn(`can't define url update operation for ${config.slug}, ${id}`);
 	}
 
-  if(operation){
-    try{
-      operation.run()
-    }catch(err){
-      throw new RizomError(RizomError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}`)
-    }
-  }
+	if (operation) {
+		try {
+			operation.run();
+		} catch (err: any) {
+			throw new RizomError(RizomError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
+		}
+	}
 }
 
 const defineOperation = (locale: Params['locale'], config: Params['config']) => {
