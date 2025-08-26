@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from '@lucide/svelte';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
+	import { getContext } from 'svelte';
 
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
-	const isAllSelected = $derived(collection.selected.length === collection.docs.length);
 	const selectedCount = $derived(collection.selected.length);
 	const pluralSuffix = $derived(selectedCount > 1 ? 's' : '');
 	const activeListClass = $derived(collection.selectMode ? 'rz-header-select__icon--active' : '');
@@ -24,7 +23,7 @@
 	</Button>
 
 	{#if collection.selectMode}
-		{#if isAllSelected}
+		{#if collection.isAllSelected}
 			<Button variant="text" icon={SquareMinus} onclick={() => (collection.selected = [])}>Deselect All</Button>
 		{:else}
 			<Button variant="text" icon={SquareCheck} onclick={collection.selectAll}>
