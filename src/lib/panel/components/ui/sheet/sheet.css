@@ -9,6 +9,7 @@
 	background-color: hsl(var(--rz-color-bg));
 	padding: var(--rz-size-6);
 	box-shadow: var(--rz-shadow-xl);
+	overflow-y: auto;
 }
 
 .rz-sheet-content__close {

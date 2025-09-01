@@ -1,273 +1,48 @@
 <script lang="ts">
-	import { goto, invalidateAll } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
-	import { directoryInput } from '$lib/core/collections/upload/directory-input-config.js';
-	import type { Directory } from '$lib/core/collections/upload/upload.js';
-	import type { UploadPath } from '$lib/core/collections/upload/util/path.js';
-	import { PARAMS } from '$lib/core/constant.js';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import Input from '$lib/fields/text/component/Text.svelte';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import ContextMenu from '$lib/panel/components/ui/context-menu/ContextMenu.svelte';
-	import ContextMenuItem from '$lib/panel/components/ui/context-menu/ContextMenuItem.svelte';
-	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
-	import { setFormContext } from '$lib/panel/context/form.svelte.js';
-	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
-	import { trycatchFetch } from '$lib/util/trycatch.js';
-	import { toast } from 'svelte-sonner';
-	import { t__ } from '../../../../../../core/i18n/index.js';
+	import type { Snippet } from 'svelte';
 
-	type Props = {
-		folder: Directory;
-		slug: string;
-		onDelete?: (path: string) => void;
-		onRename?: (oldPath: UploadPath, newPath: UploadPath) => void;
-		onDocumentDrop: (args: { documentId: string; path: string }) => void;
-		draggable?: 'true';
-	};
-	const { folder, slug, onDelete, onRename, onDocumentDrop, draggable }: Props = $props();
-
-	let deleteConfirmOpen = $state(false);
-	let renameDialogOpen = $state(false);
-	let message = $state('');
-	let rootElement = $state<HTMLButtonElement>();
-	const isRoot = $derived(folder.name === '...');
-	const APIProxy = getAPIProxyContext(API_PROXY.ROOT);
-	const childFilesURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${slug}?where[_path][equals]=${folder.id}&select=id`);
-	const childFiles = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFilesURL));
-	const childFilesCount = $derived(childFiles.data?.docs?.length || 0);
-	const baseFolderApiURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}`);
-	const childFoldersURL = $derived(`${baseFolderApiURL}?where[parent][equals]=${folder.id}&select=id`);
-	const childFolders = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFoldersURL));
-	const childFoldersCount = $derived(childFolders.data?.docs?.length || 0);
-	const renameFolderForm = setFormContext({ name: '' }, 'rename-folder');
-
-	const renameField = renameFolderForm.useField('name', directoryInput);
-
-	async function handleRename() {
-		const renameURL = `${baseFolderApiURL}/${folder.id}`;
-		const newPath = `${folder.parent}:${renameField.value}` as UploadPath;
-		const [error] = await trycatchFetch(renameURL, {
-			method: 'PATCH',
-			body: JSON.stringify({
-				id: newPath
-			})
-		});
-		if (error) {
-			return toast.error('Error renaming folder');
-		}
-		toast.success(t__('rename_success'));
-		renameDialogOpen = false;
-		if (onRename) {
-			onRename(folder.id, newPath);
-		}
-	}
-
-	async function handleGetDeleteInfos() {
-		message = t__(
-			'common.delete_dialog_text',
-			`wich contains ${childFilesCount} file(s) and ${childFoldersCount} folder(s)`
-		);
-		deleteConfirmOpen = true;
-	}
-
-	async function handleDelete() {
-		const url = `${baseFolderApiURL}/${folder.id}`;
-		const [error] = await trycatchFetch(url, { method: 'DELETE' });
-		if (error) {
-			return toast.error('Error deleting folder');
-		}
-		toast.success(t__('delete_success'));
-		deleteConfirmOpen = false;
-		if (onDelete) {
-			onDelete(folder.id);
-		}
-	}
-
-	async function handleDropFolder(folderId: string) {
-		const movedFolderPath = folderId;
-		const newFolderPath = `${folder.id}:${movedFolderPath.split(':').at(-1)}`;
-		const moveAPICallURL = `${baseFolderApiURL}/${folderId}`;
-		const [error] = await trycatchFetch(moveAPICallURL, {
-			method: 'PATCH',
-			body: JSON.stringify({ id: newFolderPath })
-		});
-
-		if (error) {
-			console.error(error);
-			return toast.error('Error moving folder');
-		}
-
-		toast.success('Folder moved successfully');
-		childFolders.refresh();
-		return invalidateAll();
-	}
-
-	async function handleDropDocument(docId: string) {
-		const moveDocumentAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${slug}/${docId}`;
-		const [error] = await trycatchFetch(moveDocumentAPICallURL, {
-			method: 'PATCH',
-			body: JSON.stringify({ _path: folder.id })
-		});
-		if (error) {
-			console.error(error);
-			return toast.error('Error moving document');
-		}
-		toast.success('Document moved successfully');
-		if (onDocumentDrop) {
-			onDocumentDrop({ documentId: docId, path: folder.id });
-		}
-		childFiles.refresh();
-	}
-
-	async function handleDrop(e: DragEvent) {
-		e.preventDefault(); // prevent default browser behavior
-		rootElement?.classList.remove('rz-folder--dragover');
-		// Get the document ID from dataTransfer
-		const docId = e.dataTransfer?.getData('text/plain');
-		if (!docId) return;
-		// This is a folder move so update folder path
-		if (docId.includes(':')) {
-			return handleDropFolder(docId);
-		}
-		// Handle a drop document
-		return handleDropDocument(docId);
-	}
-
-	function handleDragEnter(e: DragEvent) {
-		e.preventDefault();
-		rootElement?.classList.add('rz-folder--dragover');
-	}
-
-	function handleDragLeave() {
-		rootElement?.classList.remove('rz-folder--dragover');
-	}
-
-	function handleGoToFolder() {
-		goto(`${env.PUBLIC_RIZOM_URL}/panel/${slug}?${PARAMS.UPLOAD_PATH}=${folder.id}`);
-	}
-
-	function handleDragStart(e: DragEvent) {
-		e.dataTransfer?.setData('text/plain', folder.id);
-	}
+	type Props = { children: Snippet };
+	const { children }: Props = $props();
 </script>
 
-{#snippet folderContent()}
-	<svg
-		version="1.1"
-		xmlns="http://www.w3.org/2000/svg"
-		xmlns:xlink="http://www.w3.org/1999/xlink"
-		x="0px"
-		y="0px"
-		viewBox="0 0 500 400"
-		xml:space="preserve"
-	>
-		<path
-			d="M465.4,400H34.6C15.5,400,0,384.5,0,365.4V34.6C0,15.5,15.5,0,34.6,0c0,0,69,0,103,0c43.6,0,40.7,40,80.9,40
-		c27.6,0,247,0,247,0c19.1,0,34.6,15.5,34.6,34.6v290.9C500,384.5,484.5,400,465.4,400z"
-		/>
-
-		<path
-			d="M465.4,400H34.6C15.5,400,0,384.5,0,365.4V106.5C0,87.4,15.5,72,34.6,72h430.9c19.1,0,34.6,15.5,34.6,34.6
-		v258.9C500,384.5,484.5,400,465.4,400z"
-		/>
-	</svg>
-	<h3>
-		{folder.name}
-	</h3>
-{/snippet}
-
-<button
-	bind:this={rootElement}
-	onclick={handleGoToFolder}
-	class="rz-folder"
-	ondragleave={handleDragLeave}
-	ondragover={handleDragEnter}
-	ondrop={handleDrop}
-	draggable={draggable === 'true' ? 'true' : null}
-	ondragstart={draggable === 'true' ? handleDragStart : null}
+<svg
+	class="rz-folder-svg"
+	version="1.1"
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	x="0px"
+	y="0px"
+	viewBox="0 0 500 400"
+	xml:space="preserve"
 >
-	{#if !isRoot}
-		<ContextMenu>
-			{#snippet trigger()}
-				{@render folderContent()}
-			{/snippet}
-			{#snippet content()}
-				<ContextMenuItem onclick={handleGetDeleteInfos}>Delete</ContextMenuItem>
-				<ContextMenuItem onclick={() => (renameDialogOpen = true)}>Rename</ContextMenuItem>
-			{/snippet}
-		</ContextMenu>
-	{:else}
-		{@render folderContent()}
-	{/if}
+	<path
+		d="M465.4,400H34.6C15.5,400,0,384.5,0,365.4V34.6C0,15.5,15.5,0,34.6,0c0,0,69,0,103,0c43.6,0,40.7,40,80.9,40
+		c27.6,0,247,0,247,0c19.1,0,34.6,15.5,34.6,34.6v290.9C500,384.5,484.5,400,465.4,400z"
+	/>
 
-	<span></span>
-</button>
-
-<Dialog.Root bind:open={deleteConfirmOpen}>
-	<Dialog.Content>
-		<Dialog.Header>
-			{t__('common.delete_dialog_title', folder.name)}
-		</Dialog.Header>
-		<p>{message}</p>
-		<Dialog.Footer --rz-justify-content="space-between">
-			<Button onclick={handleDelete}>Delete</Button>
-			<Button onclick={() => (deleteConfirmOpen = false)} variant="secondary">Cancel</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
-
-<Dialog.Root bind:open={renameDialogOpen}>
-	<Dialog.Content>
-		<Dialog.Header>
-			{t__('common.rename_dialog_title', folder.name)}
-		</Dialog.Header>
-		<Input form={renameFolderForm} config={directoryInput} />
-		<Dialog.Footer --rz-justify-content="space-between">
-			<Button disabled={!renameFolderForm.canSubmit} onclick={handleRename}>Rename</Button>
-			<Button onclick={() => (renameDialogOpen = false)} variant="secondary">Cancel</Button>
-		</Dialog.Footer>
-	</Dialog.Content>
-</Dialog.Root>
+	<path
+		d="M465.4,400H34.6C15.5,400,0,384.5,0,365.4V106.5C0,87.4,15.5,72,34.6,72h430.9c19.1,0,34.6,15.5,34.6,34.6
+		v258.9C500,384.5,484.5,400,465.4,400z"
+	/>
+</svg>
+<h3>
+	{@render children()}
+</h3>
 
 <style lang="postcss">
-	:root {
-		--rz-folder-light: light-dark(hsl(var(--rz-gray-12)), hsl(var(--rz-gray-6)));
-		--rz-folder-dark: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
-		--rz-folder-hover-bg: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-1)));
+	h3 {
+		@mixin font-semibold;
+		text-align: center;
+		padding: var(--rz-size-3);
 	}
-
-	.rz-folder {
+	.rz-folder-svg {
+		aspect-ratio: 5 / 4;
 		width: 100%;
-		aspect-ratio: 5/4;
-		padding: var(--rz-size-5);
-		border-radius: var(--rz-radius-lg);
-		h3 {
-			@mixin font-semibold;
-			text-align: center;
-			padding: var(--rz-size-3);
-		}
-		svg {
-			aspect-ratio: 5 / 4;
-			width: 100%;
-		}
-		:global {
-			path:first-child {
-				fill: var(--rz-folder-dark);
-			}
-			path:last-child {
-				fill: var(--rz-folder-light);
-			}
-		}
-		:global {
-			&.rz-folder--dragover {
-				background-color: var(--rz-folder-hover-bg);
-			}
-		}
 	}
-
-	.rz-folder:hover {
-		background-color: var(--rz-folder-hover-bg);
+	.rz-folder-svg path:first-child {
+		fill: var(--rz-folder-dark);
+	}
+	.rz-folder-svg path:last-child {
+		fill: var(--rz-folder-light);
 	}
 </style>

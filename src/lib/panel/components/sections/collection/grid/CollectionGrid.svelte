@@ -2,7 +2,7 @@
 	import type { UploadPath } from '$lib/core/collections/upload/util/path';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import Empty from '../Empty.svelte';
-	import Folder from './grid-item/Folder.svelte';
+	import Folder from './grid-item/FolderWithActions.svelte';
 	import GridItem from './grid-item/GridItem.svelte';
 
 	type Props = { collection: CollectionContext };

@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import Doc from '$lib/panel/components/sections/document/Document.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
 	import { getUserContext } from '$lib/panel/context/user.svelte.js';
 	import { createBlankDocument } from '$lib/util/doc.js';
@@ -13,6 +10,7 @@
 	import Sortable from 'sortablejs';
 	import { onDestroy } from 'svelte';
 	import type { RelationComponentProps, RelationFieldItem } from '../types.js';
+	import Browse from './Browse.svelte';
 	import './upload.css';
 
 	const {
@@ -78,19 +76,6 @@
 	<CardResource {resource} onCloseClick={() => removeValue(item.documentId)} />
 {/snippet}
 
-{#snippet commandItem(item: RelationFieldItem)}
-	<div class="rz-relation-upload__grid-item">
-		<div class="rz-relation-upload__grid-thumbnail" style="--rz-upload-preview-cell-size: 100%">
-			<UploadThumbCell url={item.url} mimeType={item.mimeType} />
-		</div>
-		<div class="rz-relation-upload__grid-info">
-			<p class="rz-relation-upload__grid-filename">{item.filename}</p>
-			<p class="rz-relation-upload__grid-filesize">{item.filesize}</p>
-			<p class="rz-relation-upload__grid-mimetype">{item.mimeType}</p>
-		</div>
-	</div>
-{/snippet}
-
 {#key stamp}
 	<div
 		class="rz-relation-upload__list"
@@ -121,30 +106,7 @@
 	</Button>
 </div>
 
-<Command.Dialog bind:open onOpenChange={(val) => (open = val)}>
-	<Command.Input
-		class="rz-relation-upload__search"
-		placeholder={t__(
-			`common.search_a|${relationConfig.label.gender}`,
-			relationConfig.label.singular || relationConfig.slug
-		)}
-	/>
-
-	<Command.List class="rz-relation-upload__command-list">
-		<Command.Empty>No results found.</Command.Empty>
-		{#each availableItems as item, index (index)}
-			<Command.Item
-				value={item.filename}
-				onSelect={() => {
-					addValue(item.documentId);
-					open = false;
-				}}
-			>
-				{@render commandItem(item)}
-			</Command.Item>
-		{/each}
-	</Command.List>
-</Command.Dialog>
+<Browse bind:open {addValue} config={relationConfig} />
 
 <Sheet.Root
 	bind:open={create}
@@ -155,7 +117,12 @@
 		}
 	}}
 >
-	<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" showCloseButton={false} class="rz-relation-sheet" side="right">
+	<Sheet.Content
+		style="--rz-page-gutter:var(--rz-size-6)"
+		showCloseButton={false}
+		class="rz-relation-sheet"
+		side="right"
+	>
 		<Doc
 			doc={createBlankDocument(relationConfig)}
 			readOnly={false}

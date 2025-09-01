@@ -16,7 +16,7 @@ function createAPIProxy() {
 	// Use explicit type instead of ReturnType
 	const resources = $state<Map<string, Resource>>(new Map());
 
-	function getRessource<T extends any = any>(url: string) {
+	function getRessource<T>(url: string) {
 		// Check if we already have this resource
 		if (!resources.has(url)) {
 			// Create a new resource
@@ -27,7 +27,7 @@ function createAPIProxy() {
 		return resources.get(url) as Resource<T>;
 	}
 
-	function createResource<R extends any = any>(url: string): Resource<R> {
+	function createResource<R>(url: string): Resource<R> {
 		// Use $state for the resource data to make it reactive
 		let data = $state<R | null>(null);
 		let isLoading = $state(true);
@@ -108,4 +108,4 @@ export const API_PROXY = {
 	DOCUMENT: 'document',
 	ROOT: 'root',
 	TIPTAP: 'tiptap'
-}
+};
