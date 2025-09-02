@@ -30,6 +30,11 @@
 </h3>
 
 <style lang="postcss">
+	:root {
+		--rz-folder-light: light-dark(hsl(var(--rz-gray-12)), hsl(var(--rz-gray-6)));
+		--rz-folder-dark: light-dark(hsl(var(--rz-gray-10)), hsl(var(--rz-gray-4)));
+	}
+
 	h3 {
 		@mixin font-semibold;
 		text-align: center;

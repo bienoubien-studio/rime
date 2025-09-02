@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { FileText } from '@lucide/svelte';
 	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
+	import { FileText } from '@lucide/svelte';
 
 	type Props = {
 		url?: string;
@@ -8,7 +8,6 @@
 		class?: string;
 	};
 	const { url, class: className, mimeType }: Props = $props();
-	
 </script>
 
 <div class="rz-upload-preview-cell {className}">
@@ -29,12 +28,11 @@
 </div>
 
 <style type="postcss">
-
-	:root{
+	:root {
 		--rz-upload-preview-cell-bg: light-dark(hsl(var(--rz-gray-11)), hsl(var(--rz-gray-0)));
 		--rz-upload-preview-cell-fit: contain;
 	}
-	
+
 	.rz-upload-preview-cell {
 		--size: var(--rz-upload-preview-cell-size, var(--rz-size-9));
 		display: flex;

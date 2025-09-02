@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
 	import type { Directory } from '$lib/core/collections/upload/upload';
-	import DocumentCard from '$lib/panel/components/sections/collection/grid/grid-item/document-card/DocumentCard.svelte';
 	import Folder from '$lib/panel/components/sections/collection/grid/grid-item/Folder.svelte';
+	import CardDocument from '$lib/panel/components/ui/card-document/card-document.svelte';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import type { CompiledCollection, UploadDoc } from '$lib/types';
@@ -54,7 +54,7 @@
 			{#if files.data}
 				{#each files.data.docs as doc (doc.id)}
 					<button onclick={() => addValue(doc.id)}>
-						<DocumentCard {doc} />
+						<CardDocument {doc} />
 					</button>
 				{/each}
 			{/if}

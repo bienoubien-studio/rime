@@ -3,11 +3,11 @@
 	import { page } from '$app/state';
 	import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 	import type { GenericDoc } from '$lib/core/types/doc';
+	import CardDocument from '$lib/panel/components/ui/card-document/card-document.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { isUploadConfig } from '$lib/util/config.js';
 	import { getContext } from 'svelte';
-	import DocumentCard from './document-card/DocumentCard.svelte';
 
 	type Props = { checked: boolean; doc: GenericDoc; draggable?: 'true' };
 	const { checked, doc, draggable }: Props = $props();
@@ -39,7 +39,7 @@
 		>
 			<Checkbox {checked} />
 		</button>
-		<DocumentCard {doc} />
+		<CardDocument {doc} />
 	</div>
 {:else}
 	<button
@@ -48,7 +48,7 @@
 		draggable={draggable || null}
 		ondragstart={draggable ? handleDragStart : null}
 	>
-		<DocumentCard {doc} />
+		<CardDocument {doc} />
 	</button>
 {/if}
 
