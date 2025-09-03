@@ -1,4 +1,7 @@
+import { RizomError } from '$lib/core/errors';
 import type { GenericBlock } from '$lib/core/types/doc.js';
+import { omitId } from '$lib/util/object';
+import type { OperationContext } from '../hooks';
 
 type BlocksDiff = {
 	toAdd: GenericBlock[];
@@ -8,10 +11,28 @@ type BlocksDiff = {
 
 type DefineBlocksDiffArgs = {
 	existingBlocks: GenericBlock[];
-	incomingBlocks: GenericBlock[];
+	incomingBlocks: (Omit<GenericBlock, 'id'> & { id?: string })[];
+	context: OperationContext;
 };
 
-export function defineBlocksDiff({ existingBlocks, incomingBlocks }: DefineBlocksDiffArgs): BlocksDiff {
+// If block is localized should not keep its id so it created a new one
+// If block is not localized than it should keep its id so block is updated
+
+export function defineBlocksDiff({ existingBlocks, incomingBlocks, context }: DefineBlocksDiffArgs): BlocksDiff {
+	const configMap = context.configMap;
+	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @defineBlocksDiff');
+
+	incomingBlocks = incomingBlocks.map((block) => {
+		if (context.isFallbackLocale && block.path) {
+			const isLocalized: boolean = configMap[block.path]?.localized || false;
+			if (isLocalized) {
+				block = omitId(block);
+				block.locale = context.isFallbackLocale;
+			}
+		}
+		return block;
+	});
+
 	// Consider blocks as new if they have temp ID OR no ID at all
 	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
 

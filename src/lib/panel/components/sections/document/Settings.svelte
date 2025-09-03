@@ -6,7 +6,6 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { getValueAtPath, isObjectLiteral, setValueAtPath } from '$lib/util/object.js';
 	import { trycatchFetch } from '$lib/util/trycatch.js';
 	import { Copy, History, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
@@ -67,45 +66,20 @@
 		});
 	}
 
-	const prepareDuplicate = (obj: any): any => {
-		if (Array.isArray(obj)) {
-			return obj.map((item) => prepareDuplicate(item));
-		}
-
-		if (isObjectLiteral(obj)) {
-			return Object.entries(obj)
-				.filter(
-					([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'locale'
-				)
-				.reduce(
-					(acc, [key, value]) => ({
-						...acc,
-						[key]: prepareDuplicate(value)
-					}),
-					{}
-				);
-		}
-
-		return obj;
-	};
-
 	async function duplicate() {
-		let data = prepareDuplicate(form.doc);
+		const url = `/api/${form.config.slug}/${form.doc.id}/duplicate`;
 
-		const title = getValueAtPath(form.config.asTitle, data);
-		data = setValueAtPath(form.config.asTitle, data, title + ' (copy)');
-		const url = `/api/${form.config.slug}`;
 		const [error, success] = await trycatchFetch(url, {
-			body: JSON.stringify(data),
 			method: 'POST'
 		});
+
 		if (error) {
 			toast.error(error.message);
 			return console.log(error);
 		}
-		const { doc } = await success.json();
+		const { id } = await success.json();
 		toast.success(t__('common.duplicate_success'));
-		await goto(`/panel/${form.config.slug}/${doc.id}`);
+		await goto(`/panel/${form.config.slug}/${id}`);
 	}
 </script>
 

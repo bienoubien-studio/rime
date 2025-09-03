@@ -1,14 +1,14 @@
+import type { BuiltConfig } from '$lib/core/config/types/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
+import type { Dic } from '$lib/util/types.js';
 import fs from 'fs';
 import path from 'path';
-import { writeRouteFile, ensureDir, shouldRegenerateRoutes, type Routes } from './util.js';
-import { collectionAPIRoutes, collectionPanelRoutes, collectionVersionsPanelRoutes } from './collection.js';
 import { areaAPIRoutes, areaRoutes, areaVersionsPanelRoutes } from './area.js';
+import { collectionAPIRoutes, collectionPanelRoutes, collectionVersionsPanelRoutes } from './collection.js';
 import { commonRoutes, customRoute } from './common.js';
 import { injectCustomCSS, removeCustomCSS } from './custom-css.js';
-import { logger } from '$lib/core/logger/index.server.js';
-import type { BuiltConfig } from '$lib/core/config/types/index.js';
-import type { Dic } from '$lib/util/types.js';
-import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
+import { ensureDir, shouldRegenerateRoutes, writeRouteFile, type Routes } from './util.js';
 
 const projectRoot = process.cwd();
 
@@ -32,7 +32,7 @@ function generateRoutes(config: BuiltConfig): void {
 	ensureDir(rizomRoutes);
 	ensureDir(panelRoute);
 
-	// Function that generate area routes files from a Routes object
+	// Function that generate area/collection routes files from a Routes object
 	const processRoutes = (slug: string, routes: Routes) => {
 		for (const [pattern, files] of Object.entries(routes)) {
 			const routePath = pattern.replace('{area.slug}', slug).replace('{collection.slug}', slug);
@@ -89,7 +89,7 @@ function generateRoutes(config: BuiltConfig): void {
 			processRoutes(makeUploadDirectoriesSlug(collection.slug), collectionAPIRoutes);
 		}
 	}
-	
+
 	// 6. Handle custom routes from config
 	const customRoutes: Dic = config.panel?.routes;
 	if (customRoutes) {

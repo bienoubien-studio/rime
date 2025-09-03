@@ -12,6 +12,7 @@ import { PRIVATE_FIELDS } from './auth/constant.server.js';
 import { create } from './operations/create.js';
 import { deleteDocs } from './operations/delete.js';
 import { deleteById } from './operations/deleteById.js';
+import { duplicate } from './operations/duplicate.js';
 import { find } from './operations/find.js';
 import { findById } from './operations/findById.js';
 import { updateById } from './operations/updateById.js';
@@ -120,6 +121,23 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 			//@ts-expect-error args.data is DeepPartial<RegisterCollection[CollectionSlug]> and expect exactlly this
 			data: args.data,
 			locale: this.#fallbackLocale(args.locale),
+			config: this.config,
+			event: this.#event,
+			isSystemOperation: this.isSystemOperation
+		});
+	}
+
+	/**
+	 * Duplicate a document in the collection
+	 *
+	 * @example
+	 * const post = await rizom.collection('posts').duplicate({
+	 *   id: '1234'
+	 * });
+	 */
+	duplicate(args: APIMethodArgs<typeof duplicate>): Promise<string> {
+		return duplicate({
+			id: args.id,
 			config: this.config,
 			event: this.#event,
 			isSystemOperation: this.isSystemOperation

@@ -88,9 +88,18 @@ export const PATCH = api.collection.updateById(${TScastVersionSlug(slug)})
 export const DELETE = api.collection.deleteById(${TScastVersionSlug(slug)})
 `;
 
+/**
+ * API collection document duplication
+ * (rizom)/api/{collection.slug}/[id]/duplicate/+server.ts
+ */
+const apiCollectionDocDuplicateServer = (slug: string) => `
+import * as api from '${PACKAGE_NAME}/api';
+
+export const POST = api.collection.duplicate('${slug}')
+`;
 
 /****************************************************/
-/* Routes 
+/* Routes
 /****************************************************/
 
 /**
@@ -126,6 +135,8 @@ export const collectionAPIRoutes: Routes = {
 	},
 	'(rizom)/api/{collection.slug}/[id]': {
 		server: apiCollectionDocServer
+	},
+	'(rizom)/api/{collection.slug}/[id]/duplicate': {
+		server: apiCollectionDocDuplicateServer
 	}
 };
-

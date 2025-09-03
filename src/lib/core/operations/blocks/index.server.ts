@@ -16,6 +16,7 @@ export const saveBlocks = async (args: {
 	adapter: Adapter;
 	config: CompiledArea | CompiledCollection;
 }) => {
+	//
 	const { context, ownerId, data, incomingPaths, adapter, config } = args;
 	const { locale } = context.params;
 	const { originalDoc: original, configMap, originalConfigMap } = context;
@@ -30,6 +31,7 @@ export const saveBlocks = async (args: {
 	});
 
 	let existingBlocks: GenericBlock[] = [];
+
 	if (original) {
 		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
 		const blocks = extractBlocks({
@@ -46,7 +48,8 @@ export const saveBlocks = async (args: {
 
 	const blocksDiff = defineBlocksDiff({
 		existingBlocks,
-		incomingBlocks
+		incomingBlocks,
+		context
 	});
 
 	if (blocksDiff.toDelete.length) {
@@ -72,5 +75,6 @@ export const saveBlocks = async (args: {
 		);
 	}
 
+	console.log(blocksDiff);
 	return blocksDiff;
 };

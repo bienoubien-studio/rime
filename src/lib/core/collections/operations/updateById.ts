@@ -31,6 +31,8 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	let { data } = args;
 	let config = args.config;
 
+	console.log('#### update');
+
 	// Set hooks context
 	let context: OperationContext<CollectionSlug> = {
 		params: {

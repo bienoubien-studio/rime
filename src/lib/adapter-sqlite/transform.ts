@@ -34,7 +34,6 @@ export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 /****************************************************/
 
 export const databaseTransformInterface = ({ configInterface, tables }: CreateTransformInterfaceArgs) => {
-	
 	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
 		doc: RawDoc;
 		slug: AreaSlug | CollectionSlug;
@@ -96,7 +95,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 					...block
 				};
 			}
-			block = transformDatabaseColumnsToPaths(block)
+			block = transformDatabaseColumnsToPaths(block);
 			/** Clean */
 			const { position, path } = block;
 			if (!isPanel) {
@@ -133,8 +132,8 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 						...block
 					};
 				}
-				
-				block = transformDatabaseColumnsToPaths(block)
+
+				block = transformDatabaseColumnsToPaths(block);
 
 				/** Clean */
 				const { position, path } = block;
@@ -165,12 +164,12 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				)[0] as PrototypeSlug;
 
 				const relationToId = relation[relationToIdKey];
-				if(!relationToId){
-					logger.warn(`orphean ${config.slug} relation : ${relation.id}`)
-					continue
+				if (!relationToId) {
+					logger.warn(`orphean ${config.slug} relation : ${relation.id}`);
+					continue;
 				}
-				
-				const relationPath = relation.path;
+
+				const relationPath: string = relation.path;
 				let relationOutput: Relation | GenericDoc | null;
 
 				/** Get relation if depth > 0 */
@@ -182,7 +181,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				} else {
 					/** Clean relation */
 					for (const key of Object.keys(relation)) {
-						/** Delete empty [table]Id */
+						/** Delete empty [table]Id and null properties from the relation */
 						if (relation[key] === null) {
 							delete relation[key];
 						} else if (key.endsWith('Id') && key !== 'ownerId') {
@@ -219,7 +218,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		if (!isPanel || !event.locals.user) {
 			keysToDelete.push('editedBy');
 		}
-		
+
 		if (withBlank) {
 			output = omit(keysToDelete, deepmerge(blankDocument, output, { arrayMerge: (_, y) => y }));
 		} else {

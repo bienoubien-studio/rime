@@ -93,6 +93,8 @@
 	onDestroy(() => {
 		destroySortable();
 	});
+
+	console.log(treeState.items);
 </script>
 
 <fieldset class="rz-field-tree {config.className}" use:root={field}>

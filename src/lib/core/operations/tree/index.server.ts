@@ -48,7 +48,8 @@ export const saveTreeBlocks = async (args: {
 
 	const treeDiff = defineTreeBlocksDiff({
 		existingBlocks: existingTreeBlocks,
-		incomingBlocks: incomingTreeBlocks
+		incomingBlocks: incomingTreeBlocks,
+		context
 	});
 
 	if (treeDiff.toDelete.length) {
@@ -74,5 +75,6 @@ export const saveTreeBlocks = async (args: {
 		);
 	}
 
+	console.log(treeDiff);
 	return treeDiff;
 };

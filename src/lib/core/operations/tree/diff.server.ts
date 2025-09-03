@@ -1,6 +1,8 @@
+import { RizomError } from '$lib/core/errors';
 import type { TreeBlock } from '$lib/core/types/doc';
-import { isObjectLiteral } from '$lib/util/object';
+import { isObjectLiteral, omitId } from '$lib/util/object';
 import type { WithRequired } from '$lib/util/types';
+import type { OperationContext } from '../hooks';
 
 export type TreeBlocksDiff = {
 	toAdd: WithRequired<TreeBlock, 'path'>[];
@@ -11,9 +13,28 @@ export type TreeBlocksDiff = {
 type DefineTreeBlocksDiffArgs = {
 	existingBlocks: WithRequired<TreeBlock, 'path'>[];
 	incomingBlocks: WithRequired<TreeBlock, 'path'>[];
+	context: OperationContext;
 };
 
-export function defineTreeBlocksDiff({ existingBlocks, incomingBlocks }: DefineTreeBlocksDiffArgs): TreeBlocksDiff {
+export function defineTreeBlocksDiff({
+	existingBlocks,
+	incomingBlocks,
+	context
+}: DefineTreeBlocksDiffArgs): TreeBlocksDiff {
+	const configMap = context.configMap;
+	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @defineBlocksDiff');
+
+	incomingBlocks = incomingBlocks.map((block) => {
+		if (context.isFallbackLocale && block.path) {
+			const isLocalized: boolean = configMap[block.path]?.localized || false;
+			if (isLocalized) {
+				block = omitId(block);
+				block.locale = context.isFallbackLocale;
+			}
+		}
+		return block;
+	});
+
 	// Consider blocks as new if they have temp ID OR no ID at all
 	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
 	const toDelete = existingBlocks.filter((existing) => {

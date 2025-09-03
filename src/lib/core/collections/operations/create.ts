@@ -26,6 +26,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 
 	let data = args.data;
 
+	console.log('#### create');
 	let context: OperationContext<CollectionSlug> = { params: { locale }, isSystemOperation };
 
 	for (const hook of config.hooks?.beforeOperation || []) {
