@@ -1,12 +1,12 @@
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { saveBlocks } from '../../operations/blocks/index.server.js';
-import { saveTreeBlocks } from '../../operations/tree/index.server.js';
-import { saveRelations } from '../../operations/relations/index.server.js';
-import type { DeepPartial } from '$lib/util/types.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { DeepPartial } from '$lib/util/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { saveBlocks } from '../../operations/blocks/index.server.js';
+import { saveRelations } from '../../operations/relations/index.server.js';
+import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 
 type UpdateArgs<T> = {
 	data: DeepPartial<T>;
@@ -20,9 +20,9 @@ type UpdateArgs<T> = {
 
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
-	const { config, event, locale, draft, isSystemOperation } = args;
-	let { versionId } = args;
+	const { config, event, locale, draft, isSystemOperation, versionId } = args;
 	const { rizom } = event.locals;
+
 	let data = args.data;
 
 	let context: OperationContext<AreaSlug> = {
@@ -72,29 +72,22 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		versionOperation: context.versionOperation
 	});
 
-	// Use the versionId from the update result for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
+		context,
 		ownerId: context.params.versionId,
-		configMap: context.configMap,
 		data,
 		incomingPaths,
-		original: context.originalDoc,
-		originalConfigMap: context.originalConfigMap,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	const treeDiff = await saveTreeBlocks({
+		context,
 		ownerId: context.params.versionId,
-		configMap: context.configMap,
 		data,
 		incomingPaths,
-		original: context.originalDoc,
-		originalConfigMap: context.originalConfigMap,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	await saveRelations({
@@ -109,10 +102,8 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		treeDiff
 	});
 
-	//@TODO draft should not be true
-
 	// Get the updated area with the correct version ID
-	let document = await rizom.area(config.slug).find({
+	const document = await rizom.area(config.slug).find({
 		locale,
 		versionId: versionId,
 		draft: true

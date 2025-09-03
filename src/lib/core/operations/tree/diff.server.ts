@@ -1,6 +1,6 @@
 import type { TreeBlock } from '$lib/core/types/doc';
-import type { WithRequired } from '$lib/util/types';
 import { isObjectLiteral } from '$lib/util/object';
+import type { WithRequired } from '$lib/util/types';
 
 export type TreeBlocksDiff = {
 	toAdd: WithRequired<TreeBlock, 'path'>[];
@@ -16,7 +16,6 @@ type DefineTreeBlocksDiffArgs = {
 export function defineTreeBlocksDiff({ existingBlocks, incomingBlocks }: DefineTreeBlocksDiffArgs): TreeBlocksDiff {
 	// Consider blocks as new if they have temp ID OR no ID at all
 	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
-
 	const toDelete = existingBlocks.filter((existing) => {
 		return !incomingBlocks.some((newBlock) => {
 			// Only compare blocks that have real IDs
@@ -46,6 +45,7 @@ export function defineTreeBlocksDiff({ existingBlocks, incomingBlocks }: DefineT
 					return true;
 				}
 			} else if (val !== newBlock[key]) {
+				// if the value differs from original than it should update
 				return true;
 			}
 		}

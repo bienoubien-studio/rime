@@ -17,16 +17,17 @@ export const getOriginalDocument = Hooks.beforeUpdate(async (args) => {
 			if (!context.params.id) throw new RizomError(RizomError.OPERATION_ERROR, 'missing id @getOriginalDocument');
 
 			original = await rizom.collection(config.slug).findById({
-				locale: context.params.locale,
+				locale: context.isFallbackLocale ? context.isFallbackLocale : context.params.locale,
 				id: context.params.id,
 				versionId: context.params.versionId,
 				draft: VersionOperations.shouldRetrieveDraft(context.versionOperation)
 			});
+
 			break;
 
 		case 'area':
 			original = await rizom.area(config.slug).find({
-				locale: context.params.locale,
+				locale: context.isFallbackLocale ? context.isFallbackLocale : context.params.locale,
 				versionId: context.params.versionId,
 				draft: VersionOperations.shouldRetrieveDraft(context.versionOperation)
 			});

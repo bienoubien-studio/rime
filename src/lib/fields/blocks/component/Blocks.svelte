@@ -8,6 +8,7 @@
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { useSortable } from '$lib/panel/util/Sortable.js';
 	import { capitalize } from '$lib/util/string.js';
+	import { Download } from '@lucide/svelte';
 	import Sortable from 'sortablejs';
 	import { onDestroy } from 'svelte';
 	import AddBlockButton from './AddBlockButton.svelte';
@@ -123,7 +124,7 @@
 		<AddBlockButton addBlock={add} {config} />
 
 		{#if locale && locale.code !== locale.defaultCode && config.localized}
-			<Button size="sm" onclick={field.setValueFromDefaultLocale} variant="secondary">
+			<Button icon={Download} size="sm" onclick={field.setValueFromDefaultLocale} variant="text">
 				{t__('fields.get_data_from')}
 				{locale.defaultCode}
 			</Button>
@@ -165,6 +166,8 @@
 	.rz-blocks__actions-bottom {
 		display: flex;
 		gap: var(--rz-size-3);
+		padding-right: var(--rz-size-3);
 		align-items: center;
+		justify-content: space-between;
 	}
 </style>

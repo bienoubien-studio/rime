@@ -1,13 +1,13 @@
-import { RizomError } from '$lib/core/errors/index.js';
-import { saveBlocks } from '../../operations/blocks/index.server.js';
-import { saveTreeBlocks } from '../../operations/tree/index.server.js';
-import { saveRelations } from '../../operations/relations/index.server.js';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { DeepPartial } from '$lib/util/types.js';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { RequestEvent } from '@sveltejs/kit';
+import { RizomError } from '$lib/core/errors/index.js';
 import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.js';
-import type { RegisterCollection } from 'rizom';
+import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { RegisterCollection } from '$lib/index.js';
+import type { DeepPartial } from '$lib/util/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { saveBlocks } from '../../operations/blocks/index.server.js';
+import { saveRelations } from '../../operations/relations/index.server.js';
+import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 
 type Args<T> = {
 	id: string;
@@ -17,7 +17,7 @@ type Args<T> = {
 	locale?: string | undefined;
 	config: CompiledCollection;
 	event: RequestEvent;
-	isFallbackLocale?: boolean;
+	isFallbackLocale?: string | undefined;
 	isSystemOperation?: boolean;
 };
 
@@ -26,7 +26,7 @@ type Args<T> = {
  */
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
 	//
-	const { event, locale, id, draft, isFallbackLocale = false, isSystemOperation } = args;
+	const { event, locale, id, draft, isFallbackLocale = undefined, isSystemOperation } = args;
 	const { rizom } = event.locals;
 	let { data } = args;
 	let config = args.config;
@@ -67,13 +67,12 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		data = result.data as Partial<T>;
 	}
 
-	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @updateById');
-	if (!context.originalConfigMap)
-		throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalConfigMap @updateById');
-	if (!context.originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @updateById');
-	if (!context.versionOperation)
-		throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionOperation @updateById');
-	if (!context.params.versionId) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @updateById');
+	const makeMessage = (name: string) => `missing ${name} @uppdateById`;
+	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('configMap'));
+	if (!context.originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('originalConfigMap'));
+	if (!context.originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('originalDoc'));
+	if (!context.versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('versionOperation'));
+	if (!context.params.versionId) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('versionId'));
 
 	const incomingPaths = Object.keys(context.configMap);
 
@@ -87,27 +86,21 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	});
 
 	const blocksDiff = await saveBlocks({
+		context,
 		ownerId: context.params.versionId,
-		configMap: context.configMap,
-		originalConfigMap: context.originalConfigMap,
 		data,
 		incomingPaths,
-		original: context.originalDoc,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	const treeDiff = await saveTreeBlocks({
+		context,
 		ownerId: context.params.versionId,
-		configMap: context.configMap,
-		originalConfigMap: context.originalConfigMap,
 		data,
 		incomingPaths,
-		original: context.originalDoc,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	await saveRelations({
@@ -122,8 +115,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		treeDiff
 	});
 
-	let document = await rizom.collection(config.slug).findById({
-		//
+	const document = await rizom.collection(config.slug).findById({
 		id: updatedId,
 		locale,
 		versionId: context.params.versionId

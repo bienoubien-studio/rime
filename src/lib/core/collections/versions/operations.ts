@@ -104,7 +104,7 @@ type Args = {
  *
  * @example
  * // Determine the operation type for a document update
- * const versionOperation = getVersionUpdateOperation({
+ * const versionOperation = defineVersionUpdateOperation({
  *   draft: true,
  *   versionId: undefined,
  *   config: documentConfig
@@ -117,7 +117,7 @@ type Args = {
  *
  * @returns The appropriate version operation based on the context
  */
-export function getVersionUpdateOperation({ draft, versionId, config }: Args): VersionOperation {
+export function defineVersionUpdateOperation({ draft, versionId, config }: Args): VersionOperation {
 	// Non-versioned documents always use simple update
 	if (!config.versions) {
 		return VERSIONS_OPERATIONS.UPDATE;

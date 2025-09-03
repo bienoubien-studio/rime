@@ -2,10 +2,10 @@ import type { VersionOperation } from '$lib/core/collections/versions/operations
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import type { Docs, DocType, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
+import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { PrototypeSlug } from '$lib/types.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { RegisterArea, RegisterCollection } from 'rizom';
 import type { ConfigMap } from '../configMap/types.js';
 
 // Operation and timing types
@@ -159,8 +159,7 @@ export const Hooks = {
 	/**
 	 * Creates an after create hook
 	 */
-	afterCreate: <S extends DocType = 'raw'>(handler: Hook<S, 'create', 'after'>): Hook<S, 'create', 'after'> =>
-		handler,
+	afterCreate: <S extends DocType = 'raw'>(handler: Hook<S, 'create', 'after'>): Hook<S, 'create', 'after'> => handler,
 
 	/**
 	 * Creates an after create hook
@@ -172,14 +171,12 @@ export const Hooks = {
 	/**
 	 * Creates an after update hook
 	 */
-	afterUpdate: <S extends DocType = 'raw'>(handler: Hook<S, 'update', 'after'>): Hook<S, 'update', 'after'> =>
-		handler,
+	afterUpdate: <S extends DocType = 'raw'>(handler: Hook<S, 'update', 'after'>): Hook<S, 'update', 'after'> => handler,
 
 	/**
 	 * Creates an after delete hook
 	 */
-	afterDelete: <S extends DocType = 'raw'>(handler: Hook<S, 'delete', 'after'>): Hook<S, 'delete', 'after'> =>
-		handler
+	afterDelete: <S extends DocType = 'raw'>(handler: Hook<S, 'delete', 'after'>): Hook<S, 'delete', 'after'> => handler
 };
 
 export type OperationContext<S extends DocType = 'raw'> = Dic & {
@@ -197,7 +194,7 @@ export type OperationContext<S extends DocType = 'raw'> = Dic & {
 		draft?: boolean;
 	};
 	/** Parameter passed to an update operation when creating locale document fallback */
-	isFallbackLocale?: boolean;
+	isFallbackLocale?: string | undefined;
 	/** Type of version operation */
 	versionOperation?: VersionOperation;
 	/** The original document if on an update operation */

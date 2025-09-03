@@ -1,25 +1,26 @@
-import { extractBlocks } from './extract.server.js';
-import { defineBlocksDiff } from './diff.server.js';
-import type { Dic } from '$lib/util/types.js';
-import type { ConfigMap } from '../configMap/types.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
+import type { Dic } from '$lib/util/types.js';
 import { makeVersionsSlug } from '../../../util/schema.js';
+import type { OperationContext } from '../hooks/index.js';
+import { defineBlocksDiff } from './diff.server.js';
+import { extractBlocks } from './extract.server.js';
 
 export const saveBlocks = async (args: {
-	configMap: ConfigMap;
+	context: OperationContext;
+	ownerId: string;
 	data: Dic;
 	incomingPaths: string[];
-	original?: Dic;
-	originalConfigMap?: ConfigMap;
 	adapter: Adapter;
 	config: CompiledArea | CompiledCollection;
-	ownerId: string;
-	locale?: string;
 }) => {
-	const { data, configMap, incomingPaths, original, originalConfigMap, adapter, config, ownerId, locale } = args;
+	const { context, ownerId, data, incomingPaths, adapter, config } = args;
+	const { locale } = context.params;
+	const { originalDoc: original, configMap, originalConfigMap } = context;
+
+	if (!configMap || !ownerId) throw new RizomError(RizomError.OPERATION_ERROR, '@saveBlocks');
 
 	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
 

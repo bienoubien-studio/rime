@@ -46,11 +46,11 @@
 
 	const renderBlockTitle = () => {
 		if (config.renderTitle) {
-			try{
+			try {
 				const title = config.renderTitle({ values: blockValue || {}, position });
 				if (title) return title;
-			}catch(err){
-				console.error(`Can't render title in block`, err)
+			} catch (err) {
+				console.error(`Can't render title in block`, err);
 			}
 		}
 		const title = config.label ? config.label : capitalize(config.name);
@@ -133,19 +133,20 @@
 		width: 100%;
 		border-bottom: var(--rz-border);
 		padding-right: var(--rz-size-2);
+		height: var(--rz-row-height);
+		background-color: hsl(var(--rz-row-color));
 	}
 
 	.rz-block__title-button {
 		flex: 1;
 		justify-content: flex-start;
 		flex-direction: row;
-		padding: var(--rz-size-1);
+		padding: var(--rz-size-3);
 	}
 
 	.rz-block__content--closed {
 		border-radius: var(--rz-radius-md);
 		.rz-block__header {
-			height: var(--rz-size-8);
 			border-color: transparent;
 			width: 100%;
 		}
@@ -154,7 +155,7 @@
 			position: absolute;
 			opacity: 0;
 			pointer-events: none;
-			top: var(--rz-size-1);
+			top: var(--rz-size-3);
 			right: var(--rz-size-11);
 		}
 		&:global(:has(.rz-field-error)) {
@@ -193,7 +194,7 @@
 		position: absolute;
 		opacity: 0;
 		pointer-events: none;
-		top: var(--rz-size-1);
+		/*top: var(--rz-size-1);*/
 		right: var(--rz-size-11);
 	}
 </style>

@@ -1,15 +1,14 @@
 <script lang="ts">
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { CirclePlus, Plus, ToyBrick } from '@lucide/svelte';
-	import { capitalize } from '$lib/util/string.js';
-	import { emptyValuesFromFieldConfig } from '$lib/util/field.js';
-	import { isFormField } from '$lib/util/field.js';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import type { GenericBlock } from '$lib/core/types/doc.js';
-	import type { BlocksFieldRaw, BlocksFieldBlock } from '../index.js';
-	import { t__ } from '$lib/core/i18n/index.js';
-	import type { WithoutBuilders } from '$lib/util/types.js';
 	import { env } from '$env/dynamic/public';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { GenericBlock } from '$lib/core/types/doc.js';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
+	import { emptyValuesFromFieldConfig, isFormField } from '$lib/util/field.js';
+	import { capitalize } from '$lib/util/string.js';
+	import type { WithoutBuilders } from '$lib/util/types.js';
+	import { CirclePlus, ToyBrick } from '@lucide/svelte';
+	import type { BlocksFieldBlock, BlocksFieldRaw } from '../index.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
@@ -116,6 +115,7 @@
 
 		.rz-add-block-button__list {
 			padding: var(--rz-size-2);
+			max-height: var(--rz-size-72);
 			border-right: var(--rz-border);
 		}
 
@@ -124,7 +124,7 @@
 			gap: var(--rz-size-3);
 			border-radius: var(--rz-radius-md);
 		}
-		
+
 		.rz-add-block-button__preview-wrap {
 			display: flex;
 			align-items: center;

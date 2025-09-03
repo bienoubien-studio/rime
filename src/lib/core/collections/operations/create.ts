@@ -1,14 +1,14 @@
-import cloneDeep from 'clone-deep';
-import { RizomError } from '$lib/core/errors/index.js';
-import { saveTreeBlocks } from '../../operations/tree/index.server.js';
-import { saveBlocks } from '../../operations/blocks/index.server.js';
-import { saveRelations } from '../../operations/relations/index.server.js';
-import type { RequestEvent } from '@sveltejs/kit';
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
+import { omitId } from '$lib/util/object.js';
 import type { DeepPartial } from '$lib/util/types.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { saveBlocks } from '../../operations/blocks/index.server.js';
+import { saveRelations } from '../../operations/relations/index.server.js';
+import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 
 type Args<T> = {
 	data: DeepPartial<T>;
@@ -25,7 +25,6 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 	const { rizom } = event.locals;
 
 	let data = args.data;
-	const incomingData = cloneDeep(data);
 
 	let context: OperationContext<CollectionSlug> = { params: { locale }, isSystemOperation };
 
@@ -63,23 +62,21 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 
 	// Use the versionId for blocks, trees, and relations
 	const blocksDiff = await saveBlocks({
+		context,
 		ownerId: created.versionId,
-		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	const treeDiff = await saveTreeBlocks({
+		context,
 		ownerId: created.versionId,
-		configMap: context.configMap,
 		data,
 		incomingPaths,
 		adapter: rizom.adapter,
-		config,
-		locale
+		config
 	});
 
 	await saveRelations({
@@ -117,19 +114,6 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		const locales = event.locals.rizom.config.getLocalesCodes();
 
 		if (locales.length) {
-			// Remove unwanted values on fallback
-			if ('file' in incomingData) {
-				delete incomingData.file;
-			}
-			if ('filename' in incomingData) {
-				delete incomingData.filename;
-			}
-			if ('password' in incomingData) {
-				delete incomingData.password;
-			}
-			if ('confirmPassword' in incomingData) {
-				delete incomingData.confirmPassword;
-			}
 			// Get locales
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
@@ -140,12 +124,13 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 					.updateById({
 						id: created.id,
 						versionId: created.versionId,
-						data: incomingData as DeepPartial<RegisterCollection[CollectionSlug]>,
+						data: omitId(document) as DeepPartial<RegisterCollection[CollectionSlug]>,
 						locale: otherLocale,
-						isFallbackLocale: true
+						isFallbackLocale: locale
 					});
 			}
 		}
+
 		rizom.setLocale(locale);
 	}
 
@@ -159,7 +144,6 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 			context
 		});
 		context = result.context;
-		//@ts-ignore I just don't care for now man
 		document = result.doc;
 	}
 
