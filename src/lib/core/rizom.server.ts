@@ -37,10 +37,15 @@ export class Rizom {
 		}
 	}
 
+	/**
+	 * This overide the locale on the current event.
+	 * Use it with caution.
+	 * By default the locale is set by ```rizom.defineLocale```
+	 */
 	setLocale(locale: string) {
 		this.#requestEvent.locals.locale = locale;
 	}
-	
+
 	getLocale() {
 		return this.#requestEvent.locals.locale;
 	}
@@ -54,7 +59,7 @@ export class Rizom {
 			defaultLocale: this.config.getDefaultLocale()
 		});
 	}
-	
+
 	area<Slug extends keyof RegisterArea>(slug: Slug) {
 		const areaConfig = this.config.getArea(slug);
 
@@ -74,7 +79,6 @@ export class Rizom {
 	 * - default locale
 	 */
 	defineLocale({ event }: { event: RequestEvent }) {
-		
 		// locale present inside the url params ex : /en/foo
 		const params = event.params;
 		const paramLocale = params.locale;
@@ -108,7 +112,7 @@ export class Rizom {
 	get cache() {
 		return this.#plugins.cache as CorePlugins['cache'];
 	}
-	
+
 	get sse() {
 		return this.#plugins.sse as CorePlugins['sse'];
 	}

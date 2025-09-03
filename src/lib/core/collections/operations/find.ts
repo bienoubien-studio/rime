@@ -2,8 +2,8 @@ import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
+import type { RegisterCollection } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { RegisterCollection } from 'rizom';
 
 type FindArgs = {
 	query?: OperationQuery;
@@ -23,7 +23,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	//
 	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [], isSystemOperation } = args;
 	const { rizom } = event.locals;
-	
+
 	let context: OperationContext<CollectionSlug> = {
 		isSystemOperation,
 		params: {
@@ -37,7 +37,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 			depth
 		}
 	};
-	
+
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
@@ -47,7 +47,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		});
 		context = result.context;
 	}
-	
+
 	const documentsRaw = await rizom.adapter.collection.find({
 		slug: config.slug,
 		query,
@@ -58,7 +58,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		select,
 		draft
 	});
-	
+
 	const hasSelect = select && Array.isArray(select) && select.length;
 
 	async function processDocument(documentRaw: RawDoc) {

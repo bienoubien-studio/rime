@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { NodeViewProps } from '@tiptap/core';
 	import type { UploadDoc } from '$lib/core/types/doc.js';
+	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import { onMount } from 'svelte';
-	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
-	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
-	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
-	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { X } from '@lucide/svelte';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
+	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
+	import { X } from '@lucide/svelte';
+	import type { NodeViewProps } from '@tiptap/core';
+	import { onMount } from 'svelte';
+	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
 
 	type NodeAttributes = {
 		id: string | null;
@@ -58,7 +58,7 @@
 	// available from inside tiptap rendered components
 	// TODO try to pass it as a prop in a near future
 	const APIProxy = setAPIProxyContext(API_PROXY.TIPTAP);
-	const ressource = APIProxy.getRessource(`/api/${extension.options.query}`);
+	const ressource = APIProxy.getRessource<{ docs: UploadDoc[] }>(`/api/${extension.options.query}`);
 	let docs = $state<UploadDoc[]>([]);
 
 	$effect(() => {

@@ -1,6 +1,5 @@
 import test, { expect } from '@playwright/test';
 import { API_BASE_URL } from '../util.js';
-import { clearLog, logToFile } from '../../src/log.js';
 
 /****************************************************
 /* Init
@@ -28,8 +27,7 @@ test('Login should be successfull', async ({ page, request }) => {
 			password: 'a&1Aa&1A'
 		}
 	});
-	clearLog()
-	logToFile(response)
+
 	const cookie = response.headers()['set-cookie'];
 	const json = await response.json();
 	expect(cookie).toBeDefined();

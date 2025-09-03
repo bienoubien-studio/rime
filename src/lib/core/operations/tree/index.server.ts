@@ -1,25 +1,26 @@
-import { extractTreeBlocks } from './extract.server';
-import type { TreeBlock } from '$lib/core/types/doc';
-import type { Dic, WithRequired } from '$lib/util/types';
-import { defineTreeBlocksDiff } from './diff.server';
-import type { CompiledArea, CompiledCollection } from '$lib/types';
-import type { ConfigMap } from '../configMap/types';
-import { RizomError } from '$lib/core/errors/index.js';
-import { makeVersionsSlug } from '$lib/util/schema';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { TreeBlock } from '$lib/core/types/doc';
+import type { CompiledArea, CompiledCollection } from '$lib/types';
+import { makeVersionsSlug } from '$lib/util/schema';
+import type { Dic, WithRequired } from '$lib/util/types';
+import type { OperationContext } from '../hooks';
+import { defineTreeBlocksDiff } from './diff.server';
+import { extractTreeBlocks } from './extract.server';
 
 export const saveTreeBlocks = async (args: {
-	configMap: ConfigMap;
+	context: OperationContext;
+	ownerId: string;
 	data: Dic;
 	incomingPaths: string[];
-	original?: Dic;
-	originalConfigMap?: ConfigMap;
 	adapter: Adapter;
 	config: CompiledArea | CompiledCollection;
-	ownerId: string;
-	locale?: string;
 }) => {
-	const { data, configMap, incomingPaths, original, originalConfigMap, adapter, config, ownerId, locale } = args;
+	const { context, ownerId, data, incomingPaths, adapter, config } = args;
+	const { locale } = context.params;
+	const { originalDoc: original, configMap, originalConfigMap } = context;
+
+	if (!configMap || !ownerId) throw new RizomError(RizomError.OPERATION_ERROR, '@saveBlocks');
 
 	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
 
@@ -50,7 +51,6 @@ export const saveTreeBlocks = async (args: {
 		incomingBlocks: incomingTreeBlocks
 	});
 
-	// throw new Error("that's an error");
 	if (treeDiff.toDelete.length) {
 		await Promise.all(treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block })));
 	}

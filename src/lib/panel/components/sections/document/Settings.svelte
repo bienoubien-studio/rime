@@ -71,7 +71,7 @@
 		if (Array.isArray(obj)) {
 			return obj.map((item) => prepareDuplicate(item));
 		}
-		
+
 		if (isObjectLiteral(obj)) {
 			return Object.entries(obj)
 				.filter(
@@ -91,7 +91,7 @@
 
 	async function duplicate() {
 		let data = prepareDuplicate(form.doc);
-		
+
 		const title = getValueAtPath(form.config.asTitle, data);
 		data = setValueAtPath(form.config.asTitle, data, title + ' (copy)');
 		const url = `/api/${form.config.slug}`;

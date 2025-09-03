@@ -1,15 +1,15 @@
-import { extractData } from '$lib/core/operations/extract-data.server.js';
-import { json, type RequestEvent } from '@sveltejs/kit';
+import { PARAMS } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/trycatch.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import { PARAMS } from '$lib/core/constant.js';
+import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: CollectionSlug) {
 	//
 	async function PATCH(event: RequestEvent) {
-		const { rizom, locale } = event.locals;
+		const { rizom } = event.locals;
 
 		const id = event.params.id;
 		if (!id) throw new RizomError(RizomError.NOT_FOUND);
@@ -20,16 +20,16 @@ export default function (slug: CollectionSlug) {
 			: undefined;
 
 		const [extractError, data] = await trycatch(() => extractData(event.request));
-		
+
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
-		
-		if(data.locale){
-			rizom.setLocale(data.locale)
+
+		if (data.locale) {
+			rizom.setLocale(data.locale);
 		}
-		
-		const [error, document] = await trycatch(() => 
+
+		const [error, document] = await trycatch(() =>
 			rizom.collection(slug).updateById({
 				id,
 				data,
@@ -38,7 +38,7 @@ export default function (slug: CollectionSlug) {
 				draft
 			})
 		);
-		
+
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}

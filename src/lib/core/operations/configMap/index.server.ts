@@ -35,13 +35,15 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 			if (isBlocksFieldRaw(field) && value && Array.isArray(value)) {
 				const blocks = value;
 				for (const [index, block] of blocks.entries()) {
-					try{
+					try {
 						const blockConfig = field.blocks.find((b) => b.name === block.type);
 						if (blockConfig) {
 							traverseData(block, blockConfig.fields, `${path}.${index}`);
 						}
-					}catch(err:any){
-						logger.warn(`block at path ${path} and postition ${index} has been deleted`)
+					} catch (err: any) {
+						logger.warn(
+							`block at path ${path} and postition ${index} not found but there are some residual data owned by this block`
+						);
 					}
 				}
 			} else if (isTreeFieldRaw(field) && value && Array.isArray(value)) {

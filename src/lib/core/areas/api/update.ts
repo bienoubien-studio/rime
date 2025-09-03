@@ -1,9 +1,9 @@
-import { extractData } from '$lib/core/operations/extract-data.server.js';
-import { json, type RequestEvent } from '@sveltejs/kit';
+import { PARAMS } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/trycatch.js';
-import { PARAMS } from '$lib/core/constant.js';
+import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: AreaSlug) {
 	//

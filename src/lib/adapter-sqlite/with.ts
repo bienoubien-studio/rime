@@ -1,9 +1,9 @@
-import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
-import type { Dic } from '$lib/util/types';
 import type { ConfigInterface } from '$lib/core/config/index.server';
-import { getBlocksTableNames, getTreeTableNames, makeLocalesSlug } from '$lib/util/schema';
 import { getFieldConfigByPath } from '$lib/util/config';
 import { isBlocksFieldRaw, isRelationField, isTreeFieldRaw } from '$lib/util/field';
+import { getBlocksTableNames, getTreeTableNames, makeLocalesSlug } from '$lib/util/schema';
+import type { Dic } from '$lib/util/types';
+import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 
 type BuildWithParamArgs = {
 	slug: string;
@@ -64,7 +64,7 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 					withParam[blocksTable] = params;
 
 					// Handle localized blocks
-					const localesBlockTable = makeLocalesSlug(blocksTable)
+					const localesBlockTable = makeLocalesSlug(blocksTable);
 					if (locale && localesBlockTable in tables) {
 						withParam[blocksTable] = {
 							...withParam[blocksTable],
@@ -95,7 +95,7 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 					withParam[treeTable] = params;
 
 					// Handle localized trees
-					const localesTreeTables = makeLocalesSlug(treeTable)
+					const localesTreeTables = makeLocalesSlug(treeTable);
 					if (locale && localesTreeTables in tables) {
 						withParam[treeTable] = {
 							...withParam[treeTable],
@@ -191,7 +191,7 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 				};
 
 				// Handle localized trees
-				const localesTreeTable = makeLocalesSlug(treeTable)
+				const localesTreeTable = makeLocalesSlug(treeTable);
 				if (locale && localesTreeTable in tables) {
 					withParam[treeTable] = {
 						...withParam[treeTable],
@@ -224,7 +224,7 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 				};
 
 				// Handle localized blocks
-				const localesBlockTable = makeLocalesSlug(blocksTable)
+				const localesBlockTable = makeLocalesSlug(blocksTable);
 				if (locale && localesBlockTable in tables) {
 					withParam[blocksTable] = {
 						...withParam[blocksTable],
@@ -272,7 +272,7 @@ const buildFullWithParam = ({ slug, locale, tables }: { slug: string; locale?: s
 			withParam[localesTableName] = { where: eq(tableLocales.locale, locale) };
 		}
 		for (const blocksTable of blocksTables) {
-			const localesBlockTable = makeLocalesSlug(blocksTable)
+			const localesBlockTable = makeLocalesSlug(blocksTable);
 			if (localesBlockTable in tables) {
 				withParam[blocksTable] = {
 					...withParam[blocksTable],
@@ -285,7 +285,7 @@ const buildFullWithParam = ({ slug, locale, tables }: { slug: string; locale?: s
 			}
 		}
 		for (const treeTable of treeTables) {
-			const localesTreeTable = makeLocalesSlug(treeTable)
+			const localesTreeTable = makeLocalesSlug(treeTable);
 			if (localesTreeTable in tables) {
 				withParam[treeTable] = {
 					...withParam[treeTable],

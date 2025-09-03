@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { t__ } from '$lib/core/i18n/index.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { t__ } from 'rizom/i18n';
 	import DropZone from './DropZone.svelte';
 
 	type Props = { open: boolean; collection: CollectionContext };

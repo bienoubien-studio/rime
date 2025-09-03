@@ -127,7 +127,7 @@ function cleanViteImports(str: string) {
 		}
 		return _; // Return original if property not found
 	});
-	
+
 	// replace constants without property access
 	const regExp = new RegExp(`__vite_ssr_import_\\d+__\\.(${Object.keys(CONSTANTS).join('|')})`, 'g');
 	str = str.replace(regExp, (_, key) => JSON.stringify(CONSTANTS[key as keyof typeof CONSTANTS]));
@@ -239,10 +239,10 @@ type CompiledConfigWithBluePrints = CompiledConfig & {
 // Main build function
 const generateBrowserConfig = (config: CompiledConfigWithBluePrints) => {
 	const content = buildConfigString(config);
-	if(content.includes('__vite_ssr_import')){
-		cache.delete('config')
-		console.log(content)
-		throw new Error('Unhandled module __vite_ssr_import_d+__')
+	if (content.includes('__vite_ssr_import')) {
+		cache.delete('config');
+		// console.log(content)
+		throw new Error('Unhandled module __vite_ssr_import_d+__');
 	}
 	if (cache.get('config.browser') !== content) {
 		cache.set('config.browser', content);

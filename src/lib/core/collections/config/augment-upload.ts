@@ -13,7 +13,7 @@ const withNormalizedUpload = <T extends { upload?: boolean | UploadConfig }>(con
 	// Determine the normalized upload value
 	let normalizedUpload: undefined | UploadConfig;
 
-	if (typeof upload === 'boolean' ) {
+	if (typeof upload === 'boolean') {
 		normalizedUpload = upload === true ? {} : undefined;
 	} else {
 		normalizedUpload = upload;
@@ -31,11 +31,10 @@ const withNormalizedUpload = <T extends { upload?: boolean | UploadConfig }>(con
  * add corresponding fields with validation if config.upload.accept is defined
  */
 export const augmentUpdload = <T extends Collection<any>>(config: T): WithNormalizedUpload<T> => {
-	
 	const normalizedUploadConfig = withNormalizedUpload(config);
 	if (!normalizedUploadConfig.upload) return normalizedUploadConfig;
 
-	let { upload } = normalizedUploadConfig;
+	const { upload } = normalizedUploadConfig;
 	let fields = [...config.fields];
 
 	if (upload) {
@@ -46,7 +45,7 @@ export const augmentUpdload = <T extends Collection<any>>(config: T): WithNormal
 			const thumbnailSize = { name: 'thumbnail', width: 400, compression: 60 };
 			upload.imageSizes = [thumbnailSize, ...(upload.imageSizes || [])];
 		}
-		
+
 		// Add image size fields
 		if ('imageSizes' in upload && upload.imageSizes?.length) {
 			const sizesFields = upload.imageSizes.map((size: ImageSizesConfig) => text(toCamelCase(size.name)).hidden());
@@ -75,7 +74,7 @@ export const augmentUpdload = <T extends Collection<any>>(config: T): WithNormal
 				() =>
 					`_path: text('_path').references(() => ${makeUploadDirectoriesSlug(config.slug)}.id, {onDelete: 'cascade', onUpdate: 'cascade'})`
 			);
-		
+
 		// Add hidden fields
 		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden(), pathField);
 	}

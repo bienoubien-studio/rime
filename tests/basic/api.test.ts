@@ -1,13 +1,11 @@
-import test, { expect, type APIRequestContext } from '@playwright/test';
+import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
+import { filePathToBase64 } from '$lib/core/collections/upload/util/converter.js';
+import test, { expect } from '@playwright/test';
 import path from 'path';
-import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
-import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 import { API_BASE_URL, signIn } from '../util.js';
-import { logToFile } from '../../src/log.js';
 
 const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
 const signInAdmin = signIn('admin2@bienoubien.com', 'a&1Aa&1A');
-const signInAdmin2 = signIn('admin3@bienoubien.com', 'a&1Aa&1A');
 const signInEditor = signIn('editor@bienoubien.com', 'a&1Aa&1A');
 const signInRegular = signIn('anonym@gmail.com', 'zé2Zzé2Z');
 
@@ -17,9 +15,6 @@ let editor2Id: string;
 let editor3Id: string;
 let adminId: string;
 let admin2Id: string;
-
-let AppApiKey: string;
-let authorId: string;
 
 /****************************************************/
 /* Init
@@ -523,7 +518,6 @@ test('Admin should not delete superAdmin', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-
 test('Admin should create a user', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
 		headers: await signInAdmin(request),
@@ -775,7 +769,7 @@ test('Should logout editor', async ({ request }) => {
 });
 
 /****************************************************/
-/* Users access 
+/* Users access
 /****************************************************/
 
 test('Should not create a user', async ({ request }) => {
@@ -1001,7 +995,7 @@ test('SuperAdmin should delete admin', async ({ request }) => {
 });
 
 /****************************************************/
-/* Signup 
+/* Signup
 /****************************************************/
 
 test('Should not public sign-up as staff', async ({ request }) => {
