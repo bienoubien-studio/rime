@@ -54,6 +54,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		const tableName = isVersioned ? makeVersionsSlug(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
 		const tableNameLocales = makeLocalesSlug(tableName);
+
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
@@ -147,8 +148,8 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				}
 
 				delete block[treeBlockLocaleTableName];
-				/** Assign */
 
+				/** Assign */
 				flatDoc[`${path}.${position}`] = block;
 			} catch {
 				logger.error('error in ', block.path);

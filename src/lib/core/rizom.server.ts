@@ -42,7 +42,7 @@ export class Rizom {
 	 * Use it with caution.
 	 * By default the locale is set by ```rizom.defineLocale```
 	 */
-	setLocale(locale: string) {
+	setLocale(locale: string | undefined) {
 		this.#requestEvent.locals.locale = locale;
 	}
 

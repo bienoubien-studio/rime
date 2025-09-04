@@ -18,57 +18,79 @@ export const duplicate = async (args: DeleteArgs): Promise<string> => {
 	const { config, event, id } = args;
 	const { rizom } = event.locals;
 
+	/**
+	 * Set a copy title, ex: Current Title (copy)
+	 * on the given document
+	 */
+	function setCopyTitle(doc: Dic) {
+		const title = getValueAtPath<string>(config.asTitle, doc);
+		const data = setValueAtPath<Dic>(config.asTitle, doc, title + ' (copy)');
+		return data;
+	}
+
+	/**
+	 * Prepare duplcation :
+	 * - set the copy title
+	 * - set status to draft if needed
+	 * - normalize properties
+	 */
+	function prepareDuplicate(doc: Dic, locale: string | undefined) {
+		let data = setCopyTitle(doc);
+		data.satus = data.satus ? VERSIONS_STATUS.DRAFT : undefined;
+		data = normalizeProps(data, locale);
+		return data;
+	}
+
+	// Store currrent locale
+	const currentLocale = event.locals.locale;
+	// Get the collection api
 	const collection = rizom.collection(config.slug);
+	// Get the defaultLocale to copy first from the default one
 	const defaultLocale = rizom.config.getDefaultLocale();
-
-	const document = await collection.findById({ id, locale: defaultLocale });
-
-	const title = getValueAtPath(config.asTitle, document);
-	let data = setValueAtPath<Dic>(config.asTitle, document, title + ' (copy)');
-	data.satus = data.satus ? VERSIONS_STATUS.DRAFT : undefined;
-	data = prepareDuplicate(data);
-
+	// Set locale to the default one
 	if (defaultLocale) rizom.setLocale(defaultLocale);
+
+	// Fetch document to copy
+	const document = await collection.findById({ id, locale: defaultLocale });
+	// Prepare data
+	const data = prepareDuplicate(document, defaultLocale);
+	// Create document
 	const newDocument = await collection.create({ data, locale: defaultLocale });
 
+	// Now update created document with other locale data
+	// Get all locales
 	const allLocales = rizom.config.getLocalesCodes();
 	const otherLocales = allLocales.filter((l) => l !== defaultLocale);
 
-	console.log('#################################');
-	console.log('#################################');
-	console.log('#################################');
-	console.log('#################################');
-
 	for (const locale of otherLocales) {
-		console.log('======== ' + locale);
+		// set the event locale for next operations
 		rizom.setLocale(locale);
-		const docLocalized = await collection.findById({ id, locale });
-		const title = getValueAtPath(config.asTitle, docLocalized);
-		let data = setValueAtPath<Dic>(config.asTitle, docLocalized, title + ' (copy)');
-		data = prepareDuplicate(data);
-
-		console.log(data.layout.sections);
-
+		// Get localized document
+		const docLocalized = await collection.findById({ id, locale, draft: true });
+		// Prepare data
+		const data = prepareDuplicate(docLocalized, locale);
+		// Update document for this locale
 		await collection.updateById({ id: newDocument.id, data, locale });
 	}
+	// Reset event locale
+	rizom.setLocale(currentLocale);
 
 	return newDocument.id;
 };
 
-const prepareDuplicate = (obj: any): any => {
+const normalizeProps = (obj: any, locale: string | undefined): any => {
 	if (Array.isArray(obj)) {
-		return obj.map((item) => prepareDuplicate(item));
+		return obj.map((item) => normalizeProps(item, locale));
 	}
 
 	if (isObjectLiteral(obj)) {
+		if (obj.locale) obj.locale = locale;
 		return Object.entries(obj)
-			.filter(
-				([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt' && key !== 'locale'
-			)
+			.filter(([key]) => key !== 'id' && key !== 'ownerId' && key !== 'createdAt' && key !== 'updatedAt')
 			.reduce(
 				(acc, [key, value]) => ({
 					...acc,
-					[key]: prepareDuplicate(value)
+					[key]: normalizeProps(value, locale)
 				}),
 				{}
 			);

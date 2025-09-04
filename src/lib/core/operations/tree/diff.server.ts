@@ -1,42 +1,56 @@
 import { RizomError } from '$lib/core/errors';
 import type { TreeBlock } from '$lib/core/types/doc';
-import { isObjectLiteral, omitId } from '$lib/util/object';
+import { isObjectLiteral } from '$lib/util/object';
 import type { WithRequired } from '$lib/util/types';
 import type { OperationContext } from '../hooks';
 
+type TreeBlockWithPath = WithRequired<TreeBlock, 'path'>;
+type TreeBlockForUpdate = Omit<TreeBlock, 'id' | 'path'> & {
+	id?: string;
+	path: string;
+};
+
 export type TreeBlocksDiff = {
-	toAdd: WithRequired<TreeBlock, 'path'>[];
-	toDelete: WithRequired<TreeBlock, 'path'>[];
-	toUpdate: WithRequired<TreeBlock, 'path'>[];
+	toAdd: TreeBlockWithPath[];
+	toDelete: TreeBlockWithPath[];
+	toUpdate: TreeBlockForUpdate[];
 };
 
 type DefineTreeBlocksDiffArgs = {
-	existingBlocks: WithRequired<TreeBlock, 'path'>[];
-	incomingBlocks: WithRequired<TreeBlock, 'path'>[];
+	existingBlocks: TreeBlockWithPath[];
+	incomingBlocks: TreeBlockForUpdate[];
 	context: OperationContext;
 };
+
+// Utility to filter out blocks that haven't id
+const blockHasId = (b: TreeBlockForUpdate): b is TreeBlockWithPath => !!b.id;
 
 export function defineTreeBlocksDiff({
 	existingBlocks,
 	incomingBlocks,
 	context
 }: DefineTreeBlocksDiffArgs): TreeBlocksDiff {
+	//
 	const configMap = context.configMap;
 	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @defineBlocksDiff');
 
-	incomingBlocks = incomingBlocks.map((block) => {
-		if (context.isFallbackLocale && block.path) {
+	// On fallback locale :
+	// - If a block is localized, it should not keep its id so a new one is created
+	// - If a block is not localized than it should keep its id so block is updated
+	if (context.isFallbackLocale) {
+		incomingBlocks = incomingBlocks.map((block) => {
 			const isLocalized: boolean = configMap[block.path]?.localized || false;
 			if (isLocalized) {
-				block = omitId(block);
+				delete block.id;
 				block.locale = context.isFallbackLocale;
 			}
-		}
-		return block;
-	});
+			return block;
+		});
+	}
 
 	// Consider blocks as new if they have temp ID OR no ID at all
 	const toAdd = incomingBlocks.filter((block) => !block.id || block.id.startsWith('temp-'));
+
 	const toDelete = existingBlocks.filter((existing) => {
 		return !incomingBlocks.some((newBlock) => {
 			// Only compare blocks that have real IDs
@@ -45,10 +59,10 @@ export function defineTreeBlocksDiff({
 		});
 	});
 
-	const toUpdate = incomingBlocks.filter((newBlock) => {
-		// Skip blocks without IDs or with temp IDs
-		if (!newBlock.id || newBlock.id.startsWith('temp-')) return false;
-		// Skip block that doesn't exists
+	const toUpdate = incomingBlocks.filter(blockHasId).filter((newBlock) => {
+		// Skip blocks with temp IDs
+		if (newBlock.id.startsWith('temp-')) return false;
+		// Skip block that doesn't exists in existingBlocks
 		const existing = existingBlocks.find((e) => e.id === newBlock.id);
 		if (!existing) return false;
 

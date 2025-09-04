@@ -1,9 +1,10 @@
-import { omit } from '../util/object.js';
-import { and, eq, getTableColumns } from 'drizzle-orm';
-import { toPascalCase } from '../util/string.js';
-import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
+import type { GenericBlock } from '$lib/core/types/doc.js';
+import type { WithOptional } from '$lib/util/types.js';
+import { and, eq, getTableColumns } from 'drizzle-orm';
+import { omit } from '../util/object.js';
 import { makeLocalesSlug, transformDataToSchema } from '../util/schema.js';
+import { toPascalCase } from '../util/string.js';
 import { generatePK } from './util.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
@@ -17,7 +18,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 		if (Object.keys(values).length) {
 			await db.update(tables[table]).set(values).where(eq(tables[table].id, block.id));
 		}
-		
+
 		const keyTableLocales = makeLocalesSlug(table);
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
@@ -115,7 +116,7 @@ type UpdateBlock = (args: { parentSlug: string; block: GenericBlock; locale?: st
 
 type CreateBlock = (args: {
 	parentSlug: string;
-	block: GenericBlock;
+	block: WithOptional<GenericBlock, 'id'>;
 	ownerId: string;
 	locale?: string;
 }) => Promise<boolean>;

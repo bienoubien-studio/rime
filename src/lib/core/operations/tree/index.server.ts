@@ -75,6 +75,5 @@ export const saveTreeBlocks = async (args: {
 		);
 	}
 
-	console.log(treeDiff);
 	return treeDiff;
 };

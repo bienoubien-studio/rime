@@ -1,14 +1,19 @@
-import { extractRelations } from './extract.server.js';
-import { defineRelationsDiff } from './diff.server.js';
-import type { ConfigMap } from '../configMap/types.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import type { Dic } from '$lib/util/types';
-import type { TreeBlocksDiff } from '../tree/diff.server.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
+import type { Dic } from '$lib/util/types';
+import type { ConfigMap } from '../configMap/types.js';
+import type { TreeBlocksDiff } from '../tree/diff.server.js';
+import { defineRelationsDiff } from './diff.server.js';
+import { extractRelations } from './extract.server.js';
 
-type Diff<T> = { toAdd: T[]; toDelete: T[]; toUpdate: T[] };
+type Diff<T> = {
+	toAdd: (Omit<T, 'id'> & { id?: string })[];
+	toDelete: T[];
+	toUpdate: T[];
+};
+
 export const saveRelations = async (args: {
 	data: Dic;
 	configMap: ConfigMap;
