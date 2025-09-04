@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
-import type { Pretty } from '$lib/util/types.js';
+
 import type { RequestEvent } from '@sveltejs/kit';
 import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
@@ -343,6 +343,4 @@ export { CollectionInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Pretty<
-	Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>
->;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>;

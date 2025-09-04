@@ -25,7 +25,7 @@ const page = (slug: string) => `
  * Document page template
  * (rizom)/panel/{collection.slug}/[id]/+page.svelte
  */
-const docPage = (slug: string) => `
+const docPage = () => `
 <script lang="ts">
 	import { CollectionDoc, type CollectionDocData } from '${PACKAGE_NAME}/panel/client';
 	const { data }: { data: CollectionDocData<false> } = $props();
@@ -56,7 +56,7 @@ export const actions = pagesActions.collection.doc('${slug}')`;
  * Document page versions template
  * (rizom)/panel/{collection.slug}/[id]/versions/+page.svelte
  */
-const docPageVersions = (slug: string) => `
+const docPageVersions = () => `
 <script lang="ts">
 	import { CollectionDocVersions, type CollectionDocData } from '${PACKAGE_NAME}/panel/client';
 	const { data }: { data: CollectionDocData<true> } = $props();

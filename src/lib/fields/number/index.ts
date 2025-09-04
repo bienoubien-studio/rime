@@ -1,7 +1,7 @@
+import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import type { DefaultValueFn, FieldValidationFunc, FormField } from '$lib/fields/types.js';
 import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
-import type { FormField, FieldValidationFunc, DefaultValueFn } from '$lib/fields/types.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
 
@@ -36,7 +36,7 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 	_toSchema(parentPath?: string) {
 		const { camel, snake } = this._getSchemaName(parentPath);
 		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
+		if (this._generateSchema) return this._generateSchema({ camel, snake, suffix });
 		return `${camel}: real('${snake}')${suffix}`;
 	}
 
@@ -77,7 +77,7 @@ export type NumberField = FormField & {
 	min?: number;
 	max?: number;
 	defaultValue?: number | DefaultValueFn<number>;
-	validate?: FieldValidationFunc<NumberField>
+	validate?: FieldValidationFunc<NumberField>;
 	/**
 	 * Force the field to be on the root table
 	 * usefull for fields that should not be versioned

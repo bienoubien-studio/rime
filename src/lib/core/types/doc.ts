@@ -4,7 +4,7 @@ export type CollectionSlug = GetRegisterType<'CollectionSlug'>;
 export type AreaSlug = GetRegisterType<'AreaSlug'>;
 export type PrototypeSlug = CollectionSlug | AreaSlug;
 
-import type { Dic, Pretty } from '$lib/util/types.js';
+import type { Dic } from '$lib/util/types.js';
 import type { UploadPath } from '../collections/upload/util/path.js';
 import type { VersionsStatus } from '../constant.js';
 
@@ -25,20 +25,17 @@ export type BaseDoc = {
 };
 
 export type GenericDoc = BaseDoc & Dic;
-export type GenericNestedDoc = Pretty<
-	BaseDoc & {
-		_children: string[];
-		_parent: string | null;
-		_position: number;
-	} & Dic
->;
-export type GenericAuthDoc = Pretty<
-	BaseDoc & {
-		apiKeyId?: string;
-		authUserId?: string;
-		roles?: string[];
-	} & Dic
->;
+export type GenericNestedDoc = BaseDoc & {
+	_children: string[];
+	_parent: string | null;
+	_position: number;
+} & Dic;
+
+export type GenericAuthDoc = BaseDoc & {
+	apiKeyId?: string;
+	authUserId?: string;
+	roles?: string[];
+} & Dic;
 
 export type TreeBlock = {
 	id: string;

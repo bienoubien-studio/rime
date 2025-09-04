@@ -1,18 +1,18 @@
-import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
-import type { Access, User } from '../../collections/auth/types.js';
-import type { Field, Option } from '$lib/fields/types.js';
-import type { AreaSlug, CollectionSlug, DocType } from '../../types/doc.js';
-import type { AtLeastOne, Pretty, WithoutBuilders, WithRequired } from '$lib/util/types.js';
-import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
-import type { FieldsComponents } from '../../../panel/types.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
+import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
 import type { Plugin } from '$lib/core/types/plugins.js';
-import type { IconProps } from '@lucide/svelte';
-import type { Component } from 'svelte';
+import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
+import type { Field, Option } from '$lib/fields/types.js';
+import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
-import type { RegisterArea, RegisterCollection } from 'rizom';
-import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.js';
+import type { AtLeastOne, WithoutBuilders, WithRequired } from '$lib/util/types.js';
+import type { IconProps } from '@lucide/svelte';
+import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
+import type { Component } from 'svelte';
+import type { FieldsComponents } from '../../../panel/types.js';
+import type { Access, User } from '../../collections/auth/types.js';
+import type { AreaSlug, CollectionSlug, DocType } from '../../types/doc.js';
 
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
@@ -65,7 +65,7 @@ export interface Config {
 		/** The panel language, "en" or "fr" supports only */
 		language?: PanelLanguage;
 		/** Sidebar navigation groups labels and icons */
-		navigation?: Pretty<NavigationConfig>;
+		navigation?: NavigationConfig;
 		/** Specific components */
 		components?: {
 			/** Dashboard header */
@@ -316,14 +316,12 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
-export type CompiledCollection = Pretty<WithoutBuilders<BuiltCollection>>;
-export type CompiledArea = Pretty<WithoutBuilders<BuiltArea>>;
-export type CompiledConfig = Pretty<
-	Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
-		collections: Array<CompiledCollection>;
-		areas: Array<CompiledArea>;
-	}
->;
+export type CompiledCollection = WithoutBuilders<BuiltCollection>;
+export type CompiledArea = WithoutBuilders<BuiltArea>;
+export type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
+	collections: Array<CompiledCollection>;
+	areas: Array<CompiledArea>;
+};
 
 // Hook collections
 export type CollectionHooks<S extends DocType> = {

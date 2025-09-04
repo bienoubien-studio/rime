@@ -52,8 +52,6 @@ function generateRoutes(config: BuiltConfig): void {
 
 	// 4. Process area routes
 	for (const area of config.areas) {
-		const slug = area.slug;
-
 		processRoutes(area.slug, areaRoutes);
 		processRoutes(area.slug, areaAPIRoutes);
 
@@ -72,7 +70,9 @@ function generateRoutes(config: BuiltConfig): void {
 				const routePath = pattern.replace('{collection.slug}', slug);
 				// Generate each file type (page, layout, etc.)
 				for (const [fileType, templateFn] of Object.entries(files)) {
-					writeRouteFile(rootRoutes, routePath, fileType, templateFn(slug));
+					// Check if function takes parameters before calling it
+					const content = templateFn.length > 0 ? templateFn(slug) : templateFn();
+					writeRouteFile(rootRoutes, routePath, fileType, content);
 				}
 			}
 		};

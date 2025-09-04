@@ -1,12 +1,11 @@
-import { eq, inArray } from 'drizzle-orm';
-import { isRelationField } from '$lib/util/field.js';
-import type { FormField } from '$lib/fields/types.js';
-import type { RelationField } from '$lib/fields/types.js';
-import { hasProp, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
-import { logger } from '$lib/core/logger/index.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
 import { getRequestEvent } from '$app/server';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import type { FormField, RelationField } from '$lib/fields/types.js';
+import { isRelationField } from '$lib/util/field.js';
+import { getValueAtPath, hasProp, setValueAtPath } from '$lib/util/object.js';
+import { eq, inArray } from 'drizzle-orm';
 import { Hooks } from '../index.js';
 
 export const setDefaultValues = Hooks.beforeUpsert(async (args) => {
@@ -49,7 +48,7 @@ type GetDefaultValue = (args: {
 }) => Promise<any>;
 
 /**
- * This function convert any default value string | string[] of ids
+ * This function convert any default value string | string[] of ids
  * to a RelationValue from an existing relation record
  */
 const defaultRelationValue = async (config: RelationField, key: string, adapter: Adapter) => {

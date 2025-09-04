@@ -1,6 +1,5 @@
 import type { CompiledArea } from '$lib/core/config/types/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { Pretty } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createBlankDocument } from '../../util/doc.js';
 import { find } from './operations/find.js';
@@ -152,6 +151,4 @@ export { AreaInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Pretty<
-	Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>
->;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>;

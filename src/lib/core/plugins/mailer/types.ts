@@ -1,5 +1,3 @@
-import type { Pretty } from "$lib/util/types.js";
-
 export type SendMailArgs = {
 	to: string;
 	subject: string;
@@ -7,7 +5,7 @@ export type SendMailArgs = {
 	html?: string;
 };
 export type MailerActions = {
-	sendMail: (args: Pretty<SendMailArgs>) => Promise<string>;
+	sendMail: (args: SendMailArgs) => Promise<string>;
 };
 
 export type SMTPConfig = {

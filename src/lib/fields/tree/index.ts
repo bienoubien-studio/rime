@@ -17,6 +17,7 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		super(name, 'tree');
 		this.field.defaultValue = [];
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
+
 		this.field.fields = [text('path').hidden(), number('position').hidden()];
 		this.field.maxDepth = 50;
 		this.field.addItemLabel = 'Add an item';
@@ -28,11 +29,11 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	get cell() {
 		return Cell;
 	}
-	
+
 	_toType() {
 		return `${this.field.name}: Array<Tree${toPascalCase(this.field.name)}>,`;
 	}
-	
+
 	fields(...fields: FieldBuilder<Field>[]) {
 		this.field.fields = [...(this.field.fields || []), ...fields];
 		return this;
@@ -142,6 +143,6 @@ export type TreeField = FormField & {
 	addItemLabel: string;
 };
 
-export type TreeFieldBlockRenderTitle = (args: { position:string, values: Dic }) => string;
+export type TreeFieldBlockRenderTitle = (args: { position: string; values: Dic }) => string;
 
 export type TreeFieldRaw = FormField & Omit<TreeField, 'fields'> & { fields: Field[] };

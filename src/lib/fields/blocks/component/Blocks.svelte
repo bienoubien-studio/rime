@@ -44,8 +44,6 @@
 		}
 	};
 
-	const nested = $derived(path.split('.').length > 1);
-
 	const add = (options: Omit<GenericBlock, 'id' | 'path'>) => {
 		blockState.addBlock({
 			...options,
