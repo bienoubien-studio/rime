@@ -242,7 +242,7 @@ export const flattenWithGuard: FlattenWithGuard = (data, opts) => {
  * getValueAtPath('user.phone', { user: { address: { city: "New York" } } });
  */
 export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
-	path = normalizeFieldPath(path)
+	path = normalizeFieldPath(path);
 	const parts = path.split('.');
 	let current = obj;
 	for (const part of parts) {
@@ -275,7 +275,7 @@ export const getValueAtPath = <T>(path: string, obj: Dic): T | undefined => {
  * setValueAtPath('user.phone', { user: {} }, '555-1234');
  */
 export const setValueAtPath = <T extends Dic>(path: string, obj: T, value: unknown): T => {
-	path = normalizeFieldPath(path)
+	path = normalizeFieldPath(path);
 	const parts = path.split('.');
 
 	// Create a shallow copy of the root object
@@ -341,7 +341,7 @@ export const setValueAtPath = <T extends Dic>(path: string, obj: T, value: unkno
  * deleteValueAtPath({ user: { name: "John", age: 30 } }, 'user.age');
  */
 export function deleteValueAtPath<T>(obj: T, path: string): T {
-	path = normalizeFieldPath(path)
+	path = normalizeFieldPath(path);
 	const parts = path.split('.');
 	const last = parts.pop()!;
 
@@ -355,4 +355,20 @@ export function deleteValueAtPath<T>(obj: T, path: string): T {
 	const finalKey = !isNaN(Number(last)) ? Number(last) : last;
 	delete current[finalKey];
 	return obj;
+}
+
+/**
+ * Check whether two object have the same structure
+ */
+export function matchStructure(source?: Dic, target?: Dic): boolean {
+	if (!source || !target) return false;
+	const sourceKeys = Object.keys(source);
+	const targetKeys = Object.keys(target);
+
+	if (sourceKeys.length !== targetKeys.length) {
+		return false;
+	}
+
+	const sourceSet = new Set(sourceKeys);
+	return targetKeys.every((key) => sourceSet.has(key));
 }

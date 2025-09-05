@@ -40,7 +40,6 @@ export function extractTreeBlocks({ data, configMap }: ExtractTreesArgs) {
 			const isEmptyValue = config.isEmpty(value);
 
 			if (value && !isEmptyValue) {
-				console.log('process tree block');
 				value.forEach((item: TreeBlock, index: number) => {
 					processTreeItem(item, index, path, undefined);
 				});

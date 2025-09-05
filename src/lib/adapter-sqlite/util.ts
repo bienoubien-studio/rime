@@ -1,13 +1,13 @@
-import qs from 'qs';
-import { and, desc, eq, getTableColumns, Table } from 'drizzle-orm';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
 import { RizomError } from '$lib/core/errors';
+import type { RawDoc } from '$lib/core/types/doc';
+import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
 import { isObjectLiteral, omit, pick } from '$lib/util/object';
 import { transformDataToSchema } from '$lib/util/schema';
-import type { RawDoc } from '$lib/core/types/doc';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
-import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
 import type { Dic } from '$lib/util/types.js';
+import { and, desc, eq, getTableColumns, Table } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
+import qs from 'qs';
 
 /**
  * Main function to generated primaryKeys
@@ -86,13 +86,13 @@ export async function upsertLocalizedData(
 }
 
 /**
- * Extract root table properties : 
+ * Extract root table properties :
  * - hierarchy props (nested) : _parent and _position
  * - directory props (upload) : _path
  * return an object with the data filtered and the rootData.
  */
 export function extractRootData(data: any) {
-	const rootData: { _parent?: string; _position?: number, _path?:string } = {};
+	const rootData: { _parent?: string; _position?: number; _path?: string } = {};
 	// extract nested collection props
 	if ('_parent' in data) {
 		rootData._parent = data._parent;
@@ -109,7 +109,6 @@ export function extractRootData(data: any) {
 	}
 	return { data, rootData };
 }
-
 
 /**
  * Prepares data for database operations by transforming it according to table schemas
@@ -163,6 +162,7 @@ export function prepareSchemaData(
  */
 export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
 	// Check if we have version data
+	// Note: Versions data can be empty when a query returns no result
 	if (!doc[versionTableName] || doc[versionTableName].length === 0) {
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
@@ -272,6 +272,6 @@ export function columnsParams({ table, select }: { table: Dic; select?: string[]
  * Get the primary key name given a table
  */
 export function getPrimaryKey(table: Table) {
-	const columnsPrimary = getTableConfig(table).columns.filter(c => c.primary)
-	return columnsPrimary.length ? columnsPrimary[0].name : 'id' 
+	const columnsPrimary = getTableConfig(table).columns.filter((c) => c.primary);
+	return columnsPrimary.length ? columnsPrimary[0].name : 'id';
 }

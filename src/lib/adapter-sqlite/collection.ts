@@ -1,7 +1,6 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { logger } from '$lib/core/logger/index.server.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { GetRegisterType } from '$lib/index.js';
@@ -405,8 +404,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Build the query parameters for pagination and sorting of the root table
 			const params: Dic = {
-				// Set a sufficient limit when offset is set but not limit as sqlite requires limit if offset present
-				// Set a sufficient limit when offset is set but not limit as sqlite requires limit if offset present
+				// Set a sufficient limit when offset is set but limit doesn't, because sqlite requires limit if offset present
 				limit: limit || (typeof offset === 'number' ? 1000000 : undefined),
 				offset: offset,
 				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort })
@@ -441,13 +439,18 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Transform the results to include version data for eaach document
 			const result = rawDocs
 				.map((doc: RawDoc) => {
-					// for documents that have no version try/catch the 404 and return false
-					// ... should probably check that it's a 404 error in a near future
+					// for documents that have no version
 					try {
 						return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
 					} catch (err: any) {
-						logger.info(err.message);
-						return false;
+						// In case there is no version data, for exemple when a query
+						// forwarded to the versions table returns no result
+						// catch the error and return false
+						if (err instanceof RizomError && err.code === RizomError.NOT_FOUND) {
+							return false;
+						}
+						// Else throw the error
+						throw err;
 					}
 				})
 				.filter(Boolean);
