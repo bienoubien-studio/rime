@@ -9,6 +9,7 @@ import { extractFieldName } from '../fields/tree/util.js';
 import { omit } from '../util/object.js';
 import type { Relation } from './relations.js';
 
+import { getTableColumns } from 'drizzle-orm';
 import {
 	getBlocksTableNames,
 	getTreeTableNames,
@@ -95,8 +96,19 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
 					...block
 				};
+				// Set empty locales values to null if not present in the data
+				// for exemple : localized block is fetched but some of its locales values hasn't been saved already
+				const localesKeys = Object.keys(getTableColumns(tables[blockLocaleTableName])).filter(
+					(key) => !['id', 'locale', 'ownerId'].includes(key)
+				);
+				const nullKeys = Object.fromEntries(localesKeys.map((k) => [k, null]));
+				block = {
+					...nullKeys,
+					...block
+				};
 			}
 			block = transformDatabaseColumnsToPaths(block);
+
 			/** Clean */
 			const { position, path } = block;
 			if (!isPanel) {
@@ -130,6 +142,16 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				if (locale && treeBlockLocaleTableName in tables) {
 					block = {
 						...((block[treeBlockLocaleTableName][0] as Partial<GenericBlock>) || {}),
+						...block
+					};
+					// Set empty locales values to null if not present in the data
+					// for exemple : localized block is fetched but some of its locales values hasn't been saved already
+					const localesKeys = Object.keys(getTableColumns(tables[treeBlockLocaleTableName])).filter(
+						(key) => !['id', 'locale', 'ownerId'].includes(key)
+					);
+					const nullKeys = Object.fromEntries(localesKeys.map((k) => [k, null]));
+					block = {
+						...nullKeys,
 						...block
 					};
 				}
