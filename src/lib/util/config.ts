@@ -60,19 +60,15 @@ export function external<T>(module: T, path: string, exportName: string = 'defau
  * @example
  * // Get the title field in the attributes group
  * const titleField = getFieldConfigByPath('attributes.title', collection.fields);
- * 
+ *
  * // Get the title field in a specific block
- * const titleField = getFieldConfigByPath('attributes.layout.2:blockType:title', collection.fields);
+ * const titleField = getFieldConfigByPath('attributes.layout.2:blockType.title', collection.fields);
  *
  */
-export const getFieldConfigByPath = (
-	path: string,
-	fields: Field[]
-) => {
+export const getFieldConfigByPath = (path: string, fields: Field[]) => {
 	const parts = path.split('.');
-	
+
 	const findInFields = (currentFields: Field[], remainingParts: string[]): FormField | undefined => {
-		
 		if (remainingParts.length === 0) return undefined;
 
 		const currentPart = remainingParts[0];
@@ -100,10 +96,9 @@ export const getFieldConfigByPath = (
 
 					// Handle blocks
 					if (isBlocksFieldRaw(field) && remainingParts.length > 1) {
-
 						// const blockPartPattern = /:[a-zA-Z0-9]+/
-						const blockType = remainingParts[1].split(':')[1]
-						
+						const blockType = remainingParts[1].split(':')[1];
+
 						if (blockType) {
 							const block = field.blocks.find((b) => b.name === blockType);
 							if (block) {
