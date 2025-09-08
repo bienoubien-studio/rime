@@ -9,7 +9,7 @@ import type { ClientField, FormField } from '$lib/fields/types.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import { normalizeFieldPath } from '$lib/util/field.js';
 import { random } from '$lib/util/index.js';
-import { isObjectLiteral } from '$lib/util/object.js';
+import { isObjectLiteral, omit } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types';
 import type { ActionResult } from '@sveltejs/kit';
 import cloneDeep from 'clone-deep';
@@ -19,7 +19,7 @@ import { getContext, setContext } from 'svelte';
 import { toast } from 'svelte-sonner';
 import { t__ } from '../../core/i18n/index.js';
 import { moveItem } from '../../util/array.js';
-import { getValueAtPath, omit, setValueAtPath } from '../../util/object.js';
+import { getValueAtPath, setValueAtPath } from '../../util/object.js';
 import { snapshot } from '../../util/state.js';
 import { API_PROXY, getAPIProxyContext } from './api-proxy.svelte.js';
 import { getCollectionContext } from './collection.svelte.js';
@@ -339,7 +339,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	 *
 	 * // value will not update if doc.blocks.0.title update
 	 */
-	function getRawValue<T extends any = any>(path: string) {
+	function getRawValue<T>(path: string) {
 		return (snapshot(getValueAtPath(path, doc)) as T) || null;
 	}
 
@@ -393,10 +393,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
 			let fetchURL: string = BASE_API_URL;
 			if (isCollection) {
-				fetchURL += `?where[id][equals]=${doc.id}&select=${path}&locale=${locale.defaultCode}`;
+				fetchURL += `?where[id][equals]=${doc.id}&locale=${locale.defaultCode}`;
 			} else {
-				fetchURL += `?select=${path}&locale=${locale.defaultCode}`;
+				fetchURL += `?locale=${locale.defaultCode}`;
 			}
+
 			// Fetch data
 			const result = await fetch(fetchURL).then((r) => r.json());
 			// Process data
