@@ -83,9 +83,15 @@
 		toast.success(t__('common.duplicate_success'));
 		await goto(`/panel/${form.config.slug}/${id}`);
 	}
+
+	const shouldShowSettings = $derived.by(() => {
+		if (form.config.versions) return true;
+		if (locale.defaultCode && locale.code !== locale.defaultCode) return true;
+		if (form.config.type === 'collection') return true;
+	});
 </script>
 
-{#if form.config.versions}
+{#if shouldShowSettings}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
