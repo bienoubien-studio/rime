@@ -85,7 +85,7 @@
 	}
 </script>
 
-{#if form.config.versions || form.config.type === 'collection'}
+{#if form.config.versions}
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
 			{#snippet child({ props })}
@@ -116,14 +116,16 @@
 							{t__('common.duplicate')}
 						</DropdownMenu.Item>
 					{/if}
+				{/if}
 
-					{#if locale.defaultCode && locale.code !== locale.defaultCode}
-						<DropdownMenu.Item onclick={() => form.importDataFromDefaultLocale()}>
-							<Import size="12" />
-							{t__('common.import_default_locale', locale.defaultCode)}
-						</DropdownMenu.Item>
-					{/if}
+				{#if locale.defaultCode && locale.code !== locale.defaultCode}
+					<DropdownMenu.Item onclick={() => form.importDataFromDefaultLocale()}>
+						<Import size="12" />
+						{t__('common.import_default_locale', locale.defaultCode)}
+					</DropdownMenu.Item>
+				{/if}
 
+				{#if form.config.type === 'collection'}
 					<DropdownMenu.Item onclick={() => (deleteConfirmOpen = true)}>
 						<Trash2 size="12" />
 						{t__('common.delete')}
