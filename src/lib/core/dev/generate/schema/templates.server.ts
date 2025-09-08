@@ -1,7 +1,7 @@
-import dedent from 'dedent';
 import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import { toSnakeCase } from '$lib/util/string.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
+import { toSnakeCase } from '$lib/util/string.js';
+import dedent from 'dedent';
 const s = toSnakeCase;
 
 /**
@@ -263,7 +263,7 @@ export const authSessions = sqliteTable('auth_sessions', {
 	userAgent: text('user_agent'),
 	userId: text('user_id')
 		.notNull()
-		.references(() => authUsers.id),
+		.references(() => authUsers.id, { onDelete: 'cascade' }),
 	impersonatedBy: text('impersonated_by')
   });
 
@@ -273,7 +273,7 @@ export const authAccounts = sqliteTable('auth_accounts', {
 	providerId: text('provider_id').notNull(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => authUsers.id),
+		.references(() => authUsers.id, { onDelete: 'cascade' }),
 	accessToken: text('access_token'),
 	refreshToken: text('refresh_token'),
 	idToken: text('id_token'),
@@ -375,7 +375,7 @@ export const templateHead = (slug: string) => dedent`
 export const templateDirectories = (slug: string) => `
 export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDirectoriesSlug(slug))}', {
   id: text('id').notNull().primaryKey(),
-  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, { 
+  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, {
 		onDelete : 'cascade',
 		onUpdate : 'cascade',
 	}),
