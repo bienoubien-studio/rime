@@ -26,6 +26,7 @@ export default {
 	generatingPreview: "Création de l'aperçu",
 	generic_error: 'Une erreur est survenue $1',
 	generic_success: 'Opération réussie',
+	import_default_locale: 'Importer les données depuis $1',
 	last_update: 'Mise à jour',
 	live_in_sync: 'Synchronisation avec le container',
 	newPassword: 'Nouveau mot de passe',

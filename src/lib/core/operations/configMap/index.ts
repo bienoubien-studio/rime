@@ -1,9 +1,8 @@
-import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { Field } from '$lib/fields/types.js';
 import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from '$lib/util/field.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
-import { buildTreeFieldsMap } from './buildTreeMap.server.js';
+import { buildTreeFieldsMap } from './buildTreeMap.js';
 import type { ConfigMap } from './types.js';
 
 export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Field[]) => {
@@ -41,7 +40,7 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 							traverseData(block, blockConfig.fields, `${path}.${index}`);
 						}
 					} catch (err: any) {
-						logger.warn(
+						console.warn(
 							`block at path ${path} and postition ${index} not found but there are some residual data owned by this block`
 						);
 					}

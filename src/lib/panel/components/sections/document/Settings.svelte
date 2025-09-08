@@ -6,8 +6,9 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { trycatchFetch } from '$lib/util/trycatch.js';
-	import { Copy, History, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
+	import { Copy, History, Import, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
@@ -20,6 +21,7 @@
 	let dupplicateConfirmOpen = $state(false);
 	const isCollection = $derived(form.config.type === 'collection');
 	const allowDuplicate = $derived(form.config.type === 'collection' && !form.config.auth && !form.config.upload);
+	const locale = getLocaleContext();
 
 	function handleNewDraft() {
 		if (form.readOnly || !form.element) return;
@@ -114,6 +116,14 @@
 							{t__('common.duplicate')}
 						</DropdownMenu.Item>
 					{/if}
+
+					{#if locale.defaultCode && locale.code !== locale.defaultCode}
+						<DropdownMenu.Item onclick={() => form.importDataFromDefaultLocale()}>
+							<Import size="12" />
+							{t__('common.import_default_locale', locale.defaultCode)}
+						</DropdownMenu.Item>
+					{/if}
+
 					<DropdownMenu.Item onclick={() => (deleteConfirmOpen = true)}>
 						<Trash2 size="12" />
 						{t__('common.delete')}

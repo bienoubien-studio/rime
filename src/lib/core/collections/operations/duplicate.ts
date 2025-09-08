@@ -1,6 +1,6 @@
 import type { CompiledCollection } from '$lib/core/config/types/index.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { buildConfigMap } from '$lib/core/operations/configMap/index.server';
+import { buildConfigMap } from '$lib/core/operations/configMap';
 import type { BlocksFieldRaw } from '$lib/fields/blocks';
 import type { TreeFieldRaw } from '$lib/fields/tree';
 import { isBlocksFieldRaw, isTreeFieldRaw } from '$lib/util/field';

@@ -3,7 +3,8 @@ import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { env } from '$env/dynamic/public';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
-import { PARAMS } from '$lib/core/constant.js';
+import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
+import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';
 import type { ClientField, FormField } from '$lib/fields/types.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
@@ -343,6 +344,35 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return (snapshot(getValueAtPath(path, doc)) as T) || null;
 	}
 
+	// Recursively remove id property from blocks/tree/relations
+	// This ensure elements to be threated as new,
+	// preventing an unwanted delete or update with the wrong locale
+	const removeIds = <T>(data: T): T => {
+		// Handle arrays
+		if (Array.isArray(data)) {
+			return data.map((item) => removeIds(item)) as unknown as T;
+		}
+		// Handle objects
+		if (typeof data === 'object' && data !== null) {
+			// First omit the id and locale properties
+			const withoutId = omit(['id', 'locale'], data as Dic);
+			const result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
+			// Replace with the current locale if present
+			if (locale.code && 'locale' in data) {
+				result.locale = locale.code;
+			}
+			// Then recursively process all remaining properties
+			for (const key in result) {
+				if (key !== 'id' && typeof result[key] === 'object' && result[key] !== null) {
+					result[key] = removeIds(result[key]);
+				}
+			}
+			return result as unknown as T;
+		}
+		// Return primitive values as is
+		return data;
+	};
+
 	function useField(path: string, config?: ClientField<FormField>) {
 		if (!config) {
 			config = getFieldConfigByPath(path, documentConfig.fields);
@@ -392,10 +422,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		const setValueFromDefaultLocale = async () => {
 			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
 			let fetchURL: string = BASE_API_URL;
+			const draftParam = doc.status === VERSIONS_STATUS.DRAFT ? '&draft=true' : '';
 			if (isCollection) {
-				fetchURL += `?where[id][equals]=${doc.id}&locale=${locale.defaultCode}`;
+				fetchURL += `?where[id][equals]=${doc.id}&locale=${locale.defaultCode}${draftParam}`;
 			} else {
-				fetchURL += `?locale=${locale.defaultCode}`;
+				fetchURL += `?locale=${locale.defaultCode}${draftParam}`;
 			}
 
 			// Fetch data
@@ -407,34 +438,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 				// - For areas: data is in result.doc
 				const document = isCollection ? result.docs[0] : result.doc;
 				const defaultLocaleValue = getValueAtPath<Dic[]>(path, document) || [];
-				// Recursively remove id property from blocks/tree/relations
-				// This ensure elements to be threated as new,
-				// preventing an unwanted delete or update with the wrong locale
-				const removeIds = <T>(data: T): T => {
-					// Handle arrays
-					if (Array.isArray(data)) {
-						return data.map((item) => removeIds(item)) as unknown as T;
-					}
-					// Handle objects
-					if (typeof data === 'object' && data !== null) {
-						// First omit the id and locale properties
-						const withoutId = omit(['id', 'locale'], data as Dic);
-						const result: Dic = { ...withoutId, id: 'temp-' + random.randomId(8) };
-						// Replace with the current locale if present
-						if (locale.code && 'locale' in data) {
-							result.locale = locale.code;
-						}
-						// Then recursively process all remaining properties
-						for (const key in result) {
-							if (key !== 'id' && typeof result[key] === 'object' && result[key] !== null) {
-								result[key] = removeIds(result[key]);
-							}
-						}
-						return result as unknown as T;
-					}
-					// Return primitive values as is
-					return data;
-				};
 
 				// Remove ids from blocks before setting the value
 				setFieldValue(removeIds(defaultLocaleValue));
@@ -663,6 +666,33 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return `${panelUri}${actionSuffix}${redirectParam}`;
 	};
 
+	const importDataFromDefaultLocale = async () => {
+		const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
+		let fetchURL: string = BASE_API_URL;
+		const draftParam = doc.status === VERSIONS_STATUS.DRAFT ? '&draft=true' : '';
+		if (isCollection) {
+			fetchURL += `?where[id][equals]=${doc.id}&locale=${locale.defaultCode}${draftParam}`;
+		} else {
+			fetchURL += `?locale=${locale.defaultCode}${draftParam}`;
+		}
+		// Fetch data
+		const result = await fetch(fetchURL).then((r) => r.json());
+		// Process data
+		if ((isCollection && Array.isArray(result.docs) && result.docs.length) || result.doc) {
+			const defaultLocaleDoc = isCollection ? result.docs[0] : result.doc;
+			let data = { ...defaultLocaleDoc, locale: locale.code };
+			const configMap = buildConfigMap(defaultLocaleDoc, documentConfig.fields);
+			for (const [key, field] of Object.entries(configMap)) {
+				if (field.localized) {
+					let value = getValueAtPath<Dic[]>(key, data);
+					value = removeIds(value);
+					data = setValueAtPath(key, data, value);
+				}
+			}
+			doc = data;
+		}
+	};
+
 	return {
 		key,
 		setValue,
@@ -675,6 +705,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		nestedLevel,
 		buildPanelActionUrl,
 		readOnly,
+		importDataFromDefaultLocale,
 
 		get isDisabled() {
 			return isDisabled;

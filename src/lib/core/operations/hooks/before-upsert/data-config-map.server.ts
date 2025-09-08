@@ -1,4 +1,4 @@
-import { buildConfigMap } from '../../configMap/index.server.js';
+import { buildConfigMap } from '../../configMap/index.js';
 import { Hooks } from '../index.js';
 
 export const buildDataConfigMap = Hooks.beforeUpsert(async (args) => {
