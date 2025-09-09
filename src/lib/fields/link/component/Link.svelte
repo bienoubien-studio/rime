@@ -7,9 +7,10 @@
 	import { Input } from '$lib/panel/components/ui/input/index.js';
 	import Label from '$lib/panel/components/ui/label/label.svelte';
 	import { Switch } from '$lib/panel/components/ui/switch/index.js';
+	import type { PrototypeSlug } from '$lib/types';
 	import { capitalize } from '$lib/util/string.js';
 	import { Anchor, AtSign, ChevronDown, Link2, Newspaper, Phone } from '@lucide/svelte';
-	import type { Link } from '../types';
+	import type { Link, LinkType } from '../types';
 	import type { LinkFieldProps } from './props';
 	import RessourceInput from './RessourceInput.svelte';
 
@@ -32,7 +33,7 @@
 	const primitiveTypes = ['url', 'email', 'tel', 'anchor'];
 	const field = $derived(form.useField(path, config));
 	const linkTypes = config.types || ['url', 'email', 'tel', 'anchor'];
-	const initial = path ? form.getRawValue(path) : null;
+	const initial = path ? form.getRawValue<Link>(path) : null;
 
 	let initialLinkType = initial?.type || linkTypes[0];
 	let initialLinkValue = initial?.value || '';
@@ -58,7 +59,7 @@
 	};
 
 	const onTypeChange = (type: string | undefined) => {
-		linkType = type || 'url';
+		linkType = (type || 'url') as LinkType;
 		inputValue = '';
 		ressourceId = '';
 		setValue();
@@ -148,7 +149,12 @@
 					oninput={onInput}
 				/>
 			{:else}
-				<RessourceInput error={isLinkValueError} type={linkType} bind:ressourceId readOnly={form.readOnly} />
+				<RessourceInput
+					error={isLinkValueError}
+					type={linkType as PrototypeSlug}
+					bind:ressourceId
+					readOnly={form.readOnly}
+				/>
 			{/if}
 
 			<!-- Target -->

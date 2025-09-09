@@ -144,6 +144,8 @@
 				top: var(--rz-size-12);
 				z-index: 20;
 				box-shadow: var(--rz-shadow-md);
+				max-height: var(--rz-size-36);
+				border: var(--rz-border);
 			}
 
 			.rz-command-input-select {
