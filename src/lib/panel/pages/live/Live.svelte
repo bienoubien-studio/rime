@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { PaneGroup, Pane, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
 	import { goto } from '$app/navigation';
+	import type { BrowserConfig } from '$lib/core/config/types';
+	import { t__ } from '$lib/core/i18n';
 	import type { GenericDoc } from '$lib/core/types/doc';
 	import LiveSidePanel from '$lib/panel/components/sections/live/SidePanel.svelte';
-	import type { BrowserConfig } from '$lib/core/config/types';
+	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import { Pane, PaneGroup, PaneResizer } from '$lib/panel/components/ui/pane/index.js';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import { t__ } from '$lib/core/i18n';
-	import { fade } from 'svelte/transition';
+	import { Laptop, Smartphone } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	type Props = { data: any; config: BrowserConfig };
 	const { data, config }: Props = $props();
@@ -90,6 +92,7 @@
 	const ZOOMS = [0.5, 0.66, 1] as const;
 
 	let currentZoom = $state(1);
+	let currentDevice = $state<'mobile' | 'desktop'>('mobile');
 
 	const iframeScale = $derived(ZOOMS[currentZoom]);
 	const iframeSizePercent = $derived((1 / iframeScale) * 100);
@@ -111,12 +114,21 @@
 		</Pane>
 		<PaneResizer />
 		<Pane class="rz-live-container__pane-right" defaultSize={70}>
-			<iframe
-				style="height:{iframeSizePercent}%;width:{iframeSizePercent}%;scale:{iframeScale}"
-				bind:this={iframe}
-				title="edit"
-				src={data.src}
-			></iframe>
+			<div class="rz-live-container__devices">
+				<Button
+					onclick={() => (currentDevice = 'mobile')}
+					variant={currentDevice === 'mobile' ? 'secondary' : 'ghost'}
+					size="icon"
+					icon={Smartphone}
+				/>
+				<Button
+					onclick={() => (currentDevice = 'desktop')}
+					variant={currentDevice === 'desktop' ? 'secondary' : 'ghost'}
+					size="icon"
+					icon={Laptop}
+				/>
+			</div>
+			<iframe class={currentDevice} bind:this={iframe} title="edit" src={data.src}></iframe>
 		</Pane>
 	</PaneGroup>
 </div>
@@ -127,21 +139,40 @@
 	}
 	:global(.rz-live-container__pane-right) {
 		position: relative;
+		gap: var(--rz-size-6);
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: flex-start;
+		padding: var(--rz-size-3);
+		height: 100vh;
+		background-color: hsl(var(--rz-gray-3));
 	}
 
 	.rz-live-container__side-panel {
 		width: 100%;
-
 		flex-shrink: 0;
 		flex-grow: 0;
 		border-right: var(--rz-border);
 	}
+
 	.rz-live-container iframe {
-		width: 133%;
-		height: 133%;
-		scale: 0.75;
+		border: var(--rz-border);
 		transform-origin: 0 0;
 	}
+
+	.rz-live-container iframe.mobile {
+		width: 320px;
+		aspect-ratio: 2 / 3.3;
+		scale: 1.25;
+	}
+
+	.rz-live-container iframe.desktop {
+		width: 133%;
+		aspect-ratio: 16 / 11;
+		scale: 0.75;
+	}
+
 	.rz-live-container__overlay {
 		background-color: hsl(var(--rz-gray-10));
 		opacity: 0.8;
@@ -157,5 +188,13 @@
 			gap: var(--rz-size-3);
 			justify-content: center;
 		}
+	}
+
+	.rz-live-container__devices {
+		display: inline-flex;
+		gap: var(--rz-size-3);
+		padding: var(--rz-size-2);
+		border-radius: var(--rz-radius-md);
+		background-color: hsl(var(--rz-gray-2));
 	}
 </style>
