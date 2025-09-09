@@ -142,7 +142,7 @@
 		gap: var(--rz-size-6);
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: center;
 		justify-content: flex-start;
 		padding: var(--rz-size-3);
 		height: 100vh;
@@ -158,11 +158,13 @@
 
 	.rz-live-container iframe {
 		border: var(--rz-border);
-		transform-origin: 0 0;
+		transform-origin: center 0;
 	}
 
 	.rz-live-container iframe.mobile {
 		width: 320px;
+		/*transform: translateX(-50%);
+		margin-left: 50%;*/
 		aspect-ratio: 2 / 3.3;
 		scale: 1.25;
 	}
