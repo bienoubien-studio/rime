@@ -39,6 +39,7 @@ export default {
 	published: 'Published',
 	requestPasswordReset: 'Request a password reset link',
 	resetPassword: 'Reset password',
+	reset_password_success: 'Your password has been reset successfully',
 	save_draft: 'Save draft',
 	save_new_draft: 'Save in a new draft',
 	save: 'Save',

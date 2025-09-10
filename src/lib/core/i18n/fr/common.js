@@ -38,6 +38,7 @@ export default {
 	published: 'Publié',
 	requestPasswordReset: 'Demander un lien de réinitialisation',
 	resetPassword: 'Réinitialiser le mot de passe',
+	reset_password_success: 'Mot de passe réinitialisé avec succès',
 	save_draft: 'Enregistrer le brouillon',
 	save_new_draft: 'Enregistrer dans un nouveau brouillon',
 	save: 'Enregistrer',
