@@ -95,7 +95,6 @@
 	let currentDevice = $state<'mobile' | 'desktop'>('mobile');
 
 	const iframeScale = $derived(ZOOMS[currentZoom]);
-	const iframeSizePercent = $derived((1 / iframeScale) * 100);
 </script>
 
 <div class="rz-live-container">
