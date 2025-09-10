@@ -1,16 +1,17 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import type { CompiledCollection } from '$lib/core/config/types/index.js';
 	import { t__ } from '$lib/core/i18n';
-	import Button from '../../ui/button/button.svelte';
-	import { authClient } from '$lib/panel/util/auth';
-	import { toast } from 'svelte-sonner';
+	import type { ClientField, TextField } from '$lib/fields/types.js';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import validate from '$lib/util/validate';
-	import type { ClientField, TextField } from '$lib/fields/types.js';
-	import type { CompiledCollection } from '$lib/core/config/types/index.js';
+	import { authClient } from '$lib/panel/util/auth';
 	import { isAuthConfig } from '$lib/util/config.js';
-	
+	import validate from '$lib/util/validate';
+	import { toast } from 'svelte-sonner';
+	import Button from '../../ui/button/button.svelte';
+
 	type Props = { operation: string; form: DocumentFormContext; collection: CompiledCollection };
 	const { operation, form, collection }: Props = $props();
 
@@ -75,22 +76,26 @@
 	};
 </script>
 
-<div class="rz-document-auth">
-	{#if operation === 'create'}
-		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
-			<Text {form} type="password" config={passwordConfig} path="password" />
-			<Text id="confirm-password" {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
+<!-- For creation show passwords fields -->
+<!-- For updates show reset password if mailer plugin exists -->
+{#if operation === 'create' || (user.attributes.roles.includes('admin') && page.data?.hasMailer)}
+	<div class="rz-document-auth">
+		{#if operation === 'create'}
+			{#if isAuthConfig(collection) && collection.auth.type === 'password'}
+				<Text {form} type="password" config={passwordConfig} path="password" />
+				<Text id="confirm-password" {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
+			{/if}
+		{:else if user.attributes.roles.includes('admin') && page.data?.hasMailer}
+			{#if isAuthConfig(collection) && collection.auth.type === 'password'}
+				<div>
+					<Button onclick={sendPasswordResetLink} variant="outline">
+						{t__('common.sendPasswordResetLink')}
+					</Button>
+				</div>
+			{/if}
 		{/if}
-	{:else if user.attributes.roles.includes('admin')}
-		{#if isAuthConfig(collection) && collection.auth.type === 'password'}
-			<div>
-				<Button onclick={sendPasswordResetLink} variant="outline">
-					{t__('common.sendPasswordResetLink')}
-				</Button>
-			</div>
-		{/if}
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.rz-document-auth {
