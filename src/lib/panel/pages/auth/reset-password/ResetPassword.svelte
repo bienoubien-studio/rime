@@ -25,6 +25,7 @@
 	};
 	const confirmPasswordConfig = {
 		...passwordField,
+		name: 'confirmPassword',
 		placeholder: t__('common.confirmPassword')
 	};
 
@@ -47,7 +48,7 @@
 
 <AuthForm image={data.image} title={t__('common.resetPassword')}>
 	{#if success}
-		<p>{t__('common.resetPasswordSuccess')}</p>
+		<p>{t__('common.reset_password_success')}</p>
 		<Button size="xl" href="/panel/sign-in">{t__('common.login')}</Button>
 	{:else}
 		<Text type="password" config={passwordConfig} form={context} />

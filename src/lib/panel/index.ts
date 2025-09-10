@@ -1,19 +1,19 @@
+import type { VersionsStatus } from '$lib/core/constant.js';
+import type { GenericDoc } from '$lib/core/types/doc';
 import type { Snippet } from 'svelte';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc';
+import { Field } from './components/fields/index.js';
+import Panel from './components/Root.svelte';
+import Doc from './components/sections/document/Document.svelte';
 import Area from './pages/area/Area.svelte';
+import AreaVersionsDoc from './pages/area/AreaVersionsDoc.svelte';
 import CollectionDoc from './pages/collection-document/CollectionDocument.svelte';
 import CollectionDocVersions from './pages/collection-document/CollectionDocVersions.svelte';
-import AreaVersionsDoc from './pages/area/AreaVersionsDoc.svelte';
 import Collection from './pages/collection/Collection.svelte';
-import Live from './pages/live/Live.svelte';
-import Panel from './components/Root.svelte';
 import Dashboard from './pages/dashboard/Dashboard.svelte';
-import Doc from './components/sections/document/Document.svelte';
-import { Field } from './components/fields/index.js';
-import type { VersionsStatus } from '$lib/core/constant.js';
+import Live from './pages/live/Live.svelte';
 import type { Route } from './types.js';
 
-export { Area, AreaVersionsDoc, CollectionDocVersions, CollectionDoc, Collection, Live, Panel, Dashboard, Doc, Field };
+export { Area, AreaVersionsDoc, Collection, CollectionDoc, CollectionDocVersions, Dashboard, Doc, Field, Live, Panel };
 
 export type { DocumentFormContext } from './context/documentForm.svelte.js';
 
@@ -44,5 +44,8 @@ type BaseDocData =
 type DocVersions<V> = V extends true ? { versions: DocVersion[] } : {};
 
 export type CollectionDocData<V extends boolean = boolean> = DocVersions<V> &
-	BaseDocData & { operation: 'create' | 'update' };
+	BaseDocData & {
+		operation: 'create' | 'update';
+		hasMailer?: boolean;
+	};
 export type AreaDocData<V extends boolean = boolean> = DocVersions<V> & BaseDocData & { operation: 'update' };

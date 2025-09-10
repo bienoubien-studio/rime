@@ -1,14 +1,14 @@
-import { error, type ServerLoadEvent } from '@sveltejs/kit';
-import { handleError } from '$lib/core/errors/handler.server';
-import { trycatch } from '$lib/util/trycatch.js';
-import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { env } from '$env/dynamic/public';
-import { makeVersionsSlug } from '$lib/util/schema.js';
-import { RizomError } from '$lib/core/errors/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
+import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
+import { handleError } from '$lib/core/errors/handler.server';
+import { RizomError } from '$lib/core/errors/index.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { Route } from '$lib/panel/types.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
+import type { Route } from '$lib/panel/types.js';
+import { makeVersionsSlug } from '$lib/util/schema.js';
+import { trycatch } from '$lib/util/trycatch.js';
+import { error, type ServerLoadEvent } from '@sveltejs/kit';
 
 /****************************************************/
 /* Document Load
@@ -25,7 +25,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		let readOnly = false;
 		const collection = rizom.collection<any>(slug);
 		const operation = id === 'create' ? 'create' : 'update';
-		
+
 		if (id === 'create') {
 			/** Check for authorizations */
 			const authorized = collection.config.access.create(user, {});
@@ -82,6 +82,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			doc,
 			operation,
 			status: 200,
+			hasMailer: 'mailer' in rizom.plugins,
 			readOnly
 		};
 
@@ -94,9 +95,8 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			}
 			data = { ...data, versions: result.docs };
 		}
-		
-		return data as CollectionDocData<V>;
 
+		return data as CollectionDocData<V>;
 	};
 
 	return load;
