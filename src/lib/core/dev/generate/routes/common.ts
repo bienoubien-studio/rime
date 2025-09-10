@@ -102,8 +102,9 @@ export const actions = authActions.signIn;
 const forgotPasswordPage = () => `
 <script>
   import { ForgotPassword } from '${PACKAGE_NAME}/panel/auth/client'
+  const { data } = $props();
 </script>
-<ForgotPassword />`;
+<ForgotPassword {data} />`;
 
 /**
  * Forgot password page server template
@@ -122,9 +123,10 @@ export const load = authLoads.forgotPassword;
 const resetPasswordPage = () => `
 <script lang="ts">
   import { ResetPassword } from '${PACKAGE_NAME}/panel/auth/client';
+  const { data } = $props();
 </script>
 
-<ResetPassword />`;
+<ResetPassword {data} />`;
 
 /**
  * Reset password page server template
@@ -263,7 +265,7 @@ export const commonRoutes: Routes = {
 	},
 	'(rizom)/panel/sign-in': {
 		'page@(rizom)': signInPage,
-		'pageServer': signInPageServer
+		pageServer: signInPageServer
 	},
 	'(rizom)/forgot-password': {
 		page: forgotPasswordPage,
