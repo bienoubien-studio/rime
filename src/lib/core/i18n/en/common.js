@@ -38,6 +38,7 @@ export default {
 	published_infos: 'The document is published and available for everyone',
 	published: 'Published',
 	requestPasswordReset: 'Request a password reset link',
+	rename_success: 'Renamed successfully',
 	resetPassword: 'Reset password',
 	reset_password_success: 'Your password has been reset successfully',
 	save_draft: 'Save draft',

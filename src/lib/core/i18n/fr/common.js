@@ -37,6 +37,7 @@ export default {
 	published_infos: 'Le document est publié et accessible à tous',
 	published: 'Publié',
 	requestPasswordReset: 'Demander un lien de réinitialisation',
+	rename_success: 'Renommé avec succès',
 	resetPassword: 'Réinitialiser le mot de passe',
 	reset_password_success: 'Mot de passe réinitialisé avec succès',
 	save_draft: 'Enregistrer le brouillon',
