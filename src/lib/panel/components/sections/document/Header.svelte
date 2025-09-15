@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
-	import { Button } from '../../ui/button';
-	import { X, PencilRuler, ExternalLink } from '@lucide/svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
 	import { invalidateAll } from '$app/navigation';
+	import type { CompiledArea, CompiledCollection } from '$lib/core/config/types';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { ExternalLink, PencilRuler, X } from '@lucide/svelte';
+	import { Button } from '../../ui/button';
+	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
 	import PageHeader from '../../ui/page-header/PageHeader.svelte';
 	import ButtonSave from './ButtonSave.svelte';
-	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
-	import type { CompiledCollection, CompiledArea } from '$lib/core/config/types';
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import Settings from './Settings.svelte';
 	import ButtonStatus from './ButtonStatus.svelte';
+	import Settings from './Settings.svelte';
 
 	// Props
 	type Props = {
