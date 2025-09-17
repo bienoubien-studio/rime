@@ -1,71 +1,49 @@
-import type { Plugin, UserConfig } from 'vite';
-import { browserConfig } from './browser.js';
-import dotenv from 'dotenv';
-import { existsSync, rmSync } from 'fs';
-import path from 'path';
-import { hasRunInitCommand } from '../cli/util.server.js';
+import type { Plugin } from 'vite';
 
-dotenv.config({ override: true });
-const dev = process.env.NODE_ENV === 'development';
+/**
+ * Vite plugin that serves the browser config as a virtual module
+ * This way file imports works without package.json export error
+ * Caveats : Vite will not optimize imported modules, so if an error
+ * occured, the module should be added to vite config optimizeDeps.include
+ */
+export function rizom(): Plugin {
+	const virtualModuleId = '$rizom/config';
+	const resolvedVirtualModuleId = '\0' + virtualModuleId;
 
-type Args = { browser?: {
-	replace?: [string, string][]
-}}
+	return {
+		name: 'rizom-config',
 
-export function rizom(args?:Args): Plugin[] {
-	return [
-		{
-			name: 'rizom',
-			configureServer(server) {
-				// Add a listener for when the server starts
-				server.httpServer?.once('listening', () => {
-					if (dev && !hasRunInitCommand()) {
-						throw new Error('Missing required files, run `npx rizom init`');
-					}
-					// Check if we need to rebuild
-					const shouldRebuild = process.argv.includes('rebuild');
-					const rizomDevCacheDir = path.resolve(process.cwd(), '.rizom');
-					if (shouldRebuild && existsSync(rizomDevCacheDir)) {
-						rmSync(rizomDevCacheDir, { recursive: true, force: true });
-					}
-				});
+		// configureServer(server) {
+		// 	// Watch the .rizom directory for changes
+		// 	const rizomDir = path.resolve(process.cwd(), '.rizom');
+		// 	server.watcher.add(path.join(rizomDir, '**'));
+		// },
 
-				// Add a watcher for config changes
-				// Whenever any change in src/config trigger
-				// a dummy request to retrigger the configuration build
-				server.watcher.on('change', async (path) => {
-					if (path.includes('src/config')) {
-						// Make a dummy request to trigger handler
-						try {
-							const { host, port, https } = server.config.server;
-							const protocol = https ? 'https' : 'http';
-							const hostname = host === true ? 'localhost' : host || 'localhost';
-							const baseUrl = `${protocol}://${hostname}:${port}`;
-							await fetch(`${baseUrl}/api/reload-config`, { method: 'POST' });
-						} catch (error) {
-							console.error('Failed to trigger config reload:', error);
-						}
-					}
-				});
-			},
-			config(): UserConfig {
-				return {
-					ssr: {
-						external: ['sharp', 'better-sqlite3']
-					},
-					optimizeDeps: {
-						exclude: ['sharp', 'better-sqlite3'],
-						include: ['@lucide/svelte']
-					},
-					build: {
-						rollupOptions: {
-							external: ['better-sqlite3', 'sharp']
-						},
-						target: 'es2022'
-					}
-				};
+		async handleHotUpdate({ server, file }) {
+			if (file.includes('src/lib/core/config/build')) {
+				const module = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
+				if (module) {
+					server.moduleGraph.invalidateModule(module);
+					return [module];
+				}
 			}
 		},
-		browserConfig(args?.browser)
-	];
+
+		resolveId(id) {
+			if (id === virtualModuleId) {
+				return resolvedVirtualModuleId;
+			}
+		},
+
+		load(id) {
+			if (id === resolvedVirtualModuleId) {
+				const relativePath =
+					this.environment?.config?.consumer === 'server'
+						? '$lib/core/config/build/server/index.server.js'
+						: '$lib/core/config/build/client/index.js';
+				// Return import statement - let Vite handle TypeScript transpilation
+				return `export * from '${relativePath}';`;
+			}
+		}
+	};
 }
