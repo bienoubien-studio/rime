@@ -1,5 +1,5 @@
 import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import type { Docs, DocType, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
@@ -66,7 +66,7 @@ export type HookContext<
 							doc: DocTypeForSlugs<S>;
 							data?: never;
 						}
-					: {}
+					: object
 	: // After create: both data and doc are available
 		T extends 'after'
 		? O extends 'create'
@@ -92,8 +92,8 @@ export type HookContext<
 								doc: DocTypeForSlugs<S>;
 								data?: never;
 							}
-						: {}
-		: {});
+						: object
+		: object);
 
 // Hook function type
 export type Hook<S extends DocType = PrototypeSlug, O extends Operation = Operation, T extends Timing = Timing> = (

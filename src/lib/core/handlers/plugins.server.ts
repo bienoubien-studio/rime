@@ -1,6 +1,6 @@
-import { type Handle } from '@sveltejs/kit';
+import type { Config } from '$lib/core/config/types.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
-import type { Config } from '$lib/core/config/types/index.js';
+import { type Handle } from '@sveltejs/kit';
 
 type Args = { config: Config };
 

@@ -1,7 +1,7 @@
 import { invalidateAll } from '$app/navigation';
 import { env } from '$env/dynamic/public';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledCollection } from '$lib/core/config/types.js';
 import { PARAMS } from '$lib/core/constant.js';
 import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
 import type { Field, FormField } from '$lib/fields/types.js';

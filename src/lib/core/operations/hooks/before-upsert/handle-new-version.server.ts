@@ -1,22 +1,22 @@
-import { VersionOperations } from '$lib/core/collections/versions/operations.js';
-import type { Dic } from '$lib/util/types.js';
-import path from 'path';
-import type { CompiledArea, CompiledCollection, GenericDoc, Prototype } from '../../../../types.js';
 import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
-import { setValuesFromOriginal } from '../../shared/setValuesFromOriginal.js';
-import type { ConfigMap } from '../../configMap/types.js';
+import { VersionOperations } from '$lib/core/collections/versions/operations.js';
+import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { makeVersionsSlug } from '$lib/util/schema.js';
-import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { Hooks } from '../index.js';
+import type { Dic } from '$lib/util/types.js';
+import path from 'path';
+import type { CompiledArea, CompiledCollection } from '../../../../types.js';
+import type { ConfigMap } from '../../configMap/types.js';
+import { setValuesFromOriginal } from '../../shared/setValuesFromOriginal.js';
+import { Hooks } from '../index.server.js';
 
 /**
  * Handles version-related operations for document updates
  * Manages specific version updates and new version creation
  */
-export const handleNewVersion = Hooks.beforeUpsert( async (args) => {
+export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 	const { config, event } = args;
-	const { rizom } = event.locals
+	const { rizom } = event.locals;
 
 	const { versionOperation, originalDoc, originalConfigMap, params } = args.context;
 
@@ -36,11 +36,11 @@ export const handleNewVersion = Hooks.beforeUpsert( async (args) => {
 		case VersionOperations.isNewVersionCreation(versionOperation):
 			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
 			const versionsSlug = makeVersionsSlug(config.slug);
-			
+
 			const document = await rizom.collection(versionsSlug).create({
 				data,
 				locale: params.locale
-			})
+			});
 
 			if (config.versions && config.versions.maxVersions) {
 				await rizom.collection(versionsSlug).delete({

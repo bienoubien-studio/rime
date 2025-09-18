@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledCollection } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { buildConfigMap } from '$lib/core/operations/configMap';
 import type { BlocksFieldRaw } from '$lib/fields/blocks';

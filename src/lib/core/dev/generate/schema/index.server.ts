@@ -13,7 +13,7 @@ import {
 	templateAPIKey,
 	templateTable
 } from './templates.server.js';
-import type { BuiltConfig } from '$lib/core/config/types/index.js';
+import type { BuiltConfig } from '$lib/core/config/types.js';
 import type { Dic } from '$lib/util/types.js';
 import { generateJunctionTableDefinition } from './relations/junction.server.js';
 import { generateRelationshipDefinitions } from './relations/definition.server.js';

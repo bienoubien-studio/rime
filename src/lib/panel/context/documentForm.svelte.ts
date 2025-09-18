@@ -2,7 +2,7 @@ import { applyAction, deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { env } from '$env/dynamic/public';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';

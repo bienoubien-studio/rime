@@ -1,17 +1,17 @@
 <script lang="ts">
-	import Nav from '$lib/panel/components/ui/nav/Nav.svelte';
-	import { Toaster } from '$lib/panel/components/ui/sonner';
-	import { onMount, type Snippet } from 'svelte';
-	import createContext from '$lib/panel/context/createContext.svelte.js';
-	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
-	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
-	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import { API_PROXY, setAPIProxyContext } from '../context/api-proxy.svelte.js';
 	import { page } from '$app/state';
 	import type { User } from '$lib/core/collections/auth/types.js';
+	import type { BrowserConfig } from '$lib/core/config/types.js';
+	import Nav from '$lib/panel/components/ui/nav/Nav.svelte';
+	import { Toaster } from '$lib/panel/components/ui/sonner';
+	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
+	import createContext from '$lib/panel/context/createContext.svelte.js';
+	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
+	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import type { Route } from '$lib/panel/types.js';
-	import type { BrowserConfig } from '$lib/core/config/types/index.js';
-	
+	import { onMount, type Snippet } from 'svelte';
+	import { API_PROXY, setAPIProxyContext } from '../context/api-proxy.svelte.js';
+
 	type Props = {
 		routes: Record<string, Route[]>;
 		children: Snippet;
@@ -20,15 +20,15 @@
 		user: User;
 	};
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();
-	
+
 	let isCollapsed = $state(false);
 	let localeCollapsed = $state<string | null>(null);
-	
+
 	setConfigContext(config);
 	setUserContext(user);
 	createContext('title', '[untitled]');
 	setAPIProxyContext(API_PROXY.ROOT);
-	
+
 	const locale = setLocaleContext(initialeLocale);
 
 	$effect(() => {

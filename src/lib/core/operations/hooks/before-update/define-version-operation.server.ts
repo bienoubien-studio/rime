@@ -1,5 +1,5 @@
 import { defineVersionUpdateOperation } from '$lib/core/collections/versions/operations.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const defineVersionOperation = Hooks.beforeUpdate(async (args) => {
 	const { config } = args;

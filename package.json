@@ -161,6 +161,8 @@
 		"vitest": "^3.1.1"
 	},
 	"dependencies": {
+		"@babel/generator": "^7.28.3",
+		"@babel/types": "^7.28.4",
 		"@bien-bien/css-reset": "^0.1.0",
 		"@internationalized/date": "^3.8.2",
 		"@lucide/svelte": "^0.540.0",
@@ -189,6 +191,7 @@
 		"@tiptap/html": "^2.26.1",
 		"@tiptap/pm": "^2.26.1",
 		"@tiptap/starter-kit": "^2.26.1",
+		"ast-kit": "^2.1.2",
 		"autoprefixer": "^10.4.21",
 		"better-auth": "^1.2.5",
 		"better-sqlite3": "^12.2.0",
@@ -205,6 +208,7 @@
 		"drizzle-orm": "^0.44.2",
 		"flat": "^6.0.1",
 		"js-cookie": "^3.0.5",
+		"magic-string-ast": "^1.0.2",
 		"nodemailer": "^6.10.0",
 		"paneforge": "^0.0.6",
 		"polka": "^0.5.2",

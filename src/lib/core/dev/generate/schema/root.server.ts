@@ -2,7 +2,7 @@ import type { Field, FormField } from '$lib/fields/types.js';
 import { isBlocksField, isFormField, isGroupField, isRelationField, isTabsField } from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.server.js';
-import type { LocaleConfig } from '$lib/core/config/types/index.js';
+import type { LocaleConfig } from '$lib/core/config/types.js';
 import type { RelationFieldsMap } from './relations/definition.server.js';
 import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';

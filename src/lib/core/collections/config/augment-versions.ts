@@ -1,7 +1,7 @@
 import { text } from '$lib/fields/text/index.server.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import type { Collection } from '../../../types.js';
-import type { VersionsConfig } from '$lib/core/config/types/index.js';
+import type { VersionsConfig } from '$lib/core/config/types.js';
 
 type Input = { versions?: Collection<any>['versions']; fields: Collection<any>['fields'] };
 type WithVersionsConfig<T> = Omit<T, 'versions'> & { versions?: Required<VersionsConfig> };
@@ -16,7 +16,6 @@ export const augmentVersions = <T extends Input>(config: T): WithVersionsConfig<
   let normalizedVersions: Required<VersionsConfig> | undefined;
   
   if (versions) {
-    // Create a properly typed object with all required properties
     normalizedVersions = {
       draft: typeof versions === 'boolean' ? false : versions.draft ?? false,
       autoSave: typeof versions === 'boolean' ? false : versions.autoSave ?? false,

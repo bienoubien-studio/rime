@@ -1,7 +1,7 @@
-import type { RequestEvent } from '@sveltejs/kit';
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { RequestEvent } from '@sveltejs/kit';
 import type { CollectionSlug } from '../../../types.js';
 
 type DeleteArgs = {
@@ -23,7 +23,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 		params: { locale, limit, offset, sort, query },
 		isSystemOperation
 	};
-	
+
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

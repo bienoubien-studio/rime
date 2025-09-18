@@ -1,5 +1,5 @@
 import { RizomError } from '$lib/core/errors/index.js';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/trycatch.js';
 import { eq } from 'drizzle-orm';

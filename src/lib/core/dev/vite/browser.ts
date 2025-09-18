@@ -1,9 +1,9 @@
-import type { Plugin } from 'vite';
 import fs from 'fs';
 import path from 'path';
+import type { Plugin } from 'vite';
 import { logger } from '../../logger/index.server.js';
 
-type Args = { replace?: [string,string][] }
+type Args = { replace?: [string, string][] };
 
 /**
  * Vite plugin that serves the browser config as a virtual module
@@ -11,8 +11,7 @@ type Args = { replace?: [string,string][] }
  * Caveats : Vite will not optimize imported modules, so if an error
  * occured, the module should be added to vite config optimizeDeps.include
  */
-export function browserConfig(args?:Args): Plugin {
-
+export function browserConfig(args?: Args): Plugin {
 	const virtualModuleId = 'virtual:browser-config';
 	const resolvedVirtualModuleId = '\0' + virtualModuleId;
 
@@ -50,12 +49,12 @@ export function browserConfig(args?:Args): Plugin {
 					if (fs.existsSync(configPath)) {
 						// Read and return the content of the browser config
 						let content = fs.readFileSync(configPath, 'utf-8');
-						if(args?.replace){
-							for(const pattern of args.replace){
-								content = content.replaceAll(pattern[0], pattern[1])
+						if (args?.replace) {
+							for (const pattern of args.replace) {
+								content = content.replaceAll(pattern[0], pattern[1]);
 							}
 						}
-						return content
+						return content;
 					} else {
 						logger.warn('Browser config file not found at:', configPath);
 						return 'export default {}';

@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { trycatchSync } from '$lib/util/trycatch.js';
 import { getSegments } from '../util/path.js';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 
 /**
  * Hook executed before save/update operations on {uploadSlug}_directories collections

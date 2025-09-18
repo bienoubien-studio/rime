@@ -1,4 +1,4 @@
-import type { BuiltConfig, Config } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, Config } from '$lib/core/config/types.js';
 import type { FieldsComponents } from '$lib/panel/types.js';
 
 type Args = {

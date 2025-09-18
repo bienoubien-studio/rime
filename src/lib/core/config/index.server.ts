@@ -1,11 +1,9 @@
-import { RizomError } from '../errors/index.js';
 import { flattenWithGuard } from '../../util/object.js';
-import { buildConfig } from './build/index.js';
-import type { CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types/index.js';
+import { RizomError } from '../errors/index.js';
+// import { buildConfig } from './build/index.js';
+import type { CompiledArea, CompiledCollection, CompiledConfig, Config } from '$lib/core/config/types.js';
+import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
 import type { AsyncReturnType, Dic } from '$lib/util/types.js';
-import type { CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
-import type { AreaSlug } from '$lib/core/types/doc.js';
-import type { Config } from '$lib/core/config/types/index.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -18,7 +16,8 @@ const dev = process.env.NODE_ENV === 'development';
  * const pagesCollection = config.getCollection('pages');
  */
 export async function createConfigInterface(rawConfig: Config) {
-	const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });
+	// const config: CompiledConfig = await buildConfig(rawConfig, { generateFiles: dev });
+	const config: CompiledConfig = rawConfig;
 
 	/**
 	 * Flattens the configuration object for easier access to nested properties

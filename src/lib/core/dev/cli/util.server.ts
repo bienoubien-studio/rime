@@ -1,7 +1,7 @@
-import { logger } from '../../logger/index.server.js';
 import { existsSync } from 'fs';
 import path from 'path';
 import readline from 'readline';
+import { logger } from '../../logger/index.server.js';
 
 export const hasRunInitCommand = () => {
 	const projectRoot = process.cwd();
@@ -12,7 +12,7 @@ export const hasRunInitCommand = () => {
 	const schemaFile = path.resolve(projectRoot, './src/lib/server/schema.ts');
 	const hooksServerFile = path.resolve(projectRoot, './src/hooks.server.ts');
 	const dbDir = path.resolve(projectRoot, './db');
-	const configDir = path.resolve(projectRoot, './src/config');
+	const configDir = path.resolve(projectRoot, './src/lib/config');
 	const rizomConfigFile = path.resolve(configDir, './rizom.config.ts');
 
 	// Check each file/directory and log warnings for missing ones

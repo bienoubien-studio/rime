@@ -1,5 +1,5 @@
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { CompiledCollection, CompiledArea } from '$lib/core/config/types/index.js';
+import type { CompiledCollection, CompiledArea } from '$lib/core/config/types.js';
 import type { Dic } from '$lib/util/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { snapshot } from './state.js';

@@ -1,4 +1,4 @@
-import type { BuiltConfig, RouteConfig } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, RouteConfig } from '$lib/core/config/types.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Handle } from '@sveltejs/kit';
 import type { Component } from 'svelte';

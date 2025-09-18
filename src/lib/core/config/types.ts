@@ -1,5 +1,5 @@
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
-import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.js';
+import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.server.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
 import type { Plugin } from '$lib/core/types/plugins.js';
 import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
@@ -14,17 +14,45 @@ import type { FieldsComponents } from '../../../panel/types.js';
 import type { Access, User } from '../../collections/auth/types.js';
 import type { AreaSlug, CollectionSlug, DocType } from '../../types/doc.js';
 
+// const excludePatterns = [
+// 		// Root level exclusions
+// 		'^trustedOrigins$',
+// 		'^database$',
+// 		'^smtp$',
+// 		'^routes$',
+// 		'^plugins$',
+// 		'^cache',
+
+// 		// Exclude critical panel properties
+// 		'^panel.access',
+// 		'^panel.routes',
+// 		'^panel.users',
+
+// 		// Exclude area and collection hooks
+// 		'^collections..hooks',
+// 		'^areas..hooks',
+
+// 		// exclude fields hooks (allow client hook : fields..hooks.onChange)
+// 		'fields..hooks.beforeValidate',
+// 		'fields..hooks.beforeSave',
+// 		'fields..hooks.beforeRead',
+
+// 		// Generic patterns
+// 		'.*.server' // Exclude any path ending with server
+// 	];
+
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
 	/** Transversal auth config */
 	auth?: {
+		// server
 		/** Enable magicLink Better-Auth plugin */
 		magicLink?: boolean;
 	};
 	/** The database name inside ./db folder */
-	database: string;
+	database: string; // server
 	/** List of Collection  */
 	collections: Collection<string>[];
 	/** List of Area  */
@@ -54,14 +82,14 @@ export interface Config {
 	 * trustedOrigins: ['www.external.com']
 	 * ```
 	 */
-	trustedOrigins?: string[];
+	trustedOrigins?: string[]; // server
 	panel?: {
 		/** who can accesss the panel */
-		access?: (user: User | undefined) => boolean;
+		access?: (user: User | undefined) => boolean; // server
 		/** Custom panel routes that render a given component */
-		routes?: Record<string, CustomPanelRoute>;
+		routes?: Record<string, CustomPanelRoute>; // server
 		/** Additional panel users config  */
-		users?: PanelUsersConfig;
+		users?: PanelUsersConfig; // server
 		/** The panel language, "en" or "fr" supports only */
 		language?: PanelLanguage;
 		/** Sidebar navigation groups labels and icons */
@@ -83,9 +111,9 @@ export interface Config {
 		css?: string;
 	};
 	/** Enable built-in API cache */
-	cache?: { isEnabled?: (event: RequestEvent) => boolean };
+	cache?: { isEnabled?: (event: RequestEvent) => boolean }; // server
 	/** SMTP config */
-	smtp?: SMTPConfig;
+	smtp?: SMTPConfig; // server
 	/** Custom API routes
 	 * @example
 	 * routes: {
@@ -95,11 +123,11 @@ export interface Config {
 	 * 	}
 	 * }
 	 */
-	routes?: Record<string, RouteConfig>;
-	plugins?: ReturnType<Plugin>[];
+	routes?: Record<string, RouteConfig>; // server
+	plugins?: ReturnType<Plugin>[]; // server
 	custom?: {
 		browser?: Record<string, any>;
-		server?: Record<string, any>;
+		server?: Record<string, any>; // server
 	};
 }
 
@@ -137,6 +165,7 @@ type CollectionLabel = {
 };
 
 export type VersionsConfig = { draft?: boolean; autoSave?: boolean; maxVersions?: number };
+export type UrlDefinition = <T>(document: T) => string;
 
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
@@ -149,6 +178,7 @@ type BaseDocConfig<S extends string = string> = {
 	access?: Access;
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
+	url: UrlDefinition;
 	/** Panel configuration, set false to hide the area/collection from the panel */
 	panel?:
 		| false
@@ -210,17 +240,17 @@ export type Collection<S> = {
 	/** The collection label */
 	label?: CollectionLabel;
 	auth?: boolean | AuthConfig;
-	hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>;
+	hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>; // server
 	/** A function to generate the document URL */
-	url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
+	// url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
 	nested?: boolean;
 	upload?: boolean | UploadConfig;
 } & BaseDocConfig;
 
 export type Area<S> = BaseDocConfig & {
 	/** A function to generate the document URL */
-	url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
-	hooks?: AreaHooks<S extends keyof RegisterArea ? S : any>;
+	// url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
+	hooks?: AreaHooks<S extends keyof RegisterArea ? S : any>; // server
 	/** The area label */
 	label?: string;
 };

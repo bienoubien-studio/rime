@@ -1,19 +1,18 @@
 import { logger } from '$lib/core/logger/index.server.js';
 import { getValueAtPath } from '$lib/util/object.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 /**
  * Hook to populate _children property on document from a nested collection
  */
-export const populateURL = Hooks.beforeRead<'generic'>( async (args) => {
-  
+export const populateURL = Hooks.beforeRead<'generic'>(async (args) => {
 	const select =
 		args.context.params.select && Array.isArray(args.context.params.select) ? args.context.params.select : [];
 	const HAS_SELECT = select.length > 0;
 
 	// If there is a select param, populate url only if included
 	if (HAS_SELECT) return args;
-	
+
 	// Else populate url
 	const { config, event, context } = args;
 	const locale = context.params.locale;
@@ -24,7 +23,7 @@ export const populateURL = Hooks.beforeRead<'generic'>( async (args) => {
 
 		try {
 			url = config.url(document as any);
-		} catch (err:any){
+		} catch (err: any) {
 			logger.error(`Error while generating url of ${config.slug} with id: ${args.doc.id}, ${err.message}`);
 			return args;
 		}
@@ -88,20 +87,20 @@ export const populateURL = Hooks.beforeRead<'generic'>( async (args) => {
 			logger.warn('Missing document properties to generate URL for : ' + document.id);
 			return args;
 		}
-    
+
 		// Add the url if successfully generated
 		if (url) {
-      if(args.doc.url !== url){
-        args.event.locals.rizom.adapter.updateDocumentUrl(url, { 
-          id: args.doc.id,
-          versionId: args.doc.versionId,
-          config, 
-          locale 
-        })
-      }
+			if (args.doc.url !== url) {
+				args.event.locals.rizom.adapter.updateDocumentUrl(url, {
+					id: args.doc.id,
+					versionId: args.doc.versionId,
+					config,
+					locale
+				});
+			}
 			args.doc = { ...args.doc, url };
 		}
-    
+
 		// Add the live url if needed
 		if (config.live && event.locals.user && url) {
 			args.doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${url}&slug=${config.slug}&id=${args.doc.id}`;

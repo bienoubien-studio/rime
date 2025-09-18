@@ -5,14 +5,16 @@ import fs from 'fs';
 import { generateTransform, MagicStringAST, type CodeTransform } from 'magic-string-ast';
 import path from 'path';
 import type { Plugin, ViteDevServer } from 'vite';
+import type { NodeRef, Transformer, TransformerParsed } from './types';
 
 export function sanitize(): Plugin {
-	// const virtualModuleId = 'virtual:browser-config';
-	// const resolvedVirtualModuleId = '\0' + virtualModuleId;
+	const virtualModuleId = 'virtual:rizom.config';
+	const resolvedVirtualModuleId = '\0' + virtualModuleId;
+
 	let server: ViteDevServer;
 
 	return {
-		name: 'rizom:sanitize-config',
+		name: '$rizom/config',
 
 		enforce: 'pre',
 
@@ -21,35 +23,42 @@ export function sanitize(): Plugin {
 		},
 
 		resolveId(id) {
-			const isSSR = this.environment.config.consumer === 'server';
-			if (!isSSR && id.includes('rizom.config')) {
-				return id;
+			if (id === virtualModuleId) {
+				return resolvedVirtualModuleId;
+			}
+			if (id === '$rizom/config') {
+				return this.environment?.config?.consumer === 'server'
+					? 'src/lib/core/config/build/index.server.js'
+					: 'src/lib/core/config/build/index.js';
 			}
 		},
 
 		load(id) {
-			const isSSR = this.environment.config.consumer === 'server';
-			if (!isSSR && id.includes('rizom.config')) {
-				const configPath = path.resolve(process.cwd(), 'src/' + id.replace('.js', '.ts'));
-				return fs.readFileSync(configPath, 'utf-8');
-				// console.log(server.moduleGraph.getModuleById(id))
+			if (id === resolvedVirtualModuleId) {
+				const configPath = path.resolve(process.cwd(), 'src/config/rizom.config.ts');
+				const code = fs.readFileSync(configPath, 'utf-8');
+				console.log(code);
+				return code;
 			}
+			// const isSSR = this.environment.config.consumer === 'server';
+			// if (!isSSR && id.includes('rizom.config')) {
+			// 	const configPath = path.resolve(process.cwd(), 'src/' + id.replace('.js', '.ts'));
+			// 	const code = fs.readFileSync(configPath, 'utf-8');
+			// 	console.log(code);
+			// 	return code;
+			// 	// console.log(server.moduleGraph.getModuleById(id))
+			// }
 		},
 
 		async transform(code, id) {
-			const isSSR = this.environment.config.consumer === 'server';
-			if (!isSSR && id.includes('rizom.config')) {
+			// return code
+			if (id === resolvedVirtualModuleId) {
 				const sanitized = await sanitizeFunction(code, id);
 				console.log(sanitized);
 				return sanitized?.code || '';
 			}
 		}
 	};
-}
-
-interface NodeRef<T = Node> {
-	value: T;
-	set: (node: T) => void;
 }
 
 export function useNodeRef(): {
@@ -76,44 +85,6 @@ export function useNodeRef(): {
 	};
 }
 
-export type Awaitable<T> = T | PromiseLike<T>;
-
-export interface Transformer<T extends Node = Node> {
-	/**
-	 * Filter files to transform
-	 * @param id - filename
-	 * @returns whether to include the file
-	 */
-	transformInclude?: (id: string) => Awaitable<boolean>;
-	/**
-	 * Filter nodes to transform
-	 */
-	onNode?:
-		| ((node: Node, parent: Node | null | undefined, index: number | null | undefined) => Awaitable<boolean>)
-		| ((node: Node, parent: Node | null | undefined, index: number | null | undefined) => node is T);
-	/**
-	 * Transform the node to a new node or string
-	 *
-	 * @returns the new node or string, or `false` to remove the node
-	 */
-	transform: (
-		node: T,
-		code: string,
-		context: {
-			id: string;
-		}
-	) => Awaitable<string | Node | false | undefined | null>;
-	/**
-	 * It will be called after all nodes are transformed
-	 */
-	finalize?: (s: MagicStringAST) => Awaitable<void>;
-}
-
-interface TransformerParsed {
-	transformer: Transformer;
-	nodes: NodeRef<Node | undefined>[];
-}
-
 export async function sanitizeFunction(code: string, id: string): Promise<CodeTransform | undefined> {
 	const { getNodeRef } = useNodeRef();
 
@@ -122,14 +93,8 @@ export async function sanitizeFunction(code: string, id: string): Promise<CodeTr
 	const parseOptions = {
 		sourceType: 'module'
 	};
-	console.log(id);
-	console.log(getLang(id));
-	console.log('-------- CODE');
-	console.log(code);
-	console.log('-------- END CODE');
 
 	const program = babelParse(code, 'ts', parseOptions);
-	console.log(program);
 
 	await walkASTAsync(program, {
 		async enter(node, parent, key, index) {
@@ -211,30 +176,34 @@ function shouldExclude(path: string): boolean {
 
 function sanitizeNode(node: t.Node, path: string[] = []): t.Node | null {
 	if (t.isObjectExpression(node)) {
-		node.properties = node.properties.filter((prop) => {
-			if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
-				const key = prop.key.name;
-				const newPath = [...path, key];
-				const pathStr = newPath.join('.');
+		const newProperties = node.properties
+			.map((prop) => {
+				if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
+					const key = prop.key.name;
+					const newPath = [...path, key];
+					const pathStr = newPath.join('.');
 
-				if (shouldExclude(pathStr)) {
-					return false; // remove this property entirely
-				}
+					if (shouldExclude(pathStr)) {
+						return null; // remove this property entirely
+					}
 
-				// recurse into nested values
-				if (t.isObjectExpression(prop.value) || t.isArrayExpression(prop.value)) {
-					const sanitized = sanitizeNode(prop.value, newPath);
-					if (!sanitized) return false;
-					prop.value = sanitized as any;
+					// recurse into nested values
+					let newValue = prop.value;
+					if (t.isObjectExpression(prop.value) || t.isArrayExpression(prop.value)) {
+						const sanitized = sanitizeNode(prop.value, newPath);
+						if (!sanitized) return null;
+						newValue = sanitized as any;
+					}
+					return t.objectProperty(prop.key, newValue, prop.computed, prop.shorthand, prop.decorators);
 				}
-			}
-			return true;
-		});
-		return node;
+				return prop;
+			})
+			.filter(Boolean) as (t.ObjectProperty | t.SpreadElement)[];
+		return t.objectExpression(newProperties);
 	}
 
 	if (t.isArrayExpression(node)) {
-		node.elements = node.elements
+		const newElements = node.elements
 			.map((el, idx) => {
 				if (!el) return el;
 				const newPath = [...path.slice(0, -1), `${path[path.length - 1]}[${idx}]`];
@@ -251,13 +220,22 @@ function sanitizeNode(node: t.Node, path: string[] = []): t.Node | null {
 				return el;
 			})
 			.filter(Boolean);
-		return node;
+		return t.arrayExpression(newElements as t.Expression[]);
 	}
 
 	return node;
 }
 
-export const SanitizeTransformer = (): Transformer<t.Node> => ({
+export const SanitizeTransformer = (): Transformer<Node> => ({
+	onNode(node, parent) {
+		// Only transform root-level ObjectExpressions (e.g., export default ...)
+		// Skip nested ObjectExpressions to avoid overlapping edits
+		if (!t.isObjectExpression(node)) return false;
+
+		// Only process if parent is not an ObjectExpression or ArrayExpression
+		// This ensures we only handle top-level objects
+		return !t.isObjectExpression(parent) && !t.isArrayExpression(parent);
+	},
 	transform(node) {
 		if (t.isObjectExpression(node)) {
 			return sanitizeNode(node);

@@ -1,5 +1,5 @@
-import type { CompiledArea } from '$lib/core/config/types/index.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CompiledArea } from '$lib/core/config/types.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import { type RegisterArea } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -12,7 +12,7 @@ type FindArgs = {
 	select?: string[];
 	versionId?: string;
 	draft?: boolean;
-	isSystemOperation?: boolean
+	isSystemOperation?: boolean;
 };
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => {
@@ -29,7 +29,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		},
 		isSystemOperation
 	};
-	
+
 	for (const hook of config.hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,

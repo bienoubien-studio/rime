@@ -4,7 +4,7 @@ import { logger } from '$lib/core/logger/index.server';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const validateFields = Hooks.beforeUpsert(async (args) => {
 	const errors: FormErrors = {};

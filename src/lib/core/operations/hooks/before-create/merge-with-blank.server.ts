@@ -1,7 +1,7 @@
-import deepmerge from 'deepmerge';
 import { isUploadConfig } from '$lib/util/config.js';
 import { createBlankDocument } from '$lib/util/doc.js';
-import { Hooks } from '../index.js';
+import deepmerge from 'deepmerge';
+import { Hooks } from '../index.server.js';
 
 export const mergeWithBlankDocument = Hooks.beforeCreate(async (args) => {
 	const { config } = args;
@@ -13,7 +13,9 @@ export const mergeWithBlankDocument = Hooks.beforeCreate(async (args) => {
 		delete data.file;
 	}
 
-	const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config, args.event), data, { arrayMerge: (_, y) => y });
+	const dataMergedWithBlankDocument = deepmerge(createBlankDocument(config, args.event), data, {
+		arrayMerge: (_, y) => y
+	});
 
 	// Add file after merge
 	if (file) {

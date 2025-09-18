@@ -1,7 +1,7 @@
+import type { CompiledConfig } from '$lib/core/config/types.js';
+import type { Dic } from '$lib/util/types.js';
 import { flatten } from 'flat';
 import cache from '../../dev/cache/index.js';
-import type { CompiledConfig } from '$lib/core/config/types/index.js';
-import type { Dic } from '$lib/util/types.js';
 
 const serializeValue = (value: any): string => {
 	if (value === null) return 'null';

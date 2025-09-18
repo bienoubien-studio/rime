@@ -1,12 +1,11 @@
 import rizom from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
-import type { Config } from '$lib/core/config/types/index.js';
 
-export { rizom, handlers };
-export { FormFieldBuilder, FieldBuilder } from '$lib/fields/builders/field.server.js';
 export { area } from '$lib/core/areas/config/builder.js';
 export { collection } from '$lib/core/collections/config/builder.js';
-export { Hooks } from '$lib/core/operations/hooks/index.js';
+export { Hooks } from '$lib/core/operations/hooks/index.server.js';
+export { FieldBuilder, FormFieldBuilder } from '$lib/fields/builders/field.server.js';
+export { handlers, rizom };
 
 export const defineConfig = (config: Config): Config => config;
 

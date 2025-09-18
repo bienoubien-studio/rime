@@ -1,5 +1,5 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';

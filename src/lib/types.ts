@@ -1,36 +1,35 @@
-
 // Auth types
 export type { Access, User } from './core/collections/auth/types.js';
 
 // Config types
 export type {
+	Area,
+	AreaHooks,
 	BrowserConfig,
-	BuiltCollection,
-	CompiledCollection,
-	BuiltConfig,
 	BuiltArea,
-	CompiledArea,
+	BuiltCollection,
+	BuiltConfig,
 	Collection,
+	CollectionHooks,
+	CompiledArea,
+	CompiledCollection,
 	Config,
 	CustomPanelRoute,
-	Area,
 	ImageSizesConfig,
 	LocaleConfig,
 	LocalizationConfig,
 	PanelUsersConfig,
-	RouteConfig,
-	CollectionHooks,
-	AreaHooks
+	RouteConfig
 } from './core/config/types/index.js';
 
 // Doc types
 export type {
-	BaseDoc,
 	AreaSlug,
+	BaseDoc,
 	CollectionSlug,
-	Prototype,
 	GenericBlock,
 	GenericDoc,
+	Prototype,
 	PrototypeSlug,
 	UploadDoc
 } from './core/types/doc.js';
@@ -54,7 +53,7 @@ export type { Link } from './fields/link/types.js';
 // Util
 export type { WithRelationPopulated } from '$lib/util/types.js';
 
-export type { Plugin, Plugins } from './core/types/plugins.js';
 export type { Rizom } from './core/rizom.server.js';
-export type { RichTextFeatureNode, RichTextFeatureMark, RichTextFeature } from './fields/rich-text/core/types.js';
+export type { Plugin, Plugins } from './core/types/plugins.js';
 export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js';
+export type { RichTextFeature, RichTextFeatureMark, RichTextFeatureNode } from './fields/rich-text/core/types.js';

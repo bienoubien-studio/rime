@@ -1,5 +1,5 @@
 import { asc, eq } from 'drizzle-orm';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 
 /**
  * Hook to populate _children property on document from a nested collection

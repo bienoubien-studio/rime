@@ -1,4 +1,4 @@
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors';
 import type { RawDoc } from '$lib/core/types/doc';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';

@@ -1,4 +1,4 @@
-import type { BuiltConfig } from '$lib/core/config/types/index.js';
+import type { BuiltConfig } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/util/schema.js';
 import type { Dic } from '$lib/util/types.js';

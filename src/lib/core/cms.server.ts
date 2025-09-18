@@ -7,7 +7,7 @@ import { hasRunInitCommand } from './dev/cli/util.server.js';
 import { logger } from './logger/index.server.js';
 import i18n from './i18n/index.js';
 import type { AsyncReturnType } from '../util/types.js';
-import type { CompiledConfig, Config } from '$lib/core/config/types/index.js';
+import type { CompiledConfig, Config } from '$lib/core/config/types.js';
 import path from 'path';
 import { existsSync, mkdirSync } from 'fs';
 

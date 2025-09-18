@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { CompiledCollection } from '$lib/core/config/types/index.js';
+	import type { CompiledCollection } from '$lib/core/config/types.js';
 	import { t__ } from '$lib/core/i18n';
 	import type { ClientField, TextField } from '$lib/fields/types.js';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';

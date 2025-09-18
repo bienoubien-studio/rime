@@ -3,7 +3,7 @@ import { getSegments } from '../util/path.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 
 /**
  * Hook executed before save/update operations on an upload collections

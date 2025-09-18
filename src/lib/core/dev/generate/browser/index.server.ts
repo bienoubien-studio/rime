@@ -1,4 +1,4 @@
-import type { CompiledConfig } from '$lib/core/config/types/index.js';
+import type { CompiledConfig } from '$lib/core/config/types.js';
 import * as CONSTANTS from '$lib/core/constant.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';

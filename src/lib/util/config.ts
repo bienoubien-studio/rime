@@ -1,4 +1,4 @@
-import type { AuthConfig, UploadConfig } from '$lib/core/config/types/index.js';
+import type { AuthConfig, UploadConfig } from '$lib/core/config/types.js';
 import type { Field, FormField } from '$lib/fields/types.js';
 import type { WithUpload } from '$lib/util/types.js';
 import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from './field';

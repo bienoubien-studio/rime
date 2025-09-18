@@ -1,5 +1,5 @@
 import { capitalize } from '$lib/util/string.js';
-import type { BuiltCollection, Collection } from '$lib/core/config/types/index.js';
+import type { BuiltCollection, Collection } from '$lib/core/config/types.js';
 import type { CollectionWithoutSlug } from './types.js';
 import { augmentHooks } from './augment-hooks.js';
 import { augmentMetas } from './augment-metas.js';

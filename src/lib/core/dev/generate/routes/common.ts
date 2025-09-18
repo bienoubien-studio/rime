@@ -145,8 +145,8 @@ export const load = authLoads.resetPassword;
 const panelLayout = () => `
 <script>
 	import { Panel } from '${PACKAGE_NAME}/panel/client';
-	//@ts-ignore
-	import config from 'virtual:browser-config';
+
+	import config from '../config/rizom.config.js';
 	const { children, data } = $props();
 
 	const user = data.user;
@@ -197,8 +197,8 @@ export const load = pagesLoad.dashboard;`;
 const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
-  //@ts-ignore
-  import config from 'virtual:browser-config';
+
+  import config from '../config/rizom.config.js';
 
   const { data } = $props();
 </script>

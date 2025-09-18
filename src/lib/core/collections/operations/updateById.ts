@@ -1,6 +1,6 @@
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
+import type { CompiledCollection } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { DeepPartial } from '$lib/util/types.js';

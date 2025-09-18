@@ -1,9 +1,9 @@
-import { omit } from '$lib/util/object.js';
-import { toCamelCase } from '$lib/util/string.js';
 import { cleanupStoredFiles } from '$lib/core/collections/upload/disk/delete.js';
 import { saveFile } from '$lib/core/collections/upload/disk/save.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { isUploadConfig } from '$lib/util/config.js';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { omit } from '$lib/util/object.js';
+import { toCamelCase } from '$lib/util/string.js';
 
 /**
  * Hook that handles file upload processing and image resizing operations.
@@ -24,9 +24,9 @@ import { Hooks } from '$lib/core/operations/hooks/index.js';
  *    - Cleans up image variations
  *    - Nullifies related document fields
  */
-export const processFileUpload = Hooks.beforeUpsert<'upload'>( async (args) => {
+export const processFileUpload = Hooks.beforeUpsert<'upload'>(async (args) => {
 	const { operation, config, event } = args;
-	const { rizom } = event.locals
+	const { rizom } = event.locals;
 
 	if (!isUploadConfig(config)) throw new Error('Should never throw');
 
@@ -35,7 +35,8 @@ export const processFileUpload = Hooks.beforeUpsert<'upload'>( async (args) => {
 	const sizesConfig = hasSizeConfig ? config.upload.imageSizes : [];
 
 	if (data.file) {
-		if (operation === 'update' && args.context.originalDoc) await cleanupStoredFiles({ config, rizom, id: args.context.originalDoc.id });
+		if (operation === 'update' && args.context.originalDoc)
+			await cleanupStoredFiles({ config, rizom, id: args.context.originalDoc.id });
 		const { filename, imageSizes } = await saveFile(data.file, sizesConfig!);
 		data = {
 			...omit(['file'], data),
@@ -47,7 +48,8 @@ export const processFileUpload = Hooks.beforeUpsert<'upload'>( async (args) => {
 	// If data.file is explicitly set to null : delete file
 	if (data.file === null) {
 		// delete files
-		if (operation === 'update' && args.context.originalDoc) await cleanupStoredFiles({ config, rizom, id: args.context.originalDoc.id });
+		if (operation === 'update' && args.context.originalDoc)
+			await cleanupStoredFiles({ config, rizom, id: args.context.originalDoc.id });
 		// update data for DB update
 		for (const size of sizesConfig!) {
 			data = {

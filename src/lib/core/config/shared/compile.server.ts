@@ -1,5 +1,5 @@
 import { compileFields } from '$lib/fields/compile.js';
-import type { BuiltConfig, CompiledConfig } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, CompiledConfig } from '$lib/core/config/types.js';
 
 export const compileConfig = (config: BuiltConfig): CompiledConfig => {
 	return {

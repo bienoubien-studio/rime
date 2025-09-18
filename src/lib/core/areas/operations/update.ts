@@ -1,6 +1,6 @@
-import type { CompiledArea } from '$lib/core/config/types/index.js';
+import type { CompiledArea } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { DeepPartial } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';

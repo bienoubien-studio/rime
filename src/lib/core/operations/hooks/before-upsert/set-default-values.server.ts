@@ -6,7 +6,7 @@ import type { FormField, RelationField } from '$lib/fields/types.js';
 import { isRelationField } from '$lib/util/field.js';
 import { getValueAtPath, hasProp, setValueAtPath } from '$lib/util/object.js';
 import { eq, inArray } from 'drizzle-orm';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const setDefaultValues = Hooks.beforeUpsert(async (args) => {
 	const { operation, event } = args;

@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { isFile } from '$lib/util/file.js';
 import { jsonFileToFile } from '$lib/core/collections/upload/util/converter.js';
-import { Hooks } from '$lib/core/operations/hooks/index.js';
+import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 
 /**
  * Hook executed before save/update operations to convert base64 encoded files to File objects.

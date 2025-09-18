@@ -1,7 +1,7 @@
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import { buildConfigMap } from '../../configMap/index.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const processDocumentFields = Hooks.beforeRead(async (args) => {
 	const { event } = args;

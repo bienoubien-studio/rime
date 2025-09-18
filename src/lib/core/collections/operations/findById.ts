@@ -1,5 +1,5 @@
-import type { CompiledCollection } from '$lib/core/config/types/index.js';
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';

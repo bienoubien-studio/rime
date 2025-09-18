@@ -1,6 +1,6 @@
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const getOriginalDocument = Hooks.beforeUpdate(async (args) => {
 	const { event, config, context } = args;

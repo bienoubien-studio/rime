@@ -1,5 +1,5 @@
 import { getValueAtPath } from '$lib/util/object.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const setDocumentTitle = Hooks.beforeRead<'raw'>(async (args) => {
 	const config = args.config;

@@ -1,4 +1,4 @@
-import type { OperationContext } from '$lib/core/operations/hooks/index.js';
+import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { DocumentFormContext } from '$lib/panel';
 import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { IconProps } from '@lucide/svelte';
@@ -27,7 +27,6 @@ export type { TextField } from './text/index.server.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { TimeField } from './time/index.js';
 export type { ToggleField } from './toggle/index.js';
-
 
 export type FieldValidationFunc<TConfig extends FormField, TData extends Dic = Dic> = (
 	value: unknown,
@@ -75,7 +74,7 @@ export type FormField = Field & {
 	isEmpty: (value: unknown) => boolean;
 };
 
-export type DefaultValueFn<T> = ({ event }: { event?: RequestEvent}) => T
+export type DefaultValueFn<T> = ({ event }: { event?: RequestEvent }) => T;
 
 type FieldHookContext<T extends FormField = FormField> = {
 	event: RequestEvent;
@@ -119,9 +118,4 @@ export type OptionWithIcon = {
 
 export type RelationValue<T> = T[] | { id?: string; relationTo: string; documentId: string }[] | string[] | string;
 
-
-
-export type ClientField<T extends FormField> = WithRequired<
-  Partial<T>,
-  'name' | 'isEmpty' | 'type'
->
+export type ClientField<T extends FormField> = WithRequired<Partial<T>, 'name' | 'isEmpty' | 'type'>;

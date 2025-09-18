@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import cache from '../../cache/index.js';
 import { slugify } from '$lib/util/string.js';
-import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types/index.js';
+import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types.js';
 import { isDirectorySlug, isVersionsSlug } from '$lib/util/schema.js';
 
 /**

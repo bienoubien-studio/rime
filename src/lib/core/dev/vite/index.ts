@@ -7,8 +7,14 @@ import type { Plugin } from 'vite';
  * occured, the module should be added to vite config optimizeDeps.include
  */
 export function rizom(): Plugin {
-	const virtualModuleId = '$rizom/config';
-	const resolvedVirtualModuleId = '\0' + virtualModuleId;
+	const virtualCoreId = '$rizom/core';
+	const resolvedVirtualCoreId = '\0' + virtualCoreId;
+
+	const virtualConfigClientId = '$rizom/config-client';
+	const resolvedVirtualConfigClientId = '\0' + virtualConfigClientId;
+
+	const virtualConfigServerId = '$rizom/config';
+	const resolvedVirtualConfigServerId = '\0' + virtualConfigServerId;
 
 	return {
 		name: 'rizom-config',
@@ -20,8 +26,8 @@ export function rizom(): Plugin {
 		// },
 
 		async handleHotUpdate({ server, file }) {
-			if (file.includes('src/lib/core/config/build')) {
-				const module = server.moduleGraph.getModuleById(resolvedVirtualModuleId);
+			if (file.includes('src/lib/core/config')) {
+				const module = server.moduleGraph.getModuleById(resolvedVirtualCoreId);
 				if (module) {
 					server.moduleGraph.invalidateModule(module);
 					return [module];
@@ -30,19 +36,37 @@ export function rizom(): Plugin {
 		},
 
 		resolveId(id) {
-			if (id === virtualModuleId) {
-				return resolvedVirtualModuleId;
+			if (id === virtualCoreId) {
+				return resolvedVirtualCoreId;
+			}
+			if (id === virtualConfigClientId) {
+				return resolvedVirtualConfigClientId;
+			}
+			if (id === virtualConfigServerId) {
+				return resolvedVirtualConfigServerId;
 			}
 		},
 
 		load(id) {
-			if (id === resolvedVirtualModuleId) {
+			if (id === resolvedVirtualCoreId) {
 				const relativePath =
 					this.environment?.config?.consumer === 'server'
-						? '$lib/core/config/build/server/index.server.js'
-						: '$lib/core/config/build/client/index.js';
+						? '$lib/core/config/server/index.server.js'
+						: '$lib/core/config/client/index.js';
 				// Return import statement - let Vite handle TypeScript transpilation
 				return `export * from '${relativePath}';`;
+			}
+			if (id === resolvedVirtualConfigClientId) {
+				const configPath = '$lib/config/.generated/index.js';
+				return `/** client */
+				import config from '${configPath}';
+				export default config`;
+			}
+			if (id === resolvedVirtualConfigServerId) {
+				const configPath = '$lib/config/.generated/index.server.js';
+				return `/** server */
+				import config from '${configPath}';
+				export default config`;
 			}
 		}
 	};

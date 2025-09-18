@@ -6,7 +6,7 @@
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
 	import type { User } from '$lib/core/collections/auth/types.js';
-	import type { BrowserConfig } from '$lib/core/config/types/index.js';
+	import type { BrowserConfig } from '$lib/core/config/types.js';
 	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { goto } from '$app/navigation';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';

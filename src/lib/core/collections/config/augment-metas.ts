@@ -1,4 +1,3 @@
-import type { AugmentCollectionFn } from './types.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { date } from '$lib/fields/date/index.js';
 import type { Collection } from '../../../types.js';

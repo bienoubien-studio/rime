@@ -1,7 +1,7 @@
 import { buildArea } from '$lib/core/areas/config/builder.js';
 import { mergeStaffCollection } from '$lib/core/collections/auth/staff-config.server.js';
 import { buildCollection } from '$lib/core/collections/config/builder.js';
-import type { BuiltConfig, Collection, CompiledConfig, Config } from '$lib/core/config/types/index.js';
+import type { BuiltConfig, Collection, CompiledConfig, Config } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.js';
 import { cache } from '$lib/core/plugins/cache/index.js';
@@ -17,6 +17,7 @@ import { registerPlugins } from './plugins.server.js';
 import { makeUploadDirectoriesCollections } from './upload-directories.js';
 import { makeVersionsCollectionsAliases } from './versions-alias.js';
 
+const isSSR = import.meta.env.SSR;
 const dev = process.env.NODE_ENV === 'development';
 
 /**

@@ -1,4 +1,4 @@
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
 export const setDocumentType = Hooks.beforeRead<'generic'>(async (args) => {
 	const config = args.config;

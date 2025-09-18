@@ -1,4 +1,4 @@
-import type { UploadConfig } from '$lib/core/config/types/index.js';
+import type { UploadConfig } from '$lib/core/config/types.js';
 import { text } from '$lib/fields/text/index.server.js';
 import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
 import { toCamelCase } from '$lib/util/string.js';

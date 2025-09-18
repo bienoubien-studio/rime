@@ -1,7 +1,7 @@
 import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isSelectField, isTabsFieldRaw, isTreeFieldRaw } from '../../util/field.js';
 import { isAuthConfig } from '$lib/util/config.js';
 import cache from '$lib/core/dev/cache/index.js';
-import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/core/config/types/index.js';
+import type { CompiledCollection, CompiledArea, CompiledConfig } from '$lib/core/config/types.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';

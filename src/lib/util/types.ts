@@ -1,4 +1,4 @@
-import type { UploadConfig } from '$lib/core/config/types/index.js';
+import type { UploadConfig } from '$lib/core/config/types.js';
 import type { FieldBuilder } from '$lib/fields/builders';
 import type { Field } from '$lib/fields/types.js';
 import type { RelationValue } from '$lib/types';

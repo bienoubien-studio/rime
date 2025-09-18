@@ -3,7 +3,7 @@ import { text } from '$lib/fields/text/index.server.js';
 import { usersFields } from '../auth/fields.server.js';
 import { select } from '$lib/fields/select/index.js';
 import type { Collection, Option } from '../../../types.js';
-import type { AuthConfig } from '$lib/core/config/types/index.js';
+import type { AuthConfig } from '$lib/core/config/types.js';
 import { access } from '$lib/util/access/index.js';
 
 type Input = { slug: string; auth?: boolean | AuthConfig; fields: Collection<any>['fields'] };

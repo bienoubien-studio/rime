@@ -1,10 +1,10 @@
-import { type Handle } from '@sveltejs/kit';
-import cms from '../cms.server.js';
+import type { Config } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import { Rizom } from '../rizom.server.js';
-import type { Config } from '$lib/core/config/types/index.js';
+import { type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 import cloneDeep from 'clone-deep';
+import cms from '../cms.server.js';
+import { Rizom } from '../rizom.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -19,10 +19,12 @@ export function createCMSHandler({ config, schema }: Args) {
 		logger.info(`${event.request.method} ${event.url.pathname}`);
 
 		if (dev || !cms.initialized) {
-			const configCopy = cloneDeep(config) 
+			const configCopy = cloneDeep(config);
+			console.log(configCopy);
+			return resolve(event);
 			await cms.init({ config: configCopy, schema });
 		}
-		
+
 		const rizom = new Rizom({ config: cms.config, adapter: cms.adapter, event });
 		event.locals.rizom = rizom;
 

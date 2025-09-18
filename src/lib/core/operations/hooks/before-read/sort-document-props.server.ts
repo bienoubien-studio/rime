@@ -1,8 +1,8 @@
 import { isObjectLiteral } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
-import { Hooks } from '../index.js';
+import { Hooks } from '../index.server.js';
 
-export const sortDocumentProps = Hooks.beforeRead<'generic'>( async (args) => {
+export const sortDocumentProps = Hooks.beforeRead<'generic'>(async (args) => {
 	return { ...args, doc: sortDocumentKeys(args.doc) };
 });
 
