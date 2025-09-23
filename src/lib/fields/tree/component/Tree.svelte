@@ -10,7 +10,7 @@
 	import { onDestroy } from 'svelte';
 	import AddItemButton from './AddItemButton.svelte';
 	import type { TreeProps } from './props.js';
-	import TreeBlockItem from './TreeBlockItem.svelte';
+	import TreeBlock from './TreeBlock.svelte';
 
 	const { path, config, form }: TreeProps = $props();
 
@@ -93,7 +93,6 @@
 	onDestroy(() => {
 		destroySortable();
 	});
-
 </script>
 
 <fieldset class="rz-field-tree {config.className}" use:root={field}>
@@ -111,7 +110,7 @@
 		>
 			{#if hasBlocks}
 				{#each treeState.items as item, index (item.id)}
-					<TreeBlockItem {treeState} treeKey={key} path="{path}.{index}" {form} {sorting} {config} />
+					<TreeBlock {treeState} treeKey={key} path="{path}.{index}" {form} {sorting} {config} />
 				{/each}
 			{/if}
 		</div>

@@ -6,13 +6,12 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
 import type { User } from '../core/collections/auth/types';
 import type { FieldPanelTableConfig } from '../panel/types';
-
 export type { BlocksField, BlocksFieldBlock } from './blocks/index.js';
 export type { CheckboxField } from './checkbox/index.js';
 export type { ComboBoxField } from './combobox/index.js';
 export type { ComponentField } from './component/index.js';
 export type { DateField } from './date/index.js';
-export type { EmailField } from './email/index.server.js';
+export type { EmailField } from './email/index.js';
 export type { GroupField } from './group/index.js';
 export type { LinkField } from './link/index.js';
 export type { NumberField } from './number/index.js';
@@ -23,7 +22,7 @@ export type { SelectField } from './select/index.js';
 export type { SeparatorField } from './separator/index.js';
 export type { SlugField } from './slug/index.js';
 export type { TabsField } from './tabs/index.js';
-export type { TextField } from './text/index.server.js';
+export type { TextField } from './text/index.js';
 export type { TextAreaField } from './textarea/index.js';
 export type { TimeField } from './time/index.js';
 export type { ToggleField } from './toggle/index.js';
@@ -51,6 +50,8 @@ export type Field = {
 	condition?: (doc: any, siblings: any) => boolean;
 	width?: FieldWidth;
 	className?: string;
+	component: Component<any>;
+	cell: Component<any> | undefined;
 	access: {
 		create: FieldAccess;
 		read: FieldAccess;
@@ -70,13 +71,13 @@ export type FormField = Field & {
 	hint?: string;
 	table?: FieldPanelTableConfig;
 	hooks?: FieldHooks;
-	defaultValue?: unknown;
+	defaultValue?: DefaultValueFn<any> | unknown;
 	isEmpty: (value: unknown) => boolean;
 };
 
 export type DefaultValueFn<T> = ({ event }: { event?: RequestEvent }) => T;
 
-type FieldHookContext<T extends FormField = FormField> = {
+export type FieldHookContext<T extends FormField = FormField> = {
 	event: RequestEvent;
 	/** The document Id being processed */
 	documentId?: string;

@@ -1,19 +1,19 @@
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import type { GetRegisterType } from '$lib/index.js';
+import type { Dic } from '$lib/util/types.js';
 import Database from 'better-sqlite3';
 import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
 import path from 'path';
-import createAdapterCollectionInterface, { type AdapterCollectionInterface } from './collection.js';
 import createAdapterAreaInterface, { type AdapterAreaInterface } from './area.js';
-import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blocks.js';
-import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
 import createAdapterAuthInterface from './auth/index.server.js';
+import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blocks.js';
+import createAdapterCollectionInterface, { type AdapterCollectionInterface } from './collection.js';
+import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
 import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
 import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
-import { updateTableRecord } from './util.js';
-import { updateDocumentUrl } from './url.server.js';
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
-import type { GetRegisterType } from 'rizom';
-import type { Dic } from '$lib/util/types.js';
 import type { GenericTable } from './types.js';
+import { updateDocumentUrl } from './url.server.js';
+import { updateTableRecord } from './util.js';
 
 type Schema = GetRegisterType<'Schema'>;
 type Tables = GetRegisterType<'Tables'>;
@@ -24,7 +24,7 @@ type CreateAdapterArgs = {
 };
 
 const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
-	const dbPath = path.join(process.cwd(), 'db', configInterface.raw.database);
+	const dbPath = path.join(process.cwd(), 'db', configInterface.raw.$database);
 	const sqlite = new Database(dbPath);
 
 	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
@@ -38,7 +38,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		schema: schema.default,
 		configInterface
 	});
-	
+
 	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({
 		db,
 		tables,
@@ -67,7 +67,7 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 		db,
 		tables: tables as GetRegisterType<'Tables'>,
 
-		getTable<T extends any = any>(key: string) {
+		getTable<T>(key: string) {
 			return tables[key as keyof typeof tables] as T extends any ? GenericTable : T;
 		},
 

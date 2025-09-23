@@ -1,8 +1,8 @@
+import { RizomError } from '$lib/core/errors/index.js';
+import type { Plugin } from '$lib/core/types/plugins.js';
 import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import type { Plugin } from '$lib/core/types/plugins.js';
 import type { SendMailArgs, SMTPConfig } from './types';
-import { RizomError } from '$lib/core/errors/index.js';
 
 export const mailer: Plugin<SMTPConfig> = (smtpConfig) => {
 	if (!smtpConfig) {
@@ -31,7 +31,7 @@ export const mailer: Plugin<SMTPConfig> = (smtpConfig) => {
 
 	return {
 		name: 'mailer',
-		core: true,
+		type: 'server',
 		actions: {
 			sendMail
 		}

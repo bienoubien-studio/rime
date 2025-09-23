@@ -1,29 +1,20 @@
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
-import TextArea from './component/TextArea.svelte';
 import { capitalize } from '$lib/util/string.js';
+import TextArea from './component/TextArea.svelte';
 
 export const textarea = (name: string) => new TextAreaFieldBuilder(name, 'textarea');
 
-class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
+export class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
+	//
+	_metaUrl: string = import.meta.url;
+
 	get component() {
 		return TextArea;
 	}
 
 	get cell() {
 		return null;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: text('${snake}')${suffix}`;
-	}
-
-	_toType() {
-		return `${this.field.name}${this.field.required ? '' : '?'}: string`;
 	}
 
 	defaultValue(value: string | DefaultValueFn<string>) {

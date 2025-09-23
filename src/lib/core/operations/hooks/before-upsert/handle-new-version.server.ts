@@ -1,13 +1,13 @@
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
 import type { Dic } from '$lib/util/types.js';
 import path from 'path';
 import type { CompiledArea, CompiledCollection } from '../../../../types.js';
 import type { ConfigMap } from '../../configMap/types.js';
-import { setValuesFromOriginal } from '../../shared/setValuesFromOriginal.js';
+import { fallbackDataFromOriginal } from '../../shared/fallback-data-from-original.js';
 import { Hooks } from '../index.server.js';
 
 /**
@@ -33,7 +33,7 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 			versionId = originalDoc.versionId;
 			break;
 
-		case VersionOperations.isNewVersionCreation(versionOperation):
+		case VersionOperations.isNewVersionCreation(versionOperation): {
 			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
 			const versionsSlug = makeVersionsSlug(config.slug);
 
@@ -51,6 +51,7 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 			}
 			versionId = document.id;
 			break;
+		}
 
 		default:
 			versionId = originalDoc.id;
@@ -90,7 +91,7 @@ async function prepareDataForNewVersion(args: {
 	}
 
 	// Use missing data from original version
-	data = await setValuesFromOriginal({
+	data = await fallbackDataFromOriginal({
 		data,
 		original: originalDoc,
 		configMap: originalConfigMap,

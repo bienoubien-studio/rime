@@ -1,6 +1,5 @@
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FieldValidationFunc, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from '../builders/index.js';
 import Number from './component/Number.svelte';
 
 export const number = (name: string) => new NumberFieldBuilder(name);
@@ -18,7 +17,10 @@ const validateNumber: FieldValidationFunc<NumberField> = (value, { config }) => 
 	return true;
 };
 
-class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
+export class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'number');
 		this.field.validate = validateNumber;
@@ -27,17 +29,6 @@ class NumberFieldBuilder extends FormFieldBuilder<NumberField> {
 
 	get component() {
 		return Number;
-	}
-
-	_toType() {
-		return `${this.field.name}${this.field.required ? '' : '?'}: number`;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if (this._generateSchema) return this._generateSchema({ camel, snake, suffix });
-		return `${camel}: real('${snake}')${suffix}`;
 	}
 
 	defaultValue(value: number | DefaultValueFn<number>) {

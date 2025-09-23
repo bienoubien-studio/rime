@@ -1,9 +1,9 @@
-import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { Dic } from '$lib/util/types';
 import { omit } from '$lib/util/object';
-import { transformDataToSchema } from '../util/schema.js';
+import type { Dic } from '$lib/util/types';
+import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
+import { transformDataToSchema } from './util.js';
 
 const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//

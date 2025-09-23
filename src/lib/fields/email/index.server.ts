@@ -1,58 +1,15 @@
-import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from '../builders/index.js';
-import validate from '$lib/util/validate';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
-import EmailComp from './component/Email.svelte';
+import { templateUniqueRequired } from '$lib/adapter-sqlite/generate-schema/templates.server';
+import { getSchemaColumnNames } from '$lib/adapter-sqlite/generate-schema/util';
+import type { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
+import type { EmailField } from '.';
 
-class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
-	constructor(name: string) {
-		super(name, 'email');
-		this.field.validate = validate.email;
-	}
-
-	layout(layout: 'compact' | 'default') {
-		this.field.layout = layout;
-		return this;
-	}
-	
-	get component() {
-		return EmailComp;
-	}
-	
-	_toType() {
-		return `${this.field.name}${!this.field.required ? '?' : ''}: string`;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: text('${snake}')${suffix}`;
-	}
-
-	unique(bool?:boolean) {
-		this.field.unique = typeof bool === 'boolean' ? bool : true;
-		return this;
-	}
-	defaultValue(value: string | DefaultValueFn<string>) {
-		this.field.defaultValue = value;
-		return this;
-	}
-	isTitle() {
-		this.field.isTitle = true;
-		return this;
-	}
+export function toSchema(field: FormFieldBuilder<EmailField>, parentPath?: string) {
+	const { camel, snake } = getSchemaColumnNames({ name: field.name, parentPath });
+	const suffix = templateUniqueRequired({ unique: field.raw.unique, required: field.raw.required });
+	if (field._generateSchema) return field._generateSchema({ camel, snake, suffix });
+	return `${camel}: text('${snake}')${suffix}`;
 }
 
-export const email = (name: string) => new EmailFieldBuilder(name);
-
-/****************************************************/
-/* Type
-/****************************************************/
-export type EmailField = FormField & {
-	type: 'email';
-	defaultValue?: string | DefaultValueFn<string>;
-	layout?: 'compact' | 'default';
-	unique?: boolean;
-	isTitle?: true;
-};
+export function toType(args: { name: string; required: boolean }) {
+	return `${args.name}${args.required ? '' : '?'}: string`;
+}

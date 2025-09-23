@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rizom } from './src/lib/core/dev/vite/index.js';
 import { defineConfig } from 'vite';
+import { rizom } from './src/lib/core/dev/vite/index.js';
 
 export default defineConfig({
 	plugins: [sveltekit(), rizom()],
@@ -8,7 +8,7 @@ export default defineConfig({
 	server: {
 		host: 'rizom.test'
 	},
-	optimizeDeps: { 
+	optimizeDeps: {
 		exclude: ['sharp', 'better-sqlite3'],
 		include: ['@lucide/svelte']
 	},
@@ -25,9 +25,5 @@ export default defineConfig({
 		? {
 				conditions: ['browser']
 			}
-		: undefined,
-
-	test: {
-		include: ['src/**/*.spec.{js,ts}']
-	}
+		: undefined
 });

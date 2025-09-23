@@ -1,6 +1,6 @@
-import prettier from 'eslint-config-prettier';
-import js from '@eslint/js';
 import { includeIgnoreFile } from '@eslint/compat';
+import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import { fileURLToPath } from 'node:url';
@@ -25,6 +25,7 @@ export default ts.config(
 			'@typescript-eslint/no-unsafe-function-type': 'off',
 			'@typescript-eslint/no-explicit-any': 'off',
 			'@typescript-eslint/no-namespace': 'off',
+			'@typescript-eslint/ban-ts-comment': 'off',
 			'svelte/prefer-writable-derived': 'off',
 			'no-restricted-imports': [
 				'error',

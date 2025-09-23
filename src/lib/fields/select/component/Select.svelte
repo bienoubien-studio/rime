@@ -14,7 +14,7 @@
 	const validValues = config.options.map((o) => o.value);
 	let initialized = false;
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<string | string[]>(path, config));
 
 	let options = $state(config.options);
 
@@ -49,7 +49,7 @@
 			if (field.value && Array.isArray(field.value) && !initialized) {
 				field.value = field.value.filter((val: string) => validValues.includes(val));
 			}
-		} else {
+		} else if (typeof field.value === 'string') {
 			if (field.value && !initialized) {
 				field.value = validValues.includes(field.value) ? field.value : null;
 			}
@@ -59,15 +59,17 @@
 
 	$effect(() => {
 		if (config.many) {
-			if (!field.value) {
+			const currentValue = $state.snapshot(field.value);
+			if (!currentValue) {
 				options = config.options;
 			} else {
-				options = config.options.filter((option) => !field.value.includes(option.value));
+				options = config.options.filter((option) => !currentValue.includes(option.value));
 			}
 		}
 	});
 
 	const onOrderChange = (oldIndex: number, newIndex: number) => {
+		if (!Array.isArray(field.value)) return;
 		field.value = moveItem(field.value, oldIndex, newIndex);
 	};
 
@@ -103,7 +105,7 @@
 				data-error={field.error ? '' : null}
 			>
 				{#if config.many}
-					{#each field.value as val (val)}
+					{#each field.value || [] as val (val)}
 						{@const option = config.options.find((o) => o.value === val)}
 						{#if option}
 							<Tag onRemove={() => removeValue(option.value)} readOnly={form.readOnly}>

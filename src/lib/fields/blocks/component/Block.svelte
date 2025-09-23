@@ -1,16 +1,16 @@
 <script lang="ts">
 	import type { GenericBlock } from '$lib/core/types/doc.js';
+	import type { BlocksFieldBlock } from '$lib/fields/types';
 	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { useOnce } from '$lib/panel/util/once.svelte.js';
 	import { capitalize } from '$lib/util/string.js';
 	import { GripVertical, ToyBrick } from '@lucide/svelte';
 	import { watch } from 'runed';
-	import type { BlocksFieldRaw } from '../index.ts';
 	import BlockActions from './BlockActions.svelte';
 
 	type Props = {
-		config: BlocksFieldRaw['blocks'][number];
+		config: BlocksFieldBlock;
 		path: string;
 		sorting: boolean;
 		deleteBlock: () => void;

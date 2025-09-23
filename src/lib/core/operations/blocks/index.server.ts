@@ -1,10 +1,10 @@
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
-import { makeVersionsSlug } from '../../../util/schema.js';
-import type { OperationContext } from '../hooks/index.js';
+import type { OperationContext } from '../hooks/index.server.js';
 import { defineBlocksDiff } from './diff.server.js';
 import { extractBlocks } from './extract.server.js';
 

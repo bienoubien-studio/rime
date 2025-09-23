@@ -1,9 +1,9 @@
-import type { ConfigInterface } from '$lib/core/config/index.server';
+import type { ConfigInterface } from '$lib/core/config/interface.server';
 import { getFieldConfigByPath } from '$lib/util/config';
 import { isBlocksFieldRaw, isRelationField, isTreeFieldRaw } from '$lib/util/field';
-import { getBlocksTableNames, getTreeTableNames, makeLocalesSlug } from '$lib/util/schema';
 import type { Dic } from '$lib/util/types';
 import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
+import { getBlocksTableNames, getTreeTableNames, makeLocalesSlug } from './generate-schema/util.js';
 
 type BuildWithParamArgs = {
 	slug: string;

@@ -1,5 +1,5 @@
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
-import { usersFields } from '../../fields.server.js';
+import { usersFields } from '../../fields.js';
 
 export const augmentFieldsPassword = Hooks.beforeUpsert<'auth'>(async (args) => {
 	let { config } = args;

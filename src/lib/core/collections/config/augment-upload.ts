@@ -1,11 +1,10 @@
 import type { UploadConfig } from '$lib/core/config/types.js';
-import { text } from '$lib/fields/text/index.server.js';
-import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
+import { text } from '$lib/fields/text/index.js';
 import { toCamelCase } from '$lib/util/string.js';
 import validate from '$lib/util/validate.js';
 import type { Collection, ImageSizesConfig } from '../../../types.js';
 
-type WithNormalizedUpload<T> = Omit<T, 'upload'> & { upload?: UploadConfig };
+export type WithNormalizedUpload<T> = Omit<T, 'upload'> & { upload?: UploadConfig };
 
 const withNormalizedUpload = <T extends { upload?: boolean | UploadConfig }>(config: T): WithNormalizedUpload<T> => {
 	// Create a new object without the auth property
@@ -30,7 +29,7 @@ const withNormalizedUpload = <T extends { upload?: boolean | UploadConfig }>(con
  * Normalize config.upload and imagesSizes
  * add corresponding fields with validation if config.upload.accept is defined
  */
-export const augmentUpdload = <T extends Collection<any>>(config: T): WithNormalizedUpload<T> => {
+export const augmentUpload = <T extends Collection<any>>(config: T): WithNormalizedUpload<T> => {
 	const normalizedUploadConfig = withNormalizedUpload(config);
 	if (!normalizedUploadConfig.upload) return normalizedUploadConfig;
 
@@ -66,17 +65,10 @@ export const augmentUpdload = <T extends Collection<any>>(config: T): WithNormal
 			};
 		}
 
-		const pathField = text('_path')
-			._root()
-			.hidden()
-			.validate(validate.uploadPath)
-			.generateSchema(
-				() =>
-					`_path: text('_path').references(() => ${makeUploadDirectoriesSlug(config.slug)}.id, {onDelete: 'cascade', onUpdate: 'cascade'})`
-			);
+		const _pathField = text('_path')._root().hidden().validate(validate.uploadPath);
 
 		// Add hidden fields
-		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden(), pathField);
+		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden(), _pathField);
 	}
 
 	return { ...config, upload: upload || false, fields };

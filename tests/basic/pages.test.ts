@@ -1,5 +1,4 @@
 import test, { expect } from '@playwright/test';
-import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 
 const BASE_URL = 'http://rizom.test:5173';
 
@@ -51,17 +50,14 @@ test.describe('Login form', () => {
 		await submitButton.click();
 
 		// Check for error message
-		const errorMessage = page.locator(
-			'.rz-auth form .rz-field-root:first-of-type .rz-field-error'
-		);
+		const errorMessage = page.locator('.rz-auth form .rz-field-root:first-of-type .rz-field-error');
 		await expect(errorMessage).toBeVisible();
 	});
 
 	test('should not display forgot password link', async ({ page }) => {
 		await page.goto('/panel/sign-in');
-		await expect(page.locator(`a[href="/forgot-password?slug=${PANEL_USERS}"]`)).toHaveCount(0);
+		await expect(page.locator(`a[href="/forgot-password?slug=staff"]`)).toHaveCount(0);
 	});
-
 });
 
 test.describe('Admin panel', () => {
@@ -83,26 +79,26 @@ test.describe('Admin panel', () => {
 		const collections = [
 			{ slug: 'pages', singular: 'Page', plural: 'Pages' },
 			{ slug: 'medias', singular: 'Media', plural: 'Medias' },
-			{ slug: PANEL_USERS, singular: 'User', plural: 'Users' }
+			{ slug: 'staff', singular: 'User', plural: 'Users' }
 		];
 
-		for (const { slug, singular, plural } of collections) {
+		for (const { slug, plural } of collections) {
 			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
 			expect(await navButton.innerText()).toBe(plural);
 
-			let response = await page.goto(`/panel/${slug}`);
+			const response = await page.goto(`/panel/${slug}`);
 			expect(response?.status()).toBe(200);
 			await page.waitForLoadState('networkidle');
 
-			const suffix = slug === 'medias' ? `?uploadPath=root` : ''
-			const href = `/panel/${slug}/create${suffix}`
+			const suffix = slug === 'medias' ? `?uploadPath=root` : '';
+			const href = `/panel/${slug}/create${suffix}`;
 			const createButton = page.locator(`a[href="${href}"]`);
-			
+
 			await expect(createButton).toBeEnabled();
 			await createButton.click();
 			await page.waitForURL(href);
 			await page.waitForLoadState('networkidle');
-			
+
 			const saveButton = page.locator('.rz-page-header__row button[type="submit"]');
 			await expect(saveButton).toBeDisabled();
 
@@ -117,7 +113,7 @@ test.describe('Admin panel', () => {
 				expect(await h1.innerText()).toBe('Home');
 			}
 
-			if (slug === PANEL_USERS) {
+			if (slug === 'staff') {
 				const inputTitle = page.locator(`input.rz-input[name="email"]`);
 				const inputPassword = page.locator(`input.rz-input[name="password"]`);
 				const inputConfirmPassword = page.locator(`input.rz-input[name="confirmPassword"]`);

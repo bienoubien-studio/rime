@@ -1,18 +1,18 @@
-import type { TreeBlock } from '$lib/core/types/doc.js';
+import { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { Field, FormField } from '$lib/fields/types.js';
-import { snapshot } from '$lib/util/state.js';
-import { toPascalCase } from '$lib/util/string.js';
 import type { Dic } from '$lib/util/types.js';
-import cloneDeep from 'clone-deep';
-import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import { number } from '../number/index.js';
-import { text } from '../text/index.server.js';
+import { text } from '../text/index.js';
 import Cell from './component/Cell.svelte';
 import Tree from './component/Tree.svelte';
 
 export const tree = (name: string) => new TreeBuilder(name);
 
 export class TreeBuilder extends FormFieldBuilder<TreeField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'tree');
 		this.field.defaultValue = [];
@@ -28,10 +28,6 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	}
 	get cell() {
 		return Cell;
-	}
-
-	_toType() {
-		return `${this.field.name}: Array<Tree${toPascalCase(this.field.name)}>,`;
 	}
 
 	fields(...fields: FieldBuilder<Field>[]) {
@@ -93,43 +89,6 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 		};
 	}
 }
-
-// Utility (debug)
-export const treeToString = (blocks: TreeBlock[] | undefined | null) => {
-	if (!blocks || !blocks.length) return '[none]';
-	const copy = cloneDeep(snapshot(blocks));
-	const reduceBlocks = (prev: Dic[], curr: TreeBlock) => {
-		if (!curr.path || !curr) {
-			throw new Error('wrong tree path');
-		}
-		const representation = {
-			path: `${curr.path} - ${curr.position} - ${curr.id}`,
-			_children: curr._children && Array.isArray(curr._children) ? curr._children.reduce(reduceBlocks, []) : []
-		};
-		prev.push(representation);
-		return prev;
-	};
-
-	const representation = copy.reduce(reduceBlocks, []);
-
-	function transformToIndentedString(arr: Dic[], indent = 0) {
-		let result = '';
-
-		arr.forEach((item: Dic) => {
-			// Add indentation based on current level
-			result += ' '.repeat(indent * 4) + item.path + '\n';
-
-			// Recursively process children if they exist
-			if (item._children && item._children.length > 0) {
-				result += transformToIndentedString(item._children, indent + 1);
-			}
-		});
-
-		return result;
-	}
-
-	return '=====================\n' + transformToIndentedString(representation);
-};
 
 /****************************************************/
 /* Types

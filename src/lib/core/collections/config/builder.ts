@@ -1,48 +1,33 @@
-import { capitalize } from '$lib/util/string.js';
-import type { BuiltCollection, Collection } from '$lib/core/config/types.js';
-import type { CollectionWithoutSlug } from './types.js';
-import { augmentHooks } from './augment-hooks.js';
-import { augmentMetas } from './augment-metas.js';
-import { augmentTitle } from './augment-title.js';
-import { augmentUpdload } from './augment-upload.js';
-import { augmentNested } from './augment-nested.js';
-import { augmentVersions } from './augment-versions.js';
-import { augmentAuth } from './augment-auth.js';
+import { augmentAuth } from '$lib/core/collections/config/augment-auth';
+import { augmentMetas } from '$lib/core/collections/config/augment-metas';
+import { augmentNested } from '$lib/core/collections/config/augment-nested';
+import { augmentTitle } from '$lib/core/collections/config/augment-title';
+import { augmentUpload } from '$lib/core/collections/config/augment-upload';
+import { augmentUrl } from '$lib/core/collections/config/augment-url';
+import { augmentVersions } from '$lib/core/collections/config/augment-versions';
+import type { CollectionWithoutSlug } from '$lib/core/collections/config/types';
+import type { BuiltCollection, Collection } from '$lib/core/config/types';
+import type { Access } from '$lib/types';
 import { FileText } from '@lucide/svelte';
-import { augmentUrl } from './augment-url.js';
-import type { CollectionSlug } from '../../../types.js';
+import { augmentLabel } from './augment-label';
 
-const addSlug = <S extends string>(slug: S, config: CollectionWithoutSlug<S>) => ({
-	...config,
-	slug
-});
-
-/**
- * Function to define a collection
- */
-export function collection<S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): Collection<S> {
-	return addSlug(slug, incomingConfig);
-}
-
-export function buildCollection(collection: Collection<CollectionSlug>): BuiltCollection {
+export const config = <S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection => {
+	//
+	const collection: Collection<S> = { ...incomingConfig, slug };
 	const initial = { ...collection };
-	const withUpload = augmentUpdload(initial);
+	const withLabel = augmentLabel(initial);
+	const withUpload = augmentUpload(withLabel);
 	const withNested = augmentNested(withUpload);
 	const withVersions = augmentVersions(withNested);
 	const withUrl = augmentUrl(withVersions);
 	const withAuth = augmentAuth(withUrl);
 	const withMetas = augmentMetas(withAuth);
-	const withHooks = augmentHooks(withMetas);
-	const output = augmentTitle(withHooks);
+	const output = augmentTitle(withMetas);
 
 	return {
 		...output,
-		url: output.url as BuiltCollection['url'],
 		slug: output.slug as BuiltCollection['slug'],
 		type: 'collection',
-		label: output.label
-			? output.label
-			: { singular: capitalize(collection.slug), plural: capitalize(collection.slug), gender: 'm' },
 		icon: output.icon || FileText,
 		access: {
 			create: (user) => !!user && !!user.isStaff,
@@ -52,4 +37,6 @@ export function buildCollection(collection: Collection<CollectionSlug>): BuiltCo
 			...output.access
 		}
 	};
-}
+};
+
+export const access = (access: Access) => access;

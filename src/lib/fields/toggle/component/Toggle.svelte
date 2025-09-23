@@ -7,7 +7,7 @@
 
 	const { path, config, form }: ToggleProps = $props();
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<boolean>(path, config));
 	const inputId = slugify(`${form.key}-${path}`);
 
 	const onCheckedChange = (bool: boolean) => {
@@ -31,15 +31,14 @@
 	.rz-toggle-field-wrap > :global(* + *) {
 		margin-left: var(--rz-size-2);
 	}
-	
+
 	.rz-toggle-field {
 		@mixin my var(--rz-size-3);
 	}
-	
+
 	.rz-toggle-field :global {
 		.rz-field-hint {
 			margin-left: var(--rz-size-8);
 		}
 	}
-
 </style>

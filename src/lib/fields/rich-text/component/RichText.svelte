@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
-	import { Editor } from '@tiptap/core';
+	import { Editor, type JSONContent } from '@tiptap/core';
 	import { onMount } from 'svelte';
 	import { buildEditorConfig } from '../core/config-builders.js';
 	import type { RichTextFeature } from '../core/types';
@@ -20,7 +20,7 @@
 	let editor = $state<Editor>();
 	let features = $state<RichTextFeature[]>([]);
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<JSONContent>(path, config));
 
 	setRichTextContext(path);
 
@@ -56,7 +56,7 @@
 	class="rz-field-rich-text {config.className || ''}"
 	use:root={field}
 >
-	<Field.Label {config} for={path || config.name} />
+	<Field.Label {config} for={path || config.name} />
 	{#if standAlone}
 		<Field.Hint {config} />
 	{/if}
@@ -80,7 +80,6 @@
 	{#if !standAlone}
 		<Field.Hint {config} />
 	{/if}
-	
 </fieldset>
 
 <style type="postcss">

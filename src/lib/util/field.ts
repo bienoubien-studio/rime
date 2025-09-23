@@ -5,7 +5,6 @@ import type { TabsFieldRaw } from '$lib/fields/tabs/index.js';
 import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
 import type {
 	BlocksField,
-	ComponentField,
 	DateField,
 	Field,
 	FormField,
@@ -43,11 +42,6 @@ export const isNotHidden = (field: FormField) => !field.hidden;
 export const isLiveField = (field: Field) => field.live;
 
 /**
- * Checks if a field is a component field.
- */
-export const isComponentField = (field: Field): field is ComponentField => field.type === 'component';
-
-/**
  * Checks if a field is a blocks field.
  */
 export const isBlocksField = (field: Field): field is BlocksField => field.type === 'blocks';
@@ -79,17 +73,11 @@ export const isGroupFieldRaw = (field: Field): field is GroupFieldRaw => field.t
 
 /**
  * Checks if a field is a tabs field.
- *
- * @param field - The field to check
- * @returns True if the field is a tabs field
  */
 export const isTabsField = (field: Field): field is TabsField => field.type === 'tabs';
 
 /**
  * Checks if a field is a tabs field (raw type).
- *
- * @param field - The field to check
- * @returns True if the field is a tabs field
  */
 export const isTabsFieldRaw = (field: Field): field is TabsFieldRaw => field.type === 'tabs';
 
@@ -104,17 +92,7 @@ export const isDateField = (field: Field): field is DateField => field.type === 
 export const isRelationField = (field: Field): field is RelationField => field.type === 'relation';
 
 /**
- * Checks if a field is a roles field (select field with name 'roles').
- * Used for user role management.
- */
-export const isRolesField = (field: Field): field is SelectField =>
-	isFormField(field) && isSelectField(field) && field.name === 'roles';
-
-/**
  * Checks if a relation value is resolved (contains the actual referenced document).
- *
- * @param value - A RelationValue to check
- * @returns True if the value is a resolved relation
  *
  * @example
  * // Returns true for a resolved relation
@@ -127,9 +105,6 @@ export const isRelationResolved = <T>(value: any): value is T => {
 /**
  * Checks if a relation value is unresolved (contains only reference information).
  *
- * @param value - The value to check
- * @returns True if the value is an unresolved relation
- *
  * @example
  * // Returns true for an unresolved relation
  * isRelationUnresolved({ relationTo: 'pages', documentId: '123' });
@@ -141,9 +116,6 @@ export const isRelationUnresolved = (value: any): value is Omit<Relation, 'path'
 /**
  * Resolves a relation by fetching the referenced document.
  * If the relation is already resolved, returns it as is.
- *
- * @param value - The relation value to resolve
- * @returns A promise that resolves to the referenced document
  *
  * @example
  * // Resolves a relation to its full document
@@ -161,9 +133,6 @@ export const resolveRelation = async <T>(value: any): Promise<T> => {
 /**
  * Converts rich text JSON content to plain text.
  * Extracts text content from a TipTap/ProseMirror JSON structure.
- *
- * @param value - The rich text JSON string
- * @returns Plain text extracted from the rich text content
  *
  * @example
  * // Returns "Hello world"
@@ -198,10 +167,6 @@ export const richTextJSONToText = (value: string | JSONContent): string => {
  * Flattens a nested field structure into an array of form fields.
  * Handles special field types like tabs, tree, and blocks.
  *
- * @param prev - The accumulator array of form fields
- * @param curr - The current field to process
- * @returns An array of flattened form fields
- *
  * @example
  * // Flattens a tabs field into its constituent form fields
  * const fields = [tabsField].reduce(toFormFields, []);
@@ -233,9 +198,6 @@ export function toFormFields(prev: any[], curr: any) {
  * Creates an object with empty values based on field configurations.
  * Uses defaultValue if specified, otherwise undefined.
  * Handles nested fields like groups and tabs recursively.
- *
- * @param arr - Array of form field configurations
- * @returns An object with field names as keys and empty/default values
  *
  * @example
  * // Returns { title: '', attributes: { name: '', description: '' } }
@@ -306,7 +268,7 @@ export function pathToRegex(path: string): RegExp {
 	// Replace numeric indices that are:
 	// - preceded by a dot: \.123
 	// - followed by a dot or colon: 123\. or 123:
-	const pattern = escaped.replace(/(?<=\.)(\d+)(?=[\.:])|\b(\d+)(?=[\.:])/g, '\\d+');
+	const pattern = escaped.replace(/(?<=\.)(\d+)(?=[.:])|\b(\d+)(?=[.:])/g, '\\d+');
 
 	return new RegExp(`^${pattern}$`);
 }

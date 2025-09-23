@@ -1,15 +1,15 @@
 import createAdapter from '$lib/adapter-sqlite/index.server.js';
-import { randomId } from '../util/random.js';
-import { createConfigInterface } from './config/index.server.js';
-import { RizomError } from './errors/index.js';
+import type { BuiltConfig, CompiledConfig } from '$lib/core/config/types.js';
 import { registerTranslation } from '$lib/core/i18n/register.server.js';
-import { hasRunInitCommand } from './dev/cli/util.server.js';
-import { logger } from './logger/index.server.js';
-import i18n from './i18n/index.js';
-import type { AsyncReturnType } from '../util/types.js';
-import type { CompiledConfig, Config } from '$lib/core/config/types.js';
-import path from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import path from 'path';
+import { randomId } from '../util/random.js';
+import type { AsyncReturnType } from '../util/types.js';
+import { createConfigInterface } from './config/interface.server.js';
+import { hasRunInitCommand } from './dev/cli/util.server.js';
+import { RizomError } from './errors/index.js';
+import i18n from './i18n/index.js';
+import { logger } from './logger/index.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -91,7 +91,7 @@ function createCMS() {
 		get adapter() {
 			return adapter;
 		},
-		
+
 		/**
 		 * Gets the configuration interface for this CMS instance
 		 * @returns The configuration interface
@@ -133,4 +133,4 @@ export type CMS = ReturnType<typeof createCMS>;
 /**
  * Type for the initialization arguments
  */
-type InitArgs = { config: Config; schema: any };
+type InitArgs = { config: BuiltConfig; schema: any };

@@ -146,7 +146,7 @@ const panelLayout = () => `
 <script>
 	import { Panel } from '${PACKAGE_NAME}/panel/client';
 
-	import config from '../config/rizom.config.js';
+	import config from 'rizom:config-client';
 	const { children, data } = $props();
 
 	const user = data.user;
@@ -198,7 +198,7 @@ const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
 
-  import config from '../config/rizom.config.js';
+  import config from 'rizom:config-client';
 
   const { data } = $props();
 </script>

@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types';
+import type { BuiltCollection } from '$lib/core/config/types';
 import type { GenericDoc } from '$lib/core/types/doc';
 
 export type RelationFieldItem = {
@@ -19,7 +19,7 @@ export type RelationFieldItem = {
 
 export type RelationComponentProps = {
 	path: string;
-	relationConfig: CompiledCollection;
+	relationConfig: BuiltCollection;
 	stamp: string;
 	hasError: boolean;
 	isFull: boolean;

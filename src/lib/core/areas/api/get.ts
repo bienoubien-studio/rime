@@ -1,9 +1,9 @@
-import { json, type RequestEvent } from '@sveltejs/kit';
+import { PARAMS } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
-import { trycatch } from '$lib/util/trycatch.js';
+import { trycatch } from '$lib/util/function.js';
 import type { Dic } from '$lib/util/types';
-import { PARAMS } from '$lib/core/constant.js';
+import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: AreaSlug) {
 	//
@@ -24,7 +24,7 @@ export default function (slug: AreaSlug) {
 			versionId,
 			depth
 		};
-		
+
 		if (paramSelect) {
 			params.select = paramSelect.split(',');
 		}

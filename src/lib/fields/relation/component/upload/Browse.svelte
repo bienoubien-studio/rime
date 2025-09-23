@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 	import type { Directory } from '$lib/core/collections/upload/upload';
 	import Folder from '$lib/panel/components/sections/collection/grid/grid-item/Folder.svelte';
 	import CardDocument from '$lib/panel/components/ui/card-document/card-document.svelte';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
-	import type { CompiledCollection, UploadDoc } from '$lib/types';
-	import { makeUploadDirectoriesSlug } from '$lib/util/schema';
+	import type { BuiltCollection, UploadDoc } from '$lib/types';
 
-	type Props = { open: boolean; addValue: (item: string) => void; config: CompiledCollection };
+	type Props = { open: boolean; addValue: (item: string) => void; config: BuiltCollection };
 	let { open = $bindable(), addValue, config }: Props = $props();
 
 	let path = $state('root');

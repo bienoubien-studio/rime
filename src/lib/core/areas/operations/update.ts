@@ -34,7 +34,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		isSystemOperation
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'update',
@@ -44,7 +44,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		context = result.context;
 	}
 
-	for (const hook of config.hooks?.beforeUpdate || []) {
+	for (const hook of config.$hooks?.beforeUpdate || []) {
 		const result = await hook({
 			data,
 			config,
@@ -109,7 +109,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		draft: true
 	});
 
-	for (const hook of config.hooks?.afterUpdate || []) {
+	for (const hook of config.$hooks?.afterUpdate || []) {
 		const result = await hook({
 			doc: document,
 			config,

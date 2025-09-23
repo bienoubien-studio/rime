@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public';
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server';
@@ -6,8 +7,7 @@ import { RizomError } from '$lib/core/errors/index.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
 import type { Route } from '$lib/panel/types.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
-import { trycatch } from '$lib/util/trycatch.js';
+import { trycatch } from '$lib/util/function.js';
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
 
 /****************************************************/

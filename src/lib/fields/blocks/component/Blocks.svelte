@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericBlock } from '$lib/core/types/doc.js';
-	import type { BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+	import type { BlocksFieldBlock } from '$lib/fields/types';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -61,12 +61,12 @@
 		}
 	});
 
-	function getConfigByBlockType(type: string): BlocksFieldRaw['blocks'][number] {
+	function getConfigByBlockType(type: string): BlocksFieldBlock {
 		const blockConfig = config.blocks.find((b) => type === b.name);
 		if (!blockConfig) {
 			throw new Error(`Block configuration not found for type: ${type}`);
 		}
-		return blockConfig;
+		return blockConfig.block;
 	}
 
 	function collapseAll() {

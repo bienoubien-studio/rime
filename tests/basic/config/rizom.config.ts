@@ -1,22 +1,22 @@
 import {
+	block,
+	blocks,
+	component,
+	date,
+	email,
+	group,
+	link,
 	relation,
 	richText,
-	text,
-	toggle,
-	slug,
-	tabs,
-	tab,
-	blocks,
-	block,
-	link,
-	email,
 	select,
-	date,
-	group,
-	component,
 	separator,
-	tree,
-	textarea
+	slug,
+	tab,
+	tabs,
+	text,
+	textarea,
+	toggle,
+	tree
 } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import {
@@ -26,12 +26,12 @@ import {
 	Images,
 	Menu,
 	Newspaper,
+	NotebookText,
 	Settings2,
-	SlidersVertical,
-	NotebookText
+	SlidersVertical
 } from '@lucide/svelte';
 
-import { collection, area, defineConfig, Hooks } from '$lib/index.js';
+import { Area, buildConfig, Collection, Hooks } from 'rizom:core';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 
@@ -114,8 +114,8 @@ const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
 	return args;
 });
 
-const Pages = collection('pages', {
-	label: { singular: 'Page', plural: 'Pages', gender: 'f' },
+const Pages = Collection.config('pages', {
+	label: { singular: 'Page', plural: 'Pages' },
 	panel: {
 		group: 'content',
 		description: 'Edit and create your website pages'
@@ -124,7 +124,7 @@ const Pages = collection('pages', {
 	fields: [tabs(tabAttributes, tabLayout, tabSEO)],
 	live: true,
 	nested: true,
-	url: (doc) =>
+	$url: (doc) =>
 		doc.attributes.isHome
 			? `${process.env.PUBLIC_RIZOM_URL}/`
 			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
@@ -133,7 +133,7 @@ const Pages = collection('pages', {
 		create: (user) => access.isAdmin(user),
 		update: (user) => access.hasRoles(user, 'admin', 'editor')
 	},
-	hooks: {
+	$hooks: {
 		afterUpdate: [clearCacheHook],
 		afterCreate: [clearCacheHook],
 		beforeCreate: [setHome],
@@ -143,7 +143,7 @@ const Pages = collection('pages', {
 
 const Link = [text('label').layout('compact'), link('link').types('pages', 'url').layout('compact')];
 
-const Navigation = area('navigation', {
+const Navigation = Area.config('navigation', {
 	icon: Menu,
 	panel: {
 		group: 'global',
@@ -167,7 +167,7 @@ const Navigation = area('navigation', {
 	}
 });
 
-const Settings = area('settings', {
+const Settings = Area.config('settings', {
 	icon: Settings2,
 	panel: {
 		group: 'system',
@@ -179,7 +179,7 @@ const Settings = area('settings', {
 	}
 });
 
-const Informations = area('infos', {
+const Informations = Area.config('infos', {
 	icon: Contact,
 	panel: {
 		group: 'global',
@@ -210,7 +210,7 @@ const tabNewsAttributes = tab('attributes').fields(
 	date('published')
 );
 
-const News = collection('news', {
+const News = Collection.config('news', {
 	icon: NotebookText,
 	panel: {
 		description: 'Create article for your readers',
@@ -218,7 +218,7 @@ const News = collection('news', {
 	},
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
-	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	$url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -226,8 +226,8 @@ const News = collection('news', {
 	}
 });
 
-const Medias = collection('medias', {
-	label: { singular: 'Media', plural: 'Medias', gender: 'm' },
+const Medias = Collection.config('medias', {
+	label: { singular: 'Media', plural: 'Medias' },
 	panel: {
 		description: 'Manage images, video, audio, documents,...',
 		group: 'content'
@@ -247,7 +247,7 @@ const Medias = collection('medias', {
 	}
 });
 
-const Users = collection('users', {
+const Users = Collection.config('users', {
 	auth: {
 		type: 'password',
 		roles: ['user']
@@ -261,7 +261,7 @@ const Users = collection('users', {
 	}
 });
 
-const Apps = collection('apps', {
+const Apps = Collection.config('apps', {
 	auth: {
 		type: 'apiKey',
 		roles: ['apps']
@@ -270,16 +270,16 @@ const Apps = collection('apps', {
 	access: {
 		create: (user) => access.isAdmin(user),
 		read: (user) => access.isAdmin(user),
-		update: (user, { id }) => access.isAdmin(user),
-		delete: (user, { id }) => access.isAdmin(user)
+		update: (user) => access.isAdmin(user),
+		delete: (user) => access.isAdmin(user)
 	}
 });
 
-export default defineConfig({
-	database: 'basic.sqlite',
+export default buildConfig({
+	$database: 'basic.sqlite',
 	collections: [Pages, Medias, News, Users, Apps],
 	areas: [Settings, Navigation, Informations],
-	smtp: {
+	$smtp: {
 		from: process.env.RIZOM_SMTP_USER,
 		host: process.env.RIZOM_SMTP_HOST,
 		port: parseInt(process.env.RIZOM_SMTP_PORT || '465'),
@@ -288,10 +288,10 @@ export default defineConfig({
 			password: process.env.RIZOM_SMTP_PASSWORD
 		}
 	},
+	staff: {
+		roles: [{ value: 'editor' }]
+	},
 	panel: {
-		users: {
-			roles: [{ value: 'editor' }]
-		},
 		navigation: {
 			groups: [
 				{ label: 'content', icon: BookType },

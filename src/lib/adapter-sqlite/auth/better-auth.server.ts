@@ -1,12 +1,12 @@
+import { accessControl, admin, staff, user } from '$lib/core/collections/auth/better-auth-permissions.js';
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import type { CorePlugins } from '$lib/core/types/plugins.js';
+import type { GetRegisterType } from '$lib/index.js';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { admin as adminPlugin, apiKey, magicLink } from 'better-auth/plugins';
-import { accessControl, admin, user, staff } from '$lib/core/collections/auth/better-auth-permissions.js';
-import { betterAuthAfterHook, betterAuthBeforeHook } from './better-auth-hooks.server.js';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GetRegisterType } from 'rizom';
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
+import { betterAuthAfterHook, betterAuthBeforeHook } from './better-auth-hooks.server.js';
 
 type Args = {
 	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
@@ -15,8 +15,8 @@ type Args = {
 };
 
 export const configureBetterAuth = ({ db, schema, configInterface }: Args) => {
-	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
-	
+	const mailer = configInterface.plugins.mailer as CorePlugins['mailer'];
+
 	return betterAuth({
 		plugins: configurePlugins(configInterface),
 		rateLimit: {
@@ -24,7 +24,7 @@ export const configureBetterAuth = ({ db, schema, configInterface }: Args) => {
 			window: 10,
 			max: 30
 		},
-		trustedOrigins: configInterface.raw.trustedOrigins,
+		trustedOrigins: configInterface.raw.$trustedOrigins,
 		database: drizzleAdapter(db, {
 			provider: 'sqlite',
 			schema: {
@@ -77,7 +77,7 @@ export const configureBetterAuth = ({ db, schema, configInterface }: Args) => {
 };
 
 const configurePlugins = (configInterface: ConfigInterface) => {
-	const mailer = configInterface.get('plugins').mailer as CorePlugins['mailer'];
+	const mailer = configInterface.plugins.mailer as CorePlugins['mailer'];
 
 	const HAS_MAGIC_LINK = Boolean(configInterface.raw.auth?.magicLink);
 	const HAS_API_KEY = configInterface.collections.filter((c) => c.auth?.type === 'apiKey').length;
@@ -101,9 +101,9 @@ const configurePlugins = (configInterface: ConfigInterface) => {
 			}
 		}),
 		magicLink({
-			sendMagicLink: ({ email, url, token }) => {
-				if(!HAS_MAGIC_LINK) {
-					return
+			sendMagicLink: ({ email, url }) => {
+				if (!HAS_MAGIC_LINK) {
+					return;
 				}
 				mailer.sendMail({
 					to: email,
@@ -112,6 +112,5 @@ const configurePlugins = (configInterface: ConfigInterface) => {
 				});
 			}
 		})
-	]
-	
+	];
 };

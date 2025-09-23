@@ -1,45 +1,17 @@
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.server.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
-import type { Plugin } from '$lib/core/types/plugins.js';
-import type { FieldBuilder } from '$lib/fields/builders/field.server.js';
+import type { Plugin, PluginClient } from '$lib/core/types/plugins.js';
 import type { Field, Option } from '$lib/fields/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
-import type { AtLeastOne, WithoutBuilders, WithRequired } from '$lib/util/types.js';
+import type { Access, AreaSlug, CollectionSlug, User } from '$lib/types';
+import type { AtLeastOne, Dic, WithoutBuilders, WithRequired } from '$lib/util/types.js';
 import type { IconProps } from '@lucide/svelte';
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 import type { Component } from 'svelte';
-import type { FieldsComponents } from '../../../panel/types.js';
-import type { Access, User } from '../../collections/auth/types.js';
-import type { AreaSlug, CollectionSlug, DocType } from '../../types/doc.js';
-
-// const excludePatterns = [
-// 		// Root level exclusions
-// 		'^trustedOrigins$',
-// 		'^database$',
-// 		'^smtp$',
-// 		'^routes$',
-// 		'^plugins$',
-// 		'^cache',
-
-// 		// Exclude critical panel properties
-// 		'^panel.access',
-// 		'^panel.routes',
-// 		'^panel.users',
-
-// 		// Exclude area and collection hooks
-// 		'^collections..hooks',
-// 		'^areas..hooks',
-
-// 		// exclude fields hooks (allow client hook : fields..hooks.onChange)
-// 		'fields..hooks.beforeValidate',
-// 		'fields..hooks.beforeSave',
-// 		'fields..hooks.beforeRead',
-
-// 		// Generic patterns
-// 		'.*.server' // Exclude any path ending with server
-// 	];
+import type { FieldBuilder } from '../fields/builders';
+import type { BaseDoc, DocType } from '../types/doc';
 
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
@@ -47,12 +19,11 @@ export interface Config {
 	siteUrl?: string;
 	/** Transversal auth config */
 	auth?: {
-		// server
 		/** Enable magicLink Better-Auth plugin */
 		magicLink?: boolean;
 	};
 	/** The database name inside ./db folder */
-	database: string; // server
+	$database: string;
 	/** List of Collection  */
 	collections: Collection<string>[];
 	/** List of Area  */
@@ -82,14 +53,14 @@ export interface Config {
 	 * trustedOrigins: ['www.external.com']
 	 * ```
 	 */
-	trustedOrigins?: string[]; // server
+	$trustedOrigins?: string[];
+	/** Additional panel users config  */
+	staff?: AdditionalStaffConfig;
 	panel?: {
 		/** who can accesss the panel */
-		access?: (user: User | undefined) => boolean; // server
+		$access?: (user: User | undefined) => boolean;
 		/** Custom panel routes that render a given component */
-		routes?: Record<string, CustomPanelRoute>; // server
-		/** Additional panel users config  */
-		users?: PanelUsersConfig; // server
+		routes?: Record<string, CustomPanelRoute>;
 		/** The panel language, "en" or "fr" supports only */
 		language?: PanelLanguage;
 		/** Sidebar navigation groups labels and icons */
@@ -111,27 +82,30 @@ export interface Config {
 		css?: string;
 	};
 	/** Enable built-in API cache */
-	cache?: { isEnabled?: (event: RequestEvent) => boolean }; // server
+	$cache?: { isEnabled?: (event: RequestEvent) => boolean }; // server
 	/** SMTP config */
-	smtp?: SMTPConfig; // server
+	$smtp?: SMTPConfig;
 	/** Custom API routes
 	 * @example
 	 * routes: {
 	 * 	'/hello' : {
 	 * 		GET: (event) => json({ message: 'hello' }),
-	 * 		POST: (event) => doSomething(event).then(() => json({ message: 'successfully updated' })),
+	 * 		POST: (event) => sayHello(event).then(() => json({ message: 'Successfully said hello' })),
 	 * 	}
 	 * }
 	 */
-	routes?: Record<string, RouteConfig>; // server
-	plugins?: ReturnType<Plugin>[]; // server
-	custom?: {
-		browser?: Record<string, any>;
-		server?: Record<string, any>; // server
-	};
+	$routes?: Record<string, RouteConfig>;
+	/** List of client plugins */
+	plugins?: ReturnType<PluginClient>[];
+	/** List of server plugins */
+	$plugins?: ReturnType<Plugin>[];
+	/** Custom object for server-only config additional values  */
+	$custom?: Record<string, any>;
+	/** Custom object for client config additional values  */
+	custom?: Record<string, any>;
 }
 
-export type PanelUsersConfig = {
+export type AdditionalStaffConfig = {
 	roles?: (string | Option)[];
 	panel?: {
 		group?: string;
@@ -158,14 +132,19 @@ export type LocaleConfig = {
 	label: string;
 };
 
-type CollectionLabel = {
+export type CollectionLabel = {
 	singular: string;
 	plural: string;
-	gender: 'f' | 'm';
+	/** Label to search document, ex: Search for pages... */
+	search?: string;
+	/** Label for creation ex: New page */
+	create?: string;
+	/** Label when no document found, ex: No pages found */
+	none?: string;
 };
 
 export type VersionsConfig = { draft?: boolean; autoSave?: boolean; maxVersions?: number };
-export type UrlDefinition = <T>(document: T) => string;
+export type UrlDefinition<T extends BaseDoc = BaseDoc> = (document: T) => string;
 
 type BaseDocConfig<S extends string = string> = {
 	slug: S;
@@ -178,7 +157,6 @@ type BaseDocConfig<S extends string = string> = {
 	access?: Access;
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
-	url: UrlDefinition;
 	/** Panel configuration, set false to hide the area/collection from the panel */
 	panel?:
 		| false
@@ -238,71 +216,22 @@ export type AuthConfig = (
 export type Collection<S> = {
 	slug: S;
 	/** The collection label */
-	label?: CollectionLabel;
+	label?: string | CollectionLabel;
 	auth?: boolean | AuthConfig;
-	hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>; // server
+	$hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>;
 	/** A function to generate the document URL */
-	// url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
+	$url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
 	nested?: boolean;
 	upload?: boolean | UploadConfig;
 } & BaseDocConfig;
 
 export type Area<S> = BaseDocConfig & {
+	slug: S;
 	/** A function to generate the document URL */
-	// url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
-	hooks?: AreaHooks<S extends keyof RegisterArea ? S : any>; // server
+	$url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
+	$hooks?: AreaHooks<S extends keyof RegisterArea ? S : any>;
 	/** The area label */
 	label?: string;
-};
-
-export type BuiltConfig = {
-	auth?: {
-		magicLink?: boolean;
-	};
-	/** Database location relative to the root project ex: ./db/my-app.sqlite */
-	database: string;
-	/** The database location */
-	siteUrl?: string;
-	/** list of collections */
-	collections: BuiltCollection[];
-	/** list of areas */
-	areas: BuiltArea[];
-	/** Define wich language the cms support */
-	localization?: LocalizationConfig;
-	icons: Record<string, any>;
-	trustedOrigins: string[];
-	routes?: Record<string, RouteConfig>;
-	plugins?: Record<string, ReturnType<Plugin>['actions']>;
-	panel: {
-		routes: Record<string, CustomPanelRoute>;
-		navigation: NavigationConfig;
-		access: (user?: User) => boolean;
-		components?: {
-			header: Component[];
-			collectionHeader?: Component[];
-			dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
-		};
-		css?: string;
-		/**
-		 * Define the panel language
-		 *
-		 * If none defined it will try to use the current locale if the translation is available
-		 */
-		language: 'fr' | 'en';
-	};
-};
-
-export type BrowserConfig = Omit<CompiledConfig, 'panel' | 'cors' | 'routes' | 'smtp'> & {
-	blueprints: Record<string, FieldsComponents>;
-	panel: {
-		language: 'fr' | 'en';
-		navigation: NavigationConfig;
-		components: {
-			header: Component[];
-			dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
-			collectionHeader: Component[];
-		};
-	};
 };
 
 type NavigationConfig = { groups: Array<{ label: string; icon: Component<IconProps> }> };
@@ -312,27 +241,6 @@ export type CustomPanelRoute = {
 	label: string;
 	icon?: Component<IconProps>;
 	component: Component;
-};
-
-export type BuiltCollection = Omit<Collection<string>, 'versions' | 'upload' | 'auth'> & {
-	type: 'collection';
-	auth?: AuthConfig;
-	label: CollectionLabel;
-	slug: CollectionSlug;
-	asTitle: string;
-	versions?: Required<VersionsConfig>;
-	upload?: UploadConfig;
-	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
-};
-
-export type BuiltArea = Omit<Area<string>, 'versions'> & {
-	type: 'area';
-	label: string;
-	slug: AreaSlug;
-	asTitle: string;
-	versions?: Required<VersionsConfig>;
-	fields: FieldBuilder<Field>[];
-	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
 export type ImageSizesConfig = {
@@ -346,9 +254,94 @@ export type ImageSizesConfig = {
 	height: number;
 }>;
 
+export type BuiltCollection = Omit<Collection<string>, 'icon' | 'versions' | 'upload' | 'auth'> & {
+	type: 'collection';
+	auth?: AuthConfig;
+	label: CollectionLabel;
+	slug: CollectionSlug;
+	asTitle: string;
+	versions?: Required<VersionsConfig>;
+	upload?: UploadConfig;
+	icon: Component<IconProps>;
+	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
+};
+
+export type BuiltArea = Omit<Area<string>, 'versions'> & {
+	type: 'area';
+	label: string;
+	slug: AreaSlug;
+	asTitle: string;
+	versions?: Required<VersionsConfig>;
+	fields: FieldBuilder<Field>[];
+	icon: Component<IconProps>;
+	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
+};
+
+export type BuiltConfig = {
+	auth?: {
+		magicLink?: boolean;
+	};
+	/** Database location relative to the root project ex: ./db/my-app.sqlite */
+	$database: string;
+	/** The database location */
+	siteUrl?: string;
+	/** list of collections */
+	collections: BuiltCollection[];
+	/** list of areas */
+	areas: BuiltArea[];
+	/** Define wich language the cms support */
+	localization?: LocalizationConfig;
+	icons: Record<string, any>;
+	$trustedOrigins: string[];
+	$routes?: Record<string, RouteConfig>;
+	$plugins?: ReturnType<Plugin>[];
+	plugins?: ReturnType<PluginClient>[];
+	panel: {
+		routes: Record<string, CustomPanelRoute>;
+		navigation: NavigationConfig;
+		$access: (user?: User) => boolean;
+		components: {
+			header: Component[];
+			collectionHeader?: Component[];
+			dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
+		};
+		css?: string;
+		/**
+		 * Define the panel language
+		 *
+		 * If none defined it will try to use the current locale if the translation is available
+		 */
+		language: 'fr' | 'en';
+	};
+	$custom?: Record<string, any>;
+	custom?: Record<string, any>;
+};
+
+export type ServerConfigProps = '$database' | '$trustedOrigins' | '$routes' | '$smtp' | '$custom' | '$plugins';
+
+export type SanitizedConfigClient = Omit<Config, ServerConfigProps | 'collections' | 'areas'> & {
+	collections: Omit<BuiltCollection, '$url' | '$hooks'>[];
+	areas: Omit<BuiltArea, '$url' | '$hooks'>[];
+};
+export type BuiltConfigClient = Omit<BuiltConfig, ServerConfigProps | 'panel' | 'collections' | 'areas'> & {
+	collections: Omit<BuiltCollection, '$url' | '$hooks'>[];
+	areas: Omit<BuiltArea, '$url' | '$hooks'>[];
+	icons: Dic<Component<IconProps>>;
+	panel: {
+		routes: Record<string, CustomPanelRoute>;
+		language: 'fr' | 'en';
+		navigation: NavigationConfig;
+		components: {
+			header: Component[];
+			collectionHeader?: Component[];
+			dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
+		};
+	};
+};
+
 export type CompiledCollection = WithoutBuilders<BuiltCollection>;
 export type CompiledArea = WithoutBuilders<BuiltArea>;
-export type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections'> & {
+export type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections' | 'areas'> & {
 	collections: Array<CompiledCollection>;
 	areas: Array<CompiledArea>;
 };

@@ -1,7 +1,7 @@
 import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { AreaSlug } from '$lib/core/types/doc';
-import { trycatch } from '$lib/util/trycatch.js';
+import { trycatch } from '$lib/util/function.js';
 import { ERROR_CONTEXT, handleError } from '$lib/core/errors/handler.server';
 import { PARAMS } from '$lib/core/constant.js';
 import { t__ } from '../../../core/i18n/index.js';
@@ -15,7 +15,7 @@ export default function (slug: AreaSlug) {
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 
 			const data = await extractData(event.request)
-			
+
 			const [error, document] = await trycatch(() =>
 				rizom.area(slug).update({
 					data,

@@ -1,9 +1,7 @@
+import { filePathToBase64 } from '$lib/core/collections/upload/util/converter.js';
 import test, { expect } from '@playwright/test';
-import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
 import path from 'path';
-import { PANEL_USERS } from 'rizom/core/collections/auth/constant.server.js';
 import { API_BASE_URL, signIn } from '../util.js';
-
 
 const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
 const signInEditor = signIn('editor@bienoubien.com', 'a&1Aa&1A');
@@ -68,7 +66,6 @@ test('Should get correct offset / limit', async ({ request }) => {
 
 	// Create 100 pages
 	for (let i = 1; i < 100; i++) {
-		
 		const response = await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
@@ -78,12 +75,11 @@ test('Should get correct offset / limit', async ({ request }) => {
 				}
 			}
 		});
-		expect(response.status()).toBe(200)
+		expect(response.status()).toBe(200);
 	}
 
 	// Check findAll
 	for (let i = 1; i < 10; i++) {
-		
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
@@ -97,11 +93,9 @@ test('Should get correct offset / limit', async ({ request }) => {
 		expect(response.docs.at(9).title).toBe('Page ' + to3digits(offset + 10));
 	}
 
-	
 	// Create 100 other pages
 	for (let i = 1; i < 100; i++) {
-		
-		const { doc } = await request
+		await request
 			.post(`${API_BASE_URL}/pages`, {
 				headers,
 				data: {
@@ -116,7 +110,6 @@ test('Should get correct offset / limit', async ({ request }) => {
 
 	// Check with query
 	for (let i = 1; i < 10; i++) {
-		
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
@@ -136,10 +129,9 @@ test('Should get correct offset / limit', async ({ request }) => {
 		.then((r) => r.json())
 		.then((r) => r.docs);
 
-	
 	expect(allPages.toBeDefined);
 	expect(allPages.length).toBe(198);
-	
+
 	const ids = allPages.map((p: { id: string }) => p.id).join(',');
 	await request.delete(`${API_BASE_URL}/pages?where[id][in_array]=${ids}`, {
 		headers
@@ -661,10 +653,8 @@ test('Should create some treeBlocks in Area Menu FR', async ({ request }) => {
 /* AUTH Collection
 /****************************************************/
 
-let editorId: string;
-
 test('Should create a staff editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor@bienoubien.com',
@@ -678,7 +668,6 @@ test('Should create a staff editor', async ({ request }) => {
 	expect(response.status()).toBe(200);
 	expect(data.doc).toBeDefined();
 	expect(data.doc.id).toBeDefined();
-	editorId = data.doc.id;
 });
 
 test('Should not update Home', async ({ request }) => {
@@ -826,7 +815,7 @@ let page2Id: string;
 let editor2Id: string;
 
 test('Should create editor user for testing', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor2@bienoubien.com',
@@ -1063,7 +1052,7 @@ test('Should login editor', async ({ request }) => {
 });
 
 test('Editor should not update admin password', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${adminUserId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${adminUserId}`, {
 		headers: await signInEditor(request),
 		data: {
 			password: 'a&1Aa&1A'

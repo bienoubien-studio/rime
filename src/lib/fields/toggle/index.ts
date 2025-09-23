@@ -1,10 +1,12 @@
+import { BooleanFieldBuilder } from '$lib/core/fields/builders/boolean.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { BooleanFieldBuilder } from '../builders/boolean.js';
-import Toggle from './component/Toggle.svelte';
 import Cell from './component/Cell.svelte';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
+import Toggle from './component/Toggle.svelte';
 
 export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'toggle');
 		this.field.isEmpty = (value) => typeof value !== 'boolean';
@@ -14,19 +16,9 @@ export class ToggleFieldBuilder extends BooleanFieldBuilder<ToggleField> {
 	get component() {
 		return Toggle;
 	}
+
 	get cell() {
 		return Cell;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: integer('${snake}', { mode: 'boolean' })${suffix}`;
-	}
-
-	_toType() {
-		return `${this.field.name}: boolean`;
 	}
 
 	defaultValue(value: boolean | DefaultValueFn<boolean>) {

@@ -1,7 +1,7 @@
 import { capitalize } from '$lib/util/string.js';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { DashboardEntry } from './types';
 import type { CompiledCollection, Route } from '../../../types.js';
+import type { DashboardEntry } from './types';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
 	const { locale, user, rizom } = event.locals;
@@ -12,7 +12,6 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		prototype: 'collection',
 		description: c.panel && c.panel?.description ? c.panel.description : null,
 		slug: c.slug,
-		gender: c.label?.gender || 'm',
 		canCreate: user && c.access.create(user, {}),
 		link: `/panel/${c.slug}`,
 		titleSingular: c.label.singular,
@@ -31,7 +30,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 			return [];
 		}
 	};
-	
+
 	const promiseEntries = rizom.config.collections
 		.filter((collection) => user && collection.access.read(user, {}))
 		.filter((collection) => collection.panel !== false)
@@ -54,11 +53,11 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		console.error(err);
 	}
 
-	for (const area of rizom.config.areas.filter(a => a.panel !== false)) {
+	for (const area of rizom.config.areas.filter((a) => a.panel !== false)) {
 		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',
-				description: area.panel && area.panel?.description || null,
+				description: (area.panel && area.panel?.description) || null,
 				slug: area.slug,
 				link: `/panel/${area.slug}`,
 				title: area.label || capitalize(area.slug)

@@ -1,14 +1,12 @@
-import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { AreaSlug, GenericDoc } from '$lib/core/types/doc';
-import { PARAMS, type VersionsStatus } from '$lib/core/constant.js';
-import type { Dic, WithRequired } from '$lib/util/types.js';
-import type { Route } from '$lib/panel/types.js';
-import { makeVersionsSlug } from '$lib/util/schema.js';
 import { env } from '$env/dynamic/public';
-import { trycatch } from '$lib/util/trycatch.js';
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+import { PARAMS } from '$lib/core/constant.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import type { AreaSlug } from '$lib/core/types/doc';
 import type { AreaDocData } from '$lib/panel/index.js';
-
+import type { Route } from '$lib/panel/types.js';
+import { trycatch } from '$lib/util/function.js';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 export default function <V extends boolean = boolean>(slug: AreaSlug, withVersions?: V) {
 	//
@@ -35,7 +33,7 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 		if (!authorizedUpdate) {
 			return { aria, doc, operation: 'update', status: 200, readOnly: true } as AreaDocData<false>;
 		}
-		
+
 		let data: AreaDocData = {
 			aria,
 			doc,
@@ -44,7 +42,7 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 			readOnly: false,
 			versions: undefined
 		};
-		
+
 		if (withVersions) {
 			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = fetch(url).then((r) => r.json());

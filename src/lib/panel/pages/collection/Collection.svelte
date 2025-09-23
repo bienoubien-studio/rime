@@ -85,7 +85,7 @@
 				{/snippet}
 
 				{#snippet topRight()}
-					{#each config.raw.panel.components.collectionHeader as CustomHeaderComponent, index (index)}
+					{#each config.raw.panel.components.collectionHeader || [] as CustomHeaderComponent, index (index)}
 						<CustomHeaderComponent />
 					{/each}
 

@@ -11,7 +11,6 @@
 	const onInput = (event: Event) => {
 		field.value = (event.target as HTMLInputElement).value;
 	};
-	
 </script>
 
 <fieldset

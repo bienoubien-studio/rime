@@ -20,7 +20,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		isSystemOperation
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'delete',
@@ -35,7 +35,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		throw new RizomError(RizomError.NOT_FOUND);
 	}
 
-	for (const hook of config.hooks?.beforeDelete || []) {
+	for (const hook of config.$hooks?.beforeDelete || []) {
 		const result = await hook({
 			doc: document,
 			config,
@@ -48,7 +48,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 
 	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
 
-	for (const hook of config.hooks?.afterDelete || []) {
+	for (const hook of config.$hooks?.afterDelete || []) {
 		const result = await hook({
 			doc: document,
 			config,

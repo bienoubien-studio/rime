@@ -4,7 +4,7 @@ export type DashboardEntry =
 	| {
 			slug: CollectionSlug;
 			title: string;
-			gender: 'm' | 'f';
+
 			titleSingular: string;
 			link: string;
 			canCreate?: boolean;

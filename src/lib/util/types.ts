@@ -1,5 +1,5 @@
 import type { UploadConfig } from '$lib/core/config/types.js';
-import type { FieldBuilder } from '$lib/fields/builders';
+import type { FieldBuilder } from '$lib/core/fields/builders';
 import type { Field } from '$lib/fields/types.js';
 import type { RelationValue } from '$lib/types';
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
@@ -8,7 +8,7 @@ export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K
 export type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
 
-export type Dic = Record<string, any>;
+export type Dic<T = any> = Record<string, T>;
 export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extends (...args: any) => Promise<infer R>
 	? R
 	: any;

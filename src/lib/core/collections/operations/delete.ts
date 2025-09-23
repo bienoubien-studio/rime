@@ -24,7 +24,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 		isSystemOperation
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'delete',

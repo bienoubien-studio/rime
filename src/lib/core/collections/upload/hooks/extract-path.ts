@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors/index.js';
-import { trycatchSync } from '$lib/util/trycatch.js';
-import { getSegments } from '../util/path.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
+import { trycatchSync } from '$lib/util/function.js';
+import { getSegments } from '../util/path.js';
 
 /**
  * Hook executed before save/update operations on {uploadSlug}_directories collections
@@ -10,7 +10,7 @@ import { Hooks } from '$lib/core/operations/hooks/index.server.js';
  */
 export const exctractPath = Hooks.beforeUpsert<'directory'>(async (args) => {
 	let data = args.data;
-	
+
 	if (data?.id) {
 		const [error, segments] = trycatchSync(() => getSegments(data.id));
 		if (error) {

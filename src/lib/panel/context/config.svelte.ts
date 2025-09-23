@@ -1,13 +1,13 @@
-import type { CompiledCollection, BrowserConfig, CompiledArea } from '$lib/core/config/types';
+import type { BuiltArea, BuiltCollection, BuiltConfigClient } from '$lib/core/config/types';
 import type { Prototype, PrototypeSlug } from '$lib/core/types/doc';
 import { getContext, setContext } from 'svelte';
 
-function createConfigStore(config: BrowserConfig) {
-	function getArea(slug: string): CompiledArea {
+function createConfigStore(config: BuiltConfigClient) {
+	function getArea(slug: string): BuiltArea {
 		return config.areas.filter((c) => c.slug === slug)[0];
 	}
 
-	function getCollection(slug: string): CompiledCollection {
+	function getCollection(slug: string): BuiltCollection {
 		return config.collections.filter((c) => c.slug === slug)[0];
 	}
 
@@ -27,7 +27,7 @@ function createConfigStore(config: BrowserConfig) {
 
 const CONFIG_KEY = Symbol('rizom.config');
 
-export function setConfigContext(initial: BrowserConfig) {
+export function setConfigContext(initial: BuiltConfigClient) {
 	const store = createConfigStore(initial);
 	return setContext(CONFIG_KEY, store);
 }

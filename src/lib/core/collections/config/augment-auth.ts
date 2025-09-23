@@ -1,13 +1,12 @@
-import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import { text } from '$lib/fields/text/index.server.js';
-import { usersFields } from '../auth/fields.server.js';
+import type { AuthConfig, Collection } from '$lib/core/config/types.js';
 import { select } from '$lib/fields/select/index.js';
-import type { Collection, Option } from '../../../types.js';
-import type { AuthConfig } from '$lib/core/config/types.js';
+import { text } from '$lib/fields/text/index.js';
+import type { Option } from '$lib/types.js';
 import { access } from '$lib/util/access/index.js';
+import { usersFields } from '../auth/fields.js';
 
 type Input = { slug: string; auth?: boolean | AuthConfig; fields: Collection<any>['fields'] };
-type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: AuthConfig };
+export type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: AuthConfig };
 
 const withNormalizedAuth = <T extends { auth?: boolean | AuthConfig }>(config: T): WithNormalizedAuth<T> => {
 	// Create a new object without the auth property
@@ -39,11 +38,11 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 	if (!normalizedAuthConfig.auth) return normalizedAuthConfig;
 
 	// Augment Fields
-	const IS_STAFF_COLLECTION = normalizedAuthConfig.slug === PANEL_USERS;
+	const IS_STAFF_COLLECTION = normalizedAuthConfig.slug === 'staff';
 	const IS_GENERIC_COLLECTION = !IS_STAFF_COLLECTION;
 	const IS_API_AUTH = normalizedAuthConfig.auth.type === 'apiKey';
 
-	let roles = [...(normalizedAuthConfig.auth.roles || ['user'])];
+	const roles = [...(normalizedAuthConfig.auth.roles || ['user'])];
 	let normalizedRoles: Option[] = roles.map((r) => (typeof r === 'string' ? { value: r } : r));
 
 	// Filter out 'admin' roles for non staff collection
@@ -76,7 +75,7 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 		});
 	}
 
-	let fields = [
+	const fields = [
 		usersFields.name.clone(),
 		// Add email field for non api key auth type.
 		...(!IS_API_AUTH ? [usersFields.email.clone()] : []),
@@ -87,10 +86,7 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 	];
 
 	if (IS_API_AUTH) {
-		const ownerIdField = text('ownerId')
-			.hidden()
-			.readonly()
-			.generateSchema(() => `ownerId: text('onwer_id').references(() => staff.id, {onDelete: 'cascade'})`);
+		const ownerIdField = text('ownerId').hidden().readonly();
 		fields.push(ownerIdField);
 	}
 

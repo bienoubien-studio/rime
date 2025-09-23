@@ -1,38 +1,26 @@
 <script lang="ts">
-	import {
-		isComponentField,
-		isFormField,
-		isLiveField,
-		isNotHidden,
-		isPresentative,
-		isTabsField
-	} from '$lib/util/field.js';
+	import type { FieldBuilder } from '$lib/core/fields/builders';
+	import { ComponentFieldBuilder } from '$lib/fields/component';
+	import type { FormField } from '$lib/fields/types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field, FormField } from '$lib/fields/types.js';
-	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
-	import type { Component } from 'svelte';
+	import { isFormField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
 
 	type Props = {
 		path?: string;
-		fields: Field[];
+		fields: FieldBuilder[];
 		form: DocumentFormContext;
 	};
 
 	const { form, fields, path: initialPath = '' }: Props = $props();
 
 	const user = getUserContext();
-	const config = getConfigContext();
-
-	const fieldComponent = (type: string): Component<{ path: string; config: Field; form: typeof form }> => {
-		return config.raw.blueprints[type].component || null;
-	};
 
 	const authorizedFields = $derived(
 		fields.filter((field) => {
 			// if (isPresentative(field)) return true;
-			if (field.access && field.access.read) {
-				return field.access.read(user.attributes, { id: form.doc.id });
+			if (field.raw.access && field.raw.access.read) {
+				return field.raw.access.read(user.attributes, { id: form.doc.id });
 			}
 			return true;
 		})
@@ -47,31 +35,31 @@
 
 <div class="rz-render-fields">
 	{#each authorizedFields as field, index (index)}
-		{#if !form.isLive || (form.isLive && isLiveField(field))}
-			{#if isComponentField(field)}
+		{#if !form.isLive || (form.isLive && isLiveField(field.raw))}
+			{#if field instanceof ComponentFieldBuilder}
 				{@const FieldComponent = field.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<FieldComponent {path} config={field} {form} />
 				</div>
-			{:else if isPresentative(field)}
-				{@const Separator = config.raw.blueprints.separator.component}
+			{:else if isPresentative(field.raw)}
+				{@const Separator = field.component}
 				<div data-type={field.type} class="rz-render-fields__field rz-render-fields__field--full">
 					<Separator />
 				</div>
-			{:else if isTabsField(field)}
-				{@const Tabs = config.raw.blueprints.tabs.component}
+			{:else if isTabsField(field.raw)}
+				{@const Tabs = field.component}
 				<div data-type="tabs" class="rz-render-fields__field rz-render-fields__field--full">
-					<Tabs config={field} {path} {form} />
+					<Tabs config={field.raw} {path} {form} />
 				</div>
-			{:else if isFormField(field) && isNotHidden(field)}
+			{:else if isFormField(field.raw) && isNotHidden(field.raw)}
 				{@const isCompact = 'layout' in field && field.layout === 'compact'}
-				{@const FieldComponent = fieldComponent(field.type)}
+				{@const FieldComponent = field.component}
 				<div
-					class="rz-render-fields__field {widthClassModifier(field)}"
+					class="rz-render-fields__field {widthClassModifier(field.raw)}"
 					data-type={field.type}
 					data-compact={isCompact ? '' : null}
 				>
-					<FieldComponent path={path + field.name} config={field} {form} />
+					<FieldComponent path={path + field.raw.name} config={field.raw} {form} />
 				</div>
 			{/if}
 		{/if}

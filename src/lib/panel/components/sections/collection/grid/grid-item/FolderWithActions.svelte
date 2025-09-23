@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
+	import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 	import { directoryInput } from '$lib/core/collections/upload/directory-input-config.js';
 	import type { Directory } from '$lib/core/collections/upload/upload.js';
 	import type { UploadPath } from '$lib/core/collections/upload/util/path.js';
@@ -13,8 +14,7 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { setFormContext } from '$lib/panel/context/form.svelte.js';
-	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
-	import { trycatchFetch } from '$lib/util/trycatch.js';
+	import { trycatchFetch } from '$lib/util/function.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../../../core/i18n/index.js';
 	import Folder from './Folder.svelte';

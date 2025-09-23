@@ -1,7 +1,7 @@
+import { filePathToBase64 } from '$lib/core/collections/upload/util/converter.js';
+import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant';
 import test, { expect } from '@playwright/test';
 import path from 'path';
-import { filePathToBase64 } from 'rizom/core/collections/upload/util/converter.js';
-import { PARAMS, VERSIONS_STATUS } from 'rizom/core/constant';
 import { API_BASE_URL, signIn } from '../util.js';
 
 const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
@@ -160,7 +160,7 @@ test('Should create an other Media', async ({ request }) => {
 });
 
 /****************************************************
-/* Handling versioned areas without draft enabled 
+/* Handling versioned areas without draft enabled
 /****************************************************/
 
 let infoVersionId: string;
@@ -279,11 +279,10 @@ test('Should get a 404 when fetching a wrong Infos version', async ({ request })
 });
 
 /****************************************************
-/* Handling versioned areas with draft enabled 
+/* Handling versioned areas with draft enabled
 /****************************************************/
 
 let settingVersionId: string;
-let settingsId: string;
 
 test('Should get settings', async ({ request }) => {
 	const response = await request.get(`${API_BASE_URL}/settings`, {
@@ -295,7 +294,6 @@ test('Should get settings', async ({ request }) => {
 	expect(data.doc.title).toBe(null);
 	expect(data.doc.versionId).toBeDefined();
 	settingVersionId = data.doc.versionId;
-	settingsId = data.doc.id;
 });
 
 test('Should update the published settings', async ({ request }) => {

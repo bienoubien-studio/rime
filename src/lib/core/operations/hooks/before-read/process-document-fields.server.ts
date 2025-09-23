@@ -1,6 +1,8 @@
+import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
+import { deleteValueAtPath, getValueAtPath, hasProp, setValueAtPath } from '$lib/util/object.js';
 import { buildConfigMap } from '../../configMap/index.js';
+import { getDefaultValue } from '../before-upsert/set-default-values.server.js';
 import { Hooks } from '../index.server.js';
 
 export const processDocumentFields = Hooks.beforeRead(async (args) => {
@@ -10,6 +12,20 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 	const configMap = buildConfigMap(doc, args.config.fields);
 
 	for (const [key, config] of Object.entries(configMap)) {
+		let value = getValueAtPath(key, doc);
+		let isEmpty;
+
+		try {
+			isEmpty = config.isEmpty(value);
+		} catch {
+			isEmpty = false;
+			logger.warn(`Error in config.isEmpty for field ${key}`);
+		}
+		if (isEmpty && hasProp('defaultValue', config)) {
+			value = await getDefaultValue({ key, config, adapter: args.event.locals.rizom.adapter });
+			doc = setValueAtPath(key, doc, value);
+		}
+
 		if (config.type === 'blocks') {
 			const value = getValueAtPath<(GenericBlock | undefined)[]>(key, doc);
 			// Filter out possible undefined block or residual

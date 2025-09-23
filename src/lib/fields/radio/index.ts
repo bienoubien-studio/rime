@@ -1,9 +1,11 @@
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
-import { PickOneFieldBuilder } from '../builders/select.js';
+import { PickOneFieldBuilder } from '../../core/fields/builders/select.js';
 import Radio from './component/Radio.svelte';
 
-class RadioFieldBuilder extends PickOneFieldBuilder<RadioField> {
+export class RadioFieldBuilder extends PickOneFieldBuilder<RadioField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'radio');
 		this.field.many = false;
@@ -17,18 +19,6 @@ class RadioFieldBuilder extends PickOneFieldBuilder<RadioField> {
 	layout(value: 'default' | 'row') {
 		this.field.layout = value;
 		return this;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if (this._generateSchema) return this._generateSchema({ camel, snake, suffix });
-		return `${camel}: text('${snake}')${suffix}`;
-	}
-
-	_toType() {
-		const optionsString = this.field.options.map((option) => `'${option.value}'`).join(' | ');
-		return `${this.field.name}${this.field.required ? '' : '?'}: ${optionsString}`;
 	}
 }
 

@@ -1,20 +1,13 @@
 import type { FormField } from '$lib/fields/types.js';
-import { BooleanFieldBuilder } from '../builders/boolean.js';
+import { BooleanFieldBuilder } from '../../core/fields/builders/boolean.js';
 import Checkbox from './component/Checkbox.svelte';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 
-class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
+export class CheckboxFieldBuilder extends BooleanFieldBuilder<CheckboxField> {
+	//
+	_metaUrl: string = import.meta.url;
+
 	get component() {
 		return Checkbox;
-	}
-	_toSchema(parentPath: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: integer('${snake}', { mode: 'boolean' })${suffix}`;
-	}
-	_toType() {
-		return `${this.field.name}: boolean`;
 	}
 }
 

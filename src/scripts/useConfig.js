@@ -1,5 +1,5 @@
-import { program } from 'commander';
 import { execSync } from 'child_process';
+import { program } from 'commander';
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 
@@ -12,7 +12,7 @@ program
 	.argument('<name>', 'Specify the name')
 	.action((name) => {
 		try {
-			const configDirPath = path.join(projectRoot, 'src', 'config');
+			const configDirPath = path.join(projectRoot, 'src', 'lib', 'config');
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous
@@ -23,13 +23,13 @@ program
 			const testConfigDirPath = path.join(projectRoot, 'tests', name, 'config');
 
 			if (existsSync(testConfigDirPath)) {
-				mkdirSync(configDirPath)
+				mkdirSync(configDirPath);
 				// Copy the entire config directory
 				execSync(`cp -rf ${testConfigDirPath}/* ${configDirPath}/`);
 			} else {
 				console.warn(`Warning: Config directory not found for ${name}`);
 			}
-			
+
 			// Init files and DB
 			execSync(`bun ./src/lib/core/dev/cli/index.ts init --name ${name}`);
 
@@ -39,7 +39,6 @@ program
 			if (existsSync(testFrontRoutesPath.replace(/\\/g, ''))) {
 				execSync(`cp -rf ${testFrontRoutesPath} ${frontRoutesPath}`);
 			}
-			
 		} catch (error) {
 			console.error('Error setting configuration:', error);
 		}

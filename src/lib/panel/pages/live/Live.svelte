@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { BrowserConfig } from '$lib/core/config/types';
+	import type { BuiltConfigClient } from '$lib/core/config/types';
 	import { t__ } from '$lib/core/i18n';
 	import type { GenericDoc } from '$lib/core/types/doc';
 	import LiveSidePanel from '$lib/panel/components/sections/live/SidePanel.svelte';
@@ -11,7 +11,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
-	type Props = { data: any; config: BrowserConfig };
+	type Props = { data: any; config: BuiltConfigClient };
 	const { data, config }: Props = $props();
 
 	let iframe: HTMLIFrameElement;

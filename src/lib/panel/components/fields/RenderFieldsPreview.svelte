@@ -1,21 +1,15 @@
 <script lang="ts">
-	import { isFormField, isLiveField, isNotHidden, isTabsField } from '$lib/util/field.js';
+	import { FieldBuilder } from '$lib/core/fields/builders';
+	import type { Field } from '$lib/fields/types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import type { Field } from '$lib/fields/types.js';
-	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
+	import { isFormField, isLiveField, isNotHidden, isTabsField } from '$lib/util/field.js';
 	import { capitalize } from '$lib/util/string.js';
 
 	type Props = {
 		path?: string;
-		fields: Field[];
+		fields: FieldBuilder<Field>[];
 		form: DocumentFormContext;
-	};
-
-	const config = getConfigContext();
-
-	const getCellComponent = (fieldType: string) => {
-		return config.raw.blueprints[fieldType].cell || null;
 	};
 
 	const { form, fields, path: initialPath = '' }: Props = $props();
@@ -24,6 +18,7 @@
 
 	const previewFields = $derived(
 		fields
+			.map((field) => field.raw)
 			.filter((field) => !isTabsField(field))
 			.filter((field) => isFormField(field))
 			.filter((field) => {
@@ -55,8 +50,8 @@
 						{#if fieldConfig.table?.cell}
 							{@const ColumnTableCell = fieldConfig.table.cell}
 							<span><ColumnTableCell value={field.value} /></span>
-						{:else if getCellComponent(fieldConfig.type)}
-							{@const Cell = getCellComponent(fieldConfig.type)}
+						{:else if fieldConfig.cell}
+							{@const Cell = fieldConfig.cell}
 							<span><Cell value={field.value} /></span>
 						{:else}
 							<span>{field.value}</span>

@@ -1,13 +1,16 @@
+import { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 import type { Field } from '$lib/fields/types.js';
-import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
-import Tabs from './component/Tabs.svelte';
-import type { WithoutBuilders } from '$lib/util/types.js';
 import { isCamelCase } from '$lib/util/string.js';
+import type { WithoutBuilders } from '$lib/util/types.js';
+import Tabs from './component/Tabs.svelte';
 
 export const tabs = (...tabs: TabBuilder[]) => new TabsBuilder(...tabs);
 export const tab = (name: string) => new TabBuilder(name);
 
 export class TabsBuilder extends FieldBuilder<TabsField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(...tabs: TabBuilder[]) {
 		super('tabs');
 		this.field.tabs = tabs;
@@ -15,18 +18,6 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 
 	get component() {
 		return Tabs;
-	}
-
-	_toType() {
-		return this.field.tabs
-			.map((tab) => {
-				const fieldsTypes = tab.raw.fields
-					.filter((field) => field instanceof FormFieldBuilder)
-					.map((field) => field._toType())
-					.join(',\n\t\t');
-				return `${tab.raw.name}: {${fieldsTypes}}`;
-			})
-			.join(',\n\t');
 	}
 
 	compile(): WithoutBuilders<TabsField> {
@@ -37,7 +28,7 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 	}
 }
 
-class TabBuilder {
+export class TabBuilder {
 	#tab: TabsFieldTab;
 
 	constructor(name: string) {
@@ -48,6 +39,10 @@ class TabBuilder {
 	label(label: string) {
 		this.#tab.label = label;
 		return this;
+	}
+
+	get name() {
+		return this.#tab.name;
 	}
 
 	fields(...fields: FieldBuilder<Field>[]) {

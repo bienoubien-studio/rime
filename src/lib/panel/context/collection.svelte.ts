@@ -1,21 +1,31 @@
 import { invalidateAll } from '$app/navigation';
 import { env } from '$env/dynamic/public';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import { PARAMS } from '$lib/core/constant.js';
+import type { FieldBuilder } from '$lib/core/fields/builders/index.js';
 import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
-import type { Field, FormField } from '$lib/fields/types.js';
+import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { TabsBuilder } from '$lib/fields/tabs/index.js';
+import type { FormField } from '$lib/fields/types.js';
 import type { FieldPanelTableConfig } from '$lib/panel/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { toNestedStructure } from '$lib/util/doc.js';
+import { trycatch, trycatchFetch } from '$lib/util/function.js';
 import { getValueAtPath, hasProp } from '$lib/util/object.js';
-import { trycatch, trycatchFetch } from '$lib/util/trycatch.js';
 import type { WithRequired } from '$lib/util/types.js';
-import { getContext, onMount, setContext } from 'svelte';
+import { getContext, onMount, setContext, type Component } from 'svelte';
 import { toast } from 'svelte-sonner';
+import { isFormField } from '../../util/field.js';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
-import { isFormField, isGroupFieldRaw, isTabsFieldRaw } from '../../util/field.js';
+
+type TableColumn = {
+	type: string;
+	path: string;
+	cell: null | Component<{ value: any }>;
+	table: FieldPanelTableConfig;
+};
 
 type SortMode = 'asc' | 'dsc';
 export type DisplayMode = (typeof DISPLAY_MODE)[keyof typeof DISPLAY_MODE];
@@ -65,24 +75,30 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		return toNestedStructure(docs);
 	});
 
-	const buildFieldColumns = (fields: Field[], parentPath: string = '') => {
-		let columns: Array<{ path: string } & WithRequired<FormField, 'table'>> = [];
+	const buildFieldColumns = (fields: FieldBuilder[], parentPath: string = '') => {
+		let columns: TableColumn[] = [];
 		for (const field of fields) {
-			if (isGroupFieldRaw(field)) {
+			if (field instanceof GroupFieldBuilder) {
 				// For group fields, pass the current group name as parent path for nested fields
-				const groupPath = parentPath ? `${parentPath}.${field.name}` : field.name;
-				columns = [...columns, ...buildFieldColumns(field.fields, groupPath)];
+				const groupPath = parentPath ? `${parentPath}.${field.raw.name}` : field.raw.name;
+				columns = [...columns, ...buildFieldColumns(field.raw.fields, groupPath)];
 			}
-			if (isFormField(field) && hasProp('table', field)) {
+			if (isFormField(field.raw) && hasProp('table', field.raw)) {
 				// Create current field path
-				const path = parentPath ? `${parentPath}.${field.name}` : field.name;
-				// Add path property to the field for accessing nested values
-				columns.push({ ...field, path });
-			} else if (isTabsFieldRaw(field)) {
-				for (const tab of field.tabs) {
+				const path = parentPath ? `${parentPath}.${field.raw.name}` : field.raw.name;
+				// Create column
+				const column = {
+					type: field.type,
+					path,
+					cell: field.raw.table.cell || field.cell,
+					table: field.raw.table
+				};
+				columns.push(column);
+			} else if (field instanceof TabsBuilder) {
+				for (const tab of field.raw.tabs) {
 					// For tab fields, create a path with the tab name
-					const path = parentPath ? `${parentPath}.${tab.name}` : tab.name;
-					columns = [...columns, ...buildFieldColumns(tab.fields, path)];
+					const path = parentPath ? `${parentPath}.${tab.raw.name}` : tab.raw.name;
+					columns = [...columns, ...buildFieldColumns(tab.raw.fields, path)];
 				}
 			}
 		}
@@ -475,7 +491,7 @@ export type CollectionContext = ReturnType<typeof setCollectionContext>;
 
 type Args<T extends GenericDoc = GenericDoc> = {
 	initial: T[];
-	config: CompiledCollection;
+	config: BuiltCollection;
 	canCreate: boolean;
 	upload?: {
 		directories?: Directory[];

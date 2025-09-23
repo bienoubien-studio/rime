@@ -4,7 +4,7 @@
 	import { t__ } from '$lib/core/i18n/index.js';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { trycatch, trycatchFetch } from '$lib/util/trycatch';
+	import { trycatch, trycatchFetch } from '$lib/util/function.js';
 
 	type Props = {
 		collection: CollectionContext;

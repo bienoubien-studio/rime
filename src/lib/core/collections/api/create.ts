@@ -1,9 +1,9 @@
-import { isAuthConfig } from '$lib/util/config.js';
-import { extractData } from '$lib/core/operations/extract-data.server.js';
-import { json, type RequestEvent } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
+import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { trycatch } from '$lib/util/trycatch.js';
+import { isAuthConfig } from '$lib/util/config.js';
+import { trycatch } from '$lib/util/function.js';
+import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -15,14 +15,14 @@ export default function (slug: CollectionSlug) {
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
 		}
-		
+
 		// Bypass confirm password for api auth collection creation calls
 		if (isAuthConfig(collection.config) && 'password' in data) {
 			data.confirmPassword = data.password;
 		}
 
-		if(data.locale){
-			rizom.setLocale(data.locale)
+		if (data.locale) {
+			rizom.setLocale(data.locale);
 		}
 
 		const [error, document] = await trycatch(() => collection.create({ data, locale: rizom.getLocale() }));
@@ -30,8 +30,8 @@ export default function (slug: CollectionSlug) {
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
-		
-		return json({ doc: document});
+
+		return json({ doc: document });
 	}
 
 	return POST;

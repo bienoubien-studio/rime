@@ -7,9 +7,9 @@
 
 	const { path, config, form }: CheckboxProps = $props();
 
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<boolean>(path, config));
 
-	const onCheckedChange = (bool: boolean | string) => {
+	const onCheckedChange = (bool: boolean) => {
 		field.value = bool;
 	};
 
@@ -27,7 +27,7 @@
 		/>
 		<Field.LabelFor {config} for={inputId} />
 	</div>
-	<Field.Hint {config}/>
+	<Field.Hint {config} />
 </fieldset>
 
 <style lang="postcss">
@@ -35,8 +35,8 @@
 		margin-top: var(--rz-size-3);
 		margin-bottom: var(--rz-size-3);
 
-		:global{
-			.rz-field-hint{
+		:global {
+			.rz-field-hint {
 				margin-left: var(--rz-size-7);
 			}
 		}

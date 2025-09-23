@@ -6,10 +6,10 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { setFormContext } from '$lib/panel/context/form.svelte.js';
-	import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
+	import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 	import { FolderPlus } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
-	import { t__ } from '../../../../../core/i18n/index.js';
+	import { t__ } from '$lib/core/i18n/index.js';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();

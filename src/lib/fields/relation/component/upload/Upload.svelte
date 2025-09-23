@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Doc from '$lib/panel/components/sections/document/Document.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -124,7 +125,7 @@
 		side="right"
 	>
 		<Doc
-			doc={createBlankDocument(relationConfig)}
+			doc={createBlankDocument(compileDocumentConfig(relationConfig))}
 			readOnly={false}
 			onClose={() => (create = false)}
 			operation="create"

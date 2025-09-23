@@ -1,13 +1,13 @@
+import { dev } from '$app/environment';
 import { getRequestEvent } from '$app/server';
+import { BETTER_AUTH_ROLES } from '$lib/core/collections/auth/constant.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import { trycatch } from '$lib/util/function.js';
 import { omit } from '$lib/util/object.js';
-import { trycatch } from '$lib/util/trycatch.js';
+import type { AuthContext, MiddlewareContext, MiddlewareOptions } from 'better-auth';
+import { APIError } from 'better-auth/api';
 import { createAuthMiddleware, type AuthMiddleware } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
-import { BETTER_AUTH_ROLES, PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import { dev } from '$app/environment';
-import { logger } from '$lib/core/logger/index.server.js';
-import { APIError } from 'better-auth/api';
-import type { AuthContext, MiddlewareContext, MiddlewareOptions } from 'better-auth';
 
 type CTX = MiddlewareContext<
 	MiddlewareOptions,
@@ -18,12 +18,12 @@ type CTX = MiddlewareContext<
 >;
 
 /****************************************************/
-/* After hooks 
+/* After hooks
 /****************************************************/
 
 const getUserAttributes = async (ctx: CTX) => {
 	const newSession = ctx.context.newSession;
-	
+
 	if (newSession) {
 		const event = getRequestEvent();
 		const user = await event.locals.rizom.auth.getUserAttributes({
@@ -129,19 +129,19 @@ const handleUserCreation = async (ctx: CTX) => {
 };
 
 /****************************************************/
-/* Before Hooks 
+/* Before Hooks
 /****************************************************/
 
 const preventPublicStaffSignUp = (ctx: CTX): void => {
 	// Prevent public staff sign-up
 	const event = getRequestEvent();
-	if (ctx.body.type === PANEL_USERS && !event.locals.user?.isStaff && !event.locals.isInit) {
+	if (ctx.body.type === 'staff' && !event.locals.user?.isStaff && !event.locals.isInit) {
 		throw new APIError('UNAUTHORIZED');
 	}
 };
 
 /****************************************************/
-/* exports 
+/* exports
 /****************************************************/
 
 export const betterAuthBeforeHook: AuthMiddleware = createAuthMiddleware(async (ctx) => {

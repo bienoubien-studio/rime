@@ -1,12 +1,13 @@
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from '../builders/index.js';
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import TimeComponent from './component/Time.svelte';
 
 export const time = (name: string) => new TimeFieldBuilder(name);
 
-class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
+export class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
 	//
+	_metaUrl: string = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'time');
 		this.field.defaultValue = '08:00';
@@ -22,21 +23,10 @@ class TimeFieldBuilder extends FormFieldBuilder<TimeField> {
 		return TimeComponent;
 	}
 
-	_toType() {
-		return `${this.field.name}${!this.field.required ? '?' : ''}: string`;
+	defaultValue(value: string | DefaultValueFn<string>) {
+		this.field.defaultValue = value;
+		return this;
 	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field);
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: text('${snake}')${suffix}`;
-	}
-
-		defaultValue(value: string | DefaultValueFn<string>) {
-			this.field.defaultValue = value;
-			return this;
-		}
 }
 
 /****************************************************/

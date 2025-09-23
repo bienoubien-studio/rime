@@ -1,4 +1,3 @@
-import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 import { filePathToBase64 } from '$lib/core/collections/upload/util/converter.js';
 import test, { expect } from '@playwright/test';
 import path from 'path';
@@ -334,19 +333,19 @@ test("Should update a media path (path doesn't exists)", async ({ request }) => 
 /****************************************************/
 
 test('Should not get users', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}`);
+	const response = await request.get(`${API_BASE_URL}/staff`);
 	expect(response.status()).toBe(403);
 });
 
 test('SuperAdmin sould not delete himself', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(403);
 });
 
 test('SuperAdmin sould not change isSuperAdmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			isSuperAdmin: false
@@ -356,7 +355,7 @@ test('SuperAdmin sould not change isSuperAdmin', async ({ request }) => {
 });
 
 test('Should get super admin user', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.get(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
@@ -369,7 +368,7 @@ test('Should get super admin user', async ({ request }) => {
 });
 
 test('Should create a user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor@bienoubien.com',
@@ -386,7 +385,7 @@ test('Should create a user editor', async ({ request }) => {
 });
 
 test('Should create a 2nd user editor', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'editor2@bienoubien.com',
@@ -403,7 +402,7 @@ test('Should create a 2nd user editor', async ({ request }) => {
 });
 
 test('Should create another admin', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'admin2@bienoubien.com',
@@ -420,7 +419,7 @@ test('Should create another admin', async ({ request }) => {
 });
 
 test('Should create another admin (again)', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInSuperAdmin(request),
 		data: {
 			email: 'admin3@bienoubien.com',
@@ -437,7 +436,7 @@ test('Should create another admin (again)', async ({ request }) => {
 });
 
 test('Should get editor user', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
+	const response = await request.get(`${API_BASE_URL}/staff/${editorId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
@@ -512,14 +511,14 @@ test('Admin login should be successfull', async ({ request }) => {
 });
 
 test('Admin should not delete superAdmin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInAdmin(request)
 	});
 	expect(response.status()).toBe(403);
 });
 
 test('Admin should create a user', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInAdmin(request),
 		data: {
 			email: 'editor3@foo.com',
@@ -533,7 +532,7 @@ test('Admin should create a user', async ({ request }) => {
 });
 
 test('Default role should be editor', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editor3Id}`, {
+	const response = await request.get(`${API_BASE_URL}/staff/${editor3Id}`, {
 		headers: await signInAdmin(request)
 	});
 	expect(response.status()).toBe(200);
@@ -543,7 +542,7 @@ test('Default role should be editor', async ({ request }) => {
 });
 
 test('Admin should not create an admin with isSuperAdmin', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInAdmin(request),
 		data: {
 			email: 'admin2@foo.com',
@@ -557,7 +556,7 @@ test('Admin should not create an admin with isSuperAdmin', async ({ request }) =
 });
 
 test('Admin should not update isSuperAdmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInAdmin(request),
 		data: {
 			isSuperAdmin: false
@@ -567,7 +566,7 @@ test('Admin should not update isSuperAdmin', async ({ request }) => {
 });
 
 test('Admin should not change superAdmin roles', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInAdmin(request),
 		data: {
 			roles: ['editor']
@@ -646,14 +645,14 @@ test('Should login editor', async ({ request }) => {
 });
 
 test('Editor should not change its roles', async ({ request }) => {
-	await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
+	await request.patch(`${API_BASE_URL}/staff/${editorId}`, {
 		headers: await signInEditor(request),
 		data: {
 			roles: ['admin']
 		}
 	});
 
-	const verification = await request.get(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
+	const verification = await request.get(`${API_BASE_URL}/staff/${editorId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 
@@ -663,7 +662,7 @@ test('Editor should not change its roles', async ({ request }) => {
 });
 
 test('Editor should not create a user', async ({ request }) => {
-	const response = await request.post(`${API_BASE_URL}/${PANEL_USERS}`, {
+	const response = await request.post(`${API_BASE_URL}/staff`, {
 		headers: await signInEditor(request),
 		data: {
 			email: 'admin-by-editor@bienoubien.com',
@@ -703,28 +702,28 @@ test('Editor should update home', async ({ request }) => {
 });
 
 test('Editor should not delete superadmin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInEditor(request)
 	});
 	expect(response.status()).toBe(403);
 });
 
 test('Editor should not delete admin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${adminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${adminId}`, {
 		headers: await signInEditor(request)
 	});
 	expect(response.status()).toBe(403);
 });
 
 test('Editor should not delete other editors', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${editor2Id}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${editor2Id}`, {
 		headers: await signInEditor(request)
 	});
 	expect(response.status()).toBe(403);
 });
 
 test('Editor should not update admin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${adminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${adminId}`, {
 		headers: await signInEditor(request),
 		data: {
 			roles: ['editor']
@@ -734,7 +733,7 @@ test('Editor should not update admin', async ({ request }) => {
 });
 
 test('Editor should not update superadmin', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${superAdminId}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${superAdminId}`, {
 		headers: await signInEditor(request),
 		data: {
 			roles: ['editor']
@@ -744,7 +743,7 @@ test('Editor should not update superadmin', async ({ request }) => {
 });
 
 test('Editor should not update other editors', async ({ request }) => {
-	const response = await request.patch(`${API_BASE_URL}/${PANEL_USERS}/${editor2Id}`, {
+	const response = await request.patch(`${API_BASE_URL}/staff/${editor2Id}`, {
 		headers: await signInEditor(request),
 		data: {
 			roles: ['editor']
@@ -974,21 +973,21 @@ test('Regular should not update a media', async ({ request }) => {
 });
 
 test('Admin should delete editor', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${editorId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${editorId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 });
 
 test('Admin should delete admin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${admin2Id}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${admin2Id}`, {
 		headers: await signInAdmin(request)
 	});
 	expect(response.status()).toBe(200);
 });
 
 test('SuperAdmin should delete admin', async ({ request }) => {
-	const response = await request.delete(`${API_BASE_URL}/${PANEL_USERS}/${adminId}`, {
+	const response = await request.delete(`${API_BASE_URL}/staff/${adminId}`, {
 		headers: await signInSuperAdmin(request)
 	});
 	expect(response.status()).toBe(200);

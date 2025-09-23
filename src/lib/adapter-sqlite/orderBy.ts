@@ -1,9 +1,10 @@
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
-import { logger } from '$lib/core/logger/index.server.js';
-import { makeLocalesSlug, makeVersionsSlug, pathToDatabaseColumn } from '../util/schema.js';
+import { makeLocalesSlug, makeVersionsSlug } from './generate-schema/util.js';
+import { pathToDatabaseColumn } from './util.js';
 
 type Args = {
 	slug: PrototypeSlug;
@@ -110,12 +111,12 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 					return [
 						orderFunc(
 							sql.raw(
-								`(SELECT ${sqlLocaleTableName}."${localizedColumns[columnStr].name}" 
-								  FROM ${sqlLocaleTableName} 
-								  WHERE ${sqlLocaleTableName}."owner_id" IN 
-								    (SELECT ${sqlVersionsTableName}."id" 
-									 FROM ${sqlVersionsTableName} 
-									 WHERE ${sqlVersionsTableName}."owner_id" = ${sqlRootTableName}."id" 
+								`(SELECT ${sqlLocaleTableName}."${localizedColumns[columnStr].name}"
+								  FROM ${sqlLocaleTableName}
+								  WHERE ${sqlLocaleTableName}."owner_id" IN
+								    (SELECT ${sqlVersionsTableName}."id"
+									 FROM ${sqlVersionsTableName}
+									 WHERE ${sqlVersionsTableName}."owner_id" = ${sqlRootTableName}."id"
 									 ORDER BY ${sqlVersionsTableName}."updated_at" DESC LIMIT 1)
 								  AND ${sqlLocaleTableName}."locale" = '${locale}'
 								  LIMIT 1)`

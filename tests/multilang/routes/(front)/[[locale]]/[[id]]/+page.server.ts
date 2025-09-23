@@ -3,7 +3,7 @@ import { error, redirect, type ServerLoadEvent } from '@sveltejs/kit';
 export const load = async (event: ServerLoadEvent) => {
 	const { rizom, user, locale } = event.locals;
 	let { id } = event.params;
-	
+
 	if (!id && event.params.locale && !rizom.config.isValidLocale(event.params.locale)) {
 		id = event.params.locale;
 	}

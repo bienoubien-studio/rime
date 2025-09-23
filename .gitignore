@@ -32,18 +32,18 @@ debug.md
 db/*
 static
 src/hooks.server.ts
-src/config
 src/routes
 drizzle.config.ts
 src/app.generated.d.ts
 rizom.config.browser.js
 src/lib/server/schema.ts
+src/lib/config/*
+src/lib/config.generated
 src/routes/(rizom)
 static/medias
 test-results
 pnpm-lock.yaml
 
 .auto
-.windsurf
 src/params
 rizom.code-workspace

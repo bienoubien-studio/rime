@@ -32,7 +32,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		isSystemOperation
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'read',
@@ -59,7 +59,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		depth
 	});
 
-	for (const hook of config.hooks?.beforeRead || []) {
+	for (const hook of config.$hooks?.beforeRead || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte';
 	import { ChevronDown, ChevronUp, type IconProps } from '@lucide/svelte';
+	import type { Component, Snippet } from 'svelte';
 
 	type Props = {
 		children: Snippet;
@@ -94,7 +94,7 @@
 	}
 
 	.rz-nav-group--nav-collapsed {
-		padding-top: var(--rz-size-2);
+		/*padding-top: var(--rz-size-2);*/
 		.rz-nav-group__content {
 			background-color: transparent;
 			padding: 0 var(--rz-size-5);

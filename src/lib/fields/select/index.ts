@@ -1,29 +1,13 @@
-import { templateUniqueRequired } from '$lib/core/dev/generate/schema/templates.server.js';
 import type { DefaultValueFn, FormField, Option } from '$lib/fields/types.js';
-import { PickManyFieldBuilder } from '../builders/select.js';
+import { PickManyFieldBuilder } from '../../core/fields/builders/select.js';
 import Select from './component/Select.svelte';
 
-class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
+export class SelectFieldBuilder extends PickManyFieldBuilder<SelectField> {
+	_metaUrl = import.meta.url;
+
 	get component() {
 		return Select;
 	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = templateUniqueRequired(this.field)
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		if (this.field.many) {
-			return `${camel}: text('${snake}', { mode: 'json' })${suffix}`;
-		} else {
-			return `${camel}: text('${snake}')${suffix}`;
-		}
-	}
-	
-	_toType() {
-		const optionsJoinedType = this.field.options.map((o) => `'${o.value}'`).join(' | ');
-		return `${this.field.name}${this.field.required ? '' : '?'}: (${optionsJoinedType})${this.field.many ? '[]' : ''}`;
-	}
-
 }
 
 export const select = (name: string) => new SelectFieldBuilder(name, 'select');

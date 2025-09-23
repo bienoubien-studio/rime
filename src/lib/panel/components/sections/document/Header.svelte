@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import type { CompiledArea, CompiledCollection } from '$lib/core/config/types';
+	import type { BuiltArea, BuiltCollection } from '$lib/core/config/types';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { ExternalLink, PencilRuler, X } from '@lucide/svelte';
@@ -15,7 +15,7 @@
 	type Props = {
 		onClose?: any;
 		form: DocumentFormContext;
-		config: CompiledArea | CompiledCollection;
+		config: BuiltArea | BuiltCollection;
 	};
 	const { form, onClose, config }: Props = $props();
 
@@ -33,7 +33,7 @@
 	{/snippet}
 
 	{#snippet bottomRight()}
-		{#if config.url && form.doc.url}
+		{#if form.doc.url}
 			<Button icon={ExternalLink} target="_blank" href={form.doc.url} size="icon-sm" variant="secondary" />
 		{/if}
 

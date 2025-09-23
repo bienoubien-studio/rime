@@ -1,12 +1,12 @@
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { FormFieldBuilder } from '../builders/index.js';
-import RichText from './component/RichText.svelte';
 import Cell from './component/Cell.svelte';
+import RichText from './component/RichText.svelte';
 
 import type {
 	MediaFeatureDefinition,
-	ResourceFeatureDefinition,
 	PredefinedFeatureName,
+	ResourceFeatureDefinition,
 	RichTextFeature
 } from './core/types.js';
 
@@ -32,7 +32,10 @@ const isEmpty = (value: unknown) => {
 	);
 };
 
-class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
+export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
+	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'richText');
 		this.field.isEmpty = isEmpty;
@@ -49,17 +52,6 @@ class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 
 	get cell() {
 		return Cell;
-	}
-
-	_toSchema(parentPath?: string) {
-		const { camel, snake } = this._getSchemaName(parentPath);
-		const suffix = this.field.required ? '.notNull()' : '';
-		if(this._generateSchema) return this._generateSchema({ camel, snake, suffix })
-		return `${camel}: text('${snake}')${suffix}`;
-	}
-
-	_toType() {
-		return `${this.field.name}${this.field.required ? '' : '?'}: import('@tiptap/core').JSONContent`;
 	}
 
 	/**

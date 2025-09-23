@@ -2,7 +2,7 @@ import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc';
-import { trycatch } from '$lib/util/trycatch.js';
+import { trycatch } from '$lib/util/function.js';
 import { type Actions, type RequestEvent } from '@sveltejs/kit';
 import { t__ } from '../../../core/i18n/index.js';
 

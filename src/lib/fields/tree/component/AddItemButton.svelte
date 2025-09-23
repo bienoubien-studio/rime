@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { FieldBuilder } from '$lib/core/fields/builders';
 	import type { Field } from '$lib/fields/types.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { emptyValuesFromFieldConfig, isFormField } from '$lib/util/field.js';
@@ -10,14 +11,14 @@
 	type Props = {
 		size: 'default' | 'sm';
 		class: string;
-		fields: Field[];
+		fields: FieldBuilder<Field>[];
 		addItem: AddItem;
 		children: Snippet;
 	};
 	const { class: className, fields, addItem, size, children }: Props = $props();
 
 	const add = () => {
-		const empty = emptyValuesFromFieldConfig(fields.filter(isFormField));
+		const empty = emptyValuesFromFieldConfig(fields.map((f) => f.raw).filter(isFormField));
 		addItem(empty);
 	};
 </script>

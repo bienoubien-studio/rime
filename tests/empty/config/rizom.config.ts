@@ -1,7 +1,7 @@
-import { defineConfig } from 'rizom';
+import { buildConfig } from 'rizom:core';
 
-export default defineConfig({
-  database: 'empty.sqlite',
-  collections: [],
-  areas: []
+export default buildConfig({
+	$database: 'empty.sqlite',
+	collections: [],
+	areas: []
 });

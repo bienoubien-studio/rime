@@ -1,0 +1,592 @@
+// @ts-nocheck
+import { generate } from '@babel/generator';
+import * as t from '@babel/types';
+import { babelParse } from 'ast-kit';
+import fs from 'node:fs';
+import path from 'node:path';
+import { logger } from '../../../logger/index.server.js';
+
+/**
+ * New $ prefix-based sanitizer that follows opinionated rules:
+ * - All server-only config properties begin with $ (e.g., $url, $hooks)
+ * - All server-only field methods begin with $ (e.g., $beforeSave, $beforeRead)
+ * - Content must be pure functions or imports from .server.ts files
+ * - Outputs to .generated folder, preserving original folder structure
+ */
+
+// Configuration - easy to change
+const OUTPUT_DIR = 'config.generated';
+
+export async function sanitize() {
+	const root = process.cwd();
+	const configDir = path.resolve(root, 'src/lib/config');
+	const outputDir = path.resolve(root, 'src/lib/', OUTPUT_DIR);
+
+	logger.info('Sanitizing config...');
+
+	// Clean and ensure output directory exists
+	if (fs.existsSync(outputDir)) {
+		fs.rmSync(outputDir, { recursive: true, force: true });
+	}
+	fs.mkdirSync(outputDir, { recursive: true });
+
+	// Scan all TypeScript files (excluding .server.ts)
+	const allFiles = await scanConfigFiles(configDir);
+
+	// Also scan and copy all existing .server.ts files
+	const serverFiles = await scanServerFiles(configDir);
+
+	// Scan and copy all other files (non-.ts files like .svelte, .json, etc.)
+	const otherFiles = await scanOtherFiles(configDir);
+
+	for (const filePath of allFiles) {
+		const relativePath = path.relative(configDir, filePath);
+		logger.info(`   Processing: ${relativePath}`);
+
+		// Check if corresponding .server.ts already exists
+		const originalServerPath = filePath.replace('.ts', '.server.ts');
+		if (fs.existsSync(originalServerPath)) {
+			throw new Error(`Error: ${originalServerPath} already exists. Remove it before running sanitization.`);
+		}
+
+		// Process the file and output to .generated
+		await processConfigFile(filePath, configDir, outputDir);
+	}
+
+	// Copy existing .server.ts files
+	for (const serverFilePath of serverFiles) {
+		const relativePath = path.relative(configDir, serverFilePath);
+		const outputPath = path.join(outputDir, relativePath);
+		const outputDirPath = path.dirname(outputPath);
+
+		if (!fs.existsSync(outputDirPath)) {
+			fs.mkdirSync(outputDirPath, { recursive: true });
+		}
+
+		const content = fs.readFileSync(serverFilePath, 'utf-8');
+		fs.writeFileSync(outputPath, content);
+		logger.info(`   Copied: ${relativePath}`);
+	}
+
+	// Copy other files (.svelte, .json, etc.)
+	for (const otherFilePath of otherFiles) {
+		const relativePath = path.relative(configDir, otherFilePath);
+		const outputPath = path.join(outputDir, relativePath);
+		const outputDirPath = path.dirname(outputPath);
+
+		if (!fs.existsSync(outputDirPath)) {
+			fs.mkdirSync(outputDirPath, { recursive: true });
+		}
+
+		const content = fs.readFileSync(otherFilePath, 'utf-8');
+		fs.writeFileSync(outputPath, content);
+		logger.info(`   Copied: ${relativePath}`);
+	}
+
+	logger.info('Sanitization complete');
+}
+
+async function scanConfigFiles(configDir) {
+	const files = [];
+
+	function scanDir(currentDir) {
+		const items = fs.readdirSync(currentDir, { withFileTypes: true });
+
+		for (const item of items) {
+			const fullPath = path.join(currentDir, item.name);
+
+			if (item.isDirectory() && item.name !== OUTPUT_DIR) {
+				scanDir(fullPath);
+			} else if (item.isFile() && item.name.endsWith('.ts') && !item.name.endsWith('.server.ts')) {
+				files.push(fullPath);
+			}
+		}
+	}
+
+	scanDir(configDir);
+	return files;
+}
+
+async function scanServerFiles(configDir) {
+	const files = [];
+
+	function scanDir(currentDir) {
+		const items = fs.readdirSync(currentDir, { withFileTypes: true });
+
+		for (const item of items) {
+			const fullPath = path.join(currentDir, item.name);
+
+			if (item.isDirectory() && item.name !== OUTPUT_DIR) {
+				scanDir(fullPath);
+			} else if (item.isFile() && item.name.endsWith('.server.ts')) {
+				files.push(fullPath);
+			}
+		}
+	}
+
+	scanDir(configDir);
+	return files;
+}
+
+async function scanOtherFiles(configDir) {
+	const files = [];
+
+	function scanDir(currentDir) {
+		const items = fs.readdirSync(currentDir, { withFileTypes: true });
+
+		for (const item of items) {
+			const fullPath = path.join(currentDir, item.name);
+
+			if (item.isDirectory() && item.name !== OUTPUT_DIR) {
+				scanDir(fullPath);
+			} else if (item.isFile() && !item.name.endsWith('.ts')) {
+				files.push(fullPath);
+			}
+		}
+	}
+
+	scanDir(configDir);
+	return files;
+}
+
+async function processConfigFile(originalPath, configDir, outputDir) {
+	const content = fs.readFileSync(originalPath, 'utf-8');
+	const relativePath = path.relative(configDir, originalPath);
+
+	try {
+		const ast = babelParse(content, 'ts', { sourceType: 'module' });
+
+		// Analyze the file to find $ patterns
+		const analysis = analyzeFile(ast);
+
+		if (!analysis.hasServerContent) {
+			// Just copy the original file to .generated
+			const outputPath = path.join(outputDir, relativePath);
+			const outputDirPath = path.dirname(outputPath);
+			if (!fs.existsSync(outputDirPath)) {
+				fs.mkdirSync(outputDirPath, { recursive: true });
+			}
+			fs.writeFileSync(outputPath, content);
+			return;
+		}
+
+		// Calculate output paths
+		const clientPath = path.join(outputDir, relativePath);
+		const serverPath = path.join(outputDir, relativePath.replace('.ts', '.server.ts'));
+
+		// Ensure output directories exist
+		const clientDir = path.dirname(clientPath);
+		const serverDir = path.dirname(serverPath);
+		if (!fs.existsSync(clientDir)) {
+			fs.mkdirSync(clientDir, { recursive: true });
+		}
+		if (!fs.existsSync(serverDir)) {
+			fs.mkdirSync(serverDir, { recursive: true });
+		}
+
+		// Create server version (full content)
+		fs.writeFileSync(serverPath, content);
+		logger.info(`   Created: ${path.relative(outputDir, serverPath)}`);
+
+		// Create sanitized client version
+		const clientAst = sanitizeClientAst(ast, analysis);
+		// Clean up unused imports
+		const cleanedAst = removeUnusedImports(clientAst);
+		const clientCode = generate(cleanedAst, { compact: false, comments: true }).code;
+		fs.writeFileSync(clientPath, clientCode);
+		logger.info(`   Sanitized: ${path.relative(outputDir, clientPath)}`);
+	} catch (error) {
+		logger.error(`    Failed to process ${originalPath}:`, error.message);
+		throw error;
+	}
+}
+
+function analyzeFile(ast) {
+	const analysis = {
+		hasServerContent: false,
+		serverImports: new Set(),
+		serverFunctions: new Set(),
+		dollarProperties: new Set(),
+		dollarMethods: new Set(),
+		functionsUsedInDollarProps: new Set()
+	};
+
+	// Walk the AST to find $ patterns
+	function walkNode(node) {
+		if (!node || typeof node !== 'object') return;
+
+		// Find imports from .server.ts files
+		if (t.isImportDeclaration(node)) {
+			const source = node.source.value;
+			if (source.includes('.server')) {
+				analysis.hasServerContent = true;
+				// Mark all imported identifiers as server
+				node.specifiers.forEach((spec) => {
+					if (t.isImportSpecifier(spec) || t.isImportDefaultSpecifier(spec)) {
+						analysis.serverImports.add(spec.local.name);
+					}
+				});
+			}
+		}
+
+		// Find $ prefixed object properties
+		if (t.isObjectProperty(node) && t.isIdentifier(node.key) && node.key.name.startsWith('$')) {
+			analysis.hasServerContent = true;
+			analysis.dollarProperties.add(node.key.name);
+			// Track functions used within $ properties
+			findFunctionsInNode(node.value, analysis.functionsUsedInDollarProps);
+		}
+
+		// Find $ prefixed method calls (e.g., .$beforeSave())
+		if (
+			t.isCallExpression(node) &&
+			t.isMemberExpression(node.callee) &&
+			t.isIdentifier(node.callee.property) &&
+			node.callee.property.name.startsWith('$')
+		) {
+			analysis.hasServerContent = true;
+			analysis.dollarMethods.add(node.callee.property.name);
+		}
+
+		// Find local functions that might be used by $ methods
+		if (
+			t.isVariableDeclarator(node) &&
+			t.isIdentifier(node.id) &&
+			(t.isArrowFunctionExpression(node.init) || t.isFunctionExpression(node.init))
+		) {
+			// Check if this function is used by server content
+			if (isFunctionUsedByServerContent(node.id.name, ast, analysis)) {
+				analysis.serverFunctions.add(node.id.name);
+			}
+		}
+
+		if (t.isFunctionDeclaration(node) && node.id) {
+			if (isFunctionUsedByServerContent(node.id.name, ast, analysis)) {
+				analysis.serverFunctions.add(node.id.name);
+			}
+		}
+
+		// Recursively walk child nodes
+		for (const key in node) {
+			if (Object.prototype.hasOwnProperty.call(node, key) && key !== 'parent') {
+				const child = node[key];
+				if (Array.isArray(child)) {
+					child.forEach(walkNode);
+				} else if (child && typeof child === 'object') {
+					walkNode(child);
+				}
+			}
+		}
+	}
+
+	walkNode(ast);
+	return analysis;
+}
+
+function isFunctionUsedByServerContent(functionName, ast) {
+	// Simple heuristic: if function is used as argument to $ methods or imported from server
+	let isUsedByServer = false;
+
+	function checkUsage(node) {
+		if (!node || typeof node !== 'object') return;
+
+		// Check if function is used as argument to $ methods
+		if (
+			t.isCallExpression(node) &&
+			t.isMemberExpression(node.callee) &&
+			t.isIdentifier(node.callee.property) &&
+			node.callee.property.name.startsWith('$')
+		) {
+			// Check if our function is used as an argument
+			node.arguments.forEach((arg) => {
+				if (t.isIdentifier(arg) && arg.name === functionName) {
+					isUsedByServer = true;
+				}
+			});
+		}
+
+		// Check if function is used in $ properties
+		if (t.isObjectProperty(node) && t.isIdentifier(node.key) && node.key.name.startsWith('$')) {
+			function checkValue(value) {
+				if (t.isIdentifier(value) && value.name === functionName) {
+					isUsedByServer = true;
+				} else if (t.isObjectExpression(value)) {
+					value.properties.forEach((prop) => {
+						if (t.isObjectProperty(prop)) {
+							checkValue(prop.value);
+						}
+					});
+				} else if (t.isArrayExpression(value)) {
+					value.elements.forEach((el) => {
+						if (el) checkValue(el);
+					});
+				}
+			}
+
+			checkValue(node.value);
+		}
+
+		// Recursively check child nodes
+		for (const key in node) {
+			if (Object.prototype.hasOwnProperty.call(node, key) && key !== 'parent') {
+				const child = node[key];
+				if (Array.isArray(child)) {
+					child.forEach(checkUsage);
+				} else if (child && typeof child === 'object') {
+					checkUsage(child);
+				}
+			}
+		}
+	}
+
+	checkUsage(ast);
+	return isUsedByServer;
+}
+
+function findFunctionsInNode(node, functionsSet) {
+	if (!node || typeof node !== 'object') return;
+
+	if (t.isIdentifier(node)) {
+		functionsSet.add(node.name);
+	} else if (t.isArrayExpression(node)) {
+		node.elements.forEach((element) => {
+			if (element) findFunctionsInNode(element, functionsSet);
+		});
+	} else if (t.isObjectExpression(node)) {
+		node.properties.forEach((prop) => {
+			if (t.isObjectProperty(prop)) {
+				findFunctionsInNode(prop.value, functionsSet);
+			}
+		});
+	}
+
+	// Recursively check child nodes
+	for (const key in node) {
+		if (Object.prototype.hasOwnProperty.call(node, key) && key !== 'parent') {
+			const child = node[key];
+			if (Array.isArray(child)) {
+				child.forEach((item) => findFunctionsInNode(item, functionsSet));
+			} else if (child && typeof child === 'object') {
+				findFunctionsInNode(child, functionsSet);
+			}
+		}
+	}
+}
+
+function sanitizeClientAst(ast, analysis) {
+	const clonedAst = JSON.parse(JSON.stringify(ast));
+
+	function sanitizeNode(node) {
+		if (!node || typeof node !== 'object') return node;
+
+		// Remove imports from .server.ts files
+		if (t.isImportDeclaration(node)) {
+			const source = node.source.value;
+			if (source.includes('.server')) {
+				return null; // Mark for removal
+			}
+		}
+
+		// Replace buildConfig with buildConfigClient in imports
+		if (t.isImportDeclaration(node)) {
+			node.specifiers.forEach((spec) => {
+				if (t.isImportSpecifier(spec) && t.isIdentifier(spec.imported) && spec.imported.name === 'buildConfig') {
+					spec.imported.name = 'buildConfigClient';
+					if (t.isIdentifier(spec.local)) {
+						spec.local.name = 'buildConfigClient';
+					}
+				}
+			});
+		}
+
+		// Replace buildConfig function calls with buildConfigClient
+		if (t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === 'buildConfig') {
+			node.callee.name = 'buildConfigClient';
+		}
+
+		// Remove $ prefixed object properties
+		if (t.isObjectExpression(node)) {
+			node.properties = node.properties.filter((prop) => {
+				if (t.isObjectProperty(prop) && t.isIdentifier(prop.key) && prop.key.name.startsWith('$')) {
+					return false; // Remove $ properties
+				}
+				return true;
+			});
+		}
+
+		// Remove $ prefixed method calls from call chains
+		if (
+			t.isCallExpression(node) &&
+			t.isMemberExpression(node.callee) &&
+			t.isIdentifier(node.callee.property) &&
+			node.callee.property.name.startsWith('$')
+		) {
+			// Return the object the method was called on (strip the method call)
+			return sanitizeNode(node.callee.object);
+		}
+
+		// Remove server function declarations and functions only used in $ properties
+		if (t.isVariableDeclaration(node)) {
+			node.declarations = node.declarations.filter((declarator) => {
+				if (t.isIdentifier(declarator.id)) {
+					const name = declarator.id.name;
+					// Remove if it's a server function or only used in $ properties
+					if (analysis.serverFunctions.has(name) || analysis.functionsUsedInDollarProps.has(name)) {
+						return false;
+					}
+				}
+				return true;
+			});
+			// If no declarations left, mark for removal
+			if (node.declarations.length === 0) {
+				return null;
+			}
+		}
+
+		if (t.isFunctionDeclaration(node) && node.id) {
+			const name = node.id.name;
+			// Remove if it's a server function or only used in $ properties
+			if (analysis.serverFunctions.has(name) || analysis.functionsUsedInDollarProps.has(name)) {
+				return null;
+			}
+		}
+
+		// Recursively sanitize child nodes
+		for (const key in node) {
+			if (Object.prototype.hasOwnProperty.call(node, key) && key !== 'parent') {
+				const child = node[key];
+				if (Array.isArray(child)) {
+					node[key] = child.map(sanitizeNode).filter((item) => item !== null);
+				} else if (child && typeof child === 'object') {
+					const sanitized = sanitizeNode(child);
+					if (sanitized === null) {
+						delete node[key];
+					} else {
+						node[key] = sanitized;
+					}
+				}
+			}
+		}
+
+		return node;
+	}
+
+	// Apply sanitization
+	sanitizeNode(clonedAst);
+
+	// Remove null body items (removed imports/declarations)
+	if (clonedAst.body) {
+		clonedAst.body = clonedAst.body.filter((item) => item !== null);
+	}
+
+	return clonedAst;
+}
+
+function removeUnusedImports(ast) {
+	const clonedAst = JSON.parse(JSON.stringify(ast));
+
+	// Collect all imported identifiers
+	const importedIdentifiers = new Map(); // identifier -> import declaration
+	const usedIdentifiers = new Set();
+
+	// First pass: collect all imports
+	function collectImports(node) {
+		if (t.isImportDeclaration(node)) {
+			node.specifiers.forEach((spec) => {
+				let localName;
+				if (t.isImportDefaultSpecifier(spec)) {
+					localName = spec.local.name;
+				} else if (t.isImportSpecifier(spec)) {
+					localName = spec.local.name;
+				} else if (t.isImportNamespaceSpecifier(spec)) {
+					localName = spec.local.name;
+				}
+
+				if (localName) {
+					importedIdentifiers.set(localName, node);
+				}
+			});
+		}
+	}
+
+	// Second pass: find used identifiers
+	function findUsedIdentifiers(node) {
+		if (!node || typeof node !== 'object') return;
+
+		// Skip import declarations and variable declarators' ids to avoid marking declarations as usage
+		if (t.isImportDeclaration(node)) {
+			return;
+		}
+
+		if (t.isVariableDeclarator(node)) {
+			// Only check the init, not the id
+			if (node.init) {
+				findUsedIdentifiers(node.init);
+			}
+			return;
+		}
+
+		if (t.isFunctionDeclaration(node)) {
+			// Only check the body, not the id and params
+			if (node.body) {
+				findUsedIdentifiers(node.body);
+			}
+			return;
+		}
+
+		// Skip $ prefixed object properties to avoid marking their content as used
+		if (t.isObjectProperty(node) && t.isIdentifier(node.key) && node.key.name.startsWith('$')) {
+			return;
+		}
+
+		if (t.isIdentifier(node)) {
+			usedIdentifiers.add(node.name);
+		}
+
+		// Recursively check child nodes
+		for (const key in node) {
+			if (Object.prototype.hasOwnProperty.call(node, key) && key !== 'parent') {
+				const child = node[key];
+				if (Array.isArray(child)) {
+					child.forEach(findUsedIdentifiers);
+				} else if (child && typeof child === 'object') {
+					findUsedIdentifiers(child);
+				}
+			}
+		}
+	}
+
+	// Collect imports and find usage
+	clonedAst.body.forEach(collectImports);
+	clonedAst.body.forEach(findUsedIdentifiers);
+
+	// Remove unused imports
+	clonedAst.body = clonedAst.body.filter((node) => {
+		if (t.isImportDeclaration(node)) {
+			// Filter out unused specifiers
+			node.specifiers = node.specifiers.filter((spec) => {
+				let localName;
+				if (t.isImportDefaultSpecifier(spec)) {
+					localName = spec.local.name;
+				} else if (t.isImportSpecifier(spec)) {
+					localName = spec.local.name;
+				} else if (t.isImportNamespaceSpecifier(spec)) {
+					localName = spec.local.name;
+				}
+
+				return localName && usedIdentifiers.has(localName);
+			});
+
+			// Keep the import declaration only if it has remaining specifiers
+			return node.specifiers.length > 0;
+		}
+		return true;
+	});
+
+	return clonedAst;
+}
+
+// Run the sanitizer if this script is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+	sanitize().catch(console.error);
+}

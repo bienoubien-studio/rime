@@ -1,7 +1,7 @@
 import { RizomError } from '$lib/core/errors';
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import type { WithOptional } from '$lib/util/types';
-import type { OperationContext } from '../hooks';
+import type { WithOptional } from '$lib/util/types.js';
+import type { OperationContext } from '../hooks/index.server.js';
 
 type BlocksDiff = {
 	toAdd: WithOptional<GenericBlock, 'id'>[];

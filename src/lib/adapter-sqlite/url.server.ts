@@ -1,10 +1,10 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import type { GetRegisterType } from '$lib/index.js';
-import { makeLocalesSlug, makeVersionsSlug } from '$lib/util/schema.js';
 import { and, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { CompiledArea, CompiledCollection } from '../types.js';
+import { makeLocalesSlug, makeVersionsSlug } from './generate-schema/util.js';
 import type { GenericTables } from './types.js';
 
 type Params = {
@@ -89,6 +89,7 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		try {
 			operation.run();
 		} catch (err: any) {
+			console.log(operation.toSQL());
 			throw new RizomError(RizomError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
 		}
 	}

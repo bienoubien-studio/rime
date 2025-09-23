@@ -1,5 +1,6 @@
+import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { Field, FormField } from '$lib/fields/types.js';
-import { FieldBuilder, FormFieldBuilder } from '../builders/index.js';
 import Group from './component/Group.svelte';
 
 const isEmpty = (value: unknown) =>
@@ -12,6 +13,8 @@ const isEmpty = (value: unknown) =>
 
 export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 	//
+	_metaUrl = import.meta.url;
+
 	constructor(name: string) {
 		super(name, 'group');
 		this.field.isEmpty = isEmpty;
@@ -33,21 +36,13 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 
 	localized() {
 		this.field.localized = true;
-		this.field.fields = this.field.fields.map(field => {
-			if(field instanceof FormFieldBuilder){
-				return field.clone().localized()
+		this.field.fields = this.field.fields.map((field) => {
+			if (field instanceof FormFieldBuilder) {
+				return field.clone().localized();
 			}
-			return field
-		})
+			return field;
+		});
 		return this;
-	}
-
-	_toType() {
-		const fieldsTypes = this.field.fields
-			.filter((field) => field instanceof FormFieldBuilder)
-			.map((field) => field._toType())
-			.join(',\n\t');
-		return `${this.field.name}: {${fieldsTypes}}`;
 	}
 
 	compile() {

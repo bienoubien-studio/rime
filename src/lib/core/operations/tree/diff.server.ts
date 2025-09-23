@@ -2,7 +2,7 @@ import { RizomError } from '$lib/core/errors';
 import type { TreeBlock } from '$lib/core/types/doc';
 import { isObjectLiteral } from '$lib/util/object';
 import type { WithRequired } from '$lib/util/types';
-import type { OperationContext } from '../hooks';
+import type { OperationContext } from '../hooks/index.server.js';
 
 type TreeBlockWithPath = WithRequired<TreeBlock, 'path'>;
 type TreeBlockForUpdate = Omit<TreeBlock, 'id' | 'path'> & {

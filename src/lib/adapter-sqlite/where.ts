@@ -1,15 +1,16 @@
-import { and, or, eq, getTableColumns, inArray } from 'drizzle-orm';
-import * as drizzleORM from 'drizzle-orm';
-import { rizom, type GetRegisterType } from '$lib/index.js';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { Dic } from '$lib/util/types.js';
-import { logger } from '$lib/core/logger/index.server.js';
-import { isRelationField } from '$lib/util/field.js';
-import { getFieldConfigByPath } from '$lib/util/config.js';
-import type { ParsedQs } from 'qs';
 import { RizomError } from '$lib/core/errors/index.js';
-import { isVersionsSlug, makeLocalesSlug } from '$lib/util/schema.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import { rizom, type GetRegisterType } from '$lib/index.js';
+import { getFieldConfigByPath } from '$lib/util/config.js';
+import { isRelationField } from '$lib/util/field.js';
+import type { Dic } from '$lib/util/types.js';
+import * as drizzleORM from 'drizzle-orm';
+import { and, eq, getTableColumns, inArray, or } from 'drizzle-orm';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { ParsedQs } from 'qs';
+
 import type { PrototypeSlug } from '../types.js';
+import { isVersionsSlug, makeLocalesSlug } from './generate-schema/util.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
@@ -22,8 +23,8 @@ type BuildWhereArgs = {
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
 	const table = rizom.adapter.getTable(slug);
 	const tableNameLocales = makeLocalesSlug(slug);
-	const tableLocales =  rizom.adapter.getTable(tableNameLocales);
-	
+	const tableLocales = rizom.adapter.getTable(tableNameLocales);
+
 	const localizedColumns =
 		locale && tableNameLocales in rizom.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
@@ -80,12 +81,12 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 				db.select({ ownerId: rootTable.id }).from(rootTable).where(fn(rootTable[sqlColumn], value))
 			);
 		}
-		
+
 		// Handle regular fields
 		if (unlocalizedColumns.includes(sqlColumn)) {
 			return fn(table[sqlColumn], value);
 		}
-		
+
 		// Handle localized fields
 		if (locale && localizedColumns.includes(sqlColumn)) {
 			return inArray(
@@ -128,7 +129,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		const relationTableName = `${slug}Rels`;
 		const relationTable = rizom.adapter.getTable(relationTableName);
 		const conditions = [fn(relationTable[`${to}Id`], value)];
-		
+
 		if (localized) {
 			conditions.push(eq(relationTable.locale, locale));
 		}

@@ -1,8 +1,8 @@
-import { relation, richText, text, toggle, slug, tabs, tab, date, group } from '$lib/fields/index.js';
+import { date, group, relation, richText, slug, tab, tabs, text, toggle } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
-import { collection, area, defineConfig } from '$lib/index.js';
+import { Area, buildConfig, Collection } from 'rizom:core';
 
-const Settings = area('settings', {
+const Settings = Area.config('settings', {
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -10,7 +10,7 @@ const Settings = area('settings', {
 	versions: { draft: true }
 });
 
-const Infos = area('infos', {
+const Infos = Area.config('infos', {
 	fields: [text('title'), text('email')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -30,10 +30,10 @@ const tabNewsAttributes = tab('attributes').fields(
 	date('published')
 );
 
-const News = collection('news', {
+const News = Collection.config('news', {
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
-	url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	$url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -42,7 +42,7 @@ const News = collection('news', {
 	versions: { draft: true }
 });
 
-const Medias = collection('medias', {
+const Medias = Collection.config('medias', {
 	panel: {
 		group: 'content'
 	},
@@ -61,7 +61,7 @@ const Medias = collection('medias', {
 	versions: true
 });
 
-const Pdf = collection('pdf', {
+const Pdf = Collection.config('pdf', {
 	upload: true,
 	panel: {
 		group: 'content'
@@ -73,12 +73,12 @@ const Pdf = collection('pdf', {
 	versions: { draft: true }
 });
 
-const Pages = collection('pages', {
+const Pages = Collection.config('pages', {
 	panel: {
 		group: 'content'
 	},
 	fields: [group('attributes').fields(text('title').isTitle(), slug('slug'), toggle('isHome'))],
-	url: (doc) => '/',
+	$url: () => '/',
 	nested: true,
 	access: {
 		read: () => true
@@ -86,14 +86,11 @@ const Pages = collection('pages', {
 	versions: { draft: true }
 });
 
-export default defineConfig({
-	database: 'versions.sqlite',
+export default buildConfig({
+	$database: 'versions.sqlite',
 	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
-
-	panel: {
-		users: {
-			roles: [{ value: 'editor' }]
-		}
+	staff: {
+		roles: [{ value: 'editor' }]
 	}
 });

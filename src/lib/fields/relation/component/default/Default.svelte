@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';
@@ -98,7 +99,7 @@
 					ref={commandInput}
 					class={inputWithItemsClass}
 					bind:value={search}
-					placeholder={t__(`common.search_a|${relationConfig.label.gender}`, relationConfig.label.singular)}
+					placeholder={relationConfig.label.search || t__(`common.search_a`, relationConfig.label.singular)}
 				/>
 
 				{#if inputFocused}
@@ -125,7 +126,7 @@
 			variant="secondary"
 			size="sm"
 		>
-			{t__(`common.create_new|${relationConfig.label.gender}`, relationConfig.label.singular || relationConfig.slug)}
+			{t__(`common.create_new`, relationConfig.label.singular || relationConfig.slug)}
 		</Button>
 
 		<Sheet.Root
@@ -138,9 +139,14 @@
 			}}
 		>
 			<Sheet.Trigger />
-			<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" side="right" class="rz-relation-sheet" showCloseButton={false}>
+			<Sheet.Content
+				style="--rz-page-gutter:var(--rz-size-6)"
+				side="right"
+				class="rz-relation-sheet"
+				showCloseButton={false}
+			>
 				<Document
-					doc={createBlankDocument(relationConfig)}
+					doc={createBlankDocument(compileDocumentConfig(relationConfig))}
 					readOnly={false}
 					onClose={() => (create = false)}
 					operation="create"
@@ -217,5 +223,4 @@
 			cursor: no-drop;
 		}
 	}
-
 </style>

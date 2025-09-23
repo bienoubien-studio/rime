@@ -13,7 +13,7 @@ const config = {
 			'rizom/panel/client': './src/lib/panel/index.js',
 			'rizom/i18n': './src/lib/core/i18n',
 			'rizom/api': './src/lib/api.js',
-			'$lib': './src/lib',
+			$lib: './src/lib',
 			rizom: './src/lib'
 		}
 	}

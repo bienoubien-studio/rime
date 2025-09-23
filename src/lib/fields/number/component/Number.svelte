@@ -7,26 +7,17 @@
 
 	const { path, config, form }: NumberFieldProps = $props();
 
-	const field = $derived(form.useField(path, config));
-	const initialValue = form.getRawValue(path) || config.defaultValue;
-
-	let value = $state(initialValue);
+	const field = $derived(form.useField<number>(path, config));
 
 	const decrease = () => {
 		const minValue = config.min ?? -Infinity;
-		value = Math.max(value - 1, minValue);
+		field.value = Math.max((field.value || 0) - 1, minValue);
 	};
 
 	const increase = () => {
 		const maxValue = config.max ?? Infinity;
-		value = Math.min(value + 1, maxValue);
+		field.value = Math.min((field.value || 0) + 1, maxValue);
 	};
-
-	$effect(() => {
-		if (value !== field.value) {
-			field.value = value;
-		}
-	});
 </script>
 
 {#snippet chevron(Icon: any, func: any, clss: string)}
@@ -42,7 +33,7 @@
 			class="rz-number-field__input"
 			min={config.min ?? undefined}
 			max={config.max ?? undefined}
-			bind:value
+			bind:value={field.value}
 			type="number"
 		/>
 		<div class="rz-number-field__controls">
@@ -55,7 +46,6 @@
 </fieldset>
 
 <style lang="postcss">
-	
 	.rz-number-field__input-wrapper {
 		width: 6rem;
 		display: flex;

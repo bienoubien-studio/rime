@@ -1,4 +1,3 @@
-import { access } from '$lib/util/access/index.js';
 import {
 	block,
 	blocks,
@@ -14,15 +13,15 @@ import {
 	toggle,
 	tree
 } from '$lib/fields/index.js';
-import { ListTree, Newspaper, ReceiptText, Settings2 } from '@lucide/svelte';
-import { Images, Text } from '@lucide/svelte';
-import { collection, area, defineConfig, Hooks } from '$lib';
+import { access } from '$lib/util/access/index.js';
+import { Images, ListTree, Newspaper, ReceiptText, Settings2, Text } from '@lucide/svelte';
+import { Area, buildConfig, Collection, Hooks } from 'rizom:core';
 
 /****************************************************
 /* Settings
 /****************************************************/
 
-const Settings = area('settings', {
+const Settings = Area.config('settings', {
 	icon: Settings2,
 	panel: {
 		group: 'informations'
@@ -48,7 +47,7 @@ const linkField = link('link').types('pages', 'infos', 'url').required();
 const nav = tree('nav').fields(linkField);
 const mainNav = tree('mainNav').fields(linkField).localized();
 
-const Menu = area('menu', {
+const Menu = Area.config('menu', {
 	panel: {
 		group: 'Content'
 	},
@@ -63,7 +62,7 @@ const Menu = area('menu', {
 /* Informations
 /****************************************************/
 
-const Informations = area('infos', {
+const Informations = Area.config('infos', {
 	icon: ReceiptText,
 	panel: {
 		group: 'informations'
@@ -72,7 +71,7 @@ const Informations = area('infos', {
 	access: {
 		read: () => true
 	},
-	url: (doc: any) => {
+	$url: (doc: any) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
 	},
 	live: true
@@ -101,7 +100,7 @@ const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
 	return args;
 });
 
-const formatslug = Hooks.beforeUpsert<'pages'>( async (args) => {
+const formatslug = Hooks.beforeUpsert<'pages'>(async (args) => {
 	const { operation, event } = args;
 	let data = args.data;
 
@@ -179,13 +178,13 @@ const tabSeo = tab('seo').fields(text('metaTitle').localized(), text('metaDescri
 
 const tabFooter = tab('footer').fields(text('slider').localized());
 
-const Pages = collection('pages', {
+const Pages = Collection.config('pages', {
 	icon: Newspaper,
 	panel: {
 		group: 'Content'
 	},
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
-	url: (doc) => {
+	$url: (doc) => {
 		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
 	live: true,
@@ -194,7 +193,7 @@ const Pages = collection('pages', {
 		create: (user) => access.isAdmin(user),
 		update: (user) => access.hasRoles(user, 'admin', 'editor')
 	},
-	hooks: {
+	$hooks: {
 		beforeCreate: [formatslug, setHome],
 		beforeUpdate: [formatslug, setHome]
 	}
@@ -204,7 +203,7 @@ const Pages = collection('pages', {
 /* Medias
 /****************************************************/
 
-const Medias = collection('medias', {
+const Medias = Collection.config('medias', {
 	icon: Images,
 	panel: {
 		group: 'Medias'
@@ -223,9 +222,9 @@ const Medias = collection('medias', {
 	}
 });
 
-export default defineConfig({
+export default buildConfig({
 	//
-	database: 'multilang.sqlite',
+	$database: 'multilang.sqlite',
 	siteUrl: process.env.PUBLIC_RIZOM_URL,
 
 	collections: [Pages, Medias],
@@ -239,22 +238,19 @@ export default defineConfig({
 		default: 'fr'
 	},
 
-	// cors: ['localhost:5173', 'rizom.test:5173'],
+	staff: {
+		roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
+		fields: [text('website')],
+		panel: {
+			group: 'administration'
+		},
+		access: {
+			read: () => true
+		}
+	},
 
 	panel: {
 		language: 'fr',
-		access: (user) => access.hasRoles(user, 'admin', 'editor'),
-		users: {
-			roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
-			fields: [text('website')],
-			panel: {
-				group: 'administration'
-			},
-			// TODO create an author collection for testing
-			// here users shouldn't be read
-			access: {
-				read: () => true
-			}
-		}
+		$access: (user) => access.hasRoles(user, 'admin', 'editor')
 	}
 });

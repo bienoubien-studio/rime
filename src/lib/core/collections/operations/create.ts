@@ -28,7 +28,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 
 	let context: OperationContext<CollectionSlug> = { params: { locale }, isSystemOperation };
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'create',
@@ -38,7 +38,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		context = result.context;
 	}
 
-	for (const hook of config.hooks?.beforeCreate || []) {
+	for (const hook of config.$hooks?.beforeCreate || []) {
 		const result = await hook({
 			data: data as DeepPartial<RegisterCollection[CollectionSlug]>,
 			config,
@@ -134,7 +134,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		rizom.setLocale(locale);
 	}
 
-	for (const hook of config.hooks?.afterCreate || []) {
+	for (const hook of config.$hooks?.afterCreate || []) {
 		const result = await hook({
 			doc: document as RegisterCollection[CollectionSlug],
 			config,

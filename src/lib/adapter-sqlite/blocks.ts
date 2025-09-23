@@ -3,9 +3,9 @@ import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { WithOptional } from '$lib/util/types.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { omit } from '../util/object.js';
-import { makeLocalesSlug, transformDataToSchema } from '../util/schema.js';
 import { toPascalCase } from '../util/string.js';
-import { generatePK } from './util.js';
+import { makeLocalesSlug } from './generate-schema/util.js';
+import { generatePK, transformDataToSchema } from './util.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	const buildBlockTableName = (slug: string, blockName: string) => `${slug}Blocks${toPascalCase(blockName)}`;

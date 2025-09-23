@@ -1,4 +1,4 @@
-import type { Config } from '$lib/core/config/types.js';
+import type { BuiltConfig } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
@@ -8,7 +8,7 @@ import { Rizom } from '../rizom.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
-type Args = { config: Config; schema: any };
+type Args = { config: BuiltConfig; schema: any };
 
 export function createCMSHandler({ config, schema }: Args) {
 	// CMS Handler :
@@ -20,8 +20,6 @@ export function createCMSHandler({ config, schema }: Args) {
 
 		if (dev || !cms.initialized) {
 			const configCopy = cloneDeep(config);
-			console.log(configCopy);
-			return resolve(event);
 			await cms.init({ config: configCopy, schema });
 		}
 

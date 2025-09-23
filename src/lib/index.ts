@@ -1,13 +1,12 @@
 import rizom from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
 
-export { area } from '$lib/core/areas/config/builder.js';
-export { collection } from '$lib/core/collections/config/builder.js';
-export { Hooks } from '$lib/core/operations/hooks/index.server.js';
-export { FieldBuilder, FormFieldBuilder } from '$lib/fields/builders/field.server.js';
-export { handlers, rizom };
+// export { area } from '$lib/core/areas/config/builder.js';
+// export { collection } from '$lib/core/collections/config/builder.js';
+// export { Hooks } from '$lib/core/operations/hooks/index.server.js';
+// export { FieldBuilder, FormFieldBuilder } from '$lib/core/config/fields/index.js';
 
-export const defineConfig = (config: Config): Config => config;
+export { handlers, rizom };
 
 declare module 'rizom' {
 	// Register interfaces for plugin architecture

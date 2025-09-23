@@ -1,17 +1,19 @@
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+import type { BuiltConfig, ImageSizesConfig } from '$lib/core/config/types';
 import { PACKAGE_NAME } from '$lib/core/constant.server.js';
+import cache from '$lib/core/dev/cache/index.js';
+import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { BlocksBuilder } from '$lib/fields/blocks/index.js';
-import { FormFieldBuilder, type FieldBuilder } from '$lib/fields/builders/field.server.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { getFieldPrivateModule } from '$lib/fields/index.server';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import type { Field } from '$lib/fields/types.js';
 import { isUploadConfig } from '$lib/util/config.js';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import fs from 'fs';
-import type { BuiltConfig, ImageSizesConfig } from '../../../../types.js';
-import { makeVersionsSlug } from '../../../../util/schema.js';
-import cache from '../../cache/index.js';
 
 // Relation  type
 const relationValueType = `
@@ -102,7 +104,7 @@ const templateRegister = (config: BuiltConfig): string => {
 				'\tinterface RegisterArea {',
 				`${config.areas
 					.map((area) => {
-						let areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`;
+						const areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`;
 						return areaRegister;
 					})
 					.join('\n')};`,
@@ -135,7 +137,7 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
  * @param config The built configuration containing collections, areas, and fields
  * @returns A string containing all type definitions
  */
-export function generateTypesString(config: BuiltConfig) {
+export async function generateTypesString(config: BuiltConfig) {
 	const blocksTypes: string[] = [];
 	const treeBlocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
@@ -151,26 +153,30 @@ export function generateTypesString(config: BuiltConfig) {
 	 * @param fields A fields configurations list
 	 * @returns An array of string containing fields type definitions
 	 */
-	const buildFieldsTypes = (fields: FieldBuilder<Field>[]): string[] => {
+	const buildFieldsTypes = async (fields: FieldBuilder<Field>[]): Promise<string[]> => {
 		const strFields: string[] = [];
 
 		for (const field of fields) {
-			if (field instanceof FormFieldBuilder) {
-				strFields.push(field._toType());
-			} else if (field instanceof TabsBuilder) {
-				strFields.push(field._toType());
+			if (field instanceof FormFieldBuilder || field instanceof TabsBuilder) {
+				const fieldServerMethods = await getFieldPrivateModule(field);
+				if (fieldServerMethods) {
+					const result = await Promise.resolve(fieldServerMethods.toType(field));
+					strFields.push(result);
+				}
 			}
 		}
 		return strFields;
 	};
 
-	const buildblocksTypes = (fields: FieldBuilder<Field>[]) => {
+	const buildblocksTypes = async (fields: FieldBuilder<Field>[]) => {
 		for (const field of fields) {
 			if (field instanceof BlocksBuilder) {
 				{
 					for (const block of field.raw.blocks) {
 						if (!registeredBlocks.includes(block.raw.name)) {
-							const templates = buildFieldsTypes(block.raw.fields.filter((field) => field instanceof FormFieldBuilder));
+							const templates = await buildFieldsTypes(
+								block.raw.fields.filter((field) => field instanceof FormFieldBuilder)
+							);
 							blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
 							registeredBlocks.push(block.raw.name);
 						}
@@ -178,54 +184,56 @@ export function generateTypesString(config: BuiltConfig) {
 				}
 			} else if (field instanceof TabsBuilder) {
 				for (const tab of field.raw.tabs) {
-					buildblocksTypes(tab.raw.fields);
+					await buildblocksTypes(tab.raw.fields);
 				}
 			} else if (field instanceof GroupFieldBuilder) {
-				buildblocksTypes(field.raw.fields);
+				await buildblocksTypes(field.raw.fields);
 			} else if (field instanceof TreeBuilder) {
-				buildblocksTypes(field.raw.fields);
+				await buildblocksTypes(field.raw.fields);
 			}
 		}
 	};
 
-	const buildTreeBlockTypes = (fields: FieldBuilder<Field>[]) => {
+	const buildTreeBlockTypes = async (fields: FieldBuilder<Field>[]) => {
 		for (const field of fields) {
 			if (field instanceof BlocksBuilder) {
 				for (const block of field.raw.blocks) {
-					buildTreeBlockTypes(block.raw.fields)
+					await buildTreeBlockTypes(block.raw.fields);
 				}
 			} else if (field instanceof TabsBuilder) {
 				for (const tab of field.raw.tabs) {
-					buildTreeBlockTypes(tab.raw.fields);
+					await buildTreeBlockTypes(tab.raw.fields);
 				}
 			} else if (field instanceof GroupFieldBuilder) {
-				buildTreeBlockTypes(field.raw.fields);
+				await buildTreeBlockTypes(field.raw.fields);
 			} else if (field instanceof TreeBuilder) {
-				const treeBlockTypeName = `Tree${toPascalCase(field.name)}`
+				const treeBlockTypeName = `Tree${toPascalCase(field.name)}`;
 				if (!registeredTreeBlocks.includes(treeBlockTypeName)) {
-					const treeFieldsTypes = buildFieldsTypes(field.raw.fields.filter((field) => field instanceof FormFieldBuilder))
-					const treeBlockType = makeTreeBlockType(treeBlockTypeName, treeFieldsTypes.join('\n'))
-					treeBlocksTypes.push(treeBlockType)
+					const treeFieldsTypes = await buildFieldsTypes(
+						field.raw.fields.filter((field) => field instanceof FormFieldBuilder)
+					);
+					const treeBlockType = makeTreeBlockType(treeBlockTypeName, treeFieldsTypes.join('\n'));
+					treeBlocksTypes.push(treeBlockType);
 					registeredTreeBlocks.push(treeBlockTypeName);
 				}
 			}
 		}
 	};
 
-	const processCollection = (collection: (typeof config.collections)[number]) => {
+	const processCollection = async (collection: (typeof config.collections)[number]) => {
 		let fields = collection.fields;
 		if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
 			fields = collection.fields
 				.filter((f) => f instanceof FormFieldBuilder)
 				.filter((field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name));
 		}
-		let fieldsTypesList = buildFieldsTypes(fields);
+		const fieldsTypesList = await buildFieldsTypes(fields);
 		if (collection.versions) {
 			fieldsTypesList.push('versionId: string');
 		}
 		let fieldsContent = fieldsTypesList.join('\n\t');
-		buildTreeBlockTypes(fields);
-		buildblocksTypes(fields);
+		await buildTreeBlockTypes(fields);
+		await buildblocksTypes(fields);
 		if (isUploadConfig(collection)) {
 			addImport('UploadDoc');
 			if (collection.upload.imageSizes?.length) {
@@ -235,19 +243,19 @@ export function generateTypesString(config: BuiltConfig) {
 		return templateDocType(collection.slug, fieldsContent, !!collection.upload);
 	};
 
-	const processArea = (area: (typeof config.areas)[number]) => {
-		const fieldsTypesList = buildFieldsTypes(area.fields);
+	const processArea = async (area: (typeof config.areas)[number]) => {
+		const fieldsTypesList = await buildFieldsTypes(area.fields);
 		if (area.versions) {
 			fieldsTypesList.push('versionId: string');
 		}
-		buildTreeBlockTypes(area.fields);
-		buildblocksTypes(area.fields);
+		await buildTreeBlockTypes(area.fields);
+		await buildblocksTypes(area.fields);
 		return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
 	};
 
 	const register = templateRegister(config);
-	const collectionsTypes = config.collections.map(processCollection).join('\n');
-	const areasTypes = config.areas.map(processArea).join('\n');
+	const collectionsTypes = (await Promise.all(config.collections.map(processCollection))).join('\n');
+	const areasTypes = (await Promise.all(config.areas.map(processArea))).join('\n');
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
 	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
@@ -349,8 +357,9 @@ function write(content: string) {
  * Generates and writes TypeScript type definitions based on the built configuration
  * @param config The built configuration containing collections, areas, and fields
  */
-function generateTypes(config: BuiltConfig) {
-	write(generateTypesString(config));
+async function generateTypes(config: BuiltConfig) {
+	const content = await generateTypesString(config);
+	write(content);
 }
 
 export default generateTypes;

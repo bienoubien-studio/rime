@@ -5,25 +5,25 @@
 	import RenderFieldsPreview from '$lib/panel/components/fields/RenderFieldsPreview.svelte';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import { isFormField } from '$lib/util/field.js';
-	import type { WithoutBuilders } from '$lib/util/types.js';
 	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	type Props = {
 		path: string;
-		config: WithoutBuilders<GroupField>;
+		config: GroupField;
 		form: DocumentFormContext<GenericDoc>;
 	};
 	const { config, path, form }: Props = $props();
 
 	let groupOpen = $state(true);
 	const key = `group-${config.fields
+		.map((f) => f.raw)
 		.filter(isFormField)
 		.map((f) => f.name)
 		.join('-')}`;
 
-	const field = $derived(form.useField(path))
-	
+	const field = $derived(form.useField(path));
+
 	function handleClick() {
 		groupOpen = !groupOpen;
 		localStorage.setItem(key, groupOpen.toString());
@@ -65,13 +65,12 @@
 </div>
 
 <style lang="postcss">
-
-	:root{
+	:root {
 		--rz-group-trigger-bg: hsl(var(--rz-row-color));
 		--rz-group-preview-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
 		--rz-group-content-bg: var(--rz-collapse-fields-content-bg);
 	}
-	
+
 	.rz-group-field__wrapper {
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
@@ -81,7 +80,7 @@
 		}
 	}
 
-	.rz-group-field__wrapper--hidden{
+	.rz-group-field__wrapper--hidden {
 		display: none;
 	}
 

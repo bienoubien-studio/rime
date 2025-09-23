@@ -1,9 +1,9 @@
+import { isDirectorySlug, isVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types.js';
+import cache from '$lib/core/dev/cache/index.js';
+import { slugify } from '$lib/util/string.js';
 import fs from 'fs';
 import path from 'path';
-import cache from '../../cache/index.js';
-import { slugify } from '$lib/util/string.js';
-import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types.js';
-import { isDirectorySlug, isVersionsSlug } from '$lib/util/schema.js';
 
 /**
  * Types for route definitions
@@ -84,14 +84,14 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
 	let fileName: string;
 	let baseType = fileType;
 	let groupName = '';
-	
+
 	// Check if fileType contains a group name after @
 	if (fileType.includes('@')) {
 		const parts = fileType.split('@');
 		baseType = parts[0];
 		groupName = parts[1];
 	}
-	
+
 	if (baseType === 'layout') {
 		fileName = '+layout.svelte';
 	} else if (baseType === 'layoutServer') {
@@ -107,7 +107,7 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
 	} else {
 		fileName = `+${baseType}.svelte`;
 	}
-	
+
 	// Insert group name before the first dot if a group name exists
 	if (groupName) {
 		const dotIndex = fileName.indexOf('.');

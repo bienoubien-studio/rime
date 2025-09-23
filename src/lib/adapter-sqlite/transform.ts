@@ -1,4 +1,4 @@
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -16,9 +16,9 @@ import {
 	makeBlockTableSlug,
 	makeLocalesSlug,
 	makeTreeTableSlug,
-	makeVersionsSlug,
-	transformDatabaseColumnsToPaths
-} from '../util/schema.js';
+	makeVersionsSlug
+} from './generate-schema/util.js';
+import { transformDatabaseColumnsToPaths } from './util.js';
 
 /****************************************************/
 /* Types

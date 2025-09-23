@@ -7,7 +7,7 @@
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
-	import { trycatchFetch } from '$lib/util/trycatch.js';
+	import { trycatchFetch } from '$lib/util/function.js';
 	import { Copy, History, Import, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';

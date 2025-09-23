@@ -3,12 +3,13 @@ export type { Access, User } from './core/collections/auth/types.js';
 
 // Config types
 export type {
+	AdditionalStaffConfig,
 	Area,
 	AreaHooks,
-	BrowserConfig,
 	BuiltArea,
 	BuiltCollection,
 	BuiltConfig,
+	BuiltConfigClient,
 	Collection,
 	CollectionHooks,
 	CompiledArea,
@@ -18,9 +19,8 @@ export type {
 	ImageSizesConfig,
 	LocaleConfig,
 	LocalizationConfig,
-	PanelUsersConfig,
 	RouteConfig
-} from './core/config/types/index.js';
+} from './core/config/types.js';
 
 // Doc types
 export type {

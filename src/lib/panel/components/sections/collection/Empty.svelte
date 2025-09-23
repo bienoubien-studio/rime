@@ -9,7 +9,7 @@
 <div class="rz-page-collection__empty">
 	<div>
 		<span>
-			{t__(`common.no_document|${collection.config.label.gender}`, collection.config.label.singular)}
+			{collection.config.label.none || t__(`common.no_document`, collection.config.label.singular)}
 		</span>
 	</div>
 </div>

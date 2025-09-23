@@ -8,7 +8,7 @@
 	import type { RadioFieldProps } from './props.js';
 
 	const { path, config, form }: RadioFieldProps = $props();
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<string>(path, config));
 
 	const fieldId = $derived(slugify(`${form.key}-${path}`));
 </script>

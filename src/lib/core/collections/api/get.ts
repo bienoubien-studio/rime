@@ -1,9 +1,9 @@
-import { json, type RequestEvent } from '@sveltejs/kit';
-import { handleError } from '$lib/core/errors/handler.server.js';
-import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { trycatch } from '$lib/util/trycatch.js';
 import { normalizeQuery } from '$lib/adapter-sqlite/util.js';
 import { PARAMS } from '$lib/core/constant.js';
+import { handleError } from '$lib/core/errors/handler.server.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
+import { trycatch } from '$lib/util/function.js';
+import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: CollectionSlug) {
 	//
@@ -15,7 +15,7 @@ export default function (slug: CollectionSlug) {
 			.keys()
 			.filter((key) => key.startsWith('where'))
 			.toArray().length;
-		
+
 		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined;
 
 		const apiParams = {
@@ -28,13 +28,13 @@ export default function (slug: CollectionSlug) {
 			query,
 			select: params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined
 		};
-		
+
 		const [error, docs] = await trycatch(() => rizom.collection(slug).find(apiParams));
 
 		if (error) {
 			return handleError(error, { context: 'api' });
 		}
-		
+
 		return json({ docs }, { status: 200 });
 	}
 

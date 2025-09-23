@@ -4,9 +4,9 @@ import type { CompiledCollection } from '$lib/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { AreaInterface } from './areas/local-api.server.js';
 import { CollectionInterface } from './collections/local-api.server.js';
-import type { ConfigInterface } from './config/index.server.js';
+import type { ConfigInterface } from './config/interface.server.js';
 import { RizomError } from './errors/index.js';
-import type { CorePlugins, Plugins } from './types/plugins.js';
+import type { CorePlugins } from './types/plugins.js';
 
 export type RizomConstructorArgs = {
 	adapter: Adapter;
@@ -18,7 +18,6 @@ export class Rizom {
 	//
 	#operationsCount = 0;
 	#requestEvent: RequestEvent;
-	#plugins: Plugins;
 	adapter: Adapter;
 	config: ConfigInterface;
 
@@ -27,7 +26,6 @@ export class Rizom {
 		this.config = config;
 		this.defineLocale({ event });
 		this.#requestEvent = event;
-		this.#plugins = config.get('plugins');
 	}
 
 	preventOperationLoop() {
@@ -81,7 +79,7 @@ export class Rizom {
 	defineLocale({ event }: { event: RequestEvent }) {
 		// locale present inside the url params ex : /en/foo
 		const params = event.params;
-		const paramLocale = params.locale;
+		const paramLocale = 'locale' in params && typeof params.locale === 'string' ? params.locale : null;
 
 		// locale present as a search param ex : ?locale=en
 		const searchParams = event.url.searchParams;
@@ -94,15 +92,13 @@ export class Rizom {
 		const locale = paramLocale || searchParamLocale || cookieLocale;
 
 		if (locale && this.config.getLocalesCodes().includes(locale)) {
-			// event.cookies.set('Locale', locale, { path: '.' });
 			return (event.locals.locale = locale);
 		}
-		// event.cookies.set('Locale', defaultLocale, { path: '.' });
 		return (event.locals.locale = defaultLocale);
 	}
 
 	get plugins() {
-		return this.#plugins as RegisterPlugins;
+		return this.config.plugins as RegisterPlugins;
 	}
 
 	get auth() {
@@ -110,14 +106,14 @@ export class Rizom {
 	}
 
 	get cache() {
-		return this.#plugins.cache as CorePlugins['cache'];
+		return this.config.plugins.cache as CorePlugins['cache'];
 	}
 
 	get sse() {
-		return this.#plugins.sse as CorePlugins['sse'];
+		return this.config.plugins.sse as CorePlugins['sse'];
 	}
 
 	get mailer() {
-		return this.#plugins.mailer as CorePlugins['mailer'];
+		return this.config.plugins.mailer as CorePlugins['mailer'];
 	}
 }

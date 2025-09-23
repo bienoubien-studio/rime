@@ -1,10 +1,9 @@
-import type { BuiltConfig, RouteConfig } from '$lib/core/config/types.js';
+import type { BuiltConfig, BuiltConfigClient, RouteConfig } from '$lib/core/config/types.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Handle } from '@sveltejs/kit';
-import type { Component } from 'svelte';
-import type { CacheActions } from '../plugins/cache/index.js';
+import type { CacheActions } from '../plugins/cache/index.server.js';
 import type { MailerActions } from '../plugins/mailer/types.js';
-import type { SSEActions } from '../plugins/sse/index.js';
+import type { SSEActions } from '../plugins/sse/index.server.js';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 
@@ -16,18 +15,17 @@ export type CorePlugins = {
 
 export type Plugin<T = void> = (options?: T) => {
 	name: string;
-	core?: boolean;
+	type: 'server';
 	configure?: (config: BuiltConfig) => BuiltConfig;
 	actions?: Record<string, MaybeAsyncFunction>;
 	routes?: Record<string, RouteConfig>;
 	handler?: Handle;
-	fields?: Array<{
-		type: string;
-		component: Component;
-		cell: Component | null;
-		_toSchema: () => string;
-		_toType: () => string;
-	}>;
+};
+
+export type PluginClient<T = void> = (options?: T) => {
+	name: string;
+	type: 'client';
+	configure?: <T extends BuiltConfigClient>(config: T) => T;
 };
 
 export type MailerPlugin = {

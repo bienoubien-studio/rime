@@ -31,7 +31,7 @@
 	};
 
 	const primitiveTypes = ['url', 'email', 'tel', 'anchor'];
-	const field = $derived(form.useField(path, config));
+	const field = $derived(form.useField<Link>(path, config));
 	const linkTypes = config.types || ['url', 'email', 'tel', 'anchor'];
 	const initial = path ? form.getRawValue<Link>(path) : null;
 

@@ -92,7 +92,7 @@ export default defineConfig({
 // src/hooks.server.ts (should be created)
 import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from 'rizom';
-import config from './config/rizom.config.js';
+import config from 'rizom:config';
 import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));
@@ -128,13 +128,13 @@ curl -v POST http://localhost:5173/api/init \
 ## Configuration Example
 
 ```typescript
-// ./src/config/rizom.config.ts
-import { defineConfig, collection, area } from 'rizom';
+// ./src/lib/config/rizom.config.ts
+import { buildConfig, Collection, Area } from 'rizom';
 import { Settings2 } from '@lucide/svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/util";
 
-const Pages = collection('pages', {
+const Pages = Collection.config('pages', {
   group: 'content',
   fields: [
     text('title').isTitle().required(),
@@ -148,7 +148,7 @@ const Pages = collection('pages', {
   }
 };
 
-const Settings = area('settings', {
+const Settings = Area.config('settings', {
   icon: Settings2,
   group: 'settings',
   fields: [
@@ -161,7 +161,7 @@ const Settings = area('settings', {
   }
 };
 
-const Medias = collection('medias', {
+const Medias = Collection.config('medias', {
   label: {
     singular: 'Media',
     plural: 'Medias',
@@ -173,19 +173,19 @@ const Medias = collection('medias', {
   ]
 };
 
-export default defineConfig({
-  database: 'my-db.sqlite'
+export default buildConfig({
+  $database: 'my-db.sqlite'
   collections: [Pages, Medias],
   areas: [Settings],
+  staff: {
+    roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
+    fields: [
+      text('website')
+    ],
+    group: 'settings'
+  },
   panel: {
-    access: (user) => access.hasRoles(user, 'admin', 'editor'),
-    users: {
-      roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
-      fields: [
-        text('website')
-      ],
-      group: 'settings'
-    }
+    $access: (user) => access.hasRoles(user, 'admin', 'editor'),
   }
 });
 

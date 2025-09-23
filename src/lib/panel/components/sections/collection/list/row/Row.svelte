@@ -1,14 +1,13 @@
 <script lang="ts">
-	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
-	import { isUploadConfig } from '$lib/util/config.js';
-	import UploadThumbCell from '../../upload-thumb-cell/UploadThumbCell.svelte';
-	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { getContext } from 'svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { getValueAtPath } from '$lib/util/object';
-	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
+	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
+	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { isUploadConfig } from '$lib/util/config.js';
+	import { getValueAtPath } from '$lib/util/object';
+	import { getContext } from 'svelte';
 	import StatusDot from '../../StatusDot.svelte';
+	import UploadThumbCell from '../../upload-thumb-cell/UploadThumbCell.svelte';
 
 	type Props = {
 		checked: boolean;
@@ -19,11 +18,6 @@
 	const collection = getContext<CollectionContext>('rizom.collectionList');
 
 	const locale = getLocaleContext();
-	const config = getConfigContext();
-
-	const getCellComponent = (fieldType: string) => {
-		return config.raw.blueprints[fieldType].cell || null;
-	};
 
 	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
@@ -37,9 +31,13 @@
 
 <div style={gridTemplateColumn} class="rz-list-row">
 	<div class="rz-list-row__main">
-		
 		{#if collection.selectMode}
-			<Checkbox id="checkbox-{doc.id}" class="rz-list-row__checkbox" {checked} onCheckedChange={() => collection.toggleSelectOf(doc.id)} />
+			<Checkbox
+				id="checkbox-{doc.id}"
+				class="rz-list-row__checkbox"
+				{checked}
+				onCheckedChange={() => collection.toggleSelectOf(doc.id)}
+			/>
 			{#if isUploadConfig(collection.config)}
 				{#key doc.filename}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
@@ -65,12 +63,9 @@
 
 	{#each collection.columns as column, index (index)}
 		<div class="rz-list-row__cell">
-			{#if column.table?.cell}
-				{@const ColumnTableCell = column.table.cell}
+			{#if column.cell}
+				{@const ColumnTableCell = column.cell}
 				<ColumnTableCell value={getValueAtPath(column.path, doc)} />
-			{:else if getCellComponent(column.type)}
-				{@const Cell = getCellComponent(column.type)}
-				<Cell value={getValueAtPath(column.path, doc)} />
 			{:else}
 				{getValueAtPath(column.path, doc)}
 			{/if}
@@ -127,7 +122,7 @@
 		overflow: hidden;
 		word-break: break-all;
 	}
-	label.rz-list-row__title{
+	label.rz-list-row__title {
 		cursor: pointer;
 	}
 

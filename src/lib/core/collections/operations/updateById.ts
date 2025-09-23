@@ -43,7 +43,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		isFallbackLocale
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'update',
@@ -53,7 +53,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		context = result.context;
 	}
 
-	const hooksBeforeUpdate = config.hooks?.beforeUpdate as Hook<CollectionSlug>[];
+	const hooksBeforeUpdate = config.$hooks?.beforeUpdate as Hook<CollectionSlug>[];
 	for (const hook of hooksBeforeUpdate || []) {
 		const result = await hook({
 			data: data as RegisterCollection[CollectionSlug],
@@ -121,7 +121,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		versionId: context.params.versionId
 	});
 
-	for (const hook of config.hooks?.afterUpdate || []) {
+	for (const hook of config.$hooks?.afterUpdate || []) {
 		await hook({
 			doc: document,
 			data: data as RegisterCollection[CollectionSlug],

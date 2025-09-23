@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import type { User } from '$lib/core/collections/auth/types.js';
-	import type { BrowserConfig } from '$lib/core/config/types.js';
+	import type { BuiltConfigClient } from '$lib/core/config/types.js';
 	import Nav from '$lib/panel/components/ui/nav/Nav.svelte';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
 	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
@@ -16,7 +16,7 @@
 		routes: Record<string, Route[]>;
 		children: Snippet;
 		locale: string | undefined;
-		config: BrowserConfig;
+		config: BuiltConfigClient;
 		user: User;
 	};
 	const { config, routes, children, locale: initialeLocale, user }: Props = $props();

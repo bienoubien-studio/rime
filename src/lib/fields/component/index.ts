@@ -1,9 +1,8 @@
-import type { Field } from '$lib/fields/types.js';
-import { FieldBuilder } from '../builders/index.js';
-import type { FieldAccess } from '$lib/fields/types.js';
-import type { Component } from 'svelte';
-import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+import { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
+import type { Field, FieldAccess } from '$lib/fields/types.js';
+import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+import type { Component } from 'svelte';
 
 type TypedComponent = Component<{
 	path: string;
@@ -13,7 +12,7 @@ type TypedComponent = Component<{
 
 export const component = (component: TypedComponent) => new ComponentFieldBuilder(component);
 
-class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
+export class ComponentFieldBuilder extends FieldBuilder<ComponentField> {
 	//
 	constructor(component: TypedComponent) {
 		super('component');

@@ -1,6 +1,4 @@
 import { randomId } from '$lib/util/random.js';
-import dedent from 'dedent';
-import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
 
 const PACKAGE = 'rizom';
 
@@ -48,7 +46,7 @@ export default defineConfig(config);
 
 export const hooks = `import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from '${PACKAGE}';
-import config from './config/rizom.config.js';
+import config from 'rizom:config';
 import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));

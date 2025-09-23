@@ -1,12 +1,12 @@
+import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { TreeBlock } from '$lib/core/types/doc';
 import type { CompiledArea, CompiledCollection } from '$lib/types';
-import { makeVersionsSlug } from '$lib/util/schema';
 import type { Dic, WithRequired } from '$lib/util/types';
-import type { OperationContext } from '../hooks';
-import { defineTreeBlocksDiff } from './diff.server';
-import { extractTreeBlocks } from './extract.server';
+import type { OperationContext } from '../hooks/index.server.js';
+import { defineTreeBlocksDiff } from './diff.server.js';
+import { extractTreeBlocks } from './extract.server.js';
 
 export const saveTreeBlocks = async (args: {
 	context: OperationContext;

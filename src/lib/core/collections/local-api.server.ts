@@ -6,7 +6,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
 import { isFormField } from '../../util/field.js';
-import type { CompiledCollection } from '../config/types/index.js';
+import type { CompiledCollection } from '../config/types.js';
 import type { CollectionSlug } from '../types/doc.js';
 import { PRIVATE_FIELDS } from './auth/constant.server.js';
 import { create } from './operations/create.js';

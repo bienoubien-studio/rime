@@ -1,3 +1,4 @@
+import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
 import { exctractPath } from '$lib/core/collections/upload/hooks/extract-path.js';
 import {
@@ -5,17 +6,16 @@ import {
 	updateDirectoryChildren
 } from '$lib/core/collections/upload/hooks/update-directory-children.js';
 import { date } from '$lib/fields/date/index.js';
-import { text } from '$lib/fields/text/index.server.js';
-import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
+import { text } from '$lib/fields/text/index.js';
+import type { CollectionSlug } from '$lib/types';
 import { uploadPath } from '$lib/util/validate.js';
-import type { GetRegisterType } from 'rizom';
-import type { CompiledCollection, CompiledConfig } from '../types/index.js';
+import type { BuiltCollection, BuiltConfig } from '../types';
 
 /**
  * Creates an upload directories collection for collections with upload enabled
  * Eg. for medias this will create a collection medias_directories
  */
-export function makeUploadDirectoriesCollections(config: CompiledConfig) {
+export function makeUploadDirectoriesCollections(config: BuiltConfig) {
 	for (const collection of config.collections) {
 		if (collection.upload) {
 			const slug = makeUploadDirectoriesSlug(collection.slug);
@@ -24,24 +24,24 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 			// collection should not have a directories related table
 			if (config.collections.filter((c) => c.slug === slug).length) continue;
 			// else create the directory collection
-			let directoriesCollection: CompiledCollection = {
-				slug: slug as GetRegisterType<'CollectionSlug'>,
+			let directoriesCollection: BuiltCollection = {
+				slug: slug as CollectionSlug,
 				versions: undefined,
 				access: collection.access,
 				fields: [
-					text('id').validate(uploadPath).unique().required().compile(),
-					text('name').compile(),
-					text('parent').compile(),
-					date('createdAt').compile(),
-					date('updatedAt').compile()
+					text('id').validate(uploadPath).unique().required(),
+					text('name'),
+					text('parent'),
+					date('createdAt'),
+					date('updatedAt')
 				],
 				type: 'collection',
 				label: {
 					singular: `${collection.slug} directory`,
-					plural: `${collection.slug} directories`,
-					gender: 'f'
+					plural: `${collection.slug} directories`
 				},
-				hooks: {
+				icon: collection.icon,
+				$hooks: {
 					beforeUpdate: [exctractPath, prepareDirectoryChildren],
 					afterUpdate: [updateDirectoryChildren],
 					beforeCreate: [exctractPath]
@@ -49,8 +49,8 @@ export function makeUploadDirectoriesCollections(config: CompiledConfig) {
 				asTitle: 'path',
 				panel: false
 			};
-			
-			directoriesCollection = augmentHooks(directoriesCollection)
+
+			directoriesCollection = augmentHooks(directoriesCollection);
 
 			config.collections = [...config.collections, directoriesCollection];
 		}

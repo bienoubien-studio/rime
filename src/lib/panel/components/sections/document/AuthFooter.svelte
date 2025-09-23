@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import type { CompiledCollection } from '$lib/core/config/types.js';
+	import type { BuiltCollection } from '$lib/core/config/types.js';
 	import { t__ } from '$lib/core/i18n';
-	import type { ClientField, TextField } from '$lib/fields/types.js';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import { text } from '$lib/fields';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { authClient } from '$lib/panel/util/auth';
@@ -12,11 +11,10 @@
 	import { toast } from 'svelte-sonner';
 	import Button from '../../ui/button/button.svelte';
 
-	type Props = { operation: string; form: DocumentFormContext; collection: CompiledCollection };
+	type Props = { operation: string; form: DocumentFormContext; collection: BuiltCollection };
 	const { operation, form, collection }: Props = $props();
 
 	const user = getUserContext();
-	const config = getConfigContext();
 
 	$effect(() => {
 		if (form.doc.password !== form.doc.confirmPassword && operation === 'create') {
@@ -39,41 +37,19 @@
 		}
 	}
 
-	const Text = config.raw.blueprints.text.component;
+	const passwordConfig = text('password').placeholder(t__('fields.password')).required().validate(validate.password);
+	const Text = text('mock').component;
 
-	const passwordConfig: ClientField<TextField> = {
-		name: 'password',
-		type: 'text',
-		placeholder: t__('fields.password'),
-		required: true,
-		isEmpty: (value) => !value,
-		validate: validate.password,
-		access: {
-			create: () => true,
-			read: () => true,
-			update: () => true
-		}
-	};
-
-	const confirmPasswordConfig: ClientField<TextField> = {
-		name: 'confirmPassword',
-		type: 'text',
-		label: t__('common.confirmPassword'),
-		placeholder: t__('common.confirmPassword'),
-		required: true,
-		isEmpty: (value) => !value,
-		access: {
-			create: () => true,
-			read: () => true,
-			update: () => true
-		},
-		validate: (value, metas) => {
+	const confirmPasswordConfig = text('confirmPassword')
+		.label(t__('common.confirmPassword'))
+		.placeholder(t__('common.confirmPassword'))
+		.required()
+		.validate((value, metas) => {
 			if (metas.data.password !== value) {
 				return 'password_mismatch';
 			}
 			return true;
-		}
-	};
+		});
 </script>
 
 <!-- For creation show passwords fields -->
@@ -82,8 +58,8 @@
 	<div class="rz-document-auth">
 		{#if operation === 'create'}
 			{#if isAuthConfig(collection) && collection.auth.type === 'password'}
-				<Text {form} type="password" config={passwordConfig} path="password" />
-				<Text id="confirm-password" {form} type="password" config={confirmPasswordConfig} path="confirmPassword" />
+				<Text {form} type="password" config={passwordConfig.compile()} path="password" />
+				<Text {form} type="password" config={confirmPasswordConfig.compile()} path="confirmPassword" />
 			{/if}
 		{:else if user.attributes.roles.includes('admin') && page.data?.hasMailer}
 			{#if isAuthConfig(collection) && collection.auth.type === 'password'}

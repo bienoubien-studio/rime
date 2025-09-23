@@ -1,13 +1,12 @@
+import type { User } from '$lib/core/collections/auth/types.js';
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import type { CollectionSlug } from '$lib/core/types/doc.js';
+import type { GetRegisterType } from '$lib/index.js';
+import type { Dic } from '$lib/util/types.js';
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { User } from '$lib/core/collections/auth/types.js';
-import type { CollectionSlug } from '$lib/core/types/doc.js';
-import type { Dic } from '$lib/util/types.js';
-import { PANEL_USERS } from '$lib/core/collections/auth/constant.server.js';
-import type { ConfigInterface } from '$lib/core/config/index.server.js';
-import { configureBetterAuth } from './better-auth.server.js';
-import type { GetRegisterType } from 'rizom';
 import type { GenericTable } from '../types.js';
+import { configureBetterAuth } from './better-auth.server.js';
 
 /**
  * Creates and configures the authentication interface for the SQLite adapter
@@ -18,11 +17,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	const { db, schema, configInterface } = args;
 
 	const betterAuth = configureBetterAuth({ db, schema, configInterface });
-	
-	const getTable = (name:string) => schema[name as keyof typeof schema] as unknown as GenericTable
+
+	const getTable = (name: string) => schema[name as keyof typeof schema] as unknown as GenericTable;
 
 	const isSuperAdmin = async (userId: string) => {
-		const panelUsersTable = getTable(PANEL_USERS);
+		const panelUsersTable = getTable('staff');
 		const [user] = await db
 			.select({ isSuperAdmin: panelUsersTable.isSuperAdmin })
 			.from(panelUsersTable)
@@ -81,7 +80,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			email: table.email
 		};
 
-		if (slug === PANEL_USERS) {
+		if (slug === 'staff') {
 			columns.isSuperAdmin = table.isSuperAdmin;
 		}
 
@@ -94,19 +93,18 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 			isStaff: slug === 'staff'
 		} as User;
 	};
-	
+
 	return {
 		betterAuth,
 		getAuthUsers,
 		getAuthUserId,
 		deleteAuthUserById,
 		getUserAttributes,
-		isSuperAdmin,
+		isSuperAdmin
 	};
 };
 
 export default createAdapterAuthInterface;
-
 
 type GetUserAttributesArgs = {
 	authUserId: string;

@@ -1,9 +1,9 @@
-import { trycatch } from '$lib/util/trycatch.js';
-import { getSegments } from '../util/path.js';
-import { makeUploadDirectoriesSlug } from '$lib/util/schema.js';
-import { logger } from '$lib/core/logger/index.server.js';
+import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
+import { trycatch } from '$lib/util/function.js';
+import { getSegments } from '../util/path.js';
 
 /**
  * Hook executed before save/update operations on an upload collections
@@ -12,7 +12,7 @@ import { Hooks } from '$lib/core/operations/hooks/index.server.js';
  */
 export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 	const { rizom } = args.event.locals;
-	let data = args.data;
+	const data = args.data;
 
 	const IS_CREATE_WITHOUT_PATH = !('_path' in args.data) && args.operation === 'create';
 

@@ -18,11 +18,11 @@ export const populateURL = Hooks.beforeRead<'generic'>(async (args) => {
 	const locale = context.params.locale;
 	const document = args.doc;
 
-	if (config.url) {
+	if (config.$url) {
 		let url;
 
 		try {
-			url = config.url(document as any);
+			url = config.$url(document as any);
 		} catch (err: any) {
 			logger.error(`Error while generating url of ${config.slug} with id: ${args.doc.id}, ${err.message}`);
 			return args;

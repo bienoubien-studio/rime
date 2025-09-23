@@ -1,14 +1,13 @@
 <script lang="ts">
-	import Cookies from 'js-cookie';
+	import RichText from '$lib/fields/rich-text/component/RichText.svelte';
+	import { RichTextFieldBuilder } from '$lib/fields/rich-text/index.js';
+	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import * as Tabs from '$lib/panel/components/ui/tabs/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
-	import type { TabsFieldRaw } from '../index.js';
-	import RichText from '$lib/fields/rich-text/component/RichText.svelte';
-	import type { RichTextField } from '$lib/fields/types.js';
+	import Cookies from 'js-cookie';
+	import type { TabBuilder, TabsField } from '../index.js';
 
-	type Tab = TabsFieldRaw['tabs'][number];
-	type Props = { config: TabsFieldRaw; path: string; form: DocumentFormContext };
+	type Props = { config: TabsField; path: string; form: DocumentFormContext };
 
 	const { config, path: initialPath, form }: Props = $props();
 
@@ -20,7 +19,7 @@
 	$effect(() => {
 		if (form.isLive) {
 			const currentActiveTab = config.tabs.find((tab) => tab.name === activeTabName);
-			if (!currentActiveTab || currentActiveTab.live === false) {
+			if (!currentActiveTab || currentActiveTab.raw.live === false) {
 				activeTabName = config.tabs[0].name;
 			}
 		}
@@ -51,8 +50,8 @@
 
 	const path = $derived(initialPath === '' ? '' : `${initialPath}.`);
 
-	function isTabVisible(tab: Tab) {
-		return form.isLive ? tab.live === true : true;
+	function isTabVisible(tab: TabBuilder) {
+		return form.isLive ? tab.raw.live === true : true;
 	}
 </script>
 
@@ -61,7 +60,7 @@
 		<Tabs.List>
 			{#each config.tabs.filter(isTabVisible) as tab, index (index)}
 				<Tabs.Trigger data-error={tabErrors.includes(tabIds[index]) ? 'true' : null} value={tab.name}>
-					{tab.label || tab.name}
+					{tab.raw.label || tab.name}
 				</Tabs.Trigger>
 			{/each}
 		</Tabs.List>
@@ -69,12 +68,12 @@
 		{#each config.tabs.filter(isTabVisible) as tab, index (index)}
 			<Tabs.Content data-tab-id={tabIds[index]} value={tab.name}>
 				<!-- If the first field is a rich text field, render it directly -->
-				{#if tab.fields.length === 1 && tab.fields[0].type === 'richText'}
-					{@const firstField = tab.fields[0] as RichTextField}
-					<RichText standAlone={true} path="{path}{tab.name}.{firstField.name}" config={firstField} {form} />
+				{#if tab.fields.length === 1 && tab.raw.fields[0].type === 'richText'}
+					{@const firstField = tab.raw.fields[0] as RichTextFieldBuilder}
+					<RichText standAlone={true} path="{path}{tab.name}.{firstField.name}" config={firstField.raw} {form} />
 				{:else}
 					<!-- Otherwise, render the fields -->
-					<RenderFields fields={tab.fields} path="{path}{tab.name}" {form} />
+					<RenderFields fields={tab.raw.fields} path="{path}{tab.name}" {form} />
 				{/if}
 			</Tabs.Content>
 		{/each}

@@ -2,11 +2,12 @@ import { applyAction, deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
 import { env } from '$env/dynamic/public';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
 import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';
 import type { ClientField, FormField } from '$lib/fields/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import { getFieldConfigByPath } from '$lib/util/config.js';
 import { normalizeFieldPath } from '$lib/util/field.js';
 import { random } from '$lib/util/index.js';
@@ -43,7 +44,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	//
 	let intialDoc = $state(initial);
 	let doc = $state<T>(initial);
-	const documentConfig = config;
+	const documentConfig = compileDocumentConfig(config);
 	const changes = $derived<Partial<GenericDoc>>(diff(intialDoc, doc));
 	let isDisabled = $state(readOnly);
 	let processing = $state(false);
@@ -373,7 +374,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return data;
 	};
 
-	function useField(path: string, config?: ClientField<FormField>) {
+	function useField<TValue>(path: string, config?: ClientField<FormField>) {
 		if (!config) {
 			config = getFieldConfigByPath(path, documentConfig.fields);
 			if (!config) throw new Error(`can't find config for field : ${path}`);
@@ -469,11 +470,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			path,
 			setValueFromDefaultLocale,
 
-			get value() {
-				return getValueAtPath(path, doc);
+			get value(): TValue | undefined {
+				return getValueAtPath<TValue>(path, doc);
 			},
 
-			set value(value: any) {
+			set value(value: TValue | null) {
 				setFieldValue(value);
 			},
 
@@ -787,7 +788,7 @@ type Args<T> = {
 	beforeSubmit?: (data: Dic) => Promise<Dic>;
 	beforeRedirect?: (data?: FormSuccessData) => Promise<boolean>;
 	initial: T;
-	config: (AreaSlug extends never ? never : CompiledArea) | CompiledCollection;
+	config: (AreaSlug extends never ? never : BuiltArea) | BuiltCollection;
 	readOnly: boolean;
 	onDataChange?: any;
 	onNestedDocumentCreated?: any;

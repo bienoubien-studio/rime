@@ -38,7 +38,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		}
 	};
 
-	for (const hook of config.hooks?.beforeOperation || []) {
+	for (const hook of config.$hooks?.beforeOperation || []) {
 		const result = await hook({
 			config,
 			operation: 'read',
@@ -71,7 +71,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 			withBlank: !hasSelect
 		});
 
-		for (const hook of config.hooks?.beforeRead || []) {
+		for (const hook of config.$hooks?.beforeRead || []) {
 			const result = await hook({
 				doc: document as RegisterCollection[CollectionSlug],
 				config,

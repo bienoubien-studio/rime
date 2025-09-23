@@ -17,7 +17,7 @@
 	import './relation.css';
 	import type { RelationFieldItem } from './types.js';
 	import Upload from './upload/Upload.svelte';
-	
+
 	// Props
 	type Props = { path: string; config: RelationField; form: DocumentFormContext };
 	const { path, config, form }: Props = $props();

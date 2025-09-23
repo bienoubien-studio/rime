@@ -1,20 +1,20 @@
 <script lang="ts">
-	import Document from '../document/Document.svelte';
+	import { goto } from '$app/navigation';
+	import type { User } from '$lib/core/collections/auth/types.js';
+	import type { BuiltConfigClient } from '$lib/core/config/types.js';
 	import { Toaster } from '$lib/panel/components/ui/sonner';
-	import createContext from '$lib/panel/context/createContext.svelte.js';
+	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { setConfigContext } from '$lib/panel/context/config.svelte.js';
+	import createContext from '$lib/panel/context/createContext.svelte.js';
 	import { setLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { setUserContext } from '$lib/panel/context/user.svelte.js';
-	import type { User } from '$lib/core/collections/auth/types.js';
-	import type { BrowserConfig } from '$lib/core/config/types.js';
-	import { API_PROXY, setAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
-	import { goto } from '$app/navigation';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
+	import Document from '../document/Document.svelte';
 
 	type Props = {
 		doc: any;
 		locale: string | undefined;
-		config: BrowserConfig;
+		config: BuiltConfigClient;
 		onDataChange: any;
 		onFieldFocus: any;
 		user: User;
@@ -61,7 +61,7 @@
 
 <style>
 	:global {
-		html:has(.rz-live-panel){
+		html:has(.rz-live-panel) {
 			font-size: 13px;
 		}
 		.rz-live-panel {

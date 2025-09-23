@@ -6,13 +6,12 @@
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import { emptyValuesFromFieldConfig, isFormField } from '$lib/util/field.js';
 	import { capitalize } from '$lib/util/string.js';
-	import type { WithoutBuilders } from '$lib/util/types.js';
 	import { CirclePlus, ToyBrick } from '@lucide/svelte';
-	import type { BlocksFieldBlock, BlocksFieldRaw } from '../index.js';
+	import type { BlocksField, BlocksFieldBlock } from '../index.js';
 
 	type AddBlock = (options: Omit<GenericBlock, 'id' | 'path'>) => void;
 	type Props = {
-		config: BlocksFieldRaw;
+		config: BlocksField;
 		addBlock: AddBlock;
 	};
 	const { config, addBlock }: Props = $props();
@@ -20,10 +19,10 @@
 	let open = $state(false);
 	let ariaSelected = $state('');
 
-	const add = (block: WithoutBuilders<BlocksFieldBlock>) => {
+	const add = (block: BlocksFieldBlock) => {
 		open = false;
 		const empty = {
-			...emptyValuesFromFieldConfig(block.fields.filter(isFormField)),
+			...emptyValuesFromFieldConfig(block.fields.map((f) => f.compile()).filter(isFormField)),
 			type: block.name
 		};
 		addBlock(empty);
@@ -31,7 +30,7 @@
 </script>
 
 {#if config.blocks.length === 1}
-	<Button onclick={() => add(config.blocks[0])} variant="ghost" icon={CirclePlus} size="icon" />
+	<Button onclick={() => add(config.blocks[0].block)} variant="ghost" icon={CirclePlus} size="icon" />
 {:else}
 	<Button onclick={() => (open = true)} variant="ghost" icon={CirclePlus} size="icon" />
 
@@ -47,13 +46,14 @@
 			<Command.List class="rz-add-block-button__list">
 				<Command.Empty>No results found.</Command.Empty>
 				<Command.Group heading="Component">
-					{#each config.blocks as block, index (index)}
-						{@const BlockIcon = block.icon || ToyBrick}
+					{#each config.blocks as blockBuilder, index (index)}
+						{@const blockConfig = blockBuilder.block}
+						{@const BlockIcon = blockConfig.icon || ToyBrick}
 						<Command.Item
 							class="rz-add-block-button__item"
-							value={block.name}
+							value={blockConfig.name}
 							onSelect={() => {
-								add(block);
+								add(blockConfig);
 								open = false;
 							}}
 						>
@@ -63,11 +63,11 @@
 
 							<div class="rz-add-block-button__info">
 								<p class="rz-add-block-button__title">
-									{block.label || capitalize(block.name)}
+									{blockConfig.label || capitalize(blockConfig.name)}
 								</p>
-								{#if block.description}
+								{#if blockConfig.description}
 									<p class="rz-add-block-button__description">
-										{block.description}
+										{blockConfig.description}
 									</p>
 								{/if}
 							</div>
@@ -82,7 +82,7 @@
 						class:rz-add-block-button__preview--active={ariaSelected === block.name}
 						class="rz-add-block-button__preview"
 					>
-						{#if block.image}
+						{#if block.block.image}
 							<img src="{env.PUBLIC_RIZOM_URL}{block.image}" alt="preview" />
 						{:else}
 							no preview

@@ -1,13 +1,13 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
-import path from 'path';
-import * as templates from './templates.js';
-import { getPackageInfoByKey } from './getPackageName.js';
-import { randomId } from '$lib/util/random.js';
-import { fileURLToPath } from 'url';
-import { cp, mkdir } from 'fs/promises';
-import { generate } from '../generate/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { randomId } from '$lib/util/random.js';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { cp, mkdir } from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { generate } from '../generate/index.js';
 import { prompt } from '../util.server.js';
+import { getPackageInfoByKey } from './getPackageName.js';
+import * as templates from './templates.js';
 
 type Args = {
 	force?: boolean;
@@ -61,7 +61,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 	}
 
 	function setConfig(name: string) {
-		const configDirPath = path.join(process.cwd(), 'src', 'config');
+		const configDirPath = path.join(process.cwd(), 'src', 'lib', 'config');
 		const configPath = path.join(configDirPath, 'rizom.config.ts');
 
 		if (!existsSync(configPath)) {
@@ -200,7 +200,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		// }
 	} else {
 		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
-		
+
 		if (!name) {
 			logger.error('Operation cancelled');
 			process.exit(0);
