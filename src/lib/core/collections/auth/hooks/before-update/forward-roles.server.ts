@@ -33,11 +33,6 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 			slug: config.slug,
 			id: originalDoc.id
 		});
-		console.log(authUserId);
-		console.log({
-			slug: config.slug,
-			id: originalDoc.id
-		});
 
 		if (!authUserId) {
 			throw new RizomError(RizomError.OPERATION_ERROR, 'user not found');

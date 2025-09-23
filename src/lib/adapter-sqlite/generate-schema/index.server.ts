@@ -173,7 +173,8 @@ export async function generateSchemaString(config: BuiltConfig) {
 				return serverField && serverField.toSchema(field);
 			}
 
-			schema.push(templateTable(areaSlug, baseRootFields.map(fieldToSchema).filter(Boolean).join(',\n')));
+			const schemaResults = await Promise.all(baseRootFields.map(fieldToSchema));
+			schema.push(templateTable(areaSlug, schemaResults.filter(Boolean).join(',\n')));
 
 			versionsRelationsDefinitions = [
 				templateRelationOne({

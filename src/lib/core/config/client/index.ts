@@ -32,6 +32,7 @@ const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => 
 	const baseBuiltConfig = {
 		collections: [staff, ...config.collections],
 		areas: config.areas,
+		localization: config.localization ? config.localization : undefined,
 		panel: {
 			routes: config.panel?.routes ? config.panel.routes : {},
 			language: config.panel?.language || 'en',

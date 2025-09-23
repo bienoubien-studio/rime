@@ -4,9 +4,9 @@ import { access } from '$lib/util';
 import { UsersRound } from '@lucide/svelte';
 import cloneDeep from 'clone-deep';
 import { Collection } from 'rizom:core';
-import type { AdditionalStaffConfig, BuiltCollection } from '../types';
+import type { AdditionalStaffConfig, AuthConfig, BuiltCollection } from '../types';
 
-export const staffCollection: CollectionWithoutSlug<'staff'> = {
+export const staffCollection: CollectionWithoutSlug<'staff'> & { auth: AuthConfig } = {
 	label: { singular: 'User', plural: 'Users' },
 	panel: {
 		description: 'Manage who can access your admin panel',
@@ -33,7 +33,7 @@ export const buildStaffCollection = ({
 	panel,
 	label
 }: AdditionalStaffConfig = {}): BuiltCollection => {
-	const staff = cloneDeep(Collection.config('staff', staffCollection));
+	const baseStaffConfig = cloneDeep(staffCollection);
 	let roles: Option[] = incomingRoles.map((role) => (typeof role === 'string' ? { value: role } : role));
 
 	if (roles) {
@@ -50,30 +50,24 @@ export const buildStaffCollection = ({
 			roles.push({ value: 'staff' });
 		}
 
-		if (!staff.auth || typeof staff.auth === 'boolean') {
-			throw Error('predefined staff collection should have an auth:AuthConfig property, should never throw');
-		}
-
-		staff.auth.roles = roles.map((role) => role.value);
+		baseStaffConfig.auth.roles = roles.map((role) => role.value);
 	}
 
 	if (fields) {
-		staff.fields.push(...fields);
+		baseStaffConfig.fields.push(...fields);
 	}
 	if (access) {
-		staff.access = {
-			...staff.access,
+		baseStaffConfig.access = {
+			...baseStaffConfig.access,
 			...access
 		};
 	}
 	if (panel?.group) {
-		staff.panel = { ...staff.panel, group: panel?.group };
+		baseStaffConfig.panel = { ...baseStaffConfig.panel, group: panel?.group };
 	}
 	if (label) {
-		staff.label = label;
+		baseStaffConfig.label = label;
 	}
 
-	return {
-		...staff
-	};
+	return Collection.config('staff', baseStaffConfig);
 };

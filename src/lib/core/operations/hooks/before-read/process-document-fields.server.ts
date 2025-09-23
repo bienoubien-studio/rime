@@ -34,6 +34,7 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 			// * Because blocks are populated based on path.position
 			// Case residual : a block type has been removed but was including a relation, this gives ex :
 			// * blocks: [ { id:..., values,... }, { image: {...}} ]
+			//                                         ^
 			// * the image has been placed but the block doesn't exist anymore
 			if (value) {
 				const withoutResidualBlock = value

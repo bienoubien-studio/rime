@@ -71,6 +71,7 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 	];
 
 	const baseBuiltConfig: BuiltConfig = {
+		...config,
 		$database: config.$database,
 		$trustedOrigins: trustedOrigins,
 		collections: [staff, ...config.collections],

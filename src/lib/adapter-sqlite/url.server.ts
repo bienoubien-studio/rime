@@ -89,7 +89,6 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		try {
 			operation.run();
 		} catch (err: any) {
-			console.log(operation.toSQL());
 			throw new RizomError(RizomError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
 		}
 	}
