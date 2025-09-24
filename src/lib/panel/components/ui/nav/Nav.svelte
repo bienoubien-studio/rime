@@ -33,8 +33,6 @@
 		url: panelUrl(),
 		icon: PanelsTopLeft
 	};
-
-	console.log(routesGroups);
 </script>
 
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
