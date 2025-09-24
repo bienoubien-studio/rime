@@ -3,9 +3,6 @@ import camelCase from 'camelcase';
 /**
  * Capitalizes the first letter of a string.
  *
- * @param str - The string to capitalize
- * @returns The string with its first letter capitalized
- *
  * @example
  * // Returns "Hello"
  * capitalize("hello");
@@ -16,9 +13,6 @@ export const capitalize = (str: string): string => str.charAt(0).toUpperCase() +
  * Converts a string to camelCase.
  * Uses the camelcase package for consistent conversion.
  *
- * @param str - The string to convert
- * @returns The camelCase version of the string
- *
  * @example
  * // Returns "helloWorld"
  * toCamelCase("hello-world");
@@ -26,11 +20,41 @@ export const capitalize = (str: string): string => str.charAt(0).toUpperCase() +
 export const toCamelCase = (str: string): string => camelCase(str);
 
 /**
+ * Converts a string to kebab-case.
+ * Source : https://github.com/angus-c/just/blob/master/packages/string-kebab-case
+ *
+ * @example
+ * kebabCase('the quick brown fox'); // 'the-quick-brown-fox'
+ * kebabCase('the-quick-brown-fox'); // 'the-quick-brown-fox'
+ * kebabCase('the_quick_brown_fox'); // 'the-quick-brown-fox'
+ * kebabCase('theQuickBrownFox'); // 'the-quick-brown-fox'
+ * kebabCase('theQuickBrown Fox'); // 'the-quick-brown-fox'
+ * kebabCase('thequickbrownfox'); // 'thequickbrownfox'
+ * kebabCase('the - quick * brown# fox'); // 'the-quick-brown-fox'
+ * kebabCase('theQUICKBrownFox'); // 'the-quick-brown-fox'
+ */
+const wordSeparators = /[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-./:;<=>?@[\]^_`{|}~]+/;
+const capital_plus_lower = /[A-ZÀ-Ý\u00C0-\u00D6\u00D9-\u00DD][a-zà-ÿ]/g;
+const capitals = /[A-ZÀ-Ý\u00C0-\u00D6\u00D9-\u00DD]+/g;
+
+export function toKebabCase(str: string) {
+	// replace word starts with space + lower case equivalent for later parsing
+	// 1) treat cap + lower as start of new word
+	str = str.replace(capital_plus_lower, function (match) {
+		// match is one caps followed by one non-cap
+		return ' ' + (match[0].toLowerCase() || match[0]) + match[1];
+	});
+	// 2) treat all remaining capitals as words
+	str = str.replace(capitals, function (match) {
+		// match is a series of caps
+		return ' ' + match.toLowerCase();
+	});
+	return str.trim().split(wordSeparators).join('-').replace(/^-/, '').replace(/-\s*$/, '');
+}
+
+/**
  * Converts a string to PascalCase.
  * Uses the camelcase package with pascalCase option.
- *
- * @param str - The string to convert
- * @returns The PascalCase version of the string
  *
  * @example
  * // Returns "HelloWorld"
@@ -42,9 +66,6 @@ export const toPascalCase = (str: string): string => camelCase(str, { pascalCase
  * Converts a string to snake_case.
  * This is a custom implementation that replaces the to-snake-case dependency
  * and maintains the same functionality of the original package.
- *
- * @param str - The string to convert
- * @returns The snake_case version of the string
  *
  * @example
  * // Returns "hello_world"
@@ -82,9 +103,6 @@ export const toSnakeCase = (str: string): string => {
  * Converts a string to a URL-friendly slug.
  * Handles special characters, spaces, and Unicode normalization.
  *
- * @param text - The string to convert to a slug
- * @returns A URL-friendly slug version of the string
- *
  * @example
  * // Returns "hello-world"
  * slugify("Hello World!");
@@ -107,9 +125,6 @@ export const slugify = (text: string): string => {
  * Generates a numeric hash from a string using a simple hashing algorithm.
  * Useful for generating deterministic IDs from string content.
  *
- * @param str - The string to hash
- * @returns A string representation of the numeric hash
- *
  * @example
  * // Returns a consistent numeric hash string
  * toHash("hello");
@@ -130,9 +145,6 @@ export function toHash(str: string) {
 /**
  * Checks if a string is in camelCase format.
  * Validates that the string starts with a lowercase letter and contains only letters and numbers.
- *
- * @param str - The string to check
- * @returns True if the string is in camelCase format, false otherwise
  *
  * @example
  * // Returns true
