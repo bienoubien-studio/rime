@@ -72,7 +72,7 @@ export const isDirectorySlug = (slug: string) => slug.endsWith('_directories');
  * // Returns 'pages_versions'
  * makeVersionsSlug('pages');
  */
-export const makeVersionsSlug = (tableName: string) => `${tableName}_versions` as CollectionSlug;
+export const makeVersionsSlug = (name: string) => `${name}_versions` as CollectionSlug;
 
 /**
  * Check if a slug is a verioned collection slug

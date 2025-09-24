@@ -32,10 +32,10 @@ export async function generateSchemaString(config: BuiltConfig) {
 
 	for (const collection of config.collections) {
 		const collectionSlug = toCamelCase(collection.slug);
-		let rootTableName = toSnakeCase(collectionSlug);
+		let rootTableName = collectionSlug;
 		let versionsRelationsDefinitions: string[] = [];
 
-		schema.push(templateHead(collection.slug));
+		schema.push(templateHead(collectionSlug));
 
 		if (collection.versions) {
 			// Collection that have versions may need some fields forced on the root table and not root_versions
@@ -155,7 +155,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 		let rootTableName = toSnakeCase(areaSlug);
 		let versionsRelationsDefinitions: string[] = [];
 
-		schema.push(templateHead(area.slug));
+		schema.push(templateHead(areaSlug));
 
 		if (area.versions) {
 			// For now, areas don't need to filter out fields with or without _root
