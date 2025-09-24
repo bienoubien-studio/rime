@@ -1,6 +1,5 @@
 import { number } from '$lib/fields/number/index.js';
 import { text } from '$lib/fields/text/index.js';
-import { toSnakeCase } from '$lib/util/string.js';
 import type { Collection } from '../../../types.js';
 
 /**
@@ -15,7 +14,7 @@ export const augmentNestedServer = <T extends { slug: string; nested?: boolean; 
 	if (config.nested) {
 		const _parentField = text('_parent')
 			.$generateSchema(
-				() => `_parent: text('_parent').references((): any => ${toSnakeCase(config.slug)}.id, {onDelete: 'set null'})`
+				() => `_parent: text('_parent').references((): any => ${config.slug}.id, {onDelete: 'set null'})`
 			)
 			.hidden()
 			._root();
