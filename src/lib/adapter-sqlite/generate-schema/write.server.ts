@@ -14,21 +14,21 @@ const write = (schema: string) => {
 		fs.mkdirSync('./src/lib/server');
 	}
 
-	fs.writeFile('./src/lib/server/schema.ts', schema, (err) => {
-		if (err) {
-			console.error(err);
-		} else {
-			logger.info('[✓] Schema: generated at src/lib/server/schema.ts');
-			console.log('============================================================');
-			console.log('\n ⚡︎ npx drizzle-kit generate \n');
-			spawnSync('npx', ['drizzle-kit', 'generate'], { stdio: 'inherit' });
-			console.log('\n============================================================');
-			console.log('\n ⚡︎ npx drizzle-kit migrate \n');
-			spawnSync('npx', ['drizzle-kit', 'migrate'], { stdio: 'inherit' });
-			console.log('\n============================================================');
-			cache.set('schema', schema);
-		}
-	});
+	try {
+		fs.writeFileSync('./src/lib/server/schema.ts', schema);
+	} catch (err: any) {
+		logger.error('Error writing schema', err.message);
+	}
+
+	logger.info('[✓] Schema: generated at src/lib/server/schema.ts');
+	console.log('============================================================');
+	console.log('\n ⚡︎ npx drizzle-kit generate \n');
+	spawnSync('npx', ['drizzle-kit', 'generate'], { stdio: 'inherit' });
+	console.log('\n============================================================');
+	console.log('\n ⚡︎ npx drizzle-kit migrate \n');
+	spawnSync('npx', ['drizzle-kit', 'migrate'], { stdio: 'inherit' });
+	console.log('\n============================================================');
+	cache.set('schema', schema);
 };
 
 export default write;
