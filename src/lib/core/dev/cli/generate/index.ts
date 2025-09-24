@@ -1,9 +1,9 @@
+import cache from '$lib/core/dev/cache/index.js';
+import { sanitize } from '$lib/core/dev/generate/sanitize/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { trycatch } from '$lib/util/function.js';
 import { existsSync, mkdirSync, rmSync } from 'fs';
 import path from 'path';
-import cache from '../../cache';
-import { sanitize } from '../../generate/sanitize';
 
 export const generate = async (args: { force?: boolean }) => {
 	const { force } = args;

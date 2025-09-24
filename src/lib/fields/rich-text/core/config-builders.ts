@@ -1,6 +1,6 @@
 import type { EditorOptions } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
-import { t__ } from '$lib/core/i18n';
+import { t__ } from '$lib/core/i18n/index.js';
 import Typography from '@tiptap/extension-typography';
 import type {
 	MediaFeatureDefinition,
@@ -9,17 +9,17 @@ import type {
 	RichTextEditorConfig,
 	RichTextFeature
 } from '$lib/fields/rich-text/core/types';
-import { defaultFeatures, predefinedFeatures } from './features';
+import { defaultFeatures, predefinedFeatures } from './features/index.js';
 import ListItem from '@tiptap/extension-list-item';
 import Dropcursor from '@tiptap/extension-dropcursor';
 import Document from '@tiptap/extension-document';
 import Gapcursor from '@tiptap/extension-gapcursor';
 import Text from '@tiptap/extension-text';
 import History from '@tiptap/extension-history';
-import { ParagraphFeature } from './features/paragraph';
-import { MediaFeature } from './features/media';
+import { ParagraphFeature } from './features/paragraph.js';
+import { MediaFeature } from './features/media/index.js';
 import type { Level } from '@tiptap/extension-heading';
-import { ResourceFeature } from './features/resource';
+import { ResourceFeature } from './features/resource/index.js';
 
 type BuildEditorConfigArgs = {
 	features?: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>;

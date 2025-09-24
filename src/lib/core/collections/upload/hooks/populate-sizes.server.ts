@@ -1,6 +1,6 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
-import type { WithUpload } from '../util/config';
+import type { WithUpload } from '../util/config.js';
 
 export const populateSizes = Hooks.beforeRead(async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;

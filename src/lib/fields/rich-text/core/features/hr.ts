@@ -1,5 +1,5 @@
 import { SeparatorHorizontal } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../types';
+import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
 
 const hrItem: RichTextFeatureMark = {

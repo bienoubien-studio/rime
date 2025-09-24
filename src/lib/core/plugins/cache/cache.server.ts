@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { logger } from '$lib/core/logger/index.server';
+import { logger } from '$lib/core/logger/index.server.js';
 
 const cachePath = path.resolve(process.cwd(), '.cache');
 if (!fs.existsSync(cachePath)) {

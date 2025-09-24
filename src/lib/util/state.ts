@@ -1,4 +1,4 @@
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 
 /**
  * Creates a deep copy of a state object, removing any proxies or reactive wrappers.

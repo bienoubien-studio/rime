@@ -3,7 +3,7 @@ import { saveFile } from '$lib/core/collections/upload/disk/save.server.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { omit } from '$lib/util/object.js';
 import { toCamelCase } from '$lib/util/string.js';
-import { isUploadConfig } from '../util/config';
+import { isUploadConfig } from '../util/config.js';
 
 /**
  * Hook that handles file upload processing and image resizing operations.

@@ -1,13 +1,13 @@
-import { isAuthConfig } from '$lib/core/collections/auth/util';
+import { isAuthConfig } from '$lib/core/collections/auth/util.js';
 import type { CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types.js';
 import cache from '$lib/core/dev/cache/index.js';
-import { isFormField } from '$lib/core/fields/util';
+import { isFormField } from '$lib/core/fields/util.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import { isBlocksFieldRaw, type BlocksFieldRaw } from '$lib/fields/blocks/index.js';
-import { isGroupFieldRaw } from '$lib/fields/group';
-import { isSelectField } from '$lib/fields/select';
-import { isTabsFieldRaw } from '$lib/fields/tabs';
-import { isTreeFieldRaw } from '$lib/fields/tree';
+import { isGroupFieldRaw } from '$lib/fields/group/index.js';
+import { isSelectField } from '$lib/fields/select/index.js';
+import { isTabsFieldRaw } from '$lib/fields/tabs/index.js';
+import { isTreeFieldRaw } from '$lib/fields/tree/index.js';
 import type { FormField } from '$lib/fields/types.js';
 
 function hasDuplicates(arr: string[]): string[] {

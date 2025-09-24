@@ -1,7 +1,7 @@
-import { RizomError } from '$lib/core/errors';
-import type { TreeBlock } from '$lib/core/types/doc';
-import { isObjectLiteral } from '$lib/util/object';
-import type { WithRequired } from '$lib/util/types';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { TreeBlock } from '$lib/core/types/doc.js';
+import { isObjectLiteral } from '$lib/util/object.js';
+import type { WithRequired } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 
 type TreeBlockWithPath = WithRequired<TreeBlock, 'path'>;

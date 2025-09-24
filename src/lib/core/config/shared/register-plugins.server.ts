@@ -1,5 +1,5 @@
 import type { BuiltConfig } from '$lib/core/config/types.js';
-import type { Plugin } from '$lib/types';
+import type { Plugin } from '$lib/types.js';
 
 type AnyPlugin = ReturnType<Plugin>;
 

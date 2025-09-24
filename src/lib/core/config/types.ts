@@ -5,13 +5,13 @@ import type { Plugin, PluginClient } from '$lib/core/types/plugins.js';
 import type { Field, Option } from '$lib/fields/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
-import type { Access, AreaSlug, CollectionSlug, User } from '$lib/types';
+import type { AreaSlug, CollectionSlug, User } from '$lib/types.js';
 import type { AtLeastOne, Dic, WithoutBuilders, WithRequired } from '$lib/util/types.js';
 import type { IconProps } from '@lucide/svelte';
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 import type { Component } from 'svelte';
-import type { FieldBuilder } from '../fields/builders';
-import type { BaseDoc, DocType } from '../types/doc';
+import type { FieldBuilder } from '../fields/builders/index.js';
+import type { BaseDoc, DocType } from '../types/doc.js';
 
 export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
@@ -104,6 +104,18 @@ export interface Config {
 	/** Custom object for both client and server config additional values  */
 	custom?: Record<string, any>;
 }
+
+type AccessOptions = {
+	id?: string;
+	event?: RequestEvent;
+};
+
+export type Access = {
+	create?: (user: User | undefined, options: AccessOptions) => boolean;
+	read?: (user: User | undefined, options: AccessOptions) => boolean;
+	update?: (user: User | undefined, options: AccessOptions) => boolean;
+	delete?: (user: User | undefined, options: AccessOptions) => boolean;
+};
 
 export type AdditionalStaffConfig = {
 	roles?: (string | Option)[];

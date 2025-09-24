@@ -2,7 +2,7 @@ import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.j
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { DefaultValueFn, Field, FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
-import { hasProps, isObjectLiteral } from '$lib/util/object';
+import { hasProps, isObjectLiteral } from '$lib/util/object.js';
 import Cell from './component/Cell.svelte';
 import RelationComponent from './component/Relation.svelte';
 

@@ -1,4 +1,4 @@
-import type { CollectionSlug } from '$lib/types';
+import type { CollectionSlug } from '$lib/types.js';
 
 /**
  * Add a _directories suffix to a given name.

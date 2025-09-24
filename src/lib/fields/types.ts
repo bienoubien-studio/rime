@@ -1,11 +1,11 @@
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
-import type { DocumentFormContext } from '$lib/panel';
+import type { DocumentFormContext } from '$lib/panel/index.js';
 import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { IconProps } from '@lucide/svelte';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Component } from 'svelte';
-import type { User } from '../core/collections/auth/types';
-import type { FieldPanelTableConfig } from '../panel/types';
+import type { User } from '../core/collections/auth/types.js';
+import type { FieldPanelTableConfig } from '../panel/types.js';
 export type { BlocksField, BlocksFieldBlock } from './blocks/index.js';
 export type { CheckboxField } from './checkbox/index.js';
 export type { ComboBoxField } from './combobox/index.js';

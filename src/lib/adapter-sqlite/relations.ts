@@ -1,7 +1,7 @@
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
 import type { Relation } from '$lib/fields/relation/index.js';
-import { omit } from '$lib/util/object';
-import type { Dic } from '$lib/util/types';
+import { omit } from '$lib/util/object.js';
+import type { Dic } from '$lib/util/types.js';
 import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import { transformDataToSchema } from './util.js';
 

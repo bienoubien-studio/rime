@@ -1,5 +1,5 @@
 import { List } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureNode } from '../types';
+import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 import BulletList from '@tiptap/extension-bullet-list';
 
 const bulletListFeatureNode: RichTextFeatureNode = {

@@ -1,4 +1,4 @@
-import { toPascalCase } from '$lib/util/string';
+import { toPascalCase } from '$lib/util/string.js';
 import type { ToType } from '../index.server.js';
 import type { BlocksBuilder } from './index.js';
 

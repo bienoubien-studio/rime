@@ -1,13 +1,13 @@
-import type { ImageSizesConfig } from '$lib/core/config/types';
-import type { UploadDoc } from '$lib/types';
+import type { ImageSizesConfig } from '$lib/core/config/types.js';
+import type { UploadDoc } from '$lib/types.js';
 import path from 'path';
 import { existsSync, writeFileSync, statSync, readFileSync } from 'fs';
 import { RizomError } from '$lib/core/errors/index.js';
-import { pick } from '$lib/util/object';
+import { pick } from '$lib/util/object.js';
 import sharp from 'sharp';
-import { toCamelCase } from '$lib/util/string';
-import { normalizeFileName } from '$lib/util/file';
-import type { Dic } from '$lib/util/types';
+import { toCamelCase } from '$lib/util/string.js';
+import { normalizeFileName } from '$lib/util/file.js';
+import type { Dic } from '$lib/util/types.js';
 import crypto from 'crypto';
 
 /**

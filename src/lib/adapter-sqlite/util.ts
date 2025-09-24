@@ -1,8 +1,8 @@
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors';
-import type { RawDoc } from '$lib/core/types/doc';
+import { RizomError } from '$lib/core/errors/index.js';
+import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
-import { isObjectLiteral, omit, pick } from '$lib/util/object';
+import { isObjectLiteral, omit, pick } from '$lib/util/object.js';
 import { randomId } from '$lib/util/random.js';
 import type { Dic } from '$lib/util/types.js';
 import { and, desc, eq, getTableColumns, Table } from 'drizzle-orm';

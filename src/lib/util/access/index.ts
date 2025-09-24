@@ -1,4 +1,4 @@
-import type { User } from '$lib/core/collections/auth/types';
+import type { User } from '$lib/core/collections/auth/types.js';
 
 /**
  * Checks if a user has admin privileges.

@@ -1,4 +1,4 @@
-import type { ClientField, TextField } from '$lib/fields/types';
+import type { ClientField, TextField } from '$lib/fields/types.js';
 
 export const directoryInput: ClientField<TextField> = {
 	type: 'text',

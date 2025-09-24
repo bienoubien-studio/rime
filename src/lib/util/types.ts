@@ -1,6 +1,6 @@
-import type { FieldBuilder } from '$lib/core/fields/builders';
+import type { FieldBuilder } from '$lib/core/fields/builders/index.js';
 import type { Field } from '$lib/fields/types.js';
-import type { RelationValue } from '$lib/types';
+import type { RelationValue } from '$lib/types.js';
 export type OmitPreservingDiscrimination<T, K extends keyof T> = T extends any ? Omit<T, K> : never;
 
 export type WithRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;

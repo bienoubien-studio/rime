@@ -5,7 +5,7 @@ import { isBlocksFieldRaw, type BlocksFieldRaw } from '$lib/fields/blocks/index.
 import { isTreeFieldRaw, type TreeFieldRaw } from '$lib/fields/tree/index.js';
 
 import { getValueAtPath, isObjectLiteral, matchStructure, omitId, setValueAtPath } from '$lib/util/object.js';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 
 type DeleteArgs = {

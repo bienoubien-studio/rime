@@ -1,5 +1,5 @@
 // Auth types
-export type { Access, User } from './core/collections/auth/types.js';
+export type { User } from './core/collections/auth/types.js';
 
 // Config types
 export type {

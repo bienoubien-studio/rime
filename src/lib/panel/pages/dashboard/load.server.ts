@@ -2,7 +2,7 @@ import { panelUrl } from '$lib/panel/util/url.js';
 import { capitalize } from '$lib/util/string.js';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { CompiledCollection, Route } from '../../../types.js';
-import type { DashboardEntry } from './types';
+import type { DashboardEntry } from './types.js';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
 	const { locale, user, rizom } = event.locals;

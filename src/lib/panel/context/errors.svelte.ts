@@ -1,4 +1,4 @@
-import type { FormErrors } from '$lib/panel/types';
+import type { FormErrors } from '$lib/panel/types.js';
 import { getContext, setContext } from 'svelte';
 
 function createErrorsStore() {

@@ -2,7 +2,7 @@ import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 import type { ConfigMap } from '../configMap/types.js';
 import type { TreeBlocksDiff } from '../tree/diff.server.js';
 import { defineRelationsDiff } from './diff.server.js';

@@ -1,5 +1,5 @@
-import type { BuiltCollection } from '$lib/core/config/types';
-import type { GenericDoc } from '$lib/core/types/doc';
+import type { BuiltCollection } from '$lib/core/config/types.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 
 export type RelationFieldItem = {
 	id?: string;

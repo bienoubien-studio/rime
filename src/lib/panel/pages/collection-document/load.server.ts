@@ -1,7 +1,7 @@
 import { apiUrl } from '$lib/core/api/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
-import { handleError } from '$lib/core/errors/handler.server';
+import { handleError } from '$lib/core/errors/handler.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
@@ -9,7 +9,7 @@ import type { CollectionDocData } from '$lib/panel/index.js';
 import type { Route } from '$lib/panel/types.js';
 import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
-import { toKebabCase } from '$lib/util/string';
+import { toKebabCase } from '$lib/util/string.js';
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
 
 /****************************************************/

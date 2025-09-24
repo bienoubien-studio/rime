@@ -1,5 +1,5 @@
 import { Images } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureNode } from '../../types';
+import type { RichTextFeature, RichTextFeatureNode } from '../../types.js';
 import { Resource } from './resource-extension.js';
 
 const resourceFeatureNode: RichTextFeatureNode = {

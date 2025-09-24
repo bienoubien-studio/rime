@@ -1,5 +1,5 @@
 import type { BuiltConfig, BuiltConfigClient } from '$lib/core/config/types.js';
-import type { PluginClient } from '$lib/core/types/plugins';
+import type { PluginClient } from '$lib/core/types/plugins.js';
 
 export const registerPluginsClient = <T extends BuiltConfigClient | BuiltConfig>(args: {
 	plugins: ReturnType<PluginClient>[];

@@ -1,4 +1,4 @@
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 
 type Row = Dic & { _children?: Row[] };
 

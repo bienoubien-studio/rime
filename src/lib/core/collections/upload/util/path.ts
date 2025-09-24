@@ -3,7 +3,7 @@ import { RizomError } from '$lib/core/errors/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import { panelUrl } from '$lib/panel/util/url.js';
-import { toKebabCase } from '$lib/util/string';
+import { toKebabCase } from '$lib/util/string.js';
 import type { WithRequired } from '$lib/util/types.js';
 
 export type UploadPath = `${typeof UPLOAD_PATH.ROOT_NAME}${string}`;

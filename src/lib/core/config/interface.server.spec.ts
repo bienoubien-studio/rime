@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest';
-import { getFieldConfigByPath } from '../fields/util';
+import { getFieldConfigByPath } from '../fields/util.js';
 
 const fields = [
 	{

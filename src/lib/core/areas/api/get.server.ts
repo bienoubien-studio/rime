@@ -2,7 +2,7 @@ import { PARAMS } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/function.js';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: AreaSlug) {

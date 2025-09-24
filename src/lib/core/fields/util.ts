@@ -1,8 +1,8 @@
 import type { GenericBlock } from '$lib/core/types/doc.js';
-import { isBlocksFieldRaw } from '$lib/fields/blocks';
+import { isBlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import { isGroupFieldRaw } from '$lib/fields/group/index.js';
-import { isTabsFieldRaw } from '$lib/fields/tabs';
-import { isTreeFieldRaw } from '$lib/fields/tree';
+import { isTabsFieldRaw } from '$lib/fields/tabs/index.js';
+import { isTreeFieldRaw } from '$lib/fields/tree/index.js';
 import type { Field, FormField, SeparatorField } from '$lib/fields/types.js';
 import type { Dic } from '$lib/util/types.js';
 

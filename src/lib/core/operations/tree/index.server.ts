@@ -1,9 +1,9 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { RizomError } from '$lib/core/errors/index.js';
-import type { TreeBlock } from '$lib/core/types/doc';
-import type { CompiledArea, CompiledCollection } from '$lib/types';
+import type { TreeBlock } from '$lib/core/types/doc.js';
+import type { CompiledArea, CompiledCollection } from '$lib/types.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
-import type { Dic, WithRequired } from '$lib/util/types';
+import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 import { defineTreeBlocksDiff } from './diff.server.js';
 import { extractTreeBlocks } from './extract.server.js';

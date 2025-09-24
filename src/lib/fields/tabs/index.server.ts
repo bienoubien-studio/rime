@@ -1,4 +1,4 @@
-import { getFieldPrivateModule, type ToType } from '../index.server';
+import { getFieldPrivateModule, type ToType } from '../index.server.js';
 import type { TabsBuilder } from './index.js';
 
 export const toType: ToType<TabsBuilder> = async (field) => {

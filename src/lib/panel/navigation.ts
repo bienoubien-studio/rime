@@ -1,8 +1,8 @@
-import type { User } from '$lib/core/collections/auth/types';
-import type { CompiledConfig } from '$lib/core/config/types';
-import type { Dic } from '$lib/util/types';
-import type { Route } from './types';
-import { panelUrl } from './util/url';
+import type { User } from '$lib/core/collections/auth/types.js';
+import type { CompiledConfig } from '$lib/core/config/types.js';
+import type { Dic } from '$lib/util/types.js';
+import type { Route } from './types.js';
+import { panelUrl } from './util/url.js';
 
 /**
  * Builds navigation structure based on config and user permissions

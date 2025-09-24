@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
 import CounterComponent from './resource.svelte';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

@@ -1,10 +1,10 @@
-import type { ConfigInterface } from '$lib/core/config/interface.server';
+import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { withLocalesSuffix } from '$lib/core/naming.js';
 import { isBlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
 import { isTreeFieldRaw } from '$lib/fields/tree/index.js';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 import { getBlocksTableNames, getTreeTableNames } from './generate-schema/util.js';
 

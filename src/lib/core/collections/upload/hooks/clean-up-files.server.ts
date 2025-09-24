@@ -1,7 +1,7 @@
 import { cleanupStoredFiles } from '$lib/core/collections/upload/disk/delete.server.js';
 import type { CompiledCollection } from '$lib/core/config/types.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
-import type { WithUpload } from '../util/config';
+import type { WithUpload } from '../util/config.js';
 
 /**
  * Hook executed before deleting a document to clean up associated files from storage.

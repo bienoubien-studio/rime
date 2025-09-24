@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors';
+import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { WithOptional } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';

@@ -1,4 +1,4 @@
-import type { UploadPath } from './util/path';
+import type { UploadPath } from './util/path.js';
 
 export type JsonFile = {
 	base64: string;

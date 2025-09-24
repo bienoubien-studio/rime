@@ -1,4 +1,4 @@
-import type { Plugin } from '$lib/types';
+import type { Plugin } from '$lib/types.js';
 import { toHash } from '$lib/util/string.js';
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
 import { Cache } from './cache.server.js';

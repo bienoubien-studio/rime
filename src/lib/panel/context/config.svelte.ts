@@ -1,5 +1,5 @@
-import type { BuiltAreaClient, BuiltCollectionClient, BuiltConfigClient } from '$lib/core/config/types';
-import type { Prototype, PrototypeSlug } from '$lib/core/types/doc';
+import type { BuiltAreaClient, BuiltCollectionClient, BuiltConfigClient } from '$lib/core/config/types.js';
+import type { Prototype, PrototypeSlug } from '$lib/core/types/doc.js';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BuiltConfigClient) {

@@ -1,4 +1,4 @@
-import type { Plugin } from '$lib/types';
+import type { Plugin } from '$lib/types.js';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import { broadcast, registerWriter } from './broadcast.js';
 

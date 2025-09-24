@@ -1,4 +1,4 @@
-import type { Dic, WithRequired } from '$lib/util/types';
+import type { Dic, WithRequired } from '$lib/util/types.js';
 import { normalizeFieldPath } from '../core/fields/util.js';
 
 /**

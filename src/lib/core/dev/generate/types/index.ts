@@ -1,5 +1,5 @@
-import { isUploadConfig } from '$lib/core/collections/upload/util/config';
-import type { BuiltConfig, ImageSizesConfig } from '$lib/core/config/types';
+import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
+import type { BuiltConfig, ImageSizesConfig } from '$lib/core/config/types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.server.js';
 import cache from '$lib/core/dev/cache/index.js';
 import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
@@ -8,7 +8,7 @@ import { logger } from '$lib/core/logger/index.server.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import { BlocksBuilder } from '$lib/fields/blocks/index.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
-import { getFieldPrivateModule } from '$lib/fields/index.server';
+import { getFieldPrivateModule } from '$lib/fields/index.server.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import type { Field } from '$lib/fields/types.js';

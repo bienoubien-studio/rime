@@ -4,7 +4,7 @@
 	"homepage": "https://github.com/bienoubien-studio/rizom",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && vite build && npm run package && pnpm build:css",
+		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && bun ./src/scripts/useConfig.js empty && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
 		"rizom:use": "bun ./src/scripts/useConfig.js",
 		"preview": "vite preview",

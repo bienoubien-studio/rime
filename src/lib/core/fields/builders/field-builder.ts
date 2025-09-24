@@ -1,6 +1,6 @@
-import type { WithoutBuilders } from '$lib/util/types';
+import type { WithoutBuilders } from '$lib/util/types.js';
 import type { Component } from 'svelte';
-import type { Field } from '../../../fields/types';
+import type { Field } from '../../../fields/types.js';
 
 export class FieldBuilder<T extends Field = Field> {
 	field: T;

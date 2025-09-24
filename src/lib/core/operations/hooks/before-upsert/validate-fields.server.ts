@@ -1,9 +1,9 @@
 import { PARAMS } from '$lib/core/constant.js';
 import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
-import { logger } from '$lib/core/logger/index.server';
+import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
-import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object';
+import { deleteValueAtPath, getValueAtPath, setValueAtPath } from '$lib/util/object.js';
 import { Hooks } from '../index.server.js';
 
 export const validateFields = Hooks.beforeUpsert(async (args) => {

@@ -1,5 +1,5 @@
 import { ItalicIcon } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../types';
+import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 import Italic from '@tiptap/extension-italic';
 
 const italicItem: RichTextFeatureMark = {

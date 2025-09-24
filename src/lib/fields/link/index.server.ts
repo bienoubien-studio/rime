@@ -1,13 +1,13 @@
-import { templateUniqueRequired } from '$lib/adapter-sqlite/generate-schema/templates.server';
-import { getSchemaColumnNames } from '$lib/adapter-sqlite/generate-schema/util';
-import { RizomError } from '$lib/core/errors';
-import { logger } from '$lib/core/logger/index.server';
-import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/types';
-import { trycatch } from '$lib/util/function';
-import type { LinkFieldBuilder } from '.';
-import type { ToSchema, ToType } from '../index.server';
-import type { FieldHook, LinkField } from '../types';
-import type { Link } from './types';
+import { templateUniqueRequired } from '$lib/adapter-sqlite/generate-schema/templates.server.js';
+import { getSchemaColumnNames } from '$lib/adapter-sqlite/generate-schema/util.js';
+import { RizomError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
+import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/types.js';
+import { trycatch } from '$lib/util/function.js';
+import type { LinkFieldBuilder } from './index.js';
+import type { ToSchema, ToType } from '../index.server.js';
+import type { FieldHook, LinkField } from '../types.js';
+import type { Link } from './types.js';
 
 export const toSchema: ToSchema<LinkFieldBuilder> = (field, parentPath) => {
 	const { camel, snake } = getSchemaColumnNames({ name: field.name, parentPath });

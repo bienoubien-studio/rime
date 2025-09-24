@@ -1,12 +1,12 @@
-import { BoldFeature } from './bold';
-import { BulletListFeature } from './bullet-list';
-import { HeadingFeature } from './heading';
-import { HorizontalRuleFeature } from './hr';
-import { LinkFeature } from './link';
-import { ParagraphFeature } from './paragraph';
-import { OrderedListFeature } from './ordered-list';
-import { BlockquoteFeature } from './blockquote';
-import { ItalicFeature } from './italic';
+import { BoldFeature } from './bold.js';
+import { BulletListFeature } from './bullet-list.js';
+import { HeadingFeature } from './heading.js';
+import { HorizontalRuleFeature } from './hr.js';
+import { LinkFeature } from './link/index.js';
+import { ParagraphFeature } from './paragraph.js';
+import { OrderedListFeature } from './ordered-list.js';
+import { BlockquoteFeature } from './blockquote.js';
+import { ItalicFeature } from './italic.js';
 
 export { BoldFeature, HeadingFeature, LinkFeature, HorizontalRuleFeature };
 

@@ -1,10 +1,10 @@
-import type { CollectionWithoutSlug } from '$lib/core/collections/config/types';
-import type { Option } from '$lib/types';
-import { access } from '$lib/util';
+import type { CollectionWithoutSlug } from '$lib/core/collections/config/types.js';
+import type { Option } from '$lib/types.js';
+import { access } from '$lib/util/index.js';
 import { UsersRound } from '@lucide/svelte';
 import cloneDeep from 'clone-deep';
 import { Collection } from 'rizom:core';
-import type { AdditionalStaffConfig, AuthConfig, BuiltCollection } from '../types';
+import type { AdditionalStaffConfig, AuthConfig, BuiltCollection } from '../types.js';
 
 export const staffCollection: CollectionWithoutSlug<'staff'> & { auth: AuthConfig } = {
 	label: { singular: 'User', plural: 'Users' },

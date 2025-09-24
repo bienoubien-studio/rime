@@ -1,8 +1,8 @@
-import type { TreeBlock } from '$lib/core/types/doc';
-import { getValueAtPath } from '$lib/util/object';
-import type { Dic, WithRequired } from '$lib/util/types';
+import type { TreeBlock } from '$lib/core/types/doc.js';
+import { getValueAtPath } from '$lib/util/object.js';
+import type { Dic, WithRequired } from '$lib/util/types.js';
 import cloneDeep from 'clone-deep';
-import type { ConfigMap } from '../configMap/types';
+import type { ConfigMap } from '../configMap/types.js';
 
 type ExtractTreesArgs = {
 	data: Dic;

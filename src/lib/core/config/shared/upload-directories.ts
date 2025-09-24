@@ -4,13 +4,13 @@ import {
 	prepareDirectoryChildren,
 	updateDirectoryChildren
 } from '$lib/core/collections/upload/hooks/update-directory-children.server.js';
-import { validatePath } from '$lib/core/collections/upload/util/path';
+import { validatePath } from '$lib/core/collections/upload/util/path.js';
 import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.js';
-import type { CollectionSlug } from '$lib/types';
-import { toKebabCase } from '$lib/util/string';
-import type { BuiltCollection, BuiltConfig } from '../types';
+import type { CollectionSlug } from '$lib/types.js';
+import { toKebabCase } from '$lib/util/string.js';
+import type { BuiltCollection, BuiltConfig } from '../types.js';
 
 /**
  * Creates an upload directories collection for collections with upload enabled

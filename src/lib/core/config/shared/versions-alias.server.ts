@@ -1,8 +1,8 @@
 import { augmentHooks } from '$lib/core/collections/config/augment-hooks.server.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { toKebabCase } from '$lib/util/string';
-import type { BuiltCollection, BuiltConfig } from '../types';
+import { toKebabCase } from '$lib/util/string.js';
+import type { BuiltCollection, BuiltConfig } from '../types.js';
 
 /**
  * Creates versioned collection aliases for collections and areas with versioning enabled

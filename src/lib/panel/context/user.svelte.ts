@@ -1,4 +1,4 @@
-import type { User } from '$lib/core/collections/auth/types';
+import type { User } from '$lib/core/collections/auth/types.js';
 import { getContext, setContext } from 'svelte';
 
 function createUserStore(initial: User) {

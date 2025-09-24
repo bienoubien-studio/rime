@@ -2,7 +2,7 @@ import { RizomFormError } from '$lib/core/errors/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { flatten, unflatten } from 'flat';
-import type { Dic } from '$lib/util/types';
+import type { Dic } from '$lib/util/types.js';
 
 /**
  * Extracts data from a request based on its content type

@@ -1,5 +1,5 @@
 import { LinkIcon } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../../types';
+import type { RichTextFeature, RichTextFeatureMark } from '../../types.js';
 import Link from '@tiptap/extension-link';
 import LinkSelector from './component/link-selector.svelte';
 

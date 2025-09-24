@@ -2,7 +2,7 @@ import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DateField } from '$lib/fields/date/index.js';
 import type { EmailField } from '$lib/fields/email/index.js';
-import { isGroupField } from '$lib/fields/group';
+import { isGroupField } from '$lib/fields/group/index.js';
 import type { SlugField } from '$lib/fields/slug/index.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import type { TextField } from '$lib/fields/text/index.js';
