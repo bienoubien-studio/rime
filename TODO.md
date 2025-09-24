@@ -1,4 +1,3 @@
-# 0.1
 [x] translation production issue
 [x] login production issue
 [x] sharp production issue
@@ -15,14 +14,14 @@
 [x] Fix the sortable error on file change
 [x] navigation group icons
 [x] Group/Tabs as object on document
-[x] Relation proxy 
+[x] Relation proxy
 [x] Better logs
 [x] 404 on image src quick after upload deletion
 [x] more tiptap integration
 [x] basic real life config preset
 [x] Fix - translation not loaded on production
 [x] Blocks/Tree - global i18n
-[x] Make first user super admin, can't delete it 
+[x] Make first user super admin, can't delete it
 [x] Pagination limit/offset capabilities
 [x] Field hook onChange
 [x] Update document url on save hook (ex: when parent change for nested collection)
@@ -30,18 +29,18 @@
 [x] Lazy store document URL
 [x] Move api <-> rizom
 [x] core plugins as direct props of rizom, ex rizom.cache
-[ ] fix missing edited_by
-[ ] Add select feature to findById collection
 [x] Check that url encoded string queries are well handled
-[ ] Better junction table naming
 [x] Remove locales bcp47
-
-# V1
-[x] collection nested
-[ ] Batch offset/update
-[ ] Add fields hint/description
-[ ] Put bin commands in a separate package ex: @rizom/kit ?
+[x] Collection nested
+[x] Add fields hint/description
 [x] page versions
+[x] Change the way the config is sanitize to allow better @tiptap integration
+[x] Add the ability to import data from the default locale
+[ ] Change edited_by should be currently_edited, add last_edited_by, created_by for less confusion.
+[ ] Add select feature to findById collection
+[ ] Better junction table naming
+[ ] Batch offset/update
+[ ] Put bin commands in a separate package ex: @rizom/kit ?
 [ ] page modification not saved message + changes saved to a page draft
 [ ] more better-auth integration
 [ ] configurable medias/config/panel path
