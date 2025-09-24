@@ -154,7 +154,7 @@ async function processConfigFile(originalPath, configDir, outputDir) {
 	const relativePath = path.relative(configDir, originalPath);
 
 	try {
-		const ast = babelParse(content, 'ts', { sourceType: 'module' });
+		const ast = babelParse(content, 'ts', { sourceType: 'module', attachComment: false });
 
 		// Analyze the file to find $ patterns
 		const analysis = analyzeFile(ast);
@@ -477,6 +477,17 @@ function sanitizeClientAst(ast, analysis) {
 	// Remove null body items (removed imports/declarations)
 	if (clonedAst.body) {
 		clonedAst.body = clonedAst.body.filter((item) => item !== null);
+	}
+
+	// Final cleanup: remove orphaned expression statements (standalone identifiers)
+	if (clonedAst.body) {
+		clonedAst.body = clonedAst.body.filter((node) => {
+			// Remove expression statements that are just standalone identifiers
+			if (t.isExpressionStatement(node) && t.isIdentifier(node.expression)) {
+				return false; // Remove orphaned references like "legendField;"
+			}
+			return true;
+		});
 	}
 
 	return clonedAst;
