@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [sveltekit(), rizom()],
 
 	server: {
-		host: 'rizom.test'
+		host: process.env.DEV_HOST || 'localhost'
 	},
 	optimizeDeps: {
 		exclude: ['sharp', 'better-sqlite3'],

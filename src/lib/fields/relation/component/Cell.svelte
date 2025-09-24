@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
+	import { toKebabCase } from '$lib/util/string';
 
 	type Props = {
 		value: {
@@ -19,7 +21,8 @@
 
 	let APIUrl = $derived.by(() => {
 		if (value && value.length && value[0].documentId) {
-			return `${env.PUBLIC_RIZOM_URL}/api/${value[0].relationTo}/${value[0].documentId}`;
+			const relation = value[0];
+			return apiUrl(toKebabCase(relation.relationTo), relation.documentId);
 		} else {
 			return null;
 		}

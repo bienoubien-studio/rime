@@ -1,6 +1,6 @@
-import { isDirectorySlug, isVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types.js';
 import cache from '$lib/core/dev/cache/index.js';
+import { hasDirectoriesSuffix, hasVersionsSuffix } from '$lib/core/naming.js';
 import { slugify } from '$lib/util/string.js';
 import fs from 'fs';
 import path from 'path';
@@ -129,4 +129,4 @@ export function writeRouteFile(basePath: string, routePath: string, fileType: st
  * export const GET = api.collection.get('pages_versions' as any)
  */
 export const TScastVersionSlug = (slug: string) =>
-	isVersionsSlug(slug) || isDirectorySlug(slug) ? `'${slug}' as any` : `'${slug}'`;
+	hasVersionsSuffix(slug) || hasDirectoriesSuffix(slug) ? `'${slug}' as any` : `'${slug}'`;

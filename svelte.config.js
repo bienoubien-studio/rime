@@ -12,7 +12,7 @@ const config = {
 			'rizom/panel/auth': './src/lib/panel/pages/auth/index.server.js',
 			'rizom/panel/client': './src/lib/panel/index.js',
 			'rizom/i18n': './src/lib/core/i18n',
-			'rizom/api': './src/lib/api.js',
+			'rizom/api': './src/lib/core/api/index.server.js',
 			$lib: './src/lib',
 			rizom: './src/lib'
 		}

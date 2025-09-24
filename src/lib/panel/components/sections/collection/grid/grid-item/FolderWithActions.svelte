@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { goto, invalidateAll } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
-	import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import { directoryInput } from '$lib/core/collections/upload/directory-input-config.js';
 	import type { Directory } from '$lib/core/collections/upload/upload.js';
 	import type { UploadPath } from '$lib/core/collections/upload/util/path.js';
+	import type { BuiltCollectionClient } from '$lib/core/config/types.js';
 	import { PARAMS } from '$lib/core/constant.js';
+	import { withDirectoriesSuffix } from '$lib/core/naming.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Input from '$lib/fields/text/component/Text.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -14,6 +15,7 @@
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte.js';
 	import { setFormContext } from '$lib/panel/context/form.svelte.js';
+	import { panelUrl } from '$lib/panel/util/url.js';
 	import { trycatchFetch } from '$lib/util/function.js';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../../../core/i18n/index.js';
@@ -21,13 +23,13 @@
 
 	type Props = {
 		folder: Directory;
-		slug: string;
+		collection: BuiltCollectionClient;
 		onDelete?: (path: string) => void;
 		onRename?: (oldPath: UploadPath, newPath: UploadPath) => void;
 		onDocumentDrop: (args: { documentId: string; path: string }) => void;
 		draggable?: 'true';
 	};
-	const { folder, slug, onDelete, onRename, onDocumentDrop, draggable }: Props = $props();
+	const { folder, collection, onDelete, onRename, onDocumentDrop, draggable }: Props = $props();
 
 	let deleteConfirmOpen = $state(false);
 	let renameDialogOpen = $state(false);
@@ -35,10 +37,10 @@
 	let rootElement = $state<HTMLButtonElement>();
 	const isRoot = $derived(folder.name === '...');
 	const APIProxy = getAPIProxyContext(API_PROXY.ROOT);
-	const childFilesURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${slug}?where[_path][equals]=${folder.id}&select=id`);
+	const childFilesURL = $derived(`${apiUrl(collection.kebab)}?where[_path][equals]=${folder.id}&select=id`);
 	const childFiles = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFilesURL));
 	const childFilesCount = $derived(childFiles.data?.docs?.length || 0);
-	const baseFolderApiURL = $derived(`${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(slug)}`);
+	const baseFolderApiURL = $derived(`${apiUrl(withDirectoriesSuffix(collection.kebab))}`);
 	const childFoldersURL = $derived(`${baseFolderApiURL}?where[parent][equals]=${folder.id}&select=id`);
 	const childFolders = $derived(APIProxy.getRessource<{ docs: GenericDoc[] }>(childFoldersURL));
 	const childFoldersCount = $derived(childFolders.data?.docs?.length || 0);
@@ -106,7 +108,7 @@
 	}
 
 	async function handleDropDocument(docId: string) {
-		const moveDocumentAPICallURL = `${env.PUBLIC_RIZOM_URL}/api/${slug}/${docId}`;
+		const moveDocumentAPICallURL = apiUrl(collection.kebab, docId);
 		const [error] = await trycatchFetch(moveDocumentAPICallURL, {
 			method: 'PATCH',
 			body: JSON.stringify({ _path: folder.id })
@@ -146,7 +148,7 @@
 	}
 
 	function handleGoToFolder() {
-		goto(`${env.PUBLIC_RIZOM_URL}/panel/${slug}?${PARAMS.UPLOAD_PATH}=${folder.id}`);
+		goto(`${panelUrl(collection.kebab)}?${PARAMS.UPLOAD_PATH}=${folder.id}`);
 	}
 
 	function handleDragStart(e: DragEvent) {

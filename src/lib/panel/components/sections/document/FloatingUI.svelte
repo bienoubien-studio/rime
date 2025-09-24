@@ -1,21 +1,19 @@
 <script lang="ts">
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import Button from '../../ui/button/button.svelte';
-	import { ChevronLeft } from '@lucide/svelte';
-	import ButtonSave from './ButtonSave.svelte';
-	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
-	import { env } from '$env/dynamic/public';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { ChevronLeft } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';
-	import { getConfigContext } from '$lib/panel/context/config.svelte.js';
+	import Button from '../../ui/button/button.svelte';
+	import LanguageSwitcher from '../../ui/language-switcher/LanguageSwitcher.svelte';
+	import ButtonSave from './ButtonSave.svelte';
 
 	type Props = { form: DocumentFormContext; onClose: any };
 	const { form, onClose }: Props = $props();
 
-	
 	function onLocaleClick(code: string) {
-		fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
+		fetch(`${apiUrl(form.config.kebab)}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
 			.then((response) => response.json())
 			.then((data: { docs: GenericDoc[] }) => {
 				if (Array.isArray(data.docs) && data.docs.length) {
@@ -56,9 +54,7 @@
 		/>
 	{/if}
 
-	
 	<LanguageSwitcher onLocalClick={onLocaleClick} />
-	
 </div>
 
 <style>

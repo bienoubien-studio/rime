@@ -1,5 +1,5 @@
-import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
+import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
@@ -13,6 +13,7 @@ import {
 } from '$lib/core/collections/upload/util/path.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
 
 type Data = {
@@ -40,7 +41,7 @@ export function collectionLoad(slug: CollectionSlug) {
 			draft: true
 		});
 
-		let aria: Partial<Route>[] = [{ title: 'Dashboard', path: `/panel` }, { title: collection.config.label.plural }];
+		let aria: Partial<Route>[] = [{ title: 'Dashboard', url: panelUrl() }, { title: collection.config.label.plural }];
 
 		let data: Data = {
 			aria,
@@ -53,9 +54,9 @@ export function collectionLoad(slug: CollectionSlug) {
 			let directories: any[] = [];
 			const paramUploadPath = event.url.searchParams.get('uploadPath') as UploadPath | null;
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
-			const directoryCollection = rizom.collection<any>(makeUploadDirectoriesSlug(slug));
+			const directoryCollection = rizom.collection<any>(withDirectoriesSuffix(slug));
 			// Check if dir exists
-			let [error, currentDirectory] = await trycatch(() =>
+			const [error, currentDirectory] = await trycatch(() =>
 				directoryCollection.findById({
 					id: currentDirectoryPath
 				})
@@ -91,7 +92,10 @@ export function collectionLoad(slug: CollectionSlug) {
 				}
 				parentDirectory = result;
 
-				const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` };
+				const collectionAria = {
+					title: collection.config.label.plural,
+					url: panelUrl(collection.config.kebab)
+				};
 				aria = [...aria].slice(0, -1);
 				aria = [...aria, collectionAria, ...buildUploadAria({ path: currentDirectoryPath, slug })];
 				data.aria = removePathFromLastAria(aria);

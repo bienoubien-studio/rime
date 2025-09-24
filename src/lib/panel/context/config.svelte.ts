@@ -1,18 +1,19 @@
-import type { BuiltArea, BuiltCollection, BuiltConfigClient } from '$lib/core/config/types';
+import type { BuiltAreaClient, BuiltCollectionClient, BuiltConfigClient } from '$lib/core/config/types';
 import type { Prototype, PrototypeSlug } from '$lib/core/types/doc';
 import { getContext, setContext } from 'svelte';
 
 function createConfigStore(config: BuiltConfigClient) {
-	function getArea(slug: string): BuiltArea {
+	//
+	function getArea(slug: string): BuiltAreaClient {
 		return config.areas.filter((c) => c.slug === slug)[0];
 	}
 
-	function getCollection(slug: string): BuiltCollection {
+	function getCollection(slug: string): BuiltCollectionClient {
 		return config.collections.filter((c) => c.slug === slug)[0];
 	}
 
-	function getDocumentConfig({ prototype, slug }: GetDocumentConfigArgs) {
-		return prototype === 'area' ? getArea(slug) : getCollection(slug);
+	function getDocumentConfig(args: { prototype: Prototype; slug: PrototypeSlug }) {
+		return args.prototype === 'area' ? getArea(args.slug) : getCollection(args.slug);
 	}
 
 	return {
@@ -35,8 +36,3 @@ export function setConfigContext(initial: BuiltConfigClient) {
 export function getConfigContext() {
 	return getContext<ReturnType<typeof setConfigContext>>(CONFIG_KEY);
 }
-
-type GetDocumentConfigArgs = {
-	prototype: Prototype;
-	slug: PrototypeSlug;
-};

@@ -1,9 +1,11 @@
-import { redirect, type RequestEvent } from '@sveltejs/kit';
+import { PARAMS } from '$lib/core/constant.js';
+import { ERROR_CONTEXT, handleError } from '$lib/core/errors/handler.server';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { AreaSlug } from '$lib/core/types/doc';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
-import { ERROR_CONTEXT, handleError } from '$lib/core/errors/handler.server';
-import { PARAMS } from '$lib/core/constant.js';
+import { toKebabCase } from '$lib/util/string.js';
+import { redirect, type RequestEvent } from '@sveltejs/kit';
 import { t__ } from '../../../core/i18n/index.js';
 
 export default function (slug: AreaSlug) {
@@ -14,7 +16,7 @@ export default function (slug: AreaSlug) {
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 
-			const data = await extractData(event.request)
+			const data = await extractData(event.request);
 
 			const [error, document] = await trycatch(() =>
 				rizom.area(slug).update({
@@ -32,9 +34,9 @@ export default function (slug: AreaSlug) {
 			if (draft && 'versionId' in document) {
 				const referer = event.request.headers.get('referer');
 				if (referer && referer.includes('/versions')) {
-					return redirect(303, `/panel/${slug}/versions?versionId=${document.versionId}`);
+					return redirect(303, `${panelUrl(toKebabCase(slug))}/versions?versionId=${document.versionId}`);
 				} else {
-					return redirect(303, `/panel/${slug}?versionId=${document.versionId}`);
+					return redirect(303, `${panelUrl(toKebabCase(slug))}?versionId=${document.versionId}`);
 				}
 			}
 

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { isUploadConfig } from '$lib/core/collections/upload/util/config';
 	import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 	import type { GenericDoc } from '$lib/core/types/doc';
 	import CardDocument from '$lib/panel/components/ui/card-document/card-document.svelte';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import { type CollectionContext } from '$lib/panel/context/collection.svelte.js';
-	import { isUploadConfig } from '$lib/util/config.js';
+	import { panelUrl } from '$lib/panel/util/url.js';
 	import { getContext } from 'svelte';
 
 	type Props = { checked: boolean; doc: GenericDoc; draggable?: 'true' };
@@ -21,7 +22,7 @@
 			? page.url.searchParams.get(PARAMS.UPLOAD_PATH) || UPLOAD_PATH.ROOT_NAME
 			: null;
 		const params = uploadPath ? `?${PARAMS.UPLOAD_PATH}=${uploadPath}` : '';
-		goto(`/panel/${collection.config.slug}/${doc.id}${params}`);
+		goto(`${panelUrl(collection.config.kebab, doc.id)}${params}`);
 	}
 
 	function handleDragStart(e: DragEvent) {

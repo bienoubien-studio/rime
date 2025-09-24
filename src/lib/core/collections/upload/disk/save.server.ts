@@ -34,7 +34,7 @@ const isSameFile = (buffer: Buffer, filePath: string): boolean => {
 		const newFileHash = crypto.createHash('md5').update(buffer).digest('hex');
 
 		return existingFileHash === newFileHash;
-	} catch (error) {
+	} catch {
 		// If any error occurs during comparison, assume files are different
 		return false;
 	}

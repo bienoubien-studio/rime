@@ -88,8 +88,8 @@
 			"import": "./dist/panel/pages/index.js"
 		},
 		"./api": {
-			"types": "./dist/api.d.ts",
-			"import": "./dist/api.js"
+			"types": "./dist/core/api/index.server.d.ts",
+			"import": "./dist/core/api/index.server.js"
 		},
 		"./core/plugins/*.js": {
 			"types": "./dist/core/plugins/*.d.ts",
@@ -97,10 +97,6 @@
 		},
 		"./core/plugins/*.svelte": {
 			"import": "./dist/core/plugins/*.svelte"
-		},
-		"./core/config/build/index.js": {
-			"types": "./dist/core/config/build/index.d.ts",
-			"import": "./dist/core/config/build/index.js"
 		},
 		"./client": {
 			"types": "./dist/client.d.ts",

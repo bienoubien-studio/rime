@@ -1,10 +1,10 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { and, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { CompiledArea, CompiledCollection } from '../types.js';
-import { makeLocalesSlug, makeVersionsSlug } from './generate-schema/util.js';
 import type { GenericTables } from './types.js';
 
 type Params = {
@@ -37,7 +37,7 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		}
 
 		case OPERATION.LOCALE: {
-			const tableLocale = tables[makeLocalesSlug(config.slug) as keyof typeof tables];
+			const tableLocale = tables[withLocalesSuffix(config.slug) as keyof typeof tables];
 			operation = db
 				.update(tableLocale)
 				.set({ url })
@@ -52,7 +52,7 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		}
 
 		case OPERATION.VERSION: {
-			const tableVersions = tables[makeVersionsSlug(config.slug)];
+			const tableVersions = tables[withVersionsSuffix(config.slug)];
 			operation = db
 				.update(tableVersions)
 				.set({ url })
@@ -67,7 +67,7 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		}
 
 		case OPERATION.VERSION_LOCALE: {
-			const tableVersionsLocales = tables[makeLocalesSlug(makeVersionsSlug(config.slug)) as keyof typeof tables];
+			const tableVersionsLocales = tables[withLocalesSuffix(withVersionsSuffix(config.slug)) as keyof typeof tables];
 			operation = db
 				.update(tableVersionsLocales)
 				.set({ url })

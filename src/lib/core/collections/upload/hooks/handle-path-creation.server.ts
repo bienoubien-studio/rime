@@ -1,6 +1,6 @@
-import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { trycatch } from '$lib/util/function.js';
 import { getSegments } from '../util/path.js';
@@ -21,9 +21,9 @@ export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 	}
 
 	if (args.data._path) {
-		const directorySlug = makeUploadDirectoriesSlug(args.config.slug);
+		const directorySlug = withDirectoriesSuffix(args.config.slug);
 
-		const [error, dir] = await trycatch(() =>
+		const [, dir] = await trycatch(() =>
 			rizom.collection(directorySlug).findById({
 				select: ['id'],
 				id: data._path
@@ -49,7 +49,7 @@ export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 			currentPath = currentPath ? `${currentPath}${UPLOAD_PATH.SEPARATOR}${segment}` : segment;
 
 			// Check if this segment exists
-			const [segError, segExists] = await trycatch(() =>
+			const [, segExists] = await trycatch(() =>
 				rizom.collection(directorySlug).findById({
 					select: ['id'],
 					id: currentPath

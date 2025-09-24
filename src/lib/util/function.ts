@@ -90,10 +90,3 @@ export const trycatchFetch = async (
 		return [error as Error, null] as [Error, never];
 	}
 };
-
-/**
- * Type safe check whether a function return a Promise or not
- */
-export function isPromise<T>(val: T | Promise<T>): val is Promise<T> {
-	return typeof (val as any)?.then === 'function';
-}

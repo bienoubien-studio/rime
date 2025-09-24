@@ -52,6 +52,16 @@ export class GroupFieldBuilder extends FormFieldBuilder<GroupField> {
 
 export const group = (name: string) => new GroupFieldBuilder(name);
 
+/**
+ * Checks if a field is a group field.
+ */
+export const isGroupField = (field: Field): field is GroupField => field.type === 'group';
+
+/**
+ * Checks if a field is a group field (raw type).
+ */
+export const isGroupFieldRaw = (field: Field): field is GroupFieldRaw => field.type === 'group';
+
 /****************************************************/
 /* Types
 /****************************************************/

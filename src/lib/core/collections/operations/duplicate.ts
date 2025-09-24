@@ -1,9 +1,9 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { buildConfigMap } from '$lib/core/operations/configMap';
-import type { BlocksFieldRaw } from '$lib/fields/blocks';
-import type { TreeFieldRaw } from '$lib/fields/tree';
-import { isBlocksFieldRaw, isTreeFieldRaw } from '$lib/util/field';
+import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
+import { isBlocksFieldRaw, type BlocksFieldRaw } from '$lib/fields/blocks/index.js';
+import { isTreeFieldRaw, type TreeFieldRaw } from '$lib/fields/tree/index.js';
+
 import { getValueAtPath, isObjectLiteral, matchStructure, omitId, setValueAtPath } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types';
 import type { RequestEvent } from '@sveltejs/kit';

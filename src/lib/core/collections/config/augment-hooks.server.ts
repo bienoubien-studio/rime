@@ -19,11 +19,11 @@ import { populateAPIKey } from '../auth/hooks/after-create/populate-api-key.serv
 import { removePrivateFields } from '../auth/hooks/before-read/remove-private-fields.server.js';
 import { augmentFieldsPassword } from '../auth/hooks/before-upsert/augment-fields-password.server.js';
 import { addChildrenProperty } from '../nested/hooks/index.server.js';
-import { cleanUpFiles } from '../upload/hooks/clean-up-files.js';
-import { castBase64ToFile } from '../upload/hooks/convert-base64.js';
-import { handlePathCreation } from '../upload/hooks/handle-path-creation.js';
+import { cleanUpFiles } from '../upload/hooks/clean-up-files.server.js';
+import { castBase64ToFile } from '../upload/hooks/convert-base64.server.js';
+import { handlePathCreation } from '../upload/hooks/handle-path-creation.server.js';
 import { populateSizes } from '../upload/hooks/populate-sizes.server.js';
-import { processFileUpload } from '../upload/hooks/process-file-upload.js';
+import { processFileUpload } from '../upload/hooks/process-file-upload.server.js';
 
 type PartialConfig = {
 	upload?: Collection<any>['upload'];

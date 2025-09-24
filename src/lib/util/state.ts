@@ -4,9 +4,6 @@ import type { Dic } from '$lib/util/types';
  * Creates a deep copy of a state object, removing any proxies or reactive wrappers.
  * Useful for getting a clean snapshot of reactive state that can be serialized or compared.
  *
- * @param state - The state object to create a snapshot from
- * @returns A deep copy of the state with all proxies unwrapped
- *
  * @example
  * // Get a clean snapshot of a reactive state object
  * const reactiveState = { count: 1, nested: { value: 'test' } };

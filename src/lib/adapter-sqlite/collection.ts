@@ -5,12 +5,12 @@ import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js'
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { trycatchSync } from '$lib/util/function.js';
+import { withDirectoriesSuffix, withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { and, desc, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from '../core/config/interface.server.js';
 import { RizomError } from '../core/errors/index.js';
-import * as schemaUtil from './generate-schema/util.js';
 import { buildOrderByParam } from './orderBy.js';
 import * as adapterUtil from './util.js';
 import { buildWhereParam } from './where.js';
@@ -53,7 +53,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			return doc;
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsSlug(slug);
+			const versionsTable = withVersionsSuffix(slug);
 			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
 
 			// Build params based
@@ -122,7 +122,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// set the normailzed path for the reference in the upload table
 			data._path = path;
 			// Get relative directory collection table
-			const tableName = schemaUtil.makeUploadDirectoriesSlug(slug);
+			const tableName = withDirectoriesSuffix(slug);
 			const table = tables[tableName];
 
 			// Check if there is already a folder with the path in the uploadDirectories
@@ -155,13 +155,13 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Generate version ID
 			const versionId = adapterUtil.generatePK();
-			const versionsTableName = schemaUtil.makeVersionsSlug(slug);
+			const versionsTableName = withVersionsSuffix(slug);
 
 			// Prepare data for versions table
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(contentData, {
 				tables,
 				mainTableName: versionsTableName,
-				localesTableName: schemaUtil.makeLocalesSlug(versionsTableName),
+				localesTableName: withLocalesSuffix(versionsTableName),
 				locale
 			});
 
@@ -176,7 +176,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, schemaUtil.makeLocalesSlug(versionsTableName), {
+				await adapterUtil.insertTableRecord(db, tables, withLocalesSuffix(versionsTableName), {
 					...localizedData,
 					ownerId: versionId,
 					locale: locale!
@@ -196,7 +196,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
 				mainTableName: slug,
-				localesTableName: schemaUtil.makeLocalesSlug(slug),
+				localesTableName: withLocalesSuffix(slug),
 				locale
 			});
 
@@ -210,7 +210,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, schemaUtil.makeLocalesSlug(slug), {
+				await adapterUtil.insertTableRecord(db, tables, withLocalesSuffix(slug), {
 					...localizedData,
 					ownerId: docId,
 					locale: locale!
@@ -240,7 +240,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
 			const tableName = slug;
-			const tableLocalesName = schemaUtil.makeLocalesSlug(slug);
+			const tableLocalesName = withLocalesSuffix(slug);
 
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -282,8 +282,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				}
 			});
 
-			const versionsTable = schemaUtil.makeVersionsSlug(slug);
-			const versionsLocalesTable = schemaUtil.makeLocalesSlug(versionsTable);
+			const versionsTable = withVersionsSuffix(slug);
+			const versionsLocalesTable = withLocalesSuffix(versionsTable);
 
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(contentData, {
 				tables,
@@ -373,7 +373,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 		} else {
 			// Implementation for versioned collections
-			const versionsTable = schemaUtil.makeVersionsSlug(slug);
+			const versionsTable = withVersionsSuffix(slug);
 			const withParam = buildWithParam({ slug: versionsTable, select, tables, configInterface, locale }) || undefined;
 
 			// If draft is not true and versions.draft enabled

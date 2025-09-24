@@ -2,7 +2,9 @@ import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
+import { toKebabCase } from '$lib/util/string.js';
 import { type Actions, type RequestEvent } from '@sveltejs/kit';
 import { t__ } from '../../../core/i18n/index.js';
 
@@ -38,7 +40,7 @@ export default function (slug: CollectionSlug) {
 
 			// Redirect to proper upload directory if collection.upload
 			const params = collection.config.upload ? `?${PARAMS.UPLOAD_PATH}=${data._path || UPLOAD_PATH.ROOT_NAME}` : '';
-			const redirectUrl = `/panel/${slug}/${document.id}${params}`;
+			const redirectUrl = `${panelUrl(toKebabCase(slug), document.id)}${params}`;
 
 			return {
 				redirectUrl,
@@ -77,7 +79,7 @@ export default function (slug: CollectionSlug) {
 				return {
 					document,
 					message: t__('common.version_created'),
-					redirectUrl: `/panel/${slug}/${document.id}/versions?versionId=${document.versionId}`
+					redirectUrl: `${panelUrl(toKebabCase(slug), document.id)}/versions?versionId=${document.versionId}`
 				};
 			}
 

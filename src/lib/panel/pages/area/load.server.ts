@@ -1,11 +1,13 @@
-import { env } from '$env/dynamic/public';
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+import { apiUrl } from '$lib/core/api/index.js';
 import { PARAMS } from '$lib/core/constant.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { AreaSlug } from '$lib/core/types/doc';
 import type { AreaDocData } from '$lib/panel/index.js';
 import type { Route } from '$lib/panel/types.js';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
+import { toKebabCase } from '$lib/util/string';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 
 export default function <V extends boolean = boolean>(slug: AreaSlug, withVersions?: V) {
@@ -18,7 +20,7 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 		const authorizedUpdate = area.config.access.update(locals.user, {});
 
 		const aria: Partial<Route>[] = [
-			{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
+			{ title: 'Dashboard', icon: 'dashboard', url: panelUrl() },
 			{ title: area.config.label }
 		];
 
@@ -34,17 +36,16 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 			return { aria, doc, operation: 'update', status: 200, readOnly: true } as AreaDocData<false>;
 		}
 
-		let data: AreaDocData = {
+		let data: Partial<AreaDocData> = {
 			aria,
 			doc,
 			operation: 'update',
 			status: 200,
-			readOnly: false,
-			versions: undefined
+			readOnly: false
 		};
 
 		if (withVersions) {
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
+			const url = `${apiUrl(withVersionsSuffix(toKebabCase(doc._type)))}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = fetch(url).then((r) => r.json());
 			const [error, result] = await trycatch(promise);
 			if (error || !Array.isArray(result.docs)) {

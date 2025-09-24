@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { beforeNavigate } from '$app/navigation';
+	import { isAuthConfig } from '$lib/core/collections/auth/util';
+	import { isUploadConfig } from '$lib/core/collections/upload/util/config';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import { setDocumentFormContext, type FormSuccessData } from '$lib/panel/context/documentForm.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { isAuthConfig, isUploadConfig } from '$lib/util/config.js';
 	import RenderFields from '../../fields/RenderFields.svelte';
 	import AuthApiKeyDialog from './AuthAPIKeyDialog.svelte';
 	import AuthFooter from './AuthFooter.svelte';
@@ -44,9 +45,9 @@
 		prototype: initial._prototype,
 		slug: initial._type
 	});
-	
+
 	const user = getUserContext();
-	
+
 	let formElement = $state<HTMLFormElement>();
 
 	beforeNavigate(async () => {

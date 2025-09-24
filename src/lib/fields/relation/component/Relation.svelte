@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { Relation } from '$lib/adapter-sqlite/relations.js';
+	import { apiUrl } from '$lib/core/api/index.js';
+	import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { Field } from '$lib/panel/components/fields/index.js';
 	import { root } from '$lib/panel/components/fields/root.svelte.js';
@@ -7,12 +8,12 @@
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
+	import { panelUrl } from '$lib/panel/util/url.js';
 	import { moveItem } from '$lib/util/array.js';
-	import { isUploadConfig } from '$lib/util/config.js';
 	import { getValueAtPath } from '$lib/util/object.js';
 	import { snapshot } from '$lib/util/state.js';
 	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
-	import type { RelationField } from '../index';
+	import type { Relation, RelationField } from '../index.js';
 	import Default from './default/Default.svelte';
 	import './relation.css';
 	import type { RelationFieldItem } from './types.js';
@@ -61,7 +62,7 @@
 			label: getValueAtPath(relationConfig.asTitle, doc) || '[untitled]',
 			documentId: doc.id,
 			title: doc.title,
-			editUrl: `/panel/${relationConfig.slug}/${doc.id}`,
+			editUrl: panelUrl(relationConfig.kebab, doc.id),
 			_type: doc._type,
 			_prototype: doc._prototype
 		};
@@ -86,7 +87,7 @@
 
 	// Build the API URL for fetching the collection
 	function makeRessourceURL() {
-		const url = new URL(`/api/${relationConfig.slug}`, window.location.origin);
+		const url = new URL(apiUrl(relationConfig.kebab));
 
 		// Add depth parameter if in live context
 		if (form.isLive) {

@@ -64,6 +64,16 @@ export class TabBuilder {
 	}
 }
 
+/**
+ * Checks if a field is a tabs field.
+ */
+export const isTabsField = (field: Field): field is TabsField => field.type === 'tabs';
+
+/**
+ * Checks if a field is a tabs field (raw type).
+ */
+export const isTabsFieldRaw = (field: Field): field is TabsFieldRaw => field.type === 'tabs';
+
 /****************************************************/
 /* Types
 /****************************************************/

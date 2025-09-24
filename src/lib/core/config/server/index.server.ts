@@ -6,6 +6,7 @@ import devCache from '$lib/core/dev/cache/index.js';
 import generateRoutes from '$lib/core/dev/generate/routes/index.js';
 import generateTypes from '$lib/core/dev/generate/types/index.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { logger } from '$lib/core/logger/index.server.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.server.js';
 import { cacheClient } from '$lib/core/plugins/cache/index.js';
@@ -109,14 +110,12 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 				throw new RizomError('Config not valid');
 			}
 
-			generateRoutes(builtConfig);
-
+			logger.info('Generating...');
 			devCache.set('.generating', new Date().toISOString());
+			generateRoutes(builtConfig);
 			generateSchema(builtConfig).then(() => {
 				generateTypes(builtConfig).then(() => {
-					setTimeout(() => {
-						devCache.delete('.generating');
-					}, 2000);
+					devCache.delete('.generating');
 				});
 			});
 		}

@@ -1,16 +1,15 @@
 import { RizomError } from '$lib/core/errors/index.js';
+import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { hasVersionsSuffix, withLocalesSuffix } from '$lib/core/naming.js';
+import { isRelationField } from '$lib/fields/relation/index.js';
 import { rizom, type GetRegisterType } from '$lib/index.js';
-import { getFieldConfigByPath } from '$lib/util/config.js';
-import { isRelationField } from '$lib/util/field.js';
 import type { Dic } from '$lib/util/types.js';
 import * as drizzleORM from 'drizzle-orm';
 import { and, eq, getTableColumns, inArray, or } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { ParsedQs } from 'qs';
-
 import type { PrototypeSlug } from '../types.js';
-import { isVersionsSlug, makeLocalesSlug } from './generate-schema/util.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
@@ -22,7 +21,7 @@ type BuildWhereArgs = {
 
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
 	const table = rizom.adapter.getTable(slug);
-	const tableNameLocales = makeLocalesSlug(slug);
+	const tableNameLocales = withLocalesSuffix(slug);
 	const tableLocales = rizom.adapter.getTable(tableNameLocales);
 
 	const localizedColumns =
@@ -45,7 +44,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// Handle id field for versioned collections
 		// if "id" inside the query it should refer to the root table
 		// record id not from the versions table
-		if (isVersionsSlug(slug) && 'id' in conditionObject) {
+		if (hasVersionsSuffix(slug) && 'id' in conditionObject) {
 			// Replace id with ownerId and keep the same operator and value
 			const idOperator = conditionObject.id;
 			delete conditionObject.id;
@@ -70,7 +69,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		const sqlColumn = column.replace(/\./g, '__');
 
 		// Handle hierarchy fields (_parent, _position) in versioned collections
-		if (isVersionsSlug(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
+		if (hasVersionsSuffix(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
 			const rootTable = rizom.adapter.getTable(rootSlug);

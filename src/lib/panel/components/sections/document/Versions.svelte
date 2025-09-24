@@ -1,35 +1,38 @@
 <script lang="ts">
-	import { env } from '$env/dynamic/public';
+	import type { VersionsStatus } from '$lib/core/constant.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
+	import { panelUrl } from '$lib/panel/util/url.js';
+	import { toKebabCase } from '$lib/util/string.js';
+	import { X } from '@lucide/svelte';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
-	import { X } from '@lucide/svelte';
 	import ScrollArea from '../../ui/scroll-area/scroll-area.svelte';
 	import StatusDot from '../collection/StatusDot.svelte';
-	import type { VersionsStatus } from '$lib/core/constant.js';
 
 	type Props = {
 		doc: GenericDoc;
-		versions: { id:string, updatedAt: Date, status: VersionsStatus }[];
+		versions: { id: string; updatedAt: Date; status: VersionsStatus }[];
 	};
 	const { doc, versions }: Props = $props();
 
 	const locale = getLocaleContext();
 
 	const makeVersionUrl = (version: Props['versions'][number]) => {
+		const kebabSlug = toKebabCase(doc._type);
 		if (doc._prototype === 'collection') {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/${doc.id}/versions?versionId=${version.id}`;
+			return `${panelUrl(kebabSlug, doc.id)}/versions?versionId=${version.id}`;
 		} else {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/versions?versionId=${version.id}`;
+			return `${panelUrl(kebabSlug)}/versions?versionId=${version.id}`;
 		}
 	};
 
 	const returnUrl = $derived.by(() => {
+		const kebabSlug = toKebabCase(doc._type);
 		if (doc._prototype === 'collection') {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}/${doc.id}?versionId=${doc.versionId}`;
+			return `${panelUrl(kebabSlug, doc.id)}?versionId=${doc.versionId}`;
 		} else {
-			return `${env.PUBLIC_RIZOM_URL}/panel/${doc._type}?versionId=${doc.versionId}`;
+			return `${panelUrl(kebabSlug)}/panel/${toKebabCase(doc._type)}?versionId=${doc.versionId}`;
 		}
 	});
 </script>

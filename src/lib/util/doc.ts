@@ -1,15 +1,14 @@
+import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
+import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import type { CompiledCollection, CompiledArea } from '$lib/core/config/types.js';
 import type { Dic } from '$lib/util/types.js';
-import { isUploadConfig } from '$lib/util/config.js';
-import { snapshot } from './state.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import { snapshot } from './state.js';
 
 /**
  * Creates a blank document based on a collection or area configuration.
  * Initializes all fields with appropriate default values based on their type.
  *
- * @param config - The compiled collection or area configuration containing field definitions
  * @returns A new blank document with default values for all fields
  *
  * @example

@@ -1,22 +1,24 @@
 import { invalidateAll } from '$app/navigation';
-import { env } from '$env/dynamic/public';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
+import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
 import type { BuiltCollection } from '$lib/core/config/types.js';
 import { PARAMS } from '$lib/core/constant.js';
 import type { FieldBuilder } from '$lib/core/fields/builders/index.js';
+import { isFormField } from '$lib/core/fields/util.js';
+import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import type { GenericDoc, GenericNestedDoc } from '$lib/core/types/doc.js';
 import { GroupFieldBuilder } from '$lib/fields/group/index.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { FieldPanelTableConfig } from '$lib/panel/types.js';
-import { isUploadConfig } from '$lib/util/config.js';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { toNestedStructure } from '$lib/util/doc.js';
 import { trycatch, trycatchFetch } from '$lib/util/function.js';
 import { getValueAtPath, hasProp } from '$lib/util/object.js';
 import type { WithRequired } from '$lib/util/types.js';
+import { apiUrl } from '$lib/core/api/index.js';
 import { getContext, onMount, setContext, type Component } from 'svelte';
 import { toast } from 'svelte-sonner';
-import { isFormField } from '../../util/field.js';
 //@ts-expect-error command-score has no types
 import commandScore from 'command-score';
 
@@ -148,7 +150,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		docs = docs.filter((doc) => !ids.includes(doc.id));
 		initialDocs = docs;
 
-		const deleteUrl = `/api/${config.slug}?where[id][in_array]=${toDelete.map((d) => d.id).join(',')}`;
+		const deleteUrl = `${apiUrl(config.kebab)}?where[id][in_array]=${toDelete.map((d) => d.id).join(',')}`;
 		const [error] = await trycatchFetch(deleteUrl, {
 			method: 'DELETE'
 		});
@@ -239,7 +241,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 		} catch (error) {
 			console.error('Failed to update documents:', error);
 			// Revert to current database docs
-			docs = await fetch(`${env.PUBLIC_RIZOM_URL}/api/${config.slug}`)
+			docs = await fetch(apiUrl(config.kebab))
 				.then((r) => r.json())
 				.then((r) => r.docs);
 			stamp = Date.now();
@@ -254,7 +256,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	 */
 	const apiUpdateNestedStructure = async (docsToUpdate: GenericDoc[]) => {
 		const promises = docsToUpdate.map((doc) => {
-			let url = `${env.PUBLIC_RIZOM_URL}/api/${config.slug}/${doc.id}`;
+			let url = apiUrl(config.kebab, doc.id);
 			if (doc.versionId) {
 				url += `?${PARAMS.VERSION_ID}=${doc.versionId}`;
 			}
@@ -340,7 +342,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	}
 
 	async function deleteDoc(id: string) {
-		const res = await fetch(`/api/${config.slug}/${id}`, {
+		const res = await fetch(`/api/${config.kebab}/${id}`, {
 			method: 'DELETE',
 			headers: {
 				'content-type': 'application/json'
@@ -382,6 +384,19 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 
 		get hasVersions() {
 			return hasVersions;
+		},
+
+		get panelUrl() {
+			return panelUrl(config.kebab);
+		},
+
+		get apiUrl() {
+			return apiUrl(config.kebab);
+		},
+
+		get apiDirectoriesUrl() {
+			if (!config.upload) throw new Error(`${config.slug} is not an upload collection`);
+			return apiUrl(withDirectoriesSuffix(config.kebab));
 		},
 
 		config,

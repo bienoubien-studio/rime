@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { env } from '$env/dynamic/public';
 	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
+	import { panelUrl } from '$lib/panel/util/url.js';
 	import { trycatchFetch } from '$lib/util/function.js';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import { Copy, History, Import, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';
@@ -41,9 +42,7 @@
 	const isVersionPage = $derived(page.url.pathname.includes('/versions'));
 
 	function handleViewVersion() {
-		const basUrl = isCollection
-			? `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}/${form.doc.id}`
-			: `${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`;
+		const basUrl = isCollection ? panelUrl(form.config.kebab, form.doc.id) : panelUrl(form.config.kebab);
 		return goto(`${basUrl}/versions?${PARAMS.VERSION_ID}=${form.doc.versionId}`);
 	}
 
@@ -56,12 +55,12 @@
 	}
 
 	async function handleDelete() {
-		await fetch(`${env.PUBLIC_RIZOM_URL}/api/${form.config.slug}/${form.doc.id}`, {
+		await fetch(`${apiUrl(form.config.kebab)}/${form.doc.id}`, {
 			method: 'DELETE'
 		}).then((response) => {
 			if (response.ok) {
 				toast.success(t__('common.doc_deleted'));
-				goto(`${env.PUBLIC_RIZOM_URL}/panel/${form.config.slug}`);
+				goto(panelUrl(form.config.kebab));
 			} else {
 				toast.error(t__('error.generic'));
 			}
@@ -69,7 +68,7 @@
 	}
 
 	async function duplicate() {
-		const url = `/api/${form.config.slug}/${form.doc.id}/duplicate`;
+		const url = `${apiUrl(form.config.kebab, form.doc.id)}/duplicate`;
 
 		const [error, success] = await trycatchFetch(url, {
 			method: 'POST'
@@ -81,7 +80,7 @@
 		}
 		const { id } = await success.json();
 		toast.success(t__('common.duplicate_success'));
-		await goto(`/panel/${form.config.slug}/${id}`);
+		await goto(panelUrl(form.config.kebab, form.doc.id));
 	}
 
 	const shouldShowSettings = $derived.by(() => {

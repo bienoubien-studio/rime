@@ -48,7 +48,7 @@
 			<Folder
 				{onDocumentDrop}
 				folder={{ ...collection.upload.parentDirectory, name: '...' }}
-				slug={collection.config.slug}
+				collection={collection.config}
 			/>
 		{/if}
 
@@ -58,7 +58,7 @@
 				draggable="true"
 				{onDocumentDrop}
 				{folder}
-				slug={collection.config.slug}
+				collection={collection.config}
 				onDelete={onDeleteFolder}
 				onRename={onRenameFolder}
 			/>

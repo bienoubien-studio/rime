@@ -1,5 +1,5 @@
 import { type PlaywrightTestConfig, defineConfig } from '@playwright/test';
-import path from 'path'
+import path from 'path';
 
 type Args = {
 	name: string;
@@ -19,9 +19,9 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 			timeout: 30000
 		},
 		use: {
-			baseURL: 'http://rizom.test:5173',
+			baseURL: process.env.PUBLIC_RIZOM_URL || 'http://localhost:5173',
 			extraHTTPHeaders: {
-				origin: 'http://rizom.test:5173'
+				origin: process.env.PUBLIC_RIZOM_URL || 'http://localhost:5173'
 			}
 		},
 		projects: [

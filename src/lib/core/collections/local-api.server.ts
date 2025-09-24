@@ -1,14 +1,13 @@
 import { RizomError } from '$lib/core/errors/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
-
 import type { RequestEvent } from '@sveltejs/kit';
-import { isAuthConfig } from '../../util/config.js';
 import { createBlankDocument } from '../../util/doc.js';
-import { isFormField } from '../../util/field.js';
 import type { CompiledCollection } from '../config/types.js';
+import { isFormField } from '../fields/util.js';
 import type { CollectionSlug } from '../types/doc.js';
 import { PRIVATE_FIELDS } from './auth/constant.server.js';
+import { isAuthConfig } from './auth/util.js';
 import { create } from './operations/create.js';
 import { deleteDocs } from './operations/delete.js';
 import { deleteById } from './operations/deleteById.js';

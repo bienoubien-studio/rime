@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { Button } from '../../ui/button';
-	import { onMount } from 'svelte';
-	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import type { User } from '$lib/core/collections/auth/types.js';
-	
+	import type { GenericDoc } from '$lib/core/types/doc.js';
+	import { toKebabCase } from '$lib/util/string.js';
+	import { onMount } from 'svelte';
+	import { Button } from '../../ui/button/index.js';
 	type Props = { by: string; user: User; doc: GenericDoc };
 	const { by, user, doc }: Props = $props();
 
 	async function takeControl() {
-		const fetchURl = `/api/${doc._type}/${doc._prototype === 'collection' ? doc.id : ''}`;
+		const fetchURl = `${apiUrl(toKebabCase(doc._type))}/${doc._prototype === 'collection' ? doc.id : ''}`;
 
 		await fetch(fetchURl, {
 			method: 'PATCH',
@@ -22,7 +23,7 @@
 	let email = $state();
 
 	onMount(async () => {
-		const { doc } = await fetch(`/api/staff/${by}`).then((r) => r.json());
+		const { doc } = await fetch(apiUrl('staff', by)).then((r) => r.json());
 		email = doc.email;
 	});
 </script>

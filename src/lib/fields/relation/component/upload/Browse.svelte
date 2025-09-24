@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { env } from '$env/dynamic/public';
-	import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import type { Directory } from '$lib/core/collections/upload/upload';
+	import { withDirectoriesSuffix } from '$lib/core/naming.js';
 	import Folder from '$lib/panel/components/sections/collection/grid/grid-item/Folder.svelte';
 	import CardDocument from '$lib/panel/components/ui/card-document/card-document.svelte';
 	import * as Sheet from '$lib/panel/components/ui/sheet/index.js';
@@ -23,10 +23,10 @@
 	});
 
 	const filesURL = $derived.by(() => {
-		return `${env.PUBLIC_RIZOM_URL}/api/${config.slug}?where[_path][equals]=${path}`;
+		return `${apiUrl(config.kebab)}?where[_path][equals]=${path}`;
 	});
 	const foldersURL = $derived.by(() => {
-		return `${env.PUBLIC_RIZOM_URL}/api/${makeUploadDirectoriesSlug(config.slug)}?where[parent][equals]=${path}`;
+		return `${apiUrl(withDirectoriesSuffix(config.kebab))}?where[parent][equals]=${path}`;
 	});
 
 	const APIProxy = getAPIProxyContext(API_PROXY.DOCUMENT);

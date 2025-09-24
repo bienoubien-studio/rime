@@ -782,7 +782,7 @@ test('Should not create a user', async ({ request }) => {
 	expect(response.status()).toBe(403);
 });
 
-test('Should create a user', async ({ request, page }) => {
+test('Should create a user', async ({ request }) => {
 	const response = await request.post(`${API_BASE_URL}/users`, {
 		headers: await signInAdmin(request),
 		data: {

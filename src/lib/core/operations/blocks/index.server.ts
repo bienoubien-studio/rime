@@ -1,8 +1,8 @@
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
 import { RizomError } from '$lib/core/errors/index.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 import { defineBlocksDiff } from './diff.server.js';
@@ -33,7 +33,7 @@ export const saveBlocks = async (args: {
 	if (!configMap || !ownerId) throw new RizomError(RizomError.OPERATION_ERROR, '@saveBlocks');
 
 	// Determine the correct table name based on versioning configuration
-	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
+	const parentTable = config.versions ? withVersionsSuffix(config.slug) : config.slug;
 
 	// Extract all blocks from the incoming form data using the current config
 	const incomingBlocks = extractBlocks({

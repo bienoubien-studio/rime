@@ -1,4 +1,3 @@
-import type { UploadConfig } from '$lib/core/config/types.js';
 import type { FieldBuilder } from '$lib/core/fields/builders';
 import type { Field } from '$lib/fields/types.js';
 import type { RelationValue } from '$lib/types';
@@ -14,10 +13,6 @@ export type AsyncReturnType<T extends (...args: any) => Promise<any>> = T extend
 	: any;
 
 export type AnyFunction = (...args: any[]) => any;
-
-export type WithUpload<T extends { upload?: boolean | UploadConfig }> = T & {
-	upload: UploadConfig;
-};
 
 export type DeepPartial<T> = {
 	[P in keyof T]?: T[P] extends object ? DeepPartial<Required<T>[P]> : T[P];

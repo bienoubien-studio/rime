@@ -1,10 +1,12 @@
 <script lang="ts">
+	import { apiUrl } from '$lib/core/api/index.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
 	import Tag from '$lib/panel/components/ui/tag/tag.svelte';
 	import { API_PROXY, getAPIProxyContext } from '$lib/panel/context/api-proxy.svelte';
 	import type { PrototypeSlug } from '$lib/types';
+	import { toKebabCase } from '$lib/util/string';
 
 	type Ressource = {
 		label: string;
@@ -39,7 +41,7 @@
 
 	// When reactiveStateValue changes, update the resource
 	$effect(() => {
-		resource = APIProxy.getRessource(`/api/${ressourceType}`);
+		resource = APIProxy.getRessource(apiUrl(toKebabCase(ressourceType)));
 	});
 
 	// Get resources

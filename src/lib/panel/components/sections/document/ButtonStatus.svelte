@@ -1,15 +1,16 @@
 <script lang="ts">
-	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import Button from '../../ui/button/button.svelte';
-	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
-	import StatusDot from '../collection/StatusDot.svelte';
-	import * as Radio from '$lib/panel/components/ui/radio-group/index.js';
-	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
-	import { t__ } from '../../../../core/i18n/index.js';
-	import Label from '../../ui/label/label.svelte';
-	import { env } from '$env/dynamic/public';
-	import { toast } from 'svelte-sonner';
 	import { invalidateAll } from '$app/navigation';
+	import { apiUrl } from '$lib/core/api/index.js';
+	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
+	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
+	import * as Radio from '$lib/panel/components/ui/radio-group/index.js';
+	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
+	import { toKebabCase } from '$lib/util/string';
+	import { toast } from 'svelte-sonner';
+	import { t__ } from '../../../../core/i18n/index.js';
+	import Button from '../../ui/button/button.svelte';
+	import Label from '../../ui/label/label.svelte';
+	import StatusDot from '../collection/StatusDot.svelte';
 	type Props = { form: DocumentFormContext };
 	const { form }: Props = $props();
 
@@ -20,7 +21,7 @@
 	async function handleValidateStatus() {
 		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/';
 		await fetch(
-			`${env.PUBLIC_RIZOM_URL}/api/${form.doc._type}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`,
+			`${apiUrl(toKebabCase(form.doc._type))}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`,
 			{
 				method: 'PATCH',
 				body: JSON.stringify({

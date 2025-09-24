@@ -1,6 +1,10 @@
+import { isFormField } from '$lib/core/fields/util.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
+import { isBlocksFieldRaw } from '$lib/fields/blocks/index.js';
+import { isGroupFieldRaw } from '$lib/fields/group/index.js';
+import { isTabsFieldRaw } from '$lib/fields/tabs/index.js';
+import { isTreeFieldRaw } from '$lib/fields/tree/index.js';
 import type { Field } from '$lib/fields/types.js';
-import { isBlocksFieldRaw, isFormField, isGroupFieldRaw, isTabsFieldRaw, isTreeFieldRaw } from '$lib/util/field.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { buildTreeFieldsMap } from './buildTreeMap.js';
 import type { ConfigMap } from './types.js';
@@ -39,7 +43,7 @@ export const buildConfigMap = (data: DeepPartial<GenericDoc>, incomingFields: Fi
 						if (blockConfig) {
 							traverseData(block, blockConfig.fields, `${path}.${index}`);
 						}
-					} catch (err: any) {
+					} catch {
 						console.warn(
 							`block at path ${path} and postition ${index} not found but there are some residual data owned by this block`
 						);

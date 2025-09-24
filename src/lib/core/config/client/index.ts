@@ -30,6 +30,7 @@ const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => 
 	];
 
 	const baseBuiltConfig = {
+		siteUrl: config.siteUrl,
 		collections: [staff, ...config.collections],
 		areas: config.areas,
 		localization: config.localization ? config.localization : undefined,
@@ -54,23 +55,3 @@ const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => 
 };
 
 export { Area, buildConfigClient, Collection };
-
-// 	Root level exclusions
-// 		'^trustedOrigins$',
-// 	√	'^database$',
-// 	√	'^smtp$',
-// 	√	'^routes$',
-// 		'^plugins$',
-// 	√	'^cache',
-
-// 		'^panel.access',
-// 		'^panel.routes',
-
-// 	Exclude area and collection hooks
-// 	√	'^collections..hooks',
-// 	√	'^areas..hooks',
-
-// 	Exclude fields hooks (allow client hook : fields..hooks.onChange)
-// 	√	'fields..hooks.beforeValidate',
-// 	√	'fields..hooks.beforeSave',
-// 	√	'fields..hooks.beforeRead',

@@ -1,8 +1,8 @@
 import type { UploadConfig } from '$lib/core/config/types.js';
 import { text } from '$lib/fields/text/index.js';
 import { toCamelCase } from '$lib/util/string.js';
-import validate from '$lib/util/validate.js';
 import type { Collection, ImageSizesConfig } from '../../../types.js';
+import { validatePath } from '../upload/util/path.js';
 
 export type WithNormalizedUpload<T> = Omit<T, 'upload'> & { upload?: UploadConfig };
 
@@ -65,7 +65,7 @@ export const augmentUpload = <T extends Collection<any>>(config: T): WithNormali
 			};
 		}
 
-		const _pathField = text('_path')._root().hidden().validate(validate.uploadPath);
+		const _pathField = text('_path')._root().hidden().validate(validatePath);
 
 		// Add hidden fields
 		fields.push(mimeType, text('filename').hidden(), text('filesize').hidden(), _pathField);

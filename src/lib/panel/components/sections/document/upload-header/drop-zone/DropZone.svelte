@@ -1,10 +1,10 @@
 <script lang="ts">
-	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import type { Collection, CompiledCollection } from '$lib/types.js';
-	import type { WithUpload } from '$lib/util/types';
+	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
+	import type { CompiledCollection } from '$lib/types.js';
 	import { toast } from 'svelte-sonner';
 
+	import type { WithUpload } from '$lib/core/collections/upload/util/config';
 	import type { ChangeEventHandler } from 'svelte/elements';
 
 	type Props = {
@@ -110,7 +110,6 @@
 </label>
 
 <style type="postcss">
-	
 	.rz-doc-upload-dropzone {
 		display: grid;
 		cursor: pointer;

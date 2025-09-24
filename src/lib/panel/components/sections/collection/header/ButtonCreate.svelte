@@ -21,9 +21,9 @@
 	const createURL = $derived.by(() => {
 		const currentUploadPath = page.url.searchParams.get(PARAMS.UPLOAD_PATH);
 		if (collection.config.upload) {
-			return `/panel/${collection.config.slug}/create?${PARAMS.UPLOAD_PATH}=${currentUploadPath || 'root'}`;
+			return `${collection.panelUrl}/create?${PARAMS.UPLOAD_PATH}=${currentUploadPath || 'root'}`;
 		}
-		return `/panel/${collection.config.slug}/create`;
+		return `${collection.panelUrl}/create`;
 	});
 </script>
 

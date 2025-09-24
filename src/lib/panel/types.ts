@@ -6,7 +6,7 @@ import type { GenericDoc } from '../core/types/doc.js';
 export type Route = {
 	title: string;
 	icon?: any;
-	path: string;
+	url: string;
 };
 
 export type FieldsComponents = {

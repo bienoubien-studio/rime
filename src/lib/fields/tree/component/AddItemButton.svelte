@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { FieldBuilder } from '$lib/core/fields/builders';
+	import { emptyValuesFromFieldConfig, isFormField } from '$lib/core/fields/util';
 	import type { Field } from '$lib/fields/types.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { emptyValuesFromFieldConfig, isFormField } from '$lib/util/field.js';
+
 	import type { Dic } from '$lib/util/types';
 	import { Plus } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';

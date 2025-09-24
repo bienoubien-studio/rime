@@ -1,8 +1,8 @@
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { RizomError } from '$lib/core/errors/index.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic } from '$lib/util/types.js';
 import path from 'path';
 import type { CompiledArea, CompiledCollection } from '../../../../types.js';
@@ -35,7 +35,7 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 
 		case VersionOperations.isNewVersionCreation(versionOperation): {
 			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
-			const versionsSlug = makeVersionsSlug(config.slug);
+			const versionsSlug = withVersionsSuffix(config.slug);
 
 			const document = await rizom.collection(versionsSlug).create({
 				data,

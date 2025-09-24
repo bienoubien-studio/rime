@@ -90,6 +90,11 @@ export class TreeBuilder extends FormFieldBuilder<TreeField> {
 	}
 }
 
+/**
+ * Checks if a field is a tree field.
+ */
+export const isTreeFieldRaw = (field: Field): field is TreeFieldRaw => field.type === 'tree';
+
 /****************************************************/
 /* Types
 /****************************************************/

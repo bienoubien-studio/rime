@@ -2,6 +2,7 @@ import type { BuiltConfig } from '$lib/core/config/types.js';
 import type { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import { date } from '$lib/fields/date/index.js';
 import { getFieldPrivateModule } from '$lib/fields/index.server.js';
+import { withDirectoriesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import { toCamelCase, toPascalCase, toSnakeCase } from '$lib/util/string.js';
 import type { Dic } from '$lib/util/types.js';
 import { generateRelationshipDefinitions } from './relations/definition.server.js';
@@ -20,7 +21,6 @@ import {
 	templateRelationOne,
 	templateTable
 } from './templates.server.js';
-import { makeUploadDirectoriesSlug, makeVersionsSlug } from './util.js';
 import write from './write.server.js';
 
 export async function generateSchemaString(config: BuiltConfig) {
@@ -71,7 +71,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 
 			// overwrite the collection name with the _versions one to generate all table
 			// eg. blocks, relation related to the _versions one
-			rootTableName = makeVersionsSlug(collectionSlug);
+			rootTableName = withVersionsSuffix(collectionSlug);
 			// Filter fields that should be processed, remove the _root ones
 			collection.fields = collection.fields.filter(isNotRootField);
 
@@ -141,7 +141,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 
 		if (collection.upload) {
 			schema.push(templateDirectories(collection.slug));
-			enumTables = [...enumTables, makeUploadDirectoriesSlug(collection.slug)];
+			enumTables = [...enumTables, withDirectoriesSuffix(collection.slug)];
 		}
 
 		schema.push(collectionSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
@@ -162,7 +162,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 			// as these fields would have no effect
 
 			// Overrite
-			rootTableName = makeVersionsSlug(areaSlug);
+			rootTableName = withVersionsSuffix(areaSlug);
 			const manyVersionsToOneName = `rel_${rootTableName}HasOne${toPascalCase(areaSlug)}`;
 			const oneToManyVersionsName = `rel_${areaSlug}HasMany${toPascalCase(rootTableName)}`;
 

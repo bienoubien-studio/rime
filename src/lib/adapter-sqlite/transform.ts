@@ -1,22 +1,20 @@
 import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
+import type { Relation } from '$lib/fields/relation/index.js';
 import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import deepmerge from 'deepmerge';
+import { getTableColumns } from 'drizzle-orm';
 import { flatten, unflatten } from 'flat';
 import { logger } from '../core/logger/index.server.js';
 import { extractFieldName } from '../fields/tree/util.js';
 import { omit } from '../util/object.js';
-import type { Relation } from './relations.js';
-
-import { getTableColumns } from 'drizzle-orm';
 import {
 	getBlocksTableNames,
 	getTreeTableNames,
 	makeBlockTableSlug,
-	makeLocalesSlug,
-	makeTreeTableSlug,
-	makeVersionsSlug
+	makeTreeTableSlug
 } from './generate-schema/util.js';
 import { transformDatabaseColumnsToPaths } from './util.js';
 
@@ -52,9 +50,9 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 
 		const config = configInterface.getBySlug(slug);
 		const isVersioned = !!config.versions;
-		const tableName = isVersioned ? makeVersionsSlug(slug) : slug;
+		const tableName = isVersioned ? withVersionsSuffix(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
-		const tableNameLocales = makeLocalesSlug(tableName);
+		const tableNameLocales = withLocalesSuffix(tableName);
 
 		const isLive = event.url.pathname.startsWith('/live');
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
@@ -90,7 +88,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 
 		/** Place each block in its path */
 		for (let block of blocks) {
-			const blockLocaleTableName = makeLocalesSlug(makeBlockTableSlug(tableName, block.type));
+			const blockLocaleTableName = withLocalesSuffix(makeBlockTableSlug(tableName, block.type));
 			if (locale && blockLocaleTableName in tables) {
 				block = {
 					...((block[blockLocaleTableName][0] as Partial<GenericBlock>) || {}),
@@ -137,7 +135,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		for (let block of treeBlocks) {
 			try {
 				const [fieldName] = extractFieldName(block.path);
-				const treeBlockLocaleTableName = makeLocalesSlug(makeTreeTableSlug(tableName, fieldName));
+				const treeBlockLocaleTableName = withLocalesSuffix(makeTreeTableSlug(tableName, fieldName));
 
 				if (locale && treeBlockLocaleTableName in tables) {
 					block = {

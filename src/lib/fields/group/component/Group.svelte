@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { isFormField } from '$lib/core/fields/util.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { GroupField } from '$lib/fields/group/index.js';
 	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
 	import RenderFieldsPreview from '$lib/panel/components/fields/RenderFieldsPreview.svelte';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
-	import { isFormField } from '$lib/util/field.js';
 	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 

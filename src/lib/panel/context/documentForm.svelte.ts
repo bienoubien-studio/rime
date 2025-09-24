@@ -1,15 +1,14 @@
 import { applyAction, deserialize } from '$app/forms';
 import { invalidateAll } from '$app/navigation';
 import { page } from '$app/state';
-import { env } from '$env/dynamic/public';
+import { apiUrl } from '$lib/core/api/index.js';
 import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
+import type { BuiltAreaClient, BuiltCollectionClient } from '$lib/core/config/types.js';
 import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
+import { getFieldConfigByPath, normalizeFieldPath } from '$lib/core/fields/util.js';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';
 import type { ClientField, FormField } from '$lib/fields/types.js';
-import type { BuiltArea, BuiltCollection } from '$lib/types.js';
-import { getFieldConfigByPath } from '$lib/util/config.js';
-import { normalizeFieldPath } from '$lib/util/field.js';
 import { random } from '$lib/util/index.js';
 import { isObjectLiteral, omit } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types';
@@ -421,7 +420,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		};
 
 		const setValueFromDefaultLocale = async () => {
-			const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
+			const BASE_API_URL = apiUrl(documentConfig.kebab);
 			let fetchURL: string = BASE_API_URL;
 			const draftParam = doc.status === VERSIONS_STATUS.DRAFT ? '&draft=true' : '';
 			if (isCollection) {
@@ -648,7 +647,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 	const buildPanelActionUrl = () => {
 		// Start with the base URI for the panel
-		let panelUri = `/panel/${config.slug}`;
+		let panelUri = `/panel/${config.kebab}`;
 		// Add the item ID to the URI if we're updating a collection doc
 		if (operation === 'update' && initial._prototype === 'collection' && initial.id) {
 			panelUri += `/${initial.id}`;
@@ -668,7 +667,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 
 	const importDataFromDefaultLocale = async () => {
-		const BASE_API_URL = `${env.PUBLIC_RIZOM_URL}/api/${documentConfig.slug}`;
+		const BASE_API_URL = `${apiUrl(documentConfig.kebab)}`;
 		let fetchURL: string = BASE_API_URL;
 		const draftParam = doc.status === VERSIONS_STATUS.DRAFT ? '&draft=true' : '';
 		if (isCollection) {
@@ -788,7 +787,7 @@ type Args<T> = {
 	beforeSubmit?: (data: Dic) => Promise<Dic>;
 	beforeRedirect?: (data?: FormSuccessData) => Promise<boolean>;
 	initial: T;
-	config: (AreaSlug extends never ? never : BuiltArea) | BuiltCollection;
+	config: (AreaSlug extends never ? never : BuiltAreaClient) | BuiltCollectionClient;
 	readOnly: boolean;
 	onDataChange?: any;
 	onNestedDocumentCreated?: any;

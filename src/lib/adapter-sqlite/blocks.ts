@@ -1,10 +1,10 @@
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
+import { withLocalesSuffix } from '$lib/core/naming.js';
 import type { WithOptional } from '$lib/util/types.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { omit } from '../util/object.js';
 import { toPascalCase } from '../util/string.js';
-import { makeLocalesSlug } from './generate-schema/util.js';
 import { generatePK, transformDataToSchema } from './util.js';
 
 const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
@@ -19,7 +19,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 			await db.update(tables[table]).set(values).where(eq(tables[table].id, block.id));
 		}
 
-		const keyTableLocales = makeLocalesSlug(table);
+		const keyTableLocales = withLocalesSuffix(table);
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
 			const localizedColumns = getTableColumns(tableLocales);
@@ -58,7 +58,7 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 	const create: CreateBlock = async ({ parentSlug, block, ownerId, locale }) => {
 		const tableName = buildBlockTableName(parentSlug, block.type);
 		const blockId = generatePK();
-		const tableNameLocales = makeLocalesSlug(tableName);
+		const tableNameLocales = withLocalesSuffix(tableName);
 
 		if (locale && tableNameLocales in tables) {
 			const unlocalizedColumns = getTableColumns(tables[tableName]);

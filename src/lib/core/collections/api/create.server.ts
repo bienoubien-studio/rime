@@ -1,9 +1,9 @@
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
-import { isAuthConfig } from '$lib/util/config.js';
 import { trycatch } from '$lib/util/function.js';
 import { json, type RequestEvent } from '@sveltejs/kit';
+import { isAuthConfig } from '../auth/util';
 
 export default function (slug: CollectionSlug) {
 	//

@@ -1,7 +1,9 @@
-import { getContext, setContext } from 'svelte';
-import type { BeforeNavigate } from '@sveltejs/kit';
-import { isObjectLiteral, setValueAtPath } from '../../util/object.js';
+import { apiUrl } from '$lib/core/api/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
+import { toKebabCase } from '$lib/util/string.js';
+import type { BeforeNavigate } from '@sveltejs/kit';
+import { getContext, setContext } from 'svelte';
+import { isObjectLiteral, setValueAtPath } from '../../util/object.js';
 
 const LIVE_KEY = Symbol('rizom.live');
 
@@ -78,7 +80,8 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		) {
 			if (value.type && value.value) {
 				try {
-					const response = await fetch(`/api/${value.type}/${value.value}?depth=1`).then((r) => r.json());
+					const { type, value: id } = value;
+					const response = await fetch(`${apiUrl(toKebabCase(type), id)}?depth=1`).then((r) => r.json());
 
 					if (response && response.doc && response.doc.url) {
 						return {
@@ -102,7 +105,9 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 				return value.livePreview;
 			} else {
 				try {
-					const response = await fetch(`/api/${value.relationTo}/${value.documentId}?depth=1`).then((r) => r.json());
+					const response = await fetch(`${apiUrl(toKebabCase(value.relationTo), value.documentId)}?depth=1`).then((r) =>
+						r.json()
+					);
 
 					if (response && response.doc) {
 						return response.doc;
@@ -144,7 +149,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		// Populate relations / link
 		const processedValue = await populate(data.value);
 		// Update the document
-		doc = setValueAtPath( data.path, doc, processedValue) as T;
+		doc = setValueAtPath(data.path, doc, processedValue) as T;
 	};
 
 	/**

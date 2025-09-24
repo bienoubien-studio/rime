@@ -1,4 +1,3 @@
-import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { toCamelCase, toPascalCase, toSnakeCase } from '$lib/util/string.js';
 
 /**
@@ -41,59 +40,6 @@ export const getBlocksTableNames = (slug: string, tables: Record<string, any>): 
  */
 export const makeBlockTableSlug = (slug: string, blockType: string): string =>
 	`${slug}Blocks${toPascalCase(blockType)}`;
-
-/**
- * Creates a upload_directories table name for a given table name.
- * Used for uploads path in the database.
- * Prevent a version table name from being used, force the use of the main one.
- *
- * @example
- * // Returns botth 'pages_directories'
- * makeUploadDirectoriesSlug('pages');
- * makeUploadDirectoriesSlug('pages_versions');
- */
-export const makeUploadDirectoriesSlug = (slug: string) =>
-	`${slug.replace('_versions', '')}_directories` as CollectionSlug;
-
-/**
- * Check if a slug is a _directories collection slug
- *
- * @example
- * // Returns true
- * isDirectorySlug('medias_directories');
- */
-export const isDirectorySlug = (slug: string) => slug.endsWith('_directories');
-
-/**
- * Creates a versions table name for a given table.
- * Used for document versioning in the database.
- *
- * @example
- * // Returns 'pages_versions'
- * makeVersionsSlug('pages');
- */
-export const makeVersionsSlug = (name: string) => `${name}_versions` as CollectionSlug;
-
-/**
- * Check if a slug is a verioned collection slug
- *  * @example
- * // Returns true
- * isVersionsSlug('pages_versions');
- *
- */
-export const isVersionsSlug = (slug: string) => slug.endsWith('_versions');
-
-/**
- * Creates a i18n table name for a given table.
- * handling of versions table name should done separately
- *
- * @example
- * // Returns 'pagesLocales'
- * makeLocalesSlug('pages');
- * // Returns 'pages_versionsLocales'
- * makeLocalesSlug('pages_versions');
- */
-export const makeLocalesSlug = (tableName: string) => `${tableName}Locales`;
 
 /**
  * Generate the column's names for a given field name and its parent path

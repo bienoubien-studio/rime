@@ -18,7 +18,7 @@ export interface Config {
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
 	/** Transversal auth config */
-	auth?: {
+	$auth?: {
 		/** Enable magicLink Better-Auth plugin */
 		magicLink?: boolean;
 	};
@@ -101,7 +101,7 @@ export interface Config {
 	$plugins?: ReturnType<Plugin>[];
 	/** Custom object for server-only config additional values  */
 	$custom?: Record<string, any>;
-	/** Custom object for client config additional values  */
+	/** Custom object for both client and server config additional values  */
 	custom?: Record<string, any>;
 }
 
@@ -165,8 +165,6 @@ type BaseDocConfig<S extends string = string> = {
 				description?: string;
 				/** Sidebar navigation group */
 				group?: string;
-				/** Add the list of latest edited document on the dashboard */
-				dashboard?: boolean;
 		  };
 };
 
@@ -209,7 +207,6 @@ export type AuthConfig = (
 	  }
 	| { type: 'apiKey' }
 ) & {
-	isBetterAuthAdmin?: boolean;
 	roles?: (string | Option)[];
 };
 
@@ -217,11 +214,15 @@ export type Collection<S> = {
 	slug: S;
 	/** The collection label */
 	label?: string | CollectionLabel;
+	/** Auth type and availables roles */
 	auth?: boolean | AuthConfig;
+	/** Operation hooks */
 	$hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>;
 	/** A function to generate the document URL */
 	$url?: (doc: S extends keyof RegisterCollection ? RegisterCollection[S] : any) => string;
+	/** Whether a document can have children/parent */
 	nested?: boolean;
+	/** Whether the collection support file upload */
 	upload?: boolean | UploadConfig;
 } & BaseDocConfig;
 
@@ -255,27 +256,34 @@ export type ImageSizesConfig = {
 }>;
 
 export type BuiltCollection = Omit<Collection<string>, 'icon' | 'versions' | 'upload' | 'auth'> & {
-	type: 'collection';
-	auth?: AuthConfig;
-	label: CollectionLabel;
 	slug: CollectionSlug;
+	type: 'collection';
+	/** The kebab-case version of the slug for urls */
+	kebab: string;
+	label: CollectionLabel;
 	asTitle: string;
+	auth?: AuthConfig;
 	versions?: Required<VersionsConfig>;
 	upload?: UploadConfig;
 	icon: Component<IconProps>;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
 
+export type BuiltAreaClient = Omit<BuiltArea, '$url' | '$hooks'>;
+
 export type BuiltArea = Omit<Area<string>, 'versions'> & {
-	type: 'area';
-	label: string;
 	slug: AreaSlug;
+	type: 'area';
+	/** The kebab-case version of the slug for urls */
+	kebab: string;
+	label: string;
 	asTitle: string;
 	versions?: Required<VersionsConfig>;
 	fields: FieldBuilder<Field>[];
 	icon: Component<IconProps>;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
 };
+export type BuiltCollectionClient = Omit<BuiltCollection, '$url' | '$hooks'>;
 
 export type BuiltConfig = {
 	auth?: {
@@ -317,15 +325,22 @@ export type BuiltConfig = {
 	custom?: Record<string, any>;
 };
 
-export type ServerConfigProps = '$database' | '$trustedOrigins' | '$routes' | '$smtp' | '$custom' | '$plugins';
+export type ServerConfigProps =
+	| '$database'
+	| '$trustedOrigins'
+	| '$routes'
+	| '$smtp'
+	| '$custom'
+	| '$plugins'
+	| '$auth';
 
 export type SanitizedConfigClient = Omit<Config, ServerConfigProps | 'collections' | 'areas'> & {
-	collections: Omit<BuiltCollection, '$url' | '$hooks'>[];
-	areas: Omit<BuiltArea, '$url' | '$hooks'>[];
+	collections: BuiltCollectionClient[];
+	areas: BuiltAreaClient[];
 };
 export type BuiltConfigClient = Omit<BuiltConfig, ServerConfigProps | 'panel' | 'collections' | 'areas'> & {
-	collections: Omit<BuiltCollection, '$url' | '$hooks'>[];
-	areas: Omit<BuiltArea, '$url' | '$hooks'>[];
+	collections: BuiltCollectionClient[];
+	areas: BuiltAreaClient[];
 	icons: Dic<Component<IconProps>>;
 	panel: {
 		routes: Record<string, CustomPanelRoute>;

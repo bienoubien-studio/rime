@@ -1,13 +1,15 @@
-import { env } from '$env/dynamic/public';
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
+import { apiUrl } from '$lib/core/api/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server';
 import { RizomError } from '$lib/core/errors/index.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
 import type { Route } from '$lib/panel/types.js';
+import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
+import { toKebabCase } from '$lib/util/string';
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
 
 /****************************************************/
@@ -59,25 +61,25 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 
 		let aria: Partial<Route>[];
 
-		const collectionAria = { title: collection.config.label.plural, path: `/panel/${collection.config.slug}` };
+		const collectionAria = { title: collection.config.label.plural, url: panelUrl(collection.config.kebab) };
 		if (collection.config.upload) {
 			const paramUploadPath = event.url.searchParams.get('uploadPath') as UploadPath | null;
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
 			aria = [
-				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
+				{ title: 'Dashboard', icon: 'dashboard', url: panelUrl() },
 				collectionAria,
 				...buildUploadAria({ path: currentDirectoryPath, slug }),
 				{ title: undefined } // Will be populated by title context
 			];
 		} else {
 			aria = [
-				{ title: 'Dashboard', icon: 'dashboard', path: `/panel` },
-				{ title: collection.config.label.plural, path: `/panel/${collection.config.slug}` },
+				{ title: 'Dashboard', icon: 'dashboard', url: panelUrl() },
+				{ title: collection.config.label.plural, url: panelUrl(collection.config.kebab) },
 				{ title: undefined } // Will be populated by title context
 			];
 		}
 
-		let data: CollectionDocData = {
+		let data: Partial<CollectionDocData> = {
 			aria,
 			doc,
 			operation,
@@ -87,7 +89,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 		};
 
 		if (withVersion) {
-			const url = `${env.PUBLIC_RIZOM_URL}/api/${makeVersionsSlug(doc._type)}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
+			const url = `${apiUrl(withVersionsSuffix(toKebabCase(doc._type)))}?where[ownerId][equals]=${doc.id}&sort=-updatedAt&select=updatedAt,status`;
 			const promise = event.fetch(url).then((r) => r.json());
 			const [error, result] = await trycatch(() => promise);
 			if (error || !Array.isArray(result.docs)) {

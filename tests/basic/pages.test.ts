@@ -1,11 +1,15 @@
+import { toKebabCase } from '$lib/util/string';
 import test, { expect } from '@playwright/test';
 
-const BASE_URL = 'http://rizom.test:5173';
+function panelUrl(...args: string[]) {
+	if (!args.length) return `${process.env.PUBLIC_RIZOM_URL}/panel`;
+	return `${process.env.PUBLIC_RIZOM_URL}/panel/${args.join('/')}`;
+}
 
 test.describe('Login form', () => {
 	test('should login successfully with valid credentials', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 		await page.waitForLoadState();
 
 		const submitButton = page.locator('button[type="submit"]');
@@ -24,15 +28,15 @@ test.describe('Login form', () => {
 		await submitButton.click();
 
 		// Wait for navigation after login
-		await page.waitForURL(`${BASE_URL}/panel`);
+		await page.waitForURL(panelUrl());
 
 		// Add assertions based on successful login
 		// For example, check if redirected to dashboard or check for success message
-		expect(page.url()).toBe(`${BASE_URL}/panel`); // Adjust URL based on your app
+		expect(page.url()).toBe(panelUrl()); // Adjust URL based on your app
 	});
 
 	test('should show error with invalid credentials', async ({ page }) => {
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 
 		const submitButton = page.locator('button[type="submit"]');
 		await expect(submitButton).toBeDisabled();
@@ -55,7 +59,7 @@ test.describe('Login form', () => {
 	});
 
 	test('should not display forgot password link', async ({ page }) => {
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 		await expect(page.locator(`a[href="/forgot-password?slug=staff"]`)).toHaveCount(0);
 	});
 });
@@ -63,7 +67,7 @@ test.describe('Login form', () => {
 test.describe('Admin panel', () => {
 	test('Should visit all collections', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 
 		const submitButton = page.locator('button[type="submit"]');
 		// Fill in the credentials
@@ -74,7 +78,7 @@ test.describe('Admin panel', () => {
 		// Submit the form
 		await submitButton.click();
 		// Wait for navigation after login
-		await page.waitForURL(`${BASE_URL}/panel`);
+		await page.waitForURL(panelUrl());
 
 		const collections = [
 			{ slug: 'pages', singular: 'Page', plural: 'Pages' },
@@ -83,15 +87,15 @@ test.describe('Admin panel', () => {
 		];
 
 		for (const { slug, plural } of collections) {
-			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
+			const navButton = page.locator(`a.rz-button-nav[href="${panelUrl(toKebabCase(slug))}"]`);
 			expect(await navButton.innerText()).toBe(plural);
 
-			const response = await page.goto(`/panel/${slug}`);
+			const response = await page.goto(panelUrl(toKebabCase(slug)));
 			expect(response?.status()).toBe(200);
 			await page.waitForLoadState('networkidle');
 
 			const suffix = slug === 'medias' ? `?uploadPath=root` : '';
-			const href = `/panel/${slug}/create${suffix}`;
+			const href = `${panelUrl(toKebabCase(slug))}/create${suffix}`;
 			const createButton = page.locator(`a[href="${href}"]`);
 
 			await expect(createButton).toBeEnabled();
@@ -134,7 +138,7 @@ test.describe('Admin panel', () => {
 		}
 	});
 	test('Should visit all globals', async ({ page }) => {
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 
 		const submitButton = page.locator('button[type="submit"]');
 		// Fill in the credentials
@@ -149,10 +153,10 @@ test.describe('Admin panel', () => {
 		const globals = [{ slug: 'settings', label: 'Settings' }];
 
 		for (const { slug, label } of globals) {
-			const navButton = page.locator(`a.rz-button-nav[href="/panel/${slug}"]`);
+			const navButton = page.locator(`a.rz-button-nav[href="${panelUrl(toKebabCase(slug))}"]`);
 			expect(await navButton.innerText()).toBe(label);
 
-			const response = await page.goto(`/panel/${slug}`);
+			const response = await page.goto(panelUrl(toKebabCase(slug)));
 			expect(response?.status()).toBe(200);
 
 			const saveButton = page.locator('.rz-page-header__row button[type="submit"]');
@@ -173,14 +177,14 @@ test.describe('Admin panel', () => {
 
 		await page.click('.rz-signout button');
 		await page.waitForNavigation();
-		expect(page.url()).toBe(`${BASE_URL}/panel/sign-in`);
+		expect(page.url()).toBe(panelUrl('sign-in'));
 	});
 });
 
 test.describe('Live Edit', () => {
 	test('Should go to Live Panel', async ({ page }) => {
 		// Navigate to the login page
-		await page.goto('/panel/sign-in');
+		await page.goto(panelUrl('sign-in'));
 
 		const submitButton = page.locator('button[type="submit"]');
 		await expect(submitButton).toBeDisabled();
@@ -200,9 +204,9 @@ test.describe('Live Edit', () => {
 		// Wait for navigation after login
 		await page.waitForNavigation();
 
-		expect(page.url()).toBe(`${BASE_URL}/panel`);
+		expect(page.url()).toBe(panelUrl());
 
-		const response = await page.goto(`/panel/pages/create`);
+		const response = await page.goto(panelUrl('pages', 'create'));
 		expect(response?.status()).toBe(200);
 
 		const saveButton = page.locator('.rz-page-header__row button[type="submit"]');

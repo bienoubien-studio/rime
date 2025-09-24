@@ -1,6 +1,7 @@
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
-import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
+import { augmentHooks } from '$lib/core/collections/config/augment-hooks.server.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
+import { toKebabCase } from '$lib/util/string';
 import type { BuiltCollection, BuiltConfig } from '../types';
 
 /**
@@ -15,7 +16,8 @@ export function makeVersionsCollectionsAliases(config: BuiltConfig) {
 	for (const collection of config.collections) {
 		if (collection.versions) {
 			const versionedCollection: BuiltCollection = {
-				slug: makeVersionsSlug(collection.slug) as CollectionSlug,
+				slug: withVersionsSuffix(collection.slug) as CollectionSlug,
+				kebab: withVersionsSuffix(toKebabCase(collection.slug)),
 				versions: undefined,
 				access: collection.access,
 				$hooks: collection.$hooks,
@@ -35,7 +37,8 @@ export function makeVersionsCollectionsAliases(config: BuiltConfig) {
 	for (const area of config.areas) {
 		if (area.versions) {
 			let versionedCollection: BuiltCollection = {
-				slug: makeVersionsSlug(area.slug) as CollectionSlug,
+				slug: withVersionsSuffix(area.slug) as CollectionSlug,
+				kebab: withVersionsSuffix(toKebabCase(area.slug)),
 				versions: undefined,
 				access: area.access,
 				asTitle: area.asTitle,

@@ -1,14 +1,15 @@
-import { makeUploadDirectoriesSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
-import { augmentHooks } from '$lib/core/collections/config/augment-hooks.js';
-import { exctractPath } from '$lib/core/collections/upload/hooks/extract-path.js';
+import { augmentHooks } from '$lib/core/collections/config/augment-hooks.server.js';
+import { exctractPath } from '$lib/core/collections/upload/hooks/extract-path.server.js';
 import {
 	prepareDirectoryChildren,
 	updateDirectoryChildren
-} from '$lib/core/collections/upload/hooks/update-directory-children.js';
+} from '$lib/core/collections/upload/hooks/update-directory-children.server.js';
+import { validatePath } from '$lib/core/collections/upload/util/path';
+import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.js';
 import type { CollectionSlug } from '$lib/types';
-import { uploadPath } from '$lib/util/validate.js';
+import { toKebabCase } from '$lib/util/string';
 import type { BuiltCollection, BuiltConfig } from '../types';
 
 /**
@@ -18,7 +19,7 @@ import type { BuiltCollection, BuiltConfig } from '../types';
 export function makeUploadDirectoriesCollections(config: BuiltConfig) {
 	for (const collection of config.collections) {
 		if (collection.upload) {
-			const slug = makeUploadDirectoriesSlug(collection.slug);
+			const slug = withDirectoriesSuffix(collection.slug);
 			// If already created skip to the next colleciton
 			// for exemple a versions collections of an upload
 			// collection should not have a directories related table
@@ -26,10 +27,11 @@ export function makeUploadDirectoriesCollections(config: BuiltConfig) {
 			// else create the directory collection
 			let directoriesCollection: BuiltCollection = {
 				slug: slug as CollectionSlug,
+				kebab: withDirectoriesSuffix(toKebabCase(collection.slug)),
 				versions: undefined,
 				access: collection.access,
 				fields: [
-					text('id').validate(uploadPath).unique().required(),
+					text('id').validate(validatePath).unique().required(),
 					text('name'),
 					text('parent'),
 					date('createdAt'),

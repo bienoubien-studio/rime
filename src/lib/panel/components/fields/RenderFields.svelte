@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { FieldBuilder } from '$lib/core/fields/builders';
+	import { isFormField, isLiveField, isNotHidden, isPresentative } from '$lib/core/fields/util';
 	import { ComponentFieldBuilder } from '$lib/fields/component';
+	import { isTabsField } from '$lib/fields/tabs';
 	import type { FormField } from '$lib/fields/types.js';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
-	import { isFormField, isLiveField, isNotHidden, isPresentative, isTabsField } from '$lib/util/field.js';
 
 	type Props = {
 		path?: string;

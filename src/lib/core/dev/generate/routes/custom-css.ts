@@ -1,5 +1,5 @@
-import fs from 'fs';
 import { logger } from '$lib/core/logger/index.server.js';
+import fs from 'fs';
 
 /**
  * Injects a custom CSS link into the layout file
@@ -15,7 +15,7 @@ import { logger } from '$lib/core/logger/index.server.js';
 export function injectCustomCSS(layoutFilePath: string, cssPath: string): void {
 	try {
 		if (fs.existsSync(layoutFilePath)) {
-			let content = fs.readFileSync(layoutFilePath, 'utf8');
+			const content = fs.readFileSync(layoutFilePath, 'utf8');
 
 			// Check if the file already has a svelte:head tag
 			if (content.includes('<svelte:head>')) {

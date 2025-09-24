@@ -1,13 +1,13 @@
 <script lang="ts">
-	import DropZone from './drop-zone/DropZone.svelte';
-	import { capitalize } from '$lib/util/string.js';
+	import type { WithUpload } from '$lib/core/collections/upload/util/config';
+	import type { CompiledCollection } from '$lib/core/config/types';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import { type DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	import { toast } from 'svelte-sonner';
-	import * as util from '$lib/util/file.js';
 	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
-	import type { WithUpload } from '$lib/util/types';
-	import type { CompiledCollection } from '$lib/core/config/types';
+	import * as util from '$lib/util/file.js';
+	import { capitalize } from '$lib/util/string.js';
+	import { toast } from 'svelte-sonner';
+	import DropZone from './drop-zone/DropZone.svelte';
 
 	type Props = {
 		form: DocumentFormContext;

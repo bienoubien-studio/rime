@@ -1,12 +1,8 @@
 import type { User } from '$lib/core/collections/auth/types';
 import type { CompiledConfig } from '$lib/core/config/types';
 import type { Dic } from '$lib/util/types';
-
-interface Route {
-	title: string;
-	icon: string;
-	path: string;
-}
+import type { Route } from './types';
+import { panelUrl } from './util/url';
 
 /**
  * Builds navigation structure based on config and user permissions
@@ -16,7 +12,7 @@ interface Route {
  */
 const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
 	const groups: Dic = {};
-	
+
 	/**
 	 * Adds a route to the appropriate navigation group
 	 */
@@ -39,9 +35,9 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 				const route: Route = {
 					title: collection.label.plural,
 					icon: collection.slug,
-					path: `/panel/${collection.slug}`
+					url: panelUrl(collection.kebab)
 				};
-				addRouteToGroup(route, collection.panel && collection.panel?.group || 'collections');
+				addRouteToGroup(route, (collection.panel && collection.panel?.group) || 'collections');
 			}
 		});
 
@@ -51,9 +47,9 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 			const route: Route = {
 				title: area.label,
 				icon: area.slug,
-				path: `/panel/${area.slug}`
+				url: panelUrl(area.kebab)
 			};
-			addRouteToGroup(route, area.panel && area.panel?.group || 'areas');
+			addRouteToGroup(route, (area.panel && area.panel?.group) || 'areas');
 		}
 	});
 
@@ -62,7 +58,7 @@ const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic =>
 		const route: Route = {
 			title: routeConfig.label,
 			icon: `custom-${routePath}`,
-			path: `/panel/${routePath}`
+			url: panelUrl(routePath)
 		};
 		addRouteToGroup(route, routeConfig.group);
 	});

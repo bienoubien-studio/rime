@@ -1,6 +1,7 @@
+import { withDirectoriesSuffix } from '$lib/core/naming.js';
 import { toSnakeCase } from '$lib/util/string.js';
 import dedent from 'dedent';
-import { makeUploadDirectoriesSlug } from './util.js';
+
 const s = toSnakeCase;
 
 /**
@@ -372,9 +373,9 @@ export const templateHead = (slug: string) => dedent`
   /** ${slug} ============================================== **/`;
 
 export const templateDirectories = (slug: string) => `
-export const ${makeUploadDirectoriesSlug(slug)} = sqliteTable('${s(makeUploadDirectoriesSlug(slug))}', {
+export const ${withDirectoriesSuffix(slug)} = sqliteTable('${s(withDirectoriesSuffix(slug))}', {
   id: text('id').notNull().primaryKey(),
-  parent: text('parent').references(():any => ${makeUploadDirectoriesSlug(slug)}.id, {
+  parent: text('parent').references(():any => ${withDirectoriesSuffix(slug)}.id, {
 		onDelete : 'cascade',
 		onUpdate : 'cascade',
 	}),

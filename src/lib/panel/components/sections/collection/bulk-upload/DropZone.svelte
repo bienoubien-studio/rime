@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { env } from '$env/dynamic/public';
 	import { PARAMS } from '$lib/core/constant';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
@@ -53,7 +52,7 @@
 				continue;
 			}
 
-			const createUploadURL = `${env.PUBLIC_RIZOM_URL}/api/${collection.config.slug}?${PARAMS.SKIP_VALIDATION}=true`;
+			const createUploadURL = `${collection.apiUrl}?${PARAMS.SKIP_VALIDATION}=true`;
 			const [error, success] = await trycatchFetch(createUploadURL, {
 				method: 'POST',
 				body: JSON.stringify({

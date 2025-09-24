@@ -1,16 +1,17 @@
-import { augmentAuthServer } from '$lib/core/collections/config/augment-auth.server';
-import { augmentHooks } from '$lib/core/collections/config/augment-hooks';
-import { augmentMetas } from '$lib/core/collections/config/augment-metas';
-import { augmentNestedServer } from '$lib/core/collections/config/augment-nested.server';
-import { augmentTitle } from '$lib/core/collections/config/augment-title';
-import { augmentUploadServer } from '$lib/core/collections/config/augment-upload.server';
-import { augmentUrl } from '$lib/core/collections/config/augment-url';
-import { augmentVersions } from '$lib/core/collections/config/augment-versions';
-import type { CollectionWithoutSlug } from '$lib/core/collections/config/types';
-import type { BuiltCollection, Collection } from '$lib/core/config/types';
+import { augmentAuthServer } from '$lib/core/collections/config/augment-auth.server.js';
+import { augmentHooks } from '$lib/core/collections/config/augment-hooks.server.js';
+import { augmentMetas } from '$lib/core/collections/config/augment-metas.js';
+import { augmentNestedServer } from '$lib/core/collections/config/augment-nested.server.js';
+import { augmentTitle } from '$lib/core/collections/config/augment-title.js';
+import { augmentUploadServer } from '$lib/core/collections/config/augment-upload.server.js';
+import { augmentUrl } from '$lib/core/collections/config/augment-url.js';
+import { augmentVersions } from '$lib/core/collections/config/augment-versions.js';
+import type { CollectionWithoutSlug } from '$lib/core/collections/config/types.js';
+import type { BuiltCollection, Collection } from '$lib/core/config/types.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
+import { toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
-import { augmentLabel } from './augment-label';
+import { augmentLabel } from './augment-label.js';
 
 export const config = <S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection => {
 	//
@@ -24,20 +25,21 @@ export const config = <S extends string>(slug: S, incomingConfig: CollectionWith
 	const withAuth = augmentAuthServer(withUrl);
 	const withMetas = augmentMetas(withAuth);
 	const withHooks = augmentHooks(withMetas);
-	const output = augmentTitle(withHooks);
+	const augmented = augmentTitle(withHooks);
 
 	return {
-		...output,
-		$url: output.$url as BuiltCollection['$url'],
-		slug: output.slug as BuiltCollection['slug'],
+		...augmented,
+		$url: augmented.$url as BuiltCollection['$url'],
+		slug: augmented.slug as BuiltCollection['slug'],
+		kebab: toKebabCase(augmented.slug),
 		type: 'collection',
-		icon: output.icon || FileText,
+		icon: augmented.icon || FileText,
 		access: {
 			create: (user) => !!user && !!user.isStaff,
 			read: (user) => !!user && !!user.isStaff,
 			update: (user) => !!user && !!user.isStaff,
 			delete: (user) => !!user && !!user.isStaff,
-			...output.access
+			...augmented.access
 		}
 	};
 };

@@ -5,11 +5,11 @@ import { RizomError } from '$lib/core/errors/index.js';
 import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { createBlankDocument } from '$lib/util/doc.js';
+import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from '../core/config/interface.server.js';
-import { makeLocalesSlug, makeVersionsSlug } from './generate-schema/util.js';
 import type { GenericTables } from './types.js';
 import * as adapterUtil from './util.js';
 import { buildWithParam } from './with.js';
@@ -67,7 +67,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			}
 
 			// Implementation for versioned areas
-			const versionsTable = makeVersionsSlug(slug);
+			const versionsTable = withVersionsSuffix(slug);
 			const withParam = buildWithParam({
 				slug: versionsTable,
 				select,
@@ -158,13 +158,13 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			});
 
 			// Generate version ID
-			const versionsTableName = makeVersionsSlug(slug);
+			const versionsTableName = withVersionsSuffix(slug);
 
 			// Prepare data for versions table
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
 				tables,
 				mainTableName: versionsTableName,
-				localesTableName: makeLocalesSlug(versionsTableName),
+				localesTableName: withLocalesSuffix(versionsTableName),
 				locale,
 				fillNotNull: true
 			});
@@ -183,7 +183,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			// Insert localized data if needed
 			if (isLocalized && Object.keys(localizedData).length) {
-				await adapterUtil.insertTableRecord(db, tables, makeLocalesSlug(versionsTableName), {
+				await adapterUtil.insertTableRecord(db, tables, withLocalesSuffix(versionsTableName), {
 					...localizedData,
 					ownerId: versionId,
 					locale: locale!
@@ -196,7 +196,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				versionId
 			};
 		} else {
-			const tableLocales = makeLocalesSlug(slug);
+			const tableLocales = withLocalesSuffix(slug);
 
 			// Prepare data for insertion using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(values, {
@@ -267,7 +267,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		// Simple update for non-versioned areas
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Original implementation for non-versioned areas
-			const keyTableLocales = makeLocalesSlug(slug);
+			const keyTableLocales = withLocalesSuffix(slug);
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {
 				tables,
@@ -306,8 +306,8 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				})
 				.where(eq(tables[slug].id, area.id));
 
-			const versionsTable = makeVersionsSlug(slug);
-			const versionsLocalesTable = makeLocalesSlug(versionsTable);
+			const versionsTable = withVersionsSuffix(slug);
+			const versionsLocalesTable = withLocalesSuffix(versionsTable);
 
 			// Prepare data for update using the shared utility function
 			const { mainData, localizedData, isLocalized } = adapterUtil.prepareSchemaData(data, {

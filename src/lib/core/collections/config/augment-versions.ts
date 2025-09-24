@@ -7,7 +7,7 @@ type Input = { versions?: Collection<any>['versions']; fields: Collection<any>['
 type WithVersionsConfig<T> = Omit<T, 'versions'> & { versions?: Required<VersionsConfig> };
 
 /**
- * Normalize versions prop and add status field if config.versions.drat is true
+ * Normalize versions prop and add status field if config.versions.draft is true
  */
 export const augmentVersions = <T extends Input>(config: T): WithVersionsConfig<T> => {
 	const fields = [...config.fields];

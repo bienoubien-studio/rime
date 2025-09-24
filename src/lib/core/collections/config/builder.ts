@@ -1,15 +1,16 @@
-import { augmentAuth } from '$lib/core/collections/config/augment-auth';
-import { augmentMetas } from '$lib/core/collections/config/augment-metas';
-import { augmentNested } from '$lib/core/collections/config/augment-nested';
-import { augmentTitle } from '$lib/core/collections/config/augment-title';
-import { augmentUpload } from '$lib/core/collections/config/augment-upload';
-import { augmentUrl } from '$lib/core/collections/config/augment-url';
-import { augmentVersions } from '$lib/core/collections/config/augment-versions';
-import type { CollectionWithoutSlug } from '$lib/core/collections/config/types';
-import type { BuiltCollection, Collection } from '$lib/core/config/types';
-import type { Access } from '$lib/types';
+import { augmentAuth } from '$lib/core/collections/config/augment-auth.js';
+import { augmentMetas } from '$lib/core/collections/config/augment-metas.js';
+import { augmentNested } from '$lib/core/collections/config/augment-nested.js';
+import { augmentTitle } from '$lib/core/collections/config/augment-title.js';
+import { augmentUpload } from '$lib/core/collections/config/augment-upload.js';
+import { augmentUrl } from '$lib/core/collections/config/augment-url.js';
+import { augmentVersions } from '$lib/core/collections/config/augment-versions.js';
+import type { CollectionWithoutSlug } from '$lib/core/collections/config/types.js';
+import type { BuiltCollection, Collection } from '$lib/core/config/types.js';
+import { access } from '$lib/util/index.js';
+import { toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
-import { augmentLabel } from './augment-label';
+import { augmentLabel } from './augment-label.js';
 
 export const config = <S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection => {
 	//
@@ -22,21 +23,28 @@ export const config = <S extends string>(slug: S, incomingConfig: CollectionWith
 	const withUrl = augmentUrl(withVersions);
 	const withAuth = augmentAuth(withUrl);
 	const withMetas = augmentMetas(withAuth);
-	const output = augmentTitle(withMetas);
+	const augmented = augmentTitle(withMetas);
 
 	return {
-		...output,
-		slug: output.slug as BuiltCollection['slug'],
 		type: 'collection',
-		icon: output.icon || FileText,
+		slug: augmented.slug as BuiltCollection['slug'],
+		kebab: toKebabCase(augmented.slug),
+		label: augmented.label,
+		auth: augmented.auth,
+		nested: augmented.nested,
+		upload: augmented.upload,
+		fields: augmented.fields,
+		asTitle: augmented.asTitle,
+		versions: augmented.versions,
+		icon: augmented.icon || FileText,
+		live: incomingConfig.live || false,
+		panel: incomingConfig.panel,
 		access: {
-			create: (user) => !!user && !!user.isStaff,
-			read: (user) => !!user && !!user.isStaff,
-			update: (user) => !!user && !!user.isStaff,
-			delete: (user) => !!user && !!user.isStaff,
-			...output.access
+			create: (user) => access.isStaff(user),
+			read: (user) => access.isStaff(user),
+			update: (user) => access.isStaff(user),
+			delete: (user) => access.isStaff(user),
+			...(incomingConfig.access || {})
 		}
 	};
 };
-
-export const access = (access: Access) => access;

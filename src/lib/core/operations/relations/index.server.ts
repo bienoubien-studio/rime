@@ -1,6 +1,6 @@
-import { makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types';
 import type { ConfigMap } from '../configMap/types.js';
@@ -27,7 +27,7 @@ export const saveRelations = async (args: {
 }) => {
 	const { configMap, incomingPaths, blocksDiff, treeDiff, adapter, locale, config, ownerId, data } = args;
 
-	const parentTable = config.versions ? makeVersionsSlug(config.slug) : config.slug;
+	const parentTable = config.versions ? withVersionsSuffix(config.slug) : config.slug;
 
 	/** Delete relations from deletedBlocks */
 	await adapter.relations.deleteFromPaths({

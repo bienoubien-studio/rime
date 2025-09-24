@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { isUploadConfig } from '$lib/core/collections/upload/util/config';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { isUploadConfig } from '$lib/util/config.js';
 	import { getValueAtPath } from '$lib/util/object';
 	import { getContext } from 'svelte';
 	import StatusDot from '../../StatusDot.svelte';

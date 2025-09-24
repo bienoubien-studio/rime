@@ -1,6 +1,6 @@
-import { makeUploadDirectoriesSlug, makeVersionsSlug } from '$lib/adapter-sqlite/generate-schema/util.js';
 import type { BuiltConfig } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { withDirectoriesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic } from '$lib/util/types.js';
 import fs from 'fs';
 import path from 'path';
@@ -16,6 +16,8 @@ const projectRoot = process.cwd();
  * Main function to generate browser routes based on configuration
  */
 function generateRoutes(config: BuiltConfig): void {
+	logger.info('Routes generation...');
+
 	// 1. Check if routes need to be regenerated
 	if (!shouldRegenerateRoutes(config)) {
 		return;
@@ -33,9 +35,9 @@ function generateRoutes(config: BuiltConfig): void {
 	ensureDir(panelRoute);
 
 	// Function that generate area/collection routes files from a Routes object
-	const processRoutes = (slug: string, routes: Routes) => {
+	const processRoutes = (slug: string, kebab: string, routes: Routes) => {
 		for (const [pattern, files] of Object.entries(routes)) {
-			const routePath = pattern.replace('{area.slug}', slug).replace('{collection.slug}', slug);
+			const routePath = pattern.replace('{area.kebab}', kebab).replace('{collection.kebab}', kebab);
 			// Generate each file type (page, layout, etc.)
 			for (const [fileType, templateFn] of Object.entries(files)) {
 				writeRouteFile(rootRoutes, routePath, fileType, templateFn(slug));
@@ -52,22 +54,22 @@ function generateRoutes(config: BuiltConfig): void {
 
 	// 4. Process area routes
 	for (const area of config.areas) {
-		processRoutes(area.slug, areaRoutes);
-		processRoutes(area.slug, areaAPIRoutes);
+		processRoutes(area.slug, area.kebab, areaRoutes);
+		processRoutes(area.slug, area.kebab, areaAPIRoutes);
 
 		if (area.versions) {
-			processRoutes(area.slug, areaVersionsPanelRoutes);
+			processRoutes(area.slug, area.kebab, areaVersionsPanelRoutes);
 			// Use collections API route as area_versions is a collection
-			processRoutes(makeVersionsSlug(area.slug), collectionAPIRoutes);
+			processRoutes(withVersionsSuffix(area.slug), withVersionsSuffix(area.kebab), collectionAPIRoutes);
 		}
 	}
 
 	// 5. Process collection routes
 	for (const collection of config.collections) {
 		// Function that generate routes files
-		const processRoutes = (slug: string, routes: Routes) => {
+		const processRoutes = (slug: string, kebab: string, routes: Routes) => {
 			for (const [pattern, files] of Object.entries(routes)) {
-				const routePath = pattern.replace('{collection.slug}', slug);
+				const routePath = pattern.replace('{collection.kebab}', kebab);
 				// Generate each file type (page, layout, etc.)
 				for (const [fileType, templateFn] of Object.entries(files)) {
 					// Check if function takes parameters before calling it
@@ -78,15 +80,19 @@ function generateRoutes(config: BuiltConfig): void {
 		};
 
 		// Panel routes
-		processRoutes(collection.slug, collectionPanelRoutes);
-		processRoutes(collection.slug, collectionAPIRoutes);
+		processRoutes(collection.slug, collection.kebab, collectionPanelRoutes);
+		processRoutes(collection.slug, collection.kebab, collectionAPIRoutes);
 
 		if (collection.versions) {
-			processRoutes(collection.slug, collectionVersionsPanelRoutes);
-			processRoutes(makeVersionsSlug(collection.slug), collectionAPIRoutes);
+			processRoutes(collection.slug, collection.kebab, collectionVersionsPanelRoutes);
+			processRoutes(withVersionsSuffix(collection.slug), withVersionsSuffix(collection.kebab), collectionAPIRoutes);
 		}
 		if (collection.upload) {
-			processRoutes(makeUploadDirectoriesSlug(collection.slug), collectionAPIRoutes);
+			processRoutes(
+				withDirectoriesSuffix(collection.slug),
+				withDirectoriesSuffix(collection.kebab),
+				collectionAPIRoutes
+			);
 		}
 	}
 

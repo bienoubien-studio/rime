@@ -81,6 +81,16 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 	}
 }
 
+/**
+ * Checks if a field is a blocks field.
+ */
+export const isBlocksField = (field: Field): field is BlocksField => field.type === 'blocks';
+
+/**
+ * Checks if a field is a blocks field (raw type).
+ */
+export const isBlocksFieldRaw = (field: Field): field is BlocksFieldRaw => field.type === 'blocks';
+
 class BlockBuilder {
 	block: BlocksFieldBlock;
 

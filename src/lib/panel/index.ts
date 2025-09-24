@@ -13,10 +13,23 @@ import Dashboard from './pages/dashboard/Dashboard.svelte';
 import Live from './pages/live/Live.svelte';
 import type { Route } from './types.js';
 
-export { Area, AreaVersionsDoc, Collection, CollectionDoc, CollectionDocVersions, Dashboard, Doc, Field, Live, Panel };
+export {
+	// Components
+	Area,
+	AreaVersionsDoc,
+	Collection,
+	CollectionDoc,
+	CollectionDocVersions,
+	Dashboard,
+	Doc,
+	Field,
+	Live,
+	Panel
+};
+
+// Types used in generated routes
 
 export type { DocumentFormContext } from './context/documentForm.svelte.js';
-
 export type CollectionProps = {
 	data: {
 		docs: GenericDoc[];
@@ -25,7 +38,6 @@ export type CollectionProps = {
 	};
 	children: Snippet;
 };
-
 export type DocVersion = { id: string; updatedAt: Date; status: VersionsStatus };
 
 type BaseDocData =
@@ -37,10 +49,13 @@ type BaseDocData =
 	  }
 	| {
 			aria: Partial<Route>[];
+			// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 			doc: {};
 			status: 401;
 			readOnly: true;
 	  };
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 type DocVersions<V> = V extends true ? { versions: DocVersion[] } : {};
 
 export type CollectionDocData<V extends boolean = boolean> = DocVersions<V> &

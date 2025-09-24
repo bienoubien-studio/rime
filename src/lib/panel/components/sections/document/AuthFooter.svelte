@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { isAuthConfig } from '$lib/core/collections/auth/util';
 	import type { BuiltCollection } from '$lib/core/config/types.js';
 	import { t__ } from '$lib/core/i18n';
 	import { text } from '$lib/fields';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { authClient } from '$lib/panel/util/auth';
-	import { isAuthConfig } from '$lib/util/config.js';
 	import validate from '$lib/util/validate';
 	import { toast } from 'svelte-sonner';
 	import Button from '../../ui/button/button.svelte';

@@ -1,3 +1,4 @@
+import { panelUrl } from '$lib/panel/util/url.js';
 import { capitalize } from '$lib/util/string.js';
 import type { ServerLoadEvent } from '@sveltejs/kit';
 import type { CompiledCollection, Route } from '../../../types.js';
@@ -13,7 +14,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		description: c.panel && c.panel?.description ? c.panel.description : null,
 		slug: c.slug,
 		canCreate: user && c.access.create(user, {}),
-		link: `/panel/${c.slug}`,
+		link: panelUrl(c.kebab),
 		titleSingular: c.label.singular,
 		title: c.label.plural
 	});
@@ -35,7 +36,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		.filter((collection) => user && collection.access.read(user, {}))
 		.filter((collection) => collection.panel !== false)
 		.map(async (collection) => {
-			if (collection.panel && collection.panel?.dashboard) {
+			if (collection.panel) {
 				return getLastEdited(collection).then((docs) => ({ ...buildBaseEntry(collection), lastEdited: docs }));
 			} else {
 				return {
@@ -59,13 +60,13 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 				prototype: 'area',
 				description: (area.panel && area.panel?.description) || null,
 				slug: area.slug,
-				link: `/panel/${area.slug}`,
+				link: panelUrl(area.kebab),
 				title: area.label || capitalize(area.slug)
 			});
 		}
 	}
 
-	const aria: Route[] = [{ title: 'Dashboard', icon: 'dashboard', path: `/panel` }];
+	const aria: Route[] = [{ title: 'Dashboard', icon: 'dashboard', url: panelUrl() }];
 
 	return { entries, aria };
 };

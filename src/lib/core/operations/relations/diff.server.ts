@@ -1,5 +1,6 @@
-import type { BeforeOperationRelation, Relation } from '$lib/adapter-sqlite/relations.js';
-import { pathToRegex } from '$lib/util/field.js';
+import type { BeforeOperationRelation } from '$lib/adapter-sqlite/relations.js';
+import { pathToRegex } from '$lib/core/fields/util';
+import type { Relation } from '$lib/fields/relation/index.js';
 
 export type RelationDiff = {
 	toAdd: BeforeOperationRelation[];

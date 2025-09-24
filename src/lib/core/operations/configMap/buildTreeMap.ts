@@ -1,6 +1,6 @@
-import type { ConfigMap } from './types.js';
-import { isFormField } from '$lib/util/field.js';
+import { isFormField } from '$lib/core/fields/util.js';
 import type { TreeFieldRaw } from '$lib/fields/tree/index.js';
+import type { ConfigMap } from './types.js';
 
 export function buildTreeFieldsMap(treeConfig: TreeFieldRaw, treeItems: any[], basePath: string): ConfigMap {
 	const treeMap: ConfigMap = {};

@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { File } from '@lucide/svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import * as Tooltip from '$lib/panel/components/ui/tooltip';
-	import NavItemButton from './NavItemButton.svelte';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
 	import type { Route } from '$lib/panel/types';
+	import { File } from '@lucide/svelte';
+	import NavItemButton from './NavItemButton.svelte';
 
 	type Props = {
 		isCollapsed: boolean;
@@ -20,10 +20,11 @@
 	let pathname = page.url.pathname;
 
 	let active = $derived.by(() => {
-		if (route.path === '/panel') {
+		const routePathname = new URL(route.url).pathname;
+		if (routePathname === '/panel') {
 			return pathname === '/panel';
 		}
-		const reg = new RegExp(`^${route.path}(/.*)?$`);
+		const reg = new RegExp(`^${routePathname}(/.*)?$`);
 		return reg.test(pathname);
 	});
 </script>

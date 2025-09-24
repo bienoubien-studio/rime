@@ -1,12 +1,8 @@
-import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { RizomFormError } from '$lib/core/errors/index.js';
 
 /**
  * Validates a password string against security requirements.
  * Checks for minimum length, lowercase, uppercase, numbers, and special characters.
- *
- * @param value - The password string to validate
- * @returns True if valid, or a specific RizomFormError code if invalid
  *
  * @example
  * // Returns true for a valid password
@@ -37,9 +33,6 @@ export const password = (value: unknown) => {
  * Validates an email address string.
  * Ensures the email follows standard format with proper characters and domain structure.
  *
- * @param value - The email string to validate
- * @returns True if valid, or a specific RizomFormError code if invalid
- *
  * @example
  * // Returns true for a valid email
  * email("user@example.com");
@@ -66,9 +59,6 @@ export const email = (value: unknown) => {
  * Validates a telephone number string.
  * Ensures the phone number contains only digits, spaces, and the plus sign.
  *
- * @param value - The telephone number string to validate
- * @returns True if valid, or a specific RizomFormError code if invalid
- *
  * @example
  * // Returns true for a valid phone number
  * tel("+1 555 123 4567");
@@ -89,9 +79,6 @@ export const tel = (value: unknown) => {
 /**
  * Validates a URL string.
  * Ensures the URL follows standard HTTP/HTTPS format with proper domain structure.
- *
- * @param value - The URL string to validate
- * @returns True if valid, or a specific RizomFormError code if invalid
  *
  * @example
  * // Returns true for a valid URL
@@ -114,9 +101,6 @@ export const url = (value: unknown) => {
  * Validates a slug string.
  * Ensures the slug contains only lowercase letters, numbers, and hyphens.
  *
- * @param value - The slug string to validate
- * @returns True if valid, or a specific RizomFormError code if invalid
- *
  * @example
  * // Returns true for a valid slug
  * slug("my-page-slug-123");
@@ -138,9 +122,6 @@ export const slug = (value: unknown) => {
  * Validates a link object with different validation based on link type.
  * Supports tel, email, url, and anchor link types.
  *
- * @param link - The link object with type and value properties
- * @returns True if valid, or a string with the error type and message if invalid
- *
  * @example
  * // Returns true for a valid email link
  * link({ type: 'email', value: 'user@example.com' });
@@ -150,8 +131,8 @@ export const slug = (value: unknown) => {
  */
 export const link = (link: any) => {
 	const { type, value } = link;
-	if(value === '') return true
-	
+	if (value === '') return true;
+
 	if (type === 'tel') {
 		const valid = validate.tel(value);
 		return typeof valid === 'string' ? `tel::${valid}` : true;
@@ -172,54 +153,10 @@ export const link = (link: any) => {
 };
 
 /**
- * Validates that a path string follows the required format:
- * - Must start with ROOT_NAME
- * - Only allows alphanumeric characters, hyphens, underscores, spaces, and the separator
- * - Can only use the defined separator
- * @example
- * validatePath("root:folder:subfolder") // valid
- * validatePath("root:folder with spaces:sub-folder_name") // valid
- * validatePath("root/folder") // invalid
- * validatePath("root:folder$") // invalid
- */
-export const uploadPath = (value: unknown): string | true => {
-	if (typeof value !== 'string') {
-		return 'path should be a string';
-	}
-
-	// Check if path starts with ROOT_NAME
-	const STARTS_WITH_ROOT = value === UPLOAD_PATH.ROOT_NAME || value.startsWith(`${UPLOAD_PATH.ROOT_NAME}:`)
-	if (!STARTS_WITH_ROOT) {
-		return `Path must start with "${UPLOAD_PATH.ROOT_NAME}"`;
-	}
-
-	// Create a mutable copy for normalization
-	let normalizedPath = value;
-
-	// Remove trailing separator if present
-	while (normalizedPath !== UPLOAD_PATH.ROOT_NAME && normalizedPath.endsWith(UPLOAD_PATH.SEPARATOR)) {
-		normalizedPath = normalizedPath.slice(0, -1);
-	}
-
-	// Only allow alphanumeric characters, hyphens, underscores, spaces, and the separator
-	// The regex ensures:
-	// 1. Starts with ROOT_NAME
-	// 2. Followed by zero or more segments (each segment starts with separator followed by valid chars)
-	const validPathRegex = new RegExp(`^${UPLOAD_PATH.ROOT_NAME}(${UPLOAD_PATH.SEPARATOR}[a-zA-Z0-9\\-_ ]+)*$`);
-
-	if (!validPathRegex.test(normalizedPath)) {
-		return 'Path contains invalid characters. Only alphanumeric characters, hyphens, underscores, and spaces are allowed.';
-	}
-
-	return true;
-};
-
-/**
  * Collection of validation utility functions for common data types.
  * Each function returns true if the value is valid, or an error code/message if invalid.
  */
 const validate = {
-	uploadPath,
 	password,
 	email,
 	slug,

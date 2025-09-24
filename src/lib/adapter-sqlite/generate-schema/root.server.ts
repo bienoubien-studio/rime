@@ -1,15 +1,18 @@
 import type { LocaleConfig } from '$lib/core/config/types.js';
 import { type FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
-import { GroupFieldBuilder } from '$lib/fields/group/index.js';
+import { isFormField } from '$lib/core/fields/util.js';
+import { withLocalesSuffix } from '$lib/core/naming.js';
+import { isBlocksField } from '$lib/fields/blocks/index.js';
+import { GroupFieldBuilder, isGroupField } from '$lib/fields/group/index.js';
 import { getFieldPrivateModule } from '$lib/fields/index.server.js';
+import { isRelationField } from '$lib/fields/relation/index.js';
+import { isTabsField } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import type { Field, FormField } from '$lib/fields/types.js';
-import { isBlocksField, isFormField, isGroupField, isRelationField, isTabsField } from '$lib/util/field.js';
 import { toPascalCase } from '$lib/util/string.js';
 import type { RelationFieldsMap } from './relations/definition.server.js';
 import { templateHasAuth, templateLocale, templateParent, templateTable } from './templates.server.js';
-import { makeLocalesSlug } from './util.js';
 const p = toPascalCase;
 
 type Args = {
@@ -160,7 +163,7 @@ const buildRootTable = async ({
 	let table: string;
 
 	if (locales && locales.length && hasLocalizedField(incomingFields)) {
-		const tableNameLocales = makeLocalesSlug(tableName);
+		const tableNameLocales = withLocalesSuffix(tableName);
 		const strLocalizedFields = await generateFieldsTemplates(incomingFields, true);
 		relationsDic[tableName] = [...(relationsDic[tableName] || []), tableNameLocales];
 		const strUnlocalizedFields = await generateFieldsTemplates(incomingFields, false);

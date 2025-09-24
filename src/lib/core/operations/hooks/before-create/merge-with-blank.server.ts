@@ -1,11 +1,11 @@
-import { isUploadConfig } from '$lib/util/config.js';
+import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
 import { createBlankDocument } from '$lib/util/doc.js';
 import deepmerge from 'deepmerge';
 import { Hooks } from '../index.server.js';
 
 export const mergeWithBlankDocument = Hooks.beforeCreate(async (args) => {
 	const { config } = args;
-	let data = args.data;
+	const data = args.data;
 
 	let file;
 	if (config.type === 'collection' && isUploadConfig(config) && 'file' in data) {

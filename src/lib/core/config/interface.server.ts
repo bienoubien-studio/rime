@@ -1,9 +1,8 @@
-import { flattenWithGuard } from '../../util/object.js';
-import { RizomError } from '../errors/index.js';
-
 import type { BuiltConfig, CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types.js';
 import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
 import type { AsyncReturnType, Dic } from '$lib/util/types.js';
+import { flattenWithGuard } from '../../util/object.js';
+import { RizomError } from '../errors/index.js';
 import { compileConfig } from './shared/compile.js';
 
 /**

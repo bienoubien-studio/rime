@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { env } from '$env/dynamic/public';
+	import { emptyValuesFromFieldConfig, isFormField } from '$lib/core/fields/util.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericBlock } from '$lib/core/types/doc.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import { emptyValuesFromFieldConfig, isFormField } from '$lib/util/field.js';
 	import { capitalize } from '$lib/util/string.js';
 	import { CirclePlus, ToyBrick } from '@lucide/svelte';
 	import type { BlocksField, BlocksFieldBlock } from '../index.js';

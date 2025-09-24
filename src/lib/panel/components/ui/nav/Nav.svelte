@@ -1,12 +1,13 @@
 <script lang="ts">
-	import NavItem from './NavItem.svelte';
-	import NavGroup from './NavGroup.svelte';
-	import UserButton from './UserButton.svelte';
-	import type { Route } from '$lib/panel/types';
-	import { PanelsTopLeft } from '@lucide/svelte';
-	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import ScrollArea from '../scroll-area/scroll-area.svelte';
 	import { page } from '$app/state';
+	import { getConfigContext } from '$lib/panel/context/config.svelte';
+	import type { Route } from '$lib/panel/types';
+	import { panelUrl } from '$lib/panel/util/url.js';
+	import { PanelsTopLeft } from '@lucide/svelte';
+	import ScrollArea from '../scroll-area/scroll-area.svelte';
+	import NavGroup from './NavGroup.svelte';
+	import NavItem from './NavItem.svelte';
+	import UserButton from './UserButton.svelte';
 
 	type Props = {
 		isCollapsed: boolean;
@@ -29,9 +30,11 @@
 
 	const dashBoardRoute: Route = {
 		title: 'Dashboard',
-		path: '/panel',
+		url: panelUrl(),
 		icon: PanelsTopLeft
 	};
+
+	console.log(routesGroups);
 </script>
 
 <div class:rz-nav--collapsed={isCollapsed} class="rz-nav">
@@ -48,15 +51,15 @@
 							{#if groupName !== 'none'}
 								{@const icon = getGroupIcon(groupName)}
 								<NavGroup name={groupName} {icon} navCollapsed={isCollapsed}>
-									{#each routes as route (route.path)}
-										<NavItem href={route.path} {isCollapsed} {route} />
+									{#each routes as route (route.url)}
+										<NavItem href={route.url} {isCollapsed} {route} />
 									{/each}
 								</NavGroup>
 							{/if}
 						{/each}
-						{#each routesGroups.none as route (route.path)}
+						{#each routesGroups.none as route (route.url)}
 							<div class="rz-nav__group-none">
-								<NavItem href={route.path} {isCollapsed} {route} />
+								<NavItem href={route.url} {isCollapsed} {route} />
 							</div>
 						{/each}
 					</nav>
@@ -73,13 +76,13 @@
 </div>
 
 <style type="postcss">
-	:root{
+	:root {
 		--rz-nav-button-height: var(--rz-size-12);
-		--rz-nav-bg: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-0)));
-		
-		--rz-nav-button-bg: light-dark( hsl(var(--rz-gray-19)), hsl(var(--rz-gray-3)));
-		--rz-nav-group-bg: light-dark( hsl(var(--rz-gray-17)), hsl(var(--rz-gray-2)));
-		--rz-nav-group-border-color: light-dark( hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
+		--rz-nav-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-0)));
+
+		--rz-nav-button-bg: light-dark(hsl(var(--rz-gray-19)), hsl(var(--rz-gray-3)));
+		--rz-nav-group-bg: light-dark(hsl(var(--rz-gray-17)), hsl(var(--rz-gray-2)));
+		--rz-nav-group-border-color: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
 	}
 
 	.rz-nav {
