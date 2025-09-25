@@ -42,7 +42,7 @@ export const hasDirectoriesSuffix = (slug: string) => slug.endsWith('_directorie
 
 /**
  * Add a i18n suffix to a given name.
- * Used for locales table name and slug
+ * Used for localized tables name
  *
  * @example
  * // Returns 'pagesLocales'
@@ -50,4 +50,4 @@ export const hasDirectoriesSuffix = (slug: string) => slug.endsWith('_directorie
  * // Returns 'pages_versionsLocales'
  * withLocalesSuffix('pages_versions');
  */
-export const withLocalesSuffix = (tableName: string) => `${tableName}Locales`;
+export const withLocalesSuffix = (name: string) => `${name}Locales`;
