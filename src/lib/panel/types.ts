@@ -1,17 +1,12 @@
-import type { Dic } from '$lib/util/types.js';
 import type { WithRequired } from 'better-auth/svelte';
-import type { Component, Snippet } from 'svelte';
+import type { Snippet } from 'svelte';
 import type { GenericDoc } from '../core/types/doc.js';
+export type { Navigation } from './navigation.js';
 
 export type Route = {
 	title: string;
 	icon?: any;
 	url: string;
-};
-
-export type FieldsComponents = {
-	cell?: Component<any> | null;
-	component: Component<any>;
 };
 
 export type FieldPanelTableConfig = {
@@ -27,13 +22,6 @@ export type CollectionProps = {
 		canCreate: boolean;
 	};
 	children: Snippet;
-};
-
-export type PanelActionFailure<T extends Dic = Dic> = {
-	form?: {
-		[K in keyof T]: T[K];
-	};
-	errors?: Partial<FormErrors<string>>;
 };
 
 export type Aria = WithRequired<Partial<Route>, 'title'>[];

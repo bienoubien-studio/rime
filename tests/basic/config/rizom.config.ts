@@ -31,7 +31,7 @@ import {
 	SlidersVertical
 } from '@lucide/svelte';
 
-import { Area, buildConfig, Collection, Hooks } from 'rizom:core';
+import { Area, buildConfig, Collection, Hooks } from '$rizom/config';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 

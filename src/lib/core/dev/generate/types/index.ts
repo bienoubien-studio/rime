@@ -12,8 +12,12 @@ import { getFieldPrivateModule } from '$lib/fields/index.server.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import type { Field } from '$lib/fields/types.js';
+import { trycatchSync } from '$lib/util/function';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const IS_PACKAGE_DEV = process.env.IS_PACKAGE_DEV === 'true';
 
 // Relation  type
 const relationValueType = `
@@ -25,8 +29,6 @@ export type RelationValue<T> =
 
 /**
  * Generate document's type name
- * @param slug the slug of the area/collection
- * @returns the type name for this document
  * @example
  * makeDocTypeName('pages')
  * // return PagesDoc
@@ -35,9 +37,6 @@ const makeDocTypeName = (slug: string): string => `${capitalize(slug)}Doc`;
 
 /**
  * Generate the document's type definition
- * @param slug the collection/area slug
- * @param content a string of all types properties
- * @param upload a boolean flag for upload colections
  * @returns the full document type
  */
 const templateDocType = (slug: string, content: string, upload?: boolean): string => `
@@ -48,12 +47,14 @@ export type ${makeDocTypeName(slug)} = BaseDoc & ${upload ? 'UploadDoc & ' : ''}
 
 /**
  * Generates a type for a block with the given slug and content
- * @param slug The unique identifier for the block
- * @param content The string representation of the block's properties
- * @returns A string containing the block type definition
  * @example
- * makeBlockType('hero', 'title: string\nimage: string')
- * // returns a type definition for BlockHero
+ * makeBlockType('hero', 'title: string')
+ * // returns
+ * export type BlockHero {
+ *   id: string,
+ *   type: 'hero',
+ *   title: string
+ * }
  */
 const makeBlockType = (slug: string, content: string): string => `
 export type Block${toPascalCase(slug)} = {
@@ -64,12 +65,14 @@ export type Block${toPascalCase(slug)} = {
 
 /**
  * Generates a type for a treeBlock with the given slug and content
- * @param name the type name ex: TreeSomething
- * @param content The string representation of the treeBlock's fields
- * @returns A string containing the block type definition
  * @example
- * makeTreeBlockType('nav', 'title: string\nimage: string')
- * // returns a type definition for TreeNav
+ * makeTreeBlockType('TreeNav', 'title: string')
+ * // returns
+ * export type TreeNav {
+ *   id: string,
+ *   title: string
+ *   _children: TreeNav[]
+ * }
  */
 const makeTreeBlockType = (name: string, content: string): string => `
 export type ${name} = {
@@ -80,7 +83,6 @@ export type ${name} = {
 
 /**
  * Generates the module declaration for registering document types
- * @param config The built configuration containing collections and areas
  * @returns A string containing the module declaration for type registration
  */
 const templateRegister = (config: BuiltConfig): string => {
@@ -114,9 +116,16 @@ const templateRegister = (config: BuiltConfig): string => {
 	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
 
+const templateDeclareVirtualModule = () =>
+	[
+		`declare module '$rizom/config' {`,
+		...(IS_PACKAGE_DEV ? ['\t// eslint-disable-next-line no-restricted-imports'] : []),
+		`\texport * from '${PACKAGE_NAME}/config/server';`,
+		`}`
+	].join('\n');
+
 /**
  * Generates type definitions for image sizes
- * @param sizes Array of image size configurations
  * @returns A string containing the type definition for image sizes
  */
 function generateImageSizesType(sizes: ImageSizesConfig[]) {
@@ -134,7 +143,6 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
 
 /**
  * Generates the complete TypeScript type definitions string based on the built configuration
- * @param config The built configuration containing collections, areas, and fields
  * @returns A string containing all type definitions
  */
 export async function generateTypesString(config: BuiltConfig) {
@@ -152,7 +160,6 @@ export async function generateTypesString(config: BuiltConfig) {
 
 	/**
 	 * Generates fields type definitions string based on a list of field
-	 * @param fields A fields configurations list
 	 * @returns An array of string containing fields type definitions
 	 */
 	const buildFieldsTypes = async (fields: FieldBuilder<Field>[]): Promise<string[]> => {
@@ -255,7 +262,6 @@ export async function generateTypesString(config: BuiltConfig) {
 		return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
 	};
 
-	const register = templateRegister(config);
 	const collectionsTypes = (await Promise.all(config.collections.map(processCollection))).join('\n');
 	const areasTypes = (await Promise.all(config.areas.map(processArea))).join('\n');
 	const hasBlocks = !!registeredBlocks.length;
@@ -313,8 +319,10 @@ export async function generateTypesString(config: BuiltConfig) {
 }`;
 
 	const content = [
+		...(IS_PACKAGE_DEV ? ['// eslint-disable-next-line no-restricted-imports'] : []),
 		`import '${PACKAGE_NAME}';`,
 		`import type { Session } from 'better-auth';`,
+		...(IS_PACKAGE_DEV ? ['// eslint-disable-next-line no-restricted-imports'] : []),
 		typeImports,
 		'',
 		relationValueType,
@@ -326,8 +334,7 @@ export async function generateTypesString(config: BuiltConfig) {
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',
 		`}`,
-		locals,
-		register
+		locals
 	].join('\n');
 
 	return content;
@@ -337,22 +344,19 @@ export async function generateTypesString(config: BuiltConfig) {
  * Writes the generated types to the app.generated.d.ts file
  * @param content The string containing all type definitions
  */
-function write(content: string) {
-	const cachedTypes = cache.get('types');
+function write(key: string, content: string, filePath: string) {
+	const cachedTypes = cache.get(key);
 
 	if (cachedTypes && cachedTypes === content) {
 		return;
 	} else {
-		cache.set('types', content);
+		cache.set(key, content);
 	}
 
-	fs.writeFile('./src/app.generated.d.ts', content, (err) => {
-		if (err) {
-			console.error(err);
-		} else {
-			logger.info('[✓] Types: generated at src/app.generated.d.ts');
-		}
-	});
+	const [error] = trycatchSync(() => fs.writeFileSync(filePath, content));
+	if (error) {
+		logger.error(error);
+	}
 }
 
 /**
@@ -360,8 +364,14 @@ function write(content: string) {
  * @param config The built configuration containing collections, areas, and fields
  */
 async function generateTypes(config: BuiltConfig) {
-	const content = await generateTypesString(config);
-	write(content);
+	const mainTypes = await generateTypesString(config);
+	const declarations = [templateRegister(config), templateDeclareVirtualModule()].join('\n');
+
+	const appGeneratedPath = path.resolve(process.cwd(), 'src', 'app.generated.d.ts');
+	const virtualModuleGeneratedPath = path.resolve(process.cwd(), 'src', 'rizom.generated.d.ts');
+
+	write('app.generated', mainTypes, appGeneratedPath);
+	write('rizom.generated', declarations, virtualModuleGeneratedPath);
 }
 
 export default generateTypes;

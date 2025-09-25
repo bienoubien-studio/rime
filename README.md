@@ -92,7 +92,7 @@ export default defineConfig({
 // src/hooks.server.ts (should be created)
 import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from 'rizom';
-import config from 'rizom:config';
+import config from './lib/config.generated/rizom.config.server.js';
 import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));

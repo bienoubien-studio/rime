@@ -1,10 +1,10 @@
 {
 	"name": "rizom",
-	"version": "0.16.7",
+	"version": "0.17.6",
 	"homepage": "https://github.com/bienoubien-studio/rizom",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && bun ./src/scripts/useConfig.js empty && vite build && npm run package && pnpm build:css",
+		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
 		"rizom:use": "bun ./src/scripts/useConfig.js",
 		"preview": "vite preview",
@@ -90,6 +90,14 @@
 		"./api": {
 			"types": "./dist/core/api/index.server.d.ts",
 			"import": "./dist/core/api/index.server.js"
+		},
+		"./config/client": {
+			"types": "./dist/core/config/client/index.d.ts",
+			"import": "./dist/core/config/client/index.js"
+		},
+		"./config/server": {
+			"types": "./dist/core/config/server/index.server.d.ts",
+			"import": "./dist/core/config/server/index.server.js"
 		},
 		"./core/plugins/*.js": {
 			"types": "./dist/core/plugins/*.d.ts",

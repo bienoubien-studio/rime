@@ -1,6 +1,10 @@
 import { PACKAGE_NAME } from '$lib/core/constant.server.js';
 import type { Routes } from './util.js';
 
+// Trick to prevent svelte-kit to replace $lib with resolved imports path
+// same thing for PACKAGE_NAME
+const DOLLAR_LIB = '$lib';
+
 /**
  * Main base layout
  * /+layout.server.ts
@@ -146,7 +150,7 @@ const panelLayout = () => `
 <script>
 	import { Panel } from '${PACKAGE_NAME}/panel/client';
 
-	import config from 'rizom:config-client';
+	import config from '${DOLLAR_LIB}/config.generated/rizom.config.js';
 	const { children, data } = $props();
 
 	const user = data.user;
@@ -198,7 +202,7 @@ const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
 
-  import config from 'rizom:config-client';
+  import config from '$lib/config.generated/rizom.config.ts';
 
   const { data } = $props();
 </script>

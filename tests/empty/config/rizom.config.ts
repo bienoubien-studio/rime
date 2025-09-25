@@ -1,4 +1,4 @@
-import { buildConfig } from 'rizom:core';
+import { buildConfig } from '$rizom/config';
 
 export default buildConfig({
 	$database: 'empty.sqlite',

@@ -37,12 +37,8 @@ export type {
 // Fields types
 export type { Field, FormField, Option, RelationValue } from '$lib/fields/types.js';
 
-// // Hooks types
-// export type {
-// } from './core/config/types/index.js';
-
 // Panel types
-export type { CollectionProps, FieldPanelTableConfig, FormErrors, Route } from './panel/types.js';
+export type { CollectionProps, FieldPanelTableConfig, FormErrors, Navigation, Route } from './panel/types.js';
 
 export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 

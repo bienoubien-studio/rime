@@ -10,9 +10,7 @@ dotenv.config({ override: true });
 const dev = process.env.NODE_ENV === 'development';
 
 export function rizom(): Plugin {
-	const VCoreId = 'rizom:core';
-	const VConfigClientId = 'rizom:config-client';
-	const VConfigServerId = 'rizom:config';
+	const VCoreId = '$rizom/config';
 
 	const resolvedVModule = (name: string) => '\0' + name;
 
@@ -33,15 +31,23 @@ export function rizom(): Plugin {
 				}
 			});
 
-			// Add a watcher for config changes
-			// Whenever any change in src/config trigger
-			// a dummy request to retrigger the configuration build
-			server.watcher.on('change', async (path) => {
-				if (path.includes('src/lib/config') && !path.includes('src/lib/config.generated')) {
+			// Add a watcher for sanitizing config changes
+			// and trigger schema/routes/types generation
+			server.watcher.on('change', async (modulePath) => {
+				if (modulePath.includes('src/lib/config') && !modulePath.includes('src/lib/config.generated')) {
+					// Sanitize the config client/server
 					try {
 						await sanitize();
-					} catch (error) {
-						console.error('Failed to trigger config reload:', error);
+					} catch (error: any) {
+						logger.error('Error while sanitizing config:', error.message);
+						throw error;
+					}
+					// Trigger generation
+					try {
+						await server.ssrLoadModule('src/lib/config.generated/rizom.config.server.ts');
+					} catch (error: any) {
+						logger.error('Failed to reload the config', error.message);
+						throw error;
 					}
 				}
 			});
@@ -75,17 +81,7 @@ export function rizom(): Plugin {
 				return null;
 			}
 
-			if (file.includes('config.generated/rizom.config.server')) {
-				logger.info('reload config server');
-				const module = invalidateVModule(VConfigServerId);
-				if (module) return [module];
-			} else if (file.includes('config.generated/rizom.config')) {
-				logger.info('reload config client');
-				const module = invalidateVModule(VConfigClientId);
-				if (module) return [module];
-			}
-
-			if (file.includes('src/lib/core/config')) {
+			if (process.env.IS_PACKAGE_DEV && file.includes('src/lib/core/config')) {
 				logger.info('reload core config');
 				const module = invalidateVModule(VCoreId);
 				if (module) return [module];
@@ -96,12 +92,6 @@ export function rizom(): Plugin {
 			if (id === VCoreId) {
 				return resolvedVModule(id);
 			}
-			if (id === VConfigClientId) {
-				return resolvedVModule(id);
-			}
-			if (id === VConfigServerId) {
-				return resolvedVModule(id);
-			}
 
 			return null;
 		},
@@ -110,18 +100,8 @@ export function rizom(): Plugin {
 			const isServer = this.environment?.config?.consumer === 'server';
 
 			if (id === resolvedVModule(VCoreId)) {
-				const corePath = isServer ? '$lib/core/config/server/index.server.js' : '$lib/core/config/client/index.js';
+				const corePath = isServer ? 'rizom/config/server' : 'rizom/config/client';
 				return `export * from '${corePath}';`;
-			}
-
-			if (id === resolvedVModule(VConfigClientId)) {
-				const configPath = '$lib/config.generated/rizom.config.js';
-				return `import config from '${configPath}';\nexport default config`;
-			}
-
-			if (id === resolvedVModule(VConfigServerId)) {
-				const configPath = '$lib/config.generated/rizom.config.server.js';
-				return `import config from '${configPath}';\nexport default config`;
 			}
 
 			return null;

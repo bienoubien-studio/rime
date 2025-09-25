@@ -1,6 +1,6 @@
 import { date, group, relation, richText, slug, tab, tabs, text, toggle } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
-import { Area, buildConfig, Collection } from 'rizom:core';
+import { Area, buildConfig, Collection } from '$rizom/config';
 
 const Settings = Area.config('settings', {
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],

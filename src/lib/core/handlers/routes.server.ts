@@ -1,14 +1,8 @@
-import { dev } from '$app/environment';
 import buildNavigation from '$lib/panel/navigation.js';
-import { json, type Handle } from '@sveltejs/kit';
+import { type Handle } from '@sveltejs/kit';
 
 export const handleRoutes: Handle = async ({ event, resolve }) => {
 	const { rizom, user } = event.locals;
-
-	// handle dummy request from vite to reload config
-	if (dev && event.url.pathname === '/api/reload-config') {
-		return json({ success: true });
-	}
 
 	const isSignInRoute = event.url.pathname === '/panel/sign-in';
 	const isPanelRoute = event.url.pathname.startsWith('/panel') && !isSignInRoute;

@@ -56,7 +56,6 @@ export const generate = async (args: { force?: boolean }) => {
 		const { createServer } = await import('vite');
 
 		// Create a Vite server using the project's vite.config.ts
-		logger.info('Starting Vite server to handle module resolution...');
 		const vite = await createServer({
 			configFile: path.join(process.cwd(), 'vite.config.ts'),
 			server: {
@@ -77,6 +76,7 @@ export const generate = async (args: { force?: boolean }) => {
 		if (!existsSync(configGeneratedPath)) {
 			throw new Error('Unable to find generated config');
 		}
+		return path.join('$lib', 'config.generated', 'rizom.config.server.js');
 	}
 
 	async function run() {
@@ -86,9 +86,9 @@ export const generate = async (args: { force?: boolean }) => {
 		}
 		ensureUserConfigExists();
 		await sanitizeConfig();
-		ensureGeneratedConfigExists();
+		const importPathJS = ensureGeneratedConfigExists();
 		const vite = await createServer();
-		await vite.ssrLoadModule('rizom:config');
+		await vite.ssrLoadModule(importPathJS);
 
 		while (cache.get('.generating')) {
 			await new Promise((resolve) => setTimeout(resolve, 200));

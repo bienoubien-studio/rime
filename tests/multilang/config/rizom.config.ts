@@ -15,7 +15,7 @@ import {
 } from '$lib/fields/index.js';
 import { access } from '$lib/util/access/index.js';
 import { Images, ListTree, Newspaper, ReceiptText, Settings2, Text } from '@lucide/svelte';
-import { Area, buildConfig, Collection, Hooks } from 'rizom:core';
+import { Area, buildConfig, Collection, Hooks } from '$rizom/config';
 
 /****************************************************
 /* Settings

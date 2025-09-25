@@ -12,7 +12,7 @@ type Args = { config: BuiltConfig; schema: any };
 export function createCMSHandler({ config, schema }: Args) {
 	// CMS Handler :
 	// Initialize Main Singleton
-	// Create rizom object with main.config and main.adapter
+	// Create rizom object with Config and Adapter interfaces
 	// Return the better-auth handler
 	const handleCMS: Handle = async ({ event, resolve }) => {
 		logger.info(`${event.request.method} ${event.url.pathname}`);
