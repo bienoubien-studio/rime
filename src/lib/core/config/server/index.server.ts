@@ -20,9 +20,9 @@ import type { Dic } from '$lib/util/types.js';
 import { Book, BookCopy, BookType, SlidersVertical, type IconProps } from '@lucide/svelte';
 import type { Component } from 'svelte';
 import { compileConfig } from '../shared/compile.js';
+import { getStaffCollection } from '../shared/get-staff-collection.js';
 import { registerPluginsClient } from '../shared/register-plugins.js';
 import { registerPlugins } from '../shared/register-plugins.server.js';
-import { buildStaffCollection } from '../shared/staff.js';
 import { makeUploadDirectoriesCollections } from '../shared/upload-directories.js';
 import { makeVersionsCollectionsAliases } from '../shared/versions-alias.server.js';
 import type { BuiltConfig, SanitizedConfigClient } from '../types.js';
@@ -37,7 +37,7 @@ type ConfigWithBuiltPrototypes = Omit<Config, 'collections' | 'areas'> & {
 const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 	const icons: Dic<Component<IconProps>> = {};
 
-	const staff = buildStaffCollection(config.staff);
+	const staff = Collection.config('staff', getStaffCollection(config.staff));
 
 	// Add icons
 	for (const collection of [staff, ...config.collections]) {

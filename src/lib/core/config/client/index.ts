@@ -4,14 +4,14 @@ import { cacheClient } from '$lib/core/plugins/cache/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { Book, BookCopy, BookType, SlidersVertical, type IconProps } from '@lucide/svelte';
 import type { Component } from 'svelte';
+import { getStaffCollection } from '../shared/get-staff-collection.js';
 import { registerPluginsClient } from '../shared/register-plugins.js';
-import { buildStaffCollection } from '../shared/staff.js';
 import type { BuiltConfigClient, SanitizedConfigClient } from '../types.js';
 
 const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => {
 	const icons: Dic<Component<IconProps>> = {};
 
-	const staff = buildStaffCollection(config.staff);
+	const staff = Collection.config('staff', getStaffCollection(config.staff));
 
 	// Add icons
 	for (const collection of [staff, ...config.collections]) {
