@@ -10,19 +10,24 @@ PUBLIC_RIZOM_URL=http://localhost:5173
 # RIZOM_SMTP_PASSWORD=supersecret
 # RIZOM_SMTP_HOST=smtphost.com
 # RIZOM_SMTP_PORT=465
+
+RIZOM_CACHE_ENABLED=false
+RIZOM_LOG_LEVEL=TRACE
+RIZOM_LOG_TO_FILE=true
+RIZOM_LOG_TO_FILE_MAX_DAYS=1
 `;
 
 export const defaultConfig = (name: string) => `
-import { collection, defineConfig } from '${PACKAGE}';
+import { Collection, buildConfig } from '$${PACKAGE}/config';
 import { text } from '${PACKAGE}/fields';
 
-const Pages = collection('pages', {
+const Pages = Collection.config('pages', {
 	group: 'content',
 	fields: [text('title').isTitle()]
 });
 
-export default defineConfig({
-  database: '${name}.sqlite',
+export default buildConfig({
+  $database: '${name}.sqlite',
   collections: [Pages],
   areas: []
 });
@@ -46,7 +51,7 @@ export default defineConfig(config);
 
 export const hooks = `import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from '${PACKAGE}';
-import config from 'rizom:config';
+import config from './lib/config.generated/rizom.config.server.js';
 import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));

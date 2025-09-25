@@ -14,11 +14,6 @@ type Args = {
 	name?: string;
 };
 
-type EnvVarConfig = {
-	value: string;
-	replace: boolean; // if true, replace existing value; if false, keep existing value
-};
-
 const PACKAGE = 'rizom';
 
 export const init = async ({ force, name: incomingName }: Args) => {
@@ -29,26 +24,31 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		const envPath = path.resolve(projectRoot, '.env');
 
 		// Define variables with their update behavior
-		const envUpdates: Record<string, EnvVarConfig> = {
-			BETTER_AUTH_SECRET: {
-				value: randomId(32),
-				replace: false // won't replace if already exists
-			}
+		const envUpdates: Record<string, string> = {
+			BETTER_AUTH_SECRET: randomId(32),
+			PUBLIC_RIZOM_URL: 'http://localhost:5173',
+			'# RIZOM_SMTP_USER': 'user@mail.com',
+			'# RIZOM_SMTP_PASSWORD': 'supersecret',
+			'# RIZOM_SMTP_PORT': '465',
+			'# RIZOM_SMTP_HOST': 'smtphost.com',
+			RIZOM_LOG_LEVEL: 'TRACE',
+			RIZOM_LOG_TO_FILE: 'true',
+			RIZOM_LOG_TO_FILE_MAX_DAYS: '1'
 		};
 
 		if (existsSync(envPath)) {
+			logger.info('[✓] .env file found');
 			let envContent = readFileSync(envPath, 'utf-8');
 
-			Object.entries(envUpdates).forEach(([key, config]) => {
+			Object.entries(envUpdates).forEach(([key, value]) => {
 				const exists = envContent.match(new RegExp(`^${key}=`, 'm'));
 
 				if (exists) {
-					if (config.replace) {
-						envContent = envContent.replace(new RegExp(`^${key}=.*`, 'm'), `${key}=${config.value}`);
-					}
+					// logger.info(`-> ${key} already defined (skip)`);
 				} else {
 					// Add new value if doesn't exist
-					envContent += `\n${key}=${config.value}`;
+					envContent += `\n${key}=${value}`;
+					logger.info(`- ${key} added`);
 				}
 			});
 
@@ -69,24 +69,30 @@ export const init = async ({ force, name: incomingName }: Args) => {
 				mkdirSync(configDirPath);
 			}
 			writeFileSync(configPath, templates.defaultConfig(name.toString()));
+			logger.info('[✓] Config created src/lib/config/rizom.config.ts');
+		} else {
+			logger.info('[✓] Config already exists (skip)');
 		}
-		logger.info('[✓] Created src/config/rizom.config.ts');
 	}
 
 	function setDatabase() {
 		const dbPath = path.join(process.cwd(), 'db');
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
+			logger.info('[✓] Database folder created');
+		} else {
+			logger.info('[✓] Database folder already exists (skip)');
 		}
-		logger.info('[✓] Created db folder');
 	}
 
 	function setDrizzle(name: string) {
 		const drizzleConfigPath = path.join(process.cwd(), 'drizzle.config.ts');
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
+			logger.info('[✓] Drizzle config added');
+		} else {
+			logger.info('[✓] Drizzle config already exists (skip)');
 		}
-		logger.info('[✓] Added Drizzle config');
 	}
 
 	function configureVite() {
@@ -113,8 +119,10 @@ export const init = async ({ force, name: incomingName }: Args) => {
 				}
 			});
 			writeFileSync(configPath, updatedContent);
+			logger.info('[✓] Vite plugin added');
+		} else {
+			logger.info('[✓] Vite plugin already present (skip)');
 		}
-		logger.info('[✓] Added Vite plugin');
 	}
 
 	function setHooks() {
@@ -129,9 +137,9 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			}
 			// Create hooks.server.ts with template content
 			writeFileSync(hooksPath, templates.hooks, 'utf-8');
-			logger.info('[✓] Created src/hooks.server.ts');
+			logger.info('[✓] hooks.server.ts created');
 		} else {
-			logger.warn('hooks.server.ts already exists (skip)');
+			logger.info('[✓] hooks.server.ts already exists (skip)');
 		}
 	}
 
@@ -181,7 +189,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			});
 			logger.info('[✓] Copied assets');
 		} catch (err) {
-			console.error('[!] Error copying fonts:', err);
+			console.error('Error copying fonts:', err);
 		}
 	}
 
