@@ -129,7 +129,7 @@ curl -v POST http://localhost:5173/api/init \
 
 ```typescript
 // ./src/lib/config/rizom.config.ts
-import { buildConfig, Collection, Area } from 'rizom';
+import { buildConfig, Collection, Area } from '$rizom/config';
 import { Settings2 } from '@lucide/svelte';
 import { relation, link, richText, text, toggle } from 'rizom/fields';
 import { access } from "rizom/util";
@@ -173,6 +173,8 @@ const Medias = Collection.config('medias', {
   ]
 };
 
+// Properties prefixed with "$" are server-only props, they will be stripped
+// in the generated client config
 export default buildConfig({
   $database: 'my-db.sqlite'
   collections: [Pages, Medias],
