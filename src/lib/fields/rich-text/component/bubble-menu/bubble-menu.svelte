@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { Editor } from '@tiptap/core';
-	import NodeSelector from './node-selector/node-selector.svelte';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
-	import IconButton from './icon-button/icon-button.svelte';
-	import './bubble-menu.css';
-	import { getRichTextContext } from '../context.svelte';
 	import type { RichTextFeature } from '../../core/types.js';
+	import { getRichTextContext } from '../context.svelte';
+	import './bubble-menu.css';
+	import IconButton from './icon-button/icon-button.svelte';
+	import NodeSelector from './node-selector/node-selector.svelte';
 
 	type Props = {
 		editor: Editor;
@@ -28,27 +28,9 @@
 		...features.flatMap((feature) => feature.nodes || []).filter((node) => !!node.bubbleMenu)
 	]);
 
-	const pluginKey = path;
+	const pluginKey = $derived(path);
 	const updateDelay = 250;
 	const richTextContext = getRichTextContext(path);
-
-	const onShow = () => {
-		richTextContext.bubbleOpen = true;
-		isOpen = true;
-	};
-
-	const onHidden = () => {
-		richTextContext.bubbleOpen = false;
-		isOpen = false;
-	};
-
-	const tippyOptions = {
-		moveTransition: 'transform 0.15s ease-out',
-		zIndex: 50,
-		hideOnClick: true,
-		onHidden,
-		onShow
-	};
 
 	const shouldShow = ({ editor }: { editor: Editor }) => {
 		return editor.view.state.selection.$head.depth > 0 && editor.view.state.selection.content().size > 0;
@@ -69,20 +51,27 @@
 			pluginKey,
 			editor,
 			element,
-			tippyOptions,
 			shouldShow,
-			updateDelay
+			updateDelay,
+			options: {
+				onShow() {
+					richTextContext.bubbleOpen = true;
+					isOpen = true;
+				},
+				onHide() {
+					richTextContext.bubbleOpen = false;
+					isOpen = false;
+				}
+			}
 		});
 
 		editor.registerPlugin(plugin);
 		editor.on('selectionUpdate', setActiveItems);
-		// editor.on('update', setActiveItems);
 		setActiveItems();
 	});
 
 	onDestroy(() => {
 		editor.off('selectionUpdate', setActiveItems);
-		// editor.off('update', setActiveItems);
 		editor.unregisterPlugin(pluginKey);
 	});
 

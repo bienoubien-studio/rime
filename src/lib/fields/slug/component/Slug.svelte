@@ -32,7 +32,7 @@
 
 	const generateFromField = () => {
 		if (config.slugify) {
-			const source = config.slugify in form.changes ? form.changes : form.doc;
+			const source = config.slugify in form.changes ? form.changes : form.values;
 			const fromValue = getValueAtPath<string>(config.slugify, source);
 			if (!fromValue) return;
 			const slugifiedValue = slugify(fromValue);

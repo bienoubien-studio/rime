@@ -1,3 +1,4 @@
+import type { PrototypeSlug } from '$lib/types.js';
 import { Images } from '@lucide/svelte';
 import type { RichTextFeature, RichTextFeatureNode } from '../../types.js';
 import { Resource } from './resource-extension.js';
@@ -8,12 +9,12 @@ const resourceFeatureNode: RichTextFeatureNode = {
 	icon: Images,
 	isActive: ({ editor }) => editor.isActive('richt-text-resource'),
 	suggestion: {
-		//@ts-expect-error boring
+		//@ts-expect-error annoying
 		command: ({ editor }) => editor.chain().focus().insertResource().run()
 	}
 };
 
-export const ResourceFeature = (args: { query: string; slug: string }): RichTextFeature => ({
+export const ResourceFeature = (args: { query?: string; slug: PrototypeSlug }): RichTextFeature => ({
 	name: 'Resource',
 	extension: Resource.configure(args),
 	nodes: [resourceFeatureNode]

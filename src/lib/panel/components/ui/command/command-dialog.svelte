@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Command as CommandPrimitive, Dialog as DialogPrimitive, WithoutChildrenOrChild } from 'bits-ui';
 	import type { Snippet } from 'svelte';
-	import Command from './command.svelte';
 	import * as Dialog from '../dialog/index';
 	import './command-dialog.css';
+	import Command from './command.svelte';
 
 	let {
 		open = $bindable(false),

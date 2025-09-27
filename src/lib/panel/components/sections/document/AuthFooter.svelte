@@ -17,7 +17,7 @@
 	const user = getUserContext();
 
 	$effect(() => {
-		if (form.doc.password !== form.doc.confirmPassword && operation === 'create') {
+		if (form.values.password !== form.values.confirmPassword && operation === 'create') {
 			form.errors.set('__form', 'password_mismatch');
 		} else {
 			form.errors.delete('__form');
@@ -26,14 +26,14 @@
 
 	async function sendPasswordResetLink() {
 		const { data, error } = await authClient.forgetPassword({
-			email: form.doc.email,
+			email: form.values.email,
 			redirectTo: `/reset-password?slug=staff`
 		});
 		if (error && error.message) {
 			toast.error(error.message);
 		}
 		if (data && data.status) {
-			toast.success(t__('common.passwordResetLinkSent', form.doc.email));
+			toast.success(t__('common.passwordResetLinkSent', form.values.email));
 		}
 	}
 

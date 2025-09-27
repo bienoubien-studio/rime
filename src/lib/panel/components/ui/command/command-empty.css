@@ -1,0 +1,4 @@
+.rz-command-empty {
+	padding: var(--rz-size-6);
+	opacity: 0.6;
+}

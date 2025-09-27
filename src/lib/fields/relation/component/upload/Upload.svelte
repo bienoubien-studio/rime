@@ -118,12 +118,7 @@
 		}
 	}}
 >
-	<Sheet.Content
-		style="--rz-page-gutter:var(--rz-size-6)"
-		showCloseButton={false}
-		class="rz-relation-sheet"
-		side="right"
-	>
+	<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" showCloseButton={false} side="right">
 		<Doc
 			doc={createBlankDocument(compileDocumentConfig(relationConfig))}
 			readOnly={false}

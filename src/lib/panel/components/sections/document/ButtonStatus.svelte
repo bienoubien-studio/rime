@@ -19,9 +19,9 @@
 	let dialogOpen = $state(false);
 
 	async function handleValidateStatus() {
-		const urlId = form.doc._prototype === 'collection' ? `/${form.doc.id}` : '/';
+		const urlId = form.values._prototype === 'collection' ? `/${form.values.id}` : '/';
 		await fetch(
-			`${apiUrl(toKebabCase(form.doc._type))}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.doc.versionId}`,
+			`${apiUrl(toKebabCase(form.values._type))}${urlId}?draft=true&${PARAMS.VERSION_ID}=${form.values.versionId}`,
 			{
 				method: 'PATCH',
 				body: JSON.stringify({
@@ -44,7 +44,7 @@
 			});
 	}
 
-	let initialValue = $state.snapshot(form.doc.status);
+	let initialValue = $state.snapshot(form.values.status);
 	let internalValue = $state(initialValue);
 </script>
 
@@ -52,8 +52,8 @@
 	<Dialog.Trigger>
 		{#snippet child(props)}
 			<Button size="sm" variant="secondary" onclick={() => (dialogOpen = true)} {...props}>
-				<StatusDot status={form.doc.status} />
-				<p class="rz-status__text">{t__(`common.${form.doc.status}`)}</p>
+				<StatusDot status={form.values.status} />
+				<p class="rz-status__text">{t__(`common.${form.values.status}`)}</p>
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>

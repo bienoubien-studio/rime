@@ -28,7 +28,7 @@
 
 	async function sendResetPasswordMail() {
 		const { data, error } = await authClient.forgetPassword({
-			email: context.form.email,
+			email: context.values.email,
 			redirectTo: `/reset-password`
 		});
 		if (error && error.message) {
@@ -42,7 +42,7 @@
 
 <AuthForm image={data.image} title={t__('common.forgotPassword')}>
 	{#if success}
-		<p>{t__('common.passwordResetLinkSent', context.form.email)}</p>
+		<p>{t__('common.passwordResetLinkSent', context.values.email)}</p>
 	{:else}
 		<Email config={emailField} form={context} />
 		<Button size="xl" disabled={!context.canSubmit} onclick={sendResetPasswordMail}>

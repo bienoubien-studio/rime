@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte';
-	import { onDestroy } from 'svelte';
 	import Sortable from 'sortablejs';
-	import CollectionTreeNode from './CollectionTreeNode.svelte';
+	import { onDestroy } from 'svelte';
 	import { toast } from 'svelte-sonner';
-	import { countRows } from './util';
 	import Empty from '../Empty.svelte';
+	import CollectionTreeNode from './CollectionTreeNode.svelte';
+	import { countRows } from './util';
 
 	type Props = { collection: CollectionContext };
 	const { collection }: Props = $props();
@@ -27,11 +27,11 @@
 		onEnd: function (evt) {
 			const { newIndex, oldIndex } = evt;
 
-			//@ts-expect-error boring
+			//@ts-expect-error annoying
 			const fromParentId = evt.item.getAttribute('data-parent') || evt.item.__attributes?.['data-parent'];
-			//@ts-expect-error boring
+			//@ts-expect-error annoying
 			const toParentId = evt.to.getAttribute('data-id') || evt.to.__attributes?.['data-id'];
-			//@ts-expect-error boring
+			//@ts-expect-error annoying
 			const nodeId = evt.item.getAttribute('data-id') || evt.item.__attributes?.['data-id'];
 
 			collection
@@ -112,7 +112,7 @@
 		--gap: var(--rz-size-4);
 		--h: var(--rz-row-height);
 		--half-h: calc(var(--rz-row-height) / 2);
-		
+
 		height: 100%;
 		background-color: hsl(var(--rz-color-bg));
 		background-position: 0 0;

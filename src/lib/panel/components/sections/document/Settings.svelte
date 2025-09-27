@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { apiUrl } from '$lib/core/api/index.js';
 	import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import * as DropdownMenu from '$lib/panel/components/ui/dropdown-menu/index.js';
@@ -8,7 +9,6 @@
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte.js';
 	import { panelUrl } from '$lib/panel/util/url.js';
 	import { trycatchFetch } from '$lib/util/function.js';
-	import { apiUrl } from '$lib/core/api/index.js';
 	import { Copy, History, Import, Pickaxe, Settings, Trash2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { t__ } from '../../../../core/i18n/index.js';
@@ -42,8 +42,8 @@
 	const isVersionPage = $derived(page.url.pathname.includes('/versions'));
 
 	function handleViewVersion() {
-		const basUrl = isCollection ? panelUrl(form.config.kebab, form.doc.id) : panelUrl(form.config.kebab);
-		return goto(`${basUrl}/versions?${PARAMS.VERSION_ID}=${form.doc.versionId}`);
+		const basUrl = isCollection ? panelUrl(form.config.kebab, form.values.id) : panelUrl(form.config.kebab);
+		return goto(`${basUrl}/versions?${PARAMS.VERSION_ID}=${form.values.versionId}`);
 	}
 
 	async function handleDuplicate() {
@@ -55,7 +55,7 @@
 	}
 
 	async function handleDelete() {
-		await fetch(`${apiUrl(form.config.kebab)}/${form.doc.id}`, {
+		await fetch(`${apiUrl(form.config.kebab)}/${form.values.id}`, {
 			method: 'DELETE'
 		}).then((response) => {
 			if (response.ok) {
@@ -68,7 +68,7 @@
 	}
 
 	async function duplicate() {
-		const url = `${apiUrl(form.config.kebab, form.doc.id)}/duplicate`;
+		const url = `${apiUrl(form.config.kebab, form.values.id)}/duplicate`;
 
 		const [error, success] = await trycatchFetch(url, {
 			method: 'POST'
@@ -80,7 +80,7 @@
 		}
 		const { id } = await success.json();
 		toast.success(t__('common.duplicate_success'));
-		await goto(panelUrl(form.config.kebab, form.doc.id));
+		await goto(panelUrl(form.config.kebab, form.values.id));
 	}
 
 	const shouldShowSettings = $derived.by(() => {
@@ -107,7 +107,7 @@
 					</DropdownMenu.Item>
 				{/if}
 
-				{#if form.config.versions && form.config.versions.draft && form.doc.status === VERSIONS_STATUS.PUBLISHED}
+				{#if form.config.versions && form.config.versions.draft && form.values.status === VERSIONS_STATUS.PUBLISHED}
 					<DropdownMenu.Item onclick={() => handleNewDraft()}>
 						<Pickaxe size="12" />
 						{t__('common.save_new_draft')}

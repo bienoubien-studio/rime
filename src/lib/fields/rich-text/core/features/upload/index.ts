@@ -1,8 +1,9 @@
+import type { CollectionSlug } from '$lib/types.js';
 import { Images } from '@lucide/svelte';
 import type { RichTextFeature, RichTextFeatureNode } from '../../types.js';
-import { Media } from './media-extension.js';
+import { Upload } from './upload-extension.js';
 
-const mediaFeatureNode: RichTextFeatureNode = {
+const uploadFeatureNode: RichTextFeatureNode = {
 	name: 'media',
 	label: 'Media',
 	icon: Images,
@@ -13,8 +14,8 @@ const mediaFeatureNode: RichTextFeatureNode = {
 	}
 };
 
-export const MediaFeature = (args: { query: string }): RichTextFeature => ({
+export const UploadFeature = (args: { slug: CollectionSlug; query?: string }): RichTextFeature => ({
 	name: 'media',
-	extension: Media.configure(args),
-	nodes: [mediaFeatureNode]
+	extension: Upload.configure(args),
+	nodes: [uploadFeatureNode]
 });

@@ -1,6 +1,6 @@
 import { ListOrdered } from '@lucide/svelte';
+import { OrderedList } from '@tiptap/extension-list';
 import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
-import OrderedList from '@tiptap/extension-ordered-list';
 
 const orderedListFeatureNode: RichTextFeatureNode = {
 	name: 'ol',

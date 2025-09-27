@@ -8,7 +8,7 @@ import { PARAMS, VERSIONS_STATUS } from '$lib/core/constant.js';
 import { getFieldConfigByPath, normalizeFieldPath } from '$lib/core/fields/util.js';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import type { AreaSlug, GenericBlock, GenericDoc, TreeBlock } from '$lib/core/types/doc.js';
-import type { ClientField, FormField } from '$lib/fields/types.js';
+import type { FormField, SimplerField } from '$lib/fields/types.js';
 import { random } from '$lib/util/index.js';
 import { isObjectLiteral, omit } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
@@ -373,7 +373,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 		return data;
 	};
 
-	function useField<TValue>(path: string, config?: ClientField<FormField>) {
+	function useField<TValue>(path: string, config?: SimplerField<FormField>) {
 		if (!config) {
 			config = getFieldConfigByPath(path, documentConfig.fields);
 			if (!config) throw new Error(`can't find config for field : ${path}`);
@@ -729,7 +729,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			return processing;
 		},
 
-		get doc() {
+		get values() {
 			return doc;
 		},
 
@@ -741,7 +741,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			return errors;
 		},
 
-		set doc(v) {
+		set values(v) {
 			doc = v;
 		},
 

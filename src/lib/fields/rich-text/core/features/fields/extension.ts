@@ -1,18 +1,18 @@
 import type { Dic } from '$lib/util/types.js';
 import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
-import ResourceComponent from './resource.svelte';
+import FieldsComponent from './fields.svelte';
 
 declare module '@tiptap/core' {
 	interface Commands<ReturnType> {
-		resource: {
-			insertResource: (attributes: Dic) => ReturnType;
+		sheet: {
+			insertSheet: (attributes: Dic) => ReturnType;
 		};
 	}
 }
 
-export const Resource = Node.create({
-	name: 'resource',
+export const FieldsExtension = Node.create({
+	name: 'richt-text-fields',
 	group: 'block',
 	atom: true,
 	draggable: true, // Optional: to make the node draggable
@@ -20,13 +20,12 @@ export const Resource = Node.create({
 
 	addOptions() {
 		return {
-			query: null,
-			_type: null
+			fields: null
 		};
 	},
 
 	addAttributes() {
-		return ['id', 'title', '_type'].reduce((acc: Dic, key) => {
+		return ['json'].reduce((acc: Dic, key) => {
 			acc[key] = { default: null };
 			return acc;
 		}, {});
@@ -34,7 +33,7 @@ export const Resource = Node.create({
 
 	addCommands() {
 		return {
-			insertResource:
+			insertSheet:
 				(attributes = {}) =>
 				({ commands }) => {
 					return commands.insertContent({
@@ -46,14 +45,14 @@ export const Resource = Node.create({
 	},
 
 	parseHTML() {
-		return [{ tag: 'richt-text-resource' }];
+		return [{ tag: 'richt-text-fields' }];
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ['richt-text-resource', mergeAttributes(HTMLAttributes)];
+		return ['richt-text-fields', mergeAttributes(HTMLAttributes)];
 	},
 
 	addNodeView() {
-		return SvelteNodeViewRenderer(ResourceComponent);
+		return SvelteNodeViewRenderer(FieldsComponent);
 	}
 });

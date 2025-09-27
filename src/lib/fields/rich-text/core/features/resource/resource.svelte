@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { apiUrl } from '$lib/core/api';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import CardResource from '$lib/panel/components/ui/card-resource/card-resource.svelte';
@@ -43,9 +44,12 @@
 
 	// Need to set a local APIProxy because the app one is not
 	// available from inside tiptap rendered components
-	// TODO try to pass it as a prop in a near future
+	// TODO try to pass it as a prop somehow
 	const APIProxy = setAPIProxyContext(API_PROXY.TIPTAP);
-	const ressource = APIProxy.getRessource<{ docs: GenericDoc[] }>(`/api/${extension.options.query}`);
+	const url = extension.options.query
+		? apiUrl(extension.options.slug, extension.options.query)
+		: apiUrl(extension.options.slug);
+	const ressource = APIProxy.getRessource<{ docs: GenericDoc[] }>(url);
 	let docs = $state<GenericDoc[]>([]);
 
 	$effect(() => {
@@ -97,7 +101,8 @@
 <NodeViewWrapper>
 	<div data-drag-handle class="rz-richtext-resource" class:rz-richtext-resource--selected={!!selected}>
 		{#if !selected}
-			<Button variant="outline" size="sm" onclick={handleClick}>Add a resource</Button>
+			<Button class="rz-richtext-resource__add" variant="outline" size="sm" onclick={handleClick}>Add a resource</Button
+			>
 		{:else}
 			<CardResource resource={selected as RequiredNodeAttributes} onCloseClick={removeResource} />
 		{/if}
@@ -123,18 +128,16 @@
 </Command.Dialog>
 
 <style lang="postcss">
-	:global(.ProseMirror-selectednode .rz-richtext-resource .rz-card-resource) {
-		position: relative;
-		&::after {
-			content: '';
-			position: absolute;
-			inset: 0;
-			mix-blend-mode: screen;
-			background-color: hsl(var(--rz-color-spot) / 0.6);
-			pointer-events: none;
+	:global(.ProseMirror-focused .ProseMirror-selectednode .rz-richtext-resource) {
+		:global(.rz-card-resource),
+		:global(button.rz-richtext-resource__add) {
+			@mixin ring var(--rz-color-spot);
 		}
 	}
 	.rz-richtext-resource {
 		position: relative;
+		--rz-border-radius: var(--rz-radius-xl);
+		--rz-ressource-card-thumbnail-bg: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-3)));
+		--rz-ressource-card-bg: light-dark(hsl(var(--rz-gray-18)), hsl(var(--rz-gray-2)));
 	}
 </style>

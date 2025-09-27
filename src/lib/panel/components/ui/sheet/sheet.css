@@ -3,6 +3,7 @@
 /**************************************/
 
 .rz-sheet-content {
+	--ease: cubic-bezier(0.445, 0.05, 0.55, 0.95);
 	position: fixed;
 	z-index: 1010;
 	gap: var(--rz-size-4);
@@ -10,6 +11,45 @@
 	padding: var(--rz-size-6);
 	box-shadow: var(--rz-shadow-xl);
 	overflow-y: auto;
+
+	&[data-state='closed'] {
+		animation: exit 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+	}
+	&[data-state='open'] {
+		animation: enter 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+	}
+
+	width: 100%;
+	padding: 0;
+	@media (min-width: 640px) {
+		width: 75%;
+	}
+
+	@media (min-width: 1024px) {
+		width: 50%;
+	}
+}
+
+@keyframes exit {
+	from {
+		opacity: 1;
+		transform: translate3d(0%, 0, 0);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(100%, 0, 0);
+	}
+}
+
+@keyframes enter {
+	from {
+		opacity: 0;
+		transform: translate3d(100%, 0, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0%, 0, 0);
+	}
 }
 
 .rz-sheet-content__close {
@@ -26,35 +66,12 @@
 	@mixin ring var(--rz-color-ring);
 }
 
-.rz-sheet-content--left {
-	width: 75%;
-	height: 100%;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	border-right: var(--rz-border);
-}
-
 .rz-sheet-content--right {
-	width: 75%;
 	height: 100%;
 	right: 0;
 	top: 0;
 	bottom: 0;
 	border-left: var(--rz-border);
-}
-
-.rz-sheet-content--bottom {
-	right: 0;
-	left: 0;
-	bottom: 0;
-	border-top: var(--rz-border);
-}
-.rz-sheet-content--top {
-	right: 0;
-	left: 0;
-	top: 0;
-	border-bottom: var(--rz-border);
 }
 
 /**************************************/

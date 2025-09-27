@@ -10,7 +10,7 @@ function createStore(initial?: string) {
 	const config = getConfigContext();
 
 	const setValue = (value?: string) => {
-		if (config.raw.localization && value) {
+		if (config && config.raw.localization && value) {
 			code = value;
 			label = config.raw.localization.locales.find((l) => l.code === code)?.label;
 		}

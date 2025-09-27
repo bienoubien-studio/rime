@@ -20,7 +20,7 @@
 	const { form, onClose, config }: Props = $props();
 
 	const onCloseIsDefined = !!onClose;
-	const buttonLabel = $derived(form.doc.id ? t__('common.save') : t__('common.create'));
+	const buttonLabel = $derived(form.values.id ? t__('common.save') : t__('common.create'));
 </script>
 
 {#snippet topLeft()}
@@ -33,22 +33,22 @@
 	{/snippet}
 
 	{#snippet bottomRight()}
-		{#if form.doc.url}
-			<Button icon={ExternalLink} target="_blank" href={form.doc.url} size="icon-sm" variant="secondary" />
+		{#if form.values.url}
+			<Button icon={ExternalLink} target="_blank" href={form.values.url} size="icon-sm" variant="secondary" />
 		{/if}
 
-		{#if config.live && form.doc._live}
+		{#if config.live && form.values._live}
 			<Button
 				size="icon-sm"
 				variant="secondary"
 				disabled={form.readOnly}
 				class="rz-button-live"
 				icon={PencilRuler}
-				href={form.doc._live}
+				href={form.values._live}
 			></Button>
 		{/if}
 
-		{#if form.doc.id}
+		{#if form.values.id}
 			<Settings {form} />
 		{/if}
 
@@ -65,8 +65,8 @@
 				data-draft
 				data-submit
 			/>
-		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
-			{#if form.doc.id}
+		{:else if form.config.versions && form.config.versions.draft && form.values.status === 'published'}
+			{#if form.values.id}
 				<ButtonStatus {form} />
 			{/if}
 
@@ -79,8 +79,8 @@
 				data-status="published"
 				data-submit
 			/>
-		{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
-			{#if form.doc.id}
+		{:else if form.config.versions && form.config.versions.draft && form.values.status === 'draft'}
+			{#if form.values.id}
 				<ButtonStatus {form} />
 			{/if}
 			<!-- scenario 4: versions and draft, on a draft doc -->

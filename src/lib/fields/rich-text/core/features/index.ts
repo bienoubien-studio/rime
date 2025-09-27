@@ -1,14 +1,14 @@
+import { BlockquoteFeature } from './blockquote.js';
 import { BoldFeature } from './bold.js';
 import { BulletListFeature } from './bullet-list.js';
 import { HeadingFeature } from './heading.js';
 import { HorizontalRuleFeature } from './hr.js';
-import { LinkFeature } from './link/index.js';
-import { ParagraphFeature } from './paragraph.js';
-import { OrderedListFeature } from './ordered-list.js';
-import { BlockquoteFeature } from './blockquote.js';
 import { ItalicFeature } from './italic.js';
+import { LinkFeature } from './link/index.js';
+import { OrderedListFeature } from './ordered-list.js';
+import { ParagraphFeature } from './paragraph.js';
 
-export { BoldFeature, HeadingFeature, LinkFeature, HorizontalRuleFeature };
+export { BoldFeature, HeadingFeature, HorizontalRuleFeature, LinkFeature };
 
 export const predefinedFeatures = {
 	blockquote: BlockquoteFeature,

@@ -1,11 +1,10 @@
+import type { Dic } from '$lib/util/types.js';
 import { Node, mergeAttributes } from '@tiptap/core';
 import SvelteNodeViewRenderer from '../../svelte/node-view-renderer.svelte';
+import CounterComponent from './upload.svelte';
 
-import CounterComponent from './media.svelte';
-import type { Dic } from '$lib/util/types.js';
-
-export const Media = Node.create({
-	name: 'media',
+export const Upload = Node.create({
+	name: 'upload',
 	group: 'block',
 	atom: true,
 	draggable: true, // Optional: to make the node draggable
@@ -24,12 +23,12 @@ export const Media = Node.create({
 		}, {});
 	},
 
-	//@ts-expect-error boring
+	//@ts-expect-error annoying
 	addCommands() {
 		return {
 			insertMedia:
 				(attributes = {}) =>
-				//@ts-expect-error boring
+				//@ts-expect-error annoying
 				({ commands }) => {
 					return commands.insertContent({
 						type: this.name,

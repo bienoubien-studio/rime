@@ -15,7 +15,6 @@
 	import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
 	import type { Relation, RelationField } from '../index.js';
 	import Default from './default/Default.svelte';
-	import './relation.css';
 	import type { RelationFieldItem } from './types.js';
 	import Upload from './upload/Upload.svelte';
 
@@ -104,7 +103,7 @@
 				});
 			} else if (typeof config.query === 'function') {
 				// Parse the function result and add each parameter
-				const queryString = config.query(form.doc);
+				const queryString = config.query(form.values);
 				const queryParams = new URLSearchParams(queryString);
 				queryParams.forEach((value, key) => {
 					url.searchParams.append(key, value);

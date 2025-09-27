@@ -139,12 +139,7 @@
 			}}
 		>
 			<Sheet.Trigger />
-			<Sheet.Content
-				style="--rz-page-gutter:var(--rz-size-6)"
-				side="right"
-				class="rz-relation-sheet"
-				showCloseButton={false}
-			>
+			<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" side="right" showCloseButton={false}>
 				<Document
 					doc={createBlankDocument(compileDocumentConfig(relationConfig))}
 					readOnly={false}

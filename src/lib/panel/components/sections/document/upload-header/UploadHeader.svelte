@@ -54,7 +54,7 @@
 	});
 
 	$effect(() => {
-		if (file && isValidFile && form.doc.filename !== file.name) {
+		if (file && isValidFile && form.values.filename !== file.name) {
 			form.setValue('filename', file.name);
 			form.setValue('filesize', util.fileSizeToString(file.size));
 			form.setValue('mimeType', file.type);
@@ -63,24 +63,24 @@
 	});
 
 	$effect(() => {
-		if (preview && form.doc._thumbnail !== preview) {
+		if (preview && form.values._thumbnail !== preview) {
 			form.setValue(`_thumbnail`, preview);
 		}
 	});
 </script>
 
 <div class="rz-doc-upload-header">
-	{#if form.doc.mimeType}
+	{#if form.values.mimeType}
 		<div class="rz-doc-upload-header__file">
 			<div class="rz-doc-upload-header__preview">
-				{#if form.doc.mimeType.includes('image')}
+				{#if form.values.mimeType.includes('image')}
 					<div class="rz-doc-upload-header__prewiew-grid">
-						{#key form.doc.title}
-							<img src={form.doc.url || form.doc._thumbnail} alt="preview" />
+						{#key form.values.title}
+							<img src={form.values.url || form.values._thumbnail} alt="preview" />
 						{/key}
 					</div>
 				{:else}
-					{@const FileIcon = mimeTypeToIcon(form.doc.mimeType)}
+					{@const FileIcon = mimeTypeToIcon(form.values.mimeType)}
 					<FileIcon size="40" />
 				{/if}
 			</div>
@@ -88,9 +88,9 @@
 				{#each ['filename', 'filesize', 'mimeType'] as key, index (index)}
 					<h4>{capitalize(key)}</h4>
 					{#if !create && key === 'filename'}
-						<a target="_blank" href="/medias/{form.doc[key]}">{form.doc[key]}</a>
+						<a target="_blank" href="/medias/{form.values[key]}">{form.values[key]}</a>
 					{:else}
-						<p>{form.doc[key]}</p>
+						<p>{form.values[key]}</p>
 					{/if}
 				{/each}
 				<Button onclick={deleteFile} size="sm" variant="outline">Delete</Button>

@@ -1,6 +1,11 @@
 .rz-command-dialog-content {
 	overflow: hidden;
 	padding: 0;
+	background-color: var(--rz-popover-bg);
+	position: fixed;
+	left: calc(50% - var(--gutter));
+	top: 20%;
+	transform: translate(-50%, 0);
 }
 
 .rz-command-dialog-content__command [data-cmdk-group-heading] {

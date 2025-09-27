@@ -1,28 +1,19 @@
-import type { EditorOptions } from '@tiptap/core';
-import Placeholder from '@tiptap/extension-placeholder';
 import { t__ } from '$lib/core/i18n/index.js';
-import Typography from '@tiptap/extension-typography';
-import type {
-	MediaFeatureDefinition,
-	PredefinedFeatureName,
-	ResourceFeatureDefinition,
-	RichTextEditorConfig,
-	RichTextFeature
-} from '$lib/fields/rich-text/core/types';
-import { defaultFeatures, predefinedFeatures } from './features/index.js';
-import ListItem from '@tiptap/extension-list-item';
-import Dropcursor from '@tiptap/extension-dropcursor';
+import type { RichTextEditorConfig, RichTextFeature } from '$lib/fields/rich-text/core/types';
+import type { EditorOptions } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
-import Gapcursor from '@tiptap/extension-gapcursor';
+import HardBreak from '@tiptap/extension-hard-break';
+import { ListItem } from '@tiptap/extension-list';
 import Text from '@tiptap/extension-text';
-import History from '@tiptap/extension-history';
+import Typography from '@tiptap/extension-typography';
+import { Dropcursor, Gapcursor, Placeholder, UndoRedo } from '@tiptap/extensions';
+import { hasSuggestion } from '../util.js';
+import { CurrentNodeAttribute } from './extensions/current-node/current-node.js';
+import { defaultFeatures } from './features/index.js';
 import { ParagraphFeature } from './features/paragraph.js';
-import { MediaFeature } from './features/media/index.js';
-import type { Level } from '@tiptap/extension-heading';
-import { ResourceFeature } from './features/resource/index.js';
 
 type BuildEditorConfigArgs = {
-	features?: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
+	features?: Array<RichTextFeature>;
 	standAlone?: boolean;
 };
 
@@ -30,57 +21,11 @@ type BuildEditorConfigArgs = {
  * Builds a rich text editor configuration based on the provided features
  */
 export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorConfig {
-	const { features: incommingFeatures = [], standAlone } = args;
+	const { features: incommingFeatures = [] } = args;
 
-	let features: RichTextFeature[] = [];
+	const features: RichTextFeature[] = incommingFeatures.length === 0 ? defaultFeatures : incommingFeatures;
 
-	// If no features are provided, use default features
-	if (incommingFeatures.length === 0) {
-		features = defaultFeatures;
-	} else {
-		// Build feature list
-		incommingFeatures.forEach((config) => {
-			// Convert predefined feature name to feature
-			if (typeof config === 'string') {
-				// Look up predefined feature by name
-				if (config in predefinedFeatures) {
-					const featureName = config as keyof typeof predefinedFeatures;
-					const feature = predefinedFeatures[featureName];
-					// handle heading defaults
-					if (featureName === 'heading' && typeof feature === 'function') {
-						features.push(feature(2, 3, 4));
-					} else if ('extension' in feature) {
-						features.push(feature);
-					}
-				} else if (config.includes(':')) {
-					const parts = config.split(':');
-					const featureName = parts[0];
-					if (featureName === 'heading') {
-						const levelsString = parts[1];
-						if (levelsString) {
-							const levels = levelsString.split(',').map((s) => parseInt(s)) as Level[];
-							features.push(predefinedFeatures.heading(...levels));
-						}
-					} else if (featureName === 'media') {
-						const query = parts[1];
-						const mediaFeature = MediaFeature({ query });
-						features.push(mediaFeature);
-					} else if (featureName === 'resource') {
-						const query = parts[1];
-						const collectionSlug = parts[1].split('?')[0];
-						const resourceFeature = ResourceFeature({ query, slug: collectionSlug });
-						features.push(resourceFeature);
-					} else {
-						throw new Error(
-							`Unrecognized ${featureName} feature, only 'media', 'resource' and 'heading' support the {name}:{config} notation`
-						);
-					}
-				}
-			} else {
-				features.push(config);
-			}
-		});
-	}
+	const withSuggestion = hasSuggestion(features);
 
 	// Add mandatory paragraph feature if not provided
 	const hasParagraph = features
@@ -90,17 +35,21 @@ export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorCo
 		features.push(ParagraphFeature);
 	}
 
+	console.log(features);
+
 	// Create base editor configuration with essential extensions
 	const baseEditorConfig: Partial<EditorOptions> = {
 		extensions: [
 			Document,
 			Text,
-			History,
+			UndoRedo,
 			Dropcursor,
+			HardBreak,
 			Gapcursor,
+			CurrentNodeAttribute,
 			Placeholder.configure({
 				emptyEditorClass: 'empty-editor',
-				placeholder: t__('fields.write_something') + (standAlone ? ' / ⌘ + K' : '')
+				placeholder: t__('fields.write_something') + (withSuggestion ? ' / ⌘ + K' : '')
 			})
 		]
 	};

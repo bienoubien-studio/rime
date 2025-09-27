@@ -62,7 +62,7 @@
 		justify-content: space-between;
 		gap: var(--rz-size-4);
 		align-items: center;
-		@mixin mx var(--rz-page-gutter, var(--rz-size-6));
+		@mixin px var(--rz-page-gutter, var(--rz-size-6));
 	}
 
 	.rz-page-header__row:first-child {

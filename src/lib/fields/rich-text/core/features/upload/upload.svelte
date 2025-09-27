@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { apiUrl } from '$lib/core/api';
 	import type { UploadDoc } from '$lib/core/types/doc.js';
 	import UploadThumbCell from '$lib/panel/components/sections/collection/upload-thumb-cell/UploadThumbCell.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -58,7 +59,10 @@
 	// available from inside tiptap rendered components
 	// TODO try to pass it as a prop in a near future
 	const APIProxy = setAPIProxyContext(API_PROXY.TIPTAP);
-	const ressource = APIProxy.getRessource<{ docs: UploadDoc[] }>(`/api/${extension.options.query}`);
+	const url = extension.options.query
+		? apiUrl(extension.options.slug, extension.options.query)
+		: apiUrl(extension.options.slug);
+	const ressource = APIProxy.getRessource<{ docs: UploadDoc[] }>(url);
 	let docs = $state<UploadDoc[]>([]);
 
 	$effect(() => {
@@ -121,15 +125,20 @@
 <NodeViewWrapper>
 	<div data-drag-handle class="rz-richtext-media" class:rz-richtext-media--selected={!!selected}>
 		{#if !selected}
-			<Button variant="outline" onclick={handleClick}>Add a media</Button>
+			<Button class="rz-richtext-media__add" variant="outline" onclick={handleClick}>Add a media</Button>
 		{:else}
 			<div class="rz-richtext-media__actions">
-				<button class="rz-richtext-media__button" type="button" onclick={() => (dialogLegendOpen = true)}>
+				<Button size="xs" class="rz-richtext-media__button" type="button" onclick={() => (dialogLegendOpen = true)}>
 					{legend || 'set legend'}
-				</button>
-				<button class="rz-richtext-media__button rz-richtext-media__button-remove" type="button" onclick={removeMedia}>
+				</Button>
+				<Button
+					size="icon-sm"
+					class="rz-richtext-media__button rz-richtext-media__button-remove"
+					type="button"
+					onclick={removeMedia}
+				>
 					<X size="12" />
-				</button>
+				</Button>
 			</div>
 			{@render media(selected)}
 			{#if legend}
@@ -189,23 +198,23 @@
 
 <style lang="postcss">
 	:global(.ProseMirror-selectednode .rz-richtext-media) {
-		&::after {
-			content: '';
-			position: absolute;
-			inset: 0;
-			mix-blend-mode: screen;
-			background-color: hsl(var(--rz-color-spot) / 0.6);
-			pointer-events: none;
+		.rz-richtext-media__media,
+		:global(button.rz-richtext-media__add) {
+			@mixin ring var(--rz-color-spot);
 		}
-
 		.rz-richtext-media__actions {
 			display: flex;
 		}
 	}
+
 	.rz-richtext-media {
 		position: relative;
 	}
 
+	.rz-richtext-media__media {
+		border-radius: var(--rz-radius-lg);
+		overflow: hidden;
+	}
 	.rz-richtext-media__actions {
 		position: absolute;
 		font-size: var(--rz-text-sm);
@@ -213,21 +222,26 @@
 		top: var(--rz-size-3);
 		display: none;
 		gap: var(--rz-size-2);
+
+		:global {
+			.rz-richtext-media__button.rz-richtext-media__button-remove {
+				width: var(--rz-size-5);
+				padding: 0;
+			}
+			.rz-richtext-media__button {
+				/*--foreground: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-8))) padding: 0 var(--rz-size-2);*/
+				/*--rz-button-default-bg: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-4)));*/
+				border: 1px solid var(--foreground);
+				/*color: var(--foreground);*/
+				border-radius: 1rem;
+				height: var(--rz-size-5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+		}
 	}
-	.rz-richtext-media__button.rz-richtext-media__button-remove {
-		width: var(--rz-size-5);
-		padding: 0;
-	}
-	.rz-richtext-media__button {
-		padding: 0 var(--rz-size-2);
-		border: var(--rz-border);
-		background-color: hsl(var(--rz-gray-10));
-		border-radius: 1rem;
-		height: var(--rz-size-5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+
 	.rz-richtext-media__legend {
 		font-style: italic;
 		font-size: var(--rz-text-sm);

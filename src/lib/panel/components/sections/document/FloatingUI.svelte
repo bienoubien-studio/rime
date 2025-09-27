@@ -13,7 +13,7 @@
 	const { form, onClose }: Props = $props();
 
 	function onLocaleClick(code: string) {
-		fetch(`${apiUrl(form.config.kebab)}?where[id][equals]=${form.doc.id}&select=url&locale=${code}`)
+		fetch(`${apiUrl(form.config.kebab)}?where[id][equals]=${form.values.id}&select=url&locale=${code}`)
 			.then((response) => response.json())
 			.then((data: { docs: GenericDoc[] }) => {
 				if (Array.isArray(data.docs) && data.docs.length) {
@@ -30,14 +30,14 @@
 
 <div class="rz-floating-ui">
 	<Button icon={ChevronLeft} onclick={onClose} variant="secondary" size="icon"></Button>
-	{#if form.config.versions && form.config.versions.draft && form.doc.status === 'published'}
+	{#if form.config.versions && form.config.versions.draft && form.values.status === 'published'}
 		<ButtonSave
 			label={t__('common.save')}
 			class="rz-floating-ui__save"
 			disabled={!form.canSubmit}
 			processing={form.processing}
 		/>
-	{:else if form.config.versions && form.config.versions.draft && form.doc.status === 'draft'}
+	{:else if form.config.versions && form.config.versions.draft && form.values.status === 'draft'}
 		<ButtonSave
 			label={t__('common.save_draft')}
 			class="rz-floating-ui__save"

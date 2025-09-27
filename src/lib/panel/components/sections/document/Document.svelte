@@ -136,8 +136,8 @@
 		<Header {form} {config} {onClose}></Header>
 	{/if}
 
-	{#if form.doc.editedBy && form.doc.editedBy !== user.attributes.id}
-		<CurrentlyEdited by={form.doc.editedBy} doc={form.doc} user={user.attributes} />
+	{#if form.values.editedBy && form.values.editedBy !== user.attributes.id}
+		<CurrentlyEdited by={form.values.editedBy} doc={form.values} user={user.attributes} />
 	{/if}
 
 	<div class="rz-document__fields">
@@ -152,17 +152,17 @@
 
 	{#if !form.isLive}
 		<div class="rz-document__infos">
-			{#if form.doc.createdAt}
-				{@render meta(t__('common.created_at'), locale.dateFormat(form.doc.createdAt))}
+			{#if form.values.createdAt}
+				{@render meta(t__('common.created_at'), locale.dateFormat(form.values.createdAt))}
 			{/if}
-			{#if form.doc.updatedAt}
-				{@render meta(t__('common.last_update'), locale.dateFormat(form.doc.updatedAt))}
+			{#if form.values.updatedAt}
+				{@render meta(t__('common.last_update'), locale.dateFormat(form.values.updatedAt))}
 			{/if}
-			{#if form.doc.editedBy}
-				{@render meta(t__('common.edited_by'), locale.dateFormat(form.doc.editedBy))}
+			{#if form.values.editedBy}
+				{@render meta(t__('common.edited_by'), locale.dateFormat(form.values.editedBy))}
 			{/if}
-			{#if form.doc.id}
-				{@render meta('id', form.doc.id)}
+			{#if form.values.id}
+				{@render meta('id', form.values.id)}
 			{/if}
 		</div>
 	{:else}

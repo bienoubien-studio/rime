@@ -45,9 +45,9 @@
 		onEnd: function (evt) {
 			const { newIndex, to } = evt;
 
-			//@ts-expect-error boring
+			//@ts-expect-error annoying
 			const initialPath = evt.item.__attributes['data-path'];
-			//@ts-expect-error boring
+			//@ts-expect-error annoying
 			const targetListPath = to.__attributes['data-path'];
 			const isTargetPathRoot = targetListPath === path;
 			const targetPath = `${targetListPath}${!isTargetPathRoot ? '._children' : ''}.${newIndex}`;

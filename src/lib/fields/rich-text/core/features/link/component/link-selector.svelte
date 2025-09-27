@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { Editor } from '@tiptap/core';
 	import IconButton from '$lib/fields/rich-text/component/bubble-menu/icon-button/icon-button.svelte';
-	import { Check, Trash, Link2 } from '@lucide/svelte';
-	import { url as validateURL } from '$lib/util/validate.js';
 	import Input from '$lib/panel/components/ui/input/input.svelte';
+	import { url as validateURL } from '$lib/util/validate.js';
+	import { Check, Link2, Trash } from '@lucide/svelte';
+	import type { Editor } from '@tiptap/core';
 	import type { RichTextContext } from '../../../types';
+	import './link-selector.css';
 
 	type Props = { editor: Editor; context: RichTextContext; active: boolean };
 	let { editor, context, active }: Props = $props();

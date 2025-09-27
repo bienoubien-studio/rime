@@ -1,0 +1,5 @@
+.rz-rich-text-link {
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	cursor: pointer;
+}

@@ -1,20 +1,29 @@
+/** Base style */
 .rz-rich-text__editor {
-	background-color: hsl(var(--rz-color-input));
+	--left-spacing: var(--rz-size-12);
 	min-height: var(--rz-size-11);
-	width: 100%;
+	width: calc(100% + var(--left-spacing));
 	position: relative;
-	border: 1px solid var(--rz-input-border-color);
-	border-radius: var(--rz-radius-lg);
-	padding: var(--rz-size-1) var(--rz-size-3);
-}
-
-.rz-rich-text__editor {
-	max-width: 100%;
 	line-height: 1.5;
-	min-height: var(--rz-size-24);
-	@mixin py var(--rz-size-3);
+	margin-left: calc(-1 * var(--left-spacing));
+
+	.ProseMirror {
+		height: 100%;
+		@container rz-document (min-width:620px) {
+			font-size: var(--rz-text-lg);
+		}
+		@container rz-document (min-width:960px) {
+			font-size: var(--rz-text-xl);
+		}
+	}
+
+	.ProseMirror-trailingBreak {
+		content: '&nbsp;';
+		display: inline-block;
+	}
 }
 
+/** Disabled style */
 .rz-rich-text__editor > [contenteditable='false'] {
 	color: hsl(var(--rz-color-fg) / 0.5);
 	cursor: no-drop;
@@ -24,25 +33,31 @@
 	}
 }
 
+/** All editor > node */
+.ProseMirror > *:not(.ProseMirror-gapcursor) {
+	background-color: hsl(var(--rz-color-input));
+	padding: var(--rz-size-4) var(--rz-size-3) var(--rz-size-4);
+	margin-left: var(--left-spacing);
+	min-height: var(--rz-size-11);
+	border-top: 1px solid var(--rz-input-border-color);
+	&:first-child {
+		border-top-left-radius: var(--rz-radius-md);
+		border-top-right-radius: var(--rz-radius-md);
+		border-top: none;
+	}
+	&:last-child {
+		border-bottom-left-radius: var(--rz-radius-md);
+		border-bottom-right-radius: var(--rz-radius-md);
+	}
+}
+
+/** Disable focus-style on the whole editor */
 .ProseMirror-focused {
 	outline: none;
 }
 
-.rz-rich-text__editor:has(.ProseMirror-focused) {
-	@mixin ring var(--rz-color-spot);
-}
-
 .rz-rich-text__editor[data-error]:has(.ProseMirror-focused) {
 	border-color: hsl(var(--rz-color-alert));
-}
-
-.rz-rich-text__editor .ProseMirror-trailingBreak {
-	content: '&nbsp;';
-	display: inline-block;
-}
-
-.rz-rich-text__editor .ProseMirror {
-	height: 100%;
 }
 
 .rz-rich-text__editor .ProseMirror .is-empty::before {
@@ -57,23 +72,11 @@
 	margin-left: var(--rz-size-6);
 }
 
+/** Text styles */
 .rz-rich-text__editor .ProseMirror {
-	@container rz-document (min-width:620px) {
-		font-size: var(--rz-text-lg);
-	}
-	@container rz-document (min-width:960px) {
-		font-size: var(--rz-text-xl);
-	}
-
-	& > * + * {
-		margin-top: var(--rz-size-4);
-	}
-	p:not(:last-of-type) {
-		margin-bottom: var(--rz-size-3);
-	}
 	h1 {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		font-family: var(--rz-font-serif);
 		font-size: var(--rz-text-5xl);
 		line-height: 1.15;
@@ -81,7 +84,7 @@
 	}
 	h2 {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		font-family: var(--rz-font-sans);
 		font-size: var(--rz-text-4xl);
 		line-height: 1.15;
@@ -89,7 +92,7 @@
 	}
 	h3 {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		font-family: var(--rz-font-sans);
 		font-size: var(--rz-text-3xl);
 		line-height: 1.15;
@@ -97,7 +100,7 @@
 	}
 	h4 {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		font-family: var(--rz-font-sans);
 		font-size: var(--rz-text-2xl);
 		line-height: 1.15;
@@ -105,7 +108,6 @@
 	}
 	h4 {
 		display: block;
-		margin-bottom: var(--rz-size-2);
 		font-family: var(--rz-font-sans);
 		font-size: var(--rz-text-xl);
 		line-height: 1.15;
@@ -113,7 +115,7 @@
 	}
 	h5 {
 		display: block;
-		margin-bottom: var(--rz-size-2);
+		/*margin-bottom: var(--rz-size-2);*/
 		font-size: var(--rz-text-lg);
 		font-family: var(--rz-font-sans);
 		line-height: 1.15;
@@ -121,14 +123,14 @@
 	}
 	h6 {
 		display: block;
-		margin-bottom: var(--rz-size-1);
+		/*margin-bottom: var(--rz-size-1);*/
 		font-family: var(--rz-font-serif);
 		line-height: 1.15;
 		@mixin font-semibold;
 	}
 	ol {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		li {
 			& > p {
 				display: inline;
@@ -140,7 +142,7 @@
 	}
 	ul {
 		display: block;
-		margin-bottom: var(--rz-size-3);
+
 		li {
 			& > p,
 			&::marker {
@@ -152,26 +154,16 @@
 		}
 	}
 	blockquote p {
-		margin-top: var(--rz-size-5);
-		margin-bottom: var(--rz-size-5);
 		border-left: 3px solid hsl(var(--rz-color-border) / 1);
 		padding-top: 0;
 		padding-bottom: 0;
 		padding-left: var(--rz-size-4);
-		/* margin-left: var(--rz-size-5); */
 		font-family: var(--rz-font-sans);
 		@mixin font-medium;
 	}
 }
 
-/* Overwrite tippy-box original max-width */
-
-.tippy-box {
-	max-width: 400px !important;
-}
-
-.rz-rich-text-link {
-	text-decoration: underline;
-	text-underline-offset: 3px;
-	cursor: pointer;
+/** Fix gap cursor position */
+.rz-field-rich-text .ProseMirror-gapcursor:after {
+	left: calc(var(--left-spacing) + var(--rz-size-4));
 }

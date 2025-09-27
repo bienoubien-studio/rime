@@ -119,4 +119,4 @@ export type OptionWithIcon = {
 
 export type RelationValue<T> = T[] | { id?: string; relationTo: string; documentId: string }[] | string[] | string;
 
-export type ClientField<T extends FormField> = WithRequired<Partial<T>, 'name' | 'isEmpty' | 'type'>;
+export type SimplerField<T extends FormField> = WithRequired<Partial<T>, 'name' | 'isEmpty' | 'type'>;

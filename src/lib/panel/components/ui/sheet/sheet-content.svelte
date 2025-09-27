@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { Dialog as SheetPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
 	import { X } from '@lucide/svelte';
+	import { Dialog as SheetPrimitive, type WithoutChildrenOrChild } from 'bits-ui';
 	import type { Snippet } from 'svelte';
 	import { SheetOverlay, SheetPortal, type Side } from './index.js';
 
 	type Props = WithoutChildrenOrChild<SheetPrimitive.ContentProps> & {
 		side?: Side;
+		size?: 'default' | 'sm';
 		children: Snippet;
 		showCloseButton?: boolean;
 	};
@@ -14,6 +15,7 @@
 		ref = $bindable(null),
 		class: className,
 		side = 'right',
+		size = 'default',
 		children,
 		showCloseButton = true,
 		...restProps
@@ -22,7 +24,11 @@
 
 <SheetPortal>
 	<SheetOverlay />
-	<SheetPrimitive.Content bind:ref class="rz-sheet-content rz-sheet-content--{side} {className}" {...restProps}>
+	<SheetPrimitive.Content
+		bind:ref
+		class="rz-sheet-content rz-sheet-content--{side} rz-sheet-content--{size} {className}"
+		{...restProps}
+	>
 		{@render children?.()}
 
 		{#if showCloseButton}

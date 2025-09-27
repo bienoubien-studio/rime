@@ -1,10 +1,14 @@
 <script lang="ts">
+	import { FormFieldBuilder } from '$lib/core/fields/builders';
 	import { isFormField } from '$lib/core/fields/util.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import type { GroupField } from '$lib/fields/group/index.js';
+	import { TabsBuilder } from '$lib/fields/tabs';
+	import FieldsPreview from '$lib/panel/components/fields/FieldsPreview.svelte';
+	import FieldsPreviewTrigger from '$lib/panel/components/fields/FieldsPreviewTrigger.svelte';
 	import RenderFields from '$lib/panel/components/fields/RenderFields.svelte';
-	import RenderFieldsPreview from '$lib/panel/components/fields/RenderFieldsPreview.svelte';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
+	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import { ChevronDown, FolderClosed, FolderOpen } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
@@ -32,6 +36,23 @@
 	onMount(() => {
 		groupOpen = localStorage.getItem(key) === 'true';
 	});
+
+	const user = getUserContext() || undefined;
+
+	const previewFields = $derived.by(() => {
+		return config.fields
+			.filter((field) => !(field instanceof TabsBuilder))
+			.filter((field) => field instanceof FormFieldBuilder)
+			.filter((field) => !form.isLive || (form.isLive && field.raw.live))
+			.filter((field) => {
+				if (field.raw.access && field.raw.access.read) {
+					return field.raw.access.read(user.attributes, { id: form.values.id });
+				}
+				return true;
+			});
+	});
+
+	const basePath = $derived(path ? `${path}.` : '');
 </script>
 
 <div class="rz-group-field__wrapper" class:rz-group-field__wrapper--hidden={!field.visible}>
@@ -54,9 +75,9 @@
 	</button>
 
 	{#if !groupOpen}
-		<button class="rz-group-field__preview" onclick={handleClick} type="button">
-			<RenderFieldsPreview {path} fields={config.fields} {form} />
-		</button>
+		<FieldsPreviewTrigger onclick={handleClick}>
+			<FieldsPreview fields={previewFields} getField={(field) => form.useField(basePath + field.name)} />
+		</FieldsPreviewTrigger>
 	{:else}
 		<div class="rz-group-field__content">
 			<RenderFields {path} fields={config.fields} {form} />
@@ -82,13 +103,6 @@
 
 	.rz-group-field__wrapper--hidden {
 		display: none;
-	}
-
-	.rz-group-field__preview {
-		display: block;
-		background-color: var(--rz-group-preview-bg);
-		width: 100%;
-		text-align: left;
 	}
 
 	.rz-group-field__content {

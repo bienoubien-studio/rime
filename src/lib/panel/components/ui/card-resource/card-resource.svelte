@@ -45,9 +45,10 @@
 </div>
 
 <style lang="postcss">
-
-:root{
+	:root {
 		--rz-ressource-card-bg: light-dark(hsl(var(--rz-gray-18)), hsl(var(--rz-gray-4)));
+		--rz-ressource-card-thumbnail-bg: light-dark(hsl(var(--rz-gray-15)), hsl(var(--rz-gray-2)));
+		--rz-border-radius: var(--rz-radius-md);
 	}
 
 	.rz-card-resource {
@@ -57,7 +58,7 @@
 		position: relative;
 		display: flex;
 		gap: var(--rz-size-6);
-		border-radius: var(--rz-radius-md);
+		border-radius: var(--rz-border-radius);
 		border: var(--rz-border);
 		padding: var(--padding);
 		max-width: 400px;
@@ -68,7 +69,7 @@
 		height: var(--rz-size);
 		flex-shrink: 0;
 		overflow: hidden;
-		background-color: hsl(var(--rz-gray-15));
+		background-color: var(--rz-ressource-card-thumbnail-bg);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -88,11 +89,13 @@
 
 	.rz-card-resource__title {
 		@mixin font-semibold;
+		display: flex;
+		align-items: center;
 		a {
 			display: inline-block;
-			padding: 0 0.3rem;
+			padding: 0.3rem;
 			:global(svg) {
-				translate: 0 0.25rem;
+				translate: 0 0.05rem;
 			}
 		}
 	}

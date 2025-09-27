@@ -1,20 +1,20 @@
 <script lang="ts">
-	import { Link } from '@lucide/svelte';
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
-	
-	const { form }: { form: DocumentFormContext<any> }= $props();
+	import { Link } from '@lucide/svelte';
+
+	const { form }: { form: DocumentFormContext<any> } = $props();
 </script>
 
-{#if form.doc.url}
-	<a href={form.doc.url} class="rz-comp-url" target="_blank">
+{#if form.values.url}
+	<a href={form.values.url} class="rz-comp-url" target="_blank">
 		<Link size="12" />
-		{form.doc.url}
+		{form.values.url}
 	</a>
 {/if}
 
 <style>
-	:root{
-		--rz-comp-url-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-4)))
+	:root {
+		--rz-comp-url-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-gray-4)));
 	}
 	.rz-comp-url {
 		background-color: var(--rz-comp-url-bg);

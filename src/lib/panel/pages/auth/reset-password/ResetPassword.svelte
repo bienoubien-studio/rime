@@ -10,7 +10,7 @@
 
 	let success = $state(false);
 
-	const context = setFormContext({}, 'reset-password');
+	const form = setFormContext({}, 'reset-password');
 
 	type Props = {
 		data: {
@@ -35,7 +35,7 @@
 			return toast.error('An error occured');
 		}
 		const { data, error } = await authClient.resetPassword({
-			newPassword: context.form.password,
+			newPassword: form.values.password,
 			token
 		});
 		if (error) {
@@ -51,12 +51,12 @@
 		<p>{t__('common.reset_password_success')}</p>
 		<Button size="xl" href="/panel/sign-in">{t__('common.login')}</Button>
 	{:else}
-		<Text type="password" config={passwordConfig} form={context} />
-		<Text type="password" config={confirmPasswordConfig} form={context} />
+		<Text type="password" config={passwordConfig} {form} />
+		<Text type="password" config={confirmPasswordConfig} {form} />
 
 		<Button
 			size="xl"
-			disabled={!(context.canSubmit && context.form.password && context.form.confirmPassword)}
+			disabled={!(form.canSubmit && form.values.password && form.values.confirmPassword)}
 			onclick={resetPassword}
 		>
 			{t__('common.resetPassword')}

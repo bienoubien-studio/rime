@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { Editor } from '@tiptap/core';
-	import { Asterisk, Check, ChevronDown } from '@lucide/svelte';
-	import * as Popover from '$lib/panel/components/ui/popover/index.js';
 	import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types.js';
-	import { onMount, onDestroy } from 'svelte';
-	import './node-selector.css';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
+	import * as Popover from '$lib/panel/components/ui/popover/index.js';
+	import { Asterisk, Check, ChevronDown } from '@lucide/svelte';
+	import type { Editor } from '@tiptap/core';
+	import { onDestroy, onMount } from 'svelte';
+	import './node-selector.css';
 
 	type Props = { editor: Editor; isMenuOpen: boolean; items: RichTextFeatureNode[] };
 	let { editor, items, isMenuOpen }: Props = $props();
@@ -64,7 +64,7 @@
 
 <Popover.Root bind:open>
 	<Popover.Trigger class="rz-node-selector__trigger" type="button">
-		{#snippet child({props})}
+		{#snippet child({ props })}
 			<Button size="sm" variant="ghost" {...props}>
 				{activeItem.label || activeItem.name}
 				<ChevronDown size={16} />
@@ -72,30 +72,32 @@
 		{/snippet}
 	</Popover.Trigger>
 
-	<Popover.Content align="start" class="rz-node-selector__content">
-		{#each items as item (item.name)}
-			{@const ItemIcon = item.icon}
-			<button
-				onclick={() => {
-					if (item.nodeSelector && item.nodeSelector.command) {
-						item.nodeSelector.command({ editor });
-					}
-					open = false;
-				}}
-				class="rz-node-selector__node"
-				type="button"
-			>
-				<div class="rz-node-selector__node-content">
-					<div class="rz-node-selector__node-icon">
-						<ItemIcon size={15} />
+	<Popover.Portal>
+		<Popover.Content align="start" class="rz-node-selector__content">
+			{#each items as item (item.name)}
+				{@const ItemIcon = item.icon}
+				<button
+					onclick={() => {
+						if (item.nodeSelector && item.nodeSelector.command) {
+							item.nodeSelector.command({ editor });
+						}
+						open = false;
+					}}
+					class="rz-node-selector__node"
+					type="button"
+				>
+					<div class="rz-node-selector__node-content">
+						<div class="rz-node-selector__node-icon">
+							<ItemIcon size={15} />
+						</div>
+						<span>{item.label || item.name}</span>
 					</div>
-					<span>{item.label || item.name}</span>
-				</div>
 
-				{#if activeItems[item.name]}
-					<Check size={16} />
-				{/if}
-			</button>
-		{/each}
-	</Popover.Content>
+					{#if activeItems[item.name]}
+						<Check size={16} />
+					{/if}
+				</button>
+			{/each}
+		</Popover.Content>
+	</Popover.Portal>
 </Popover.Root>

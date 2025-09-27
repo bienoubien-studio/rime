@@ -15,6 +15,7 @@ const config = {
 			'rizom/api': './src/lib/core/api/index.server.js',
 			'rizom/config/server': './src/lib/core/config/server/index.server.js',
 			'rizom/config/client': './src/lib/core/config/client/index.js',
+			'rizom/fields/richText': './src/lib/fields/rich-text/client.js',
 			$lib: './src/lib',
 			rizom: './src/lib'
 		}

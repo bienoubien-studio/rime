@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { ClientField, FormField } from '$lib/fields/types.js';
+	import type { FormField, SimplerField } from '$lib/fields/types.js';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { capitalize } from '$lib/util/string.js';
 	import type { Snippet } from 'svelte';
 	import { Label } from '../ui/label/index.js';
 
-	type Props = { config?: ClientField<FormField>; children?: Snippet; for?: string };
+	type Props = { config?: SimplerField<FormField>; children?: Snippet; for?: string };
 	const { config, children, for: forAttribute, ...rest }: Props = $props();
 
 	const locale = getLocaleContext();

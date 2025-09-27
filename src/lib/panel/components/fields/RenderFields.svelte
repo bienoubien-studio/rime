@@ -19,9 +19,8 @@
 
 	const authorizedFields = $derived(
 		fields.filter((field) => {
-			// if (isPresentative(field)) return true;
 			if (field.raw.access && field.raw.access.read) {
-				return field.raw.access.read(user.attributes, { id: form.doc.id });
+				return field.raw.access.read(user.attributes, { id: form.values.id });
 			}
 			return true;
 		})

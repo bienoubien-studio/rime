@@ -141,6 +141,6 @@ type RichTextContent = { type: 'doc'; content: JSONContent[] };
 
 export type RichTextField = FormField & {
 	type: 'richText';
-	features?: Array<MediaFeatureDefinition | ResourceFeatureDefinition | PredefinedFeatureName | RichTextFeature>;
+	features?: Array<RichTextFeature>;
 	defaultValue?: RichTextContent | DefaultValueFn<RichTextContent>;
 };

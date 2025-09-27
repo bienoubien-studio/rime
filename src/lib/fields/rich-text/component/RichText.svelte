@@ -5,8 +5,9 @@
 	import { onMount } from 'svelte';
 	import { buildEditorConfig } from '../core/config-builders.js';
 	import type { RichTextFeature } from '../core/types';
+	import { hasSuggestion } from '../util.js';
 	import EditorBubbleMenu from './bubble-menu/bubble-menu.svelte';
-	import { setRichTextContext } from './context.svelte';
+	import { setRichTextContext } from './context.svelte.js';
 	import DragHandler from './drag-handle/drag-handle.svelte';
 	import type { RichTextFieldProps } from './props.js';
 	import './styles/rich-text.css';
@@ -19,14 +20,15 @@
 
 	let editor = $state<Editor>();
 	let features = $state<RichTextFeature[]>([]);
-
 	const field = $derived(form.useField<JSONContent>(path, config));
 
 	setRichTextContext(path);
 
+	const withSuggestion = $derived(hasSuggestion(config.features || []));
+
 	onMount(() => {
 		// Build editor configuration
-		const richTextEditorConfig = buildEditorConfig({ features: config.features, standAlone });
+		const richTextEditorConfig = buildEditorConfig({ features: config.features });
 
 		features = richTextEditorConfig.features;
 		editor = new Editor({
@@ -57,17 +59,16 @@
 	use:root={field}
 >
 	<Field.Label {config} for={path || config.name} />
-	{#if standAlone}
-		<Field.Hint {config} />
-	{/if}
+
 	<Field.Error error={field.error} />
 
 	<div class="rz-rich-text__editor-wrapper">
 		<div bind:this={element} data-error={field.error ? 'true' : null} class="rz-rich-text__editor {className}"></div>
 
 		{#if editor && editor.isEditable}
-			{#if standAlone}
-				<DragHandler {editor} />
+			<DragHandler {editor} />
+
+			{#if withSuggestion}
 				<Suggestion {editor} {features} />
 			{/if}
 
@@ -94,22 +95,28 @@
 			}
 		}
 	}
-	.rz-field-rich-text--standalone {
+
+	.rz-field-rich-text__label-box {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	/*.rz-field-rich-text {
 		margin-bottom: var(--rz-size-20);
 		.rz-rich-text__editor {
 			border: none;
 		}
-	}
+	}*/
 
-	.rz-field-rich-text--standalone :global {
-		.rz-field-label {
+	.rz-field-rich-text :global {
+		/*.rz-field-label {
 			display: none;
-		}
-		.rz-rich-text__editor {
+		}*/
+		/*.rz-rich-text__editor {
 			background-color: transparent;
-		}
-		.rz-rich-text__editor:has(.ProseMirror-focused) {
+		}*/
+		/*.rz-rich-text__editor:has(.ProseMirror-focused) {
 			box-shadow: none;
-		}
+		}*/
 	}
 </style>
