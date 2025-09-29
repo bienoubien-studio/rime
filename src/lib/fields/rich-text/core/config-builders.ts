@@ -35,8 +35,6 @@ export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorCo
 		features.push(ParagraphFeature);
 	}
 
-	console.log(features);
-
 	// Create base editor configuration with essential extensions
 	const baseEditorConfig: Partial<EditorOptions> = {
 		extensions: [
