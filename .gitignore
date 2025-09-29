@@ -47,4 +47,5 @@ pnpm-lock.yaml
 
 .auto
 src/params
+/.zed
 rizom.code-workspace

@@ -58,28 +58,3 @@
 		{/each}
 	</Sheet.Content>
 </Sheet.Root>
-
-<style lang="postcss">
-	:global(.ProseMirror-focused .ProseMirror-selectednode .rz-fields-preview__trigger) {
-		@mixin ring var(--rz-color-spot);
-	}
-
-	:global(.rz-rich-text-sheet) {
-		gap: var(--rz-size-6);
-		display: flex;
-		flex-direction: column;
-	}
-
-	:global(.rz-rich-text-fields-preview) :global {
-		font-size: var(--rz-text-sm);
-		max-width: 420px;
-		border-radius: var(--rz-radius-lg);
-
-		.rz-render-fields-preview__row:first-child .rz-render-fields-preview__name {
-			border-top-left-radius: var(--rz-radius-lg);
-		}
-		.rz-render-fields-preview__row:last-child .rz-render-fields-preview__name {
-			border-bottom-left-radius: var(--rz-radius-lg);
-		}
-	}
-</style>
