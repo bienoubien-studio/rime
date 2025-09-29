@@ -5,6 +5,8 @@ You can contribute to this project in many ways :
 - improving documentation
 - adding features
 - adding translation for the panel in your language
+- make it work for .js only
+- try other adapters and adjust the build command to handle these.
 
 ## Clone the repo
 
@@ -35,6 +37,9 @@ pnpm rizom:use basic
 Available names are `empty`, `basic`, `multilang`, `versions`, `versions-multilang`, respective config live inside the /tests directory.
 
 ## CLI commands
+
+Note : for now cli commands are .ts files, so I am using `bun` to make theme work inside this repo.
+
 Sanitize config, and generates schema, types, routes
 ```bash
 bun ./src/lib/core/dev/cli/index.ts generate
