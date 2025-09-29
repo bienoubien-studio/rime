@@ -22,8 +22,8 @@
 	let { node, extension, updateAttributes }: Props = $props();
 	let isSheetOpen = $state(false);
 
-	const locale = setLocaleContext(page.data.locale || 'en');
-	const form = setFormContext(node.attrs.json || {}, 'sheet');
+	setLocaleContext(page.data.locale || 'en');
+	const form = setFormContext(node.attrs.json || {}, 'fields');
 
 	onMount(() => {
 		if (!node.attrs.json) {
