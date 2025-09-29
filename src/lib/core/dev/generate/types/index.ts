@@ -334,7 +334,8 @@ export async function generateTypesString(config: BuiltConfig) {
 		hasBlocks ? blocksTypeNames : '',
 		hasBlocks ? anyBlock : '',
 		`}`,
-		locals
+		locals,
+		templateRegister(config)
 	].join('\n');
 
 	return content;
@@ -365,7 +366,7 @@ function write(key: string, content: string, filePath: string) {
  */
 async function generateTypes(config: BuiltConfig) {
 	const mainTypes = await generateTypesString(config);
-	const declarations = [templateRegister(config), templateDeclareVirtualModule()].join('\n');
+	const declarations = [templateDeclareVirtualModule()].join('\n');
 
 	const appGeneratedPath = path.resolve(process.cwd(), 'src', 'app.generated.d.ts');
 	const virtualModuleGeneratedPath = path.resolve(process.cwd(), 'src', 'rizom.generated.d.ts');
