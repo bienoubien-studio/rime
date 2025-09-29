@@ -45,6 +45,9 @@ export async function sanitize() {
 	// Track files that will be written during sanitization
 	const outputFiles = new Set();
 
+	// Track files that get split into both client and server versions
+	const splitFiles = new Set();
+
 	// Scan all TypeScript files (excluding .server.ts)
 	const allFiles = await scanConfigFiles(configDir);
 
@@ -65,7 +68,7 @@ export async function sanitize() {
 		}
 
 		// Process the file and output to .generated
-		await processConfigFile(filePath, configDir, outputDir, outputFiles);
+		await processConfigFile(filePath, configDir, outputDir, outputFiles, splitFiles);
 	}
 
 	// Copy existing .server.ts files
@@ -185,7 +188,7 @@ async function scanOtherFiles(configDir) {
 	return files;
 }
 
-async function processConfigFile(originalPath, configDir, outputDir, outputFiles) {
+async function processConfigFile(originalPath, configDir, outputDir, outputFiles, splitFiles) {
 	const content = fs.readFileSync(originalPath, 'utf-8');
 	const relativePath = path.relative(configDir, originalPath);
 
@@ -232,10 +235,15 @@ async function processConfigFile(originalPath, configDir, outputDir, outputFiles
 		outputFiles.add(relativeServerPath);
 		outputFiles.add(relativeClientPath);
 
-		// Create server version (full content)
-		if (shouldWriteFile(serverPath, content)) {
-			fs.writeFileSync(serverPath, content);
-			logger.debug(`   Created: ${relativeServerPath}`);
+		// Track this as a split file (has both client and server versions)
+		const relativeOriginalPath = path.relative(configDir, originalPath);
+		splitFiles.add(relativeOriginalPath);
+
+		// Create server version (full content with updated imports)
+		const serverContent = updateServerImports(content, splitFiles, path.dirname(relativePath));
+		if (shouldWriteFile(serverPath, serverContent)) {
+			fs.writeFileSync(serverPath, serverContent);
+			logger.info(`   Created: ${relativeServerPath}`);
 		}
 
 		// Create sanitized client version
@@ -647,6 +655,61 @@ function removeUnusedImports(ast) {
 	});
 
 	return clonedAst;
+}
+
+/**
+ * Updates imports in server files to use server versions of split modules
+ */
+function updateServerImports(content, splitFiles, currentDir) {
+	try {
+		const ast = babelParse(content, 'ts', { sourceType: 'module', attachComment: false });
+
+		let hasChanges = false;
+
+		// Walk through all import declarations
+		for (const node of ast.body) {
+			if (t.isImportDeclaration(node) && t.isStringLiteral(node.source)) {
+				const importPath = node.source.value;
+
+				// Skip absolute imports and package imports
+				if (!importPath.startsWith('./') && !importPath.startsWith('../')) {
+					continue;
+				}
+
+				// Resolve the import path relative to current file's directory
+				let resolvedPath = path.resolve(currentDir, importPath);
+
+				// Handle .js extension - convert to .ts for checking
+				if (resolvedPath.endsWith('.js')) {
+					resolvedPath = resolvedPath.slice(0, -3) + '.ts';
+				}
+
+				// Check if this import points to a split file
+				const relativeResolvedPath = path.relative('.', resolvedPath);
+				if (splitFiles.has(relativeResolvedPath)) {
+					// Update import to use server version
+					let newImportPath = importPath;
+					if (newImportPath.endsWith('.js')) {
+						newImportPath = newImportPath.slice(0, -3) + '.server.js';
+					} else {
+						newImportPath += '.server';
+					}
+					node.source.value = newImportPath;
+					hasChanges = true;
+				}
+			}
+		}
+
+		if (hasChanges) {
+			return generate(ast, { compact: false, comments: true }).code;
+		}
+
+		return content;
+	} catch (error) {
+		// If parsing fails, return original content
+		logger.warn(`Failed to update imports in server file: ${error.message}`);
+		return content;
+	}
 }
 
 /**
