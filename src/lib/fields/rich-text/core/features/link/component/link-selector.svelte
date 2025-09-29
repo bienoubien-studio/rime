@@ -94,7 +94,7 @@
 	}
 
 	.rz-link-selector__form {
-		position: fixed;
+		position: absolute;
 		top: 100%;
 		z-index: 100;
 		margin-top: var(--rz-size-1);
