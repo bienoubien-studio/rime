@@ -7,14 +7,13 @@ import path from 'node:path';
 import { logger } from '../../../logger/index.server.js';
 
 /**
- * New $ prefix-based sanitizer that follows opinionated rules:
+ * $ prefix-based sanitizer that rules:
  * - All server-only config properties begin with $ (e.g., $url, $hooks)
  * - All server-only field methods begin with $ (e.g., $beforeSave, $beforeRead)
  * - Content must be pure functions or imports from .server.ts files
  * - Outputs to .generated folder, preserving original folder structure
  */
 
-// Configuration - easy to change
 const OUTPUT_DIR = 'config.generated';
 
 export async function sanitize() {
@@ -24,11 +23,27 @@ export async function sanitize() {
 
 	logger.info('Sanitizing config...');
 
-	// Clean and ensure output directory exists
+	// List all existing files recursively in the output directory
+	const existingFiles = new Set();
 	if (fs.existsSync(outputDir)) {
-		fs.rmSync(outputDir, { recursive: true, force: true });
+		const scanExistingFiles = (dir) => {
+			const entries = fs.readdirSync(dir, { withFileTypes: true });
+			for (const entry of entries) {
+				const fullPath = path.join(dir, entry.name);
+				if (entry.isDirectory()) {
+					scanExistingFiles(fullPath);
+				} else {
+					existingFiles.add(path.relative(outputDir, fullPath));
+				}
+			}
+		};
+		scanExistingFiles(outputDir);
+	} else {
+		fs.mkdirSync(outputDir, { recursive: true });
 	}
-	fs.mkdirSync(outputDir, { recursive: true });
+
+	// Track files that will be written during sanitization
+	const outputFiles = new Set();
 
 	// Scan all TypeScript files (excluding .server.ts)
 	const allFiles = await scanConfigFiles(configDir);
@@ -41,7 +56,7 @@ export async function sanitize() {
 
 	for (const filePath of allFiles) {
 		const relativePath = path.relative(configDir, filePath);
-		logger.info(`   Processing: ${relativePath}`);
+		logger.debug(`   Processing: ${relativePath}`);
 
 		// Check if corresponding .server.ts already exists
 		const originalServerPath = filePath.replace('.ts', '.server.ts');
@@ -50,7 +65,7 @@ export async function sanitize() {
 		}
 
 		// Process the file and output to .generated
-		await processConfigFile(filePath, configDir, outputDir);
+		await processConfigFile(filePath, configDir, outputDir, outputFiles);
 	}
 
 	// Copy existing .server.ts files
@@ -64,8 +79,14 @@ export async function sanitize() {
 		}
 
 		const content = fs.readFileSync(serverFilePath, 'utf-8');
-		fs.writeFileSync(outputPath, content);
-		logger.info(`   Copied: ${relativePath}`);
+		const relativeOutputPath = path.relative(outputDir, outputPath);
+		outputFiles.add(relativeOutputPath);
+
+		// Only write if content is different or file doesn't exist
+		if (shouldWriteFile(outputPath, content)) {
+			fs.writeFileSync(outputPath, content);
+			logger.debug(`   Copied: ${relativePath}`);
+		}
 	}
 
 	// Copy other files (.svelte, .json, etc.)
@@ -79,8 +100,23 @@ export async function sanitize() {
 		}
 
 		const content = fs.readFileSync(otherFilePath, 'utf-8');
-		fs.writeFileSync(outputPath, content);
-		logger.info(`   Copied: ${relativePath}`);
+		const relativeOutputPath = path.relative(outputDir, outputPath);
+		outputFiles.add(relativeOutputPath);
+
+		// Only write if content is different or file doesn't exist
+		if (shouldWriteFile(outputPath, content)) {
+			fs.writeFileSync(outputPath, content);
+			logger.debug(`   Copied: ${relativePath}`);
+		}
+	}
+
+	// Delete files that exist in current list but not in output list
+	for (const existingFile of existingFiles) {
+		if (!outputFiles.has(existingFile)) {
+			const fileToDelete = path.join(outputDir, existingFile);
+			fs.unlinkSync(fileToDelete);
+			logger.debug(`   Deleted: ${existingFile}`);
+		}
 	}
 
 	logger.info('Sanitization complete');
@@ -149,7 +185,7 @@ async function scanOtherFiles(configDir) {
 	return files;
 }
 
-async function processConfigFile(originalPath, configDir, outputDir) {
+async function processConfigFile(originalPath, configDir, outputDir, outputFiles) {
 	const content = fs.readFileSync(originalPath, 'utf-8');
 	const relativePath = path.relative(configDir, originalPath);
 
@@ -166,7 +202,13 @@ async function processConfigFile(originalPath, configDir, outputDir) {
 			if (!fs.existsSync(outputDirPath)) {
 				fs.mkdirSync(outputDirPath, { recursive: true });
 			}
-			fs.writeFileSync(outputPath, content);
+			const relativeOutputPath = path.relative(outputDir, outputPath);
+			outputFiles.add(relativeOutputPath);
+
+			// Only write if content is different or file doesn't exist
+			if (shouldWriteFile(outputPath, content)) {
+				fs.writeFileSync(outputPath, content);
+			}
 			return;
 		}
 
@@ -184,17 +226,27 @@ async function processConfigFile(originalPath, configDir, outputDir) {
 			fs.mkdirSync(serverDir, { recursive: true });
 		}
 
+		// Track output files
+		const relativeServerPath = path.relative(outputDir, serverPath);
+		const relativeClientPath = path.relative(outputDir, clientPath);
+		outputFiles.add(relativeServerPath);
+		outputFiles.add(relativeClientPath);
+
 		// Create server version (full content)
-		fs.writeFileSync(serverPath, content);
-		logger.info(`   Created: ${path.relative(outputDir, serverPath)}`);
+		if (shouldWriteFile(serverPath, content)) {
+			fs.writeFileSync(serverPath, content);
+			logger.debug(`   Created: ${relativeServerPath}`);
+		}
 
 		// Create sanitized client version
 		const clientAst = sanitizeClientAst(ast, analysis);
 		// Clean up unused imports
 		const cleanedAst = removeUnusedImports(clientAst);
 		const clientCode = generate(cleanedAst, { compact: false, comments: true }).code;
-		fs.writeFileSync(clientPath, clientCode);
-		logger.info(`   Sanitized: ${path.relative(outputDir, clientPath)}`);
+		if (shouldWriteFile(clientPath, clientCode)) {
+			fs.writeFileSync(clientPath, clientCode);
+			logger.debug(`   Sanitized: ${relativeClientPath}`);
+		}
 	} catch (error) {
 		logger.error(`    Failed to process ${originalPath}:`, error.message);
 		throw error;
@@ -595,6 +647,18 @@ function removeUnusedImports(ast) {
 	});
 
 	return clonedAst;
+}
+
+/**
+ * Checks if a file should be written by comparing content with existing file
+ */
+function shouldWriteFile(filePath, newContent) {
+	if (!fs.existsSync(filePath)) {
+		return true;
+	}
+
+	const existingContent = fs.readFileSync(filePath, 'utf-8');
+	return existingContent !== newContent;
 }
 
 // Run the sanitizer if this script is executed directly
