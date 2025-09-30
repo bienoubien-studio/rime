@@ -3,8 +3,8 @@ import type { TabsBuilder } from './index.js';
 
 export const toType: ToType<TabsBuilder> = async (field) => {
 	const types: string[] = [];
-	const fieldsTypes: string[] = [];
 	for (const tab of field.raw.tabs) {
+		const fieldsTypes: string[] = [];
 		for (const field of tab.raw.fields) {
 			const fieldServerMethods = await getFieldPrivateModule(field);
 			if (fieldServerMethods) {
