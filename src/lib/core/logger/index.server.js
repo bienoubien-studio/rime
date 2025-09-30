@@ -164,7 +164,7 @@ const logger = {
 	debug: (...args) => {
 		if (isLevelEnabled(LogLevel.DEBUG)) {
 			const timestamp = getFormattedLocalTime(new Date());
-			console.debug(chalk.dim(timestamp), rizomFormatted, chalk.redBright('DEBUG'), ...args);
+			console.debug(chalk.dim(timestamp), rizomFormatted, chalk.gray('DEBUG'), ...args);
 			writeToFile('DEBUG', timestamp, args);
 		}
 	},
