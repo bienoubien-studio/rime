@@ -35,6 +35,7 @@
 	let renameDialogOpen = $state(false);
 	let message = $state('');
 	let rootElement = $state<HTMLButtonElement>();
+	let isDragging = $state(false);
 	const isRoot = $derived(folder.name === '...');
 	const APIProxy = getAPIProxyContext(API_PROXY.ROOT);
 	const childFilesURL = $derived(`${apiUrl(collection.kebab)}?where[_path][equals]=${folder.id}&select=id`);
@@ -129,9 +130,11 @@
 		rootElement?.classList.remove('rz-folder--dragover');
 		// Get the document ID from dataTransfer
 		const docId = e.dataTransfer?.getData('text/plain');
+
 		if (!docId) return;
-		// This is a folder move so update folder path
+		// Handle drop folder
 		if (docId.includes(':')) {
+			if (docId === folder.id) return;
 			return handleDropFolder(docId);
 		}
 		// Handle a drop document
@@ -152,7 +155,11 @@
 	}
 
 	function handleDragStart(e: DragEvent) {
+		isDragging = true;
 		e.dataTransfer?.setData('text/plain', folder.id);
+	}
+	function handleDragEnd() {
+		isDragging = false;
 	}
 </script>
 
@@ -160,9 +167,11 @@
 	bind:this={rootElement}
 	onclick={handleGoToFolder}
 	class="rz-folder"
+	class:rz-folder--dragging={isDragging}
 	ondragleave={handleDragLeave}
-	ondragover={handleDragEnter}
-	ondrop={handleDrop}
+	ondragover={!isDragging ? handleDragEnter : null}
+	ondragend={handleDragEnd}
+	ondrop={!isDragging ? handleDrop : null}
 	draggable={draggable === 'true' ? 'true' : null}
 	ondragstart={draggable === 'true' ? handleDragStart : null}
 >
@@ -215,6 +224,11 @@
 <style lang="postcss">
 	:root {
 		--rz-folder-hover-bg: light-dark(hsl(var(--rz-gray-14)), hsl(var(--rz-gray-1)));
+	}
+
+	.rz-folder--dragging {
+		pointer-events: none;
+		opacity: 0.5;
 	}
 
 	.rz-folder {
