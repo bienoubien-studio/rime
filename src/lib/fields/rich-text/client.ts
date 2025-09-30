@@ -10,6 +10,7 @@ import { LinkFeature } from './core/features/link/index.js';
 import { OrderedListFeature } from './core/features/ordered-list.js';
 import { ParagraphFeature } from './core/features/paragraph.js';
 import { ResourceFeature } from './core/features/resource/index.js';
+import type { RichTextResource } from './core/features/resource/types.js';
 import { UploadFeature } from './core/features/upload/index.js';
 import RenderRichText from './core/render-rich-text.svelte';
 import SvelteNodeViewRenderer from './core/svelte/node-view-renderer.svelte';
@@ -29,3 +30,5 @@ export const upload = (args: Parameters<typeof UploadFeature>[0]) => UploadFeatu
 export const resource = (args: Parameters<typeof ResourceFeature>[0]) => ResourceFeature(args);
 
 export { NodeViewWrapper, RenderRichText, SvelteNodeViewRenderer };
+//
+export type { RichTextResource };

@@ -101,22 +101,4 @@
 		align-items: center;
 		justify-content: space-between;
 	}
-	/*.rz-field-rich-text {
-		margin-bottom: var(--rz-size-20);
-		.rz-rich-text__editor {
-			border: none;
-		}
-	}*/
-
-	.rz-field-rich-text :global {
-		/*.rz-field-label {
-			display: none;
-		}*/
-		/*.rz-rich-text__editor {
-			background-color: transparent;
-		}*/
-		/*.rz-rich-text__editor:has(.ProseMirror-focused) {
-			box-shadow: none;
-		}*/
-	}
 </style>

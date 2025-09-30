@@ -8,12 +8,7 @@
 	import type { NodeViewProps } from '@tiptap/core';
 	import { onMount } from 'svelte';
 	import NodeViewWrapper from '../../svelte/node-view-wrapper.svelte';
-
-	type NodeAttributes = {
-		id: string | null;
-		title: string | null;
-		_type: string | null;
-	};
+	import type { RichTextResource } from './types';
 
 	type RequiredNodeAttributes = {
 		id: string;
@@ -23,7 +18,7 @@
 
 	let { node, updateAttributes, extension }: NodeViewProps = $props();
 	let isDialogOpen = $state(false);
-	let selected = $state<NodeAttributes | null>();
+	let selected = $state<RichTextResource | null>();
 
 	const handleClick = () => {
 		isDialogOpen = true;
@@ -94,7 +89,7 @@
 			id: selected.id,
 			title: selected.title,
 			_type: extension.options.slug
-		} as NodeAttributes);
+		});
 	}
 </script>
 
