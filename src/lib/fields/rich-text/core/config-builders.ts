@@ -45,6 +45,7 @@ export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorCo
 			HardBreak,
 			Gapcursor,
 			CurrentNodeAttribute,
+			Typography,
 			Placeholder.configure({
 				emptyEditorClass: 'empty-editor',
 				placeholder: t__('fields.write_something') + (withSuggestion ? ' / ⌘ + K' : '')
@@ -71,9 +72,6 @@ export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorCo
 		}
 	});
 
-	if (baseEditorConfig.extensions?.find((ext) => ext.name === 'typography')) {
-		baseEditorConfig.extensions.push(Typography);
-	}
 
 	return {
 		tiptap: baseEditorConfig,
