@@ -15,7 +15,7 @@ import { UploadFeature } from './core/features/upload/index.js';
 import RenderRichText from './core/render-rich-text.svelte';
 import SvelteNodeViewRenderer from './core/svelte/node-view-renderer.svelte';
 import NodeViewWrapper from './core/svelte/node-view-wrapper.svelte';
-import type { RichTextNodeRenderer } from './core/types.js';
+import type { RichTextNodeRenderer, RichTextNodeRendererProps } from './core/types.js';
 
 export const fields = (args: Parameters<typeof FieldsFeature>[0]) => FieldsFeature(args);
 export const bold = () => BoldFeature;
@@ -32,4 +32,4 @@ export const resource = (args: Parameters<typeof ResourceFeature>[0]) => Resourc
 
 export { NodeViewWrapper, RenderRichText, SvelteNodeViewRenderer };
 //
-export type { RichTextNodeRenderer, RichTextResource };
+export type { RichTextNodeRenderer, RichTextNodeRendererProps, RichTextResource };

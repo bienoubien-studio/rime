@@ -64,10 +64,11 @@ export type ComponentInputProps<T> = Partial<T> & {
 	children?: Snippet;
 };
 
-export type RichTextNodeRenderer = Component<{
+export type RichTextNodeRendererProps = {
 	node: JSONContent;
 	components?: Record<string, RichTextNodeRenderer>;
 	children?: Snippet;
-}>;
+};
+export type RichTextNodeRenderer = Component<RichTextNodeRendererProps>;
 
 export type { RichTextContext };
