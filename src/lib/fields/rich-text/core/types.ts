@@ -1,8 +1,7 @@
-import type { IconProps } from '@lucide/svelte';
-import type { Editor, EditorOptions, Range, Extension, Node, Mark } from '@tiptap/core';
-import type { Component } from 'svelte';
-import type { Snippet } from 'svelte';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
+import type { IconProps } from '@lucide/svelte';
+import type { Editor, EditorOptions, Extension, JSONContent, Mark, Node, Range } from '@tiptap/core';
+import type { Component, Snippet } from 'svelte';
 import type { RichTextContext } from '../component/context.svelte.js';
 
 export type RichTextFeatureType = 'mark' | 'node';
@@ -64,5 +63,11 @@ export type ComponentInputProps<T> = Partial<T> & {
 	class?: string;
 	children?: Snippet;
 };
+
+export type RichTextNodeRenderer = Component<{
+	node: JSONContent;
+	components?: Record<string, RichTextNodeRenderer>;
+	children?: Snippet;
+}>;
 
 export type { RichTextContext };

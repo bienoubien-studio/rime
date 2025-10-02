@@ -1,24 +1,23 @@
 <script lang="ts">
 	import type { JSONContent } from '@tiptap/core';
 	import RenderRichText from './render-rich-text.svelte';
-	import type { Snippet, Component } from 'svelte';
+	import type { RichTextNodeRenderer } from './types';
 
-	type NodeComp = Component<{ node: JSONContent[number]; children: Snippet }>;
 	type Props = {
 		json?: JSONContent;
 		components?: {
-			heading?: NodeComp;
-			paragraph?: NodeComp;
-			blockquote?: NodeComp;
-			bold?: NodeComp;
-			italic?: NodeComp;
-			link?: NodeComp;
-			ul?: NodeComp;
-			media?: NodeComp;
-			resource?: NodeComp;
-			li?: NodeComp;
-			ol?: NodeComp;
-		} & Record<string, NodeComp>;
+			heading?: RichTextNodeRenderer;
+			paragraph?: RichTextNodeRenderer;
+			blockquote?: RichTextNodeRenderer;
+			bold?: RichTextNodeRenderer;
+			italic?: RichTextNodeRenderer;
+			link?: RichTextNodeRenderer;
+			ul?: RichTextNodeRenderer;
+			media?: RichTextNodeRenderer;
+			resource?: RichTextNodeRenderer;
+			li?: RichTextNodeRenderer;
+			ol?: RichTextNodeRenderer;
+		} & Record<string, RichTextNodeRenderer>;
 	};
 
 	function shiftAndReturn<T>(arr: T[]): [T | undefined, T[]] {
@@ -38,7 +37,7 @@
 	{#if marks && marks.length}
 		{#if mark.type === 'bold'}
 			{#if components?.bold}
-				<components.bold {node}>
+				<components.bold {components} {node}>
 					{@render renderMarks(processedNode)}
 				</components.bold>
 			{:else}
@@ -47,7 +46,7 @@
 			<!--  -->
 		{:else if mark.type === 'italic'}
 			{#if components?.italic}
-				<components.italic {node}>
+				<components.italic {components} {node}>
 					{@render renderMarks(processedNode)}
 				</components.italic>
 			{:else}
@@ -57,7 +56,7 @@
 			<!--  -->
 		{:else if mark.type === 'link'}
 			{#if components?.link}
-				<components.link {node}>
+				<components.link {components} {node}>
 					{@render renderMarks(processedNode)}
 				</components.link>
 			{:else}
@@ -76,7 +75,7 @@
 			<!--  -->
 		{:else if node.type === 'paragraph'}
 			{#if components?.paragraph}
-				<components.paragraph {node}>
+				<components.paragraph {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.paragraph>
 			{:else}
@@ -85,7 +84,7 @@
 			<!--  -->
 		{:else if node.type === 'heading'}
 			{#if components?.heading}
-				<components.heading {node}>
+				<components.heading {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.heading>
 			{:else}
@@ -95,7 +94,7 @@
 			<!--  -->
 		{:else if node.type === 'blockquote'}
 			{#if components?.blockquote}
-				<components.blockquote {node}>
+				<components.blockquote {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.blockquote>
 			{:else}
@@ -104,7 +103,7 @@
 			<!--  -->
 		{:else if node.type === 'bulletList'}
 			{#if components?.ul}
-				<components.ul {node}>
+				<components.ul {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.ul>
 			{:else}
@@ -113,7 +112,7 @@
 			<!--  -->
 		{:else if node.type === 'orderedList'}
 			{#if components?.ol}
-				<components.ol {node}>
+				<components.ol {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.ol>
 			{:else}
@@ -122,7 +121,7 @@
 			<!--  -->
 		{:else if node.type === 'listItem'}
 			{#if components?.li}
-				<components.li {node}>
+				<components.li {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.li>
 			{:else}
@@ -131,20 +130,28 @@
 			<!--  -->
 		{:else if node.type === 'media'}
 			{#if components?.media}
-				<components.media {node}>
+				<components.media {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.media>
 			{:else}
-				[Provide a media component with a node prop to render this node]
+				[Provide a media component to render this node]
 			{/if}
 			<!--  -->
 		{:else if node.type === 'resource'}
 			{#if components?.resource}
-				<components.resource {node}>
+				<components.resource {components} {node}>
 					<RenderRichText {components} json={node} />
 				</components.resource>
 			{:else}
-				[Provide a resource component with a node prop to render this node]
+				[Provide a resource component to render this node]
+			{/if}
+		{:else if node.type === 'fields'}
+			{#if components?.fields}
+				<components.fields {components} {node}>
+					<RenderRichText {components} json={node} />
+				</components.fields>
+			{:else}
+				[Provide a fields component to render this node]
 			{/if}
 			<!--  -->
 		{:else if components && node.type && node.type in components}
