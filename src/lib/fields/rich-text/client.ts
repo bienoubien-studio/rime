@@ -16,6 +16,7 @@ import RenderRichText from './core/render-rich-text.svelte';
 import SvelteNodeViewRenderer from './core/svelte/node-view-renderer.svelte';
 import NodeViewWrapper from './core/svelte/node-view-wrapper.svelte';
 import type { RichTextNodeRenderer, RichTextNodeRendererProps } from './core/types.js';
+import { richTextJSONToText } from './index.js';
 
 export const fields = (args: Parameters<typeof FieldsFeature>[0]) => FieldsFeature(args);
 export const bold = () => BoldFeature;
@@ -30,6 +31,6 @@ export const italic = () => ItalicFeature;
 export const upload = (args: Parameters<typeof UploadFeature>[0]) => UploadFeature(args);
 export const resource = (args: Parameters<typeof ResourceFeature>[0]) => ResourceFeature(args);
 
-export { NodeViewWrapper, RenderRichText, SvelteNodeViewRenderer };
+export { NodeViewWrapper, RenderRichText, richTextJSONToText, SvelteNodeViewRenderer };
 //
 export type { RichTextNodeRenderer, RichTextNodeRendererProps, RichTextResource };

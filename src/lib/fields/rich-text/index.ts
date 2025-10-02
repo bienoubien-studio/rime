@@ -3,12 +3,7 @@ import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import Cell from './component/Cell.svelte';
 import RichText from './component/RichText.svelte';
 
-import type {
-	MediaFeatureDefinition,
-	PredefinedFeatureName,
-	ResourceFeatureDefinition,
-	RichTextFeature
-} from './core/types.js';
+import type { RichTextFeature } from './core/types.js';
 
 import type { JSONContent } from '@tiptap/core';
 
@@ -67,9 +62,7 @@ export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 	 * richText('intro').features(myCustomFeature)
 	 *
 	 */
-	features(
-		...features: Array<ResourceFeatureDefinition | MediaFeatureDefinition | PredefinedFeatureName | RichTextFeature>
-	) {
+	features(...features: Array<RichTextFeature>) {
 		this.field.features = features;
 		return this;
 	}
