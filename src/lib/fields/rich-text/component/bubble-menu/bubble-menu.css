@@ -1,5 +1,5 @@
 .rz-bubble-menu {
-	z-index: 20;
+	z-index: 110;
 	display: flex;
 	width: fit-content;
 	gap: var(--rz-size-1);

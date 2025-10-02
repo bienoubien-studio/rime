@@ -1,3 +1,4 @@
+.ProseMirror-focused > *:has([data-current]),
 .ProseMirror-focused > *[data-current] {
 	border-color: transparent;
 	position: relative;

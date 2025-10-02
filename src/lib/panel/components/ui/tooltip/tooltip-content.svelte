@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Tooltip as TooltipPrimitive } from 'bits-ui';
 	import { fly } from 'svelte/transition';
-	
+
 	let {
 		ref = $bindable(null),
 		class: className,
@@ -25,7 +25,7 @@
 
 <style lang="postcss">
 	:root {
-		--rz-tooltip-color-fg: light-dark(hsl(var(--rz-gray-8)), hsl(var(--rz-gray-2)));
+		--rz-tooltip-color-fg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-2)));
 		--rz-tooltip-color-bg: light-dark(hsl(var(--rz-gray-0)), hsl(var(--rz-gray-11)));
 	}
 
