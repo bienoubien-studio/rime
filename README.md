@@ -81,7 +81,7 @@ The `rime init` command will automatically:
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rime } from 'rime/vite';
+import { rime } from '@bienbien/rime/vite';
 
 export default defineConfig({
   plugins: [rime(), sveltekit()]
@@ -91,7 +91,7 @@ export default defineConfig({
 ```typescript
 // src/hooks.server.ts (should be created)
 import { sequence } from '@sveltejs/kit/hooks';
-import { handlers } from 'rime';
+import { handlers } from '@bienbien/rime';
 import config from './lib/config.generated/rime.config.server.js';
 import * as schema from './lib/server/schema.js';
 
@@ -131,8 +131,8 @@ curl -v POST http://localhost:5173/api/init \
 // ./src/lib/config/rime.config.ts
 import { buildConfig, Collection, Area } from '$rime/config';
 import { Settings2 } from '@lucide/svelte';
-import { relation, link, richText, text, toggle } from 'rime/fields';
-import { access } from "rime/util";
+import { relation, link, richText, text, toggle } from '@bienbien/rime/fields';
+import { access } from "@bienbien/rime/util";
 
 const Pages = Collection.create('pages', {
   group: 'content',
