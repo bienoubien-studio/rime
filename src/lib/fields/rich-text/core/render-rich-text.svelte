@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { JSONContent } from '@tiptap/core';
+	import type { RichTextNodeRenderer } from 'rizom/fields/richText';
 	import RenderRichText from './render-rich-text.svelte';
-	import type { RichTextNodeRenderer } from './types';
 
 	type Props = {
 		json?: JSONContent;
@@ -62,6 +62,13 @@
 			{:else}
 				<a {...mark.attrs}>{@render renderMarks(processedNode)}</a>
 			{/if}
+		{:else if components && mark.type && mark.type in components}
+			{@const CustomMark = components[mark.type]}
+			<CustomMark {components} {node}>
+				{@render renderMarks(processedNode)}
+			</CustomMark>
+		{:else if node.content}
+			<span {...mark.attrs}>{@render renderMarks(processedNode)}</span>
 		{/if}
 	{:else}
 		{node.text}

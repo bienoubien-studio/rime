@@ -2,9 +2,7 @@ import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.j
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import Cell from './component/Cell.svelte';
 import RichText from './component/RichText.svelte';
-
 import type { RichTextFeature } from './core/types.js';
-
 import type { JSONContent } from '@tiptap/core';
 
 const isEmpty = (value: unknown) => {
