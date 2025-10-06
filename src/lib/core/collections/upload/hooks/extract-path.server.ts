@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { trycatchSync } from '$lib/util/function.js';
 import { getSegments } from '../util/path.js';
@@ -14,7 +14,7 @@ export const exctractPath = Hooks.beforeUpsert<'directory'>(async (args) => {
 	if (data?.id) {
 		const [error, segments] = trycatchSync(() => getSegments(data.id));
 		if (error) {
-			throw new RizomError(RizomError.INVALID_DATA, error.message);
+			throw new RimeError(RimeError.INVALID_DATA, error.message);
 		}
 		data = {
 			...data,

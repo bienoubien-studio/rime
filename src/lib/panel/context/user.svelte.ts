@@ -11,7 +11,7 @@ function createUserStore(initial: User) {
 	};
 }
 
-const CONFIG_KEY = Symbol('rizom.user');
+const CONFIG_KEY = Symbol('rime.user');
 
 export function setUserContext(initial: User) {
 	const user = createUserStore(initial);

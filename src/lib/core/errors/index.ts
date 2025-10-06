@@ -1,7 +1,7 @@
 import { t__ } from '$lib/core/i18n/index.js';
 import type { FormErrors } from '$lib/panel/types.js';
 
-class RizomError extends Error {
+class RimeError extends Error {
 	static BAD_REQUEST = 'bad_request';
 	static CONFIG_ERROR = 'config_error';
 	static FIRST_USER_DEV = 'first_user_dev';
@@ -18,7 +18,7 @@ class RizomError extends Error {
 	static UPLOAD = 'upload_error';
 	static USER_BANNED = 'user_banned';
 
-	code = RizomError.UNKWONW;
+	code = RimeError.UNKWONW;
 	status: number;
 
 	constructor(code: string, message?: string, ...args: any) {
@@ -26,18 +26,18 @@ class RizomError extends Error {
 		super(message, ...args);
 		this.code = code;
 		const statusCodes = {
-			[RizomError.FORM_ERROR]: 400,
-			[RizomError.BAD_REQUEST]: 400,
-			[RizomError.INVALID_CREDENTIALS]: 401,
-			[RizomError.UNAUTHORIZED]: 403,
-			[RizomError.USER_BANNED]: 403,
-			[RizomError.NOT_FOUND]: 404
+			[RimeError.FORM_ERROR]: 400,
+			[RimeError.BAD_REQUEST]: 400,
+			[RimeError.INVALID_CREDENTIALS]: 401,
+			[RimeError.UNAUTHORIZED]: 403,
+			[RimeError.USER_BANNED]: 403,
+			[RimeError.NOT_FOUND]: 404
 		};
 		this.status = statusCodes[code] || 500;
 	}
 }
 
-class RizomFormError extends RizomError {
+class RimeFormError extends RimeError {
 	static INVALID_DATA = 'invalid_data';
 	static INVALID_EMAIL = 'invalid_email';
 	static INVALID_FIELD = 'invalid_field';
@@ -66,10 +66,10 @@ class RizomFormError extends RizomError {
 				return prev;
 			}, [] as string[])
 			.join(', ');
-		super(RizomError.FORM_ERROR, message);
+		super(RimeError.FORM_ERROR, message);
 
 		this.errors = errors;
 	}
 }
 
-export { RizomError, RizomFormError };
+export { RimeError, RimeFormError };

@@ -113,12 +113,12 @@ const templateRegister = (config: BuiltConfig): string => {
 				'\t}'
 			]
 		: [];
-	return ["declare module 'rizom' {", ...registerCollections, ...registerAreas, '}'].join('\n');
+	return ["declare module 'rime' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
 
 const templateDeclareVirtualModule = () =>
 	[
-		`declare module '$rizom/config' {`,
+		`declare module '$rime/config' {`,
 		...(IS_PACKAGE_DEV ? ['\t// eslint-disable-next-line no-restricted-imports'] : []),
 		`\texport * from '${PACKAGE_NAME}/config/server';`,
 		`}`
@@ -152,7 +152,7 @@ export async function generateTypesString(config: BuiltConfig) {
 	const treeBlocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
 	const registeredTreeBlocks: string[] = [];
-	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rizom']);
+	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rime']);
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
@@ -276,7 +276,7 @@ export async function generateTypesString(config: BuiltConfig) {
 			isInit?: boolean;
 			/** The better auth session */
       session: Session | undefined;
-			/** The rizom user document when authenticated */
+			/** The rime user document when authenticated */
       user: User | undefined;
 			/**
 			 * Flag enabled when a create operation is triggered
@@ -300,8 +300,8 @@ export async function generateTypesString(config: BuiltConfig) {
 				}
 			| undefined;
 			/** Singleton providing access to auth, config and local-api */
-      rizom: Rizom;
-			/** Flag enabled by the core plugin rizom.cache when the API cache is ON */
+      rime: Rime;
+      /** Flag enabled by the core plugin rime.cache when the API cache is ON */
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
       routes: Navigation;
@@ -369,10 +369,10 @@ async function generateTypes(config: BuiltConfig) {
 	const declarations = [templateDeclareVirtualModule()].join('\n');
 
 	const appGeneratedPath = path.resolve(process.cwd(), 'src', 'app.generated.d.ts');
-	const virtualModuleGeneratedPath = path.resolve(process.cwd(), 'src', 'rizom.generated.d.ts');
+	const virtualModuleGeneratedPath = path.resolve(process.cwd(), 'src', 'rime.generated.d.ts');
 
 	write('app.generated', mainTypes, appGeneratedPath);
-	write('rizom.generated', declarations, virtualModuleGeneratedPath);
+	write('rime.generated', declarations, virtualModuleGeneratedPath);
 }
 
 export default generateTypes;

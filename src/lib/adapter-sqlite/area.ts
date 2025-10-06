@@ -1,11 +1,11 @@
 import { getRequestEvent } from '$app/server';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
+import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { createBlankDocument } from '$lib/util/doc.js';
-import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
@@ -33,7 +33,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
 		const areaConfig = configInterface.getArea(slug);
 		if (!areaConfig) {
-			throw new RizomError(RizomError.INIT, slug + ' is not an area, should never happen');
+			throw new RimeError(RimeError.INIT, slug + ' is not an area, should never happen');
 		}
 
 		const hasVersions = !!areaConfig.versions;
@@ -122,7 +122,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 			const doc = await db.query[slug].findFirst(params);
 
 			if (!doc) {
-				throw new RizomError(RizomError.OPERATION_ERROR);
+				throw new RimeError(RimeError.OPERATION_ERROR);
 			}
 
 			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable, select);
@@ -255,7 +255,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 * });
 	 *
 	 * @returns Object containing the IDs of the updated area and version
-	 * @throws RizomError when operation fails or version ID is missing when required
+	 * @throws RimeError when operation fails or version ID is missing when required
 	 */
 	const update: Update = async ({ slug, data, locale, versionId, versionOperation }) => {
 		const now = new Date();
@@ -296,7 +296,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Update a specific version directly
 			if (!versionId) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @adapter-update-area');
+				throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionId @adapter-update-area');
 			}
 			// First, update the root table's updatedAt
 			await db
@@ -348,7 +348,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 
 			return { id: area.id };
 		} else {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'Unhandled version operation');
 		}
 	};
 

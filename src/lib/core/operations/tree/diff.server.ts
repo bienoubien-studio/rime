@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
 import { isObjectLiteral } from '$lib/util/object.js';
 import type { WithRequired } from '$lib/util/types.js';
@@ -32,7 +32,7 @@ export function defineTreeBlocksDiff({
 }: DefineTreeBlocksDiffArgs): TreeBlocksDiff {
 	//
 	const configMap = context.configMap;
-	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @defineBlocksDiff');
+	if (!configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @defineBlocksDiff');
 
 	// On fallback locale :
 	// - If a block is localized, it should not keep its id so a new one is created

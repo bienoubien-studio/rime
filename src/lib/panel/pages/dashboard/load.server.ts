@@ -5,7 +5,7 @@ import type { CompiledCollection, Route } from '../../../types.js';
 import type { DashboardEntry } from './types.js';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
-	const { locale, user, rizom } = event.locals;
+	const { locale, user, rime } = event.locals;
 
 	const entries: DashboardEntry[] = [];
 
@@ -21,7 +21,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 
 	const getLastEdited = async (c: CompiledCollection) => {
 		try {
-			return await rizom.collection(c.slug).find({
+			return await rime.collection(c.slug).find({
 				limit: 6,
 				locale
 			});
@@ -32,7 +32,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		}
 	};
 
-	const promiseEntries = rizom.config.collections
+	const promiseEntries = rime.config.collections
 		.filter((collection) => user && collection.access.read(user, {}))
 		.filter((collection) => collection.panel !== false)
 		.map(async (collection) => {
@@ -54,7 +54,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		console.error(err);
 	}
 
-	for (const area of rizom.config.areas.filter((a) => a.panel !== false)) {
+	for (const area of rime.config.areas.filter((a) => a.panel !== false)) {
 		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',

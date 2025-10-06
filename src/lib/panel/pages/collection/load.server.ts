@@ -31,9 +31,9 @@ type Data = {
 export function collectionLoad(slug: CollectionSlug) {
 	//
 	const load = async (event: ServerLoadEvent): Promise<Data> => {
-		const { rizom, locale, user } = event.locals;
+		const { rime, locale, user } = event.locals;
 
-		const collection = rizom.collection(slug);
+		const collection = rime.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 
 		const docs = await collection.find({
@@ -54,7 +54,7 @@ export function collectionLoad(slug: CollectionSlug) {
 			let directories: any[] = [];
 			const paramUploadPath = event.url.searchParams.get('uploadPath') as UploadPath | null;
 			const currentDirectoryPath = paramUploadPath || UPLOAD_PATH.ROOT_NAME;
-			const directoryCollection = rizom.collection<any>(withDirectoriesSuffix(slug));
+			const directoryCollection = rime.collection<any>(withDirectoriesSuffix(slug));
 			// Check if dir exists
 			const [error, currentDirectory] = await trycatch(() =>
 				directoryCollection.findById({

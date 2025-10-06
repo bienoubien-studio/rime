@@ -25,13 +25,13 @@ function generateRoutes(config: BuiltConfig): void {
 
 	// 2. Ensure base directories exist
 	const rootRoutes = path.resolve(projectRoot, 'src', 'routes');
-	const rizomRoutes = path.join(rootRoutes, '(rizom)');
-	const panelRoute = path.join(rizomRoutes, 'panel');
+	const rimeRoutes = path.join(rootRoutes, '(rime)');
+	const panelRoute = path.join(rimeRoutes, 'panel');
 
-	fs.rmSync(rizomRoutes, { recursive: true, force: true });
+	fs.rmSync(rimeRoutes, { recursive: true, force: true });
 
 	ensureDir(rootRoutes);
-	ensureDir(rizomRoutes);
+	ensureDir(rimeRoutes);
 	ensureDir(panelRoute);
 
 	// Function that generate area/collection routes files from a Routes object
@@ -100,13 +100,13 @@ function generateRoutes(config: BuiltConfig): void {
 	const customRoutes: Dic = config.panel?.routes;
 	if (customRoutes) {
 		for (const [route, routeConfig] of Object.entries(customRoutes)) {
-			const routePath = path.join('(rizom)', 'panel', route);
+			const routePath = path.join('(rime)', 'panel', route);
 			writeRouteFile(rootRoutes, routePath, 'page', customRoute(routeConfig));
 		}
 	}
 
 	// 7. Handle custom CSS in layout file
-	const layoutPath = path.join(rizomRoutes, '+layout.svelte');
+	const layoutPath = path.join(rimeRoutes, '+layout.svelte');
 	if (fs.existsSync(layoutPath)) {
 		if (config.panel?.css) {
 			injectCustomCSS(layoutPath, config.panel.css);

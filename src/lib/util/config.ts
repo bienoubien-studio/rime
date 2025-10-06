@@ -12,7 +12,7 @@
  *
  * export default external(LoremFeature, import.meta.url);
  *
- * // src/config/rizom.config.ts
+ * // src/config/rime.config.ts
  * import loremFeature from './lorem-feature.ts'
  * const writer = richText('writer').features('bold', loremFeature)
  */

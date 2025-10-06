@@ -1,8 +1,8 @@
-import { error, fail, isRedirect, redirect } from '@sveltejs/kit';
-import { RizomError, RizomFormError } from './index.js';
-import { logger } from '$lib/core/logger/index.server.js';
 import { getRequestEvent } from '$app/server';
+import { logger } from '$lib/core/logger/index.server.js';
+import { error, fail, isRedirect, redirect } from '@sveltejs/kit';
 import { APIError } from 'better-auth/api';
+import { RimeError, RimeFormError } from './index.js';
 
 export const ERROR_CONTEXT = {
 	ACTION: 'action',
@@ -24,7 +24,7 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	/****************************************************/
 	/* FormError Errors
 	/****************************************************/
-	if (err instanceof RizomFormError) {
+	if (err instanceof RimeFormError) {
 		switch (context) {
 			case ERROR_CONTEXT.ACTION:
 				return fail(400, {
@@ -37,10 +37,10 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 	}
 
 	/****************************************************/
-	/* Rizom Errors 
+	/* Rime Errors
 	/****************************************************/
-	if (err instanceof RizomError) {
-		if (err.code === RizomError.NOT_FOUND && context === ERROR_CONTEXT.LOAD) {
+	if (err instanceof RimeError) {
+		if (err.code === RimeError.NOT_FOUND && context === ERROR_CONTEXT.LOAD) {
 			const event = getRequestEvent();
 			logger.error(`404 - ${err.message} - ${event.url.href}`);
 			throw error(404, event.url.href + ' : ' + err.message);
@@ -65,7 +65,7 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 					return fail(400, {
 						form: formData || {},
 						errors: {
-							email: RizomFormError.UNIQUE_FIELD
+							email: RimeFormError.UNIQUE_FIELD
 						}
 					});
 				case ERROR_CONTEXT.API:
@@ -75,8 +75,8 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 		}
 
 		const message = `${err.body?.message || err.message || err.status}`;
-		logger.debug(err)
-		
+		logger.debug(err);
+
 		switch (context) {
 			case ERROR_CONTEXT.ACTION:
 				return fail(err.statusCode, {

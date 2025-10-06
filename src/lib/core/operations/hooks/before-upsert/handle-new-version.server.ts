@@ -1,7 +1,7 @@
 import { filePathToFile } from '$lib/core/collections/upload/util/converter.js';
 import { VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic } from '$lib/util/types.js';
 import path from 'path';
@@ -16,14 +16,13 @@ import { Hooks } from '../index.server.js';
  */
 export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 	const { config, event } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	const { versionOperation, originalDoc, originalConfigMap, params } = args.context;
 
-	if (!originalConfigMap)
-		throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalConfigMap @handleNewVersion');
-	if (!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @handleNewVersion');
-	if (!versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionOperation @handleNewVersion');
+	if (!originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalConfigMap @handleNewVersion');
+	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @handleNewVersion');
+	if (!versionOperation) throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionOperation @handleNewVersion');
 
 	let versionId;
 	let data;
@@ -37,13 +36,13 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
 			const versionsSlug = withVersionsSuffix(config.slug);
 
-			const document = await rizom.collection(versionsSlug).create({
+			const document = await rime.collection(versionsSlug).create({
 				data,
 				locale: params.locale
 			});
 
 			if (config.versions && config.versions.maxVersions) {
-				await rizom.collection(versionsSlug).delete({
+				await rime.collection(versionsSlug).delete({
 					sort: '-updatedAt',
 					query: 'where[status][not_equals]=published',
 					offset: config.versions.maxVersions

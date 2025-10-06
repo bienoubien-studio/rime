@@ -2,11 +2,11 @@ import type { BuiltConfig, CompiledArea, CompiledCollection, CompiledConfig } fr
 import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/core/types/doc.js';
 import type { AsyncReturnType, Dic } from '$lib/util/types.js';
 import { flattenWithGuard } from '../../util/object.js';
-import { RizomError } from '../errors/index.js';
+import { RimeError } from '../errors/index.js';
 import { compileConfig } from './shared/compile.js';
 
 /**
- * Creates a configuration interface that provides access to the compiled Rizom configuration
+ * Creates a configuration interface that provides access to the compiled Rime configuration
  * @param rawConfig The raw configuration object defined by the user
  * @returns A configuration interface with methods to access different parts of the configuration
  * @example
@@ -36,11 +36,11 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 	 * Retrieves an area configuration by its slug
 	 * @param slug The slug of the area to retrieve
 	 * @returns The compiled area configuration
-	 * @throws {RizomError} If the area does not exist
+	 * @throws {RimeError} If the area does not exist
 	 */
 	const getArea = (slug: string): CompiledArea => {
 		const areaConfig = config.areas.find((g) => g.slug === slug);
-		if (!areaConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not an area`);
+		if (!areaConfig) throw new RimeError(RimeError.BAD_REQUEST, `${slug} is not an area`);
 
 		return areaConfig;
 	};
@@ -49,11 +49,11 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 	 * Retrieves a collection configuration by its slug
 	 * @param slug The slug of the collection to retrieve
 	 * @returns The compiled collection configuration
-	 * @throws {RizomError} If the collection does not exist
+	 * @throws {RimeError} If the collection does not exist
 	 */
 	const getCollection = (slug: string): CompiledCollection => {
 		const collectionConfig = config.collections.find((c) => c.slug === slug);
-		if (!collectionConfig) throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a collection`);
+		if (!collectionConfig) throw new RimeError(RimeError.BAD_REQUEST, `${slug} is not a collection`);
 
 		return collectionConfig;
 	};
@@ -62,7 +62,7 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 	 * Retrieves either an area or collection configuration by its slug
 	 * @param slug The slug to search for in both areas and collections
 	 * @returns The compiled area or collection configuration
-	 * @throws {RizomError} If the slug does not match any area or collection
+	 * @throws {RimeError} If the slug does not match any area or collection
 	 */
 	const getBySlug = (slug: string) => {
 		// Try to find in collections
@@ -74,7 +74,7 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 				const config = getArea(slug);
 				return config;
 			} catch {
-				throw new RizomError(RizomError.BAD_REQUEST, `${slug} is not a valid area or collection`);
+				throw new RimeError(RimeError.BAD_REQUEST, `${slug} is not a valid area or collection`);
 			}
 		}
 	};
@@ -101,7 +101,7 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 	 * Determines the prototype (collection or area) of a document by its slug
 	 * @param slug The slug to check
 	 * @returns 'collection' or 'area' depending on the document type
-	 * @throws {RizomError} If the slug does not match any area or collection
+	 * @throws {RimeError} If the slug does not match any area or collection
 	 */
 	const getDocumentPrototype = (slug: PrototypeSlug) => {
 		if (isCollection(slug)) {
@@ -109,17 +109,17 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 		} else if (isArea(slug)) {
 			return 'area';
 		}
-		throw new RizomError(RizomError.BAD_REQUEST, slug + 'is neither a collection nor a globlal');
+		throw new RimeError(RimeError.BAD_REQUEST, slug + 'is neither a collection nor a globlal');
 	};
 
 	return {
 		/**
 		 * Gets the raw compiled configuration object
-		 * @throws {RizomError} If the configuration is not loaded
+		 * @throws {RimeError} If the configuration is not loaded
 		 */
 		get raw() {
 			if (!config) {
-				throw new RizomError('config not loaded yet');
+				throw new RimeError('config not loaded yet');
 			}
 			return config;
 		},
@@ -128,11 +128,11 @@ export async function createConfigInterface(rawConfig: BuiltConfig) {
 		 * Gets a configuration value by its path
 		 * @param path Optional path to a specific configuration value
 		 * @returns The configuration value at the specified path, or the entire configuration if no path is provided
-		 * @throws {RizomError} If the configuration is not loaded
+		 * @throws {RimeError} If the configuration is not loaded
 		 */
 		get(path?: string) {
 			if (!config) {
-				throw new RizomError('config not loaded yet');
+				throw new RimeError('config not loaded yet');
 			}
 			if (!path) return config;
 

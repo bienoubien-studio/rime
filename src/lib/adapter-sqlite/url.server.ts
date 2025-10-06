@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { GetRegisterType } from '$lib/index.js';
@@ -89,7 +89,7 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		try {
 			operation.run();
 		} catch (err: any) {
-			throw new RizomError(RizomError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
+			throw new RimeError(RimeError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
 		}
 	}
 }

@@ -70,20 +70,20 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 *
 	 * @example
 	 * // Get the published version
-	 * const doc = await rizom.area('settings').find({ locale })
+	 * const doc = await rime.area('settings').find({ locale })
 	 *
 	 * // Get a specific version
-	 * const doc = await rizom.area('settings').find({ versionId: '123' })
+	 * const doc = await rime.area('settings').find({ versionId: '123' })
 	 *
 	 * // Get the latest version excluding draft
-	 * const doc = await rizom.area('settings').find()
+	 * const doc = await rime.area('settings').find()
 	 *
 	 * // Get the latest version including draft
-	 * const doc = await rizom.area('settings').find({ draft: true })
+	 * const doc = await rime.area('settings').find({ draft: true })
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc> {
 		const { locale, select = [], depth = 0, versionId, draft } = args;
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
@@ -97,7 +97,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 		};
 
 		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
-			const key = this.#event.locals.rizom.cache.createKey('area.find', {
+			const key = this.#event.locals.rime.cache.createKey('area.find', {
 				slug: this.config.slug,
 				select,
 				versionId,
@@ -107,7 +107,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 				draft,
 				locale
 			});
-			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
+			return this.#event.locals.rime.cache.get(key, () => find<Doc>(params));
 		}
 
 		return find<Doc>(params);
@@ -127,11 +127,11 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 *   - If no versionId and draft === true: Creates a new draft from the published version
 	 *
 	 * @example
-	 * rizom.area('settings').update({ data, locale })
+	 * rime.area('settings').update({ data, locale })
 	 */
 	update(args: APIMethodArgs<typeof update>): Promise<Doc> {
 		const { data, locale, versionId, draft } = args;
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 
 		return update<Doc>({
 			data,
@@ -151,4 +151,4 @@ export { AreaInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rime' | 'event' | 'config' | 'slug'>;

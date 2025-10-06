@@ -22,7 +22,7 @@ type FindArgs = {
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> => {
 	//
 	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [], isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {
 		isSystemOperation,
@@ -48,7 +48,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 		context = result.context;
 	}
 
-	const documentsRaw = await rizom.adapter.collection.find({
+	const documentsRaw = await rime.adapter.collection.find({
 		slug: config.slug,
 		query,
 		sort,
@@ -62,7 +62,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> =
 	const hasSelect = select && Array.isArray(select) && select.length;
 
 	async function processDocument(documentRaw: RawDoc) {
-		let document = await event.locals.rizom.adapter.transform.doc({
+		let document = await event.locals.rime.adapter.transform.doc({
 			doc: documentRaw,
 			slug: config.slug,
 			locale,

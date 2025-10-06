@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { Hooks } from '../index.server.js';
 
@@ -29,8 +29,8 @@ export const authorize = Hooks.beforeOperation(async (args) => {
 	}
 
 	if (!authorized) {
-		logger.error(RizomError.UNAUTHORIZED);
-		throw new RizomError(RizomError.UNAUTHORIZED);
+		logger.error(RimeError.UNAUTHORIZED);
+		throw new RimeError(RimeError.UNAUTHORIZED);
 	}
 	return args;
 });

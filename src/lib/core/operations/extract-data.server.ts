@@ -1,8 +1,8 @@
-import { RizomFormError } from '$lib/core/errors/index.js';
-import type { RequestEvent } from '@sveltejs/kit';
+import { RimeFormError } from '$lib/core/errors/index.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
-import { flatten, unflatten } from 'flat';
 import type { Dic } from '$lib/util/types.js';
+import type { RequestEvent } from '@sveltejs/kit';
+import { flatten, unflatten } from 'flat';
 
 /**
  * Extracts data from a request based on its content type
@@ -31,9 +31,9 @@ export const extractData = async <T extends Record<string, any>>(request: Reques
 			data = jsonDataToData(jsonData);
 		}
 	} catch (err: any) {
-		throw new RizomFormError({ _form: err.message });
+		throw new RimeFormError({ _form: err.message });
 	}
-	
+
 	return data as T;
 };
 

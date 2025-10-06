@@ -9,25 +9,25 @@ import { sanitize } from '../generate/sanitize/index.js';
 dotenv.config({ override: true });
 const dev = process.env.NODE_ENV === 'development';
 
-export function rizom(): Plugin {
-	const VCoreId = '$rizom/config';
+export function rime(): Plugin {
+	const VCoreId = '$rime/config';
 
 	const resolvedVModule = (name: string) => '\0' + name;
 
 	return {
-		name: 'virtual-rizom',
+		name: 'virtual-rime',
 
 		configureServer(server) {
 			// Add a listener for when the server starts
 			server.httpServer?.once('listening', () => {
 				if (dev && !hasRunInitCommand()) {
-					throw new Error('Missing required files, run `npx rizom init`');
+					throw new Error('Missing required files, run `npx rime init`');
 				}
 				// Check if we need to rebuild
 				const shouldRebuild = process.argv.includes('rebuild');
-				const rizomDevCacheDir = path.resolve(process.cwd(), '.rizom');
-				if (shouldRebuild && existsSync(rizomDevCacheDir)) {
-					rmSync(rizomDevCacheDir, { recursive: true, force: true });
+				const rimeDevCacheDir = path.resolve(process.cwd(), '.rime');
+				if (shouldRebuild && existsSync(rimeDevCacheDir)) {
+					rmSync(rimeDevCacheDir, { recursive: true, force: true });
 				}
 			});
 
@@ -44,7 +44,7 @@ export function rizom(): Plugin {
 					}
 					// Trigger generation
 					try {
-						await server.ssrLoadModule('src/lib/config.generated/rizom.config.server.ts');
+						await server.ssrLoadModule('src/lib/config.generated/rime.config.server.ts');
 					} catch (error: any) {
 						logger.error('Failed to reload the config', error.message);
 						throw error;
@@ -100,7 +100,7 @@ export function rizom(): Plugin {
 			const isServer = this.environment?.config?.consumer === 'server';
 
 			if (id === resolvedVModule(VCoreId)) {
-				const corePath = isServer ? 'rizom/config/server' : 'rizom/config/client';
+				const corePath = isServer ? 'rime/config/server' : 'rime/config/client';
 				return `export * from '${corePath}';`;
 			}
 

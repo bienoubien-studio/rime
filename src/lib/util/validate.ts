@@ -1,4 +1,4 @@
-import { RizomFormError } from '$lib/core/errors/index.js';
+import { RimeFormError } from '$lib/core/errors/index.js';
 
 /**
  * Validates a password string against security requirements.
@@ -9,22 +9,22 @@ import { RizomFormError } from '$lib/core/errors/index.js';
  * password("Secure1Password!");
  *
  * // Returns an error code for an invalid password
- * password("weak"); // Returns RizomFormError.PASSWORD_MIN_8
+ * password("weak"); // Returns RimeFormError.PASSWORD_MIN_8
  */
 export const password = (value: unknown) => {
 	if (typeof value !== 'string') {
-		return RizomFormError.NOT_A_STRING;
+		return RimeFormError.NOT_A_STRING;
 	}
 	if (value.length < 8) {
-		return RizomFormError.PASSWORD_MIN_8;
+		return RimeFormError.PASSWORD_MIN_8;
 	} else if (!/[a-z]/.test(value)) {
-		return RizomFormError.PASSWORD_LOWERCASE_MISSING;
+		return RimeFormError.PASSWORD_LOWERCASE_MISSING;
 	} else if (!/[A-Z]/.test(value)) {
-		return RizomFormError.PASSWORD_UPPERCASE_MISSING;
+		return RimeFormError.PASSWORD_UPPERCASE_MISSING;
 	} else if (!/\d/.test(value)) {
-		return RizomFormError.PASSWORD_NUMBER_MISSING;
+		return RimeFormError.PASSWORD_NUMBER_MISSING;
 	} else if (!/[#.?"'(§)_=!+:;@$%^&*-]/.test(value)) {
-		return RizomFormError.PASSWORD_SPECIAL_CHAR_MISSING;
+		return RimeFormError.PASSWORD_SPECIAL_CHAR_MISSING;
 	}
 	return true;
 };
@@ -38,11 +38,11 @@ export const password = (value: unknown) => {
  * email("user@example.com");
  *
  * // Returns an error code for an invalid email
- * email("invalid-email"); // Returns RizomFormError.INVALID_EMAIL
+ * email("invalid-email"); // Returns RimeFormError.INVALID_EMAIL
  */
 export const email = (value: unknown) => {
 	if (typeof value !== 'string') {
-		return RizomFormError.NOT_A_STRING;
+		return RimeFormError.NOT_A_STRING;
 	}
 	// This regex ensures:
 	// 1. Starts with letter/number
@@ -50,7 +50,7 @@ export const email = (value: unknown) => {
 	// 3. Can't have consecutive dots
 	// 4. Can't end with .-_ before @
 	if (!/^[a-zA-Z0-9](?:[a-zA-Z0-9._-]*[a-zA-Z0-9])?@[^\s@]+\.[^\s@]+$/.test(value)) {
-		return RizomFormError.INVALID_EMAIL;
+		return RimeFormError.INVALID_EMAIL;
 	}
 	return true;
 };
@@ -64,14 +64,14 @@ export const email = (value: unknown) => {
  * tel("+1 555 123 4567");
  *
  * // Returns an error code for an invalid phone number
- * tel("abc123"); // Returns RizomFormError.INVALID_PHONE
+ * tel("abc123"); // Returns RimeFormError.INVALID_PHONE
  */
 export const tel = (value: unknown) => {
 	if (typeof value !== 'string') {
-		return RizomFormError.NOT_A_STRING;
+		return RimeFormError.NOT_A_STRING;
 	}
 	if (!/^[+\d\s]+$/.test(value)) {
-		return RizomFormError.INVALID_PHONE;
+		return RimeFormError.INVALID_PHONE;
 	}
 	return true;
 };
@@ -85,14 +85,14 @@ export const tel = (value: unknown) => {
  * url("https://example.com/page");
  *
  * // Returns an error code for an invalid URL
- * url("not-a-url"); // Returns RizomFormError.INVALID_URL
+ * url("not-a-url"); // Returns RimeFormError.INVALID_URL
  */
 export const url = (value: unknown) => {
 	if (typeof value !== 'string') {
-		return RizomFormError.NOT_A_STRING;
+		return RimeFormError.NOT_A_STRING;
 	}
 	if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z]{2,}\b([-a-zA-Z0-9@:%_+.~#?&/=,]*)$/.test(value)) {
-		return RizomFormError.INVALID_URL;
+		return RimeFormError.INVALID_URL;
 	}
 	return true;
 };
@@ -106,14 +106,14 @@ export const url = (value: unknown) => {
  * slug("my-page-slug-123");
  *
  * // Returns an error code for an invalid slug
- * slug("Invalid Slug!"); // Returns RizomFormError.INVALID_SLUG
+ * slug("Invalid Slug!"); // Returns RimeFormError.INVALID_SLUG
  */
 export const slug = (value: unknown) => {
 	if (typeof value !== 'string') {
-		return RizomFormError.NOT_A_STRING;
+		return RimeFormError.NOT_A_STRING;
 	}
 	if (!/^[a-z0-9-]+$/.test(value)) {
-		return RizomFormError.INVALID_SLUG;
+		return RimeFormError.INVALID_SLUG;
 	}
 	return true;
 };

@@ -1,7 +1,7 @@
-// /Users/ai/Dev/rizom/src/lib/fields/rich-text/core/features/bold.ts
+// /Users/ai/Dev/rime/src/lib/fields/rich-text/core/features/bold.ts
 import { BoldIcon } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 import Bold from '@tiptap/extension-bold';
+import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 
 // Create the bold extension
 const boldExtension = Bold.configure({

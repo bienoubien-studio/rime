@@ -2,7 +2,7 @@ import { apiUrl } from '$lib/core/api/index.js';
 import { buildUploadAria, type UploadPath } from '$lib/core/collections/upload/util/path.js';
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
@@ -18,14 +18,14 @@ import { error, type ServerLoadEvent } from '@sveltejs/kit';
 export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 	//
 	const load = async <V extends boolean = boolean>(event: ServerLoadEvent) => {
-		const { locale, user, rizom } = event.locals;
+		const { locale, user, rime } = event.locals;
 		const { id } = event.params;
 
 		if (!id) throw error(404, 'Not found');
 
 		let doc: GenericDoc;
 		let readOnly = false;
-		const collection = rizom.collection<any>(slug);
+		const collection = rime.collection<any>(slug);
 		const operation = id === 'create' ? 'create' : 'update';
 
 		if (id === 'create') {
@@ -84,7 +84,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			doc,
 			operation,
 			status: 200,
-			hasMailer: 'mailer' in rizom.plugins,
+			hasMailer: 'mailer' in rime.plugins,
 			readOnly
 		};
 
@@ -93,7 +93,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			const promise = event.fetch(url).then((r) => r.json());
 			const [error, result] = await trycatch(() => promise);
 			if (error || !Array.isArray(result.docs)) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
+				throw new RimeError(RimeError.OPERATION_ERROR, 'while getting versions');
 			}
 			data = { ...data, versions: result.docs };
 		}

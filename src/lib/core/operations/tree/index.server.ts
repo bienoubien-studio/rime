@@ -1,8 +1,8 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
+import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
 import type { CompiledArea, CompiledCollection } from '$lib/types.js';
-import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 import { defineTreeBlocksDiff } from './diff.server.js';
@@ -20,7 +20,7 @@ export const saveTreeBlocks = async (args: {
 	const { locale } = context.params;
 	const { originalDoc: original, configMap, originalConfigMap } = context;
 
-	if (!configMap || !ownerId) throw new RizomError(RizomError.OPERATION_ERROR, '@saveBlocks');
+	if (!configMap || !ownerId) throw new RimeError(RimeError.OPERATION_ERROR, '@saveBlocks');
 
 	const parentTable = config.versions ? withVersionsSuffix(config.slug) : config.slug;
 
@@ -33,7 +33,7 @@ export const saveTreeBlocks = async (args: {
 	// Get existings
 	let existingTreeBlocks: WithRequired<TreeBlock, 'path'>[] = [];
 	if (original) {
-		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
+		if (!originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing original');
 		const blocks = extractTreeBlocks({
 			data: original,
 			configMap: originalConfigMap

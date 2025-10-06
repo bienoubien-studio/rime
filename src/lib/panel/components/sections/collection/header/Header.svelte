@@ -6,7 +6,7 @@
 	import SelectUI from './SelectUI.svelte';
 	import Separator from './Separator.svelte';
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 
 	const showSelectUI = $derived(!collection.isNested());
 	const showDisplayMode = $derived(collection.isUpload || collection.config.nested);

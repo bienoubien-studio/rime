@@ -11,13 +11,13 @@ import type { BuiltConfigClient, SanitizedConfigClient } from '../types.js';
 const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => {
 	const icons: Dic<Component<IconProps>> = {};
 
-	const staff = Collection.config('staff', getStaffCollection(config.staff));
+	const staff = Collection.create('staff', getStaffCollection(config.staff));
 
 	// Add icons
-	for (const collection of [staff, ...config.collections]) {
+	for (const collection of [staff, ...(config.collections || [])]) {
 		icons[collection.slug] = collection.icon;
 	}
-	for (const area of config.areas) {
+	for (const area of config.areas || []) {
 		icons[area.slug] = area.icon;
 	}
 
@@ -31,8 +31,8 @@ const buildConfigClient = (config: SanitizedConfigClient): BuiltConfigClient => 
 
 	const baseBuiltConfig = {
 		siteUrl: config.siteUrl,
-		collections: [staff, ...config.collections],
-		areas: config.areas,
+		collections: [staff, ...(config.collections || [])],
+		areas: config.areas || [],
 		localization: config.localization ? config.localization : undefined,
 		panel: {
 			routes: config.panel?.routes ? config.panel.routes : {},

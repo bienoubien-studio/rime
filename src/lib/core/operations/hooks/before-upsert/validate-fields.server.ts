@@ -1,5 +1,5 @@
 import { PARAMS } from '$lib/core/constant.js';
-import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
+import { RimeError, RimeFormError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { FormErrors } from '$lib/panel/types.js';
@@ -9,15 +9,15 @@ import { Hooks } from '../index.server.js';
 export const validateFields = Hooks.beforeUpsert(async (args) => {
 	const errors: FormErrors = {};
 	const { event, operation } = args;
-	const { rizom, user } = event.locals;
+	const { rime, user } = event.locals;
 	const configMap = args.context.configMap;
 	const locale = args.context.params.locale || args.event.locals.locale;
 	const slug = args.config.slug;
-	const isCollection = rizom.config.isCollection(slug);
+	const isCollection = rime.config.isCollection(slug);
 
 	let output = { ...args.data };
 
-	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @validateFields');
+	if (!configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @validateFields');
 
 	// Get the skip parameter from the url
 	const paramSkip = event.url.searchParams.get(PARAMS.SKIP_VALIDATION) === 'true' || false;
@@ -45,17 +45,17 @@ export const validateFields = Hooks.beforeUpsert(async (args) => {
 					break;
 				case 'update':
 					if (!args.context.originalDoc)
-						throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @validateFields');
+						throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @validateFields');
 					query = `where[and][0][${key}][equals]=${value}&where[and][1][id][not_equals]=${args.context.originalDoc.id}&select=id`;
 			}
 
-			const existing = await rizom
+			const existing = await rime
 				.collection(slug)
 				.system()
 				.find({ locale, query, select: ['id'] });
 
 			if (existing.length) {
-				errors[key] = RizomFormError.UNIQUE_FIELD;
+				errors[key] = RimeFormError.UNIQUE_FIELD;
 			}
 		}
 
@@ -91,7 +91,7 @@ export const validateFields = Hooks.beforeUpsert(async (args) => {
 				}
 			} catch {
 				logger.warn(`Error while validating field ${key}`);
-				errors[key] = RizomFormError.VALIDATION_ERROR;
+				errors[key] = RimeFormError.VALIDATION_ERROR;
 			}
 		}
 
@@ -137,13 +137,13 @@ export const validateFields = Hooks.beforeUpsert(async (args) => {
 			if (skipRequired) {
 				output = setValueAtPath(key, output, '');
 			} else {
-				errors[key] = RizomFormError.REQUIRED_FIELD;
+				errors[key] = RimeFormError.REQUIRED_FIELD;
 			}
 		}
 	}
 
 	if (Object.keys(errors).length) {
-		throw new RizomFormError(errors);
+		throw new RimeFormError(errors);
 	}
 
 	return {

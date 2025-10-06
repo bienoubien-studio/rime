@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 
 /**
@@ -12,7 +12,7 @@ export const preventUserMutations = Hooks.beforeUpdate<'auth'>(async (args) => {
 		if (args.context.isFallbackLocale) {
 			delete args.data.password;
 		} else {
-			throw new RizomError(RizomError.UNAUTHORIZED);
+			throw new RimeError(RimeError.UNAUTHORIZED);
 		}
 	}
 

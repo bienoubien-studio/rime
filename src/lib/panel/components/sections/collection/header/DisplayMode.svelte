@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { LayoutGrid, List, TextQuote } from '@lucide/svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
-	import { getContext } from 'svelte';
 	import { DISPLAY_MODE, type CollectionContext, type DisplayMode } from '$lib/panel/context/collection.svelte.js';
-	
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	import { LayoutGrid, List, TextQuote } from '@lucide/svelte';
+	import { getContext } from 'svelte';
+
+	const collection = getContext<CollectionContext>('rime.collectionList');
 
 	const listIconClass = $derived(collection.isList() ? 'rz-header-display-mode__icon--active' : '');
 	const gridIconClass = $derived(collection.isGrid() ? 'rz-header-display-mode__icon--active' : '');
 	const nestedIconClass = $derived(collection.isNested() ? 'rz-header-display-mode__icon--active' : '');
 
 	const setVariant = (mode: DisplayMode) => (mode === collection.display ? 'secondary' : 'ghost');
-	const isActive = (mode: DisplayMode) => (mode === collection.display);
-	
+	const isActive = (mode: DisplayMode) => mode === collection.display;
+
 	function handleListClick() {
 		collection.display = DISPLAY_MODE.LIST;
 	}
@@ -25,17 +25,32 @@
 </script>
 
 <div class="rz-header-display-mode">
-	<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.LIST)} inert={isActive(DISPLAY_MODE.LIST)} onclick={handleListClick}>
+	<Button
+		size="icon-sm"
+		variant={setVariant(DISPLAY_MODE.LIST)}
+		inert={isActive(DISPLAY_MODE.LIST)}
+		onclick={handleListClick}
+	>
 		<List size={17} class="rz-header-display-mode__icon {listIconClass}" />
 	</Button>
 
 	{#if collection.config.upload}
-		<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.GRID)} inert={isActive(DISPLAY_MODE.GRID)} onclick={handleGridClick}>
+		<Button
+			size="icon-sm"
+			variant={setVariant(DISPLAY_MODE.GRID)}
+			inert={isActive(DISPLAY_MODE.GRID)}
+			onclick={handleGridClick}
+		>
 			<LayoutGrid size={17} class="rz-header-display-mode__icon {gridIconClass}" />
 		</Button>
 	{/if}
 	{#if collection.config.nested}
-		<Button size="icon-sm" variant={setVariant(DISPLAY_MODE.NESTED)} inert={isActive(DISPLAY_MODE.NESTED)} onclick={handleNestedClick}>
+		<Button
+			size="icon-sm"
+			variant={setVariant(DISPLAY_MODE.NESTED)}
+			inert={isActive(DISPLAY_MODE.NESTED)}
+			onclick={handleNestedClick}
+		>
 			<TextQuote size={17} class="rz-header-display-mode__icon {nestedIconClass}" />
 		</Button>
 	{/if}

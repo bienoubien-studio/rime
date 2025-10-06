@@ -1,12 +1,12 @@
 import { templateUniqueRequired } from '$lib/adapter-sqlite/generate-schema/templates.server.js';
 import { getSchemaColumnNames } from '$lib/adapter-sqlite/generate-schema/util.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import type { AreaSlug, CollectionSlug, PrototypeSlug } from '$lib/types.js';
 import { trycatch } from '$lib/util/function.js';
-import type { LinkFieldBuilder } from './index.js';
 import type { ToSchema, ToType } from '../index.server.js';
 import type { FieldHook, LinkField } from '../types.js';
+import type { LinkFieldBuilder } from './index.js';
 import type { Link } from './types.js';
 
 export const toSchema: ToSchema<LinkFieldBuilder> = (field, parentPath) => {
@@ -37,18 +37,18 @@ export const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { e
 		return link;
 	}
 
-	const { rizom, locale } = event.locals;
+	const { rime, locale } = event.locals;
 
 	async function getRessource(slug: PrototypeSlug) {
 		switch (true) {
-			case rizom.config.isCollection(slug):
-				return await rizom.collection(slug as CollectionSlug).findById({
+			case rime.config.isCollection(slug):
+				return await rime.collection(slug as CollectionSlug).findById({
 					id: link.value || '',
 					locale: locale,
 					select: ['url']
 				});
-			case rizom.config.isArea(slug):
-				return await rizom.area(slug as AreaSlug).find({
+			case rime.config.isArea(slug):
+				return await rime.area(slug as AreaSlug).find({
 					locale: locale,
 					select: ['url']
 				});
@@ -62,7 +62,7 @@ export const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { e
 		return link;
 	}
 
-	if (error instanceof RizomError && error.code === RizomError.NOT_FOUND) {
+	if (error instanceof RimeError && error.code === RimeError.NOT_FOUND) {
 		logger.warn(`Link field : ${link.type} ${link.value || '?'} not found`);
 		return link;
 	}

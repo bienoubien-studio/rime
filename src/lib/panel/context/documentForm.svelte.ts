@@ -765,7 +765,7 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	};
 }
 
-const FORM_KEY = 'rizom.form';
+const FORM_KEY = 'rime.form';
 
 export function setDocumentFormContext<T extends GenericDoc>(args: Args<T>) {
 	const store = createDocumentFormState(args);

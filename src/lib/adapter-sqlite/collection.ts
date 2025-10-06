@@ -1,16 +1,16 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
+import { withDirectoriesSuffix, withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { trycatchSync } from '$lib/util/function.js';
-import { withDirectoriesSuffix, withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { and, desc, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import type { ConfigInterface } from '../core/config/interface.server.js';
-import { RizomError } from '../core/errors/index.js';
+import { RimeError } from '../core/errors/index.js';
 import { buildOrderByParam } from './orderBy.js';
 import * as adapterUtil from './util.js';
 import { buildWhereParam } from './where.js';
@@ -47,7 +47,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			});
 
 			if (!doc) {
-				throw new RizomError(RizomError.NOT_FOUND);
+				throw new RimeError(RimeError.NOT_FOUND);
 			}
 
 			return doc;
@@ -83,7 +83,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Throw 404 if not found
 			// If we found the document but there are no versions, that's also a 404
 			if (!doc || !doc[versionsTable] || doc[versionsTable].length === 0) {
-				throw new RizomError(RizomError.NOT_FOUND);
+				throw new RimeError(RimeError.NOT_FOUND);
 			}
 
 			return adapterUtil.mergeRawDocumentWithVersion(doc, versionsTable);
@@ -97,7 +97,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	const deleteById: DeleteById = async ({ slug, id }) => {
 		const docs = await db.delete(tables[slug]).where(eq(tables[slug].id, id)).returning();
 		if (!docs || !Array.isArray(docs) || !docs.length) {
-			throw new RizomError(RizomError.NOT_FOUND);
+			throw new RimeError(RimeError.NOT_FOUND);
 		}
 		return docs[0].id;
 	};
@@ -116,7 +116,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 			// Get path segments
 			const [error, segments] = trycatchSync(() => getSegments(data._path));
 			if (error) {
-				throw new RizomError(RizomError.BAD_REQUEST, error.message);
+				throw new RimeError(RimeError.BAD_REQUEST, error.message);
 			}
 			const { path, name, parent } = segments;
 			// set the normailzed path for the reference in the upload table
@@ -267,7 +267,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Upadte specific version
 			if (!versionId) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @adapter-update-collection');
+				throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionId @adapter-update-collection');
 			}
 
 			// Extract hierarchy fields (_parent, _position) from data
@@ -333,7 +333,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 
 			return { id: data.id || id };
 		} else {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'Unhandled version operation');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'Unhandled version operation');
 		}
 	};
 
@@ -446,7 +446,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 						// In case there is no version data, for exemple when a query
 						// forwarded to the versions table returns no result
 						// catch the error and return false
-						if (err instanceof RizomError && err.code === RizomError.NOT_FOUND) {
+						if (err instanceof RimeError && err.code === RimeError.NOT_FOUND) {
 							return false;
 						}
 						// Else throw the error

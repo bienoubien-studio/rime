@@ -1,5 +1,5 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -13,7 +13,7 @@ type DeleteArgs = {
 
 export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promise<string> => {
 	const { event, id, config, isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {
 		params: { id },
@@ -30,9 +30,9 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		context = result.context;
 	}
 
-	const document = (await rizom.adapter.collection.findById({ slug: config.slug, id, draft: true })) as T;
+	const document = (await rime.adapter.collection.findById({ slug: config.slug, id, draft: true })) as T;
 	if (!document) {
-		throw new RizomError(RizomError.NOT_FOUND);
+		throw new RimeError(RimeError.NOT_FOUND);
 	}
 
 	for (const hook of config.$hooks?.beforeDelete || []) {
@@ -46,7 +46,7 @@ export const deleteById = async <T extends GenericDoc>(args: DeleteArgs): Promis
 		context = result.context;
 	}
 
-	await rizom.adapter.collection.deleteById({ slug: config.slug, id });
+	await rime.adapter.collection.deleteById({ slug: config.slug, id });
 
 	for (const hook of config.$hooks?.afterDelete || []) {
 		const result = await hook({

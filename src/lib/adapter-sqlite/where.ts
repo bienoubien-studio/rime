@@ -1,9 +1,9 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { hasVersionsSuffix, withLocalesSuffix } from '$lib/core/naming.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
-import { rizom, type GetRegisterType } from '$lib/index.js';
+import { rime, type GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
 import * as drizzleORM from 'drizzle-orm';
 import { and, eq, getTableColumns, inArray, or } from 'drizzle-orm';
@@ -20,12 +20,12 @@ type BuildWhereArgs = {
 };
 
 export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
-	const table = rizom.adapter.getTable(slug);
+	const table = rime.adapter.getTable(slug);
 	const tableNameLocales = withLocalesSuffix(slug);
-	const tableLocales = rizom.adapter.getTable(tableNameLocales);
+	const tableLocales = rime.adapter.getTable(tableNameLocales);
 
 	const localizedColumns =
-		locale && tableNameLocales in rizom.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
+		locale && tableNameLocales in rime.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
@@ -56,7 +56,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		const [operator, rawValue] = Object.entries(operatorObj)[0];
 
 		if (!isOperator(operator)) {
-			throw new RizomError(RizomError.INVALID_DATA, operator + 'is not supported');
+			throw new RimeError(RimeError.INVALID_DATA, operator + 'is not supported');
 		}
 
 		// get the correct Drizzle operator
@@ -72,7 +72,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		if (hasVersionsSuffix(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
-			const rootTable = rizom.adapter.getTable(rootSlug);
+			const rootTable = rime.adapter.getTable(rootSlug);
 
 			// Query the root table for the hierarchy field
 			return inArray(
@@ -99,7 +99,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		// Look for a relation field
 		// Get document config
-		const documentConfig = rizom.config.getBySlug(slug);
+		const documentConfig = rime.config.getBySlug(slug);
 		if (!documentConfig) {
 			throw new Error(`${slug} not found (should never happen)`);
 		}
@@ -126,7 +126,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
 		const relationTableName = `${slug}Rels`;
-		const relationTable = rizom.adapter.getTable(relationTableName);
+		const relationTable = rime.adapter.getTable(relationTableName);
 		const conditions = [fn(relationTable[`${to}Id`], value)];
 
 		if (localized) {

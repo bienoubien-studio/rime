@@ -1,7 +1,7 @@
-import { RizomError } from '$lib/core/errors/index.js';
-import { isFile } from '$lib/util/file.js';
 import { jsonFileToFile } from '$lib/core/collections/upload/util/converter.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
+import { isFile } from '$lib/util/file.js';
 
 /**
  * Hook executed before save/update operations to convert base64 encoded files to File objects.
@@ -15,7 +15,7 @@ import { Hooks } from '$lib/core/operations/hooks/index.server.js';
  * @param args Hook arguments containing the document to process
  * @returns Updated args object with converted file data
  */
-export const castBase64ToFile = Hooks.beforeUpsert<'upload'>( async (args) => {
+export const castBase64ToFile = Hooks.beforeUpsert<'upload'>(async (args) => {
 	let data = args.data;
 	if (data?.file && !isFile(data.file)) {
 		try {
@@ -28,7 +28,7 @@ export const castBase64ToFile = Hooks.beforeUpsert<'upload'>( async (args) => {
 				mimeType: data.mimeType || mimeType
 			};
 		} catch {
-			throw new RizomError(RizomError.UPLOAD, 'Unable to process file');
+			throw new RimeError(RimeError.UPLOAD, 'Unable to process file');
 		}
 	}
 	return { ...args, data };

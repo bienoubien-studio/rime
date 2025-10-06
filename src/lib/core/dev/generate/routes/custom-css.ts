@@ -7,7 +7,7 @@ import fs from 'fs';
  * @param cssPath Custom CSS path from config
  * @example
  * // Inject custom CSS into a layout file
- * const layoutPath = '/path/to/src/routes/(rizom)/+layout.svelte';
+ * const layoutPath = '/path/to/src/routes/(rime)/+layout.svelte';
  * const cssPath = '/assets/custom-styles.css';
  * injectCustomCSS(layoutPath, cssPath);
  * // This will add a <svelte:head> tag with a link to the CSS file
@@ -62,7 +62,7 @@ export function injectCustomCSS(layoutFilePath: string, cssPath: string): void {
  * @param layoutFilePath Path to the layout file
  * @example
  * // Remove custom CSS from a layout file
- * const layoutPath = '/path/to/src/routes/(rizom)/+layout.svelte';
+ * const layoutPath = '/path/to/src/routes/(rime)/+layout.svelte';
  * removeCustomCSS(layoutPath);
  * // This will remove any <svelte:head> tag and its contents from the layout file
  */

@@ -7,7 +7,7 @@
 
 	type TableColumn = Partial<FormField> & { name: string; label?: string };
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 	let gridTemplateColumn = $state('grid-template-columns: 2fr repeat(1, minmax(0, 1fr));');
 
 	$effect(() => {

@@ -12,7 +12,7 @@
 		topLeft?: Snippet;
 		topRight?: Snippet;
 	};
-	const { children, bottomRight, bottomLeft, topRight, topLeft, title, class: className }: Props = $props();
+	const { children, bottomRight, bottomLeft, topRight, topLeft, title }: Props = $props();
 
 	//
 </script>

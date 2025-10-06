@@ -1,7 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { getConfigContext } from './config.svelte';
 
-const LOCALE_KEY = Symbol('rizom.locale');
+const LOCALE_KEY = Symbol('rime.locale');
 
 function createStore(initial?: string) {
 	let code = $state<string>();

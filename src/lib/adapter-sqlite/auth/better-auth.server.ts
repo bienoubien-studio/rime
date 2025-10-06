@@ -107,7 +107,7 @@ const configurePlugins = (configInterface: ConfigInterface) => {
 				}
 				mailer.sendMail({
 					to: email,
-					subject: 'Rizom signin link',
+					subject: 'Rime signin link',
 					text: `click this link to signin ${url}`
 				});
 			}

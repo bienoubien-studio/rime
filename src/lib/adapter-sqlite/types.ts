@@ -1,5 +1,5 @@
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GetRegisterType } from 'rizom';
+import type { GetRegisterType } from 'rime';
 import type { PrototypeSlug } from '../types.js';
 import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
 import type { ColumnBaseConfig, ColumnDataType } from 'drizzle-orm';

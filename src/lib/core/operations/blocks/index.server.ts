@@ -1,8 +1,8 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import type { GenericBlock } from '$lib/core/types/doc.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
+import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 import { defineBlocksDiff } from './diff.server.js';
@@ -30,7 +30,7 @@ export const saveBlocks = async (args: {
 	const { locale } = context.params;
 	const { originalDoc: original, configMap, originalConfigMap } = context;
 
-	if (!configMap || !ownerId) throw new RizomError(RizomError.OPERATION_ERROR, '@saveBlocks');
+	if (!configMap || !ownerId) throw new RimeError(RimeError.OPERATION_ERROR, '@saveBlocks');
 
 	// Determine the correct table name based on versioning configuration
 	const parentTable = config.versions ? withVersionsSuffix(config.slug) : config.slug;
@@ -45,7 +45,7 @@ export const saveBlocks = async (args: {
 
 	// If we have an original document (i.e., this is an update operation)
 	if (original) {
-		if (!originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing original');
+		if (!originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing original');
 
 		// Extract blocks from the original document using its config
 		const blocks = extractBlocks({

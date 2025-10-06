@@ -4,7 +4,7 @@ import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import { PARAMS } from '$lib/core/constant.js';
 
 export async function liveLoad(event: ServerLoadEvent) {
-	const { user, rizom } = event.locals;
+	const { user, rime } = event.locals;
 	event.depends('data:src');
 	const params = event.url.searchParams;
 
@@ -20,11 +20,11 @@ export async function liveLoad(event: ServerLoadEvent) {
 	if (user && src && slug && id) {
 		const output = { user, src: src, slug, locale };
 
-		if (rizom.config.isCollection(slug)) {
-			const doc = await rizom.collection(slug).findById({ id, locale, versionId });
+		if (rime.config.isCollection(slug)) {
+			const doc = await rime.collection(slug).findById({ id, locale, versionId });
 			return { ...output, doc };
 		} else {
-			const doc = await rizom.area(slug).find({ locale, versionId });
+			const doc = await rime.area(slug).find({ locale, versionId });
 			return { ...output, doc };
 		}
 	} else {

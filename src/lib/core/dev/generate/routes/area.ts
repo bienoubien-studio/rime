@@ -3,7 +3,7 @@ import { TScastVersionSlug, type Routes } from './util.js';
 
 /**
  * Area templates defined outside of the routes object
- * (rizom)/panel/{area.kebab}/+page.svelte
+ * (rime)/panel/{area.kebab}/+page.svelte
  */
 const pageTemplate = (): string => `
 <script>
@@ -14,7 +14,7 @@ const pageTemplate = (): string => `
 
 /**
  * Page server template for area
- * (rizom)/panel/{area.kebab}/+page.server.ts
+ * (rime)/panel/{area.kebab}/+page.server.ts
  */
 const pageServerTemplate = (slug: string): string => `
 import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
@@ -32,7 +32,7 @@ export const actions = pagesActions.area('${slug}')
 
 /**
  * API collection list operations
- * (rizom)/api/{collection.slug}/+server.ts
+ * (rime)/api/{collection.slug}/+server.ts
  */
 const apiAreaServer = (slug: string): string => `
 import * as api from '${PACKAGE_NAME}/api';
@@ -43,7 +43,7 @@ export const PATCH = api.area.update(${TScastVersionSlug(slug)})
 
 /**
  * Document page versions template
- * (rizom)/panel/{collection.slug}/[id]/versions/+page.svelte
+ * (rime)/panel/{collection.slug}/[id]/versions/+page.svelte
  */
 const pageVersions = () => `
 <script lang="ts">
@@ -57,21 +57,21 @@ const pageVersions = () => `
  * Area routes dictionary defining route patterns and their corresponding templates
  */
 export const areaRoutes: Routes = {
-	'(rizom)/panel/{area.kebab}/': {
+	'(rime)/panel/{area.kebab}/': {
 		page: pageTemplate,
 		pageServer: pageServerTemplate
 	}
 };
 
 export const areaVersionsPanelRoutes: Routes = {
-	'(rizom)/panel/{area.kebab}/versions': {
+	'(rime)/panel/{area.kebab}/versions': {
 		page: pageVersions,
 		pageServer: pageServerTemplateVersions
 	}
 };
 
 export const areaAPIRoutes: Routes = {
-	'(rizom)/api/{area.kebab}/': {
+	'(rime)/api/{area.kebab}/': {
 		server: apiAreaServer
 	}
 };

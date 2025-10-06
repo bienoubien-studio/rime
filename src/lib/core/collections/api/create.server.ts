@@ -8,9 +8,9 @@ import { isAuthConfig } from '../auth/util.js';
 export default function (slug: CollectionSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 
-		const collection = rizom.collection(slug);
+		const collection = rime.collection(slug);
 		const [extractError, data] = await trycatch(() => extractData(event.request));
 		if (extractError) {
 			return handleError(extractError, { context: 'api' });
@@ -22,10 +22,10 @@ export default function (slug: CollectionSlug) {
 		}
 
 		if (data.locale) {
-			rizom.setLocale(data.locale);
+			rime.setLocale(data.locale);
 		}
 
-		const [error, document] = await trycatch(() => collection.create({ data, locale: rizom.getLocale() }));
+		const [error, document] = await trycatch(() => collection.create({ data, locale: rime.getLocale() }));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

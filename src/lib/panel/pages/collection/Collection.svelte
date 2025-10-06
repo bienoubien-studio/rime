@@ -47,7 +47,7 @@
 		key: slug
 	});
 
-	setContext('rizom.collectionList', collection);
+	setContext('rime.collectionList', collection);
 
 	$effect(() => {
 		collection.upload = {

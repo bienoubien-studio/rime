@@ -1,5 +1,5 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
@@ -22,7 +22,7 @@ type Args<T> = {
 
 export const create = async <T extends RegisterCollection[CollectionSlug]>(args: Args<T>) => {
 	const { config, event, locale, isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let data = args.data;
 
@@ -50,11 +50,11 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		data = result.data as Partial<T>;
 	}
 
-	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing config map @create');
+	if (!context.configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing config map @create');
 
 	const incomingPaths = Object.keys(context.configMap);
 
-	const created = await rizom.adapter.collection.insert({
+	const created = await rime.adapter.collection.insert({
 		slug: config.slug,
 		data,
 		locale
@@ -66,7 +66,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		ownerId: created.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -75,7 +75,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		ownerId: created.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -84,7 +84,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		configMap: context.configMap,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config,
 		locale,
 		blocksDiff,
@@ -96,29 +96,29 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 	 */
 	if (config.auth && event.locals.isAutoSignIn) {
 		if (typeof data.name !== 'string' || typeof data.email !== 'string' || typeof args.data.authUserId !== 'string') {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'unable to signin user');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'unable to signin user');
 		}
 
-		event.locals.user = await rizom.auth.getUserAttributes({
+		event.locals.user = await rime.auth.getUserAttributes({
 			authUserId: args.data.authUserId,
 			slug: config.slug
 		});
 	}
 
 	// Use the document ID to find the created document
-	let document = (await rizom
+	let document = (await rime
 		.collection(config.slug)
 		.findById({ id: created.id, locale, versionId: created.versionId })) as T;
 
 	if (locale) {
-		const locales = event.locals.rizom.config.getLocalesCodes();
+		const locales = event.locals.rime.config.getLocalesCodes();
 
 		if (locales.length) {
 			// Get locales
 			const otherLocales = locales.filter((code) => code !== locale);
 			for (const otherLocale of otherLocales) {
-				rizom.setLocale(otherLocale);
-				await rizom
+				rime.setLocale(otherLocale);
+				await rime
 					.collection(config.slug)
 					.system()
 					.updateById({
@@ -131,7 +131,7 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 			}
 		}
 
-		rizom.setLocale(locale);
+		rime.setLocale(locale);
 	}
 
 	for (const hook of config.$hooks?.afterCreate || []) {

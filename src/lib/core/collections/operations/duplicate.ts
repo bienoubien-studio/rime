@@ -20,7 +20,7 @@ type DeleteArgs = {
 
 export const duplicate = async (args: DeleteArgs): Promise<string> => {
 	const { config, event, id } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	/**
 	 * Set a copy title, ex: Current Title (copy)
@@ -49,11 +49,11 @@ export const duplicate = async (args: DeleteArgs): Promise<string> => {
 	// Store currrent locale
 	const currentLocale = event.locals.locale;
 	// Get the collection api
-	const collection = rizom.collection(config.slug);
+	const collection = rime.collection(config.slug);
 	// Get the defaultLocale to copy first from the default locale
-	const defaultLocale = rizom.config.getDefaultLocale();
+	const defaultLocale = rime.config.getDefaultLocale();
 	// Set locale to the default one
-	if (defaultLocale) rizom.setLocale(defaultLocale);
+	if (defaultLocale) rime.setLocale(defaultLocale);
 
 	// Fetch document to copy
 	const document = await collection.findById({ id, locale: defaultLocale });
@@ -64,12 +64,12 @@ export const duplicate = async (args: DeleteArgs): Promise<string> => {
 
 	// Now update the created document with other locales data
 	// Get all locales
-	const allLocales = rizom.config.getLocalesCodes();
+	const allLocales = rime.config.getLocalesCodes();
 	const otherLocales = allLocales.filter((l) => l !== defaultLocale);
 
 	for (const locale of otherLocales) {
 		// set the event locale for next operations
-		rizom.setLocale(locale);
+		rime.setLocale(locale);
 
 		// Get localized document
 		let source = await collection.findById({ id, locale, draft: true });
@@ -124,7 +124,7 @@ export const duplicate = async (args: DeleteArgs): Promise<string> => {
 		await collection.updateById({ id: newDocument.id, data, locale });
 	}
 	// Reset event locale
-	rizom.setLocale(currentLocale);
+	rime.setLocale(currentLocale);
 
 	return newDocument.id;
 };

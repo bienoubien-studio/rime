@@ -5,7 +5,7 @@
 	import { ListChecks, SquareCheck, SquareMinus, Trash } from '@lucide/svelte';
 	import { getContext } from 'svelte';
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 
 	const selectedCount = $derived(collection.selected.length);
 	const pluralSuffix = $derived(selectedCount > 1 ? 's' : '');

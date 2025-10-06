@@ -1,5 +1,5 @@
 import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
 import { isObjectLiteral, omit, pick } from '$lib/util/object.js';
@@ -164,7 +164,7 @@ export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: strin
 	// Check if we have version data
 	// Note: Versions data can be empty when a query returns no result
 	if (!doc[versionTableName] || doc[versionTableName].length === 0) {
-		throw new RizomError(RizomError.NOT_FOUND);
+		throw new RimeError(RimeError.NOT_FOUND);
 	}
 
 	const versionData = doc[versionTableName][0];
@@ -233,16 +233,16 @@ export function normalizeQuery(incomingQuery: OperationQuery): ParsedOperationQu
 		try {
 			query = qs.parse(incomingQuery);
 		} catch (err: any) {
-			throw new RizomError(RizomError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
+			throw new RimeError(RimeError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
 		}
 	} else {
 		if (!isObjectLiteral(incomingQuery)) {
-			throw new RizomError(RizomError.INVALID_DATA, 'Query is not an object');
+			throw new RimeError(RimeError.INVALID_DATA, 'Query is not an object');
 		}
 		query = incomingQuery;
 	}
 	if (!query.where) {
-		throw new RizomError(RizomError.INVALID_DATA, 'Query must have a root where property');
+		throw new RimeError(RimeError.INVALID_DATA, 'Query must have a root where property');
 	}
 	return query as ParsedOperationQuery;
 }

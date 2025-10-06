@@ -15,6 +15,6 @@ import type { WithUpload } from '../util/config.js';
 export const cleanUpFiles = Hooks.beforeDelete(async (args) => {
 	const config = args.config as WithUpload<CompiledCollection>;
 	const id = args.context.params.id || '';
-	await cleanupStoredFiles({ config, rizom: args.event.locals.rizom, id });
+	await cleanupStoredFiles({ config, rime: args.event.locals.rime, id });
 	return args;
 });

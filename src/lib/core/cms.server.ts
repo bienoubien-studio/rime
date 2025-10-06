@@ -7,7 +7,7 @@ import { randomId } from '../util/random.js';
 import type { AsyncReturnType } from '../util/types.js';
 import { createConfigInterface } from './config/interface.server.js';
 import { hasRunInitCommand } from './dev/cli/util.server.js';
-import { RizomError } from './errors/index.js';
+import { RimeError } from './errors/index.js';
 import i18n from './i18n/index.js';
 import { logger } from './logger/index.server.js';
 
@@ -40,13 +40,13 @@ function createCMS() {
 	/**
 	 * Initializes the CMS with configuration and database schema
 	 * @param options Initialization options containing config and schema
-	 * @throws {RizomError} If required files are missing in development mode
+	 * @throws {RimeError} If required files are missing in development mode
 	 */
 	const init = async ({ config: rawConfig, schema }: InitArgs) => {
 		initialized = false;
 
 		if (dev && !hasRunInitCommand()) {
-			throw new RizomError(RizomError.INIT, 'Missing required files, run `npx rizom init`');
+			throw new RimeError(RimeError.INIT, 'Missing required files, run `npx rime init`');
 		}
 
 		// Initialize config
@@ -114,11 +114,11 @@ let instance: CMS;
  */
 const getInstance = () => {
 	if (instance) {
-		logger.info('import rizom instance ' + instance.key);
+		logger.info('import rime instance ' + instance.key);
 		return instance;
 	}
 	console.log('');
-	logger.info('create rizom instance');
+	logger.info('create rime instance');
 	instance = createCMS();
 	return instance;
 };

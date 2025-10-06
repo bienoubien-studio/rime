@@ -1,5 +1,5 @@
 import type { CompiledArea } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { AreaSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { DeepPartial } from '$lib/util/types.js';
@@ -21,7 +21,7 @@ type UpdateArgs<T> = {
 export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs<T>) => {
 	//
 	const { config, event, locale, draft, isSystemOperation, versionId } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let data = args.data;
 
@@ -56,15 +56,15 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		data = result.data as Partial<T>;
 	}
 
-	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @update');
-	if (!context.originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalConfigMap @update');
-	if (!context.originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @update');
-	if (!context.versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionOperation @update');
-	if (!context.params.versionId) throw new RizomError(RizomError.OPERATION_ERROR, 'missing versionId @update');
+	if (!context.configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @update');
+	if (!context.originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalConfigMap @update');
+	if (!context.originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @update');
+	if (!context.versionOperation) throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionOperation @update');
+	if (!context.params.versionId) throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionId @update');
 
 	const incomingPaths = Object.keys(context.configMap);
 
-	await rizom.adapter.area.update({
+	await rime.adapter.area.update({
 		slug: config.slug,
 		data,
 		locale,
@@ -77,7 +77,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		ownerId: context.params.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -86,7 +86,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		ownerId: context.params.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -95,7 +95,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 		configMap: context.configMap,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config,
 		locale,
 		blocksDiff,
@@ -103,7 +103,7 @@ export const update = async <T extends GenericDoc = GenericDoc>(args: UpdateArgs
 	});
 
 	// Get the updated area with the correct version ID
-	const document = await rizom.area(config.slug).find({
+	const document = await rime.area(config.slug).find({
 		locale,
 		versionId: versionId,
 		draft: true

@@ -1,7 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 
 export const handler: Handle = async ({ event, resolve }) => {
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	event.locals.cacheEnabled = false;
 
@@ -11,7 +11,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 	}
 
 	// Do not cache if env var is not 'true'
-	if (!(process.env.RIZOM_CACHE_ENABLED === 'true')) {
+	if (!(process.env.RIME_CACHE_ENABLED === 'true')) {
 		return await resolve(event);
 	}
 
@@ -20,7 +20,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 		return await resolve(event);
 	}
 
-	if (!rizom.cache.isEnabled(event)) {
+	if (!rime.cache.isEnabled(event)) {
 		return await resolve(event);
 	}
 

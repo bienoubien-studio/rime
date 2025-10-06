@@ -1,7 +1,7 @@
-// /Users/ai/Dev/rizom/src/lib/fields/rich-text/core/features/bold.ts
+// /Users/ai/Dev/rime/src/lib/fields/rich-text/core/features/bold.ts
 import { Text } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 import Paragraph from '@tiptap/extension-paragraph';
+import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 
 const paragraphFeatureNode: RichTextFeatureNode = {
 	name: 'p',

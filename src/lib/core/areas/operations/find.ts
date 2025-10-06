@@ -40,7 +40,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 		context = result.context;
 	}
 
-	const documentRaw = await event.locals.rizom.adapter.area.get({
+	const documentRaw = await event.locals.rime.adapter.area.get({
 		slug: config.slug,
 		locale,
 		select,
@@ -50,7 +50,7 @@ export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T> => 
 
 	const hasSelect = select && Array.isArray(select) && !!select.length;
 
-	let document = await event.locals.rizom.adapter.transform.doc({
+	let document = await event.locals.rime.adapter.transform.doc({
 		doc: documentRaw,
 		slug: config.slug,
 		locale,

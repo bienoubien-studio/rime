@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { trycatch } from '$lib/util/function.js';
 import { eq } from 'drizzle-orm';
@@ -10,12 +10,12 @@ export const prepareDirectoryChildren = Hooks.beforeUpdate<'directory'>(async (a
 	const { event, config, context } = args;
 	const originalDoc = context.originalDoc;
 
-	if (!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @prepareDirectoryChildren');
+	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @prepareDirectoryChildren');
 
-	const db = event.locals.rizom.adapter.db;
+	const db = event.locals.rime.adapter.db;
 
 	if (data.id) {
-		const table = event.locals.rizom.adapter.getTable(config.slug);
+		const table = event.locals.rime.adapter.getTable(config.slug);
 
 		//@ts-ignore
 		const children = await db.query[config.slug].findMany({
@@ -38,13 +38,13 @@ export const prepareDirectoryChildren = Hooks.beforeUpdate<'directory'>(async (a
 
 export const updateDirectoryChildren = Hooks.afterUpdate<'directory'>(async (args) => {
 	const { event, config } = args;
-	const collection = event.locals.rizom.collection(config.slug);
+	const collection = event.locals.rime.collection(config.slug);
 	const updates: Update[] = args.context.directoriesUpdates || [];
 
 	for (const update of updates) {
 		const [error] = await trycatch(() => collection.updateById(update));
 		if (error) {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'Error when updating child directories');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'Error when updating child directories');
 		}
 	}
 

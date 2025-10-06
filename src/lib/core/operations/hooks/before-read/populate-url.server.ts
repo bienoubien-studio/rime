@@ -45,7 +45,7 @@ export const populateURL = Hooks.beforeRead<'generic'>(async (args) => {
 			while (parent && depth < MAX_DEPTH) {
 				depth++;
 
-				const docs = await event.locals.rizom.collection(config.slug as any).find({
+				const docs = await event.locals.rime.collection(config.slug as any).find({
 					query: `where[id][equals]=${parent}`,
 					select: [attributePath, '_parent'],
 					locale
@@ -91,7 +91,7 @@ export const populateURL = Hooks.beforeRead<'generic'>(async (args) => {
 		// Add the url if successfully generated
 		if (url) {
 			if (args.doc.url !== url) {
-				args.event.locals.rizom.adapter.updateDocumentUrl(url, {
+				args.event.locals.rime.adapter.updateDocumentUrl(url, {
 					id: args.doc.id,
 					versionId: args.doc.versionId,
 					config,
@@ -103,7 +103,7 @@ export const populateURL = Hooks.beforeRead<'generic'>(async (args) => {
 
 		// Add the live url if needed
 		if (config.live && event.locals.user && url) {
-			args.doc._live = `${process.env.PUBLIC_RIZOM_URL}/live?src=${url}&slug=${config.slug}&id=${args.doc.id}`;
+			args.doc._live = `${process.env.PUBLIC_RIME_URL}/live?src=${url}&slug=${config.slug}&id=${args.doc.id}`;
 			args.doc._live += locale ? `&locale=${locale}` : '';
 		}
 	}

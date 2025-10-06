@@ -1,5 +1,5 @@
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import { panelUrl } from '$lib/panel/util/url.js';
@@ -42,7 +42,7 @@ export function getSegments(path?: UploadPath | null): {
 	// Validate and normalize the path
 	const isValid = validatePath(safePath);
 	if (typeof isValid === 'string') {
-		throw new RizomError(RizomError.BAD_REQUEST, isValid);
+		throw new RimeError(RimeError.BAD_REQUEST, isValid);
 	}
 
 	const segments = safePath

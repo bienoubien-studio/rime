@@ -1,11 +1,11 @@
-import { NodeView, Editor, getRenderedAttributes } from '@tiptap/core';
-import type { NodeViewRenderer, NodeViewProps, NodeViewRendererOptions, DecorationWithType } from '@tiptap/core';
-import type { Decoration, DecorationSource } from '@tiptap/pm/view';
+import type { DecorationWithType, NodeViewProps, NodeViewRenderer, NodeViewRendererOptions } from '@tiptap/core';
+import { Editor, getRenderedAttributes, NodeView } from '@tiptap/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { type Component, mount } from 'svelte';
-import SvelteRenderer from './renderer.js';
-import { TIPTAP_NODE_VIEW } from './constant.js';
 import { NodeSelection } from '@tiptap/pm/state';
+import type { Decoration, DecorationSource } from '@tiptap/pm/view';
+import { type Component, mount } from 'svelte';
+import { TIPTAP_NODE_VIEW } from './constant.js';
+import SvelteRenderer from './renderer.js';
 
 interface RendererUpdateProps {
 	oldNode: ProseMirrorNode;
@@ -78,7 +78,7 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 
 		target.addEventListener('click', () => {
 			// Create a NodeSelection for this node
-			const nodeSelection = NodeSelection.create(this.editor.state.doc, this.getPos());
+			const nodeSelection = NodeSelection.create(this.editor.state.doc, this.getPos() || 0);
 			// Dispatch a transaction to update the selection
 			this.editor.view.dispatch(this.editor.state.tr.setSelection(nodeSelection));
 			// Focus the editor

@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { FormField } from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -78,7 +78,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * @returns A blank document with default values
 	 *
 	 * @example
-	 * const emptyDoc = rizom.collection('posts').blank();
+	 * const emptyDoc = rime.collection('posts').blank();
 	 */
 	blank(): Doc {
 		if (isAuthConfig(this.config)) {
@@ -110,7 +110,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * Creates a new document in the collection
 	 *
 	 * @example
-	 * const post = await rizom.collection('posts').create({
+	 * const post = await rime.collection('posts').create({
 	 *   data: { title: 'Hello World', content: 'My first post' },
 	 *   locale: 'en'
 	 * });
@@ -130,7 +130,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * Duplicate a document in the collection
 	 *
 	 * @example
-	 * const post = await rizom.collection('posts').duplicate({
+	 * const post = await rime.collection('posts').duplicate({
 	 *   id: '1234'
 	 * });
 	 */
@@ -148,7 +148,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 *
 	 * @example
 	 * // Find published posts sorted by creation date
-	 * const posts = await rizom.collection('posts').find({
+	 * const posts = await rime.collection('posts').find({
 	 *   query: { published: true },
 	 *   sort: '-createdAt',
 	 *   limit: 10
@@ -156,7 +156,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
 		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 
 		const params = {
 			select: args.select,
@@ -173,7 +173,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 
 		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
-			const key = this.#event.locals.rizom.cache.createKey('collection.find', {
+			const key = this.#event.locals.rime.cache.createKey('collection.find', {
 				slug: this.config.slug,
 				select: args.select,
 				userEmail: this.#event.locals.user?.email,
@@ -186,7 +186,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				draft,
 				query
 			});
-			return this.#event.locals.rizom.cache.get(key, () => find<Doc>(params));
+			return this.#event.locals.rime.cache.get(key, () => find<Doc>(params));
 		}
 
 		return find<Doc>(params);
@@ -202,17 +202,17 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 *
 	 * @example
 	 * // Get published version
-	 * const post = await rizom.collection('posts').findById({ id: '12345' });
+	 * const post = await rime.collection('posts').findById({ id: '12345' });
 	 *
 	 * // Get specific version
-	 * const post = await rizom.collection('posts').findById({
+	 * const post = await rime.collection('posts').findById({
 	 *   id: '12345',
 	 *   versionId: 'v2',
 	 *   locale: 'en'
 	 * });
 	 *
 	 * // Get latest draft version
-	 * const post = await rizom.collection('posts').findById({
+	 * const post = await rime.collection('posts').findById({
 	 *   id: '12345',
 	 *   draft: true
 	 * });
@@ -220,10 +220,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	findById(args: APIMethodArgs<typeof findById>): Promise<Doc> {
 		const { id, versionId, locale, draft, depth = 0 } = args;
 
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 
 		if (!id) {
-			throw new RizomError(RizomError.NOT_FOUND);
+			throw new RimeError(RimeError.NOT_FOUND);
 		}
 		const params = {
 			id,
@@ -237,7 +237,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 		};
 
 		if (this.#event.locals.cacheEnabled && !this.isSystemOperation) {
-			const key = this.#event.locals.rizom.cache.createKey('collection.findById', {
+			const key = this.#event.locals.rime.cache.createKey('collection.findById', {
 				slug: this.config.slug,
 				userEmail: this.#event.locals.user?.email,
 				userRoles: this.#event.locals.user?.roles,
@@ -247,7 +247,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 				draft,
 				locale
 			});
-			return this.#event.locals.rizom.cache.get(key, () => findById<Doc>(params));
+			return this.#event.locals.rime.cache.get(key, () => findById<Doc>(params));
 		}
 
 		return findById<Doc>(params);
@@ -268,14 +268,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 *
 	 * @example
 	 * // Update published version
-	 * const post = await rizom.collection('posts').updateById({
+	 * const post = await rime.collection('posts').updateById({
 	 *   id: '12345',
 	 *   data: { title: 'New title' },
 	 *   locale: 'en'
 	 * });
 	 *
 	 * // Update specific version
-	 * const post = await rizom.collection('posts').updateById({
+	 * const post = await rime.collection('posts').updateById({
 	 *   id: '12345',
 	 *   versionId: 'v2',
 	 *   data: { title: 'New title' },
@@ -283,14 +283,14 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 *
 	 * // Create or update draft version
-	 * const post = await rizom.collection('posts').updateById({
+	 * const post = await rime.collection('posts').updateById({
 	 *   id: '12345',
 	 *   data: { title: 'Draft title' },
 	 *   draft: true
 	 * });
 	 */
 	updateById(args: APIMethodArgs<typeof updateById>): Promise<Doc> {
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 		return updateById<Doc>({
 			...args,
 			locale: this.#fallbackLocale(args.locale),
@@ -304,10 +304,10 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * Deletes a document in the collection by ID
 	 *
 	 * @example
-	 * const post = await rizom.collection('posts').deleteById('12345');
+	 * const post = await rime.collection('posts').deleteById('12345');
 	 */
 	deleteById = ({ id }: APIMethodArgs<typeof deleteById>) => {
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 		return deleteById({
 			id,
 			config: this.config,
@@ -320,13 +320,13 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * Deletes multiple documents in the collection
 	 *
 	 * @example
-	 * const posts = await rizom.collection('posts').delete({
+	 * const posts = await rime.collection('posts').delete({
 	 *   query: { published: true },
 	 *   limit: 10
 	 * });
 	 */
 	delete = (args: APIMethodArgs<typeof deleteDocs>) => {
-		this.#event.locals.rizom.preventOperationLoop();
+		this.#event.locals.rime.preventOperationLoop();
 		return deleteDocs({
 			config: this.config,
 			event: this.#event,
@@ -342,4 +342,4 @@ export { CollectionInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rizom' | 'event' | 'config' | 'slug'>;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rime' | 'event' | 'config' | 'slug'>;

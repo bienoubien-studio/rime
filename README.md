@@ -1,11 +1,11 @@
-# Rizom
+# Rime
 
 Headless CMS powered by SvelteKit.
 
 > [!NOTE]
 > Not ready for production
 
-![alt backend capture](https://github.com/bienoubien-studio/rizom/blob/main/rizom.png?raw=true)
+![alt backend capture](https://github.com/bienoubien-studio/rime/blob/main/rime.png?raw=true)
 
 ## Features
 
@@ -52,26 +52,26 @@ cd my-app
 > [!NOTE]
 > Select TypeScript when prompted
 
-### 2. Install Rizom
+### 2. Install Rime
 
 ```bash
-npm install rizom sharp better-sqlite3
+npm install @bienbien/rime sharp better-sqlite3
 npm install -D drizzle-kit
-npx rizom init
+npx rime init
 ```
 
 > [!NOTE]
 > pnpm missed installation of needed dependencies @lucide/svelte and drizzle-orm
 > so you will need to install them manually
 
-The `rizom init` command will automatically:
+The `rime init` command will automatically:
 
 - Create/populate `.env` file
-- Create `src/config/rizom.config.ts` config file
+- Create `src/config/rime.config.ts` config file
 - Create a `db/` folder
 - Add a `drizzle.config.ts`
 - Create `src/hooks.server.ts` with the required initialization code
-- Add the Rizom plugin to `vite.config.ts`
+- Add the Rime plugin to `vite.config.ts`
 - Push initial schema
 
 > [!NOTE]
@@ -81,18 +81,18 @@ The `rizom init` command will automatically:
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rizom } from 'rizom/vite';
+import { rime } from 'rime/vite';
 
 export default defineConfig({
-  plugins: [rizom(), sveltekit()]
+  plugins: [rime(), sveltekit()]
 });
 ```
 
 ```typescript
 // src/hooks.server.ts (should be created)
 import { sequence } from '@sveltejs/kit/hooks';
-import { handlers } from 'rizom';
-import config from './lib/config.generated/rizom.config.server.js';
+import { handlers } from 'rime';
+import config from './lib/config.generated/rime.config.server.js';
 import * as schema from './lib/server/schema.js';
 
 export const handle = sequence(...handlers({ config, schema }));
@@ -101,16 +101,16 @@ export const handle = sequence(...handlers({ config, schema }));
 ```
 #.env
 BETTER_AUTH_SECRET=super_secret
-PUBLIC_RIZOM_URL=http://localhost:5173
+PUBLIC_RIME_URL=http://localhost:5173
 
-RIZOM_LOG_TO_FILE=true
-RIZOM_LOG_LEVEL=DEBUG
+RIME_LOG_TO_FILE=true
+RIME_LOG_LEVEL=DEBUG
 
-# RIZOM_CACHE_ENABLED=false
-# RIZOM_SMTP_USER=user@mail.com
-# RIZOM_SMTP_PASSWORD=supersecret
-# RIZOM_SMTP_HOST=smtphost.com
-# RIZOM_SMTP_PORT=465
+# RIME_CACHE_ENABLED=false
+# RIME_SMTP_USER=user@mail.com
+# RIME_SMTP_PASSWORD=supersecret
+# RIME_SMTP_HOST=smtphost.com
+# RIME_SMTP_PORT=465
 ```
 
 ### 3. Create the first admin user
@@ -128,13 +128,13 @@ curl -v POST http://localhost:5173/api/init \
 ## Configuration Example
 
 ```typescript
-// ./src/lib/config/rizom.config.ts
-import { buildConfig, Collection, Area } from '$rizom/config';
+// ./src/lib/config/rime.config.ts
+import { buildConfig, Collection, Area } from '$rime/config';
 import { Settings2 } from '@lucide/svelte';
-import { relation, link, richText, text, toggle } from 'rizom/fields';
-import { access } from "rizom/util";
+import { relation, link, richText, text, toggle } from 'rime/fields';
+import { access } from "rime/util";
 
-const Pages = Collection.config('pages', {
+const Pages = Collection.create('pages', {
   group: 'content',
   fields: [
     text('title').isTitle().required(),
@@ -148,7 +148,7 @@ const Pages = Collection.config('pages', {
   }
 };
 
-const Settings = Area.config('settings', {
+const Settings = Area.create('settings', {
   icon: Settings2,
   group: 'settings',
   fields: [
@@ -161,7 +161,7 @@ const Settings = Area.config('settings', {
   }
 };
 
-const Medias = Collection.config('medias', {
+const Medias = Collection.create('medias', {
   label: {
     singular: 'Media',
     plural: 'Medias',
@@ -203,20 +203,20 @@ export default buildConfig({
 
 ```ts
 export const load = async (event: LayoutServerLoadEvent) => {
-  const { rizom } = event.locals;
+  const { rime } = event.locals;
   // Get an Area document
-  const menu = await rizom.area('menu').find();
+  const menu = await rime.area('menu').find();
   // Get all pages documents
-  const pages = await rizom.collection('pages').findAll({ locale: 'en' });
+  const pages = await rime.collection('pages').findAll({ locale: 'en' });
   // Get a page byId
-  const home = await rizom.collection('pages').findById({ locale: 'en', id: 'some-id' });
+  const home = await rime.collection('pages').findById({ locale: 'en', id: 'some-id' });
   // Get a user with a query
-  const [user] = await rizom.collection('users').find({
+  const [user] = await rime.collection('users').find({
     query: `where[email][equals]=some@email.com` // qs query or ParsedQsQuery
   });
   // Get some config values
-  const languages = rizom.config.getLocalesCodes();
-  const collections = rizom.config.collections;
+  const languages = rime.config.getLocalesCodes();
+  const collections = rime.config.collections;
   //...
 };
 ```
@@ -234,8 +234,8 @@ For now I am using it with @svelte/adapter-node, other adapter not tested and pr
 
 With the node adapter :
 ```sh
-npx rizom build
-npx rizom build -d # to copy the database directory
+npx rime build
+npx rime build -d # to copy the database directory
 ```
 It's doing bascically `vite build` under the hood and create the polka server file inside an app directory, plus giving some info on how to run it.
 
@@ -256,7 +256,7 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 - [x] collection nested
 - [x] more better-auth integration
 - [ ] auto-saved draft
-- [ ] Put bin commands in a separate package ex: @rizom/kit
+- [ ] Put bin commands in a separate package ex: @rime/kit
 - [ ] configurable medias/config path
 
 ## Acknowledgments

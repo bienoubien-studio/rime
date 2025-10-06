@@ -83,7 +83,7 @@
 						class="rz-add-block-button__preview"
 					>
 						{#if block.block.image}
-							<img src="{env.PUBLIC_RIZOM_URL}{block.image}" alt="preview" />
+							<img src="{env.PUBLIC_RIME_URL}{block.image}" alt="preview" />
 						{:else}
 							no preview
 						{/if}

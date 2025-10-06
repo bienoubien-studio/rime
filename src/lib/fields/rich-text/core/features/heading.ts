@@ -1,7 +1,7 @@
-// /Users/ai/Dev/rizom/src/lib/fields/rich-text/core/features/heading.ts
+// /Users/ai/Dev/rime/src/lib/fields/rich-text/core/features/heading.ts
 import { Heading1Icon, Heading2Icon, Heading3Icon, Heading4Icon, Heading5Icon, Heading6Icon } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 import Heading, { type Level } from '@tiptap/extension-heading';
+import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 
 // Create the heading extension
 const headingExtension = (levels?: Level[]) =>

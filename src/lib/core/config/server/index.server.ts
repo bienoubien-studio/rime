@@ -5,7 +5,7 @@ import * as Collection from '$lib/core/collections/config/builder.server.js';
 import devCache from '$lib/core/dev/cache/index.js';
 import generateRoutes from '$lib/core/dev/generate/routes/index.js';
 import generateTypes from '$lib/core/dev/generate/types/index.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { apiInit } from '$lib/core/plugins/api-init/index.server.js';
@@ -30,20 +30,20 @@ import validate from './validate.js';
 import writeMemo from './write.js';
 
 type ConfigWithBuiltPrototypes = Omit<Config, 'collections' | 'areas'> & {
-	collections: BuiltCollection[];
-	areas: BuiltArea[];
+	collections?: BuiltCollection[];
+	areas?: BuiltArea[];
 };
 
 const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 	const icons: Dic<Component<IconProps>> = {};
 
-	const staff = Collection.config('staff', getStaffCollection(config.staff));
+	const staff = Collection.create('staff', getStaffCollection(config.staff));
 
 	// Add icons
-	for (const collection of [staff, ...config.collections]) {
+	for (const collection of [staff, ...(config.collections || [])]) {
 		icons[collection.slug] = collection.icon;
 	}
-	for (const area of config.areas) {
+	for (const area of config.areas || []) {
 		icons[area.slug] = area.icon;
 	}
 
@@ -58,7 +58,7 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 	const trustedOrigins =
 		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
 			? config.trustedOrigins
-			: [process.env.PUBLIC_RIZOM_URL as string];
+			: [process.env.PUBLIC_RIME_URL as string];
 
 	const corePluginsServer = [
 		// Cache plugin with default enabled only if there is no user
@@ -75,8 +75,8 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 		...config,
 		$database: config.$database,
 		$trustedOrigins: trustedOrigins,
-		collections: [staff, ...config.collections],
-		areas: config.areas,
+		collections: [staff, ...(config.collections || [])],
+		areas: config.areas || [],
 		panel: {
 			$access: config.panel?.$access ? config.panel.$access : (user?: User) => access.isAdmin(user),
 			routes: config.panel?.routes ? config.panel.routes : {},
@@ -107,7 +107,7 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 		if (changed) {
 			const valid = validate(compiledConfig);
 			if (!valid) {
-				throw new RizomError('Config not valid');
+				throw new RimeError('Config not valid');
 			}
 
 			logger.info('Generating...');

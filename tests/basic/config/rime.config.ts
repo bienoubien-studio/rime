@@ -31,7 +31,8 @@ import {
 	SlidersVertical
 } from '@lucide/svelte';
 
-import { Area, buildConfig, Collection, Hooks } from '$rizom/config';
+import { bold, heading, italic, link as linkFeature, resource, upload } from '$lib/fields/rich-text/client.js';
+import { Area, buildConfig, Collection, Hooks } from '$rime/config';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 
@@ -91,7 +92,7 @@ const tabLayout = tab('layout')
 	);
 
 const clearCacheHook = Hooks.afterUpsert<'pages'>(async (args) => {
-	args.event.locals.rizom.cache.clear();
+	args.event.locals.rime.cache.clear();
 	return args;
 });
 
@@ -101,10 +102,10 @@ const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
 	if (data?.attributes?.isHome) {
 		const query = `where[attributes.isHome][equals]=true`;
 
-		const pagesIsHome = await event.locals.rizom.collection('pages').find({ query });
+		const pagesIsHome = await event.locals.rime.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await event.locals.rizom.collection('pages').updateById({
+			await event.locals.rime.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});
@@ -114,7 +115,7 @@ const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
 	return args;
 });
 
-const Pages = Collection.config('pages', {
+const Pages = Collection.create('pages', {
 	label: { singular: 'Page', plural: 'Pages' },
 	panel: {
 		group: 'content',
@@ -126,8 +127,8 @@ const Pages = Collection.config('pages', {
 	nested: true,
 	$url: (doc) =>
 		doc.attributes.isHome
-			? `${process.env.PUBLIC_RIZOM_URL}/`
-			: `${process.env.PUBLIC_RIZOM_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
+			? `${process.env.PUBLIC_RIME_URL}/`
+			: `${process.env.PUBLIC_RIME_URL}/[...parent.attributes.slug]/${doc.attributes.slug}`,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -143,7 +144,7 @@ const Pages = Collection.config('pages', {
 
 const Link = [text('label').layout('compact'), link('link').types('pages', 'url').layout('compact')];
 
-const Navigation = Area.config('navigation', {
+const Navigation = Area.create('navigation', {
 	icon: Menu,
 	panel: {
 		group: 'global',
@@ -167,7 +168,7 @@ const Navigation = Area.config('navigation', {
 	}
 });
 
-const Settings = Area.config('settings', {
+const Settings = Area.create('settings', {
 	icon: Settings2,
 	panel: {
 		group: 'system',
@@ -179,7 +180,7 @@ const Settings = Area.config('settings', {
 	}
 });
 
-const Informations = Area.config('infos', {
+const Informations = Area.create('infos', {
 	icon: Contact,
 	panel: {
 		group: 'global',
@@ -193,24 +194,24 @@ const Informations = Area.config('infos', {
 
 const tabWriter = tab('writer').fields(
 	richText('text').features(
-		'bold',
-		'italic',
+		bold(),
+		italic(),
 		LoremFeature,
-		'resource:pages',
-		'media:medias?where[mimeType][like]=image',
-		'heading:2,3',
-		'link'
+		resource({ slug: 'pages' }),
+		upload({ slug: 'medias', query: 'where[mimeType][like]=image' }),
+		heading(2, 3),
+		linkFeature()
 	)
 );
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
-	richText('intro').features('bold', 'link'),
+	richText('intro').features(bold(), linkFeature()),
 	date('published')
 );
 
-const News = Collection.config('news', {
+const News = Collection.create('news', {
 	icon: NotebookText,
 	panel: {
 		description: 'Create article for your readers',
@@ -218,7 +219,7 @@ const News = Collection.config('news', {
 	},
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
-	$url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	$url: (doc) => `${process.env.PUBLIC_RIME_URL}/actualites/${doc.attributes.slug}`,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -226,7 +227,7 @@ const News = Collection.config('news', {
 	}
 });
 
-const Medias = Collection.config('medias', {
+const Medias = Collection.create('medias', {
 	label: { singular: 'Media', plural: 'Medias' },
 	panel: {
 		description: 'Manage images, video, audio, documents,...',
@@ -247,7 +248,7 @@ const Medias = Collection.config('medias', {
 	}
 });
 
-const Users = Collection.config('users', {
+const Users = Collection.create('users', {
 	auth: {
 		type: 'password',
 		roles: ['user']
@@ -261,7 +262,7 @@ const Users = Collection.config('users', {
 	}
 });
 
-const Apps = Collection.config('apps', {
+const Apps = Collection.create('apps', {
 	auth: {
 		type: 'apiKey',
 		roles: ['apps']
@@ -280,12 +281,12 @@ export default buildConfig({
 	collections: [Pages, Medias, News, Users, Apps],
 	areas: [Settings, Navigation, Informations],
 	$smtp: {
-		from: process.env.RIZOM_SMTP_USER,
-		host: process.env.RIZOM_SMTP_HOST,
-		port: parseInt(process.env.RIZOM_SMTP_PORT || '465'),
+		from: process.env.RIME_SMTP_USER,
+		host: process.env.RIME_SMTP_HOST,
+		port: parseInt(process.env.RIME_SMTP_PORT || '465'),
 		auth: {
-			user: process.env.RIZOM_SMTP_USER,
-			password: process.env.RIZOM_SMTP_PASSWORD
+			user: process.env.RIME_SMTP_USER,
+			password: process.env.RIME_SMTP_PASSWORD
 		}
 	},
 	staff: {

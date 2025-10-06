@@ -6,18 +6,18 @@
 	import { authClient } from '$lib/panel/util/auth.js';
 	import { env } from '$env/dynamic/public';
 	import { toast } from 'svelte-sonner';
-	
+
 	type Props = { navCollapsed: boolean };
 	const { navCollapsed }: Props = $props();
 
 	const user = getUserContext();
 
 	async function signout() {
-		const result = await authClient.signOut()
-		if(result.data?.success){
-			window.location.href = `${env.PUBLIC_RIZOM_URL}/panel/sign-in`
-		}else{
-			toast.error(`Can't sign-out, please try again`)
+		const result = await authClient.signOut();
+		if (result.data?.success) {
+			window.location.href = `${env.PUBLIC_RIME_URL}/panel/sign-in`;
+		} else {
+			toast.error(`Can't sign-out, please try again`);
 		}
 	}
 </script>

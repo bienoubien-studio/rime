@@ -13,7 +13,7 @@
 	type Props = { checked: boolean; doc: GenericDoc; draggable?: 'true' };
 	const { checked, doc, draggable }: Props = $props();
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 
 	const isUploadCollection = $derived(isUploadConfig(collection.config));
 

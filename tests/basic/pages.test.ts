@@ -2,8 +2,8 @@ import { toKebabCase } from '$lib/util/string';
 import test, { expect } from '@playwright/test';
 
 function panelUrl(...args: string[]) {
-	if (!args.length) return `${process.env.PUBLIC_RIZOM_URL}/panel`;
-	return `${process.env.PUBLIC_RIZOM_URL}/panel/${args.join('/')}`;
+	if (!args.length) return `${process.env.PUBLIC_RIME_URL}/panel`;
+	return `${process.env.PUBLIC_RIME_URL}/panel/${args.join('/')}`;
 }
 
 test.describe('Login form', () => {

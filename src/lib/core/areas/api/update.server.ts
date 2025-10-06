@@ -8,7 +8,7 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 export default function (slug: AreaSlug) {
 	//
 	async function POST(event: RequestEvent) {
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
@@ -21,15 +21,15 @@ export default function (slug: AreaSlug) {
 		}
 
 		if (data.locale) {
-			rizom.setLocale(data.locale);
+			rime.setLocale(data.locale);
 		}
 
 		const [error, doc] = await trycatch(() =>
-			rizom.area(slug).update({
+			rime.area(slug).update({
 				data,
 				versionId,
 				draft,
-				locale: rizom.getLocale()
+				locale: rime.getLocale()
 			})
 		);
 

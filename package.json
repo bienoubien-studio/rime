@@ -1,12 +1,12 @@
 {
-	"name": "rizom",
+	"name": "@bienbien/rime",
 	"version": "0.17.5",
-	"homepage": "https://github.com/bienoubien-studio/rizom",
+	"homepage": "https://github.com/bienoubien-studio/rime",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && vite build && npm run package && pnpm build:css",
 		"build:css": "postcss dist/**/*.css --replace --config ./postcss.config.cjs",
-		"rizom:use": "bun ./src/scripts/useConfig.js",
+		"rime:use": "bun ./src/scripts/useConfig.js",
 		"preview": "vite preview",
 		"package": "bun ./src/lib/core/dev/cli/index.ts clear --force && svelte-kit sync && svelte-package && publint",
 		"prepublishOnly": "npm run package && pnpm build:css",
@@ -26,7 +26,7 @@
 	"license": "MIT",
 	"type": "module",
 	"bin": {
-		"rizom": "./dist/core/dev/cli/index.js"
+		"rime": "./dist/core/dev/cli/index.js"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",

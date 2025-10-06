@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 
 import { handleError } from '$lib/core/errors/handler.server.js';
-import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
+import { RimeError, RimeFormError } from '$lib/core/errors/index.js';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { FormErrors, Plugin } from '$lib/types.js';
 import { trycatch, trycatchSync } from '$lib/util/function.js';
@@ -10,11 +10,11 @@ import { json, type RequestHandler } from '@sveltejs/kit';
 
 export const apiInit: Plugin<never> = () => {
 	const requestHandler: RequestHandler = async (event) => {
-		if (!dev) throw new RizomError(RizomError.NOT_FOUND);
+		if (!dev) throw new RimeError(RimeError.NOT_FOUND);
 
-		const users = await event.locals.rizom.auth.getAuthUsers();
+		const users = await event.locals.rime.auth.getAuthUsers();
 		if (users.length > 0 || (users.length === 0 && !dev)) {
-			throw handleError(new RizomError(RizomError.NOT_FOUND), { context: 'api' });
+			throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'api' });
 		}
 
 		const data = await extractData<Record<string, string>>(event.request);
@@ -30,7 +30,7 @@ export const apiInit: Plugin<never> = () => {
 		event.locals.isInit = true;
 
 		const [signUpError] = await trycatch(() =>
-			event.locals.rizom.auth.betterAuth.api.signUpEmail({
+			event.locals.rime.auth.betterAuth.api.signUpEmail({
 				body: {
 					email: data.email,
 					name: data.name,
@@ -66,31 +66,31 @@ const validateForm = (data: Record<string, string>): data is { email: string; na
 	const { name, email, password } = data;
 
 	if (!email) {
-		errors.email = RizomFormError.REQUIRED_FIELD;
+		errors.email = RimeFormError.REQUIRED_FIELD;
 	}
 	if (!name) {
-		errors.name = RizomFormError.REQUIRED_FIELD;
+		errors.name = RimeFormError.REQUIRED_FIELD;
 	}
 	if (!password) {
-		errors.password = RizomFormError.REQUIRED_FIELD;
+		errors.password = RimeFormError.REQUIRED_FIELD;
 	}
 
 	const emailValidation = validateEmail(email);
 	if (typeof emailValidation === 'string') {
-		errors.email = RizomFormError.INVALID_FIELD;
+		errors.email = RimeFormError.INVALID_FIELD;
 	}
 
 	if (typeof name !== 'string') {
-		errors.name = RizomFormError.INVALID_FIELD;
+		errors.name = RimeFormError.INVALID_FIELD;
 	}
 
 	const passwordValidation = validatePassword(password);
 	if (typeof passwordValidation === 'string') {
-		errors.name = RizomFormError.INVALID_FIELD;
+		errors.name = RimeFormError.INVALID_FIELD;
 	}
 
 	if (Object.keys(errors).length > 0) {
-		throw new RizomFormError(errors);
+		throw new RimeFormError(errors);
 	}
 
 	return true;

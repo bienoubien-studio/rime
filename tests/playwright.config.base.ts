@@ -10,7 +10,7 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 		workers: 1,
 		reporter: 'line',
 		webServer: {
-			command: `pnpm rizom:use ${name} && pnpm vite dev`,
+			command: `pnpm rime:use ${name} && pnpm vite dev`,
 			port: 5173,
 			stdout: 'ignore',
 			stderr: 'ignore'
@@ -19,9 +19,9 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 			timeout: 30000
 		},
 		use: {
-			baseURL: process.env.PUBLIC_RIZOM_URL || 'http://localhost:5173',
+			baseURL: process.env.PUBLIC_RIME_URL || 'http://localhost:5173',
 			extraHTTPHeaders: {
-				origin: process.env.PUBLIC_RIZOM_URL || 'http://localhost:5173'
+				origin: process.env.PUBLIC_RIME_URL || 'http://localhost:5173'
 			}
 		},
 		projects: [

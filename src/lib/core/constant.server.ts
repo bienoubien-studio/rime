@@ -1,1 +1,1 @@
-export const PACKAGE_NAME = 'rizom';
+export const PACKAGE_NAME = 'rime';

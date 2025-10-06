@@ -40,7 +40,7 @@
 		{#if ressource.data.doc._thumbnail}
 			<UploadThumbCell
 				mimeType={ressource.data.doc.mimeType}
-				url="{env.PUBLIC_RIZOM_URL}{ressource.data.doc._thumbnail}"
+				url="{env.PUBLIC_RIME_URL}{ressource.data.doc._thumbnail}"
 			/>
 			{ressource.data.doc.title}
 		{:else}

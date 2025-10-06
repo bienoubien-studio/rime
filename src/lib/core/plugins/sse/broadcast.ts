@@ -6,7 +6,6 @@ import type { ContentUpdatePayload } from './types.js';
  * broadcast({  collection: 'events', id: '42', operation: 'update', timestamp: new Date().toISOString() });
  */
 
-
 const clients = new Set<WritableStreamDefaultWriter<string>>();
 
 export const registerWriter = (writer: WritableStreamDefaultWriter<string>): (() => void) => {
@@ -22,7 +21,7 @@ export const registerWriter = (writer: WritableStreamDefaultWriter<string>): (()
  * broadcast({  collection: 'events', id: '1', operation: 'update', timestamp: new Date().toISOString() });
  */
 export const broadcast = (data: ContentUpdatePayload): void => {
-	const frame = `event: rizom:${data.operation}\ndata: ${JSON.stringify(data)}\n\n`;
+	const frame = `event: rime:${data.operation}\ndata: ${JSON.stringify(data)}\n\n`;
 	for (const w of clients) {
 		void w.write(frame).catch(() => {
 			clients.delete(w);

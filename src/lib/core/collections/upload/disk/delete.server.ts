@@ -1,6 +1,6 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { Rizom } from '$lib/core/rizom.server.js';
+import type { Rime } from '$lib/core/rime.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { existsSync, unlink, unlinkSync } from 'fs';
 import path from 'path';
@@ -8,12 +8,12 @@ import type { WithUpload } from '../util/config.js';
 
 type Args = {
 	config: WithUpload<CompiledCollection>;
-	rizom: Rizom;
+	rime: Rime;
 	id: string;
 };
 
-export const cleanupStoredFiles = async ({ config, rizom, id }: Args): Promise<GenericDoc> => {
-	const doc = await rizom.collection<any>(config.slug).findById({ id, draft: true });
+export const cleanupStoredFiles = async ({ config, rime, id }: Args): Promise<GenericDoc> => {
+	const doc = await rime.collection<any>(config.slug).findById({ id, draft: true });
 
 	try {
 		const filePath = path.resolve(process.cwd(), `static/medias/${doc.filename}`);

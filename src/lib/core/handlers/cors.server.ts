@@ -1,11 +1,11 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { error, type Handle } from '@sveltejs/kit';
 
 export const handleCORS: Handle = async ({ event, resolve }) => {
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
-	const trustedOrigin = [...(rizom.config.raw.$trustedOrigins || [])];
+	const trustedOrigin = [...(rime.config.raw.$trustedOrigins || [])];
 
 	let cors;
 	const origin = event.request.headers.get('origin');
@@ -38,7 +38,7 @@ export const handleCORS: Handle = async ({ event, resolve }) => {
 		if (cors) {
 			response.headers.append('Access-Control-Allow-Origin', cors);
 		} else {
-			throw error(401, RizomError.UNAUTHORIZED);
+			throw error(401, RimeError.UNAUTHORIZED);
 		}
 	}
 

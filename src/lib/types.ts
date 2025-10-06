@@ -49,7 +49,7 @@ export type { Link } from './fields/link/types.js';
 // Util
 export type { WithRelationPopulated } from '$lib/util/types.js';
 
-export type { Rizom } from './core/rizom.server.js';
+export type { Rime } from './core/rime.server.js';
 export type { Plugin, Plugins } from './core/types/plugins.js';
 export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js';
 export type { RichTextFeature, RichTextFeatureMark, RichTextFeatureNode } from './fields/rich-text/core/types.js';

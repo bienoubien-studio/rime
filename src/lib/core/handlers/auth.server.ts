@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
@@ -10,21 +10,21 @@ const dev = process.env.NODE_ENV === 'development';
 // retrieve user attributes
 // check for panel access
 export const handleAuth: Handle = async ({ event, resolve }) => {
-	const rizom = event.locals.rizom;
+	const rime = event.locals.rime;
 
 	const isSignInRoute = event.url.pathname === '/panel/sign-in';
 	const isPanelRoute = event.url.pathname.startsWith('/panel') && !isSignInRoute;
 
 	// Authenticate
-	const authenticated = await rizom.auth.betterAuth.api.getSession({
+	const authenticated = await rime.auth.betterAuth.api.getSession({
 		headers: event.request.headers
 	});
 
 	// for /panel request
 	if (isPanelRoute) {
-		const users = await rizom.auth.getAuthUsers();
+		const users = await rime.auth.getAuthUsers();
 		if (users.length === 0 && !dev) {
-			throw new RizomError(RizomError.NOT_FOUND);
+			throw new RimeError(RimeError.NOT_FOUND);
 		}
 		if (!authenticated) {
 			throw redirect(303, '/panel/sign-in');
@@ -42,7 +42,7 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	const { session, user: authUser } = authenticated;
 
 	// Get CMS user attributes
-	const user = await rizom.auth.getUserAttributes({
+	const user = await rime.auth.getUserAttributes({
 		authUserId: authUser.id,
 		slug: authUser.type as CollectionSlug
 	});
@@ -50,21 +50,21 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	// Throw error if the user doesn't exsits, that means there is no associated CMS user
 	// to the current better-auth account, this should never happend
 	if (!user) {
-		logger.error(RizomError.UNAUTHORIZED);
-		throw error(401, RizomError.UNAUTHORIZED);
+		logger.error(RimeError.UNAUTHORIZED);
+		throw error(401, RimeError.UNAUTHORIZED);
 	}
 
 	// Check admin roles on both better-auth and user attributes
 	if (user.roles.includes('admin') && authUser.role !== BETTER_AUTH_ROLES.ADMIN) {
-		logger.error(RizomError.UNAUTHORIZED);
-		throw error(401, RizomError.UNAUTHORIZED);
+		logger.error(RimeError.UNAUTHORIZED);
+		throw error(401, RimeError.UNAUTHORIZED);
 	}
 
 	// Forward API_KEY role if it's an api-key authentication
 	const apiKey = event.request.headers.get('x-api-key') || null;
 	if (apiKey) {
 		// get the api key informations
-		const result = await rizom.auth.betterAuth.api.verifyApiKey({
+		const result = await rime.auth.betterAuth.api.verifyApiKey({
 			body: {
 				key: apiKey
 			}
@@ -74,8 +74,8 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 			const permissions = JSON.parse(result.key.permissions);
 			user.roles = permissions.roles;
 		} else {
-			logger.error(RizomError.UNAUTHORIZED, 'Invalid api key');
-			throw error(401, RizomError.UNAUTHORIZED);
+			logger.error(RimeError.UNAUTHORIZED, 'Invalid api key');
+			throw error(401, RimeError.UNAUTHORIZED);
 		}
 	}
 
@@ -89,14 +89,14 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	if (isPanelRoute) {
 		// Check that panel access is from a staff authenticated user
 		if (!user.isStaff) {
-			logger.error(RizomError.UNAUTHORIZED);
-			throw error(401, RizomError.UNAUTHORIZED);
+			logger.error(RimeError.UNAUTHORIZED);
+			throw error(401, RimeError.UNAUTHORIZED);
 		}
 
 		// Check that this staff user have access to panel
-		if (!rizom.config.raw.panel.$access(user)) {
-			logger.error(RizomError.UNAUTHORIZED);
-			throw error(401, RizomError.UNAUTHORIZED);
+		if (!rime.config.raw.panel.$access(user)) {
+			logger.error(RimeError.UNAUTHORIZED);
+			throw error(401, RimeError.UNAUTHORIZED);
 		}
 	}
 

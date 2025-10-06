@@ -11,12 +11,12 @@ You can contribute to this project in many ways :
 ## Clone the repo
 
 ```bash
-git clone https://github.com/bienoubien-studio/rizom.git
+git clone https://github.com/bienoubien-studio/rime.git
 ```
 
 ## Install deps
 ```bash
-cd rizom
+cd rime
 pnpm install
 ```
 
@@ -32,7 +32,7 @@ pnpm dev
 
 ## Use a predifined config as a starting point
 ```bash
-pnpm rizom:use basic
+pnpm rime:use basic
 ```
 Available names are `empty`, `basic`, `multilang`, `versions`, `versions-multilang`, respective config live inside the /tests directory.
 
@@ -46,7 +46,7 @@ bun ./src/lib/core/dev/cli/index.ts generate
 bun ./src/lib/core/dev/cli/index.ts generate --force
 ```
 
-Clear all rizom related files
+Clear all rime related files
 ```bash
 bun ./src/lib/core/dev/cli/index.ts clear
 bun ./src/lib/core/dev/cli/index.ts clear --force

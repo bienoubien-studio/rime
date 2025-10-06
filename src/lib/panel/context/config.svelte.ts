@@ -26,7 +26,7 @@ function createConfigStore(config: BuiltConfigClient) {
 	};
 }
 
-const CONFIG_KEY = Symbol('rizom.config');
+const CONFIG_KEY = Symbol('rime.config');
 
 export function setConfigContext(initial: BuiltConfigClient) {
 	const store = createConfigStore(initial);

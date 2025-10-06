@@ -15,7 +15,7 @@
 	};
 
 	const { checked, doc }: Props = $props();
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 
 	const locale = getLocaleContext();
 

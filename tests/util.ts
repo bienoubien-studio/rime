@@ -1,6 +1,6 @@
 import type { APIRequestContext } from '@playwright/test';
 
-export const BASE_URL = process.env.PUBLIC_RIZOM_URL;
+export const BASE_URL = process.env.PUBLIC_RIME_URL;
 export const API_BASE_URL = `${BASE_URL}/api`;
 
 export const signIn = (email: string, password: string) => {

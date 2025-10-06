@@ -3,7 +3,7 @@ import { program } from 'commander';
 
 program.version('0.1').description('CMS utilities');
 
-program.description('Rizom utilities');
+program.description('Rime utilities');
 
 program
 	.command('init')

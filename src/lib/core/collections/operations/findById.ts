@@ -18,7 +18,7 @@ type Args = {
 
 export const findById = async <T extends GenericDoc>(args: Args) => {
 	const { config, event, id, versionId, locale, depth, select, draft, isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {
 		params: {
@@ -42,7 +42,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		context = result.context;
 	}
 
-	const documentRaw = await rizom.adapter.collection.findById({
+	const documentRaw = await rime.adapter.collection.findById({
 		slug: config.slug,
 		id,
 		versionId,
@@ -51,7 +51,7 @@ export const findById = async <T extends GenericDoc>(args: Args) => {
 		draft
 	});
 
-	let document = await event.locals.rizom.adapter.transform.doc({
+	let document = await event.locals.rime.adapter.transform.doc({
 		doc: documentRaw,
 		slug: config.slug,
 		locale,

@@ -1,9 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { rizom } from './src/lib/core/dev/vite/index.js';
+import { rime } from './src/lib/core/dev/vite/index.js';
 
 export default defineConfig({
-	plugins: [sveltekit(), rizom()],
+	plugins: [sveltekit(), rime()],
 
 	server: {
 		host: process.env.DEV_HOST || 'localhost'

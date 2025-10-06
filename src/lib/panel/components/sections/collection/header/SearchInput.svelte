@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
+	import { t__ } from '$lib/core/i18n/index.js';
+	import Input from '$lib/panel/components/ui/input/input.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
 	import { Search } from '@lucide/svelte';
-	import Input from '$lib/panel/components/ui/input/input.svelte';
-	import { t__ } from '$lib/core/i18n/index.js';
+	import { getContext } from 'svelte';
 
-	const collection = getContext<CollectionContext>('rizom.collectionList');
+	const collection = getContext<CollectionContext>('rime.collectionList');
 	let filterValue = $state('');
 
 	$effect(() => {

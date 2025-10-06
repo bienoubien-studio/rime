@@ -44,7 +44,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		//
 
 		const { slug, locale, event, withBlank = true, depth = 0 } = args;
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 
 		let doc = args.doc;
 
@@ -59,9 +59,9 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 
 		let docAPI;
 		if (configInterface.isCollection(slug)) {
-			docAPI = rizom.collection(slug);
+			docAPI = rime.collection(slug);
 		} else {
-			docAPI = rizom.area(slug);
+			docAPI = rime.area(slug);
 		}
 
 		const blankDocument = docAPI.blank();
@@ -196,7 +196,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 				/** Get relation if depth > 0 */
 				if (depth > 0) {
 					const relationSlug = relationToIdKey.replace('Id', '') as CollectionSlug;
-					relationOutput = await rizom
+					relationOutput = await rime
 						.collection(relationSlug)
 						.findById({ id: relationToId, locale: relation.locale, depth: depth - 1 });
 				} else {

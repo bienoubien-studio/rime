@@ -3,8 +3,8 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 export const forgotPasswordLoad = async ({ locals }: ServerLoadEvent) => {
-	const { session, rizom } = locals;
-	if (!('mailer' in rizom.plugins)) {
+	const { session, rime } = locals;
+	if (!('mailer' in rime.plugins)) {
 		return error(404);
 	}
 

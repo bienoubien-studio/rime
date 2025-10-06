@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
+import { RimeError, RimeFormError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { access } from '$lib/util/access/index.js';
 import { cases } from '$lib/util/cases.js';
@@ -10,7 +10,7 @@ import { BETTER_AUTH_ROLES } from '../../constant.server.js';
  */
 export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 	const { config, event } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	if (!Boolean(config.auth)) return args;
 
@@ -58,7 +58,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 		 * 	- Auth Flow:
 		 * 		- User submits signup form
 		 * 		- Better-Auth creates user with 'user' role
-		 * 		- Better-Auth hook call rizom.collection(slug).create to create the document
+		 * 		- Better-Auth hook call rime.collection(slug).create to create the document
 		 */
 		PUBLIC_SIGNUP: Boolean(args.data.authUserId),
 
@@ -85,7 +85,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 
 	// Prevent superAdmin value to be set on creation
 	if ('isSuperAdmin' in args.data && CASE.value !== CASE.INIT) {
-		throw new RizomError(RizomError.UNAUTHORIZED);
+		throw new RimeError(RimeError.UNAUTHORIZED);
 	}
 
 	let authUserId;
@@ -103,7 +103,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 				[BETTER_AUTH_ROLES.USER]: true
 			});
 
-			const result = await rizom.auth.betterAuth.api.createUser({
+			const result = await rime.auth.betterAuth.api.createUser({
 				headers: args.event.request.headers,
 				body: {
 					email: args.data.email,
@@ -127,7 +127,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 				[BETTER_AUTH_ROLES.USER]: true
 			});
 
-			const result = await rizom.auth.betterAuth.api.createUser({
+			const result = await rime.auth.betterAuth.api.createUser({
 				headers: args.event.request.headers,
 				body: {
 					email: args.data.email,
@@ -145,16 +145,16 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 
 		case CASE.API_KEY_CREATION:
 			if (!event.locals.betterAuthUser || !event.locals.user) {
-				throw new RizomError(RizomError.UNAUTHORIZED);
+				throw new RimeError(RimeError.UNAUTHORIZED);
 			}
-			if (!rizom.mailer) {
-				throw new RizomError(RizomError.OPERATION_ERROR, `Can't create API KEY without smtp config`);
+			if (!rime.mailer) {
+				throw new RimeError(RimeError.OPERATION_ERROR, `Can't create API KEY without smtp config`);
 			}
 			if (!args.data.name) {
-				throw new RizomFormError({ name: RizomFormError.REQUIRED_FIELD });
+				throw new RimeFormError({ name: RimeFormError.REQUIRED_FIELD });
 			}
 
-			const apiKey = await rizom.auth.betterAuth.api.createApiKey({
+			const apiKey = await rime.auth.betterAuth.api.createApiKey({
 				body: {
 					name: args.data.name,
 					userId: event.locals.betterAuthUser.id,
@@ -165,7 +165,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 			});
 
 			// Send api key by email to the user
-			await rizom.mailer.sendMail({
+			await rime.mailer.sendMail({
 				to: event.locals.user!.email,
 				subject: 'Your API Key',
 				text: `Your ${args.data.name} apiKey : ${apiKey}, keep it safe, only server-side`
@@ -194,7 +194,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 		 *  - unauthenticated user using direct API calls ex: POST /api/staff
 		 */
 		default:
-			throw new RizomError(RizomError.UNAUTHORIZED);
+			throw new RimeError(RimeError.UNAUTHORIZED);
 	}
 
 	return {

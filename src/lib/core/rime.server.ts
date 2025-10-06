@@ -5,23 +5,23 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { AreaInterface } from './areas/local-api.server.js';
 import { CollectionInterface } from './collections/local-api.server.js';
 import type { ConfigInterface } from './config/interface.server.js';
-import { RizomError } from './errors/index.js';
+import { RimeError } from './errors/index.js';
 import type { CorePlugins } from './types/plugins.js';
 
-export type RizomConstructorArgs = {
+export type RimeConstructorArgs = {
 	adapter: Adapter;
 	config: ConfigInterface;
 	event: RequestEvent;
 };
 
-export class Rizom {
+export class Rime {
 	//
 	#operationsCount = 0;
 	#requestEvent: RequestEvent;
 	adapter: Adapter;
 	config: ConfigInterface;
 
-	constructor({ adapter, config, event }: RizomConstructorArgs) {
+	constructor({ adapter, config, event }: RimeConstructorArgs) {
 		this.adapter = adapter;
 		this.config = config;
 		this.defineLocale({ event });
@@ -31,14 +31,14 @@ export class Rizom {
 	preventOperationLoop() {
 		this.#operationsCount++;
 		if (this.#operationsCount++ > 1000) {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'infinite loop');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'infinite loop');
 		}
 	}
 
 	/**
 	 * This overide the locale on the current event.
 	 * Use it with caution.
-	 * By default the locale is set by ```rizom.defineLocale```
+	 * By default the locale is set by ```rime.defineLocale```
 	 */
 	setLocale(locale: string | undefined) {
 		this.#requestEvent.locals.locale = locale;

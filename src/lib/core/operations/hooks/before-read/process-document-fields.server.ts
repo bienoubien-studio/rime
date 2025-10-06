@@ -22,7 +22,7 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 			logger.warn(`Error in config.isEmpty for field ${key}`);
 		}
 		if (isEmpty && hasProp('defaultValue', config)) {
-			value = await getDefaultValue({ key, config, adapter: args.event.locals.rizom.adapter });
+			value = await getDefaultValue({ key, config, adapter: args.event.locals.rime.adapter });
 			doc = setValueAtPath(key, doc, value);
 		}
 

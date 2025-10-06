@@ -3,10 +3,10 @@ import { rmSync } from 'node:fs';
 import path from 'node:path';
 import { prompt } from '../util.server.js';
 
-const clearMessage = `Are you sure you want to delete all related rizom files (Y/n):
+const clearMessage = `Are you sure you want to delete all related rime files (Y/n):
 - ./static/medias
 - ./db
-- ./src/routes/(rizom)
+- ./src/routes/(rime)
 - ./src/lib/config
 - ./src/lib/config.generated
 - ./src/lib/server/schema.ts
@@ -28,8 +28,8 @@ export const clear = async (args: { force?: boolean }) => {
 	}
 
 	// Remove directories
-	rmSync(path.join('.rizom'), { recursive: true, force: true });
-	rmSync(path.join('src', 'routes', '(rizom)'), { recursive: true, force: true });
+	rmSync(path.join('.rime'), { recursive: true, force: true });
+	rmSync(path.join('src', 'routes', '(rime)'), { recursive: true, force: true });
 	rmSync(path.join('src', 'lib', 'config'), { recursive: true, force: true });
 	rmSync(path.join('src', 'lib', 'config.generated'), { recursive: true, force: true });
 	rmSync(path.join('db'), { recursive: true, force: true });
@@ -41,5 +41,5 @@ export const clear = async (args: { force?: boolean }) => {
 	rmSync(path.join('src', 'lib', 'server', 'schema.ts'), { force: true });
 	rmSync(path.join('drizzle.config.ts'), { force: true });
 
-	return logger.info('rizom cleared');
+	return logger.info('rime cleared');
 };

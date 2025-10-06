@@ -71,11 +71,11 @@ export function ensureDir(dirPath: string): void {
  * @example
  * // Write a page file for a collection
  * const basePath = '/path/to/src/routes';
- * const routePath = '(rizom)/panel/news';
+ * const routePath = '(rime)/panel/news';
  * const fileType = 'page';
- * const content = '<script>\n  import { Collection } from "rizom/panel"\n</script>...';
+ * const content = '<script>\n  import { Collection } from "rime/panel"\n</script>...';
  * writeRouteFile(basePath, routePath, fileType, content);
- * // Creates /path/to/src/routes/(rizom)/panel/news/+page.svelte with the provided content
+ * // Creates /path/to/src/routes/(rime)/panel/news/+page.svelte with the provided content
  */
 export function writeRouteFile(basePath: string, routePath: string, fileType: string, content: string): void {
 	const dir = path.join(basePath, routePath);

@@ -33,14 +33,14 @@ export default ts.config(
 				{
 					paths: [
 						{
-							name: 'rizom',
-							message: 'Please use $lib/* imports instead of rizom imports in source files'
+							name: 'rime',
+							message: 'Please use $lib/* imports instead of rime imports in source files'
 						}
 					],
 					patterns: [
 						{
-							group: ['rizom/*', 'rizom/**'],
-							message: 'Please use $lib/* imports instead of rizom imports in source files'
+							group: ['rime/*', 'rime/**'],
+							message: 'Please use $lib/* imports instead of rime imports in source files'
 						}
 					]
 				}

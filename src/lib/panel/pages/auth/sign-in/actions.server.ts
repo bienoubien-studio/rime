@@ -1,17 +1,17 @@
 import { dev } from '$app/environment';
-import { redirect, type Actions } from '@sveltejs/kit';
 import { handleError } from '$lib/core/errors/handler.server.js';
-import { RizomFormError } from '$lib/core/errors/index.js';
+import { RimeFormError } from '$lib/core/errors/index.js';
+import { redirect, type Actions } from '@sveltejs/kit';
 
 export const signInActions: Actions = {
 	default: async ({ cookies, request, locals }) => {
-		const { rizom } = locals;
+		const { rime } = locals;
 
 		const data = await request.formData();
 		const email = data.get('email')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 
-		const response = await rizom.auth.betterAuth.api.signInEmail({
+		const response = await rime.auth.betterAuth.api.signInEmail({
 			body: { email, password },
 			asResponse: true
 		});
@@ -20,10 +20,10 @@ export const signInActions: Actions = {
 
 		if (!authenticated) {
 			return handleError(
-				new RizomFormError({
-					_form: RizomFormError.INVALID_CREDENTIALS,
-					email: RizomFormError.INVALID_CREDENTIALS,
-					password: RizomFormError.INVALID_CREDENTIALS
+				new RimeFormError({
+					_form: RimeFormError.INVALID_CREDENTIALS,
+					email: RimeFormError.INVALID_CREDENTIALS,
+					password: RimeFormError.INVALID_CREDENTIALS
 				}),
 				{
 					context: 'action',
@@ -38,7 +38,7 @@ export const signInActions: Actions = {
 			const parsedCookie = setCookieHeader.split(';')[0];
 			const [name, encodedValue] = parsedCookie.split('=');
 			const decodedValue = decodeURIComponent(encodedValue);
-			
+
 			cookies.set(name, decodedValue, {
 				path: '/',
 				httpOnly: true,

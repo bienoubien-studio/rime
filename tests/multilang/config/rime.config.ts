@@ -13,15 +13,16 @@ import {
 	toggle,
 	tree
 } from '$lib/fields/index.js';
+import { bold } from '$lib/fields/rich-text/client.js';
 import { access } from '$lib/util/access/index.js';
+import { Area, buildConfig, Collection, Hooks } from '$rime/config';
 import { Images, ListTree, Newspaper, ReceiptText, Settings2, Text } from '@lucide/svelte';
-import { Area, buildConfig, Collection, Hooks } from '$rizom/config';
 
 /****************************************************
 /* Settings
 /****************************************************/
 
-const Settings = Area.config('settings', {
+const Settings = Area.create('settings', {
 	icon: Settings2,
 	panel: {
 		group: 'informations'
@@ -47,7 +48,7 @@ const linkField = link('link').types('pages', 'infos', 'url').required();
 const nav = tree('nav').fields(linkField);
 const mainNav = tree('mainNav').fields(linkField).localized();
 
-const Menu = Area.config('menu', {
+const Menu = Area.create('menu', {
 	panel: {
 		group: 'Content'
 	},
@@ -62,7 +63,7 @@ const Menu = Area.config('menu', {
 /* Informations
 /****************************************************/
 
-const Informations = Area.config('infos', {
+const Informations = Area.create('infos', {
 	icon: ReceiptText,
 	panel: {
 		group: 'informations'
@@ -72,7 +73,7 @@ const Informations = Area.config('infos', {
 		read: () => true
 	},
 	$url: (doc: any) => {
-		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/about`;
+		return `${process.env.PUBLIC_RIME_URL}/${doc.locale}/about`;
 	},
 	live: true
 });
@@ -87,10 +88,10 @@ const setHome = Hooks.beforeUpsert<'pages'>(async (args) => {
 	if (data?.attributes?.isHome) {
 		const query = `where[attributes.isHome][equals]=true`;
 
-		const pagesIsHome = await event.locals.rizom.collection('pages').find({ query });
+		const pagesIsHome = await event.locals.rime.collection('pages').find({ query });
 
 		for (const page of pagesIsHome) {
-			await event.locals.rizom.collection('pages').updateById({
+			await event.locals.rime.collection('pages').updateById({
 				id: page.id,
 				data: { attributes: { isHome: false } }
 			});
@@ -106,7 +107,7 @@ const formatslug = Hooks.beforeUpsert<'pages'>(async (args) => {
 
 	const queryPagesWithSlug = async ({ slug }: { slug: string }) => {
 		const query = `where[attributes.slug][equals]=${slug}`;
-		return event.locals.rizom.collection('pages').find({
+		return event.locals.rime.collection('pages').find({
 			query,
 			locale: event.locals.locale
 		});
@@ -155,7 +156,7 @@ const tabHero = tab('hero').fields(
 		.condition((doc) => {
 			return doc.heroType === 'banner';
 		}),
-	richText('intro').features('bold')
+	richText('intro').features(bold())
 );
 
 const tabAttributes = tab('attributes').fields(
@@ -178,14 +179,14 @@ const tabSeo = tab('seo').fields(text('metaTitle').localized(), text('metaDescri
 
 const tabFooter = tab('footer').fields(text('slider').localized());
 
-const Pages = Collection.config('pages', {
+const Pages = Collection.create('pages', {
 	icon: Newspaper,
 	panel: {
 		group: 'Content'
 	},
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
 	$url: (doc) => {
-		return `${process.env.PUBLIC_RIZOM_URL}/${doc.locale}/${doc.attributes.slug}`;
+		return `${process.env.PUBLIC_RIME_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
 	live: true,
 	access: {
@@ -203,7 +204,7 @@ const Pages = Collection.config('pages', {
 /* Medias
 /****************************************************/
 
-const Medias = Collection.config('medias', {
+const Medias = Collection.create('medias', {
 	icon: Images,
 	panel: {
 		group: 'Medias'
@@ -225,7 +226,7 @@ const Medias = Collection.config('medias', {
 export default buildConfig({
 	//
 	$database: 'multilang.sqlite',
-	siteUrl: process.env.PUBLIC_RIZOM_URL,
+	siteUrl: process.env.PUBLIC_RIME_URL,
 
 	collections: [Pages, Medias],
 	areas: [Settings, Informations, Menu],

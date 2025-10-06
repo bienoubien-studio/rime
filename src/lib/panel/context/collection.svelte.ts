@@ -491,7 +491,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	};
 }
 
-const COLLECTION_KEY = 'rizom.collection';
+const COLLECTION_KEY = 'rime.collection';
 
 export function setCollectionContext(args: Args) {
 	const store = createCollectionStore(args);

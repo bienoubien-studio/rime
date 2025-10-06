@@ -3,7 +3,7 @@ import { TScastVersionSlug, type Routes } from './util.js';
 
 /**
  * Layout server template for collection
- * (rizom)/panel/{collection.kebab}/+page.server.ts
+ * (rime)/panel/{collection.kebab}/+page.server.ts
  */
 const pageServer = (slug: string) => `
 import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
@@ -12,7 +12,7 @@ export const load = pagesLoad.collection.list('${slug}')
 
 /**
  * Page template for collection list
- * (rizom)/panel/{collection.kebab}/+page.svelte
+ * (rime)/panel/{collection.kebab}/+page.svelte
  */
 const page = (slug: string) => `
 <script>
@@ -23,7 +23,7 @@ const page = (slug: string) => `
 
 /**
  * Document page template
- * (rizom)/panel/{collection.kebab}/[id]/+page.svelte
+ * (rime)/panel/{collection.kebab}/[id]/+page.svelte
  */
 const docPage = () => `
 <script lang="ts">
@@ -35,8 +35,8 @@ const docPage = () => `
 
 /**
  * Document page server template
- * (rizom)/panel/{collection.kebab}/[id]/+page.server.ts
- * (rizom)/panel/{collection.kebab}/[id]/versions/+page.server.ts
+ * (rime)/panel/{collection.kebab}/[id]/+page.server.ts
+ * (rime)/panel/{collection.kebab}/[id]/versions/+page.server.ts
  * Same actions / load for /versions page
  * except the withVersion param
  */
@@ -54,7 +54,7 @@ export const actions = pagesActions.collection.doc('${slug}')`;
 
 /**
  * Document page versions template
- * (rizom)/panel/{collection.kebab}/[id]/versions/+page.svelte
+ * (rime)/panel/{collection.kebab}/[id]/versions/+page.svelte
  */
 const docPageVersions = () => `
 <script lang="ts">
@@ -66,7 +66,7 @@ const docPageVersions = () => `
 
 /**
  * API collection list operations
- * (rizom)/api/{collection.kebab}/+server.ts
+ * (rime)/api/{collection.kebab}/+server.ts
  */
 const apiCollectionServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
@@ -78,7 +78,7 @@ export const DELETE = api.collection.delete(${TScastVersionSlug(slug)})
 
 /**
  * API collection document operations
- * (rizom)/api/{collection.kebab}/[id]/+server.ts
+ * (rime)/api/{collection.kebab}/[id]/+server.ts
  */
 const apiCollectionDocServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
@@ -90,7 +90,7 @@ export const DELETE = api.collection.deleteById(${TScastVersionSlug(slug)})
 
 /**
  * API collection document duplication
- * (rizom)/api/{collection.kebab}/[id]/duplicate/+server.ts
+ * (rime)/api/{collection.kebab}/[id]/duplicate/+server.ts
  */
 const apiCollectionDocDuplicateServer = (slug: string) => `
 import * as api from '${PACKAGE_NAME}/api';
@@ -106,11 +106,11 @@ export const POST = api.collection.duplicate('${slug}')
  * Collection panel routes
  */
 export const collectionPanelRoutes: Routes = {
-	'(rizom)/panel/{collection.kebab}/': {
+	'(rime)/panel/{collection.kebab}/': {
 		pageServer: pageServer,
 		page: page
 	},
-	'(rizom)/panel/{collection.kebab}/[id]': {
+	'(rime)/panel/{collection.kebab}/[id]': {
 		page: docPage,
 		pageServer: docPageServer
 	}
@@ -120,7 +120,7 @@ export const collectionPanelRoutes: Routes = {
  * Collection verions panel routes
  */
 export const collectionVersionsPanelRoutes: Routes = {
-	'(rizom)/panel/{collection.kebab}/[id]/versions': {
+	'(rime)/panel/{collection.kebab}/[id]/versions': {
 		page: docPageVersions,
 		pageServer: docPageServerVersions
 	}
@@ -130,13 +130,13 @@ export const collectionVersionsPanelRoutes: Routes = {
  * Collection API routes
  */
 export const collectionAPIRoutes: Routes = {
-	'(rizom)/api/{collection.kebab}/': {
+	'(rime)/api/{collection.kebab}/': {
 		server: apiCollectionServer
 	},
-	'(rizom)/api/{collection.kebab}/[id]': {
+	'(rime)/api/{collection.kebab}/[id]': {
 		server: apiCollectionDocServer
 	},
-	'(rizom)/api/{collection.kebab}/[id]/duplicate': {
+	'(rime)/api/{collection.kebab}/[id]/duplicate': {
 		server: apiCollectionDocDuplicateServer
 	}
 };

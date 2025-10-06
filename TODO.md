@@ -27,8 +27,8 @@
 [x] Update document url on save hook (ex: when parent change for nested collection)
 [x] handle Area with required field without default value
 [x] Lazy store document URL
-[x] Move api <-> rizom
-[x] core plugins as direct props of rizom, ex rizom.cache
+[x] Move api <-> rime
+[x] core plugins as direct props of rime, ex rime.cache
 [x] Check that url encoded string queries are well handled
 [x] Remove locales bcp47
 [x] Collection nested
@@ -40,7 +40,7 @@
 [ ] Add select feature to findById collection
 [ ] Better junction table naming
 [ ] Batch offset/update
-[ ] Put bin commands in a separate package ex: @rizom/kit ?
+[ ] Put bin commands in a separate package ex: @rime/kit ?
 [ ] page modification not saved message + changes saved to a page draft
 [ ] more better-auth integration
 [ ] configurable medias/config/panel path

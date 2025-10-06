@@ -1,8 +1,9 @@
 import { date, group, relation, richText, slug, tab, tabs, text, toggle } from '$lib/fields/index.js';
+import { bold, heading, italic, link as linkFeature, upload } from '$lib/fields/rich-text/client.js';
 import { access } from '$lib/util/access/index.js';
-import { Area, buildConfig, Collection } from '$rizom/config';
+import { Area, buildConfig, Collection } from '$rime/config';
 
-const Settings = Area.config('settings', {
+const Settings = Area.create('settings', {
 	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -10,7 +11,7 @@ const Settings = Area.config('settings', {
 	versions: { draft: true }
 });
 
-const Infos = Area.config('infos', {
+const Infos = Area.create('infos', {
 	fields: [text('title').localized(), text('email').localized()],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
@@ -19,21 +20,27 @@ const Infos = Area.config('infos', {
 });
 
 const tabWriter = tab('writer').fields(
-	richText('text').features('bold', 'italic', 'media:medias?where[mimeType][like]=image', 'heading:2,3', 'link')
+	richText('text').features(
+		bold(),
+		italic(),
+		upload({ slug: 'medias', query: 'where[mimeType][like]=image' }),
+		heading(2, 3),
+		linkFeature()
+	)
 );
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
 	relation('image').to('medias'),
-	richText('intro').features('bold', 'link'),
+	richText('intro').features(bold(), linkFeature()),
 	date('published')
 );
 
-const News = Collection.config('news', {
+const News = Collection.create('news', {
 	fields: [tabs(tabNewsAttributes, tabWriter)],
 	live: true,
-	$url: (doc) => `${process.env.PUBLIC_RIZOM_URL}/actualites/${doc.attributes.slug}`,
+	$url: (doc) => `${process.env.PUBLIC_RIME_URL}/actualites/${doc.attributes.slug}`,
 	access: {
 		read: () => true,
 		create: (user) => access.isAdmin(user),
@@ -42,7 +49,7 @@ const News = Collection.config('news', {
 	versions: { draft: true }
 });
 
-const Medias = Collection.config('medias', {
+const Medias = Collection.create('medias', {
 	panel: {
 		group: 'content'
 	},
@@ -61,7 +68,7 @@ const Medias = Collection.config('medias', {
 	versions: true
 });
 
-const Pdf = Collection.config('pdf', {
+const Pdf = Collection.create('pdf', {
 	upload: true,
 	panel: {
 		group: 'content'
@@ -73,7 +80,7 @@ const Pdf = Collection.config('pdf', {
 	versions: { draft: true }
 });
 
-const Pages = Collection.config('pages', {
+const Pages = Collection.create('pages', {
 	panel: {
 		group: 'content'
 	},

@@ -1,4 +1,4 @@
-import rizom from '$lib/core/cms.server.js';
+import rime from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
 
 // export { area } from '$lib/core/areas/config/builder.js';
@@ -6,9 +6,9 @@ import handlers from '$lib/core/handlers/index.js';
 // export { Hooks } from '$lib/core/operations/hooks/index.server.js';
 // export { FieldBuilder, FormFieldBuilder } from '$lib/core/config/fields/index.js';
 
-export { handlers, rizom };
+export { handlers, rime };
 
-declare module 'rizom' {
+declare module 'rime' {
 	// Register interfaces for plugin architecture
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface RegisterPlugins {}

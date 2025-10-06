@@ -26,7 +26,7 @@ const getUserAttributes = async (ctx: CTX) => {
 
 	if (newSession) {
 		const event = getRequestEvent();
-		const user = await event.locals.rizom.auth.getUserAttributes({
+		const user = await event.locals.rime.auth.getUserAttributes({
 			authUserId: newSession.user.id,
 			slug: newSession.user.type
 		});
@@ -62,8 +62,8 @@ const handleUserCreation = async (ctx: CTX) => {
 	 * - set isSuperAdmin to true
 	 */
 	if (event.locals.isInit && dev) {
-		const { authUsers } = event.locals.rizom.adapter.tables;
-		await event.locals.rizom.adapter.db
+		const { authUsers } = event.locals.rime.adapter.tables;
+		await event.locals.rime.adapter.db
 			.update(authUsers)
 			.set({
 				role: BETTER_AUTH_ROLES.ADMIN
@@ -93,7 +93,7 @@ const handleUserCreation = async (ctx: CTX) => {
 	 * Create the collection document
 	 */
 	const [error, _] = await trycatch(() =>
-		event.locals.rizom
+		event.locals.rime
 			.collection(ctx.body.type)
 			.system(event.locals.isInit)
 			.create({
@@ -117,13 +117,13 @@ const handleUserCreation = async (ctx: CTX) => {
 		ctx.context.newSession = null;
 		const { user } = newSession;
 		const event = getRequestEvent();
-		const { rizom } = event.locals;
-		const sessionTable = rizom.adapter.tables.authSessions;
-		const authAccountsTable = rizom.adapter.tables.authAccounts;
-		const authUsersTable = rizom.adapter.tables.authUsers;
-		await rizom.adapter.db.delete(sessionTable).where(eq(sessionTable.userId, user.id));
-		await rizom.adapter.db.delete(authAccountsTable).where(eq(authAccountsTable.userId, user.id));
-		await rizom.adapter.db.delete(authUsersTable).where(eq(authUsersTable.id, user.id));
+		const { rime } = event.locals;
+		const sessionTable = rime.adapter.tables.authSessions;
+		const authAccountsTable = rime.adapter.tables.authAccounts;
+		const authUsersTable = rime.adapter.tables.authUsers;
+		await rime.adapter.db.delete(sessionTable).where(eq(sessionTable.userId, user.id));
+		await rime.adapter.db.delete(authAccountsTable).where(eq(authAccountsTable.userId, user.id));
+		await rime.adapter.db.delete(authUsersTable).where(eq(authUsersTable.id, user.id));
 		throw new APIError('BAD_REQUEST');
 	}
 };

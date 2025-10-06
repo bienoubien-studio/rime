@@ -16,14 +16,14 @@ export default function (slug: CollectionSlug) {
 		 * /panel/{slug}/create
 		 */
 		create: async (event: RequestEvent) => {
-			const { rizom, locale } = event.locals;
+			const { rime, locale } = event.locals;
 			// Get the redirect parameter ex: ?redirect=0 that can be present if we're in a nested form
 			// to prevent redirection after entry creation ex: for relation creation
 			const withoutRedirect = event.url.searchParams.get(PARAMS.REDIRECT) === 'false';
 
 			const data = await extractData(event.request);
 
-			const collection = rizom.collection(slug);
+			const collection = rime.collection(slug);
 
 			const [error, document] = await trycatch(() => collection.create({ data, locale }));
 
@@ -55,14 +55,14 @@ export default function (slug: CollectionSlug) {
 		 * /panel/{slug}/{documentId}
 		 */
 		update: async (event: RequestEvent) => {
-			const { rizom, locale } = event.locals;
+			const { rime, locale } = event.locals;
 			const id = event.params.id || '';
 			const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 			const data = await extractData(event.request);
 
 			const [error, document] = await trycatch(() =>
-				rizom.collection(slug).updateById({
+				rime.collection(slug).updateById({
 					id,
 					data,
 					versionId,

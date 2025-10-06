@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { RimeError, RimeFormError } from '$lib/core/errors/index.js';
 	import { t__ } from '$lib/core/i18n/index.js';
-	import { RizomError, RizomFormError } from '$lib/core/errors/index.js';
 
 	type Props = { error: string | false };
 
@@ -9,8 +9,8 @@
 	function formatError(error: string) {
 		// subfield::error
 		const cleanError = error.split('::').at(-1) ?? '';
-		// If it's a predefined error from RizomError or RizomFormError
-		if (Object.values(RizomError).includes(cleanError) || Object.values(RizomFormError).includes(cleanError)) {
+		// If it's a predefined error from RimeError or RimeFormError
+		if (Object.values(RimeError).includes(cleanError) || Object.values(RimeFormError).includes(cleanError)) {
 			return t__(`errors.${cleanError}`);
 		}
 		// Otherwise return as-is (user defined message)

@@ -1,4 +1,4 @@
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { access } from '$lib/util/access/index.js';
 import { cases } from '$lib/util/cases.js';
@@ -9,7 +9,7 @@ import { BETTER_AUTH_ROLES } from '../../constant.server.js';
  */
 export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) => {
 	const { event, config, context } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	if (args.context.isFallbackLocale) return args;
 
@@ -25,17 +25,17 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 
 	const originalDoc = context.originalDoc;
 
-	if (!originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, 'missing originalDoc @forwardRolesToBetterAuth');
+	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @forwardRolesToBetterAuth');
 
 	if (IS_ROLES_MUTATION) {
 		// get the better-auth userId
-		const authUserId = await rizom.auth.getAuthUserId({
+		const authUserId = await rime.auth.getAuthUserId({
 			slug: config.slug,
 			id: originalDoc.id
 		});
 
 		if (!authUserId) {
-			throw new RizomError(RizomError.OPERATION_ERROR, 'user not found');
+			throw new RimeError(RimeError.OPERATION_ERROR, 'user not found');
 		}
 
 		// Assign proper better-auth role based on who perform action,
@@ -54,7 +54,7 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 			[BETTER_AUTH_ROLES.USER]: true
 		});
 
-		await rizom.auth.betterAuth.api.setRole({
+		await rime.auth.betterAuth.api.setRole({
 			headers: args.event.request.headers,
 			body: { userId: authUserId, role: role.value }
 		});

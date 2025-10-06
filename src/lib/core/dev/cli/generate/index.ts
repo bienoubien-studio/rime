@@ -9,36 +9,36 @@ export const generate = async (args: { force?: boolean }) => {
 	const { force } = args;
 
 	/**
-	 * Clear the cached .rizom folder
+	 * Clear the cached .rime folder
 	 */
 	function clearConfigCache() {
 		try {
-			rmSync(path.join(process.cwd(), '.rizom'), { recursive: true, force: true });
-			mkdirSync(path.join(process.cwd(), '.rizom'));
+			rmSync(path.join(process.cwd(), '.rime'), { recursive: true, force: true });
+			mkdirSync(path.join(process.cwd(), '.rime'));
 		} catch (err: any) {
 			logger.error(err.message);
 		}
 	}
 
 	/*
-	 * Delete routes/(rizom) folder
+	 * Delete routes/(rime) folder
 	 */
 	function clearRoutes() {
 		try {
-			rmSync(path.join(process.cwd(), 'src', 'routes', '(rizom)'), { recursive: true, force: true });
+			rmSync(path.join(process.cwd(), 'src', 'routes', '(rime)'), { recursive: true, force: true });
 		} catch (err: any) {
 			logger.error(err.message);
 		}
 	}
 
 	/**
-	 * Check for user configuration file at src/lib/config/rizom.config.ts
+	 * Check for user configuration file at src/lib/config/rime.config.ts
 	 */
 	function ensureUserConfigExists() {
-		const configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'rizom.config.ts');
+		const configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'rime.config.ts');
 
 		if (!existsSync(configPath)) {
-			throw new Error('Unable to find config, did you run rizom init');
+			throw new Error('Unable to find config, did you run rime init');
 		}
 	}
 
@@ -72,11 +72,11 @@ export const generate = async (args: { force?: boolean }) => {
 	 * Ensure sanitize config exists
 	 */
 	function ensureGeneratedConfigExists() {
-		const configGeneratedPath = path.join(process.cwd(), 'src', 'lib', 'config.generated', 'rizom.config.server.ts');
+		const configGeneratedPath = path.join(process.cwd(), 'src', 'lib', 'config.generated', 'rime.config.server.ts');
 		if (!existsSync(configGeneratedPath)) {
 			throw new Error('Unable to find generated config');
 		}
-		return path.join('$lib', 'config.generated', 'rizom.config.server.js');
+		return path.join('$lib', 'config.generated', 'rime.config.server.js');
 	}
 
 	async function run() {

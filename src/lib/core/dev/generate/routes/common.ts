@@ -23,7 +23,7 @@ export const load = async ({ locals, url }: ServerLoadEvent) => {
 
 /**
  * Error page template
- * (rizom)/+error.svelte
+ * (rime)/+error.svelte
  */
 const error = (): string => `
 <script>
@@ -40,7 +40,7 @@ const error = (): string => `
 
 /**
  * Root layout template
- * (rizom)/+layout.svelte
+ * (rime)/+layout.svelte
  */
 const rootLayout = () => `
 <script lang="ts">
@@ -62,7 +62,7 @@ const rootLayout = () => `
 
 /**
  * Root layout server template
- * (rizom)/+layout.server.ts
+ * (rime)/+layout.server.ts
  */
 const rootLayoutServer = () => `
 import type { ServerLoadEvent } from '@sveltejs/kit';
@@ -71,14 +71,14 @@ import { registerTranslation } from '${PACKAGE_NAME}/i18n/register.server.js';
 export const ssr = false;
 
 export const load = async ({ locals }: ServerLoadEvent) => {
-	const { user, rizom } = locals;
-	const translations = await registerTranslation(rizom.config.raw.panel.language);
+	const { user, rime } = locals;
+	const translations = await registerTranslation(rime.config.raw.panel.language);
 	return { user, translations };
 };`;
 
 /**
  * Login page template
- * (rizom)/panel/sign-in/+page.svelte
+ * (rime)/panel/sign-in/+page.svelte
  */
 const signInPage = () => `
 <script lang="ts">
@@ -90,7 +90,7 @@ const signInPage = () => `
 
 /**
  * Login page server template
- * (rizom)/auth/sign-in/+page@(rizom).server.ts
+ * (rime)/auth/sign-in/+page@(rime).server.ts
  */
 const signInPageServer = () => `
 import { authLoads, authActions } from '${PACKAGE_NAME}/panel/auth';
@@ -101,7 +101,7 @@ export const actions = authActions.signIn;
 
 /**
  * Forgot password page template
- * (rizom)/forgot-password/+page.svelte
+ * (rime)/forgot-password/+page.svelte
  */
 const forgotPasswordPage = () => `
 <script>
@@ -112,7 +112,7 @@ const forgotPasswordPage = () => `
 
 /**
  * Forgot password page server template
- * (rizom)/forgot-password/+page.server.ts
+ * (rime)/forgot-password/+page.server.ts
  */
 const forgotPasswordPageServer = () => `
 import { authLoads } from '${PACKAGE_NAME}/panel/auth';
@@ -122,7 +122,7 @@ export const load = authLoads.forgotPassword;
 
 /**
  * Reset password page template
- * (rizom)/reset-password/+page.svelte
+ * (rime)/reset-password/+page.svelte
  */
 const resetPasswordPage = () => `
 <script lang="ts">
@@ -134,7 +134,7 @@ const resetPasswordPage = () => `
 
 /**
  * Reset password page server template
- * (rizom)/reset-password/+page.server.ts
+ * (rime)/reset-password/+page.server.ts
  */
 const resetPasswordPageServer = () => `
 import { authLoads } from '${PACKAGE_NAME}/panel/auth';
@@ -144,13 +144,13 @@ export const load = authLoads.resetPassword;
 
 /**
  * Panel layout template
- * (rizom)/panel/+layout.svelte
+ * (rime)/panel/+layout.svelte
  */
 const panelLayout = () => `
 <script>
 	import { Panel } from '${PACKAGE_NAME}/panel/client';
 
-	import config from '${DOLLAR_LIB}/config.generated/rizom.config.js';
+	import config from '${DOLLAR_LIB}/config.generated/rime.config.js';
 	const { children, data } = $props();
 
 	const user = data.user;
@@ -163,7 +163,7 @@ const panelLayout = () => `
 
 /**
  * Panel layout server template
- * (rizom)/panel/+layout.server.ts
+ * (rime)/panel/+layout.server.ts
  */
 const panelLayoutServer = () => `
 import { type ServerLoadEvent } from '@sveltejs/kit';
@@ -175,7 +175,7 @@ export const load = async ({ locals }: ServerLoadEvent) => {
 
 /**
  * Panel page template
- * (rizom)/panel/+page.svelte
+ * (rime)/panel/+page.svelte
  */
 const panelPage = () => `
 <script>
@@ -187,7 +187,7 @@ const panelPage = () => `
 
 /**
  * Panel page load template
- * (rizom)/panel/+page.server.ts
+ * (rime)/panel/+page.server.ts
  */
 const panelPageServer = () => `
 import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
@@ -196,13 +196,13 @@ export const load = pagesLoad.dashboard;`;
 
 /**
  * Live page template
- * (rizom)/live/+page.svelte
+ * (rime)/live/+page.svelte
  */
 const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
 
-  import config from '$lib/config.generated/rizom.config.ts';
+  import config from '$lib/config.generated/rime.config.js';
 
   const { data } = $props();
 </script>
@@ -212,7 +212,7 @@ const livePage = () => `
 
 /**
  * Live page server template
- * (rizom)/live/+page.server.ts
+ * (rime)/live/+page.server.ts
  */
 const livePageServer = () => `
 import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
@@ -262,30 +262,30 @@ export const commonRoutes: Routes = {
 	'': {
 		layoutServer: mainLayout
 	},
-	'(rizom)': {
+	'(rime)': {
 		layout: rootLayout,
 		layoutServer: rootLayoutServer,
 		error: error
 	},
-	'(rizom)/panel/sign-in': {
-		'page@(rizom)': signInPage,
+	'(rime)/panel/sign-in': {
+		'page@(rime)': signInPage,
 		pageServer: signInPageServer
 	},
-	'(rizom)/forgot-password': {
+	'(rime)/forgot-password': {
 		page: forgotPasswordPage,
 		pageServer: forgotPasswordPageServer
 	},
-	'(rizom)/reset-password': {
+	'(rime)/reset-password': {
 		page: resetPasswordPage,
 		pageServer: resetPasswordPageServer
 	},
-	'(rizom)/panel': {
+	'(rime)/panel': {
 		layout: panelLayout,
 		layoutServer: panelLayoutServer,
 		page: panelPage,
 		pageServer: panelPageServer
 	},
-	'(rizom)/live': {
+	'(rime)/live': {
 		page: livePage,
 		pageServer: livePageServer
 	}

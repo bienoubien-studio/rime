@@ -1,6 +1,6 @@
 import { getRequestEvent } from '$app/server';
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
 import type { FormField, RelationField } from '$lib/fields/types.js';
@@ -10,11 +10,11 @@ import { Hooks } from '../index.server.js';
 
 export const setDefaultValues = Hooks.beforeUpsert(async (args) => {
 	const { operation, event } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	const configMap = args.context.configMap;
 
-	if (!configMap) throw new RizomError(RizomError.OPERATION_ERROR, 'missing configMap @setDefaultValues');
+	if (!configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @setDefaultValues');
 
 	let output = { ...args.data };
 	for (const [key, config] of Object.entries(configMap)) {
@@ -30,7 +30,7 @@ export const setDefaultValues = Hooks.beforeUpsert(async (args) => {
 			logger.warn(`Error in config.isEmpty for field ${key}`);
 		}
 		if (shouldAddDefault && isEmpty && hasProp('defaultValue', config)) {
-			value = await getDefaultValue({ key, config, adapter: rizom.adapter });
+			value = await getDefaultValue({ key, config, adapter: rime.adapter });
 			output = setValueAtPath(key, output, value);
 		}
 	}

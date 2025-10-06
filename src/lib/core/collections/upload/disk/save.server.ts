@@ -1,14 +1,14 @@
 import type { ImageSizesConfig } from '$lib/core/config/types.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { UploadDoc } from '$lib/types.js';
-import path from 'path';
-import { existsSync, writeFileSync, statSync, readFileSync } from 'fs';
-import { RizomError } from '$lib/core/errors/index.js';
-import { pick } from '$lib/util/object.js';
-import sharp from 'sharp';
-import { toCamelCase } from '$lib/util/string.js';
 import { normalizeFileName } from '$lib/util/file.js';
+import { pick } from '$lib/util/object.js';
+import { toCamelCase } from '$lib/util/string.js';
 import type { Dic } from '$lib/util/types.js';
 import crypto from 'crypto';
+import { existsSync, readFileSync, statSync, writeFileSync } from 'fs';
+import path from 'path';
+import sharp from 'sharp';
 
 /**
  * Compares a buffer with an existing file to determine if they are identical
@@ -151,7 +151,7 @@ export const saveFile = async (file: File, imagesSizes: ImageSizesConfig[] | fal
 			});
 		}
 	} catch (error: any) {
-		throw new RizomError(RizomError.UPLOAD, `Error while processing file: ${error.message}`);
+		throw new RimeError(RimeError.UPLOAD, `Error while processing file: ${error.message}`);
 	}
 
 	return { filename, imageSizes: sizes };

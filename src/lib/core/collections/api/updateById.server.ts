@@ -1,6 +1,6 @@
 import { PARAMS } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { trycatch } from '$lib/util/function.js';
@@ -9,10 +9,10 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 export default function (slug: CollectionSlug) {
 	//
 	async function PATCH(event: RequestEvent) {
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 
 		const id = event.params.id;
-		if (!id) throw new RizomError(RizomError.NOT_FOUND);
+		if (!id) throw new RimeError(RimeError.NOT_FOUND);
 
 		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
 		const draft = event.url.searchParams.get(PARAMS.DRAFT)
@@ -26,14 +26,14 @@ export default function (slug: CollectionSlug) {
 		}
 
 		if (data.locale) {
-			rizom.setLocale(data.locale);
+			rime.setLocale(data.locale);
 		}
 
 		const [error, document] = await trycatch(() =>
-			rizom.collection(slug).updateById({
+			rime.collection(slug).updateById({
 				id,
 				data,
-				locale: rizom.getLocale(),
+				locale: rime.getLocale(),
 				versionId,
 				draft
 			})

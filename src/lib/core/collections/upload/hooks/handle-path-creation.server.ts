@@ -11,7 +11,7 @@ import { getSegments } from '../util/path.js';
  * if it doesn't it create {upload_slug}_directories entries recursively
  */
 export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
-	const { rizom } = args.event.locals;
+	const { rime } = args.event.locals;
 	const data = args.data;
 
 	const IS_CREATE_WITHOUT_PATH = !('_path' in args.data) && args.operation === 'create';
@@ -24,7 +24,7 @@ export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 		const directorySlug = withDirectoriesSuffix(args.config.slug);
 
 		const [, dir] = await trycatch(() =>
-			rizom.collection(directorySlug).findById({
+			rime.collection(directorySlug).findById({
 				select: ['id'],
 				id: data._path
 			})
@@ -50,7 +50,7 @@ export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 
 			// Check if this segment exists
 			const [, segExists] = await trycatch(() =>
-				rizom.collection(directorySlug).findById({
+				rime.collection(directorySlug).findById({
 					select: ['id'],
 					id: currentPath
 				})
@@ -59,7 +59,7 @@ export const handlePathCreation = Hooks.beforeUpsert<'upload'>(async (args) => {
 			// If the segment doesn't exist, create it
 			if (!segExists) {
 				const [createError] = await trycatch(() =>
-					rizom.collection(directorySlug).create({
+					rime.collection(directorySlug).create({
 						data: {
 							id: currentPath,
 							parent: parentPath,

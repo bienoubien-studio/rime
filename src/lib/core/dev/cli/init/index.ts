@@ -14,7 +14,7 @@ type Args = {
 	name?: string;
 };
 
-const PACKAGE = 'rizom';
+const PACKAGE = 'rime';
 
 export const init = async ({ force, name: incomingName }: Args) => {
 	const projectRoot = process.cwd();
@@ -26,14 +26,14 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		// Define variables with their update behavior
 		const envUpdates: Record<string, string> = {
 			BETTER_AUTH_SECRET: randomId(32),
-			PUBLIC_RIZOM_URL: 'http://localhost:5173',
-			'# RIZOM_SMTP_USER': 'user@mail.com',
-			'# RIZOM_SMTP_PASSWORD': 'supersecret',
-			'# RIZOM_SMTP_PORT': '465',
-			'# RIZOM_SMTP_HOST': 'smtphost.com',
-			RIZOM_LOG_LEVEL: 'TRACE',
-			RIZOM_LOG_TO_FILE: 'true',
-			RIZOM_LOG_TO_FILE_MAX_DAYS: '1'
+			PUBLIC_RIME_URL: 'http://localhost:5173',
+			'# RIME_SMTP_USER': 'user@mail.com',
+			'# RIME_SMTP_PASSWORD': 'supersecret',
+			'# RIME_SMTP_PORT': '465',
+			'# RIME_SMTP_HOST': 'smtphost.com',
+			RIME_LOG_LEVEL: 'TRACE',
+			RIME_LOG_TO_FILE: 'true',
+			RIME_LOG_TO_FILE_MAX_DAYS: '1'
 		};
 
 		if (existsSync(envPath)) {
@@ -62,14 +62,14 @@ export const init = async ({ force, name: incomingName }: Args) => {
 
 	function setConfig(name: string) {
 		const configDirPath = path.join(process.cwd(), 'src', 'lib', 'config');
-		const configPath = path.join(configDirPath, 'rizom.config.ts');
+		const configPath = path.join(configDirPath, 'rime.config.ts');
 
 		if (!existsSync(configPath)) {
 			if (!existsSync(configDirPath)) {
 				mkdirSync(configDirPath);
 			}
 			writeFileSync(configPath, templates.defaultConfig(name.toString()));
-			logger.info('[✓] Config created src/lib/config/rizom.config.ts');
+			logger.info('[✓] Config created src/lib/config/rime.config.ts');
 		} else {
 			logger.info('[✓] Config already exists (skip)');
 		}
@@ -101,21 +101,21 @@ export const init = async ({ force, name: incomingName }: Args) => {
 			throw new Error("Can't find vite configuration file");
 		}
 		const content = readFileSync(configPath, 'utf-8');
-		if (!content.includes('rizom()')) {
+		if (!content.includes('rime()')) {
 			// Add import
-			const newContent = content.replace(/(import .* from .*;\n?)/, `$1import { rizom } from '${PACKAGE}/vite';\n`);
+			const newContent = content.replace(/(import .* from .*;\n?)/, `$1import { rime } from '${PACKAGE}/vite';\n`);
 
 			// Add plugin to the list - ensure it's after sveltekit()
 			const updatedContent = newContent.replace(/plugins:\s*\[([\s\S]*?)\]/, (match, plugins) => {
 				// Check if sveltekit() is in the plugins list
 				if (plugins.includes('sveltekit()')) {
-					// Add rizom() after sveltekit()
+					// Add rime() after sveltekit()
 					return plugins.includes('sveltekit()')
-						? match.replace('sveltekit()', 'sveltekit(), rizom()')
-						: `plugins: [${plugins}, rizom()]`;
+						? match.replace('sveltekit()', 'sveltekit(), rime()')
+						: `plugins: [${plugins}, rime()]`;
 				} else {
-					// If sveltekit() isn't found, add rizom() at the end
-					return `plugins: [${plugins}, rizom()]`;
+					// If sveltekit() isn't found, add rime() at the end
+					return `plugins: [${plugins}, rime()]`;
 				}
 			});
 			writeFileSync(configPath, updatedContent);

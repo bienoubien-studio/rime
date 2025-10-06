@@ -1,11 +1,11 @@
-import { getExtensionFromMimeType, getMimeTypeFromExtension } from './mime.js';
 import type { JsonFile } from '$lib/core/collections/upload/upload.js';
-import { readFile } from 'fs/promises';
-import { fileSizeToString } from '$lib/util/file.js';
-import { RizomError } from '$lib/core/errors/index.js';
-import fs from 'fs';
-import path from 'path';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
+import { fileSizeToString } from '$lib/util/file.js';
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import path from 'path';
+import { getExtensionFromMimeType, getMimeTypeFromExtension } from './mime.js';
 
 export const jsonFileToFile = (jsonFile: JsonFile) => {
 	// Convert base64 to Blob
@@ -14,7 +14,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 	const base64Content = base64String.split(',')[1];
 
 	if (!base64Content) {
-		throw new RizomError(RizomError.UPLOAD, 'Invalid base64 data format');
+		throw new RimeError(RimeError.UPLOAD, 'Invalid base64 data format');
 	}
 
 	try {
@@ -40,7 +40,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 
 		const extension = getExtensionFromMimeType(mimeType);
 		if (!extension) {
-			throw new RizomError(RizomError.UPLOAD, 'File type not supported');
+			throw new RimeError(RimeError.UPLOAD, 'File type not supported');
 		}
 
 		const blob = new Blob([byteArray], { type: mimeType });
@@ -59,7 +59,7 @@ export const jsonFileToFile = (jsonFile: JsonFile) => {
 			})
 		};
 	} catch {
-		throw new RizomError(RizomError.UPLOAD, 'Invalid base64 content');
+		throw new RimeError(RimeError.UPLOAD, 'Invalid base64 content');
 	}
 };
 
@@ -90,7 +90,7 @@ export async function filePathToFile(filePath: string): Promise<File> {
 	try {
 		// Check if file exists
 		if (!fs.existsSync(filePath)) {
-			throw new RizomError(RizomError.UPLOAD, `File not found: ${filePath}`);
+			throw new RimeError(RimeError.UPLOAD, `File not found: ${filePath}`);
 		}
 
 		// Read file stats and content
@@ -112,6 +112,6 @@ export async function filePathToFile(filePath: string): Promise<File> {
 		});
 	} catch (error: any) {
 		logger.error('Error creating File from path:', error.message);
-		throw new RizomError(RizomError.UPLOAD, `Failed to create File from path: ${error.message}`);
+		throw new RimeError(RimeError.UPLOAD, `Failed to create File from path: ${error.message}`);
 	}
 }

@@ -1,12 +1,12 @@
 import { templateUniqueRequired } from '$lib/adapter-sqlite/generate-schema/templates.server.js';
 import { getSchemaColumnNames } from '$lib/adapter-sqlite/generate-schema/util.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import type { GenericDoc } from '$lib/types.js';
 import { capitalize } from '$lib/util/string.js';
-import type { RelationFieldBuilder } from './index.js';
 import type { ToSchema, ToType } from '../index.server.js';
 import type { FieldHook, RelationField, RelationValue } from '../types.js';
+import type { RelationFieldBuilder } from './index.js';
 
 export const toSchema: ToSchema<RelationFieldBuilder<any>> = (field, parentPath) => {
 	const { camel, snake } = getSchemaColumnNames({ name: field.name, parentPath });
@@ -27,10 +27,10 @@ export const ensureRelationExists: FieldHook<RelationField<GenericDoc>> = async 
 
 	const retrieveRelation = async (id: string) => {
 		try {
-			return await event.locals.rizom.collection(config.relationTo).findById({ id, select: ['id'] });
+			return await event.locals.rime.collection(config.relationTo).findById({ id, select: ['id'] });
 		} catch (err: any) {
 			logger.error('Error in relation beforValidate hook : ' + err.message);
-			throw new RizomError(RizomError.OPERATION_ERROR, err.message);
+			throw new RimeError(RimeError.OPERATION_ERROR, err.message);
 		}
 	};
 

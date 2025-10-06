@@ -25,9 +25,9 @@ export interface Config {
 	/** The database name inside ./db folder */
 	$database: string;
 	/** List of Collection  */
-	collections: Collection<string>[];
+	collections?: Collection<string>[];
 	/** List of Area  */
-	areas: Area<string>[];
+	areas?: Area<string>[];
 	/** List of locales for document i18£n
 	 * @example
 	 * localization: {
@@ -347,8 +347,8 @@ export type ServerConfigProps =
 	| '$auth';
 
 export type SanitizedConfigClient = Omit<Config, ServerConfigProps | 'collections' | 'areas'> & {
-	collections: BuiltCollectionClient[];
-	areas: BuiltAreaClient[];
+	collections?: BuiltCollectionClient[];
+	areas?: BuiltAreaClient[];
 };
 export type BuiltConfigClient = Omit<BuiltConfig, ServerConfigProps | 'panel' | 'collections' | 'areas'> & {
 	collections: BuiltCollectionClient[];

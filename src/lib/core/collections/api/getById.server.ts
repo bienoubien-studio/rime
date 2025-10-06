@@ -7,7 +7,7 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 export default function (slug: CollectionSlug) {
 	//
 	async function GET(event: RequestEvent) {
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 		const id = event.params.id || '-1';
 
 		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
@@ -17,9 +17,9 @@ export default function (slug: CollectionSlug) {
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const [error, document] = await trycatch(() =>
-			rizom.collection(slug).findById({
+			rime.collection(slug).findById({
 				id,
-				locale: rizom.getLocale(),
+				locale: rime.getLocale(),
 				depth,
 				draft,
 				versionId

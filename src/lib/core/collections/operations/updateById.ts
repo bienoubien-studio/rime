@@ -1,5 +1,5 @@
 import type { CompiledCollection } from '$lib/core/config/types.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
@@ -27,7 +27,7 @@ type Args<T> = {
 export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T>) => {
 	//
 	const { event, locale, id, draft, isFallbackLocale = undefined, isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 	let { data } = args;
 	let config = args.config;
 
@@ -68,15 +68,15 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 	}
 
 	const makeMessage = (name: string) => `missing ${name} @uppdateById`;
-	if (!context.configMap) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('configMap'));
-	if (!context.originalConfigMap) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('originalConfigMap'));
-	if (!context.originalDoc) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('originalDoc'));
-	if (!context.versionOperation) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('versionOperation'));
-	if (!context.params.versionId) throw new RizomError(RizomError.OPERATION_ERROR, makeMessage('versionId'));
+	if (!context.configMap) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('configMap'));
+	if (!context.originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalConfigMap'));
+	if (!context.originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalDoc'));
+	if (!context.versionOperation) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionOperation'));
+	if (!context.params.versionId) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionId'));
 
 	const incomingPaths = Object.keys(context.configMap);
 
-	const { id: updatedId } = await rizom.adapter.collection.update({
+	const { id: updatedId } = await rime.adapter.collection.update({
 		id,
 		versionId: context.params.versionId,
 		slug: config.slug,
@@ -90,7 +90,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		ownerId: context.params.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -99,7 +99,7 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		ownerId: context.params.versionId,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config
 	});
 
@@ -108,14 +108,14 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 		configMap: context.configMap,
 		data,
 		incomingPaths,
-		adapter: rizom.adapter,
+		adapter: rime.adapter,
 		config,
 		locale,
 		blocksDiff,
 		treeDiff
 	});
 
-	const document = await rizom.collection(config.slug).findById({
+	const document = await rime.collection(config.slug).findById({
 		id: updatedId,
 		locale,
 		versionId: context.params.versionId

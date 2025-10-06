@@ -13,7 +13,7 @@ import { toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
 import { augmentLabel } from './augment-label.js';
 
-export const config = <S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection => {
+export const create = <S extends string>(slug: S, incomingConfig: CollectionWithoutSlug<S>): BuiltCollection => {
 	//
 	const collection: Collection<S> = { ...incomingConfig, slug };
 	const initial = { ...collection };

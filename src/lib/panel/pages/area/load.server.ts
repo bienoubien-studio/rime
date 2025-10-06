@@ -1,6 +1,6 @@
 import { apiUrl } from '$lib/core/api/index.js';
 import { PARAMS } from '$lib/core/constant.js';
-import { RizomError } from '$lib/core/errors/index.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { AreaSlug } from '$lib/core/types/doc.js';
 import type { AreaDocData } from '$lib/panel/index.js';
@@ -13,9 +13,9 @@ import type { ServerLoadEvent } from '@sveltejs/kit';
 export default function <V extends boolean = boolean>(slug: AreaSlug, withVersions?: V) {
 	//
 	const load = async ({ locals, url, fetch }: ServerLoadEvent) => {
-		const { rizom, locale } = locals;
+		const { rime, locale } = locals;
 
-		const area = rizom.area(slug);
+		const area = rime.area(slug);
 		const authorizedRead = area.config.access.read(locals.user, {});
 		const authorizedUpdate = area.config.access.update(locals.user, {});
 
@@ -49,7 +49,7 @@ export default function <V extends boolean = boolean>(slug: AreaSlug, withVersio
 			const promise = fetch(url).then((r) => r.json());
 			const [error, result] = await trycatch(promise);
 			if (error || !Array.isArray(result.docs)) {
-				throw new RizomError(RizomError.OPERATION_ERROR, 'while getting versions');
+				throw new RimeError(RimeError.OPERATION_ERROR, 'while getting versions');
 			}
 			data = { ...data, versions: result.docs };
 		}

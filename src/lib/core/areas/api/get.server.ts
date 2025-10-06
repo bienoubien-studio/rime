@@ -8,7 +8,7 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 export default function (slug: AreaSlug) {
 	//
 	async function GET(event: RequestEvent) {
-		const { rizom } = event.locals;
+		const { rime } = event.locals;
 
 		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
 		const paramSelect = event.url.searchParams.get(PARAMS.SELECT);
@@ -19,7 +19,7 @@ export default function (slug: AreaSlug) {
 		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
 
 		const params: Dic = {
-			locale: rizom.getLocale(),
+			locale: rime.getLocale(),
 			draft,
 			versionId,
 			depth
@@ -29,7 +29,7 @@ export default function (slug: AreaSlug) {
 			params.select = paramSelect.split(',');
 		}
 
-		const [error, doc] = await trycatch(() => rizom.area(slug).find(params));
+		const [error, doc] = await trycatch(() => rime.area(slug).find(params));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

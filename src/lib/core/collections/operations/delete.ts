@@ -17,7 +17,7 @@ type DeleteArgs = {
 
 export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 	const { config, event, locale, limit, offset, sort, query, isSystemOperation } = args;
-	const { rizom } = event.locals;
+	const { rime } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {
 		params: { locale, limit, offset, sort, query },
@@ -34,7 +34,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 		context = result.context;
 	}
 
-	const documentsToDelete = await rizom.adapter.collection.find({
+	const documentsToDelete = await rime.adapter.collection.find({
 		slug: config.slug,
 		query,
 		limit,
@@ -46,7 +46,7 @@ export const deleteDocs = async (args: DeleteArgs): Promise<string[]> => {
 	});
 
 	const promisesDelete = documentsToDelete.map(({ id }) => {
-		return rizom.collection(config.slug).deleteById({ id });
+		return rime.collection(config.slug).deleteById({ id });
 	});
 
 	const ids = await Promise.all(promisesDelete);

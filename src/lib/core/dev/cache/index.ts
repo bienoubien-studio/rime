@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 const dev = process.env.NODE_ENV === 'development';
-const cachePath = path.resolve(process.cwd(), '.rizom');
+const cachePath = path.resolve(process.cwd(), '.rime');
 if (!fs.existsSync(cachePath) && dev) {
 	fs.mkdirSync(cachePath);
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { JSONContent } from '@tiptap/core';
-	import type { RichTextNodeRenderer } from 'rizom/fields/richText';
+	import type { RichTextNodeRenderer } from 'rime/fields/richText';
 	import RenderRichText from './render-rich-text.svelte';
 
 	type Props = {
