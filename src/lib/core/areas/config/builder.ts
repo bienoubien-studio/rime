@@ -7,7 +7,7 @@ import type { Area, BuiltArea } from '$lib/core/config/types.js';
 import { capitalize, toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
 
-export const config = <S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): BuiltArea => {
+export const create = <S extends string>(slug: S, incomingConfig: AreaWithoutSlug<S>): BuiltArea => {
 	const area: Area<S> = { ...incomingConfig, slug };
 
 	const initial = { ...area };
