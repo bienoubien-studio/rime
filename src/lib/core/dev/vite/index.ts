@@ -100,7 +100,7 @@ export function rime(): Plugin {
 			const isServer = this.environment?.config?.consumer === 'server';
 
 			if (id === resolvedVModule(VCoreId)) {
-				const corePath = isServer ? 'rime/config/server' : 'rime/config/client';
+				const corePath = isServer ? '@bienbien/rime/config/server' : '@bienbien/rime/config/client';
 				return `export * from '${corePath}';`;
 			}
 

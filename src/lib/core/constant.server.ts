@@ -1,1 +1,1 @@
-export const PACKAGE_NAME = 'rime';
+export const PACKAGE_NAME = '@bienbien/rime';

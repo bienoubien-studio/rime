@@ -14,7 +14,7 @@ type Args = {
 	name?: string;
 };
 
-const PACKAGE = 'rime';
+const PACKAGE = '@bienbien/rime';
 
 export const init = async ({ force, name: incomingName }: Args) => {
 	const projectRoot = process.cwd();

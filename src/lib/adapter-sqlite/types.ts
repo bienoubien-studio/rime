@@ -1,8 +1,8 @@
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GetRegisterType } from 'rime';
-import type { PrototypeSlug } from '../types.js';
-import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
+import type { GetRegisterType } from '@bienbien/rime';
 import type { ColumnBaseConfig, ColumnDataType } from 'drizzle-orm';
+import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-core';
+import type { PrototypeSlug } from '../types.js';
 
 // Basic types needed across multiple files
 export type GenericAdapterInterfaceArgs = {
