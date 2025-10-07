@@ -24,7 +24,7 @@
 	let error = $state(false);
 	let open = $state(false);
 	let resourceDialogOpen = $state(false);
-	let isTargetBlank = $state((editor && editor.getAttributes('link').target) || false);
+	let isTargetBlank = $state((editor && editor.getAttributes('link').target === '_blank') || false);
 
 	/**
 	 * Logic to get internal resources e.g., collections, areas
@@ -65,7 +65,7 @@
 	$effect(() => {
 		if (open) {
 			value = (editor && editor.getAttributes('link').href) || '';
-			isTargetBlank = (editor && editor.getAttributes('link').target) || false;
+			isTargetBlank = (editor && editor.getAttributes('link').target === '_blank') || false;
 		}
 	});
 
