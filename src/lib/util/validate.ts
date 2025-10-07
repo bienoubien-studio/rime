@@ -91,10 +91,17 @@ export const url = (value: unknown) => {
 	if (typeof value !== 'string') {
 		return RimeFormError.NOT_A_STRING;
 	}
-	if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z]{2,}\b([-a-zA-Z0-9@:%_+.~#?&/=,]*)$/.test(value)) {
+
+	try {
+		const url = new URL(value);
+		// Only allow http and https protocols
+		if (!['http:', 'https:'].includes(url.protocol)) {
+			return RimeFormError.INVALID_URL;
+		}
+		return true;
+	} catch {
 		return RimeFormError.INVALID_URL;
 	}
-	return true;
 };
 
 /**
