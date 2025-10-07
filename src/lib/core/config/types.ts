@@ -56,33 +56,9 @@ export interface Config {
 	$trustedOrigins?: string[];
 	/** Additional panel users config  */
 	staff?: AdditionalStaffConfig;
-	panel?: {
-		/** who can accesss the panel */
-		$access?: (user: User | undefined) => boolean;
-		/** Custom panel routes that render a given component */
-		routes?: Record<string, CustomPanelRoute>;
-		/** The panel language, "en" or "fr" supports only */
-		language?: PanelLanguage;
-		/** Sidebar navigation groups labels and icons */
-		navigation?: NavigationConfig;
-		/** Specific components */
-		components?: {
-			/** Dashboard header */
-			header?: Component[];
-			/** Collection header */
-			collectionHeader?: Component[];
-			/** Full dashboard component */
-			dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
-		};
-		/** a relative path from the "static" directory or an external url
-		 * @example
-		 * // for static/panel/custom.css
-		 * css : '/panel/custom.css'
-		 */
-		css?: string;
-	};
+	panel?: PanelConfig;
 	/** Enable built-in API cache */
-	$cache?: { isEnabled?: (event: RequestEvent) => boolean }; // server
+	$cache?: CacheConfig;
 	/** SMTP config */
 	$smtp?: SMTPConfig;
 	/** Custom API routes
@@ -126,6 +102,34 @@ export type AdditionalStaffConfig = {
 	label?: CollectionLabel;
 	fields?: FieldBuilder<Field>[];
 };
+
+export type PanelConfig = {
+	/** who can accesss the panel */
+	$access?: (user: User | undefined) => boolean;
+	/** Custom panel routes that render a given component */
+	routes?: Record<string, CustomPanelRoute>;
+	/** The panel language, "en" or "fr" supports only */
+	language?: PanelLanguage;
+	/** Sidebar navigation groups labels and icons */
+	navigation?: NavigationConfig;
+	/** Specific components */
+	components?: {
+		/** Dashboard header */
+		header?: Component[];
+		/** Collection header */
+		collectionHeader?: Component[];
+		/** Full dashboard component */
+		dashboard?: Component<{ entries: DashboardEntry[]; user?: User }>;
+	};
+	/** a relative path from the "static" directory or an external url
+	 * @example
+	 * // for static/panel/custom.css
+	 * css : '/panel/custom.css'
+	 */
+	css?: string;
+};
+
+export type CacheConfig = { isEnabled?: (event: RequestEvent) => boolean };
 
 export type RouteConfig = {
 	POST?: RequestHandler;
