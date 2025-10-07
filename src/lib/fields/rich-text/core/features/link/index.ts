@@ -30,12 +30,14 @@ const linkItem: RichTextFeatureMark = {
 };
 
 export type LinkFeatureOptions = LinkOptions & {
-	resources: Array<{ slug: PrototypeSlug; query?: string }>;
+	resources?: Array<{ slug: PrototypeSlug; query?: string }>;
 };
 export const LinkFeature = (options?: Partial<LinkFeatureOptions>): RichTextFeature => ({
 	extension: linkExtension
 		? linkExtension.configure({
 				openOnClick: false,
+				autolink: false,
+				protocols: ['mailto', 'tel', 'http', 'https'],
 				...options
 			})
 		: undefined,

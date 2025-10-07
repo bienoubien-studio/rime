@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { env } from '$env/dynamic/public';
 	import { apiUrl } from '$lib/core/api';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import IconButton from '$lib/fields/rich-text/component/bubble-menu/icon-button/icon-button.svelte';
@@ -7,9 +8,10 @@
 	import Input from '$lib/panel/components/ui/input/input.svelte';
 	import { API_PROXY, getAPIProxyContext, type Resource } from '$lib/panel/context/api-proxy.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
-	import { url as validateURL } from '$lib/util/validate.js';
+	import validate from '$lib/util/validate.js';
 	import { CornerDownLeft, ExternalLink, Link2, Newspaper, Trash } from '@lucide/svelte';
 	import type { Editor } from '@tiptap/core';
+	import { watch } from 'runed';
 	import type { LinkFeatureOptions } from '..';
 	import type { RichTextContext } from '../../../types';
 	import './link-selector.css';
@@ -20,10 +22,13 @@
 
 	let value = $state((editor && editor.getAttributes('link').href) || '');
 	let error = $state(false);
-	let resourceDialogOpen = $state(false);
 	let open = $state(false);
-	let isTargetBlank = $state(false);
+	let resourceDialogOpen = $state(false);
+	let isTargetBlank = $state((editor && editor.getAttributes('link').target) || false);
 
+	/**
+	 * Logic to get internal resources e.g., collections, areas
+	 */
 	const APIProxy = getAPIProxyContext(API_PROXY.DOCUMENT);
 	const locale = getLocaleContext();
 	let resources = $state<Resource<LinkResource[]>[]>([]);
@@ -43,6 +48,7 @@
 		}
 	});
 
+	/** Create a flat map of all resources */
 	$effect(() => {
 		const notNull = (d: LinkResource[] | null): d is LinkResource[] => d !== null;
 		resourcesFlatMap = resources
@@ -52,27 +58,72 @@
 			.filter((r) => !!r.url);
 	});
 
+	/**
+	 * Whenever the url input opened and the selection is active
+	 * get initial values
+	 */
 	$effect(() => {
 		if (open) {
 			value = (editor && editor.getAttributes('link').href) || '';
+			isTargetBlank = (editor && editor.getAttributes('link').target) || false;
 		}
 	});
 
+	/**
+	 * Whenver the bubble-menu is closed,
+	 *	close the linnk input
+	 */
 	$effect(() => {
 		if (!context.bubbleOpen) {
 			open = false;
 		}
 	});
 
+	/**
+	 * Validate url whenever value changes
+	 */
 	let urlState = $derived.by(() => {
 		let transformedUrl = value;
-		// Add https:// if needed
-		if (value && !value.includes('http')) {
-			transformedUrl = `https://${value}`;
+		let isValid = false;
+
+		if (!value) {
+			return { url: '', isValid: false };
 		}
+
+		// Handle different URL types
+		// mailto
+		if (value.startsWith('mailto:')) {
+			const email = value.replace('mailto:', '');
+			isValid = validate.email(email) === true;
+			transformedUrl = value;
+		}
+		// tel
+		else if (value.startsWith('tel:')) {
+			const phone = value.replace('tel:', '');
+			isValid = validate.tel(phone) === true;
+			transformedUrl = value;
+		}
+		// Anchor link
+		else if (value.startsWith('#')) {
+			const anchor = value.slice(1);
+			isValid = validate.slug(anchor) === true;
+			transformedUrl = value;
+		}
+		// relative url
+		else if (value.startsWith('/')) {
+			transformedUrl = `${env.PUBLIC_RIME_URL}${value}`;
+			console.log(transformedUrl);
+			isValid = validate.url(transformedUrl) === true;
+		}
+		// Only validate if it already has a protocol
+		else {
+			isValid = value.includes('://') ? validate.url(value) === true : false;
+			transformedUrl = value;
+		}
+
 		return {
-			url: transformedUrl,
-			isValid: validateURL(transformedUrl) === true
+			url: value,
+			isValid
 		};
 	});
 
@@ -87,21 +138,39 @@
 		open = false;
 	}
 
-	$effect(() => {
-		if (urlState.isValid) {
-			editor
-				.chain()
-				.focus()
-				.setLink({ href: urlState.url, target: isTargetBlank ? '_blank' : '_self' })
-				.run();
+	/** Whenever the target change, update editor content */
+	watch(
+		() => isTargetBlank,
+		(current, previous) => {
+			if (current !== previous && urlState.isValid) {
+				editor
+					.chain()
+					.focus()
+					.setLink({ href: urlState.url, target: isTargetBlank ? '_blank' : '_self' })
+					.run();
+			}
 		}
-	});
+	);
 
 	function onDelete() {
 		editor.chain().focus().unsetLink().run();
 		value = '';
 		open = false;
 	}
+
+	function handleEscape(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			open = false;
+			resourceDialogOpen = false;
+		}
+	}
+
+	$effect(() => {
+		if (open) {
+			addEventListener('keydown', handleEscape);
+		}
+		return () => removeEventListener('keydown', handleEscape);
+	});
 </script>
 
 <div class="rz-link-selector">
@@ -129,7 +198,7 @@
 					/>
 					<Button size="icon-sm" variant="ghost" icon={Trash} onclick={onDelete} />
 				{:else}
-					{#if options?.resources.length}
+					{#if options?.resources?.length}
 						<Button onclick={() => (resourceDialogOpen = true)} size="icon-sm" icon={Newspaper} variant="ghost" />
 					{/if}
 					<Button type="submit" variant="ghost" size="icon-sm" icon={CornerDownLeft}></Button>
