@@ -10,26 +10,26 @@ export default function (slug: AreaSlug) {
 	async function GET(event: RequestEvent) {
 		const { rime } = event.locals;
 
-		const paramDepth = event.url.searchParams.get(PARAMS.DEPTH);
-		const paramSelect = event.url.searchParams.get(PARAMS.SELECT);
-		const versionId = event.url.searchParams.get(PARAMS.VERSION_ID) || undefined;
-		const draft = event.url.searchParams.get(PARAMS.DRAFT)
-			? event.url.searchParams.get(PARAMS.DRAFT) === 'true'
-			: undefined;
-		const depth = typeof paramDepth === 'string' ? parseInt(paramDepth) : 0;
+		const params = event.url.searchParams;
+		const areaAPI = rime.area(slug);
 
-		const params: Dic = {
-			locale: rime.getLocale(),
-			draft,
-			versionId,
-			depth
-		};
-
-		if (paramSelect) {
-			params.select = paramSelect.split(',');
+		function buildSelect(params: typeof event.url.searchParams) {
+			const paramSelect = params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined;
+			if (paramSelect && paramSelect.includes('title') && !paramSelect.includes(areaAPI.config.asTitle)) {
+				paramSelect.push(areaAPI.config.asTitle);
+			}
+			return paramSelect;
 		}
 
-		const [error, doc] = await trycatch(() => rime.area(slug).find(params));
+		const apiParams: Dic = {
+			locale: rime.getLocale(),
+			draft: params.get(PARAMS.DRAFT) ? params.get(PARAMS.DRAFT) === 'true' : undefined,
+			versionId: params.get(PARAMS.VERSION_ID) || undefined,
+			depth: params.get(PARAMS.DEPTH) ? parseInt(params.get(PARAMS.DEPTH)!) : 0,
+			select: buildSelect(params)
+		};
+
+		const [error, doc] = await trycatch(() => rime.area(slug).find(apiParams));
 
 		if (error) {
 			return handleError(error, { context: 'api' });

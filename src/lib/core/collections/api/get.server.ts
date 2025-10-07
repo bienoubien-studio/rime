@@ -16,8 +16,17 @@ export default function (slug: CollectionSlug) {
 			.filter((key) => key.startsWith('where'))
 			.toArray().length;
 
-		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined;
+		const collectionAPI = rime.collection(slug);
 
+		function buildSelect(params: typeof event.url.searchParams) {
+			const paramSelect = params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined;
+			if (paramSelect && paramSelect.includes('title') && !paramSelect.includes(collectionAPI.config.asTitle)) {
+				paramSelect.push(collectionAPI.config.asTitle);
+			}
+			return paramSelect;
+		}
+
+		const query = hasQueryParams ? normalizeQuery(event.url.search.substring(1)) : undefined;
 		const apiParams = {
 			locale: rime.getLocale(),
 			sort: params.get(PARAMS.SORT) || undefined,
@@ -26,10 +35,10 @@ export default function (slug: CollectionSlug) {
 			offset: params.get(PARAMS.OFFSET) ? parseInt(params.get(PARAMS.OFFSET)!) : undefined,
 			draft: params.get(PARAMS.DRAFT) ? params.get(PARAMS.DRAFT) === 'true' : undefined,
 			query,
-			select: params.get(PARAMS.SELECT) ? params.get(PARAMS.SELECT)!.split(',') : undefined
+			select: buildSelect(params)
 		};
 
-		const [error, docs] = await trycatch(() => rime.collection(slug).find(apiParams));
+		const [error, docs] = await trycatch(() => collectionAPI.find(apiParams));
 
 		if (error) {
 			return handleError(error, { context: 'api' });
