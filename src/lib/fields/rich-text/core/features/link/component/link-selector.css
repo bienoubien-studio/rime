@@ -1,4 +1,4 @@
-.rz-rich-text-link {
+.rz-rich-text__editor a {
 	text-decoration: underline;
 	text-underline-offset: 3px;
 	cursor: pointer;

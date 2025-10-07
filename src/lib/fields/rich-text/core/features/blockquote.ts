@@ -1,9 +1,8 @@
 import { TextQuote } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 import Blockquote from '@tiptap/extension-blockquote';
+import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 
 const blockquoteFeatureNode: RichTextFeatureNode = {
-	name: 'blockquote',
 	label: 'Blockquote',
 	icon: TextQuote,
 	isActive: ({ editor }) => editor.isActive('blockquote'),
@@ -16,7 +15,6 @@ const blockquoteFeatureNode: RichTextFeatureNode = {
 };
 
 export const BlockquoteFeature: RichTextFeature = {
-	name: 'blockquote',
 	extension: Blockquote,
 	nodes: [blockquoteFeatureNode]
 };

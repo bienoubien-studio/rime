@@ -2,12 +2,14 @@
 	import type { Editor } from '@tiptap/core';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
-	import type { RichTextFeature } from '../../core/types.js';
+	import type { RichTextFeature, RichTextFeatureMark, RichTextFeatureNode } from '../../core/types.js';
 	import { getRichTextContext } from '../context.svelte';
 	import './bubble-menu.css';
 	import IconButton from './icon-button/icon-button.svelte';
 	import NodeSelector from './node-selector/node-selector.svelte';
 
+	type BubbleMenuItem = (RichTextFeatureMark | RichTextFeatureNode) & { name: string; options?: any };
+	type NodeItem = RichTextFeatureNode & { name: string; options?: any };
 	type Props = {
 		editor: Editor;
 		features: RichTextFeature[];
@@ -20,12 +22,31 @@
 	let isOpen = $state(false);
 
 	// Get all node selector items from features
-	const nodeItems = $derived(features.flatMap((feature) => feature.nodes || []).filter((node) => !!node.nodeSelector));
+	const getNodeItems = (nodes: any[], feature: any): NodeItem[] =>
+		nodes
+			.map((node) => ({
+				...node,
+				name: feature.extension?.name,
+				options: feature.extension?.options
+			}))
+			.filter((node) => !!node.nodeSelector);
+
+	const nodeItems = $derived(features.flatMap((feature) => getNodeItems(feature.nodes || [], feature)));
 
 	// Get all items with bubble menu components (both nodes and marks)
+	const getBubbleMenuItems = (items: any[], feature: any): BubbleMenuItem[] =>
+		items
+			.map((item) => ({
+				...item,
+				name: feature.extension?.name,
+				options: feature.extension?.options
+			}))
+			.filter((item) => !!item.name)
+			.filter((item) => !!item.bubbleMenu);
+
 	const bubbleMenuItems = $derived([
-		...features.flatMap((feature) => feature.marks || []).filter((mark) => !!mark.bubbleMenu),
-		...features.flatMap((feature) => feature.nodes || []).filter((node) => !!node.bubbleMenu)
+		...features.flatMap((feature) => getBubbleMenuItems(feature.marks || [], feature)),
+		...features.flatMap((feature) => getBubbleMenuItems(feature.nodes || [], feature))
 	]);
 
 	const pluginKey = $derived(path);
@@ -87,7 +108,13 @@
 		{#each bubbleMenuItems as item, index (index)}
 			{#if item.bubbleMenu && item.bubbleMenu.component}
 				{@const FeatureComponent = item.bubbleMenu.component}
-				<FeatureComponent active={activeItems[item.name]} {editor} {path} context={richTextContext} />
+				<FeatureComponent
+					active={activeItems[item.name]}
+					options={item.options}
+					{editor}
+					{path}
+					context={richTextContext}
+				/>
 			{:else if item.bubbleMenu?.command}
 				<IconButton
 					active={activeItems[item.name]}

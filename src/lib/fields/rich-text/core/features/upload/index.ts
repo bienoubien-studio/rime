@@ -4,7 +4,6 @@ import type { RichTextFeature, RichTextFeatureNode } from '../../types.js';
 import { Upload } from './upload-extension.js';
 
 const uploadFeatureNode: RichTextFeatureNode = {
-	name: 'media',
 	label: 'Media',
 	icon: Images,
 	isActive: ({ editor }) => editor.isActive('richt-text-media'),
@@ -15,7 +14,6 @@ const uploadFeatureNode: RichTextFeatureNode = {
 };
 
 export const UploadFeature = (args: { slug: CollectionSlug; query?: string }): RichTextFeature => ({
-	name: 'media',
 	extension: Upload.configure(args),
 	nodes: [uploadFeatureNode]
 });

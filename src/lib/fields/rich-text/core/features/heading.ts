@@ -13,7 +13,6 @@ const headingExtension = (levels?: Level[]) =>
 // Create heading feature items for each level
 const headingItems: RichTextFeatureNode[] = [
 	{
-		name: 'heading1',
 		label: 'Heading 1',
 		icon: Heading1Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 1 }),
@@ -25,7 +24,6 @@ const headingItems: RichTextFeatureNode[] = [
 		}
 	},
 	{
-		name: 'heading2',
 		label: 'Heading 2',
 		icon: Heading2Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 2 }),
@@ -37,7 +35,6 @@ const headingItems: RichTextFeatureNode[] = [
 		}
 	},
 	{
-		name: 'heading3',
 		label: 'Heading 3',
 		icon: Heading3Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 3 }),
@@ -49,7 +46,6 @@ const headingItems: RichTextFeatureNode[] = [
 		}
 	},
 	{
-		name: 'heading4',
 		label: 'Heading 4',
 		icon: Heading4Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 4 }),
@@ -61,7 +57,6 @@ const headingItems: RichTextFeatureNode[] = [
 		}
 	},
 	{
-		name: 'heading5',
 		label: 'Heading 5',
 		icon: Heading5Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 5 }),
@@ -73,7 +68,6 @@ const headingItems: RichTextFeatureNode[] = [
 		}
 	},
 	{
-		name: 'heading6',
 		label: 'Heading 6',
 		icon: Heading6Icon,
 		isActive: ({ editor }) => editor.isActive('heading', { level: 6 }),
@@ -88,7 +82,6 @@ const headingItems: RichTextFeatureNode[] = [
 
 // Export the heading feature with all levels
 export const HeadingFeature = (...levels: Level[]): RichTextFeature => ({
-	name: 'heading',
 	extension: headingExtension(levels),
 	nodes: levels.map((number) => headingItems[number - 1])
 });

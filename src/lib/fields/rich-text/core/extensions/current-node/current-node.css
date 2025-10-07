@@ -3,5 +3,4 @@
 	border-color: transparent;
 	position: relative;
 	z-index: 10;
-	@mixin ring var(--rz-color-spot);
 }

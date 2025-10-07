@@ -10,7 +10,6 @@ const boldExtension = Bold.configure({
 
 // Create bold feature item
 const boldItem: RichTextFeatureMark = {
-	name: 'bold',
 	label: 'Bold',
 	icon: BoldIcon,
 	isActive: ({ editor }) => editor.isActive('bold'),
@@ -21,7 +20,6 @@ const boldItem: RichTextFeatureMark = {
 
 // Export the bold feature
 export const BoldFeature: RichTextFeature = {
-	name: 'bold',
 	extension: boldExtension,
 	marks: [boldItem]
 };

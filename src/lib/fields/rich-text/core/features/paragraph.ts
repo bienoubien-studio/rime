@@ -4,7 +4,6 @@ import Paragraph from '@tiptap/extension-paragraph';
 import type { RichTextFeature, RichTextFeatureNode } from '../types.js';
 
 const paragraphFeatureNode: RichTextFeatureNode = {
-	name: 'p',
 	label: 'Paragraph',
 	icon: Text,
 	isActive: ({ editor }) => editor.isActive('paragraph'),
@@ -14,7 +13,6 @@ const paragraphFeatureNode: RichTextFeatureNode = {
 };
 
 export const ParagraphFeature: RichTextFeature = {
-	name: 'paragraph',
 	extension: Paragraph.configure(),
 	nodes: [paragraphFeatureNode]
 };

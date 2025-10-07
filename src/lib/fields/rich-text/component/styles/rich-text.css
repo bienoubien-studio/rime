@@ -38,11 +38,13 @@
 	background-color: hsl(var(--rz-color-input));
 	padding: var(--rz-size-4) var(--rz-size-3) var(--rz-size-4);
 	margin-left: var(--left-spacing);
+	width: calc(100% - var(--left-spacing));
 	min-height: var(--rz-size-11);
-	border-top: 1px solid var(--rz-input-border-color);
+	border-top: 1px solid hsl(from var(--rz-input-border-color) h s l / 0.3);
 	border-left: 1px solid var(--rz-input-border-color);
 	border-right: 1px solid var(--rz-input-border-color);
 	&:first-child {
+		border-top: 1px solid var(--rz-input-border-color);
 		border-top-left-radius: var(--rz-radius-md);
 		border-top-right-radius: var(--rz-radius-md);
 		/*border-top: none;*/
@@ -63,7 +65,7 @@
 	border-color: hsl(var(--rz-color-alert));
 }
 
-.rz-rich-text__editor .ProseMirror .is-empty::before {
+.rz-rich-text__editor .ProseMirror .is-empty:not(table)::before {
 	content: attr(data-placeholder);
 	color: hsl(var(--rz-color-fg) / 0.3);
 	float: left;
@@ -71,6 +73,7 @@
 	height: 0;
 }
 .rz-rich-text__editor .ProseMirror ul.is-empty::before,
+.rz-rich-text__editor .ProseMirror ol.is-empty::before,
 .rz-rich-text__editor .ProseMirror blockquote.is-empty::before {
 	margin-left: var(--rz-size-6);
 }

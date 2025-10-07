@@ -1,17 +1,26 @@
+import type { PrototypeSlug } from '$lib/types.js';
 import { LinkIcon } from '@lucide/svelte';
+import Link, { type LinkOptions } from '@tiptap/extension-link';
 import type { RichTextFeature, RichTextFeatureMark } from '../../types.js';
-import Link from '@tiptap/extension-link';
 import LinkSelector from './component/link-selector.svelte';
 
 // Create the link extension
-const linkExtension = Link.configure({
-	openOnClick: false,
-	HTMLAttributes: { class: 'rz-rich-text-link' }
-});
+const linkExtension = import.meta.env.SSR
+	? undefined
+	: Link.extend({
+			addOptions() {
+				return {
+					// @ts-expect-error @tiptap error
+					...this.parent?.(),
+					types: []
+				};
+			},
+			openOnClick: false,
+			HTMLAttributes: { class: 'rz-rich-text-link' }
+		});
 
 // Create link feature item
 const linkItem: RichTextFeatureMark = {
-	name: 'link',
 	label: 'Link',
 	icon: LinkIcon,
 	isActive: ({ editor }) => editor.isActive('link'),
@@ -20,9 +29,15 @@ const linkItem: RichTextFeatureMark = {
 	}
 };
 
-// Export the link feature
-export const LinkFeature: RichTextFeature = {
-	name: 'link',
-	extension: linkExtension,
-	marks: [linkItem]
+export type LinkFeatureOptions = LinkOptions & {
+	resources: Array<{ slug: PrototypeSlug; query?: string }>;
 };
+export const LinkFeature = (options?: Partial<LinkFeatureOptions>): RichTextFeature => ({
+	extension: linkExtension
+		? linkExtension.configure({
+				openOnClick: false,
+				...options
+			})
+		: undefined,
+	marks: [linkItem]
+});

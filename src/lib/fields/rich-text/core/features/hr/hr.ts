@@ -1,9 +1,9 @@
 import { SeparatorHorizontal } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 import HorizontalRule from '@tiptap/extension-horizontal-rule';
+import type { RichTextFeature, RichTextFeatureMark } from '../../types.js';
+import './hr.css';
 
 const hrItem: RichTextFeatureMark = {
-	name: 'hr',
 	label: 'Horizontal Rule',
 	icon: SeparatorHorizontal,
 	isActive: () => false,
@@ -13,7 +13,6 @@ const hrItem: RichTextFeatureMark = {
 };
 
 export const HorizontalRuleFeature: RichTextFeature = {
-	name: 'horizontal-rule',
-	extension: HorizontalRule,
+	extension: !import.meta.env.SSR ? HorizontalRule : undefined,
 	nodes: [hrItem]
 };

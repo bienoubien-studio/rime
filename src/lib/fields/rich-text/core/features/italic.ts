@@ -1,9 +1,8 @@
 import { ItalicIcon } from '@lucide/svelte';
-import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 import Italic from '@tiptap/extension-italic';
+import type { RichTextFeature, RichTextFeatureMark } from '../types.js';
 
 const italicItem: RichTextFeatureMark = {
-	name: 'italic',
 	label: 'Italic',
 	icon: ItalicIcon,
 	isActive: ({ editor }) => editor.isActive('italic'),
@@ -13,7 +12,6 @@ const italicItem: RichTextFeatureMark = {
 };
 
 export const ItalicFeature: RichTextFeature = {
-	name: 'italic',
 	extension: Italic,
 	marks: [italicItem]
 };
