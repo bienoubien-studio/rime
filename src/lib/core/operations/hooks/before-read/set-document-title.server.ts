@@ -5,8 +5,9 @@ export const setDocumentTitle = Hooks.beforeRead<'raw'>(async (args) => {
 	const config = args.config;
 	let doc = args.doc;
 
-	const hasSelect = Array.isArray(args.context.params.select) && args.context.params.select.length;
-	const shouldSetTitle = !doc.title && !hasSelect;
+	const paramSelect = args.context.params.select;
+	const hasSelect = Array.isArray(paramSelect) && paramSelect.length;
+	const shouldSetTitle = !doc.title && (!hasSelect || (hasSelect && paramSelect.includes('title')));
 
 	if (shouldSetTitle) {
 		doc = {
