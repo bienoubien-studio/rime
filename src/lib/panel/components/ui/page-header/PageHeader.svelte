@@ -4,7 +4,6 @@
 
 	// Props
 	type Props = {
-		class?: string;
 		children?: Snippet;
 		title?: Snippet;
 		bottomRight?: Snippet;
