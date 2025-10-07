@@ -1,14 +1,12 @@
 import rime from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
 
-// export { area } from '$lib/core/areas/config/builder.js';
-// export { collection } from '$lib/core/collections/config/builder.js';
-// export { Hooks } from '$lib/core/operations/hooks/index.server.js';
-// export { FieldBuilder, FormFieldBuilder } from '$lib/core/config/fields/index.js';
+export { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
+export { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 
 export { handlers, rime };
 
-declare module 'rime' {
+declare module '@bienbien/rime' {
 	// Register interfaces for plugin architecture
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface RegisterPlugins {}

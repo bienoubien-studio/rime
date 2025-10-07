@@ -338,7 +338,7 @@ export const apikey = sqliteTable("apikey", {
  *   authSessions
  * }
  *
- * declare module 'rime' {
+ * declare module '@bienbien/rime' {
  *   export interface RegisterSchema {
  *      schema: typeof schema;
  * 	 }
@@ -356,7 +356,7 @@ const schema = {
 	authSessions
 }
 
-declare module 'rime' {
+declare module '@bienbien/rime' {
 	export interface RegisterSchema {
 			schema: typeof schema;
 			tables: typeof tables;

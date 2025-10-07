@@ -113,7 +113,7 @@ const templateRegister = (config: BuiltConfig): string => {
 				'\t}'
 			]
 		: [];
-	return ["declare module 'rime' {", ...registerCollections, ...registerAreas, '}'].join('\n');
+	return ["declare module '@bienbien/rime' {", ...registerCollections, ...registerAreas, '}'].join('\n');
 };
 
 const templateDeclareVirtualModule = () =>

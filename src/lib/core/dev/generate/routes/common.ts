@@ -202,7 +202,7 @@ const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
 
-  import config from '$lib/config.generated/rime.config.js';
+  import config from '../../../lib/config.generated/rime.config.js';
 
   const { data } = $props();
 </script>
