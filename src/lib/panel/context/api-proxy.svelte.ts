@@ -3,7 +3,7 @@ import { getContext, setContext } from 'svelte';
 const API_PROXY_KEY = Symbol('api-proxy');
 
 // Define the Resource type explicitly to avoid circular references
-type Resource<T = any> = {
+export type Resource<T = any> = {
 	data: T | null;
 	isLoading: boolean;
 	error: any;
@@ -12,22 +12,24 @@ type Resource<T = any> = {
 	refresh: () => void;
 };
 
+type GetResourcesOptions = { transformData?: (input: any) => R };
+
 function createAPIProxy() {
 	// Use explicit type instead of ReturnType
 	const resources = $state<Map<string, Resource>>(new Map());
 
-	function getRessource<T>(url: string) {
+	function getRessource<T>(url: string, options?: GetResourcesOptions) {
 		// Check if we already have this resource
 		if (!resources.has(url)) {
 			// Create a new resource
-			const resource = createResource<T>(url);
+			const resource = createResource<T>(url, options);
 			resources.set(url, resource);
 		}
 
 		return resources.get(url) as Resource<T>;
 	}
 
-	function createResource<R>(url: string): Resource<R> {
+	function createResource<R>(url: string, options?: GetResourcesOptions): Resource<R> {
 		// Use $state for the resource data to make it reactive
 		let data = $state<R | null>(null);
 		let isLoading = $state(true);
@@ -53,7 +55,7 @@ function createAPIProxy() {
 					return response.json();
 				})
 				.then((json) => {
-					data = json;
+					data = options?.transformData ? options?.transformData(json) : json;
 					isLoading = false;
 				})
 				.catch((err) => {
