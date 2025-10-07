@@ -112,7 +112,6 @@
 		// relative url
 		else if (value.startsWith('/')) {
 			transformedUrl = `${env.PUBLIC_RIME_URL}${value}`;
-			console.log(transformedUrl);
 			isValid = validate.url(transformedUrl) === true;
 		}
 		// Only validate if it already has a protocol
@@ -244,6 +243,7 @@
 		:global(.rz-input) {
 			font-size: var(--rz-text-sm);
 			border-radius: var(--rz-radius-lg);
+			padding-right: var(--rz-size-24);
 		}
 
 		:global(.rz-link-selector__button) {
