@@ -219,7 +219,7 @@
 				{#if item}
 					<Command.Item
 						onSelect={() => {
-							value = item.url;
+							value = item.url.replace(env.PUBLIC_RIME_URL, '');
 							resourceDialogOpen = false;
 							onSubmit();
 						}}
