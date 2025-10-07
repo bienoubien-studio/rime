@@ -1,5 +1,9 @@
-<script lang="ts">
+<script module>
 	import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types.js';
+	export type NodeSelectorItem = RichTextFeatureNode & { name: string; options?: any };
+</script>
+
+<script lang="ts">
 	import Button from '$lib/panel/components/ui/button/button.svelte';
 	import * as Popover from '$lib/panel/components/ui/popover/index.js';
 	import { Asterisk, Check, ChevronDown } from '@lucide/svelte';
@@ -7,7 +11,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import './node-selector.css';
 
-	type Props = { editor: Editor; isMenuOpen: boolean; items: RichTextFeatureNode[] };
+	type Props = { editor: Editor; isMenuOpen: boolean; items: NodeSelectorItem[] };
 	let { editor, items, isMenuOpen }: Props = $props();
 
 	let open = $state(false);
@@ -74,7 +78,7 @@
 
 	<Popover.Portal>
 		<Popover.Content align="start" class="rz-node-selector__content">
-			{#each items as item (item.name)}
+			{#each items as item, index (index)}
 				{@const ItemIcon = item.icon}
 				<button
 					onclick={() => {

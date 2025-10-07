@@ -6,10 +6,10 @@
 	import { getRichTextContext } from '../context.svelte';
 	import './bubble-menu.css';
 	import IconButton from './icon-button/icon-button.svelte';
-	import NodeSelector from './node-selector/node-selector.svelte';
+	import NodeSelector, { type NodeSelectorItem } from './node-selector/node-selector.svelte';
 
 	type BubbleMenuItem = (RichTextFeatureMark | RichTextFeatureNode) & { name: string; options?: any };
-	type NodeItem = RichTextFeatureNode & { name: string; options?: any };
+
 	type Props = {
 		editor: Editor;
 		features: RichTextFeature[];
@@ -22,7 +22,7 @@
 	let isOpen = $state(false);
 
 	// Get all node selector items from features
-	const getNodeItems = (nodes: any[], feature: any): NodeItem[] =>
+	const getNodeItems = (nodes: any[], feature: any): NodeSelectorItem[] =>
 		nodes
 			.map((node) => ({
 				...node,
