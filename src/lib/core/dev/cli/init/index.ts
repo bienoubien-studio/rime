@@ -1,5 +1,6 @@
 import { logger } from '$lib/core/logger/index.server.js';
 import { randomId } from '$lib/util/random.js';
+import { execSync } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { cp, mkdir } from 'fs/promises';
 import path from 'path';
@@ -7,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { generate } from '../generate/index.js';
 import { prompt } from '../util.server.js';
 import { getPackageInfoByKey } from './getPackageName.js';
+import { getInstallCommand, getPackageManager } from './packageManagerUtil.js';
 import * as templates from './templates.js';
 
 type Args = {
@@ -143,42 +145,41 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		}
 	}
 
-	// async function installDeps(force = false) {
-	// 	const devDeps = ['drizzle-kit'];
-	// 	const deps = ['better-sqlite3', 'sharp'];
-	// 	if (force) {
-	// 		const packageManager = getPackageManager();
-	// 		const command = getInstallCommand(packageManager);
-	// 		execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
-	// 		logger.info('drizzle-kit & better-sqlite3 installed');
-	// 	} else {
-	// 		const packageManager = await select({
-	// 			message: 'Which package manager do you want to install dependencies with?',
-	// 			options: [
-	// 				{ value: 'npm', label: 'npm' },
-	// 				{ value: 'pnpm', label: 'pnpm' },
-	// 				{ value: 'yarn', label: 'yarn', hint: 'not tested' },
-	// 				{ value: 'bun', label: 'bun', hint: 'not tested' }
-	// 			]
-	// 		});
-	// 		if (isCancel(packageManager)) {
-	// 			outro('Operation cancelled');
-	// 			process.exit(0);
-	// 		}
-	// 		const isValidPackageManager = (name: unknown): name is PackageManagerName =>
-	// 			typeof packageManager === 'string' &&
-	// 			['pnpm', 'npm', 'yarn', 'bun'].includes(packageManager);
-	// 		if (!isValidPackageManager(packageManager)) return;
-	// 		const s = spinner();
-	// 		s.start('Installing via ' + packageManager);
-	// 		const command = getInstallCommand(packageManager);
-	// 		execSync(`${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`);
-	// 		s.stop('drizzle-kit & better-sqlite3 installed');
-	// 		s.start('Pushing schema');
-	// 		execSync(`npx drizzle-kit push`);
-	// 		s.stop('Schema pushed');
-	// 	}
-	// }
+	async function installDeps() {
+		const devDeps = ['drizzle-kit'];
+		const deps = ['@lucide/svelte', 'drizzle-orm', 'sharp', 'better-sqlite3'];
+		const packageManager = getPackageManager();
+		if (packageManager === 'pnpm') {
+			// Update package.json with pnpm configuration
+			const packageJsonPath = path.resolve(projectRoot, 'package.json');
+			if (existsSync(packageJsonPath)) {
+				const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
+
+				// Add or update pnpm configuration
+				if (!packageJson.pnpm) {
+					packageJson.pnpm = {};
+				}
+
+				// Update onlyBuiltDependencies
+				const existingBuiltDeps = packageJson.pnpm.onlyBuiltDependencies || [];
+				const newBuiltDeps = ['better-sqlite3', 'esbuild', 'sharp'];
+
+				// Merge and deduplicate
+				const mergedBuiltDeps = [...new Set([...existingBuiltDeps, ...newBuiltDeps])];
+				packageJson.pnpm.onlyBuiltDependencies = mergedBuiltDeps;
+
+				writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, '\t'), 'utf-8');
+				logger.info('[✓] Updated package.json to approve pnpm built of sharp and better-sqlite3');
+			}
+		}
+		const command = getInstallCommand(packageManager);
+		const fullCommand = `${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`;
+		logger.info(`${fullCommand}`);
+		execSync(fullCommand);
+		if (packageManager === 'pnpm') {
+			execSync('pnpm rebuild');
+		}
+	}
 
 	async function copyAssets() {
 		try {
@@ -202,10 +203,8 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
+		await installDeps();
 		await generate({ force: true });
-		// if (!skipInstall) {
-		// 	await installDeps(true);
-		// }
 	} else {
 		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
 
@@ -221,10 +220,8 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
+		await installDeps();
 		await generate({ force: true });
-		// if (!skipInstall) {
-		// 	await installDeps();
-		// }
 		logger.info('[✓] done');
 	}
 };
