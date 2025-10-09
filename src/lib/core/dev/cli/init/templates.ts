@@ -22,14 +22,12 @@ import { Collection, buildConfig } from '$rime/config';
 import { text } from '${PACKAGE}/fields';
 
 const Pages = Collection.create('pages', {
-	group: 'content',
 	fields: [text('title').isTitle()]
 });
 
 export default buildConfig({
   $database: '${name}.sqlite',
-  collections: [Pages],
-  areas: []
+  collections: [Pages]
 });
 `;
 

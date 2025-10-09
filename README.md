@@ -135,7 +135,6 @@ import { relation, link, richText, text, toggle } from '@bienbien/rime/fields';
 import { access } from "@bienbien/rime/util";
 
 const Pages = Collection.create('pages', {
-  group: 'content',
   fields: [
     text('title').isTitle().required(),
     relation('parent').to('pages'),
@@ -150,7 +149,6 @@ const Pages = Collection.create('pages', {
 
 const Settings = Area.create('settings', {
   icon: Settings2,
-  group: 'settings',
   fields: [
     toggle('maintenance'),
     link('about'),
@@ -167,7 +165,6 @@ const Medias = Collection.create('medias', {
     plural: 'Medias',
   },
   upload: true,
-  group: 'content',
   fields: [
     text('alt')
   ]
@@ -183,8 +180,7 @@ export default buildConfig({
     roles: [{ value: 'admin', label: 'Administrator' }, { value: 'editor' }],
     fields: [
       text('website')
-    ],
-    group: 'settings'
+    ]
   },
   panel: {
     $access: (user) => access.hasRoles(user, 'admin', 'editor'),

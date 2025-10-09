@@ -5,7 +5,7 @@
 		DragHandlePlugin,
 		defaultComputePositionConfig,
 		type DragHandlePluginProps
-	} from '@tiptap/extension-drag-handle';
+	} from '../../core/extensions/drag-handle/index.js';
 	import './drag-handle.css';
 
 	type Props = {

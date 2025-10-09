@@ -1,6 +1,5 @@
 import { logger } from '$lib/core/logger/index.server.js';
 import { randomId } from '$lib/util/random.js';
-import { execSync } from 'child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { cp, mkdir } from 'fs/promises';
 import path from 'path';
@@ -8,7 +7,7 @@ import { fileURLToPath } from 'url';
 import { generate } from '../generate/index.js';
 import { prompt } from '../util.server.js';
 import { getPackageInfoByKey } from './getPackageName.js';
-import { getInstallCommand, getPackageManager } from './packageManagerUtil.js';
+import { installDependencies } from './packageManagerUtil.js';
 import * as templates from './templates.js';
 
 type Args = {
@@ -145,42 +144,6 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		}
 	}
 
-	async function installDeps() {
-		const devDeps = ['drizzle-kit'];
-		const deps = ['@lucide/svelte', 'drizzle-orm', 'sharp', 'better-sqlite3'];
-		const packageManager = getPackageManager();
-		if (packageManager === 'pnpm') {
-			// Update package.json with pnpm configuration
-			const packageJsonPath = path.resolve(projectRoot, 'package.json');
-			if (existsSync(packageJsonPath)) {
-				const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-
-				// Add or update pnpm configuration
-				if (!packageJson.pnpm) {
-					packageJson.pnpm = {};
-				}
-
-				// Update onlyBuiltDependencies
-				const existingBuiltDeps = packageJson.pnpm.onlyBuiltDependencies || [];
-				const newBuiltDeps = ['better-sqlite3', 'esbuild', 'sharp'];
-
-				// Merge and deduplicate
-				const mergedBuiltDeps = [...new Set([...existingBuiltDeps, ...newBuiltDeps])];
-				packageJson.pnpm.onlyBuiltDependencies = mergedBuiltDeps;
-
-				writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, '\t'), 'utf-8');
-				logger.info('[✓] Updated package.json to approve pnpm built of sharp and better-sqlite3');
-			}
-		}
-		const command = getInstallCommand(packageManager);
-		const fullCommand = `${command} -D ${devDeps.join(' ')} && ${command} ${deps.join(' ')}`;
-		logger.info(`${fullCommand}`);
-		execSync(fullCommand);
-		if (packageManager === 'pnpm') {
-			execSync('pnpm rebuild');
-		}
-	}
-
 	async function copyAssets() {
 		try {
 			const currentDir = path.dirname(fileURLToPath(import.meta.url));
@@ -203,7 +166,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
-		await installDeps();
+		installDependencies();
 		await generate({ force: true });
 	} else {
 		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
@@ -220,7 +183,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
-		await installDeps();
+		installDependencies();
 		await generate({ force: true });
 		logger.info('[✓] done');
 	}
