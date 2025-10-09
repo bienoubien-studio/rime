@@ -3,13 +3,14 @@ import { execSync } from 'child_process';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
-export type PackageManagerName = 'yarn' | 'pnpm' | 'bun' | 'npm';
+export type PackageManagerName = 'yarn' | 'pnpm' | 'bun' | 'npm' | 'deno';
 
 const packageManagersMap = {
 	yarn: 'yarn.lock',
 	pnpm: 'pnpm-lock.yaml',
 	bun: 'bun.lock',
-	npm: 'package-lock.json'
+	npm: 'package-lock.json',
+	deno: 'deno.lock'
 } as const;
 
 type PMConfig = Record<
@@ -37,6 +38,9 @@ const packageManagerConfigs: PMConfig = {
 	},
 	npm: {
 		command: 'npm install -D drizzle-kit'
+	},
+	deno: {
+		command: 'deno install -D npm:drizzle-kit && deno install --allow-scripts=npm:sharp,npm:better-sqlite3'
 	}
 };
 
@@ -52,6 +56,10 @@ export function getPackageManager(): PackageManagerName {
 
 export function installDependencies(): void {
 	const pm = getPackageManager();
+	if (pm === 'deno' || pm === 'yarn') {
+		throw new Error('Unsupported package manager ' + pm);
+	}
+
 	const config = packageManagerConfigs[pm];
 
 	// Pre installation hooks
