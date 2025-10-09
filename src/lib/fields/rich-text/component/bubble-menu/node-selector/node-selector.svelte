@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
 	import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types.js';
 	export type NodeSelectorItem = RichTextFeatureNode & { name: string; options?: any };
 </script>
