@@ -18,7 +18,7 @@ RIME_LOG_TO_FILE_MAX_DAYS=1
 `;
 
 export const defaultConfig = (name: string) => `
-import { Collection, buildConfig } from '$${PACKAGE}/config';
+import { Collection, buildConfig } from '$rime/config';
 import { text } from '${PACKAGE}/fields';
 
 const Pages = Collection.create('pages', {
