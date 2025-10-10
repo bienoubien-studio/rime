@@ -6,7 +6,7 @@ import { TScastVersionSlug, type Routes } from './util.js';
  * (rime)/panel/{collection.kebab}/+page.server.ts
  */
 const pageServer = (slug: string) => `
-import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel';
 export const load = pagesLoad.collection.list('${slug}')
 `;
 

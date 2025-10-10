@@ -13,12 +13,7 @@ const mainLayout = (): string => `
 import type { ServerLoadEvent } from '@sveltejs/kit';
 export const load = async ({ locals, url }: ServerLoadEvent) => {
 	const user = { ...locals.user }
-	const isPanelRoute = url.pathname.startsWith('/panel')
-	if(!isPanelRoute){
-		delete user.isSuperAdmin
-		delete user.isStaff
-	}
-  return { user };
+	return { user };
 };`;
 
 /**
@@ -190,7 +185,7 @@ const panelPage = () => `
  * (rime)/panel/+page.server.ts
  */
 const panelPageServer = () => `
-import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel';
 
 export const load = pagesLoad.dashboard;`;
 
@@ -215,7 +210,7 @@ const livePage = () => `
  * (rime)/live/+page.server.ts
  */
 const livePageServer = () => `
-import { pagesLoad } from '${PACKAGE_NAME}/panel/pages';
+import { pagesLoad } from '${PACKAGE_NAME}/panel';
 
 export const load = pagesLoad.live;`;
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RichTextNodeRenderer } from '@bienbien/rime/fields/richText';
+	import type { RichTextNodeRenderer } from '@bienbien/rime/fields/rich-text';
 	import type { JSONContent } from '@tiptap/core';
 	import RenderRichText from './render-rich-text.svelte';
 
