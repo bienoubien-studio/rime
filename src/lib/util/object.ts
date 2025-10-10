@@ -1,5 +1,5 @@
 import type { Dic, WithRequired } from '$lib/util/types.js';
-import { normalizeFieldPath } from '../core/fields/util.js';
+import { normalizeFieldPath } from './doc';
 
 /**
  * Creates a new object with only the specified keys from the original object.

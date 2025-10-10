@@ -126,3 +126,15 @@ export const toNestedStructure = (documents: GenericDoc[]) => {
 	// Filter to get root documents and process them
 	return output;
 };
+
+/**
+ * Remove block type in path
+ * @example
+ * normalizePath('foo.bar.0:content.baz')
+ *
+ * // return foo.bar.0.baz
+ */
+export const normalizeFieldPath = (path: string) => {
+	const regExpBlockType = /:[a-zA-Z0-9]+/g;
+	return path.replace(regExpBlockType, '');
+};

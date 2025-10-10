@@ -105,18 +105,6 @@ export const emptyValuesFromFieldConfig = <T extends FormField>(arr: T[]): Dic =
 };
 
 /**
- * Remove block type in path
- * @example
- * normalizePath('foo.bar.0:content.baz')
- *
- * // return foo.bar.0.baz
- */
-export const normalizeFieldPath = (path: string) => {
-	const regExpBlockType = /:[a-zA-Z0-9]+/g;
-	return path.replace(regExpBlockType, '');
-};
-
-/**
  * Converts a path with numeric indices to a regex pattern
  * Numbers between dots or between dot and colon are converted to \d+
  *

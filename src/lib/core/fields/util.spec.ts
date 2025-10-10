@@ -1,5 +1,5 @@
+import { normalizeFieldPath } from '$lib/util/doc.js';
 import { expect, test } from 'vitest';
-import { normalizeFieldPath } from './util.js';
 
 test('should return bar.0.foo', () => {
 	const res = normalizeFieldPath('bar.0:booz.foo');
