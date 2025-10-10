@@ -39,7 +39,7 @@ function analyzeRoute(pathname: string): RouteInfo {
 /**
  * Ensures panel is properly set up before allowing access
  */
-async function ensurePanelSetup(rime: Rime): Promise<void> {
+async function ensureFirstAuthSetup(rime: Rime): Promise<void> {
 	if ((await rime.auth.hasAuthUser()) && !dev) {
 		throw new RimeError(RimeError.NOT_FOUND);
 	}
@@ -181,9 +181,9 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	const rime = event.locals.rime;
 	const routeInfo = analyzeRoute(event.url.pathname);
 
-	// Ensure panel is set up for panel routes
+	// Ensure auth is set up
 	if (routeInfo.isPanel) {
-		await ensurePanelSetup(rime);
+		await ensureFirstAuthSetup(rime);
 	}
 
 	// Authenticate the request
