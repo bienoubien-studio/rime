@@ -58,17 +58,6 @@
 				width: 100%;
 				gap: var(--rz-size-4);
 			}
-			/* :global(fieldset label) {
-				display: none;
-			} */
-			/* :global(fieldset .rz-field-error) {
-				top: calc(-1 * var(--rz-size-6));
-			} */
-			/* :global(fieldset input) {
-				font-size: var(--rz-text-md);
-				padding: 0 var(--rz-size-5);
-				height: var(--rz-size-14);
-			} */
 		}
 	}
 
@@ -77,12 +66,17 @@
 		@media (min-width: 768px) {
 			display: block;
 		}
-		@media (prefers-color-scheme: light) {
-			background-image: linear-gradient(32deg, #c2efee 0%, #d9eddf 100%);
-		}
-		@media (prefers-color-scheme: dark) {
-			background-image: linear-gradient(32deg, #006e6c 0%, #d9eddf 100%);
-		}
+
+		background-size: 100% 100%;
+		background-position:
+			0px 0px,
+			0px 0px,
+			0px 0px,
+			0px 0px;
+		background-image:
+			radial-gradient(113% 91% at 17% -2%, #0f0721ff 1%, #ff000000 99%),
+			radial-gradient(142% 91% at 83% 7%, oklch(0.21 0.2 200) 1%, #00ff8e00 99%),
+			radial-gradient(142% 91% at 111% 84%, #0a0b26ff 0%, #1e1c4cff 100%);
 	}
 
 	.rz-auth__left.rz-auth__left--image {
