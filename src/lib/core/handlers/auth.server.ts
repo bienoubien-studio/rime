@@ -79,6 +79,11 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 		}
 	}
 
+	if (!isPanelRoute) {
+		delete user.isSuperAdmin;
+		delete user.isStaff;
+	}
+
 	// Populate locals
 	event.locals.user = user;
 	event.locals.session = session || undefined;
