@@ -3,107 +3,194 @@ import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
 import { logger } from '../logger/index.server.js';
+import type { Rime } from '../rime.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
-// Validate the session
-// retrieve user attributes
-// check for panel access
-export const handleAuth: Handle = async ({ event, resolve }) => {
-	const rime = event.locals.rime;
+interface RouteInfo {
+	isSignIn: boolean;
+	isPanel: boolean;
+}
 
-	const isSignInRoute = event.url.pathname === '/panel/sign-in';
-	const isPanelRoute = event.url.pathname.startsWith('/panel') && !isSignInRoute;
+interface AuthResult {
+	session: any;
+	user: any;
+}
 
-	// Authenticate
-	const authenticated = await rime.auth.betterAuth.api.getSession({
-		headers: event.request.headers
-	});
+interface UserData {
+	user: any;
+	session: any;
+	authUser: any;
+}
 
-	// for /panel request
-	if (isPanelRoute) {
-		const users = await rime.auth.getAuthUsers();
-		if (users.length === 0 && !dev) {
-			throw new RimeError(RimeError.NOT_FOUND);
-		}
-		if (!authenticated) {
-			throw redirect(303, '/panel/sign-in');
-		}
+/**
+ * Analyzes the current route to determine authentication requirements
+ */
+function analyzeRoute(pathname: string): RouteInfo {
+	const isSignIn = pathname === '/panel/sign-in';
+	const isPanel = pathname.startsWith('/panel') && !isSignIn;
+
+	return { isSignIn, isPanel };
+}
+
+/**
+ * Ensures panel is properly set up before allowing access
+ */
+async function ensurePanelSetup(rime: Rime): Promise<void> {
+	if ((await rime.auth.hasAuthUser()) && !dev) {
+		throw new RimeError(RimeError.NOT_FOUND);
+	}
+}
+
+/**
+ * Authenticates the request using better-auth
+ */
+async function authenticateRequest(headers: Headers, auth: Rime['auth']): Promise<AuthResult | null> {
+	return await auth.betterAuth.api.getSession({ headers });
+}
+
+/**
+ * Handles unauthenticated users based on route requirements
+ */
+function handleUnauthenticated(event: any, resolve: any, routeInfo: RouteInfo): any {
+	if (routeInfo.isPanel) {
+		throw redirect(303, '/panel/sign-in');
 	}
 
-	// If not authenticated resolve
-	// before getting user attributes
-	if (!authenticated) {
-		event.locals.user = undefined;
-		event.locals.session = undefined;
-		return resolve(event);
-	}
+	event.locals.user = undefined;
+	event.locals.session = undefined;
+	return resolve(event);
+}
 
-	const { session, user: authUser } = authenticated;
-
-	// Get CMS user attributes
-	const user = await rime.auth.getUserAttributes({
-		authUserId: authUser.id,
-		slug: authUser.type as CollectionSlug
+/**
+ * Gets CMS user attributes for the authenticated user
+ */
+async function getCmsUserAttributes(authUserId: string, userType: string, auth: Rime['auth']): Promise<any> {
+	const user = await auth.getUserAttributes({
+		authUserId,
+		slug: userType as CollectionSlug
 	});
 
-	// Throw error if the user doesn't exsits, that means there is no associated CMS user
-	// to the current better-auth account, this should never happend
 	if (!user) {
 		logger.error(RimeError.UNAUTHORIZED);
 		throw error(401, RimeError.UNAUTHORIZED);
 	}
 
-	// Check admin roles on both better-auth and user attributes
+	return user;
+}
+
+/**
+ * Validates admin roles consistency between better-auth and CMS
+ */
+function validateAdminRoles(user: any, authUser: any): void {
 	if (user.roles.includes('admin') && authUser.role !== BETTER_AUTH_ROLES.ADMIN) {
 		logger.error(RimeError.UNAUTHORIZED);
 		throw error(401, RimeError.UNAUTHORIZED);
 	}
+}
 
-	// Forward API_KEY role if it's an api-key authentication
-	const apiKey = event.request.headers.get('x-api-key') || null;
-	if (apiKey) {
-		// get the api key informations
-		const result = await rime.auth.betterAuth.api.verifyApiKey({
-			body: {
-				key: apiKey
-			}
-		});
-		// If valid then forward roles to the authenticated user
-		if (result.valid && result.key && typeof result.key.permissions === 'string') {
-			const permissions = JSON.parse(result.key.permissions);
-			user.roles = permissions.roles;
-		} else {
-			logger.error(RimeError.UNAUTHORIZED, 'Invalid api key');
-			throw error(401, RimeError.UNAUTHORIZED);
-		}
+/**
+ * Handles API key authentication and role forwarding
+ */
+async function handleApiKeyAuth(headers: Headers, user: any, auth: Rime['auth']): Promise<void> {
+	const apiKey = headers.get('x-api-key');
+	if (!apiKey) return;
+
+	const result = await auth.betterAuth.api.verifyApiKey({
+		body: { key: apiKey }
+	});
+
+	if (!result.valid || !result.key || typeof result.key.permissions !== 'string') {
+		logger.error(RimeError.UNAUTHORIZED, 'Invalid api key');
+		throw error(401, RimeError.UNAUTHORIZED);
 	}
 
-	if (!isPanelRoute) {
+	const permissions = JSON.parse(result.key.permissions);
+	user.roles = permissions.roles;
+}
+
+/**
+ * Builds complete user data by combining auth and CMS information
+ */
+async function buildUserData(authResult: AuthResult, rime: Rime, headers: Headers): Promise<UserData> {
+	const { session, user: authUser } = authResult;
+
+	// Get CMS user attributes
+	const user = await getCmsUserAttributes(authUser.id, authUser.type, rime.auth);
+
+	// Validate admin roles consistency
+	validateAdminRoles(user, authUser);
+
+	// Handle API key authentication
+	await handleApiKeyAuth(headers, user, rime.auth);
+
+	return { user, session, authUser };
+}
+
+/**
+ * Applies authorization rules based on route and user data
+ */
+function authorizeUser(userData: UserData, routeInfo: RouteInfo, config: Rime['config']): void {
+	const { user } = userData;
+
+	if (!routeInfo.isPanel) {
+		// Remove sensitive properties for non-panel routes
 		delete user.isSuperAdmin;
 		delete user.isStaff;
+		return;
 	}
 
-	// Populate locals
+	// Panel-specific authorization
+	if (!user.isStaff) {
+		logger.error(RimeError.UNAUTHORIZED);
+		throw error(401, RimeError.UNAUTHORIZED);
+	}
+
+	if (!config.raw.panel.$access(user)) {
+		logger.error(RimeError.UNAUTHORIZED);
+		throw error(401, RimeError.UNAUTHORIZED);
+	}
+}
+
+/**
+ * Sets up event locals and resolves the request
+ */
+function setupLocalsAndResolve(event: any, resolve: any, userData: UserData): any {
+	const { user, session, authUser } = userData;
+
 	event.locals.user = user;
 	event.locals.session = session || undefined;
 	event.locals.betterAuthUser = authUser;
 
-	// Check if a user has the proper role
-	// to visit the panel
-	if (isPanelRoute) {
-		// Check that panel access is from a staff authenticated user
-		if (!user.isStaff) {
-			logger.error(RimeError.UNAUTHORIZED);
-			throw error(401, RimeError.UNAUTHORIZED);
-		}
+	return resolve(event);
+}
 
-		// Check that this staff user have access to panel
-		if (!rime.config.raw.panel.$access(user)) {
-			logger.error(RimeError.UNAUTHORIZED);
-			throw error(401, RimeError.UNAUTHORIZED);
-		}
+/**
+ * Main authentication handler with clear, linear flow
+ */
+export const handleAuth: Handle = async ({ event, resolve }) => {
+	const rime = event.locals.rime;
+	const routeInfo = analyzeRoute(event.url.pathname);
+
+	// Ensure panel is set up for panel routes
+	if (routeInfo.isPanel) {
+		await ensurePanelSetup(rime);
 	}
 
-	return resolve(event);
+	// Authenticate the request
+	const authResult = await authenticateRequest(event.request.headers, rime.auth);
+
+	// Handle unauthenticated users
+	if (!authResult) {
+		return handleUnauthenticated(event, resolve, routeInfo);
+	}
+
+	// Build complete user data
+	const userData = await buildUserData(authResult, rime, event.request.headers);
+
+	// Apply authorization rules
+	authorizeUser(userData, routeInfo, rime.config);
+
+	// Set up locals and resolve
+	return setupLocalsAndResolve(event, resolve, userData);
 };

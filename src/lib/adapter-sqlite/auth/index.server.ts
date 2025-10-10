@@ -45,11 +45,11 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	};
 
 	/**
-	 * Retrieves all BetterAuth users from the database
-	 * @returns Array of all auth users
+	 * Check whether an auth user exists
 	 */
-	const getAuthUsers = () => {
-		return db.query.authUsers.findMany();
+	const hasAuthUser = async () => {
+		const user = await db.query.authUsers.findFirst();
+		return !!user;
 	};
 
 	/**
@@ -96,7 +96,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 
 	return {
 		betterAuth,
-		getAuthUsers,
+		hasAuthUser,
 		getAuthUserId,
 		deleteAuthUserById,
 		getUserAttributes,

@@ -12,8 +12,8 @@ export const apiInit: Plugin<never> = () => {
 	const requestHandler: RequestHandler = async (event) => {
 		if (!dev) throw new RimeError(RimeError.NOT_FOUND);
 
-		const users = await event.locals.rime.auth.getAuthUsers();
-		if (users.length > 0 || (users.length === 0 && !dev)) {
+		const hasAuthUser = await event.locals.rime.auth.hasAuthUser();
+		if (hasAuthUser || (!hasAuthUser && !dev)) {
 			throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'api' });
 		}
 
