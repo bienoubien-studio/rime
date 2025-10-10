@@ -1,3 +1,4 @@
+import { env } from '$env/dynamic/public';
 import {
 	block,
 	blocks,
@@ -73,7 +74,7 @@ const Informations = Area.create('infos', {
 		read: () => true
 	},
 	$url: (doc: any) => {
-		return `${process.env.PUBLIC_RIME_URL}/${doc.locale}/about`;
+		return `${env.PUBLIC_RIME_URL}/${doc.locale}/about`;
 	},
 	live: true
 });
@@ -186,7 +187,7 @@ const Pages = Collection.create('pages', {
 	},
 	fields: [tabs(tabHero, tabContent, tabAttributes, tabSeo, tabFooter)],
 	$url: (doc) => {
-		return `${process.env.PUBLIC_RIME_URL}/${doc.locale}/${doc.attributes.slug}`;
+		return `${env.PUBLIC_RIME_URL}/${doc.locale}/${doc.attributes.slug}`;
 	},
 	live: true,
 	access: {
@@ -226,7 +227,7 @@ const Medias = Collection.create('medias', {
 export default buildConfig({
 	//
 	$database: 'multilang.sqlite',
-	siteUrl: process.env.PUBLIC_RIME_URL,
+	siteUrl: env.PUBLIC_RIME_URL,
 
 	collections: [Pages, Medias],
 	areas: [Settings, Informations, Menu],
