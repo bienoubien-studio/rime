@@ -1,5 +1,6 @@
 import { RimeError } from '$lib/core/errors/index.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
+import type { User } from '$lib/types.js';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
 import { logger } from '../logger/index.server.js';
@@ -10,6 +11,7 @@ const dev = process.env.NODE_ENV === 'development';
 interface RouteInfo {
 	isSignIn: boolean;
 	isPanel: boolean;
+	isAPI: boolean;
 }
 
 interface AuthResult {
@@ -18,7 +20,7 @@ interface AuthResult {
 }
 
 interface UserData {
-	user: any;
+	user: User;
 	session: any;
 	authUser: any;
 }
@@ -29,8 +31,9 @@ interface UserData {
 function analyzeRoute(pathname: string): RouteInfo {
 	const isSignIn = pathname === '/panel/sign-in';
 	const isPanel = pathname.startsWith('/panel') && !isSignIn;
+	const isAPI = pathname.startsWith('/api');
 
-	return { isSignIn, isPanel };
+	return { isSignIn, isPanel, isAPI };
 }
 
 /**
@@ -130,25 +133,20 @@ async function buildUserData(authResult: AuthResult, rime: Rime, headers: Header
 /**
  * Applies authorization rules based on route and user data
  */
-function authorizeUser(userData: UserData, routeInfo: RouteInfo, config: Rime['config']): void {
+function authorizePanelUser(userData: UserData, routeInfo: RouteInfo, config: Rime['config']): void {
 	const { user } = userData;
 
-	if (!routeInfo.isPanel) {
-		// Remove sensitive properties for non-panel routes
-		delete user.isSuperAdmin;
-		delete user.isStaff;
-		return;
-	}
-
 	// Panel-specific authorization
-	if (!user.isStaff) {
-		logger.error(RimeError.UNAUTHORIZED);
-		throw error(401, RimeError.UNAUTHORIZED);
-	}
-
-	if (!config.raw.panel.$access(user)) {
-		logger.error(RimeError.UNAUTHORIZED);
-		throw error(401, RimeError.UNAUTHORIZED);
+	if (routeInfo.isPanel) {
+		// Do not allow non-staff user on panel
+		if (!user.isStaff) {
+			logger.error(RimeError.UNAUTHORIZED);
+			throw error(401, RimeError.UNAUTHORIZED);
+		}
+		if (!config.raw.panel.$access(user)) {
+			logger.error(RimeError.UNAUTHORIZED);
+			throw error(401, RimeError.UNAUTHORIZED);
+		}
 	}
 }
 
@@ -163,6 +161,17 @@ function setupLocalsAndResolve(event: any, resolve: any, userData: UserData): an
 	event.locals.betterAuthUser = authUser;
 
 	return resolve(event);
+}
+
+/**
+ * Clean up user props
+ */
+function cleanupUser(userData: UserData, routeInfo: RouteInfo) {
+	if (!routeInfo.isPanel && !routeInfo.isAPI) {
+		delete userData.user.isSuperAdmin;
+		delete userData.user.isStaff;
+	}
+	return userData;
 }
 
 /**
@@ -186,10 +195,13 @@ export const handleAuth: Handle = async ({ event, resolve }) => {
 	}
 
 	// Build complete user data
-	const userData = await buildUserData(authResult, rime, event.request.headers);
+	let userData = await buildUserData(authResult, rime, event.request.headers);
 
-	// Apply authorization rules
-	authorizeUser(userData, routeInfo, rime.config);
+	// Apply panel authorization rules
+	authorizePanelUser(userData, routeInfo, rime.config);
+
+	// Filter user props if not on panel or API
+	userData = cleanupUser(userData, routeInfo);
 
 	// Set up locals and resolve
 	return setupLocalsAndResolve(event, resolve, userData);

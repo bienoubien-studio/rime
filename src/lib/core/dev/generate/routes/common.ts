@@ -12,8 +12,7 @@ const DOLLAR_LIB = '$lib';
 const mainLayout = (): string => `
 import type { ServerLoadEvent } from '@sveltejs/kit';
 export const load = async ({ locals, url }: ServerLoadEvent) => {
-	const user = { ...locals.user }
-	return { user };
+	return { user: locals.user };
 };`;
 
 /**
