@@ -56,12 +56,12 @@ const buildConfig = (config: ConfigWithBuiltPrototypes): BuiltConfig => {
 	];
 
 	const trustedOrigins =
-		'trustedOrigins' in config && Array.isArray(config.trustedOrigins)
-			? config.trustedOrigins
+		hasProp('$trustedOrigins', config) && Array.isArray(config.$trustedOrigins)
+			? config.$trustedOrigins
 			: [process.env.PUBLIC_RIME_URL as string];
 
 	const corePluginsServer = [
-		// Cache plugin with default enabled only if there is no user
+		// Cache plugin with default isEnabled : event => !event.locals.user
 		cache(config.$cache || {}),
 		// Server Sent Event
 		sse(),
