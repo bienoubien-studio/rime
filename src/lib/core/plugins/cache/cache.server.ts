@@ -1,6 +1,7 @@
+import { getRequestEvent } from '$app/server';
+import { logger } from '$lib/core/logger/index.server.js';
 import fs from 'fs';
 import path from 'path';
-import { logger } from '$lib/core/logger/index.server.js';
 
 const cachePath = path.resolve(process.cwd(), '.cache');
 if (!fs.existsSync(cachePath)) {
@@ -10,8 +11,9 @@ if (!fs.existsSync(cachePath)) {
 export class Cache {
 	//
 	static async get<T>(key: string, loadData: any): Promise<T> {
+		const event = getRequestEvent();
 		const keyPath = path.join(cachePath, key + '.txt');
-		const exist = fs.existsSync(keyPath);
+		const exist = event.locals.cacheEnabled && fs.existsSync(keyPath);
 
 		const setAndReturn = async () => {
 			const data = await loadData();

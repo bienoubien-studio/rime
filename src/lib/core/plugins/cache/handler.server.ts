@@ -10,7 +10,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 		return await resolve(event);
 	}
 
-	// Do not cache if env var is not 'true'
+	// Do not cache if env RIME_CACHE_ENABLED is not 'true'
 	if (!(process.env.RIME_CACHE_ENABLED === 'true')) {
 		return await resolve(event);
 	}
@@ -20,6 +20,7 @@ export const handler: Handle = async ({ event, resolve }) => {
 		return await resolve(event);
 	}
 
+	// Use configuration function
 	if (!rime.cache.isEnabled(event)) {
 		return await resolve(event);
 	}
