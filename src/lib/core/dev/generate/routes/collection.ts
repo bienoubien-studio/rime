@@ -41,13 +41,13 @@ const docPage = () => `
  * except the withVersion param
  */
 const docPageServer = (slug: string) => `
-import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel'
 
 export const load = pagesLoad.collection.doc('${slug}')
 export const actions = pagesActions.collection.doc('${slug}')`;
 
 const docPageServerVersions = (slug: string) => `
-import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel'
 
 export const load = pagesLoad.collection.doc('${slug}', true)
 export const actions = pagesActions.collection.doc('${slug}')`;

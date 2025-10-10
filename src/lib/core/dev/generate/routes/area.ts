@@ -17,14 +17,14 @@ const pageTemplate = (): string => `
  * (rime)/panel/{area.kebab}/+page.server.ts
  */
 const pageServerTemplate = (slug: string): string => `
-import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel'
 
 export const load = pagesLoad.area('${slug}')
 export const actions = pagesActions.area('${slug}')
 `;
 
 const pageServerTemplateVersions = (slug: string): string => `
-import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel/pages'
+import { pagesLoad, pagesActions } from '${PACKAGE_NAME}/panel'
 
 export const load = pagesLoad.area('${slug}', true)
 export const actions = pagesActions.area('${slug}')
