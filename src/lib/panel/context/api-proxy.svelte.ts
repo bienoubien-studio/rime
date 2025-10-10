@@ -12,13 +12,13 @@ export type Resource<T = any> = {
 	refresh: () => void;
 };
 
-type GetResourcesOptions = { transformData?: (input: any) => R };
+type GetResourcesOptions<T> = { transformData?: (input: any) => T };
 
 function createAPIProxy() {
 	// Use explicit type instead of ReturnType
 	const resources = $state<Map<string, Resource>>(new Map());
 
-	function getRessource<T>(url: string, options?: GetResourcesOptions) {
+	function getRessource<T>(url: string, options?: GetResourcesOptions<T>) {
 		// Check if we already have this resource
 		if (!resources.has(url)) {
 			// Create a new resource
@@ -29,9 +29,9 @@ function createAPIProxy() {
 		return resources.get(url) as Resource<T>;
 	}
 
-	function createResource<R>(url: string, options?: GetResourcesOptions): Resource<R> {
+	function createResource<T>(url: string, options?: GetResourcesOptions<T>): Resource<T> {
 		// Use $state for the resource data to make it reactive
-		let data = $state<R | null>(null);
+		let data = $state<T | null>(null);
 		let isLoading = $state(true);
 		let error = $state(null);
 
@@ -43,10 +43,7 @@ function createAPIProxy() {
 			error = null;
 
 			fetch(url, {
-				method: 'GET',
-				headers: {
-					'content-type': 'application/json'
-				}
+				method: 'GET'
 			})
 				.then((response) => {
 					if (!response.ok) {
