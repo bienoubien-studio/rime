@@ -162,7 +162,14 @@ export type CollectionLabel = {
 export type VersionsConfig = { draft?: boolean; autoSave?: boolean; maxVersions?: number };
 export type UrlDefinition<T extends BaseDoc = BaseDoc> = (document: T) => string;
 
-type BaseDocConfig<S extends string = string> = {
+export type PrototypePanelConfig = {
+	/** Description for the collection/area, basically displayed on the dashboard */
+	description?: string;
+	/** Sidebar navigation group */
+	group?: string;
+};
+
+type PrototypeConfig<S extends string = string> = {
 	slug: S;
 	/** Document fields definition */
 	fields: FieldBuilder<Field>[];
@@ -174,14 +181,7 @@ type BaseDocConfig<S extends string = string> = {
 	/** If the document can be edited live, if enabled the url prop must be set also. */
 	live?: boolean;
 	/** Panel configuration, set false to hide the area/collection from the panel */
-	panel?:
-		| false
-		| {
-				/** Description for the collection/area, basically displayed on the dashboard */
-				description?: string;
-				/** Sidebar navigation group */
-				group?: string;
-		  };
+	panel?: false | PrototypePanelConfig;
 };
 
 export type UploadConfig = {
@@ -240,9 +240,9 @@ export type Collection<S> = {
 	nested?: boolean;
 	/** Whether the collection support file upload */
 	upload?: boolean | UploadConfig;
-} & BaseDocConfig;
+} & PrototypeConfig;
 
-export type Area<S> = BaseDocConfig & {
+export type Area<S> = PrototypeConfig & {
 	slug: S;
 	/** A function to generate the document URL */
 	$url?: (doc: S extends keyof RegisterArea ? RegisterArea[S] : any) => string;
