@@ -243,7 +243,7 @@ async function processConfigFile(originalPath, configDir, outputDir, outputFiles
 		const serverContent = updateServerImports(content, splitFiles, path.dirname(relativePath));
 		if (shouldWriteFile(serverPath, serverContent)) {
 			fs.writeFileSync(serverPath, serverContent);
-			logger.info(`   Created: ${relativeServerPath}`);
+			logger.debug(`   Created: ${relativeServerPath}`);
 		}
 
 		// Create sanitized client version
