@@ -28,6 +28,7 @@ export default ts.config(
 			'@typescript-eslint/ban-ts-comment': 'off',
 			'@typescript-eslint/no-empty-object-type': 'warn',
 			'svelte/prefer-writable-derived': 'off',
+			'@typescript-eslint/no-unused-expressions': ['error', { allowShortCircuit: true }],
 			'no-restricted-imports': [
 				'error',
 				{

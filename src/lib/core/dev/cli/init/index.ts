@@ -12,12 +12,13 @@ import * as templates from './templates.js';
 
 type Args = {
 	force?: boolean;
+	skipInstall?: boolean;
 	name?: string;
 };
 
 const PACKAGE = '@bienbien/rime';
 
-export const init = async ({ force, name: incomingName }: Args) => {
+export const init = async ({ force, name: incomingName, skipInstall }: Args) => {
 	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
 
@@ -166,7 +167,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
-		installDependencies();
+		!!skipInstall && installDependencies();
 		await generate({ force: true });
 	} else {
 		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
@@ -183,7 +184,7 @@ export const init = async ({ force, name: incomingName }: Args) => {
 		setHooks();
 		configureVite();
 		await copyAssets();
-		installDependencies();
+		!!skipInstall && installDependencies();
 		await generate({ force: true });
 		logger.info('[✓] done');
 	}

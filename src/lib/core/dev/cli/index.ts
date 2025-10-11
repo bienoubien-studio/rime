@@ -9,6 +9,7 @@ program
 	.command('init')
 	.option('-n, --name <name>', 'Will be the database name')
 	.option('-f, --force', 'Force init with default package name', false)
+	.option('-s, --skip-install', 'Do not install dependencies', false)
 	.action(async (args) => {
 		const init = await import('./init/index.js').then((m) => m.init);
 		init(args);

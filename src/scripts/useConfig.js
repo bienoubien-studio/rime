@@ -31,7 +31,7 @@ program
 			}
 
 			// Init files and DB
-			execSync(`bun ./src/lib/core/dev/cli/index.ts init --name ${name}`);
+			execSync(`bun ./src/lib/core/dev/cli/index.ts init -s --name ${name}`);
 
 			// Copy routes
 			const testFrontRoutesPath = path.join(projectRoot, 'tests', name, 'routes', '\\(front\\)');
