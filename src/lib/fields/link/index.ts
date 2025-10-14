@@ -11,7 +11,8 @@ export class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 
 	constructor(name: string) {
 		super(name, 'link');
-		this.field.isEmpty = (link: unknown) => !link || (typeof link === 'object' && 'value' in link && !link.value);
+		this.field.isEmpty = (link: unknown) =>
+			!link || (typeof link === 'object' && 'value' in link && !link.value);
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.types = ['url'];
@@ -66,5 +67,5 @@ export type LinkField = FormField & {
 	type: 'link';
 	defaultValue?: Link | DefaultValueFn<Link>;
 	layout: 'compact' | 'default';
-	types?: LinkType[];
+	types: LinkType[];
 };

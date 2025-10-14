@@ -1,5 +1,5 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/core/config/types.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
@@ -23,7 +23,7 @@ export const saveBlocks = async (args: {
 	data: Dic;
 	incomingPaths: string[];
 	adapter: Adapter;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 }) => {
 	//
 	const { context, ownerId, data, incomingPaths, adapter, config } = args;
@@ -72,7 +72,9 @@ export const saveBlocks = async (args: {
 
 	// Execute delete operations first to avoid potential conflicts
 	if (blocksDiff.toDelete.length) {
-		await Promise.all(blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: parentTable, block })));
+		await Promise.all(
+			blocksDiff.toDelete.map((block) => adapter.blocks.delete({ parentSlug: parentTable, block }))
+		);
 	}
 
 	// Create new blocks (blocks without IDs or with temporary IDs)
@@ -92,7 +94,9 @@ export const saveBlocks = async (args: {
 	// Update existing blocks that have changed properties
 	if (blocksDiff.toUpdate.length) {
 		await Promise.all(
-			blocksDiff.toUpdate.map((block) => adapter.blocks.update({ parentSlug: parentTable, block, locale: locale }))
+			blocksDiff.toUpdate.map((block) =>
+				adapter.blocks.update({ parentSlug: parentTable, block, locale: locale })
+			)
 		);
 	}
 

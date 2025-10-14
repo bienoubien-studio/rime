@@ -7,7 +7,6 @@ node_modules
 /build
 /dist
 /app
-/src/plugins
 *.tgz
 
 # OS
@@ -36,10 +35,8 @@ src/routes
 drizzle.config.ts
 src/app.generated.d.ts
 src/rime.generated.d.ts
-rime.config.browser.js
-src/lib/server/schema.ts
-src/lib/config/*
-src/lib/config.generated
+src/lib/+rime/*
+src/lib/+rime.generated
 src/routes/(rime)
 static/medias
 test-results

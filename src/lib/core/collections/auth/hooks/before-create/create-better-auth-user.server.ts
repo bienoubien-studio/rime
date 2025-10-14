@@ -12,10 +12,11 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 	const { config, event } = args;
 	const { rime } = event.locals;
 
-	if (!Boolean(config.auth)) return args;
+	if (!config.auth) return args;
 
 	const IS_API_KEY_OPERATION = config.auth?.type === 'apiKey';
-	const ADMIN_ROLE_IN_DATA = Array.isArray(args.data.roles) && args.data.roles.includes(BETTER_AUTH_ROLES.ADMIN);
+	const ADMIN_ROLE_IN_DATA =
+		Array.isArray(args.data.roles) && args.data.roles.includes(BETTER_AUTH_ROLES.ADMIN);
 	const IS_CURRENT_USER_ADMIN = access.isAdmin(event.locals.user);
 	const IS_CURRENT_USER_STAFF = Boolean(event.locals.user?.isStaff);
 	const IS_STAFF_CREATION = config.slug === 'staff';
@@ -70,7 +71,8 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 		 * 		- Admin creates API key user that forward current authneticated user
 		 * 		- API key generated and send by email
 		 */
-		API_KEY_CREATION: IS_API_KEY_OPERATION && Boolean(event.locals.user) && Boolean(event.locals.betterAuthUser?.id)
+		API_KEY_CREATION:
+			IS_API_KEY_OPERATION && Boolean(event.locals.user) && Boolean(event.locals.betterAuthUser?.id)
 
 		/**
 		 * 7. Programmatic User Creation : API_KEY APP create user
@@ -103,7 +105,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 				[BETTER_AUTH_ROLES.USER]: true
 			});
 
-			const result = await rime.auth.betterAuth.api.createUser({
+			const result = await rime.auth.api.createUser({
 				headers: args.event.request.headers,
 				body: {
 					email: args.data.email,
@@ -127,7 +129,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 				[BETTER_AUTH_ROLES.USER]: true
 			});
 
-			const result = await rime.auth.betterAuth.api.createUser({
+			const result = await rime.auth.api.createUser({
 				headers: args.event.request.headers,
 				body: {
 					email: args.data.email,
@@ -143,7 +145,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 			break;
 		}
 
-		case CASE.API_KEY_CREATION:
+		case CASE.API_KEY_CREATION: {
 			if (!event.locals.betterAuthUser || !event.locals.user) {
 				throw new RimeError(RimeError.UNAUTHORIZED);
 			}
@@ -154,7 +156,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 				throw new RimeFormError({ name: RimeFormError.REQUIRED_FIELD });
 			}
 
-			const apiKey = await rime.auth.betterAuth.api.createApiKey({
+			const apiKey = await rime.auth.api.createApiKey({
 				body: {
 					name: args.data.name,
 					userId: event.locals.betterAuthUser.id,
@@ -184,6 +186,7 @@ export const createBetterAuthUser = Hooks.beforeCreate<'auth'>(async (args) => {
 					ownerId: event.locals.user.id
 				}
 			};
+		}
 
 		case CASE.PUBLIC_SIGNUP:
 			authUserId = args.data.authUserId;

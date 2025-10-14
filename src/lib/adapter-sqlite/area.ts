@@ -1,37 +1,40 @@
 import { getRequestEvent } from '$app/server';
-import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
+import {
+	VERSIONS_OPERATIONS,
+	VersionOperations
+} from '$lib/core/collections/versions/operations.js';
+import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
+import type { IConfig } from '$lib/core/rime.server.js';
 import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { createBlankDocument } from '$lib/util/doc.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { ConfigInterface } from '../core/config/interface.server.js';
-import type { GenericTables } from './types.js';
+import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 import * as adapterUtil from './util.js';
 import { buildWithParam } from './with.js';
-
-type AreaInterfaceArgs = {
-	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
-	tables: GenericTables;
-	configInterface: ConfigInterface;
-};
 
 /**
  * Creates an area interface for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned areas with support for localization.
  */
-const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfaceArgs) => {
+const createAreaInterface = <const C extends Config>(args: {
+	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
+	tables: any;
+	iConfig: IConfig<C>;
+}) => {
+	const { db, tables, iConfig } = args;
+
 	/**
 	 * Retrieves an area document. If the area doesn't exist, it creates a blank one.
 	 * For versioned areas, returns either a specific version (if versionId is provided)
 	 * or the latest/published version.
 	 */
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
-		const areaConfig = configInterface.getArea(slug);
+		const areaConfig = iConfig.getArea(slug);
 		if (!areaConfig) {
 			throw new RimeError(RimeError.INIT, slug + ' is not an area, should never happen');
 		}
@@ -41,7 +44,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 		if (!hasVersions) {
 			const params = {
 				columns: adapterUtil.columnsParams({ table: tables[slug], select }),
-				with: buildWithParam({ slug, select, locale, tables, configInterface }) || undefined
+				with: buildWithParam({ slug, select, locale, tables, config: areaConfig }) || undefined
 			};
 
 			// @ts-expect-error slug is a tableName
@@ -73,7 +76,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 				select,
 				locale,
 				tables,
-				configInterface
+				config: areaConfig
 			});
 
 			// Handle select columns for version table
@@ -146,7 +149,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 */
 	const createArea = async (slug: AreaSlug, values: Partial<GenericDoc>, locale?: string) => {
 		const now = new Date();
-		const config = configInterface.getArea(slug);
+		const config = iConfig.getArea(slug);
 
 		const hasVersions = !!config.versions;
 
@@ -259,7 +262,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	 */
 	const update: Update = async ({ slug, data, locale, versionId, versionOperation }) => {
 		const now = new Date();
-		const areaConfig = configInterface.getArea(slug);
+		const areaConfig = iConfig.getArea(slug);
 
 		const rows = await db.select({ id: tables[slug].id }).from(tables[slug]);
 		const area = rows[0];
@@ -359,9 +362,7 @@ const createAdapterAreaInterface = ({ db, tables, configInterface }: AreaInterfa
 	};
 };
 
-export default createAdapterAreaInterface;
-
-export type AdapterAreaInterface = ReturnType<typeof createAdapterAreaInterface>;
+export default createAreaInterface;
 
 /****************************************************/
 /* Types

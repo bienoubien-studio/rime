@@ -1,4 +1,4 @@
-import type { CompiledArea, CompiledCollection } from '../../../types.js';
+import type { BuiltArea, BuiltCollection } from '../../../types.js';
 
 /**
  * Defines the different version operation strategies for document updates.
@@ -41,7 +41,10 @@ export const VersionOperations = {
 	 * }
 	 */
 	isSpecificVersionUpdate: (operation: VersionOperation) => {
-		return operation === VERSIONS_OPERATIONS.UPDATE_VERSION || operation === VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
+		return (
+			operation === VERSIONS_OPERATIONS.UPDATE_VERSION ||
+			operation === VERSIONS_OPERATIONS.UPDATE_PUBLISHED
+		);
 	},
 
 	/**
@@ -88,7 +91,8 @@ export const VersionOperations = {
 	 */
 	shouldRetrieveDraft: (operation: VersionOperation) => {
 		return (
-			operation === VERSIONS_OPERATIONS.UPDATE_VERSION || operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST
+			operation === VERSIONS_OPERATIONS.UPDATE_VERSION ||
+			operation === VERSIONS_OPERATIONS.NEW_VERSION_FROM_LATEST
 		);
 	}
 };
@@ -96,7 +100,7 @@ export const VersionOperations = {
 type Args = {
 	draft?: boolean;
 	versionId?: string;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 };
 
 /**
@@ -134,5 +138,7 @@ export function defineVersionUpdateOperation({ draft, versionId, config }: Args)
 	}
 
 	// For versioned documents with draft support
-	return draft ? VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED : VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
+	return draft
+		? VERSIONS_OPERATIONS.NEW_DRAFT_FROM_PUBLISHED
+		: VERSIONS_OPERATIONS.UPDATE_PUBLISHED;
 }

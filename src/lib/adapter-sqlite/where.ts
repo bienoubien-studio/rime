@@ -2,42 +2,53 @@ import { RimeError } from '$lib/core/errors/index.js';
 import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { hasVersionsSuffix, withLocalesSuffix } from '$lib/core/naming.js';
+import type { IConfig } from '$lib/core/rime.server.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
-import { rime, type GetRegisterType } from '$lib/index.js';
+import { type GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
 import * as drizzleORM from 'drizzle-orm';
 import { and, eq, getTableColumns, inArray, or } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 import type { ParsedQs } from 'qs';
 import type { PrototypeSlug } from '../types.js';
+import type { GenericTable } from './types.js';
 
 type BuildWhereArgs = {
 	query: ParsedQs;
 	slug: PrototypeSlug;
 	locale?: string;
-	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	draft?: boolean;
+	tables: GetRegisterType<'Tables'>;
+	iConfig: IConfig;
 };
 
-export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => {
-	const table = rime.adapter.getTable(slug);
+export const buildWhereParam = ({ query, slug, db, locale, tables, iConfig }: BuildWhereArgs) => {
+	function getTable<T>(key: string) {
+		return tables[key as keyof typeof tables] as T extends any ? GenericTable : T;
+	}
+	const table = getTable(slug);
 	const tableNameLocales = withLocalesSuffix(slug);
-	const tableLocales = rime.adapter.getTable(tableNameLocales);
+	const tableLocales = getTable(tableNameLocales);
 
 	const localizedColumns =
-		locale && tableNameLocales in rime.adapter.tables ? Object.keys(getTableColumns(tableLocales)) : [];
+		locale && tableNameLocales in tables ? Object.keys(getTableColumns(tableLocales)) : [];
 	const unlocalizedColumns = Object.keys(getTableColumns(table));
 
 	const buildCondition = (conditionObject: Dic): any | false => {
 		// Handle nested AND conditions
 		if ('and' in conditionObject && Array.isArray(conditionObject.and)) {
-			const subConditions = conditionObject.and.map((condition) => buildCondition(condition as Dic)).filter(Boolean);
+			const subConditions = conditionObject.and
+				.map((condition) => buildCondition(condition as Dic))
+				.filter(Boolean);
 			return subConditions.length ? and(...subConditions) : false;
 		}
 
 		// Handle nested OR conditions
 		if ('or' in conditionObject && Array.isArray(conditionObject.or)) {
-			const subConditions = conditionObject.or.map((condition) => buildCondition(condition as Dic)).filter(Boolean);
+			const subConditions = conditionObject.or
+				.map((condition) => buildCondition(condition as Dic))
+				.filter(Boolean);
 			return subConditions.length ? or(...subConditions) : false;
 		}
 
@@ -69,10 +80,13 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		const sqlColumn = column.replace(/\./g, '__');
 
 		// Handle hierarchy fields (_parent, _position) in versioned collections
-		if (hasVersionsSuffix(slug) && (sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')) {
+		if (
+			hasVersionsSuffix(slug) &&
+			(sqlColumn === '_parent' || sqlColumn === '_position' || sqlColumn === '_path')
+		) {
 			// Get the root table name by removing the '_versions' suffix
 			const rootSlug = slug.replace('_versions', '');
-			const rootTable = rime.adapter.getTable(rootSlug);
+			const rootTable = getTable(rootSlug);
 
 			// Query the root table for the hierarchy field
 			return inArray(
@@ -99,17 +113,22 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		// Look for a relation field
 		// Get document config
-		const documentConfig = rime.config.getBySlug(slug);
+		const documentConfig = iConfig.getBySlug(slug);
 		if (!documentConfig) {
 			throw new Error(`${slug} not found (should never happen)`);
 		}
 
 		// Get the field config
-		const fieldConfig = getFieldConfigByPath(column, documentConfig.fields);
+		const fieldConfig = getFieldConfigByPath(
+			column,
+			documentConfig.fields.map((f) => f.compile())
+		);
 
 		if (!fieldConfig) {
 			// @TODO handle relation props ex: author.email
-			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
+			logger.warn(
+				`the query contains the field "${column}", not found for ${documentConfig.slug} document`
+			);
 			// Return a condition that will always be false instead of returning false
 			// This ensures no documents match when a non-existent field is queried
 			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
@@ -117,7 +136,9 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 
 		// Not a relation
 		if (!isRelationField(fieldConfig)) {
-			logger.warn(`the query contains the field "${column}", not found for ${documentConfig.slug} document`);
+			logger.warn(
+				`the query contains the field "${column}", not found for ${documentConfig.slug} document`
+			);
 			// Return a condition that will always be false
 			return eq(table.id, '-1'); // No document will have ID = -1, so this will always be false
 		}
@@ -126,7 +147,7 @@ export const buildWhereParam = ({ query, slug, db, locale }: BuildWhereArgs) => 
 		// @TODO handle relation props ex: author.email
 		const [to, localized] = [fieldConfig.relationTo, fieldConfig.localized];
 		const relationTableName = `${slug}Rels`;
-		const relationTable = rime.adapter.getTable(relationTableName);
+		const relationTable = getTable(relationTableName);
 		const conditions = [fn(relationTable[`${to}Id`], value)];
 
 		if (localized) {

@@ -66,7 +66,7 @@ export const text = (name: string) => new TextFieldBuilder(name, 'text');
 /****************************************************/
 /* Type
 /****************************************************/
-export type TextField = FormField & {
+export type TextField = {
 	type: 'text';
 	defaultValue?: string | DefaultValueFn<string>;
 	unique?: boolean;
@@ -80,4 +80,4 @@ export type TextField = FormField & {
 	 * different versions to have different parents
 	 */
 	_root?: boolean;
-};
+} & FormField;

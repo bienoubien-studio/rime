@@ -9,10 +9,14 @@ export const preventSuperAdminMutation = Hooks.beforeUpdate(async (args) => {
 	const { event, context } = args;
 	const originalDoc = context.originalDoc;
 
-	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @preventSuperAdminMutation');
+	if (!originalDoc)
+		throw new RimeError(
+			RimeError.OPERATION_ERROR,
+			'missing originalDoc @preventSuperAdminMutation'
+		);
 
 	const IS_ROLES_MUTATION = 'roles' in args.data && Array.isArray(args.data.roles);
-	const IS_SUPERADMIN_MUTATION = await event.locals.rime.auth.isSuperAdmin(originalDoc.id);
+	const IS_SUPERADMIN_MUTATION = await event.locals.rime.adapter.auth.isSuperAdmin(originalDoc.id);
 
 	// Prevent super admin user to be changed by someone
 	if (IS_SUPERADMIN_MUTATION && !event.locals.user?.isSuperAdmin) {

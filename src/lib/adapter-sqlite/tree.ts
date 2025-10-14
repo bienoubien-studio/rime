@@ -1,14 +1,14 @@
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
+import { withLocalesSuffix } from '$lib/core/naming.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
 import { extractFieldName } from '$lib/fields/tree/util.js';
-import { withLocalesSuffix } from '$lib/core/naming.js';
 import type { WithRequired } from '$lib/util/types.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { omit } from '../util/object.js';
 import { toPascalCase } from '../util/string.js';
 import { generatePK, transformDataToSchema } from './util.js';
 
-const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+const createTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
 	const buildBlockTableName = (slug: string, blockPath: string) => {
 		const [fieldName] = extractFieldName(blockPath);
@@ -28,7 +28,10 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 		if (locale && tableLocalesName in tables) {
 			const tableLocales = tables[tableLocalesName];
 			const localizedColumns = getTableColumns(tableLocales);
-			const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
+			const localizedValues = transformDataToSchema(
+				omit(['ownerId', 'id'], block),
+				localizedColumns
+			);
 
 			if (!Object.keys(localizedValues).length) return true;
 
@@ -109,9 +112,7 @@ const createAdapterTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs)
 	};
 };
 
-export default createAdapterTreeInterface;
-
-export type AdapterTreeInterface = ReturnType<typeof createAdapterTreeInterface>;
+export default createTreeInterface;
 
 /****************************************************/
 /* Types
@@ -130,4 +131,7 @@ type CreateBlock = (args: {
 	locale?: string;
 }) => Promise<boolean>;
 
-type DeleteBlock = (args: { parentSlug: string; block: WithRequired<TreeBlock, 'path'> }) => Promise<boolean>;
+type DeleteBlock = (args: {
+	parentSlug: string;
+	block: WithRequired<TreeBlock, 'path'>;
+}) => Promise<boolean>;

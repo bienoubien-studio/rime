@@ -1,3 +1,4 @@
+import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.server.js';
 import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
@@ -6,7 +7,7 @@ import type { Field, Option } from '$lib/fields/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
 import type { AreaSlug, CollectionSlug, User } from '$lib/types.js';
-import type { AtLeastOne, Dic, WithoutBuilders, WithRequired } from '$lib/util/types.js';
+import type { AtLeastOne, Dic, WithRequired } from '$lib/util/types.js';
 import type { IconProps } from '@lucide/svelte';
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 import type { Component } from 'svelte';
@@ -17,17 +18,27 @@ export interface Config {
 	/** If config.siteUrl is defined, a preview button is added
 	on the panel dahsboard, pointing to this url  */
 	siteUrl?: string;
+	/**
+	 * Database adapter
+	 * @example
+	 * export default rime({
+	 *   $adapter: sqliteAdapter(drizzleConfig)
+	 * }
+	 */
+	$adapter: {
+		createAdapter: (config: any) => Promise<Adapter>;
+		generateSchema: (config: any) => Promise<void>;
+	};
 	/** Transversal auth config */
 	$auth?: {
-		/** Enable magicLink Better-Auth plugin */
-		magicLink?: boolean;
+		plugins: any;
+		// configure?: AuthConfigure;
+		// configurePlugins?: (...args: any[]) => any;
 	};
-	/** The database name inside ./db folder */
-	$database: string;
 	/** List of Collection  */
-	collections?: Collection<string>[];
+	collections?: BuiltCollection[];
 	/** List of Area  */
-	areas?: Area<string>[];
+	areas?: BuiltArea[];
 	/** List of locales for document i18£n
 	 * @example
 	 * localization: {
@@ -217,7 +228,7 @@ export type UploadConfig = {
 	accept?: string[];
 };
 
-export type AuthConfig = (
+export type CollectionAuthConfig = (
 	| {
 			type: 'password';
 	  }
@@ -231,7 +242,7 @@ export type Collection<S> = {
 	/** The collection label */
 	label?: string | CollectionLabel;
 	/** Auth type and availables roles */
-	auth?: boolean | AuthConfig;
+	auth?: boolean | CollectionAuthConfig;
 	/** Operation hooks */
 	$hooks?: CollectionHooks<S extends keyof RegisterCollection ? S : any>;
 	/** A function to generate the document URL */
@@ -278,11 +289,14 @@ export type BuiltCollection = Omit<Collection<string>, 'icon' | 'versions' | 'up
 	kebab: string;
 	label: CollectionLabel;
 	asTitle: string;
-	auth?: AuthConfig;
+	auth?: CollectionAuthConfig;
 	versions?: Required<VersionsConfig>;
 	upload?: UploadConfig;
 	icon: Component<IconProps>;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
+	_generateTypes?: false;
+	_generateSchema?: false;
+	_generateRoutes?: false;
 };
 
 export type BuiltAreaClient = Omit<BuiltArea, '$url' | '$hooks'>;
@@ -298,13 +312,18 @@ export type BuiltArea = Omit<Area<string>, 'versions'> & {
 	fields: FieldBuilder<Field>[];
 	icon: Component<IconProps>;
 	access: WithRequired<Access, 'create' | 'read' | 'update' | 'delete'>;
+	_generateTypes?: false;
+	_generateSchema?: false;
+	_generateRoutes?: false;
 };
 export type BuiltCollectionClient = Omit<BuiltCollection, '$url' | '$hooks'>;
 
+// export type Config = Omit<Config, 'collections' | 'areas'> & {
+// 	collections?: BuiltCollection[];
+// 	areas?: BuiltArea[];
+// };
+
 export type BuiltConfig = {
-	auth?: {
-		magicLink?: boolean;
-	};
 	/** Database location relative to the root project ex: ./db/my-app.sqlite */
 	$database: string;
 	/** The database location */
@@ -342,6 +361,7 @@ export type BuiltConfig = {
 };
 
 export type ServerConfigProps =
+	| '$adapter'
 	| '$database'
 	| '$trustedOrigins'
 	| '$routes'
@@ -354,7 +374,10 @@ export type SanitizedConfigClient = Omit<Config, ServerConfigProps | 'collection
 	collections?: BuiltCollectionClient[];
 	areas?: BuiltAreaClient[];
 };
-export type BuiltConfigClient = Omit<BuiltConfig, ServerConfigProps | 'panel' | 'collections' | 'areas'> & {
+export type BuiltConfigClient = Omit<
+	BuiltConfig,
+	ServerConfigProps | 'panel' | 'collections' | 'areas'
+> & {
 	collections: BuiltCollectionClient[];
 	areas: BuiltAreaClient[];
 	icons: Dic<Component<IconProps>>;
@@ -370,13 +393,6 @@ export type BuiltConfigClient = Omit<BuiltConfig, ServerConfigProps | 'panel' | 
 	};
 };
 
-export type CompiledCollection = WithoutBuilders<BuiltCollection>;
-export type CompiledArea = WithoutBuilders<BuiltArea>;
-export type CompiledConfig = Omit<WithoutBuilders<BuiltConfig>, 'collections' | 'areas'> & {
-	collections: Array<CompiledCollection>;
-	areas: Array<CompiledArea>;
-};
-
 // Hook collections
 export type CollectionHooks<S extends DocType> = {
 	beforeOperation?: HookBeforeOperation<S>[];
@@ -384,7 +400,6 @@ export type CollectionHooks<S extends DocType> = {
 	beforeRead?: Hook<S, 'read', 'before'>[];
 	beforeUpdate?: (Hook<S, 'update', 'before'> | Hook<S, 'update' | 'create', 'before'>)[];
 	beforeDelete?: Hook<S, 'delete', 'before'>[];
-
 	afterCreate?: (Hook<S, 'create', 'after'> | Hook<S, 'update' | 'create', 'after'>)[];
 	afterUpdate?: (Hook<S, 'update', 'after'> | Hook<S, 'update' | 'create', 'after'>)[];
 	afterDelete?: Hook<S, 'delete', 'after'>[];

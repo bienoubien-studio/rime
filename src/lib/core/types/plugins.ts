@@ -1,4 +1,4 @@
-import type { BuiltConfig, BuiltConfigClient, RouteConfig } from '$lib/core/config/types.js';
+import type { Config, RouteConfig, SanitizedConfigClient } from '$lib/core/config/types.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Handle } from '@sveltejs/kit';
 import type { CacheActions } from '../plugins/cache/index.server.js';
@@ -16,7 +16,7 @@ export type CorePlugins = {
 export type Plugin<T = void> = (options?: T) => {
 	name: string;
 	type: 'server';
-	configure?: (config: BuiltConfig) => BuiltConfig;
+	configure?: <const C extends Config>(config: C) => C;
 	actions?: Record<string, MaybeAsyncFunction>;
 	routes?: Record<string, RouteConfig>;
 	handler?: Handle;
@@ -25,12 +25,18 @@ export type Plugin<T = void> = (options?: T) => {
 export type PluginClient<T = void> = (options?: T) => {
 	name: string;
 	type: 'client';
-	configure?: <T extends BuiltConfigClient>(config: T) => T;
+	configure?: <const C extends SanitizedConfigClient>(config: C) => C;
 };
 
 export type MailerPlugin = {
 	options: { from: string };
-	sendMail: (args: { from: string; to: string; subject: string; text: string; html: string }) => Promise<any>;
+	sendMail: (args: {
+		from: string;
+		to: string;
+		subject: string;
+		text: string;
+		html: string;
+	}) => Promise<any>;
 };
 
 export type Plugins = CorePlugins & GetRegisterType<'Plugins'>;

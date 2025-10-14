@@ -1,5 +1,5 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/core/config/types.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { Dic } from '$lib/util/types.js';
@@ -22,10 +22,11 @@ export const saveRelations = async (args: {
 	treeDiff: TreeBlocksDiff;
 	adapter: Adapter;
 	locale?: string;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 	ownerId: string;
 }) => {
-	const { configMap, incomingPaths, blocksDiff, treeDiff, adapter, locale, config, ownerId, data } = args;
+	const { configMap, incomingPaths, blocksDiff, treeDiff, adapter, locale, config, ownerId, data } =
+		args;
 
 	const parentTable = config.versions ? withVersionsSuffix(config.slug) : config.slug;
 

@@ -1,10 +1,31 @@
-import { date, group, relation, richText, slug, tab, tabs, text, toggle } from '$lib/fields/index.js';
-import { bold, heading, italic, link as linkFeature, upload } from '$lib/fields/rich-text/client.js';
+import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import {
+	date,
+	group,
+	relation,
+	richText,
+	slug,
+	tab,
+	tabs,
+	text,
+	toggle
+} from '$lib/fields/index.js';
+import {
+	bold,
+	heading,
+	italic,
+	link as linkFeature,
+	upload
+} from '$lib/fields/rich-text/client.js';
 import { access } from '$lib/util/access/index.js';
-import { Area, buildConfig, Collection } from '$rime/config';
+import { Area, Collection, rime } from '$rime/config';
 
 const Settings = Area.create('settings', {
-	fields: [text('title'), toggle('maintenance').label('Maintenance').required(), relation('logo').to('medias')],
+	fields: [
+		text('title'),
+		toggle('maintenance').label('Maintenance').required(),
+		relation('logo').to('medias')
+	],
 	access: {
 		read: (user) => access.hasRoles(user, 'admin')
 	},
@@ -31,7 +52,12 @@ const tabWriter = tab('writer').fields(
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
-	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
+	slug('slug')
+		.slugify('attributes.title')
+		.live(false)
+		.table({ position: 3, sort: true })
+		.localized()
+		.required(),
 	relation('image').to('medias'),
 	richText('intro').features(bold(), linkFeature()),
 	date('published')
@@ -93,8 +119,8 @@ const Pages = Collection.create('pages', {
 	versions: { draft: true }
 });
 
-export default buildConfig({
-	$database: 'versions.sqlite',
+export default rime({
+	$adapter: sqliteAdapter('versions.sqlite'),
 	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
 	staff: {

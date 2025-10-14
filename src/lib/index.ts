@@ -1,10 +1,9 @@
-import rime from '$lib/core/cms.server.js';
 import handlers from '$lib/core/handlers/index.js';
 
 export { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 export { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 
-export { handlers, rime };
+export { handlers };
 
 declare module '@bienbien/rime' {
 	// Register interfaces for plugin architecture

@@ -54,7 +54,9 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 	const isCollection = documentConfig.type === 'collection';
 	const collection = isCollection ? getCollectionContext(documentConfig.slug) : null;
 	const hasError = $derived(errors.length);
-	const canSubmit = $derived(!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError);
+	const canSubmit = $derived(
+		!isDisabled && !readOnly && Object.keys(changes).length > 0 && !hasError
+	);
 	const nestedLevel = initLevel();
 	const isLiveEdit = !!onDataChange;
 	const locale = getLocaleContext();
@@ -102,7 +104,11 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			// Process all properties of the item
 			Object.keys(newItem).forEach((key) => {
 				// If property is an array of object, process it recursively
-				if (Array.isArray(newItem[key]) && newItem[key].length && isObjectLiteral(newItem[key][0])) {
+				if (
+					Array.isArray(newItem[key]) &&
+					newItem[key].length &&
+					isObjectLiteral(newItem[key][0])
+				) {
 					const newParentPath = `${parentPath}.${index}.${key}`;
 					newItem[key] = rebuildPaths(newItem[key], basePath, newParentPath);
 				}
@@ -168,7 +174,8 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 			let items = cloneDeep(snapshot(getItems()));
 
 			// Get target array
-			const targetArray = getValueAtPath<TreeBlock[]>(atPath.replace(`${path}.`, ''), items) || items;
+			const targetArray =
+				getValueAtPath<TreeBlock[]>(atPath.replace(`${path}.`, ''), items) || items;
 
 			// Perform the move operation
 			targetArray.splice(index, 1);
@@ -777,7 +784,9 @@ export function getDocumentFormContext<T extends GenericDoc>(key: string = 'root
 	return getContext<DocumentFormContext<T>>(`${FORM_KEY}.${key}`);
 }
 
-export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<typeof setDocumentFormContext<T>>;
+export type DocumentFormContext<T extends GenericDoc = GenericDoc> = ReturnType<
+	typeof setDocumentFormContext<T>
+>;
 
 type AddBlock = (block: Omit<GenericBlock, 'id' | 'path'>) => void;
 type MoveBlock = (from: number, to: number) => void;

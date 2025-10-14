@@ -1,10 +1,10 @@
 import { findTitleField } from '$lib/core/config/shared/find-title.js';
-import type { AuthConfig, UploadConfig } from '$lib/core/config/types.js';
+import type { CollectionAuthConfig, UploadConfig } from '$lib/core/config/types.js';
 import type { Collection } from '../../../types.js';
 
 type Input = {
 	upload?: UploadConfig;
-	auth?: false | AuthConfig;
+	auth?: false | CollectionAuthConfig;
 	fields: Collection<any>['fields'];
 };
 type WithAsTitle<T> = T & { asTitle: string };

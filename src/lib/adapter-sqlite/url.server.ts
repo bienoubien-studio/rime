@@ -2,17 +2,17 @@ import { RimeError } from '$lib/core/errors/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import type { GetRegisterType } from '$lib/index.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import { and, eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { CompiledArea, CompiledCollection } from '../types.js';
+import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 import type { GenericTables } from './types.js';
 
 type Params = {
 	id: string;
 	versionId?: string;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 	locale?: string;
-	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
+	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	tables: GenericTables;
 };
 
@@ -67,7 +67,8 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		}
 
 		case OPERATION.VERSION_LOCALE: {
-			const tableVersionsLocales = tables[withLocalesSuffix(withVersionsSuffix(config.slug)) as keyof typeof tables];
+			const tableVersionsLocales =
+				tables[withLocalesSuffix(withVersionsSuffix(config.slug)) as keyof typeof tables];
 			operation = db
 				.update(tableVersionsLocales)
 				.set({ url })
@@ -89,7 +90,10 @@ export async function updateDocumentUrl(url: string, params: Params) {
 		try {
 			operation.run();
 		} catch (err: any) {
-			throw new RimeError(RimeError.OPERATION_ERROR, `Error storing url for ${config.slug}, ${id}. ${err.message}`);
+			throw new RimeError(
+				RimeError.OPERATION_ERROR,
+				`Error storing url for ${config.slug}, ${id}. ${err.message}`
+			);
 		}
 	}
 }

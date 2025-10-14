@@ -1,4 +1,5 @@
 import { randomId } from '$lib/util/random.js';
+import { OUTPUT_DIR } from '../../constants';
 
 const PACKAGE = '@bienbien/rime';
 
@@ -18,14 +19,14 @@ RIME_LOG_TO_FILE_MAX_DAYS=1
 `;
 
 export const defaultConfig = (name: string) => `
-import { Collection, buildConfig } from '$rime/config';
+import { Collection, rime } from '$rime/config';
 import { text } from '${PACKAGE}/fields';
 
 const Pages = Collection.create('pages', {
 	fields: [text('title').isTitle()]
 });
 
-export default buildConfig({
+export default rime({
   $database: '${name}.sqlite',
   collections: [Pages]
 });
@@ -35,7 +36,7 @@ export const drizzleConfig = (name: string) => `
 import { defineConfig, type Config } from 'drizzle-kit';
 
 export const config: Config = {
-  schema: './src/lib/server/schema.ts',
+  schema: './src/lib/${OUTPUT_DIR}/schema.server.ts',
   out: './db',
   strict: false,
   dialect: 'sqlite',
@@ -49,10 +50,10 @@ export default defineConfig(config);
 
 export const hooks = `import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from '${PACKAGE}';
-import config from './lib/config.generated/rime.config.server.js';
-import * as schema from './lib/server/schema.js';
+import config from './lib/${OUTPUT_DIR}/rime.config.server.js';
+import * as schema from './lib/${OUTPUT_DIR}/schema.server.js';
 
-export const handle = sequence(...handlers({ config, schema }));
+export const handle = sequence(...(await handlers(config)));
 `;
 
 export const auth = (name: string) => `

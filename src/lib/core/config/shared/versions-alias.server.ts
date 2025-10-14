@@ -2,7 +2,7 @@ import { augmentHooks } from '$lib/core/collections/config/augment-hooks.server.
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { toKebabCase } from '$lib/util/string.js';
-import type { BuiltCollection, BuiltConfig } from '../types.js';
+import type { BuiltCollection, Config } from '../types.js';
 
 /**
  * Creates versioned collection aliases for collections and areas with versioning enabled
@@ -12,8 +12,8 @@ import type { BuiltCollection, BuiltConfig } from '../types.js';
  * // if an area "settings" has versions enabled, this will create also a "settings_versions" collection
  * const updatedConfig = makeVersionsCollectionsAliases(config);
  */
-export function makeVersionsCollectionsAliases(config: BuiltConfig) {
-	for (const collection of config.collections) {
+export function makeVersionsCollectionsAliases<C extends Config>(config: C) {
+	for (const collection of config.collections || []) {
 		if (collection.versions) {
 			const versionedCollection: BuiltCollection = {
 				slug: withVersionsSuffix(collection.slug) as CollectionSlug,
@@ -28,17 +28,20 @@ export function makeVersionsCollectionsAliases(config: BuiltConfig) {
 				type: collection.type,
 				asTitle: collection.asTitle,
 				icon: collection.icon,
-				panel: false
-			};
-			config.collections = [...config.collections, versionedCollection];
+				panel: false,
+				_generateTypes: false,
+				_generateSchema: false
+			} as const;
+			config.collections = [...(config.collections || []), versionedCollection];
 		}
 	}
 
-	for (const area of config.areas) {
+	for (const area of config.areas || []) {
 		if (area.versions) {
 			let versionedCollection: BuiltCollection = {
 				slug: withVersionsSuffix(area.slug) as CollectionSlug,
 				kebab: withVersionsSuffix(toKebabCase(area.slug)),
+				icon: area.icon,
 				versions: undefined,
 				access: area.access,
 				asTitle: area.asTitle,
@@ -46,12 +49,14 @@ export function makeVersionsCollectionsAliases(config: BuiltConfig) {
 				fields: area.fields,
 				type: 'collection',
 				label: { plural: area.label, singular: area.label },
-				panel: false
-			} as BuiltCollection;
+				panel: false,
+				_generateTypes: false,
+				_generateSchema: false
+			} as const;
 
 			versionedCollection = augmentHooks(versionedCollection);
 
-			config.collections = [...config.collections, versionedCollection];
+			config.collections = [...(config.collections || []), versionedCollection];
 		}
 	}
 

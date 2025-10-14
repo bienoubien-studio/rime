@@ -5,6 +5,7 @@ import { babelParse } from 'ast-kit';
 import fs from 'node:fs';
 import path from 'node:path';
 import { logger } from '../../../logger/index.server.js';
+import { INPUT_DIR, OUTPUT_DIR } from '../../constants.js';
 
 /**
  * $ prefix-based sanitizer that rules:
@@ -14,11 +15,9 @@ import { logger } from '../../../logger/index.server.js';
  * - Outputs to .generated folder, preserving original folder structure
  */
 
-const OUTPUT_DIR = 'config.generated';
-
 export async function sanitize() {
 	const root = process.cwd();
-	const configDir = path.resolve(root, 'src/lib/config');
+	const configDir = path.resolve(root, 'src/lib/', INPUT_DIR);
 	const outputDir = path.resolve(root, 'src/lib/', OUTPUT_DIR);
 
 	logger.info('Sanitizing config...');
@@ -64,7 +63,9 @@ export async function sanitize() {
 		// Check if corresponding .server.ts already exists
 		const originalServerPath = filePath.replace('.ts', '.server.ts');
 		if (fs.existsSync(originalServerPath)) {
-			throw new Error(`Error: ${originalServerPath} already exists. Remove it before running sanitization.`);
+			throw new Error(
+				`Error: ${originalServerPath} already exists. Remove it before running sanitization.`
+			);
 		}
 
 		// Process the file and output to .generated
@@ -115,7 +116,8 @@ export async function sanitize() {
 
 	// Delete files that exist in current list but not in output list
 	for (const existingFile of existingFiles) {
-		if (!outputFiles.has(existingFile)) {
+		// Do not delete "schema.server.ts"
+		if (!outputFiles.has(existingFile) && existingFile !== 'schema.server.ts') {
 			const fileToDelete = path.join(outputDir, existingFile);
 			fs.unlinkSync(fileToDelete);
 			logger.debug(`   Deleted: ${existingFile}`);
@@ -447,21 +449,25 @@ function sanitizeClientAst(ast, analysis) {
 			}
 		}
 
-		// Replace buildConfig with buildConfigClient in imports
+		// Replace rime with rimeClient in imports
 		if (t.isImportDeclaration(node)) {
 			node.specifiers.forEach((spec) => {
-				if (t.isImportSpecifier(spec) && t.isIdentifier(spec.imported) && spec.imported.name === 'buildConfig') {
-					spec.imported.name = 'buildConfigClient';
+				if (
+					t.isImportSpecifier(spec) &&
+					t.isIdentifier(spec.imported) &&
+					spec.imported.name === 'rime'
+				) {
+					spec.imported.name = 'rimeClient';
 					if (t.isIdentifier(spec.local)) {
-						spec.local.name = 'buildConfigClient';
+						spec.local.name = 'rimeClient';
 					}
 				}
 			});
 		}
 
-		// Replace buildConfig function calls with buildConfigClient
-		if (t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === 'buildConfig') {
-			node.callee.name = 'buildConfigClient';
+		// Replace rime function calls with rimeClient
+		if (t.isCallExpression(node) && t.isIdentifier(node.callee) && node.callee.name === 'rime') {
+			node.callee.name = 'rimeClient';
 		}
 
 		// Remove $ prefixed object properties

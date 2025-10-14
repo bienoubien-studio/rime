@@ -1,7 +1,7 @@
 import { panelUrl } from '$lib/panel/util/url.js';
 import { capitalize } from '$lib/util/string.js';
 import type { ServerLoadEvent } from '@sveltejs/kit';
-import type { CompiledCollection, Route } from '../../../types.js';
+import type { BuiltCollection, Route } from '../../../types.js';
 import type { DashboardEntry } from './types.js';
 
 export const dashboardLoad = async (event: ServerLoadEvent) => {
@@ -9,7 +9,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 
 	const entries: DashboardEntry[] = [];
 
-	const buildBaseEntry = (c: CompiledCollection): DashboardEntry => ({
+	const buildBaseEntry = (c: BuiltCollection): DashboardEntry => ({
 		prototype: 'collection',
 		description: c.panel && c.panel?.description ? c.panel.description : null,
 		slug: c.slug,
@@ -19,7 +19,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		title: c.label.plural
 	});
 
-	const getLastEdited = async (c: CompiledCollection) => {
+	const getLastEdited = async (c: BuiltCollection) => {
 		try {
 			return await rime.collection(c.slug).find({
 				limit: 6,
@@ -37,7 +37,10 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		.filter((collection) => collection.panel !== false)
 		.map(async (collection) => {
 			if (collection.panel) {
-				return getLastEdited(collection).then((docs) => ({ ...buildBaseEntry(collection), lastEdited: docs }));
+				return getLastEdited(collection).then((docs) => ({
+					...buildBaseEntry(collection),
+					lastEdited: docs
+				}));
 			} else {
 				return {
 					...buildBaseEntry(collection),

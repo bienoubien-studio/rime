@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Document from '$lib/panel/components/sections/document/Document.svelte';
@@ -68,7 +67,9 @@
 		search = '';
 	};
 
-	const inputWithItemsClass = $derived(selectedItems.length === 0 ? '' : 'rz-command-input-select--with-items');
+	const inputWithItemsClass = $derived(
+		selectedItems.length === 0 ? '' : 'rz-command-input-select--with-items'
+	);
 </script>
 
 <div class="rz-relation">
@@ -99,7 +100,8 @@
 					ref={commandInput}
 					class={inputWithItemsClass}
 					bind:value={search}
-					placeholder={relationConfig.label.search || t__(`common.search_a`, relationConfig.label.singular)}
+					placeholder={relationConfig.label.search ||
+						t__(`common.search_a`, relationConfig.label.singular)}
 				/>
 
 				{#if inputFocused}
@@ -141,7 +143,7 @@
 			<Sheet.Trigger />
 			<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" side="right" showCloseButton={false}>
 				<Document
-					doc={createBlankDocument(compileDocumentConfig(relationConfig))}
+					doc={createBlankDocument(relationConfig)}
 					readOnly={false}
 					onClose={() => (create = false)}
 					operation="create"

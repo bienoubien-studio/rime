@@ -1,18 +1,18 @@
-import type { AuthConfig, Collection } from '$lib/core/config/types.js';
+import type { Collection, CollectionAuthConfig } from '$lib/core/config/types.js';
 import { select } from '$lib/fields/select/index.js';
 import { text } from '$lib/fields/text/index.js';
 import type { Option } from '$lib/types.js';
 import { access } from '$lib/util/access/index.js';
 import { usersFields } from '../auth/fields.js';
 
-type Input = { slug: string; auth?: boolean | AuthConfig; fields: Collection<any>['fields'] };
-export type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: AuthConfig };
+type Input = { slug: string; auth?: boolean | CollectionAuthConfig; fields: Collection<any>['fields'] };
+export type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: CollectionAuthConfig };
 
-const withNormalizedAuth = <T extends { auth?: boolean | AuthConfig }>(config: T): WithNormalizedAuth<T> => {
+const withNormalizedAuth = <T extends { auth?: boolean | CollectionAuthConfig }>(config: T): WithNormalizedAuth<T> => {
 	// Create a new object without the auth property
 	const { auth, ...rest } = config;
 	// Determine the normalized auth value
-	let normalizedAuth: undefined | AuthConfig;
+	let normalizedAuth: undefined | CollectionAuthConfig;
 
 	if (typeof auth === 'boolean') {
 		normalizedAuth = { type: 'password' };

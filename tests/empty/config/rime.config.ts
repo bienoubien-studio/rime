@@ -1,5 +1,6 @@
-import { buildConfig } from '$rime/config';
+import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import { rime } from '$rime/config';
 
-export default buildConfig({
-	$database: 'empty.sqlite'
+export default rime({
+	$adapter: sqliteAdapter('empty.sqlite')
 });

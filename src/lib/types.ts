@@ -12,8 +12,6 @@ export type {
 	BuiltConfigClient,
 	Collection,
 	CollectionHooks,
-	CompiledArea,
-	CompiledCollection,
 	Config,
 	CustomPanelRoute,
 	ImageSizesConfig,
@@ -38,7 +36,13 @@ export type {
 export type { Field, FormField, Option, RelationValue } from '$lib/fields/types.js';
 
 // Panel types
-export type { CollectionProps, FieldPanelTableConfig, FormErrors, Navigation, Route } from './panel/types.js';
+export type {
+	CollectionProps,
+	FieldPanelTableConfig,
+	FormErrors,
+	Navigation,
+	Route
+} from './panel/types.js';
 
 export type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte.js';
 
@@ -49,7 +53,11 @@ export type { Link } from './fields/link/types.js';
 // Util
 export type { WithRelationPopulated } from '$lib/util/types.js';
 
-export type { Rime } from './core/rime.server.js';
+export type { Rime, RimeContext } from './core/rime.server.js';
 export type { Plugin, Plugins } from './core/types/plugins.js';
 export type { BlocksFieldBlockRenderTitle } from './fields/blocks/index.js';
-export type { RichTextFeature, RichTextFeatureMark, RichTextFeatureNode } from './fields/rich-text/core/types.js';
+export type {
+	RichTextFeature,
+	RichTextFeatureMark,
+	RichTextFeatureNode
+} from './fields/rich-text/core/types.js';

@@ -2,13 +2,20 @@
 	import type { Editor } from '@tiptap/core';
 	import { BubbleMenuPlugin } from '@tiptap/extension-bubble-menu';
 	import { onDestroy, onMount } from 'svelte';
-	import type { RichTextFeature, RichTextFeatureMark, RichTextFeatureNode } from '../../core/types.js';
+	import type {
+		RichTextFeature,
+		RichTextFeatureMark,
+		RichTextFeatureNode
+	} from '../../core/types.js';
 	import { getRichTextContext } from '../context.svelte';
 	import './bubble-menu.css';
 	import IconButton from './icon-button/icon-button.svelte';
 	import NodeSelector, { type NodeSelectorItem } from './node-selector/node-selector.svelte';
 
-	type BubbleMenuItem = (RichTextFeatureMark | RichTextFeatureNode) & { name: string; options?: any };
+	type BubbleMenuItem = (RichTextFeatureMark | RichTextFeatureNode) & {
+		name: string;
+		options?: any;
+	};
 
 	type Props = {
 		editor: Editor;
@@ -31,7 +38,9 @@
 			}))
 			.filter((node) => !!node.nodeSelector);
 
-	const nodeItems = $derived(features.flatMap((feature) => getNodeItems(feature.nodes || [], feature)));
+	const nodeItems = $derived(
+		features.flatMap((feature) => getNodeItems(feature.nodes || [], feature))
+	);
 
 	// Get all items with bubble menu components (both nodes and marks)
 	const getBubbleMenuItems = (items: any[], feature: any): BubbleMenuItem[] =>
@@ -54,7 +63,9 @@
 	const richTextContext = getRichTextContext(path);
 
 	const shouldShow = ({ editor }: { editor: Editor }) => {
-		return editor.view.state.selection.$head.depth > 0 && editor.view.state.selection.content().size > 0;
+		return (
+			editor.view.state.selection.$head.depth > 0 && editor.view.state.selection.content().size > 0
+		);
 	};
 
 	function setActiveItems() {

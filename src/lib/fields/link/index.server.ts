@@ -17,10 +17,18 @@ export const toSchema: ToSchema<LinkFieldBuilder> = (field, parentPath) => {
 };
 
 export const toType: ToType<LinkFieldBuilder> = (field: LinkFieldBuilder) => {
-	return `${field.name}${field.raw.required ? '' : '?'}: Link`;
+	return `${field.name}${field.raw.required ? '' : '?'}: {
+		type: ${field.raw.types.map((t) => `'${t}'`).join(' | ')};
+		value: string | null;
+		target: '_self' | '_blank';
+		url?: string;
+}`;
 };
 
-export const populateRessourceURL: FieldHook<LinkField> = async (link: Link, { event, documentId, operation }) => {
+export const populateRessourceURL: FieldHook<LinkField> = async (
+	link: Link,
+	{ event, documentId, operation }
+) => {
 	if (!link) return link;
 
 	// if not a resource return original value

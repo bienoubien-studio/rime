@@ -1,7 +1,7 @@
-import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { PrototypeSlug } from '$lib/core/types/doc.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
+import type { PrototypeSlug } from '$lib/core/types/doc.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import { asc, desc, getTableColumns, sql } from 'drizzle-orm';
 import { getTableConfig } from 'drizzle-orm/sqlite-core';
 import { pathToDatabaseColumn } from './util.js';
@@ -9,14 +9,12 @@ import { pathToDatabaseColumn } from './util.js';
 type Args = {
 	slug: PrototypeSlug;
 	locale?: string;
-	configInterface: ConfigInterface;
+	config: BuiltArea | BuiltCollection;
 	by?: string;
 	tables: any;
 };
 
-export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }: Args) => {
-	// Get collection config to check if it has versions
-	const config = configInterface.getBySlug(slug);
+export const buildOrderByParam = ({ slug, locale, tables, config, by }: Args) => {
 	const hasVersions = !!config.versions;
 
 	const getOrderFunc = (str?: string) => {
@@ -81,7 +79,11 @@ export const buildOrderByParam = ({ slug, locale, tables, configInterface, by }:
 		const versionsTableColumns = Object.keys(getTableColumns(versionsTable));
 
 		// Check if the column exists in the versions table and is not a system field
-		if (versionsTableColumns.includes(columnStr) && columnStr !== 'createdAt' && columnStr !== 'updatedAt') {
+		if (
+			versionsTableColumns.includes(columnStr) &&
+			columnStr !== 'createdAt' &&
+			columnStr !== 'updatedAt'
+		) {
 			const { name: sqlVersionsTableName } = getTableConfig(versionsTable);
 			const { name: sqlRootTableName } = getTableConfig(rootTable);
 

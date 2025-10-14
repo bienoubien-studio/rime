@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { t__ } from '$lib/core/i18n/index.js';
 	import SpinLoader from '$lib/panel/components/ui/spin-loader/SpinLoader.svelte';
-	import type { CompiledCollection } from '$lib/types.js';
+	import type { BuiltCollection } from '$lib/types.js';
 	import { toast } from 'svelte-sonner';
 
 	import type { WithUpload } from '$lib/core/collections/upload/util/config';
 	import type { ChangeEventHandler } from 'svelte/elements';
 
 	type Props = {
-		accept: WithUpload<CompiledCollection>['upload']['accept'] | undefined;
+		accept: WithUpload<BuiltCollection>['upload']['accept'] | undefined;
 		preview: string | null;
 		file: File | null;
 		onGeneratingPreviewStart: () => void;

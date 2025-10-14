@@ -26,12 +26,14 @@ const getUserAttributes = async (ctx: CTX) => {
 
 	if (newSession) {
 		const event = getRequestEvent();
-		const user = await event.locals.rime.auth.getUserAttributes({
+		const user = await event.locals.rime.adapter.auth.getUserAttributes({
 			authUserId: newSession.user.id,
 			slug: newSession.user.type
 		});
 		if (!user) {
-			logger.error(`cant' find user with authUser id ${newSession.user.id} from ${newSession.user.type} collection`);
+			logger.error(
+				`cant' find user with authUser id ${newSession.user.id} from ${newSession.user.type} collection`
+			);
 			throw new APIError('BAD_REQUEST');
 		}
 		return ctx.json({
@@ -54,7 +56,7 @@ const handleUserCreation = async (ctx: CTX) => {
 	if (!newSession) return;
 
 	const event = getRequestEvent();
-	let data = ctx.body;
+	const data = ctx.body;
 
 	/**
 	 * Handle first user creation,
@@ -92,7 +94,7 @@ const handleUserCreation = async (ctx: CTX) => {
 	/**
 	 * Create the collection document
 	 */
-	const [error, _] = await trycatch(() =>
+	const [error] = await trycatch(() =>
 		event.locals.rime
 			.collection(ctx.body.type)
 			.system(event.locals.isInit)
@@ -111,8 +113,9 @@ const handleUserCreation = async (ctx: CTX) => {
 
 	// If error clean up session/account/user created
 	// Would be great to do it with the admin plugin,
-	// TODO maybe generate a superadmin API-KEY stored on server... or not
+
 	if (error) {
+		console.log(error);
 		logger.error(error.message);
 		ctx.context.newSession = null;
 		const { user } = newSession;

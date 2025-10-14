@@ -18,15 +18,17 @@ export class FieldBuilder<T extends Field = Field> {
 		return this;
 	}
 
-	compile(): WithoutBuilders<T> {
-		const compiled = {
+	compile(): WithoutBuilders<T> & {
+		component: Component<any>;
+		cell?: Component<{ value: any }> | null;
+	} {
+		return {
 			...this.field,
 			component: this.component,
-			cell: this.cell
-		};
-		return compiled as WithoutBuilders<T> & {
-			component: typeof compiled.component;
-			cell: typeof compiled.cell;
+			cell: this.cell || undefined
+		} as WithoutBuilders<T> & {
+			component: Component<any>;
+			cell?: Component<{ value: any }> | null;
 		};
 	}
 

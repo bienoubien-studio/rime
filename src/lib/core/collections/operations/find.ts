@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
@@ -8,7 +8,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 type FindArgs = {
 	query?: OperationQuery;
 	locale?: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	event: RequestEvent & { locals: App.Locals };
 	sort?: string;
 	depth?: number;
@@ -21,7 +21,19 @@ type FindArgs = {
 
 export const find = async <T extends GenericDoc>(args: FindArgs): Promise<T[]> => {
 	//
-	const { config, event, locale, sort, limit, offset, depth, query, draft, select = [], isSystemOperation } = args;
+	const {
+		config,
+		event,
+		locale,
+		sort,
+		limit,
+		offset,
+		depth,
+		query,
+		draft,
+		select = [],
+		isSystemOperation
+	} = args;
 	const { rime } = event.locals;
 
 	let context: OperationContext<CollectionSlug> = {

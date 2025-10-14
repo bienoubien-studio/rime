@@ -20,11 +20,13 @@ export class TabsBuilder extends FieldBuilder<TabsField> {
 		return Tabs;
 	}
 
-	compile(): WithoutBuilders<TabsField> {
+	override compile() {
 		return {
 			...this.field,
-			tabs: this.field.tabs.map((tab) => tab.compile())
-		} as unknown as WithoutBuilders<TabsField>;
+			tabs: this.field.tabs.map((tab) => tab.compile()),
+			component: this.component,
+			cell: this.cell || undefined
+		};
 	}
 }
 

@@ -11,7 +11,7 @@ export const signInActions: Actions = {
 		const email = data.get('email')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 
-		const response = await rime.auth.betterAuth.api.signInEmail({
+		const response = await rime.auth.api.signInEmail({
 			body: { email, password },
 			asResponse: true
 		});

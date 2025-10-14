@@ -9,7 +9,10 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 	const { event } = args;
 	let doc = args.doc;
 
-	const configMap = buildConfigMap(doc, args.config.fields);
+	const configMap = buildConfigMap(
+		doc,
+		args.config.fields.map((f) => f.compile())
+	);
 
 	for (const [key, config] of Object.entries(configMap)) {
 		let value = getValueAtPath(key, doc);

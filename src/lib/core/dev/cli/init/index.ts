@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { cp, mkdir } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { INPUT_DIR } from '../../constants.js';
 import { generate } from '../generate/index.js';
 import { prompt } from '../util.server.js';
 import { getPackageInfoByKey } from './getPackageName.js';
@@ -17,13 +18,13 @@ type Args = {
 };
 
 const PACKAGE = '@bienbien/rime';
+const root = process.cwd();
 
 export const init = async ({ force, name: incomingName, skipInstall }: Args) => {
-	const projectRoot = process.cwd();
 	const packageName = getPackageInfoByKey('name');
 
 	function setEnv() {
-		const envPath = path.resolve(projectRoot, '.env');
+		const envPath = path.resolve(root, '.env');
 
 		// Define variables with their update behavior
 		const envUpdates: Record<string, string> = {
@@ -63,7 +64,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	}
 
 	function setConfig(name: string) {
-		const configDirPath = path.join(process.cwd(), 'src', 'lib', 'config');
+		const configDirPath = path.resolve(root, 'src/lib', INPUT_DIR);
 		const configPath = path.join(configDirPath, 'rime.config.ts');
 
 		if (!existsSync(configPath)) {
@@ -78,7 +79,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	}
 
 	function setDatabase() {
-		const dbPath = path.join(process.cwd(), 'db');
+		const dbPath = path.join(root, 'db');
 		if (!existsSync(dbPath)) {
 			mkdirSync(dbPath);
 			logger.info('[✓] Database folder created');
@@ -88,7 +89,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	}
 
 	function setDrizzle(name: string) {
-		const drizzleConfigPath = path.join(process.cwd(), 'drizzle.config.ts');
+		const drizzleConfigPath = path.join(root, 'drizzle.config.ts');
 		if (!existsSync(drizzleConfigPath)) {
 			writeFileSync(drizzleConfigPath, templates.drizzleConfig(name.toString()));
 			logger.info('[✓] Drizzle config added');
@@ -98,14 +99,17 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	}
 
 	function configureVite() {
-		const configPath = path.resolve(projectRoot, 'vite.config.ts');
+		const configPath = path.resolve(root, 'vite.config.ts');
 		if (!existsSync(configPath)) {
 			throw new Error("Can't find vite configuration file");
 		}
 		const content = readFileSync(configPath, 'utf-8');
 		if (!content.includes('rime()')) {
 			// Add import
-			const newContent = content.replace(/(import .* from .*;\n?)/, `$1import { rime } from '${PACKAGE}/vite';\n`);
+			const newContent = content.replace(
+				/(import .* from .*;\n?)/,
+				`$1import { rime } from '${PACKAGE}/vite';\n`
+			);
 
 			// Add plugin to the list - ensure it's after sveltekit()
 			const updatedContent = newContent.replace(/plugins:\s*\[([\s\S]*?)\]/, (match, plugins) => {
@@ -128,8 +132,8 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	}
 
 	function setHooks() {
-		const hooksPath = path.join(projectRoot, 'src', 'hooks.server.ts');
-		const srcDir = path.join(projectRoot, 'src');
+		const hooksPath = path.join(root, 'src', 'hooks.server.ts');
+		const srcDir = path.join(root, 'src');
 
 		// Check if file exists
 		if (!existsSync(hooksPath)) {
@@ -149,9 +153,13 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		try {
 			const currentDir = path.dirname(fileURLToPath(import.meta.url));
 			await mkdir(path.resolve(process.cwd(), 'static/panel/fonts'), { recursive: true });
-			await cp(path.join(currentDir, '../../../../panel/fonts'), path.resolve(process.cwd(), 'static/panel/fonts'), {
-				recursive: true
-			});
+			await cp(
+				path.join(currentDir, '../../../../panel/fonts'),
+				path.resolve(process.cwd(), 'static/panel/fonts'),
+				{
+					recursive: true
+				}
+			);
 			logger.info('[✓] Copied assets');
 		} catch (err) {
 			console.error('Error copying fonts:', err);
@@ -170,7 +178,10 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		!!skipInstall && installDependencies();
 		await generate({ force: true });
 	} else {
-		const name = await prompt('What is your project name (will be used as database name) ?', packageName || 'app');
+		const name = await prompt(
+			'What is your project name (will be used as database name) ?',
+			packageName || 'app'
+		);
 
 		if (!name) {
 			logger.error('Operation cancelled');

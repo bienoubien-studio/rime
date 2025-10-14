@@ -1,32 +1,35 @@
-import type { BuiltArea, BuiltCollection, BuiltConfig, CompiledConfig } from '$lib/core/config/types.js';
+import type { Config } from '$lib/core/config/types.js';
 import type { FieldBuilder } from '$lib/core/fields/builders';
 import type { Field } from '$lib/types';
+import type { WithoutBuilders } from '$lib/util/types';
 
 /**
  * Compile fields on the whole config for areaas and collections
  */
-export function compileConfig(config: BuiltConfig): CompiledConfig {
+export function compileConfig<C extends Config>(config: C): WithoutBuilders<C> {
 	return {
 		...config,
-		collections: config.collections.map(compileDocumentConfig),
-		areas: config.areas.map(compileDocumentConfig)
-	};
+		collections: (config.collections || []).map(compileDocumentConfig),
+		areas: (config.areas || []).map(compileDocumentConfig)
+	} as WithoutBuilders<C>;
 }
 
 /**
  * Compile fields for the given area/collection
  * returns area/collections with compiled fields
  */
-export const compileDocumentConfig = <T extends BuiltArea | BuiltCollection>(config: T) => {
+export const compileDocumentConfig = <T extends { fields: FieldBuilder[] }>(
+	config: T
+): WithoutBuilders<T> => {
 	return {
 		...config,
 		fields: compileFields(config.fields)
-	};
+	} as WithoutBuilders<T>;
 };
 
 /**
  * Compile a list of fields and return it
  */
-export const compileFields = (fields: FieldBuilder<Field>[]) => {
+export const compileFields = (fields: FieldBuilder<Field>[]): Field[] => {
 	return fields.map((f) => f.compile());
 };

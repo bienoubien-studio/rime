@@ -2,7 +2,7 @@ import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
-import type { CompiledArea, CompiledCollection } from '$lib/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import type { Dic, WithRequired } from '$lib/util/types.js';
 import type { OperationContext } from '../hooks/index.server.js';
 import { defineTreeBlocksDiff } from './diff.server.js';
@@ -14,7 +14,7 @@ export const saveTreeBlocks = async (args: {
 	data: Dic;
 	incomingPaths: string[];
 	adapter: Adapter;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 }) => {
 	const { context, ownerId, data, incomingPaths, adapter, config } = args;
 	const { locale } = context.params;
@@ -53,7 +53,9 @@ export const saveTreeBlocks = async (args: {
 	});
 
 	if (treeDiff.toDelete.length) {
-		await Promise.all(treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block })));
+		await Promise.all(
+			treeDiff.toDelete.map((block) => adapter.tree.delete({ parentSlug: parentTable, block }))
+		);
 	}
 
 	if (treeDiff.toAdd.length) {
@@ -71,7 +73,9 @@ export const saveTreeBlocks = async (args: {
 
 	if (treeDiff.toUpdate.length) {
 		await Promise.all(
-			treeDiff.toUpdate.map((block) => adapter.tree.update({ parentSlug: parentTable, block, locale: locale }))
+			treeDiff.toUpdate.map((block) =>
+				adapter.tree.update({ parentSlug: parentTable, block, locale: locale })
+			)
 		);
 	}
 

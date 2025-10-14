@@ -7,7 +7,11 @@ export const augmentAuthServer = <T extends Collection<any>>(config: T): WithNor
 
 	const IS_API_AUTH = collection.auth?.type === 'apiKey';
 
-	if (IS_API_AUTH) {
+	/**
+	 * For APIKeys auth collections,
+	 * register the staff ownerId as a reference
+	 */
+	function addSchemaStaffReferenceForAPIKeys() {
 		collection.fields.forEach((field) => {
 			if (field instanceof FormFieldBuilder && field.name === 'ownerId') {
 				field = field.$generateSchema(
@@ -15,6 +19,11 @@ export const augmentAuthServer = <T extends Collection<any>>(config: T): WithNor
 				);
 			}
 		});
+		return collection;
+	}
+
+	if (IS_API_AUTH) {
+		addSchemaStaffReferenceForAPIKeys();
 	}
 
 	return collection;

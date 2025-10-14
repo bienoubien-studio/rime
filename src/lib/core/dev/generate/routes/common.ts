@@ -1,4 +1,5 @@
 import { PACKAGE_NAME } from '$lib/core/constant.server.js';
+import { OUTPUT_DIR } from '../../constants.js';
 import type { Routes } from './util.js';
 
 // Trick to prevent svelte-kit to replace $lib with resolved imports path
@@ -144,7 +145,7 @@ const panelLayout = () => `
 <script>
 	import { Panel } from '${PACKAGE_NAME}/panel/client';
 
-	import config from '${DOLLAR_LIB}/config.generated/rime.config.js';
+	import config from '${DOLLAR_LIB}/${OUTPUT_DIR}/rime.config.js';
 	const { children, data } = $props();
 
 	const user = data.user;
@@ -196,7 +197,7 @@ const livePage = () => `
 <script lang="ts">
   import { Live } from '${PACKAGE_NAME}/panel/client';
 
-  import config from '../../../lib/config.generated/rime.config.js';
+  import config from '../../../lib/${OUTPUT_DIR}/rime.config.js';
 
   const { data } = $props();
 </script>

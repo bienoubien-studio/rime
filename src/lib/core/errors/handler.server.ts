@@ -87,15 +87,17 @@ export function handleError(err: Error, options: ErrorHandlerOptions) {
 				});
 
 			case ERROR_CONTEXT.API:
-				logger.debug(`401 — ${message}`);
-				return error(401, message);
+				logger.debug(`400 — ${message}`);
+				return error(400, message);
 		}
 	}
 
 	// Unknown errors
 	console.error(err);
 	const event = getRequestEvent();
-	const logMessage = err.message ? `500 - ${event.url.href} - ${err.message}` : `500 - ${event.url.href}`;
+	const logMessage = err.message
+		? `500 - ${event.url.href} - ${err.message}`
+		: `500 - ${event.url.href}`;
 	logger.error(logMessage);
 	return error(500, 'Internal Server Error');
 }

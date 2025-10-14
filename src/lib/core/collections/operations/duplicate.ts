@@ -1,16 +1,22 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { buildConfigMap } from '$lib/core/operations/configMap/index.js';
 import { isBlocksFieldRaw, type BlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import { isTreeFieldRaw, type TreeFieldRaw } from '$lib/fields/tree/index.js';
 
-import { getValueAtPath, isObjectLiteral, matchStructure, omitId, setValueAtPath } from '$lib/util/object.js';
+import {
+	getValueAtPath,
+	isObjectLiteral,
+	matchStructure,
+	omitId,
+	setValueAtPath
+} from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 
 type DeleteArgs = {
 	id: string;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	event: RequestEvent & { locals: App.Locals };
 	isSystemOperation?: boolean;
 };
@@ -73,7 +79,10 @@ export const duplicate = async (args: DeleteArgs): Promise<string> => {
 
 		// Get localized document
 		let source = await collection.findById({ id, locale, draft: true });
-		const configMap = buildConfigMap(source, config.fields);
+		const configMap = buildConfigMap(
+			source,
+			config.fields.map((f) => f.compile())
+		);
 
 		// Id mapping
 		for (const [key, field] of Object.entries(configMap)) {

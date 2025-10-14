@@ -1,18 +1,18 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection, Config } from '$lib/core/config/types.js';
 import { logger } from '$lib/core/logger/index.server.js';
-import type { Rime } from '$lib/core/rime.server.js';
+import type { RimeContext } from '$lib/core/rime.server.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { existsSync, unlink, unlinkSync } from 'fs';
 import path from 'path';
 import type { WithUpload } from '../util/config.js';
 
-type Args = {
-	config: WithUpload<CompiledCollection>;
-	rime: Rime;
+export const cleanupStoredFiles = async <C extends Config>(args: {
+	config: WithUpload<BuiltCollection>;
+	rime: RimeContext<C>;
 	id: string;
-};
-
-export const cleanupStoredFiles = async ({ config, rime, id }: Args): Promise<GenericDoc> => {
+}): Promise<GenericDoc> => {
+	//
+	const { config, rime, id } = args;
 	const doc = await rime.collection<any>(config.slug).findById({ id, draft: true });
 
 	try {

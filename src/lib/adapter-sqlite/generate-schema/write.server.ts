@@ -2,6 +2,9 @@ import cache from '$lib/core/dev/cache/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import fs from 'fs';
 import { spawnSync } from 'node:child_process';
+import path from 'node:path';
+
+const OUTPUT_DIR = '+rime.generated';
 
 const write = (schema: string) => {
 	const cachedSchema = cache.get('schema');
@@ -10,12 +13,14 @@ const write = (schema: string) => {
 		return;
 	}
 
-	if (!fs.existsSync('./src/lib/server')) {
-		fs.mkdirSync('./src/lib/server');
+	const outputPath = path.join('./src/lib', OUTPUT_DIR);
+	const outputFile = path.join(outputPath, 'schema.server.ts');
+	if (!fs.existsSync(outputPath)) {
+		fs.mkdirSync(outputPath);
 	}
 
 	try {
-		fs.writeFileSync('./src/lib/server/schema.ts', schema);
+		fs.writeFileSync(outputFile, schema);
 	} catch (err: any) {
 		logger.error('Error writing schema', err.message);
 	}

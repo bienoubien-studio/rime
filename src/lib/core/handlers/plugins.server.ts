@@ -1,12 +1,11 @@
-import type { BuiltConfig } from '$lib/core/config/types.js';
+import type { Config } from '$lib/core/config/types.js';
 import { type Handle } from '@sveltejs/kit';
+import type { Rime } from '../rime.server';
 
-type Args = { config: BuiltConfig };
-
-export function createPluginsHandler({ config }: Args) {
+export function createPluginsHandler<const C extends Config>(rime: Rime<C>) {
 	const pluginHandlers: Handle[] = [];
 
-	for (const plugin of config.$plugins || []) {
+	for (const plugin of rime.config.raw.$plugins || []) {
 		if (plugin.handler) {
 			pluginHandlers.push(plugin.handler);
 		}

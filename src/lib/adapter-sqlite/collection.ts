@@ -1,15 +1,19 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
-import { VERSIONS_OPERATIONS, VersionOperations } from '$lib/core/collections/versions/operations.js';
+import {
+	VERSIONS_OPERATIONS,
+	VersionOperations
+} from '$lib/core/collections/versions/operations.js';
+import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { withDirectoriesSuffix, withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
+import type { IConfig } from '$lib/core/rime.server.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { trycatchSync } from '$lib/util/function.js';
 import type { DeepPartial, Dic } from '$lib/util/types.js';
 import { and, desc, eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { ConfigInterface } from '../core/config/interface.server.js';
+import type { LibSQLDatabase } from 'drizzle-orm/libsql';
 import { RimeError } from '../core/errors/index.js';
 import { buildOrderByParam } from './orderBy.js';
 import * as adapterUtil from './util.js';
@@ -17,29 +21,30 @@ import { buildWhereParam } from './where.js';
 import { buildWithParam } from './with.js';
 
 type Schema = GetRegisterType<'Schema'>;
-type Args = {
-	db: BetterSQLite3Database<Schema>;
-	tables: any;
-	configInterface: ConfigInterface;
-};
 
 /**
  * Creates a collection interface for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned collections with support for localization.
  */
-const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args) => {
+const createCollectionInterface = <const C extends Config>(args: {
+	db: LibSQLDatabase<Schema>;
+	tables: any;
+	iConfig: IConfig<C>;
+}) => {
+	const { db, tables, iConfig } = args;
+
 	/**
 	 * Retrieves a document by its ID from a collection. For versioned collections,
 	 * returns either a specific version (if versionId is provided) or the latest/published version.
 	 */
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
-		const config = configInterface.getCollection(slug);
+		const config = iConfig.getCollection(slug);
 		const isVersioned = !!config.versions;
 		const table = tables[slug];
 
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
-			const withParam = buildWithParam({ slug, locale, tables, configInterface });
+			const withParam = buildWithParam({ slug, locale, tables, config });
 			//@ts-expect-error slug is a table for sure
 			const doc = await db.query[slug].findFirst({
 				where: eq(table.id, id),
@@ -54,7 +59,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		} else {
 			// Implementation for versioned collections
 			const versionsTable = withVersionsSuffix(slug);
-			const withParam = buildWithParam({ slug: versionsTable, locale, tables, configInterface });
+			const withParam = buildWithParam({ slug: versionsTable, locale, tables, config });
 
 			// Build params based
 			// if version Id get the specifi version
@@ -108,7 +113,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 * a single document with the provided data.
 	 */
 	const insert: Insert = async ({ slug, data, locale }) => {
-		const config = configInterface.getCollection(slug);
+		const config = iConfig.getCollection(slug);
 		const isVersioned = !!config.versions;
 		const now = new Date();
 
@@ -235,7 +240,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 */
 	const update: Update = async ({ slug, id, versionId, data, locale, versionOperation }) => {
 		const now = new Date();
-		const config = configInterface.getCollection(slug);
+		const config = iConfig.getCollection(slug);
 
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
@@ -267,7 +272,10 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		} else if (VersionOperations.isSpecificVersionUpdate(versionOperation)) {
 			// Scenario 1: Upadte specific version
 			if (!versionId) {
-				throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionId @adapter-update-collection');
+				throw new RimeError(
+					RimeError.OPERATION_ERROR,
+					'missing versionId @adapter-update-collection'
+				);
 			}
 
 			// Extract hierarchy fields (_parent, _position) from data
@@ -342,8 +350,17 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	 * field selection, and localization. For versioned collections, returns the latest
 	 * or published version of each document.
 	 */
-	const find: FindDocuments = async ({ slug, select, query: incomingQuery, sort, limit, offset, locale, draft }) => {
-		const config = configInterface.getCollection(slug);
+	const find: FindDocuments = async ({
+		slug,
+		select,
+		query: incomingQuery,
+		sort,
+		limit,
+		offset,
+		locale,
+		draft
+	}) => {
+		const config = iConfig.getCollection(slug);
 		const isVersioned = !!config.versions;
 
 		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined;
@@ -351,15 +368,15 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		if (!isVersioned) {
 			// Original implementation for non-versioned collections
 			const params: Dic = {
-				with: buildWithParam({ slug, select, tables, configInterface, locale }) || undefined,
-				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort }),
+				with: buildWithParam({ slug, select, tables, config, locale }) || undefined,
+				orderBy: buildOrderByParam({ slug, locale, tables, config, by: sort }),
 				// Set a sufficient limit when offset is set but not limit as sqlite requires limit if offset present
 				limit: limit || (typeof offset === 'number' ? 1000000 : undefined),
 				offset: offset || undefined
 			};
 
 			if (query) {
-				params.where = buildWhereParam({ query, slug, locale, db });
+				params.where = buildWhereParam({ query, slug, locale, db, iConfig, tables });
 			}
 
 			// Remove undefined properties
@@ -374,7 +391,8 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 		} else {
 			// Implementation for versioned collections
 			const versionsTable = withVersionsSuffix(slug);
-			const withParam = buildWithParam({ slug: versionsTable, select, tables, configInterface, locale }) || undefined;
+			const withParam =
+				buildWithParam({ slug: versionsTable, select, tables, config, locale }) || undefined;
 
 			// If draft is not true and versions.draft enabled
 			// Then we adjust the query to get the published document
@@ -400,14 +418,16 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 				}
 			}
 
-			const whereParam = query ? buildWhereParam({ query, slug: versionsTable, locale, db }) : undefined;
+			const whereParam = query
+				? buildWhereParam({ query, slug: versionsTable, locale, db, iConfig, tables })
+				: undefined;
 
 			// Build the query parameters for pagination and sorting of the root table
 			const params: Dic = {
 				// Set a sufficient limit when offset is set but limit doesn't, because sqlite requires limit if offset present
 				limit: limit || (typeof offset === 'number' ? 1000000 : undefined),
 				offset: offset,
-				orderBy: buildOrderByParam({ slug, locale, tables, configInterface, by: sort })
+				orderBy: buildOrderByParam({ slug, locale, tables, config, by: sort })
 			};
 
 			// Remove undefined properties
@@ -468,9 +488,7 @@ const createAdapterCollectionInterface = ({ db, tables, configInterface }: Args)
 	};
 };
 
-export default createAdapterCollectionInterface;
-
-export type AdapterCollectionInterface = ReturnType<typeof createAdapterCollectionInterface>;
+export default createCollectionInterface;
 
 type FindDocuments = (args: {
 	slug: CollectionSlug;

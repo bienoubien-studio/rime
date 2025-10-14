@@ -1,5 +1,5 @@
 import { isAuthConfig } from '$lib/core/collections/auth/util.js';
-import type { CompiledArea, CompiledCollection, CompiledConfig } from '$lib/core/config/types.js';
+import type { BuiltArea, BuiltCollection, Config } from '$lib/core/config/types.js';
 import cache from '$lib/core/dev/cache/index.js';
 import { isFormField } from '$lib/core/fields/util.js';
 import type { PrototypeSlug } from '$lib/core/types/doc.js';
@@ -18,12 +18,12 @@ function hasDuplicates(arr: string[]): string[] {
  * Check if there are multiple occurences
  * of the same slug inside collections and areas
  */
-function hasDuplicateSlug(config: CompiledConfig) {
+function hasDuplicateSlug(config: Config) {
 	const slugs: PrototypeSlug[] = [];
-	for (const collection of config.collections) {
+	for (const collection of config.collections || []) {
 		slugs.push(collection.slug);
 	}
-	for (const area of config.areas) {
+	for (const area of config.areas || []) {
 		slugs.push(area.slug);
 	}
 
@@ -38,8 +38,9 @@ function hasDuplicateSlug(config: CompiledConfig) {
  * Prevent the panel user collection slug
  * to be used elsewhere
  */
-function hasUsersSlug(config: CompiledConfig) {
-	const invalid = config.collections.filter((collection) => collection.slug === 'staff').length > 1;
+function hasUsersSlug(config: Config) {
+	const invalid =
+		(config.collections || []).filter((collection) => collection.slug === 'staff').length > 1;
 	if (invalid) {
 		return [`staff is a reserved slug for panel users`];
 	}
@@ -50,37 +51,38 @@ function hasUsersSlug(config: CompiledConfig) {
  * Validate documents fields for each collections
  * and areas
  */
-const validateFields = (config: CompiledConfig) => {
+const validateFields = (config: Config) => {
 	let errors: string[] = [];
-	for (const collection of config.collections) {
+	for (const collection of config.collections || []) {
 		const collectionErrors = validateDocumentFields(collection);
 		errors = [...errors, ...collectionErrors];
 	}
-	for (const area of config.areas) {
+	for (const area of config.areas || []) {
 		const collectionErrors = validateDocumentFields(area);
 		errors = [...errors, ...collectionErrors];
 	}
 	return errors;
 };
 
-type UnknownConfig = CompiledCollection | CompiledArea;
-
 /**
  *
  */
-const validateDocumentFields = (config: UnknownConfig) => {
+const validateDocumentFields = (config: BuiltCollection | BuiltArea) => {
 	const errors: string[] = [];
-	const isCollection = (config: UnknownConfig): config is CompiledCollection => config.type === 'collection';
+	const isCollection = (config: any): config is BuiltCollection => config.type === 'collection';
 	const isAuth = isCollection(config) && isAuthConfig(config);
 	const registeredBlocks: Record<string, BlocksFieldRaw['blocks'][number]> = {};
 
+	const fieldsCompiled = config.fields.map((f) => f.compile());
+
 	if (isAuth) {
-		const rolesField = config.fields
+		const rolesField = fieldsCompiled
 			.filter(isFormField)
 			.filter((f) => f.name === 'roles')
 			.filter((f) => isSelectField(f))[0];
-		const nameField = config.fields.filter(isFormField).filter((f) => f.name === 'name')[0];
-		const emailField = config.fields
+
+		const nameField = fieldsCompiled.filter(isFormField).filter((f) => f.name === 'name')[0];
+		const emailField = fieldsCompiled
 			.filter(isFormField)
 			.find((f: FormField) => f.name === 'email' && f.type === 'email');
 
@@ -123,7 +125,9 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		for (const field of fields) {
 			// Check that a field wich has field._root = true is not localized
 			if ('_root' in field && field._root && field.localized) {
-				errors.push(`Field ${field.name} of ${config.type} ${config.slug} with _root = true, can't be localized`);
+				errors.push(
+					`Field ${field.name} of ${config.type} ${config.slug} with _root = true, can't be localized`
+				);
 			}
 
 			// Check for malformed field.name
@@ -135,7 +139,8 @@ const validateDocumentFields = (config: UnknownConfig) => {
 			if (isBlocksFieldRaw(field)) {
 				for (const block of field.blocks) {
 					if (block.name in registeredBlocks) {
-						const blockDefinedButDiffer = JSON.stringify(registeredBlocks[block.name]) !== JSON.stringify(block);
+						const blockDefinedButDiffer =
+							JSON.stringify(registeredBlocks[block.name]) !== JSON.stringify(block);
 						if (blockDefinedButDiffer) {
 							errors.push(`Each block with same name should be identique (block ${block.name})`);
 						}
@@ -157,22 +162,22 @@ const validateDocumentFields = (config: UnknownConfig) => {
 		}
 	};
 
-	validateFormFields(config.fields.filter(isFormField));
+	validateFormFields(config.fields.map((f) => f.compile()).filter(isFormField));
 
 	return errors;
 };
 
-const hasDatabase = (config: CompiledConfig) => {
-	const hasDatabaseName = '$database' in config && typeof config.$database === 'string';
+const hasDatabase = <T extends Config>(config: T) => {
+	const hasDatabaseName = '$adapter' in config;
 	if (!hasDatabaseName) {
-		return ['config.$database not defined'];
+		return ['config.$adapter not defined'];
 	}
 	return [];
 };
 
-function validateAuthCollections(config: CompiledConfig) {
+function validateAuthCollections<T extends Config>(config: T) {
 	const errors = [];
-	const authCollections = config.collections.filter(isAuthConfig);
+	const authCollections = (config.collections || []).filter(isAuthConfig);
 	for (const collection of authCollections) {
 		if (collection.versions) {
 			errors.push(`Auth collections can't be versionned (${collection.slug})`);
@@ -181,8 +186,14 @@ function validateAuthCollections(config: CompiledConfig) {
 	return errors;
 }
 
-function validate(config: CompiledConfig): boolean {
-	const validateFunctions = [hasDuplicateSlug, hasUsersSlug, validateFields, hasDatabase, validateAuthCollections];
+function validate(config: Config): boolean {
+	const validateFunctions = [
+		hasDuplicateSlug,
+		hasUsersSlug,
+		validateFields,
+		hasDatabase,
+		validateAuthCollections
+	];
 
 	for (const isValid of validateFunctions) {
 		const errors: string[] = isValid(config);

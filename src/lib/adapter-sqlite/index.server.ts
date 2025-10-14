@@ -1,16 +1,18 @@
-import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import type { Config } from '$lib/core/config/types.js';
+import { OUTPUT_DIR } from '$lib/core/dev/constants.js';
+import type { IConfig } from '$lib/core/rime.server.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
-import Database from 'better-sqlite3';
-import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3';
+import { drizzle } from 'drizzle-orm/libsql';
 import path from 'path';
-import createAdapterAreaInterface, { type AdapterAreaInterface } from './area.js';
-import createAdapterAuthInterface from './auth/index.server.js';
-import createAdapterBlocksInterface, { type AdapterBlocksInterface } from './blocks.js';
-import createAdapterCollectionInterface, { type AdapterCollectionInterface } from './collection.js';
-import createAdapterRelationsInterface, { type AdapterRelationsInterface } from './relations.js';
-import { databaseTransformInterface, type AdapterTransformInterface } from './transform.js';
-import createAdapterTreeInterface, { type AdapterTreeInterface } from './tree.js';
+import createAreaInterface from './area.js';
+import createAuthInterface from './auth.server.js';
+import createBlocksInterface from './blocks.js';
+import createCollectionInterface from './collection.js';
+import generateSchema from './generate-schema/index.server.js';
+import createRelationsInterface from './relations.js';
+import { databaseTransformInterface } from './transform.js';
+import createTreeInterface from './tree.js';
 import type { GenericTable } from './types.js';
 import { updateDocumentUrl } from './url.server.js';
 import { updateTableRecord } from './util.js';
@@ -18,42 +20,52 @@ import { updateTableRecord } from './util.js';
 type Schema = GetRegisterType<'Schema'>;
 type Tables = GetRegisterType<'Tables'>;
 
-type CreateAdapterArgs = {
-	schema: { tables: Tables; default: Schema; relationFieldsMap: any };
-	configInterface: ConfigInterface;
-};
+export function sqliteAdapter(database: string) {
+	//
+	return {
+		createAdapter: <C extends Config>(iConfig: IConfig<C>) => createAdapter({ database, iConfig }),
+		generateSchema
+	};
+}
 
-const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
-	const dbPath = path.join(process.cwd(), 'db', configInterface.raw.$database);
-	const sqlite = new Database(dbPath);
+const createAdapter = async <const C extends Config>(args: {
+	database: string;
+	iConfig: IConfig<C>;
+}) => {
+	const { database, iConfig } = args;
 
-	const db: BetterSQLite3Database<Schema> = drizzle(sqlite, { schema: schema.default });
+	const schema = (await import(
+		path.resolve(/* @vite-ignore */ process.cwd(), `src/lib/${OUTPUT_DIR}/schema.server.js`)
+	)) as { tables: Tables; default: Schema; relationFieldsMap: any };
+
+	const dbPath = path.join(process.cwd(), 'db', database);
+	// const sqlite = new Database(dbPath);
+
+	const db = drizzle('file:' + dbPath, { schema: schema.default });
 	const tables = schema.tables;
 
-	const blocks: AdapterBlocksInterface = createAdapterBlocksInterface({ db, tables });
-	const tree: AdapterTreeInterface = createAdapterTreeInterface({ db, tables });
-	const relations: AdapterRelationsInterface = createAdapterRelationsInterface({ db, tables });
-	const auth = createAdapterAuthInterface({
+	const blocks = createBlocksInterface({ db, tables });
+	const tree = createTreeInterface({ db, tables });
+	const relations = createRelationsInterface({ db, tables });
+	const auth = createAuthInterface({
 		db,
-		schema: schema.default,
-		configInterface
+		schema: schema.default
 	});
-
-	const collection: AdapterCollectionInterface = createAdapterCollectionInterface({
+	const collection = createCollectionInterface({
 		db,
 		tables,
-		configInterface
+		iConfig
 	});
 
-	const area: AdapterAreaInterface = createAdapterAreaInterface({
+	const area = createAreaInterface({
 		db,
 		tables,
-		configInterface
+		iConfig
 	});
 
-	const transform: AdapterTransformInterface = databaseTransformInterface({
+	const transform = databaseTransformInterface({
 		tables,
-		configInterface
+		iConfig
 	});
 
 	return {
@@ -75,7 +87,10 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 			return await updateTableRecord(db, tables, tableName, { recordId: id, data });
 		},
 
-		async updateDocumentUrl(url: string, params: Omit<Parameters<typeof updateDocumentUrl>[1], 'db' | 'tables'>) {
+		async updateDocumentUrl(
+			url: string,
+			params: Omit<Parameters<typeof updateDocumentUrl>[1], 'db' | 'tables'>
+		) {
 			return await updateDocumentUrl(url, {
 				...params,
 				db,
@@ -93,6 +108,4 @@ const createAdapter = ({ schema, configInterface }: CreateAdapterArgs) => {
 	};
 };
 
-export default createAdapter;
-
-export type Adapter = ReturnType<typeof createAdapter>;
+export type Adapter<C extends Config = Config> = Awaited<ReturnType<typeof createAdapter<C>>>;

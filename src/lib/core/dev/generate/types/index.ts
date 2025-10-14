@@ -1,5 +1,10 @@
 import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
-import type { BuiltConfig, ImageSizesConfig } from '$lib/core/config/types.js';
+import type {
+	BuiltArea,
+	BuiltCollection,
+	Config,
+	ImageSizesConfig
+} from '$lib/core/config/types.js';
 import { PACKAGE_NAME } from '$lib/core/constant.server.js';
 import cache from '$lib/core/dev/cache/index.js';
 import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
@@ -16,6 +21,7 @@ import { trycatchSync } from '$lib/util/function';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { OUTPUT_DIR } from '../../constants';
 
 const IS_PACKAGE_DEV = process.env.IS_PACKAGE_DEV === 'true';
 
@@ -85,11 +91,13 @@ export type ${name} = {
  * Generates the module declaration for registering document types
  * @returns A string containing the module declaration for type registration
  */
-const templateRegister = (config: BuiltConfig): string => {
-	const registerCollections = config.collections.length
+const templateRegister = <T extends Config>(config: T): string => {
+	const collections = (config.collections || []).filter((c) => c._generateTypes !== false);
+	const areas = (config.areas || []).filter((c) => c._generateTypes !== false);
+	const registerCollections = collections.length
 		? [
 				'\tinterface RegisterCollection {',
-				`${config.collections
+				`${collections
 					.map((collection) => {
 						let collectionRegister = `\t\t'${collection.slug}': ${makeDocTypeName(collection.slug)}`;
 						if (collection.versions) {
@@ -101,10 +109,10 @@ const templateRegister = (config: BuiltConfig): string => {
 				'\t}'
 			]
 		: [];
-	const registerAreas = config.areas.length
+	const registerAreas = areas.length
 		? [
 				'\tinterface RegisterArea {',
-				`${config.areas
+				`${areas
 					.map((area) => {
 						const areaRegister = `\t\t'${area.slug}': ${makeDocTypeName(area.slug)}`;
 						return areaRegister;
@@ -113,7 +121,9 @@ const templateRegister = (config: BuiltConfig): string => {
 				'\t}'
 			]
 		: [];
-	return ["declare module '@bienbien/rime' {", ...registerCollections, ...registerAreas, '}'].join('\n');
+	return ["declare module '@bienbien/rime' {", ...registerCollections, ...registerAreas, '}'].join(
+		'\n'
+	);
 };
 
 const templateDeclareVirtualModule = () =>
@@ -145,14 +155,15 @@ function generateImageSizesType(sizes: ImageSizesConfig[]) {
  * Generates the complete TypeScript type definitions string based on the built configuration
  * @returns A string containing all type definitions
  */
-export async function generateTypesString(config: BuiltConfig) {
+export async function generateTypesString<T extends Config>(config: T) {
 	logger.info('Types generation...');
-
+	const collections = (config.collections || []).filter((c) => c._generateTypes !== false);
+	const areas = (config.areas || []).filter((c) => c._generateTypes !== false);
 	const blocksTypes: string[] = [];
 	const treeBlocksTypes: string[] = [];
 	const registeredBlocks: string[] = [];
 	const registeredTreeBlocks: string[] = [];
-	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User', 'Rime']);
+	let imports = new Set<string>(['BaseDoc', 'Navigation', 'User']);
 
 	const addImport = (string: string) => {
 		imports = new Set([...imports, string]);
@@ -184,10 +195,13 @@ export async function generateTypesString(config: BuiltConfig) {
 					for (const block of field.raw.blocks) {
 						if (!registeredBlocks.includes(block.raw.name)) {
 							const templates = await buildFieldsTypes(
-								block.raw.fields.filter((field) => field instanceof FormFieldBuilder)
+								block.raw.fields
+									.filter((field) => field instanceof FormFieldBuilder)
+									.filter((field) => field.name !== 'type')
 							);
 							blocksTypes.push(makeBlockType(block.raw.name, templates.join('\n\t')));
 							registeredBlocks.push(block.raw.name);
+							buildblocksTypes(block.raw.fields);
 						}
 					}
 				}
@@ -229,12 +243,14 @@ export async function generateTypesString(config: BuiltConfig) {
 		}
 	};
 
-	const processCollection = async (collection: (typeof config.collections)[number]) => {
+	const processCollection = async (collection: BuiltCollection) => {
 		let fields = collection.fields;
 		if (isUploadConfig(collection) && collection.upload.imageSizes?.length) {
 			fields = collection.fields
 				.filter((f) => f instanceof FormFieldBuilder)
-				.filter((field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name));
+				.filter(
+					(field) => !collection.upload.imageSizes!.some((size) => size.name === field.raw.name)
+				);
 		}
 		const fieldsTypesList = await buildFieldsTypes(fields);
 		if (collection.versions) {
@@ -252,7 +268,7 @@ export async function generateTypesString(config: BuiltConfig) {
 		return templateDocType(collection.slug, fieldsContent, !!collection.upload);
 	};
 
-	const processArea = async (area: (typeof config.areas)[number]) => {
+	const processArea = async (area: BuiltArea) => {
 		const fieldsTypesList = await buildFieldsTypes(area.fields);
 		if (area.versions) {
 			fieldsTypesList.push('versionId: string');
@@ -262,8 +278,8 @@ export async function generateTypesString(config: BuiltConfig) {
 		return templateDocType(area.slug, fieldsTypesList.join('\n\t'));
 	};
 
-	const collectionsTypes = (await Promise.all(config.collections.map(processCollection))).join('\n');
-	const areasTypes = (await Promise.all(config.areas.map(processArea))).join('\n');
+	const collectionsTypes = (await Promise.all(collections.map(processCollection))).join('\n');
+	const areasTypes = (await Promise.all(areas.map(processArea))).join('\n');
 	const hasBlocks = !!registeredBlocks.length;
 	const blocksTypeNames = `export type BlockTypes = ${registeredBlocks.map((name) => `'${name}'`).join('|')}\n`;
 	const anyBlock = `export type AnyBlock = ${registeredBlocks.map((name) => `Block${toPascalCase(name)}`).join('|')}\n`;
@@ -300,7 +316,11 @@ export async function generateTypesString(config: BuiltConfig) {
 				}
 			| undefined;
 			/** Singleton providing access to auth, config and local-api */
-      rime: Rime;
+      rime: ReturnType<
+				Awaited<
+					typeof import('$lib/${OUTPUT_DIR}/rime.config.server.ts').default
+				>['createRimeContext']
+			>;
       /** Flag enabled by the core plugin rime.cache when the API cache is ON */
       cacheEnabled: boolean;
       /** Available in panel, routes for sidebar */
@@ -364,7 +384,7 @@ function write(key: string, content: string, filePath: string) {
  * Generates and writes TypeScript type definitions based on the built configuration
  * @param config The built configuration containing collections, areas, and fields
  */
-async function generateTypes(config: BuiltConfig) {
+async function generateTypes<T extends Config>(config: T) {
 	const mainTypes = await generateTypesString(config);
 	const declarations = [templateDeclareVirtualModule()].join('\n');
 

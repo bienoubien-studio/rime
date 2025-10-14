@@ -10,20 +10,20 @@ import { date } from '$lib/fields/date/index.js';
 import { text } from '$lib/fields/text/index.js';
 import type { CollectionSlug } from '$lib/types.js';
 import { toKebabCase } from '$lib/util/string.js';
-import type { BuiltCollection, BuiltConfig } from '../types.js';
+import type { BuiltCollection, Config } from '../types.js';
 
 /**
  * Creates an upload directories collection for collections with upload enabled
  * Eg. for medias this will create a collection medias_directories
  */
-export function makeUploadDirectoriesCollections(config: BuiltConfig) {
-	for (const collection of config.collections) {
+export function makeUploadDirectoriesCollections<C extends Config>(config: C) {
+	for (const collection of config.collections || []) {
 		if (collection.upload) {
 			const slug = withDirectoriesSuffix(collection.slug);
 			// If already created skip to the next colleciton
 			// for exemple a versions collections of an upload
 			// collection should not have a directories related table
-			if (config.collections.filter((c) => c.slug === slug).length) continue;
+			if ((config.collections || []).filter((c) => c.slug === slug).length) continue;
 			// else create the directory collection
 			let directoriesCollection: BuiltCollection = {
 				slug: slug as CollectionSlug,
@@ -49,12 +49,14 @@ export function makeUploadDirectoriesCollections(config: BuiltConfig) {
 					beforeCreate: [exctractPath]
 				},
 				asTitle: 'path',
-				panel: false
+				panel: false,
+				_generateTypes: false,
+				_generateSchema: false
 			};
 
 			directoriesCollection = augmentHooks(directoriesCollection);
 
-			config.collections = [...config.collections, directoriesCollection];
+			config.collections = [...(config.collections || []), directoriesCollection];
 		}
 	}
 

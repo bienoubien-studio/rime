@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import type { Hook, OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
@@ -15,7 +15,7 @@ type Args<T> = {
 	draft?: boolean;
 	data: DeepPartial<T>;
 	locale?: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	event: RequestEvent;
 	isFallbackLocale?: string | undefined;
 	isSystemOperation?: boolean;
@@ -69,10 +69,14 @@ export const updateById = async <T extends GenericDoc = GenericDoc>(args: Args<T
 
 	const makeMessage = (name: string) => `missing ${name} @uppdateById`;
 	if (!context.configMap) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('configMap'));
-	if (!context.originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalConfigMap'));
-	if (!context.originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalDoc'));
-	if (!context.versionOperation) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionOperation'));
-	if (!context.params.versionId) throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionId'));
+	if (!context.originalConfigMap)
+		throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalConfigMap'));
+	if (!context.originalDoc)
+		throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('originalDoc'));
+	if (!context.versionOperation)
+		throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionOperation'));
+	if (!context.params.versionId)
+		throw new RimeError(RimeError.OPERATION_ERROR, makeMessage('versionId'));
 
 	const incomingPaths = Object.keys(context.configMap);
 

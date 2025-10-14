@@ -1,5 +1,6 @@
 import type { User } from '$lib/core/collections/auth/types.js';
-import type { CompiledConfig } from '$lib/core/config/types.js';
+import type { BuildConfig } from '$lib/core/config/server/index.server.js';
+import type { Config } from '$lib/types.js';
 import type { Dic } from '$lib/util/types.js';
 import type { Route } from './types.js';
 import { panelUrl } from './util/url.js';
@@ -10,7 +11,7 @@ import { panelUrl } from './util/url.js';
  * @param user - Current user object (optional)
  * @returns Dictionary of navigation groups
  */
-const buildNavigation = (config: CompiledConfig, user: User | undefined): Dic => {
+const buildNavigation = (config: BuildConfig<Config>, user: User | undefined): Dic => {
 	const groups: Dic = {};
 
 	/**

@@ -1,14 +1,15 @@
 import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
-import type { GenericBlock } from '$lib/core/types/doc.js';
 import { withLocalesSuffix } from '$lib/core/naming.js';
+import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { WithOptional } from '$lib/util/types.js';
 import { and, eq, getTableColumns } from 'drizzle-orm';
 import { omit } from '../util/object.js';
 import { toPascalCase } from '../util/string.js';
 import { generatePK, transformDataToSchema } from './util.js';
 
-const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
-	const buildBlockTableName = (slug: string, blockName: string) => `${slug}Blocks${toPascalCase(blockName)}`;
+const createBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+	const buildBlockTableName = (slug: string, blockName: string) =>
+		`${slug}Blocks${toPascalCase(blockName)}`;
 
 	const update: UpdateBlock = async ({ parentSlug, block, locale }) => {
 		const table = buildBlockTableName(parentSlug, block.type);
@@ -23,7 +24,10 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 		if (locale && keyTableLocales in tables) {
 			const tableLocales = tables[keyTableLocales];
 			const localizedColumns = getTableColumns(tableLocales);
-			const localizedValues = transformDataToSchema(omit(['ownerId', 'id'], block), localizedColumns);
+			const localizedValues = transformDataToSchema(
+				omit(['ownerId', 'id'], block),
+				localizedColumns
+			);
 
 			if (!Object.keys(localizedValues).length) return true;
 
@@ -94,7 +98,9 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 	};
 
 	const getBlocksTableNames = (slug: string): string[] =>
-		Object.keys(tables).filter((key) => key.startsWith(`${slug}Blocks`) && !key.endsWith('Locales'));
+		Object.keys(tables).filter(
+			(key) => key.startsWith(`${slug}Blocks`) && !key.endsWith('Locales')
+		);
 
 	return {
 		getBlocksTableNames,
@@ -104,15 +110,17 @@ const createAdapterBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArg
 	};
 };
 
-export default createAdapterBlocksInterface;
-
-export type AdapterBlocksInterface = ReturnType<typeof createAdapterBlocksInterface>;
+export default createBlocksInterface;
 
 /****************************************************/
 /* Types
 /****************************************************/
 
-type UpdateBlock = (args: { parentSlug: string; block: GenericBlock; locale?: string }) => Promise<boolean>;
+type UpdateBlock = (args: {
+	parentSlug: string;
+	block: GenericBlock;
+	locale?: string;
+}) => Promise<boolean>;
 
 type CreateBlock = (args: {
 	parentSlug: string;

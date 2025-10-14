@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public';
+import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
 import {
 	block,
 	blocks,
@@ -16,7 +17,7 @@ import {
 } from '$lib/fields/index.js';
 import { bold } from '$lib/fields/rich-text/client.js';
 import { access } from '$lib/util/access/index.js';
-import { Area, buildConfig, Collection, Hooks } from '$rime/config';
+import { Area, Collection, Hooks, rime } from '$rime/config';
 import { Images, ListTree, Newspaper, ReceiptText, Settings2, Text } from '@lucide/svelte';
 
 /****************************************************
@@ -69,7 +70,12 @@ const Informations = Area.create('infos', {
 	panel: {
 		group: 'informations'
 	},
-	fields: [richText('about').localized(), text('email').required(), text('instagram'), link('legals').localized()],
+	fields: [
+		richText('about').localized(),
+		text('email').required(),
+		text('instagram'),
+		link('legals').localized()
+	],
 	access: {
 		read: () => true
 	},
@@ -163,7 +169,12 @@ const tabHero = tab('hero').fields(
 const tabAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
 	toggle('isHome').table({ position: 2, sort: true }).live(false),
-	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
+	slug('slug')
+		.slugify('attributes.title')
+		.live(false)
+		.table({ position: 3, sort: true })
+		.localized()
+		.required(),
 
 	relation('related').to('pages').many(),
 	relation('author').to('staff'),
@@ -176,7 +187,10 @@ const tabContent = tab('layout').fields(
 	blocks('components', [blockParagraph, blockSlider, blockImage]).table().localized()
 );
 
-const tabSeo = tab('seo').fields(text('metaTitle').localized(), text('metaDescription').localized());
+const tabSeo = tab('seo').fields(
+	text('metaTitle').localized(),
+	text('metaDescription').localized()
+);
 
 const tabFooter = tab('footer').fields(text('slider').localized());
 
@@ -224,9 +238,9 @@ const Medias = Collection.create('medias', {
 	}
 });
 
-export default buildConfig({
+export default rime({
 	//
-	$database: 'multilang.sqlite',
+	$adapter: sqliteAdapter('multilang.sqlite'),
 	siteUrl: env.PUBLIC_RIME_URL,
 
 	collections: [Pages, Medias],

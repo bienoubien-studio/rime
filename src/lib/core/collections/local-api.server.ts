@@ -1,10 +1,8 @@
 import { RimeError } from '$lib/core/errors/index.js';
-import type { FormField } from '$lib/fields/types.js';
-import type { RegisterCollection } from '$lib/index.js';
+import { FormFieldBuilder, type RegisterCollection } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createBlankDocument } from '../../util/doc.js';
-import type { CompiledCollection } from '../config/types.js';
-import { isFormField } from '../fields/util.js';
+import type { BuiltCollection } from '../config/types.js';
 import type { CollectionSlug } from '../types/doc.js';
 import { PRIVATE_FIELDS } from './auth/constant.server.js';
 import { isAuthConfig } from './auth/util.js';
@@ -17,7 +15,7 @@ import { findById } from './operations/findById.js';
 import { updateById } from './operations/updateById.js';
 
 type Args = {
-	config: CompiledCollection;
+	config: BuiltCollection;
 	defaultLocale: string | undefined;
 	event: RequestEvent;
 };
@@ -31,7 +29,7 @@ type Args = {
 class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	isSystemOperation: boolean;
 
 	/**
@@ -83,8 +81,8 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	blank(): Doc {
 		if (isAuthConfig(this.config)) {
 			const withoutPrivateFields = this.config.fields
-				.filter(isFormField)
-				.filter((field: FormField) => !PRIVATE_FIELDS.includes(field.name));
+				.filter((f) => f instanceof FormFieldBuilder)
+				.filter((f) => !PRIVATE_FIELDS.includes(f.name));
 
 			return createBlankDocument(
 				{
@@ -156,7 +154,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc[]> {
 		const { query, locale, sort = '-updatedAt', depth = 0, limit, offset, draft } = args;
-		this.#event.locals.rime.preventOperationLoop();
 
 		const params = {
 			select: args.select,
@@ -219,8 +216,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 */
 	findById(args: APIMethodArgs<typeof findById>): Promise<Doc> {
 		const { id, versionId, locale, draft, depth = 0 } = args;
-
-		this.#event.locals.rime.preventOperationLoop();
 
 		if (!id) {
 			throw new RimeError(RimeError.NOT_FOUND);
@@ -290,7 +285,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	updateById(args: APIMethodArgs<typeof updateById>): Promise<Doc> {
-		this.#event.locals.rime.preventOperationLoop();
 		return updateById<Doc>({
 			...args,
 			locale: this.#fallbackLocale(args.locale),
@@ -307,7 +301,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * const post = await rime.collection('posts').deleteById('12345');
 	 */
 	deleteById = ({ id }: APIMethodArgs<typeof deleteById>) => {
-		this.#event.locals.rime.preventOperationLoop();
 		return deleteById({
 			id,
 			config: this.config,
@@ -326,7 +319,6 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	 * });
 	 */
 	delete = (args: APIMethodArgs<typeof deleteDocs>) => {
-		this.#event.locals.rime.preventOperationLoop();
 		return deleteDocs({
 			config: this.config,
 			event: this.#event,
@@ -342,4 +334,7 @@ export { CollectionInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rime' | 'event' | 'config' | 'slug'>;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<
+	Parameters<T>[0],
+	'rime' | 'event' | 'config' | 'slug'
+>;

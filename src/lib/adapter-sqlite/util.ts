@@ -1,4 +1,4 @@
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/core/config/types.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import type { RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery, ParsedOperationQuery } from '$lib/core/types/index.js';
@@ -38,7 +38,12 @@ export async function updateTableRecord(
  * Inserts a new record into a database table
  * @returns The ID of the inserted record
  */
-export async function insertTableRecord(db: any, tables: any, tableName: string, data: any): Promise<string> {
+export async function insertTableRecord(
+	db: any,
+	tables: any,
+	tableName: string,
+	data: any
+): Promise<string> {
 	const recordId = data.id || generatePK();
 	await db.insert(tables[tableName]).values({
 		...data,
@@ -160,7 +165,11 @@ export function prepareSchemaData(
  * 4. Adds version fields while avoiding duplicates
  * 5. Includes the versionId in the result
  */
-export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: string, select?: string[]) {
+export function mergeRawDocumentWithVersion(
+	doc: RawDoc,
+	versionTableName: string,
+	select?: string[]
+) {
 	// Check if we have version data
 	// Note: Versions data can be empty when a query returns no result
 	if (!doc[versionTableName] || doc[versionTableName].length === 0) {
@@ -203,7 +212,7 @@ export function mergeRawDocumentWithVersion(doc: RawDoc, versionTableName: strin
  */
 export function buildPublishedOrLatestVersionParams(args: {
 	draft?: boolean;
-	config: CompiledArea | CompiledCollection;
+	config: BuiltArea | BuiltCollection;
 	table: any;
 }) {
 	const { config, table, draft } = args;
@@ -233,7 +242,10 @@ export function normalizeQuery(incomingQuery: OperationQuery): ParsedOperationQu
 		try {
 			query = qs.parse(incomingQuery);
 		} catch (err: any) {
-			throw new RimeError(RimeError.INVALID_DATA, 'Unable to parse given string query ' + err.message);
+			throw new RimeError(
+				RimeError.INVALID_DATA,
+				'Unable to parse given string query ' + err.message
+			);
 		}
 	} else {
 		if (!isObjectLiteral(incomingQuery)) {

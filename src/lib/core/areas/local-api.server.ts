@@ -1,4 +1,4 @@
-import type { CompiledArea } from '$lib/core/config/types.js';
+import type { BuiltArea } from '$lib/core/config/types.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createBlankDocument } from '../../util/doc.js';
@@ -6,7 +6,7 @@ import { find } from './operations/find.js';
 import { update } from './operations/update.js';
 
 type Args = {
-	config: CompiledArea;
+	config: BuiltArea;
 	defaultLocale: string | undefined;
 	event: RequestEvent;
 };
@@ -21,7 +21,7 @@ type Args = {
 class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
-	config: CompiledArea;
+	config: BuiltArea;
 	isSystemOperation: boolean;
 
 	/**
@@ -83,7 +83,6 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 */
 	find(args: APIMethodArgs<typeof find>): Promise<Doc> {
 		const { locale, select = [], depth = 0, versionId, draft } = args;
-		this.#event.locals.rime.preventOperationLoop();
 
 		const params = {
 			locale: this.#fallbackLocale(locale),
@@ -131,7 +130,6 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	 */
 	update(args: APIMethodArgs<typeof update>): Promise<Doc> {
 		const { data, locale, versionId, draft } = args;
-		this.#event.locals.rime.preventOperationLoop();
 
 		return update<Doc>({
 			data,
@@ -151,4 +149,7 @@ export { AreaInterface };
 /* Types
 /****************************************************/
 
-type APIMethodArgs<T extends (...args: any) => any> = Omit<Parameters<T>[0], 'rime' | 'event' | 'config' | 'slug'>;
+type APIMethodArgs<T extends (...args: any) => any> = Omit<
+	Parameters<T>[0],
+	'rime' | 'event' | 'config' | 'slug'
+>;

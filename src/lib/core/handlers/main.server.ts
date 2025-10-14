@@ -1,30 +1,17 @@
-import type { BuiltConfig } from '$lib/core/config/types.js';
+import { building } from '$app/environment';
 import { logger } from '$lib/core/logger/index.server.js';
 import { type Handle } from '@sveltejs/kit';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
-import cms from '../cms.server.js';
-import { Rime } from '../rime.server.js';
+import type { Config } from '../config/types.js';
+import type { Rime } from '../rime.server.js';
 
-const dev = process.env.NODE_ENV === 'development';
-
-type Args = { config: BuiltConfig; schema: any };
-
-export function createCMSHandler({ config, schema }: Args) {
-	// CMS Handler :
-	// Initialize Main Singleton
-	// Create rime object with Config and Adapter interfaces
-	// Return the better-auth handler
+export function createCMSHandler<const C extends Config>(rime: Rime<C>) {
+	//
 	const handleCMS: Handle = async ({ event, resolve }) => {
+		//
 		logger.info(`${event.request.method} ${event.url.pathname}`);
-
-		if (dev || !cms.initialized) {
-			await cms.init({ config, schema });
-		}
-
-		const rime = new Rime({ config: cms.config, adapter: cms.adapter, event });
-		event.locals.rime = rime;
-
-		return svelteKitHandler({ event, resolve, auth: cms.adapter.auth.betterAuth });
+		event.locals.rime = rime.createRimeContext(event) as any;
+		return svelteKitHandler({ event, resolve, auth: rime.auth, building });
 	};
 
 	return handleCMS;

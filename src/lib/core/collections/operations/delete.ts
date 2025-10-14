@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -7,7 +7,7 @@ import type { CollectionSlug } from '../../../types.js';
 type DeleteArgs = {
 	query?: OperationQuery;
 	locale?: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	event: RequestEvent & { locals: App.Locals };
 	sort?: string;
 	limit?: number;

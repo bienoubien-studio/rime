@@ -4,9 +4,9 @@ import { access } from '$lib/util/index.js';
 import { UsersRound } from '@lucide/svelte';
 import cloneDeep from 'clone-deep';
 
-import type { AdditionalStaffConfig, AuthConfig } from '../types.js';
+import type { AdditionalStaffConfig, CollectionAuthConfig } from '../types.js';
 
-export const staffCollection: CollectionWithoutSlug<'staff'> & { auth: AuthConfig } = {
+export const staffCollection: CollectionWithoutSlug<'staff'> & { auth: CollectionAuthConfig } = {
 	label: { singular: 'User', plural: 'Users' },
 	panel: {
 		description: 'Manage who can access your admin panel',
@@ -24,7 +24,7 @@ export const staffCollection: CollectionWithoutSlug<'staff'> & { auth: AuthConfi
 		delete: (user) => access.isAdmin(user),
 		update: (user, { id }) => access.isAdminOrMe(user, id)
 	}
-};
+} as const;
 
 export const getStaffCollection = ({
 	roles: incomingRoles = [],
@@ -33,8 +33,10 @@ export const getStaffCollection = ({
 	panel,
 	label
 }: AdditionalStaffConfig = {}) => {
-	const staffConfig = cloneDeep(staffCollection);
-	let roles: Option[] = incomingRoles.map((role) => (typeof role === 'string' ? { value: role } : role));
+	const staffConfig = cloneDeep(staffCollection) as typeof staffCollection;
+	let roles: Option[] = incomingRoles.map((role) =>
+		typeof role === 'string' ? { value: role } : role
+	);
 
 	if (roles) {
 		const hasAdminRole = roles.find((role) => role.value === 'admin');

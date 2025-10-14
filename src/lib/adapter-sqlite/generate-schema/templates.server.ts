@@ -169,7 +169,11 @@ export const templateFieldRelationColumn = (table: string) => {
  * })
  * ```
  */
-export const templateRelationFieldsTable = ({ table, relations, hasLocale }: FieldsRelationTableArgs) => `
+export const templateRelationFieldsTable = ({
+	table,
+	relations,
+	hasLocale
+}: FieldsRelationTableArgs) => `
 export const ${table}Rels = sqliteTable('${s(table)}_rels', {
   id: pk(),
   path: text('path'),

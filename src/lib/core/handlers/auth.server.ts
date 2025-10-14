@@ -4,7 +4,7 @@ import type { User } from '$lib/types.js';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
 import { logger } from '../logger/index.server.js';
-import type { Rime } from '../rime.server.js';
+import type { Rime, RimeContext } from '../rime.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -39,8 +39,8 @@ function analyzeRoute(pathname: string): RouteInfo {
 /**
  * Ensures panel is properly set up before allowing access
  */
-async function ensureFirstAuthSetup(rime: Rime): Promise<void> {
-	if ((await rime.auth.hasAuthUser()) && !dev) {
+async function ensureFirstAuthSetup(rime: RimeContext): Promise<void> {
+	if ((await rime.adapter.auth.hasAuthUser()) && !dev) {
 		throw new RimeError(RimeError.NOT_FOUND);
 	}
 }
@@ -48,8 +48,11 @@ async function ensureFirstAuthSetup(rime: Rime): Promise<void> {
 /**
  * Authenticates the request using better-auth
  */
-async function authenticateRequest(headers: Headers, auth: Rime['auth']): Promise<AuthResult | null> {
-	return await auth.betterAuth.api.getSession({ headers });
+async function authenticateRequest(
+	headers: Headers,
+	auth: RimeContext['auth']
+): Promise<AuthResult | null> {
+	return await auth.api.getSession({ headers });
 }
 
 /**
@@ -68,8 +71,12 @@ function handleUnauthenticated(event: any, resolve: any, routeInfo: RouteInfo): 
 /**
  * Gets CMS user attributes for the authenticated user
  */
-async function getCmsUserAttributes(authUserId: string, userType: string, auth: Rime['auth']): Promise<any> {
-	const user = await auth.getUserAttributes({
+async function getCmsUserAttributes(
+	authUserId: string,
+	userType: string,
+	rime: RimeContext
+): Promise<any> {
+	const user = await rime.adapter.auth.getUserAttributes({
 		authUserId,
 		slug: userType as CollectionSlug
 	});
@@ -95,11 +102,15 @@ function validateAdminRoles(user: any, authUser: any): void {
 /**
  * Handles API key authentication and role forwarding
  */
-async function handleApiKeyAuth(headers: Headers, user: any, auth: Rime['auth']): Promise<void> {
+async function handleApiKeyAuth(
+	headers: Headers,
+	user: any,
+	auth: RimeContext['auth']
+): Promise<void> {
 	const apiKey = headers.get('x-api-key');
 	if (!apiKey) return;
 
-	const result = await auth.betterAuth.api.verifyApiKey({
+	const result = await auth.api.verifyApiKey({
 		body: { key: apiKey }
 	});
 
@@ -115,11 +126,15 @@ async function handleApiKeyAuth(headers: Headers, user: any, auth: Rime['auth'])
 /**
  * Builds complete user data by combining auth and CMS information
  */
-async function buildUserData(authResult: AuthResult, rime: Rime, headers: Headers): Promise<UserData> {
+async function buildUserData(
+	authResult: AuthResult,
+	rime: RimeContext,
+	headers: Headers
+): Promise<UserData> {
 	const { session, user: authUser } = authResult;
 
 	// Get CMS user attributes
-	const user = await getCmsUserAttributes(authUser.id, authUser.type, rime.auth);
+	const user = await getCmsUserAttributes(authUser.id, authUser.type, rime);
 
 	// Validate admin roles consistency
 	validateAdminRoles(user, authUser);
@@ -133,7 +148,11 @@ async function buildUserData(authResult: AuthResult, rime: Rime, headers: Header
 /**
  * Applies authorization rules based on route and user data
  */
-function authorizePanelUser(userData: UserData, routeInfo: RouteInfo, config: Rime['config']): void {
+function authorizePanelUser(
+	userData: UserData,
+	routeInfo: RouteInfo,
+	config: Rime['config']
+): void {
 	const { user } = userData;
 
 	// Panel-specific authorization

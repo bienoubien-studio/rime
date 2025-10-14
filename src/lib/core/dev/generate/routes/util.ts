@@ -1,4 +1,4 @@
-import type { BuiltCollection, BuiltConfig } from '$lib/core/config/types.js';
+import type { BuiltCollection, Config } from '$lib/core/config/types.js';
 import cache from '$lib/core/dev/cache/index.js';
 import { hasDirectoriesSuffix, hasVersionsSuffix } from '$lib/core/naming.js';
 import { slugify } from '$lib/util/string.js';
@@ -21,13 +21,14 @@ export type Routes = Record<string, RouteDefinition>;
  * const needsRegeneration = shouldRegenerateRoutes(config);
  * // If the config has changed since last run, needsRegeneration will be true
  */
-export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
+export function shouldRegenerateRoutes<T extends Config>(config: T): boolean {
 	const versionsSuffix = (document: any) => (document.versions ? '.v' : '');
-	const authSuffix = (collection: BuiltCollection) => (collection.auth ? `.${collection.auth.type}` : '');
+	const authSuffix = (collection: BuiltCollection) =>
+		collection.auth ? `.${collection.auth.type}` : '';
 
 	const memo = `
-    areas:${config.areas.map((area) => `${area.slug}${versionsSuffix(area)}`).join(',')}
-    collections:${config.collections.map((collection) => `${collection.slug}${authSuffix(collection)}${versionsSuffix(collection)}`).join(',')}
+    areas:${(config.areas || []).map((area) => `${area.slug}${versionsSuffix(area)}`).join(',')}
+    collections:${(config.collections || []).map((collection) => `${collection.slug}${authSuffix(collection)}${versionsSuffix(collection)}`).join(',')}
     custom:${
 			config.panel?.routes
 				? Object.entries(config.panel.routes)
@@ -35,7 +36,7 @@ export function shouldRegenerateRoutes(config: BuiltConfig): boolean {
 						.join(',')
 				: ''
 		}
-    css:${config.panel.css ? config.panel.css : 'none'}
+    css:${config.panel?.css ? config.panel.css : 'none'}
   `;
 
 	const cachedMemo = cache.get('routes');
@@ -77,7 +78,12 @@ export function ensureDir(dirPath: string): void {
  * writeRouteFile(basePath, routePath, fileType, content);
  * // Creates /path/to/src/routes/(rime)/panel/news/+page.svelte with the provided content
  */
-export function writeRouteFile(basePath: string, routePath: string, fileType: string, content: string): void {
+export function writeRouteFile(
+	basePath: string,
+	routePath: string,
+	fileType: string,
+	content: string
+): void {
 	const dir = path.join(basePath, routePath);
 	ensureDir(dir);
 

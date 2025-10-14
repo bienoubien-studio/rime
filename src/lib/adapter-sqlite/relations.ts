@@ -5,7 +5,7 @@ import type { Dic } from '$lib/util/types.js';
 import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import { transformDataToSchema } from './util.js';
 
-const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+const createRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	//
 	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, ownerId, paths, locale }) => {
 		if (paths.length === 0) return true;
@@ -92,7 +92,9 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 
 		if (relations.length === 0) return true;
 
-		const documentIds = relations.map((rel) => rel.id).filter((id): id is string => id !== undefined);
+		const documentIds = relations
+			.map((rel) => rel.id)
+			.filter((id): id is string => id !== undefined);
 		if (documentIds.length === 0) return true;
 
 		try {
@@ -142,9 +144,7 @@ const createAdapterRelationsInterface = ({ db, tables }: GenericAdapterInterface
 	};
 };
 
-export default createAdapterRelationsInterface;
-
-export type AdapterRelationsInterface = ReturnType<typeof createAdapterRelationsInterface>;
+export default createRelationsInterface;
 
 export type BeforeOperationRelation = Omit<Relation, 'ownerId'> & { ownerId?: string };
 
@@ -157,6 +157,14 @@ type DeleteFromPaths = (args: {
 
 type Delete = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
 type Update = (args: { parentSlug: string; relations: Relation[] }) => Promise<boolean>;
-type Create = (args: { parentSlug: string; ownerId: string; relations: BeforeOperationRelation[] }) => Promise<boolean>;
+type Create = (args: {
+	parentSlug: string;
+	ownerId: string;
+	relations: BeforeOperationRelation[];
+}) => Promise<boolean>;
 
-type GetAllRelations = (args: { parentSlug: string; ownerId: string; locale?: string }) => Promise<Relation[]>;
+type GetAllRelations = (args: {
+	parentSlug: string;
+	ownerId: string;
+	locale?: string;
+}) => Promise<Relation[]>;

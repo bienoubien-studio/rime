@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { compileDocumentConfig } from '$lib/core/config/shared/compile.js';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Doc from '$lib/panel/components/sections/document/Document.svelte';
 	import Button from '$lib/panel/components/ui/button/button.svelte';
@@ -56,7 +55,9 @@
 
 	$effect(() => {
 		if (many) {
-			const list = document.querySelector(`.rz-relation-upload__list[data-list="${stamp}"]`) as HTMLDivElement;
+			const list = document.querySelector(
+				`.rz-relation-upload__list[data-list="${stamp}"]`
+			) as HTMLDivElement;
 			instance = Sortable.create(list, sortableOptions);
 		}
 	});
@@ -90,13 +91,21 @@
 	</div>
 {/key}
 
-<div class="rz-relation-upload__actions" class:rz-relation-upload__actions--list-empty={selectedItems.length === 0}>
-	<Button disabled={isFull || availableItems.length === 0} onclick={() => (open = true)} variant="outline">
+<div
+	class="rz-relation-upload__actions"
+	class:rz-relation-upload__actions--list-empty={selectedItems.length === 0}
+>
+	<Button
+		disabled={isFull || availableItems.length === 0}
+		onclick={() => (open = true)}
+		variant="outline"
+	>
 		Select a {relationConfig.label.singular || relationConfig.slug}
 	</Button>
 
 	<Button
-		disabled={isFull || !(relationConfig.access.create && relationConfig.access.create(user.attributes, {}))}
+		disabled={isFull ||
+			!(relationConfig.access.create && relationConfig.access.create(user.attributes, {}))}
 		onclick={() => {
 			create = true;
 			onRelationCreation();
@@ -120,7 +129,7 @@
 >
 	<Sheet.Content style="--rz-page-gutter:var(--rz-size-6)" showCloseButton={false} side="right">
 		<Doc
-			doc={createBlankDocument(compileDocumentConfig(relationConfig))}
+			doc={createBlankDocument(relationConfig)}
 			readOnly={false}
 			onClose={() => (create = false)}
 			operation="create"

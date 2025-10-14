@@ -1,6 +1,14 @@
-import type { ConfigInterface } from '$lib/core/config/interface.server.js';
+import type { Config } from '$lib/core/config/types.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
-import type { AreaSlug, CollectionSlug, GenericBlock, GenericDoc, PrototypeSlug, RawDoc } from '$lib/core/types/doc.js';
+import type { IConfig } from '$lib/core/rime.server.js';
+import type {
+	AreaSlug,
+	CollectionSlug,
+	GenericBlock,
+	GenericDoc,
+	PrototypeSlug,
+	RawDoc
+} from '$lib/core/types/doc.js';
 import type { Relation } from '$lib/fields/relation/index.js';
 import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -22,17 +30,18 @@ import { transformDatabaseColumnsToPaths } from './util.js';
 /* Types
 /****************************************************/
 
-type CreateTransformInterfaceArgs = {
-	configInterface: ConfigInterface;
-	tables: any;
-};
 export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
 
 /****************************************************/
 /* Interface
 /****************************************************/
 
-export const databaseTransformInterface = ({ configInterface, tables }: CreateTransformInterfaceArgs) => {
+export const databaseTransformInterface = <const C extends Config>(args: {
+	iConfig: IConfig<C>;
+	tables: any;
+}) => {
+	const { iConfig, tables } = args;
+
 	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
 		doc: RawDoc;
 		slug: AreaSlug | CollectionSlug;
@@ -48,7 +57,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 
 		let doc = args.doc;
 
-		const config = configInterface.getBySlug(slug);
+		const config = iConfig.getBySlug(slug);
 		const isVersioned = !!config.versions;
 		const tableName = isVersioned ? withVersionsSuffix(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
@@ -58,7 +67,7 @@ export const databaseTransformInterface = ({ configInterface, tables }: CreateTr
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
 		let docAPI;
-		if (configInterface.isCollection(slug)) {
+		if (iConfig.isCollection(slug)) {
 			docAPI = rime.collection(slug);
 		} else {
 			docAPI = rime.area(slug);

@@ -1,4 +1,3 @@
-import type { CompiledConfig } from '$lib/core/config/types.js';
 import type { Dic } from '$lib/util/types.js';
 import { flatten } from 'flat';
 import cache from '../../dev/cache/index.js';
@@ -37,7 +36,7 @@ const serializeValue = (value: any): string => {
 	}
 };
 
-const writeMemo = (config: CompiledConfig) => {
+const writeMemo = <T extends object>(config: T) => {
 	const memo: Dic = flatten(config);
 	// const memoStr = JSON.stringify(config);
 	const memoStr = Object.entries(memo)

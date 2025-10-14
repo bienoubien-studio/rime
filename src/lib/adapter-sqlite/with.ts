@@ -1,22 +1,21 @@
-import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { withLocalesSuffix } from '$lib/core/naming.js';
 import { isBlocksFieldRaw } from '$lib/fields/blocks/index.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
 import { isTreeFieldRaw } from '$lib/fields/tree/index.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import type { Dic } from '$lib/util/types.js';
 import { asc, eq, getTableColumns, SQL } from 'drizzle-orm';
 import { getBlocksTableNames, getTreeTableNames } from './generate-schema/util.js';
 
-type BuildWithParamArgs = {
+export const buildWithParam = (args: {
 	slug: string;
 	select?: string[];
-	configInterface: ConfigInterface;
-	tables: any;
 	locale?: string;
-};
-
-export const buildWithParam = ({ slug, select = [], locale, tables, configInterface }: BuildWithParamArgs) => {
+	tables: any;
+	config: BuiltCollection | BuiltArea;
+}) => {
+	const { slug, select = [], locale, tables, config: documentConfig } = args;
 	if (!select.length) {
 		return buildFullWithParam({
 			slug,
@@ -24,9 +23,6 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 			tables
 		});
 	}
-
-	// Get document configuration
-	const documentConfig = configInterface.getBySlug(slug);
 
 	const withParam: Dic = {};
 
@@ -39,7 +35,10 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 		// Convert dot notation to double underscore notation for SQLite queries
 		const sqlPath = path.replace(/\./g, '__');
 
-		const fieldConfig = getFieldConfigByPath(path, documentConfig.fields);
+		const fieldConfig = getFieldConfigByPath(
+			path,
+			documentConfig.fields.map((f) => f.compile())
+		);
 
 		if (fieldConfig && isRelationField(fieldConfig)) {
 			// Handle relation fields
@@ -250,7 +249,15 @@ export const buildWithParam = ({ slug, select = [], locale, tables, configInterf
 	return withParam;
 };
 
-const buildFullWithParam = ({ slug, locale, tables }: { slug: string; locale?: string; tables: Dic }): Dic => {
+const buildFullWithParam = ({
+	slug,
+	locale,
+	tables
+}: {
+	slug: string;
+	locale?: string;
+	tables: Dic;
+}): Dic => {
 	const blocksTables = getBlocksTableNames(slug, tables);
 	const treeTables = getTreeTableNames(slug, tables);
 

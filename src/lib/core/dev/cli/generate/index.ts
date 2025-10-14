@@ -2,8 +2,9 @@ import cache from '$lib/core/dev/cache/index.js';
 import { sanitize } from '$lib/core/dev/generate/sanitize/index.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { trycatch } from '$lib/util/function.js';
-import { existsSync, mkdirSync, rmSync } from 'fs';
+import { mkdirSync, rmSync } from 'fs';
 import path from 'path';
+import { ensureGeneratedConfigExists, ensureUserConfigExists } from '../util.server';
 
 export const generate = async (args: { force?: boolean }) => {
 	const { force } = args;
@@ -32,17 +33,6 @@ export const generate = async (args: { force?: boolean }) => {
 	}
 
 	/**
-	 * Check for user configuration file at src/lib/config/rime.config.ts
-	 */
-	function ensureUserConfigExists() {
-		const configPath = path.join(process.cwd(), 'src', 'lib', 'config', 'rime.config.ts');
-
-		if (!existsSync(configPath)) {
-			throw new Error('Unable to find config, did you run rime init');
-		}
-	}
-
-	/**
 	 * Sanitize the user config and create the config.generated folder
 	 */
 	async function sanitizeConfig() {
@@ -66,17 +56,6 @@ export const generate = async (args: { force?: boolean }) => {
 			logLevel: 'error'
 		});
 		return vite;
-	}
-
-	/**
-	 * Ensure sanitize config exists
-	 */
-	function ensureGeneratedConfigExists() {
-		const configGeneratedPath = path.join(process.cwd(), 'src', 'lib', 'config.generated', 'rime.config.server.ts');
-		if (!existsSync(configGeneratedPath)) {
-			throw new Error('Unable to find generated config');
-		}
-		return path.join('$lib', 'config.generated', 'rime.config.server.js');
 	}
 
 	async function run() {

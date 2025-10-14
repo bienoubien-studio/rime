@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
@@ -13,7 +13,7 @@ import { saveTreeBlocks } from '../../operations/tree/index.server.js';
 type Args<T> = {
 	data: DeepPartial<T>;
 	locale?: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	isSystemOperation?: boolean;
 	event: RequestEvent & {
 		locals: App.Locals;
@@ -50,7 +50,8 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 		data = result.data as Partial<T>;
 	}
 
-	if (!context.configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing config map @create');
+	if (!context.configMap)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing config map @create');
 
 	const incomingPaths = Object.keys(context.configMap);
 
@@ -95,11 +96,15 @@ export const create = async <T extends RegisterCollection[CollectionSlug]>(args:
 	 * Auto sign-in user after a success sign-up
 	 */
 	if (config.auth && event.locals.isAutoSignIn) {
-		if (typeof data.name !== 'string' || typeof data.email !== 'string' || typeof args.data.authUserId !== 'string') {
+		if (
+			typeof data.name !== 'string' ||
+			typeof data.email !== 'string' ||
+			typeof args.data.authUserId !== 'string'
+		) {
 			throw new RimeError(RimeError.OPERATION_ERROR, 'unable to signin user');
 		}
 
-		event.locals.user = await rime.auth.getUserAttributes({
+		event.locals.user = await rime.adapter.auth.getUserAttributes({
 			authUserId: args.data.authUserId,
 			slug: config.slug
 		});

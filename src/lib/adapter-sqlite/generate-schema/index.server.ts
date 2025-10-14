@@ -1,8 +1,8 @@
-import type { BuiltConfig } from '$lib/core/config/types.js';
+import type { Config } from '$lib/core/config/types.js';
 import type { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
+import { withDirectoriesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import { date } from '$lib/fields/date/index.js';
 import { getFieldPrivateModule } from '$lib/fields/index.server.js';
-import { withDirectoriesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
 import { toCamelCase, toPascalCase, toSnakeCase } from '$lib/util/string.js';
 import type { Dic } from '$lib/util/types.js';
 import { generateRelationshipDefinitions } from './relations/definition.server.js';
@@ -23,14 +23,17 @@ import {
 } from './templates.server.js';
 import write from './write.server.js';
 
-export async function generateSchemaString(config: BuiltConfig) {
+export async function generateSchemaString<T extends Config>(config: T) {
+	const collections = (config.collections || []).filter((c) => c._generateSchema !== false);
+	const areas = (config.areas || []).filter((a) => a._generateSchema !== false);
+
 	const schema: string[] = [templateImports];
 	let enumTables: string[] = [];
 	let enumRelations: string[] = [];
 	let relationFieldsExportDic: Dic = {};
 	const blocksRegister: string[] = [];
 
-	for (const collection of config.collections) {
+	for (const collection of collections) {
 		const collectionSlug = toCamelCase(collection.slug);
 		let rootTableName = collectionSlug;
 		let versionsRelationsDefinitions: string[] = [];
@@ -42,8 +45,10 @@ export async function generateSchemaString(config: BuiltConfig) {
 			// process the root table with these fields first then, handle versions related tables creation
 
 			// utility function to filter out fields
-			const isRootField = (field: (typeof collection.fields)[number]) => '_root' in field.raw && field.raw._root;
-			const isNotRootField = (field: (typeof collection.fields)[number]) => !('_root' in field.raw) || !field.raw._root;
+			const isRootField = (field: (typeof collection.fields)[number]) =>
+				'_root' in field.raw && field.raw._root;
+			const isNotRootField = (field: (typeof collection.fields)[number]) =>
+				!('_root' in field.raw) || !field.raw._root;
 
 			// 1. Process root table
 
@@ -144,13 +149,18 @@ export async function generateSchemaString(config: BuiltConfig) {
 			enumTables = [...enumTables, withDirectoriesSuffix(collection.slug)];
 		}
 
-		schema.push(collectionSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
+		schema.push(
+			collectionSchema,
+			junctionTable,
+			...versionsRelationsDefinitions,
+			relationsDefinitions
+		);
 	}
 
 	/**
 	 * Areas
 	 */
-	for (const area of config.areas) {
+	for (const area of areas) {
 		const areaSlug = toCamelCase(area.slug);
 		let rootTableName = toSnakeCase(areaSlug);
 		let versionsRelationsDefinitions: string[] = [];
@@ -234,7 +244,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 		schema.push(areaSchema, junctionTable, ...versionsRelationsDefinitions, relationsDefinitions);
 	}
 
-	const HAS_API_KEY = config.collections.filter((c) => c.auth?.type === 'apiKey').length;
+	const HAS_API_KEY = collections.filter((c) => c.auth?.type === 'apiKey').length;
 
 	schema.push(templateAuth);
 	if (HAS_API_KEY) {
@@ -249,7 +259,7 @@ export async function generateSchemaString(config: BuiltConfig) {
 	return schema.join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
-const generateSchema = async (config: BuiltConfig) => {
+const generateSchema = async <T extends Config>(config: T) => {
 	const result = await generateSchemaString(config);
 	write(result);
 };

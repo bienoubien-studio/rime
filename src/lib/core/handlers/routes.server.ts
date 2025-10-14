@@ -13,8 +13,10 @@ export const handleRoutes: Handle = async ({ event, resolve }) => {
 	}
 
 	// Handle custom routes from config and plugins
-	const routes = rime.config.raw.$routes || {};
-	if (event.url.pathname in routes) {
+	const routes =
+		'$routes' in rime.config.raw ? (rime.config.raw.$routes as Record<string, any>) : null;
+
+	if (routes && event.url.pathname in routes) {
 		const route = routes[event.url.pathname];
 		type RequestMethod = 'POST' | 'GET' | 'PATCH' | 'DELETE';
 		const method: RequestMethod = event.request.method as RequestMethod;

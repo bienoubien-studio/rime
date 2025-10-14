@@ -11,6 +11,8 @@ export type WithUpload<T extends { upload?: boolean | UploadConfig }> = T & {
  *   // Handle upload-specific functionality
  * }
  */
-export function isUploadConfig(config: { upload?: UploadConfig }): config is WithUpload<typeof config> {
+export function isUploadConfig<C extends { upload?: UploadConfig }>(
+	config: C
+): config is WithUpload<C> {
 	return Boolean('upload' in config && config.upload);
 }

@@ -1,5 +1,5 @@
 import type { VersionOperation } from '$lib/core/collections/versions/operations.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltArea, BuiltCollection } from '$lib/core/config/types.js';
 import type { Docs, DocType, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
@@ -25,12 +25,12 @@ export type DocTypeForSlugs<S extends DocType = PrototypeSlug> = S extends Proto
 
 // Config type based on slug
 export type ConfigForSlug<S extends DocType = PrototypeSlug> = S extends keyof RegisterCollection
-	? CompiledCollection & { slug: S }
+	? BuiltCollection & { slug: S }
 	: S extends keyof RegisterArea
-		? CompiledArea & { slug: S }
+		? BuiltArea & { slug: S }
 		: S extends 'auth' | 'upload' | 'directory'
-			? CompiledCollection
-			: CompiledArea | CompiledCollection;
+			? BuiltCollection
+			: BuiltArea | BuiltCollection;
 
 // Universal hook context with all possible properties
 export type HookContext<
@@ -96,19 +96,25 @@ export type HookContext<
 		: object);
 
 // Hook function type
-export type Hook<S extends DocType = PrototypeSlug, O extends Operation = Operation, T extends Timing = Timing> = (
-	context: HookContext<S, O, T>
-) => Promise<HookContext<S, O, T>>;
+export type Hook<
+	S extends DocType = PrototypeSlug,
+	O extends Operation = Operation,
+	T extends Timing = Timing
+> = (context: HookContext<S, O, T>) => Promise<HookContext<S, O, T>>;
 
-type HookBeforeOperationParams<S extends DocType = PrototypeSlug, O extends Operation = Operation> = {
+type HookBeforeOperationParams<
+	S extends DocType = PrototypeSlug,
+	O extends Operation = Operation
+> = {
 	event: RequestEvent;
 	context: OperationContext<S>;
-	config: S extends PrototypeSlug ? ConfigForSlug<S> : CompiledCollection | CompiledArea;
+	config: S extends PrototypeSlug ? ConfigForSlug<S> : BuiltCollection | BuiltArea;
 	operation: O;
 };
-export type HookBeforeOperation<S extends DocType = PrototypeSlug, O extends Operation = Operation> = (
-	args: HookBeforeOperationParams<S, O>
-) => Promise<HookBeforeOperationParams<S, O>>;
+export type HookBeforeOperation<
+	S extends DocType = PrototypeSlug,
+	O extends Operation = Operation
+> = (args: HookBeforeOperationParams<S, O>) => Promise<HookBeforeOperationParams<S, O>>;
 
 /**
  * Helper object for creating hooks with specific operation and timing
@@ -124,13 +130,16 @@ export const Hooks = {
 	/**
 	 * Creates a before read hook
 	 */
-	beforeRead: <S extends DocType = 'raw'>(handler: Hook<S, 'read', 'before'>): Hook<S, 'read', 'before'> => handler,
+	beforeRead: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'read', 'before'>
+	): Hook<S, 'read', 'before'> => handler,
 
 	/**
 	 * Creates a before create hook
 	 */
-	beforeCreate: <S extends DocType = 'raw'>(handler: Hook<S, 'create', 'before'>): Hook<S, 'create', 'before'> =>
-		handler,
+	beforeCreate: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'create', 'before'>
+	): Hook<S, 'create', 'before'> => handler,
 
 	/**
 	 * Creates a before upsert hook
@@ -142,24 +151,30 @@ export const Hooks = {
 	/**
 	 * Creates a before update hook
 	 */
-	beforeUpdate: <S extends DocType = 'raw'>(handler: Hook<S, 'update', 'before'>): Hook<S, 'update', 'before'> =>
-		handler,
+	beforeUpdate: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'update', 'before'>
+	): Hook<S, 'update', 'before'> => handler,
 
 	/**
 	 * Creates a before delete hook
 	 */
-	beforeDelete: <S extends DocType = 'raw'>(handler: Hook<S, 'delete', 'before'>): Hook<S, 'delete', 'before'> =>
-		handler,
+	beforeDelete: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'delete', 'before'>
+	): Hook<S, 'delete', 'before'> => handler,
 
 	/**
 	 * Creates an after read hook
 	 */
-	afterRead: <S extends DocType = 'raw'>(handler: Hook<S, 'read', 'after'>): Hook<S, 'read', 'after'> => handler,
+	afterRead: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'read', 'after'>
+	): Hook<S, 'read', 'after'> => handler,
 
 	/**
 	 * Creates an after create hook
 	 */
-	afterCreate: <S extends DocType = 'raw'>(handler: Hook<S, 'create', 'after'>): Hook<S, 'create', 'after'> => handler,
+	afterCreate: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'create', 'after'>
+	): Hook<S, 'create', 'after'> => handler,
 
 	/**
 	 * Creates an after create hook
@@ -171,12 +186,16 @@ export const Hooks = {
 	/**
 	 * Creates an after update hook
 	 */
-	afterUpdate: <S extends DocType = 'raw'>(handler: Hook<S, 'update', 'after'>): Hook<S, 'update', 'after'> => handler,
+	afterUpdate: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'update', 'after'>
+	): Hook<S, 'update', 'after'> => handler,
 
 	/**
 	 * Creates an after delete hook
 	 */
-	afterDelete: <S extends DocType = 'raw'>(handler: Hook<S, 'delete', 'after'>): Hook<S, 'delete', 'after'> => handler
+	afterDelete: <S extends DocType = 'raw'>(
+		handler: Hook<S, 'delete', 'after'>
+	): Hook<S, 'delete', 'after'> => handler
 };
 
 export type OperationContext<S extends DocType = 'raw'> = Dic & {

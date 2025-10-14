@@ -25,11 +25,12 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 
 	const originalDoc = context.originalDoc;
 
-	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @forwardRolesToBetterAuth');
+	if (!originalDoc)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @forwardRolesToBetterAuth');
 
 	if (IS_ROLES_MUTATION) {
 		// get the better-auth userId
-		const authUserId = await rime.auth.getAuthUserId({
+		const authUserId = await rime.adapter.auth.getAuthUserId({
 			slug: config.slug,
 			id: originalDoc.id
 		});
@@ -46,7 +47,8 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 
 		const role = cases({
 			// Only admins can set others staff users the 'admin' role
-			[BETTER_AUTH_ROLES.ADMIN]: IS_CURRENT_USER_ADMIN && ADMIN_ROLE_IN_DATA && config.slug === 'staff',
+			[BETTER_AUTH_ROLES.ADMIN]:
+				IS_CURRENT_USER_ADMIN && ADMIN_ROLE_IN_DATA && config.slug === 'staff',
 			// If not an admin action, or there is no admin role in data
 			// but it's a staff collection mutation and executed by any staff user then set 'staff'
 			[BETTER_AUTH_ROLES.STAFF]: IS_CURRENT_USER_STAFF && config.slug === 'staff',
@@ -54,7 +56,7 @@ export const forwardRolesToBetterAuth = Hooks.beforeUpdate<'auth'>(async (args) 
 			[BETTER_AUTH_ROLES.USER]: true
 		});
 
-		await rime.auth.betterAuth.api.setRole({
+		await rime.auth.api.setRole({
 			headers: args.event.request.headers,
 			body: { userId: authUserId, role: role.value }
 		});

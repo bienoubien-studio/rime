@@ -11,8 +11,8 @@ export const cacheClient: PluginClient = () => {
 				panel: {
 					...(config.panel || {}),
 					components: {
-						...(config.panel.components || { header: [], collectionHeader: [] }),
-						header: [...(config.panel.components?.header || []), HeaderButton]
+						...(config.panel?.components || { header: [], collectionHeader: [] }),
+						header: [...(config.panel?.components?.header || []), HeaderButton]
 					}
 				}
 			};

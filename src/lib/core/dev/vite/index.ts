@@ -3,7 +3,8 @@ import { existsSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import type { Plugin, UserConfig } from 'vite';
 import { logger } from '../../logger/index.server.js';
-import { hasRunInitCommand } from '../cli/util.server.js';
+import { ensureHasInit } from '../cli/util.server.js';
+import { INPUT_DIR, OUTPUT_DIR } from '../constants.js';
 import { sanitize } from '../generate/sanitize/index.js';
 
 dotenv.config({ override: true });
@@ -20,21 +21,23 @@ export function rime(): Plugin {
 		configureServer(server) {
 			// Add a listener for when the server starts
 			server.httpServer?.once('listening', () => {
-				if (dev && !hasRunInitCommand()) {
-					throw new Error('Missing required files, run `npx rime init`');
-				}
+				dev && ensureHasInit();
 				// Check if we need to rebuild
-				const shouldRebuild = process.argv.includes('rebuild');
+				const shouldRebuild = process.argv.includes('--rebuild');
 				const rimeDevCacheDir = path.resolve(process.cwd(), '.rime');
 				if (shouldRebuild && existsSync(rimeDevCacheDir)) {
 					rmSync(rimeDevCacheDir, { recursive: true, force: true });
+					logger.info('--rebuild : .rime folder deleted');
 				}
 			});
 
 			// Add a watcher for sanitizing config changes
 			// and trigger schema/routes/types generation
 			server.watcher.on('change', async (modulePath) => {
-				if (modulePath.includes('src/lib/config') && !modulePath.includes('src/lib/config.generated')) {
+				if (
+					modulePath.includes(`src/lib/${INPUT_DIR}`) &&
+					!modulePath.includes(`src/lib/${OUTPUT_DIR}`)
+				) {
 					// Sanitize the config client/server
 					try {
 						await sanitize();
@@ -44,7 +47,7 @@ export function rime(): Plugin {
 					}
 					// Trigger generation
 					try {
-						await server.ssrLoadModule('src/lib/config.generated/rime.config.server.ts');
+						await server.ssrLoadModule(`src/lib/${OUTPUT_DIR}/rime.config.server.ts`);
 					} catch (error: any) {
 						logger.error('Failed to reload the config', error.message);
 						throw error;

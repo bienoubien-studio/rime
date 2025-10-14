@@ -6,7 +6,6 @@ import { FieldsExtension } from './extension.js';
 type Args = { name: string; label: string; fields: FieldBuilder[] };
 
 const fieldsFeatureNode = (args: Args): RichTextFeatureNode => ({
-	name: args.name,
 	label: args.label || args.name,
 	icon: SheetIcon,
 	isActive: ({ editor }) => editor.isActive('richt-text-fields'),
@@ -17,7 +16,6 @@ const fieldsFeatureNode = (args: Args): RichTextFeatureNode => ({
 });
 
 export const FieldsFeature = (args: Args): RichTextFeature => ({
-	name: 'FieldsFeature',
 	extension: FieldsExtension.configure(args),
 	nodes: [fieldsFeatureNode(args)]
 });

@@ -31,14 +31,25 @@ import {
 	SlidersVertical
 } from '@lucide/svelte';
 
-import { bold, heading, italic, link as linkFeature, resource, upload } from '$lib/fields/rich-text/client.js';
-import { Area, buildConfig, Collection, Hooks } from '$rime/config';
+import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import {
+	bold,
+	heading,
+	italic,
+	link as linkFeature,
+	resource,
+	upload
+} from '$lib/fields/rich-text/client.js';
+import { Area, Collection, Hooks, rime } from '$rime/config';
 import URL from './components/URL.svelte';
 import LoremFeature from './lorem-fill.js';
 
 const tabSEO = tab('metas')
 	.label('SEO')
-	.fields(text('title').label('Meta title').layout('compact'), textarea('description').label('Meta description'))
+	.fields(
+		text('title').label('Meta title').layout('compact'),
+		textarea('description').label('Meta description')
+	)
 	.live(false);
 
 const tabAttributes = tab('attributes')
@@ -76,7 +87,9 @@ const blockKeyFacts = block('keyFacts').fields(
 );
 
 const blockParagraph = block('paragraph').fields(richText('text'));
-const blockImage = block('image').fields(relation('image').to('medias').query(`where[mimeType][like]=image`));
+const blockImage = block('image').fields(
+	relation('image').to('medias').query(`where[mimeType][like]=image`)
+);
 const blockSlider = block('slider').fields(relation('images').to('medias').many());
 const blockSubContent = block('content').fields(text('title'), richText('text'));
 const blockBlack = block('black').fields(
@@ -142,7 +155,10 @@ const Pages = Collection.create('pages', {
 	}
 });
 
-const Link = [text('label').layout('compact'), link('link').types('pages', 'url').layout('compact')];
+const Link = [
+	text('label').layout('compact'),
+	link('link').types('pages', 'url').layout('compact')
+];
 
 const Navigation = Area.create('navigation', {
 	icon: Menu,
@@ -186,7 +202,11 @@ const Informations = Area.create('infos', {
 		group: 'global',
 		description: 'Update your website information, email, name of the website,...'
 	},
-	fields: [email('email'), slug('instagram').placeholder('nom-du-compte'), textarea('address').label('Adresse')],
+	fields: [
+		email('email'),
+		slug('instagram').placeholder('nom-du-compte'),
+		textarea('address').label('Adresse')
+	],
 	access: {
 		read: () => true
 	}
@@ -206,7 +226,12 @@ const tabWriter = tab('writer').fields(
 
 const tabNewsAttributes = tab('attributes').fields(
 	text('title').isTitle().localized().required(),
-	slug('slug').slugify('attributes.title').live(false).table({ position: 3, sort: true }).localized().required(),
+	slug('slug')
+		.slugify('attributes.title')
+		.live(false)
+		.table({ position: 3, sort: true })
+		.localized()
+		.required(),
 	richText('intro').features(bold(), linkFeature()),
 	date('published')
 );
@@ -276,8 +301,8 @@ const Apps = Collection.create('apps', {
 	}
 });
 
-export default buildConfig({
-	$database: 'basic.sqlite',
+export default rime({
+	$adapter: sqliteAdapter('basic.sqlite'),
 	collections: [Pages, Medias, News, Users, Apps],
 	areas: [Settings, Navigation, Informations],
 	$smtp: {

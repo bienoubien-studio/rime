@@ -1,22 +1,34 @@
 import type { User } from '$lib/core/collections/auth/types.js';
-import type { ConfigInterface } from '$lib/core/config/interface.server.js';
 import type { CollectionSlug } from '$lib/core/types/doc.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { eq } from 'drizzle-orm';
-import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import type { GenericTable } from '../types.js';
-import { configureBetterAuth } from './better-auth.server.js';
+import type { LibSQLDatabase } from 'drizzle-orm/libsql';
+import type { GenericTable } from './types.js';
+// import { configureBetterAuth } from './better-auth.server.js';
 
 /**
  * Creates and configures the authentication interface for the SQLite adapter
  * @param args Configuration parameters for the auth interface
  * @returns Object containing all auth-related functions
  */
-const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
-	const { db, schema, configInterface } = args;
+const createAuthInterface = (args: {
+	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
+	schema: GetRegisterType<'Schema'>;
+}) => {
+	const { db, schema } = args;
 
-	const betterAuth = configureBetterAuth({ db, schema, configInterface });
+	const betterAuthAdapter = drizzleAdapter(db, {
+		provider: 'sqlite',
+		schema: {
+			...schema,
+			user: schema.authUsers,
+			session: schema.authSessions,
+			account: schema.authAccounts,
+			verification: schema.authVerifications
+		}
+	});
 
 	const getTable = (name: string) => schema[name as keyof typeof schema] as unknown as GenericTable;
 
@@ -36,7 +48,7 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	 */
 	const getAuthUserId = async ({ slug, id }: { slug: CollectionSlug; id: string }) => {
 		const userTable = getTable(slug);
-		//@ts-expect-error slug is key of query
+		// @ts-expect-error slug is key of query
 		const user = await db.query[slug].findFirst({ where: eq(userTable.id, id) });
 		if (user) {
 			return user.authUserId;
@@ -53,24 +65,13 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	};
 
 	/**
-	 * Deletes a BetterAuth user by ID
-	 * @returns ID of the deleted user
-	 */
-	const deleteAuthUserById = async ({ id, headers }: { id: string; headers?: Request['headers'] }) => {
-		await betterAuth.api.removeUser({
-			body: {
-				userId: id
-			},
-			headers
-		});
-		return id;
-	};
-
-	/**
 	 * Retrieves user attributes from an auth collection
 	 * @returns User object or undefined if not found
 	 */
-	const getUserAttributes = async ({ authUserId, slug }: GetUserAttributesArgs): Promise<User | undefined> => {
+	const getUserAttributes = async ({
+		authUserId,
+		slug
+	}: GetUserAttributesArgs): Promise<User | undefined> => {
 		const table = getTable(slug);
 
 		const columns: Dic = {
@@ -95,24 +96,18 @@ const createAdapterAuthInterface = (args: AuthDatabaseInterfaceArgs) => {
 	};
 
 	return {
-		betterAuth,
+		betterAuthAdapter,
 		hasAuthUser,
 		getAuthUserId,
-		deleteAuthUserById,
+		// deleteAuthUserById,
 		getUserAttributes,
 		isSuperAdmin
 	};
 };
 
-export default createAdapterAuthInterface;
+export default createAuthInterface;
 
 type GetUserAttributesArgs = {
 	authUserId: string;
 	slug: CollectionSlug;
-};
-
-type AuthDatabaseInterfaceArgs = {
-	db: BetterSQLite3Database<GetRegisterType<'Schema'>>;
-	schema: GetRegisterType<'Schema'>;
-	configInterface: ConfigInterface;
 };

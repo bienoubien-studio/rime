@@ -12,7 +12,7 @@ program
 	.argument('<name>', 'Specify the name')
 	.action((name) => {
 		try {
-			const configDirPath = path.join(projectRoot, 'src', 'lib', 'config');
+			const configDirPath = path.join(projectRoot, 'src', 'lib', '+rime');
 			const frontRoutesPath = path.join(projectRoot, 'src', 'routes', '\\(front\\)');
 
 			// Delete previous

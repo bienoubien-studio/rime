@@ -1,6 +1,5 @@
-import { SquarePilcrow } from '@lucide/svelte';
 import type { RichTextFeatureNode } from '$lib/fields/rich-text/core/types';
-import { external } from '$lib/util/config.js';
+import { SquarePilcrow } from '@lucide/svelte';
 
 const lorems = [
 	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin auctor, sapien nec mollis pharetra, ante massa ullamcorper nisl, at blandit magna purus at est.',
@@ -10,7 +9,6 @@ const lorems = [
 
 // Create bold feature item
 const fillWithLorem: RichTextFeatureNode = {
-	name: 'lorem-fill',
 	label: 'Fill with Lorem',
 	icon: SquarePilcrow,
 	suggestion: {
@@ -21,9 +19,7 @@ const fillWithLorem: RichTextFeatureNode = {
 	}
 };
 
-const LoremFeature = {
+export default {
 	name: 'lorem-fill',
 	marks: [fillWithLorem]
 };
-
-export default external(LoremFeature, import.meta.url);

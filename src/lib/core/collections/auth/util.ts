@@ -1,4 +1,4 @@
-import type { AuthConfig } from '$lib/core/config/types.js';
+import type { CollectionAuthConfig } from '$lib/core/config/types.js';
 
 /**
  * Checks if a collection configuration has authentication capabilities
@@ -7,6 +7,6 @@ import type { AuthConfig } from '$lib/core/config/types.js';
  *   // Handle auth-specific functionality
  * }
  */
-export const isAuthConfig = <T extends { auth?: boolean | AuthConfig }>(
+export const isAuthConfig = <T extends { auth?: boolean | CollectionAuthConfig }>(
 	config: T
-): config is T & { auth: true | AuthConfig } => !!config.auth;
+): config is T & { auth: true | CollectionAuthConfig } => !!config.auth;

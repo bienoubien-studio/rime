@@ -9,7 +9,7 @@ export default defineConfig({
 		host: process.env.DEV_HOST || 'localhost'
 	},
 	optimizeDeps: {
-		exclude: ['sharp', 'better-sqlite3'],
+		exclude: ['sharp'],
 		include: ['@lucide/svelte']
 	},
 	ssr: {
@@ -17,7 +17,7 @@ export default defineConfig({
 	},
 	build: {
 		rollupOptions: {
-			external: ['better-sqlite3', 'sharp']
+			external: ['sharp']
 		}
 	},
 

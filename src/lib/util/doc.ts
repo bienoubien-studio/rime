@@ -1,6 +1,8 @@
 import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
-import type { CompiledArea, CompiledCollection } from '$lib/core/config/types.js';
+import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
+import { TabsBuilder } from '$lib/fields/tabs/index.js';
+import type { BuiltArea, BuiltCollection } from '$lib/types.js';
 import type { Dic } from '$lib/util/types.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { snapshot } from './state.js';
@@ -15,33 +17,36 @@ import { snapshot } from './state.js';
  * // Create a blank document for the 'pages' collection
  * const blankPage = createBlankDocument(config.getCollection('pages'));
  */
-export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
-	config: CompiledCollection | CompiledArea,
+export const createBlankDocument = <
+	C extends BuiltCollection | BuiltArea,
+	T extends GenericDoc = GenericDoc
+>(
+	config: C,
 	event?: RequestEvent
 ): T => {
 	/**
 	 * Recursively processes field definitions to create a blank document structure.
 	 * Handles special field types like tabs, blocks, relations, and nested fields.
 	 */
-	function reduceFieldsToBlankDocument(prev: Dic, curr: any) {
+	function reduceFieldsToBlankDocument(prev: Dic, curr: FormFieldBuilder<any>) {
 		try {
-			if (curr.type === 'tabs') {
-				curr.tabs.forEach((tab: any) => {
+			if (curr instanceof TabsBuilder) {
+				curr.raw.tabs.forEach((tab: any) => {
 					prev[tab.name] = tab.fields.reduce(reduceFieldsToBlankDocument, {});
 				});
 			} else if (['blocks', 'relation', 'tree'].includes(curr.type)) {
-				prev[curr.name] = [];
-			} else if ('fields' in curr) {
-				prev[curr.name] = curr.fields.reduce(reduceFieldsToBlankDocument, {});
+				prev[curr.raw.name] = [];
+			} else if ('fields' in curr.raw) {
+				prev[curr.raw.name] = curr.raw.fields.reduce(reduceFieldsToBlankDocument, {});
 			} else {
-				if (curr.defaultValue !== undefined) {
-					if (typeof curr.defaultValue === 'function') {
-						prev[curr.name] = curr.defaultValue({ event });
+				if (curr.raw.defaultValue !== undefined) {
+					if (typeof curr.raw.defaultValue === 'function') {
+						prev[curr.raw.name] = curr.raw.defaultValue({ event });
 					} else {
-						prev[curr.name] = curr.defaultValue;
+						prev[curr.raw.name] = curr.raw.defaultValue;
 					}
 				} else {
-					prev[curr.name] = null;
+					prev[curr.raw.name] = null;
 				}
 			}
 		} catch (err) {
@@ -51,14 +56,21 @@ export const createBlankDocument = <T extends GenericDoc = GenericDoc>(
 		return prev;
 	}
 
-	const fields: GenericDoc['fields'] = config.fields.reduce(reduceFieldsToBlankDocument, {});
+	const fields: GenericDoc['fields'] = config.fields
+		.filter((f) => f instanceof FormFieldBuilder)
+		.reduce(reduceFieldsToBlankDocument, {});
 	const empty = {
 		...fields,
 		_type: config.slug,
 		_prototype: config.type
 	};
 
-	if (config.type === 'collection' && isUploadConfig(config) && 'imageSizes' in config && config.imageSizes) {
+	if (
+		config.type === 'collection' &&
+		isUploadConfig(config) &&
+		'imageSizes' in config &&
+		config.imageSizes
+	) {
 		empty.sizes = {};
 	}
 

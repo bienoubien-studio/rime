@@ -52,7 +52,10 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 			blockBuilder.block.fields = blockBuilder.block.fields.map((field) => {
 				// If type / position / path field do not set as localized
 				// as it's a block property
-				if (field instanceof FormFieldBuilder && ['position', 'type', 'path', 'locale'].includes(field.raw.name)) {
+				if (
+					field instanceof FormFieldBuilder &&
+					['position', 'type', 'path', 'locale'].includes(field.raw.name)
+				) {
 					return field;
 				}
 				// For all others fields set as localized
@@ -71,13 +74,15 @@ export class BlocksBuilder extends FormFieldBuilder<BlocksField> {
 		return this;
 	}
 
-	compile(): WithoutBuilders<BlocksField> {
+	override compile() {
 		return {
 			...this.field,
 			blocks: this.field.blocks.map((block) => {
 				return block.compile();
-			})
-		} as unknown as WithoutBuilders<BlocksField>;
+			}),
+			component: this.component,
+			cell: this.cell || undefined
+		} as any;
 	}
 }
 

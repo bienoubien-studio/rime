@@ -1,4 +1,4 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import type { OperationContext } from '$lib/core/operations/hooks/index.server.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
 import type { RegisterCollection } from '$lib/index.js';
@@ -8,7 +8,7 @@ type Args = {
 	id: string;
 	versionId?: string;
 	locale?: string | undefined;
-	config: CompiledCollection;
+	config: BuiltCollection;
 	event: RequestEvent;
 	depth?: number;
 	select?: string[];

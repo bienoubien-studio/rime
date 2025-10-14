@@ -1,5 +1,4 @@
 import type { DefaultValueFn, FieldValidationFunc, FormField } from '$lib/fields/types.js';
-import type { WithoutBuilders } from '$lib/util/types.js';
 import { FormFieldBuilder } from './form-field-builder.js';
 
 type BooleanField = FormField & {
@@ -20,9 +19,10 @@ export class BooleanFieldBuilder<T extends BooleanField> extends FormFieldBuilde
 		return this;
 	}
 
-	compile(): WithoutBuilders<T> {
+	compile() {
 		if (!this.field.validate) {
-			this.field.validate = (value: unknown) => typeof value === 'boolean' || 'Should be true/false';
+			this.field.validate = (value: unknown) =>
+				typeof value === 'boolean' || 'Should be true/false';
 		}
 		if (!this.field.defaultValue) {
 			this.field.defaultValue = false;

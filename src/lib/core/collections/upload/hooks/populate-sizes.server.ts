@@ -1,9 +1,9 @@
-import type { CompiledCollection } from '$lib/core/config/types.js';
+import type { BuiltCollection } from '$lib/core/config/types.js';
 import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import type { WithUpload } from '../util/config.js';
 
 export const populateSizes = Hooks.beforeRead(async (args) => {
-	const config = args.config as WithUpload<CompiledCollection>;
+	const config = args.config as WithUpload<BuiltCollection>;
 	const doc = args.doc;
 
 	if ('imageSizes' in config.upload && config.upload.imageSizes && doc.filename) {
@@ -33,7 +33,9 @@ export const populateSizes = Hooks.beforeRead(async (args) => {
 		if ('thumbnail' in doc.sizes) {
 			doc._thumbnail = doc.sizes.thumbnail;
 		} else {
-			const thumbnailKey = Object.keys(doc.sizes).find((sizeName) => sizeName.startsWith('thumbnail'));
+			const thumbnailKey = Object.keys(doc.sizes).find((sizeName) =>
+				sizeName.startsWith('thumbnail')
+			);
 			if (thumbnailKey) {
 				doc._thumbnail = doc.sizes[thumbnailKey];
 			} else {

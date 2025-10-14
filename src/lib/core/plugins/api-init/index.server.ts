@@ -12,7 +12,7 @@ export const apiInit: Plugin<never> = () => {
 	const requestHandler: RequestHandler = async (event) => {
 		if (!dev) throw new RimeError(RimeError.NOT_FOUND);
 
-		const hasAuthUser = await event.locals.rime.auth.hasAuthUser();
+		const hasAuthUser = await event.locals.rime.adapter.auth.hasAuthUser();
 		if (hasAuthUser || (!hasAuthUser && !dev)) {
 			throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'api' });
 		}
@@ -30,7 +30,7 @@ export const apiInit: Plugin<never> = () => {
 		event.locals.isInit = true;
 
 		const [signUpError] = await trycatch(() =>
-			event.locals.rime.auth.betterAuth.api.signUpEmail({
+			event.locals.rime.auth.api.signUpEmail({
 				body: {
 					email: data.email,
 					name: data.name,
@@ -61,7 +61,9 @@ export const apiInit: Plugin<never> = () => {
 	};
 };
 
-const validateForm = (data: Record<string, string>): data is { email: string; name: string; password: string } => {
+const validateForm = (
+	data: Record<string, string>
+): data is { email: string; name: string; password: string } => {
 	const errors: FormErrors = {};
 	const { name, email, password } = data;
 

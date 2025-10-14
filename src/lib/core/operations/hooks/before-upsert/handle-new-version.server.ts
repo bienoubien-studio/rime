@@ -5,7 +5,7 @@ import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
 import type { Dic } from '$lib/util/types.js';
 import path from 'path';
-import type { CompiledArea, CompiledCollection } from '../../../../types.js';
+import type { BuiltArea, BuiltCollection } from '../../../../types.js';
 import type { ConfigMap } from '../../configMap/types.js';
 import { fallbackDataFromOriginal } from '../../shared/fallback-data-from-original.js';
 import { Hooks } from '../index.server.js';
@@ -20,9 +20,12 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 
 	const { versionOperation, originalDoc, originalConfigMap, params } = args.context;
 
-	if (!originalConfigMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalConfigMap @handleNewVersion');
-	if (!originalDoc) throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @handleNewVersion');
-	if (!versionOperation) throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionOperation @handleNewVersion');
+	if (!originalConfigMap)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalConfigMap @handleNewVersion');
+	if (!originalDoc)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing originalDoc @handleNewVersion');
+	if (!versionOperation)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing versionOperation @handleNewVersion');
 
 	let versionId;
 	let data;
@@ -33,7 +36,12 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 			break;
 
 		case VersionOperations.isNewVersionCreation(versionOperation): {
-			data = await prepareDataForNewVersion({ data: args.data, originalDoc, config, originalConfigMap });
+			data = await prepareDataForNewVersion({
+				data: args.data,
+				originalDoc,
+				config,
+				originalConfigMap
+			});
 			const versionsSlug = withVersionsSuffix(config.slug);
 
 			const document = await rime.collection(versionsSlug).create({
@@ -70,7 +78,7 @@ export const handleNewVersion = Hooks.beforeUpsert(async (args) => {
 
 async function prepareDataForNewVersion(args: {
 	data: Dic;
-	config: CompiledCollection | CompiledArea;
+	config: BuiltCollection | BuiltArea;
 	originalDoc: Dic;
 	originalConfigMap: ConfigMap;
 }) {

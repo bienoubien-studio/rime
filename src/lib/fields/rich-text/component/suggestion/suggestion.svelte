@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { Editor } from '@tiptap/core';
-	import * as Command from '$lib/panel/components/ui/command/index.js';
-	import { onDestroy, onMount } from 'svelte';
-	import { capitalize } from '$lib/util/string.js';
 	import { t__ } from '$lib/core/i18n/index.js';
+	import * as Command from '$lib/panel/components/ui/command/index.js';
+	import { capitalize } from '$lib/util/string.js';
+	import type { Editor } from '@tiptap/core';
+	import { onDestroy, onMount } from 'svelte';
 	import type { RichTextFeature } from '../../core/types.js';
 
 	type Props = {
@@ -15,13 +15,24 @@
 
 	let isOpen = $state(false);
 
+	const augmentFeatureName = (feature: RichTextFeature): RichTextFeature & { name?: string } => ({
+		...feature,
+		name: feature.extension?.name
+	});
+
 	// Get all items with suggestion commands
 	const markItems = $derived(
-		features.flatMap((feature) => feature.marks || []).filter((mark) => mark.suggestion && mark.suggestion.command)
+		features
+			.map(augmentFeatureName)
+			.flatMap((feature) => feature.marks?.map((m) => ({ ...m, name: feature.name })) || [])
+			.filter((mark) => mark.suggestion && mark.suggestion.command)
 	);
 
 	const nodeItems = $derived(
-		features.flatMap((feature) => feature.nodes || []).filter((node) => node.suggestion && node.suggestion.command)
+		features
+			.map(augmentFeatureName)
+			.flatMap((feature) => feature.nodes?.map((m) => ({ ...m, name: feature.name })) || [])
+			.filter((node) => node.suggestion && node.suggestion.command)
 	);
 
 	// Combine all suggestion items
@@ -76,7 +87,7 @@
 				</div>
 				<div>
 					<p>
-						{item.label || capitalize(item.name)}
+						{item.label || capitalize(item.name || '')}
 					</p>
 				</div>
 			</Command.Item>
