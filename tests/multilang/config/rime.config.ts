@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/public';
-import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import { adapterSqlite } from '$lib/adapter-sqlite/index.server';
 import {
 	block,
 	blocks,
@@ -240,7 +240,7 @@ const Medias = Collection.create('medias', {
 
 export default rime({
 	//
-	$adapter: sqliteAdapter('multilang.sqlite'),
+	$adapter: adapterSqlite('multilang.sqlite'),
 	siteUrl: env.PUBLIC_RIME_URL,
 
 	collections: [Pages, Medias],

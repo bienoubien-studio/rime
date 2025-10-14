@@ -22,7 +22,7 @@ export interface Config {
 	 * Database adapter
 	 * @example
 	 * export default rime({
-	 *   $adapter: sqliteAdapter(drizzleConfig)
+	 *   $adapter: adapterSqlite(drizzleConfig)
 	 * }
 	 */
 	$adapter: {

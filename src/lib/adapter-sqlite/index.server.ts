@@ -20,7 +20,7 @@ import { updateTableRecord } from './util.js';
 type Schema = GetRegisterType<'Schema'>;
 type Tables = GetRegisterType<'Tables'>;
 
-export function sqliteAdapter(database: string) {
+export function adapterSqlite(database: string) {
 	//
 	return {
 		createAdapter: <C extends Config>(iConfig: IConfig<C>) => createAdapter({ database, iConfig }),

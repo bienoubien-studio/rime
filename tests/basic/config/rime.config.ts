@@ -31,7 +31,7 @@ import {
 	SlidersVertical
 } from '@lucide/svelte';
 
-import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import { adapterSqlite } from '$lib/adapter-sqlite/index.server';
 import {
 	bold,
 	heading,
@@ -302,7 +302,7 @@ const Apps = Collection.create('apps', {
 });
 
 export default rime({
-	$adapter: sqliteAdapter('basic.sqlite'),
+	$adapter: adapterSqlite('basic.sqlite'),
 	collections: [Pages, Medias, News, Users, Apps],
 	areas: [Settings, Navigation, Informations],
 	$smtp: {

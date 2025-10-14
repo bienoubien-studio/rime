@@ -40,6 +40,10 @@
 			"types": "./dist/core/api/index.server.d.ts",
 			"import": "./dist/core/api/index.server.js"
 		},
+		"./sqlite": {
+			"types": "./dist/core/adapter-sqlite/index.server.d.ts",
+			"import": "./dist/core/adapter-sqlite/index.server.js"
+		},
 		"./config/client": {
 			"types": "./dist/core/config/client/index.d.ts",
 			"import": "./dist/core/config/client/index.js"

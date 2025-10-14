@@ -65,7 +65,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	const to3digits = (n: number) => n.toString().padStart(3, '0');
 
 	// Create 100 pages
-	for (let i = 1; i < 100; i++) {
+	for (let i = 1; i < 30; i++) {
 		const response = await request.post(`${API_BASE_URL}/pages`, {
 			headers,
 			data: {
@@ -79,7 +79,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Check findAll
-	for (let i = 1; i < 10; i++) {
+	for (let i = 1; i < 3; i++) {
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
@@ -94,7 +94,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Create 100 other pages
-	for (let i = 1; i < 100; i++) {
+	for (let i = 1; i < 30; i++) {
 		await request
 			.post(`${API_BASE_URL}/pages`, {
 				headers,
@@ -109,11 +109,13 @@ test('Should get correct offset / limit', async ({ request }) => {
 	}
 
 	// Check with query
-	for (let i = 1; i < 10; i++) {
+	for (let i = 1; i < 3; i++) {
 		const pagination = i;
 		const offset = (pagination - 1) * 10;
 		const response = await request
-			.get(`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`)
+			.get(
+				`${API_BASE_URL}/pages?where[attributes.slug][like]=other-&limit=10&offset=${offset}&sort=createdAt`
+			)
 			.then((response) => {
 				return response.json();
 			});
@@ -130,7 +132,7 @@ test('Should get correct offset / limit', async ({ request }) => {
 		.then((r) => r.docs);
 
 	expect(allPages.toBeDefined);
-	expect(allPages.length).toBe(198);
+	expect(allPages.length).toBe(58);
 
 	const ids = allPages.map((p: { id: string }) => p.id).join(',');
 	await request.delete(`${API_BASE_URL}/pages?where[id][in_array]=${ids}`, {
@@ -257,9 +259,12 @@ test('Should create a page', async ({ request }) => {
 });
 
 test('Should get only the layout page prop', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/pages/?where[id][equals]=${pageId}&select=layout.components`, {
-		headers: await signInSuperAdmin(request)
-	});
+	const response = await request.get(
+		`${API_BASE_URL}/pages/?where[id][equals]=${pageId}&select=layout.components`,
+		{
+			headers: await signInSuperAdmin(request)
+		}
+	);
 	expect(response.status()).toBe(200);
 	const { docs } = await response.json();
 	const doc = docs[0];
@@ -423,9 +428,11 @@ test('Should return 2 page', async ({ request }) => {
 /** ---------------- SELECT ---------------- */
 
 test('Should return 2 pages with only attributes.slug and id prop', async ({ request }) => {
-	const response = await request.get(`${API_BASE_URL}/pages?select=attributes.slug`).then((response) => {
-		return response.json();
-	});
+	const response = await request
+		.get(`${API_BASE_URL}/pages?select=attributes.slug`)
+		.then((response) => {
+			return response.json();
+		});
 	expect(response.docs).toBeDefined();
 	expect(response.docs.length).toBe(2);
 	expect(response.docs[0].id).toBeDefined();

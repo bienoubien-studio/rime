@@ -1,4 +1,4 @@
-import { sqliteAdapter } from '$lib/adapter-sqlite/index.server';
+import { adapterSqlite } from '$lib/adapter-sqlite/index.server';
 import {
 	date,
 	group,
@@ -128,7 +128,7 @@ const Pages = Collection.create('pages', {
 });
 
 export default rime({
-	$adapter: sqliteAdapter('versions-multilang.sqlite'),
+	$adapter: adapterSqlite('versions-multilang.sqlite'),
 	collections: [News, Medias, Pdf, Pages],
 	areas: [Settings, Infos],
 	localization: {

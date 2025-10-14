@@ -21,13 +21,14 @@ RIME_LOG_TO_FILE_MAX_DAYS=1
 export const defaultConfig = (name: string) => `
 import { Collection, rime } from '$rime/config';
 import { text } from '${PACKAGE}/fields';
+import { adapterSqlite } from '${PACKAGE}/sqlite';
 
 const Pages = Collection.create('pages', {
 	fields: [text('title').isTitle()]
 });
 
 export default rime({
-  $database: '${name}.sqlite',
+  $adapter: '${name}.sqlite',
   collections: [Pages]
 });
 `;
@@ -55,11 +56,3 @@ import * as schema from './lib/${OUTPUT_DIR}/schema.server.js';
 
 export const handle = sequence(...(await handlers(config)));
 `;
-
-export const auth = (name: string) => `
-  import { betterAuth } from "better-auth";
-  import Database from "better-sqlite3";
-
-  export const auth = betterAuth({
-      database: new Database("./db/${name}.db"),
-  })`;
