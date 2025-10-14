@@ -1,3 +1,4 @@
+import { dev } from '$app/environment';
 import type { MailerActions } from '$lib/core/plugins/mailer/types.js';
 import type { Config } from '$lib/types.js';
 import { admin as adminPlugin, apiKey } from 'better-auth/plugins';
@@ -12,7 +13,7 @@ export function getBaseAuthConfig<const B extends BuildConfig<Config>>(ctx: {
 	const betterAuthOptions = {
 		plugins: configurePlugins(ctx.config),
 		rateLimit: {
-			enabled: true,
+			enabled: !dev,
 			window: 10,
 			max: 30
 		},
