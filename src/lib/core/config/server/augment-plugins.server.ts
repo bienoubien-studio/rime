@@ -1,45 +1,49 @@
 import { dev } from '$app/environment';
 import type { Config } from '$lib/core/config/types.js';
-import { apiInit } from '$lib/core/plugins/api-init/index.server.js';
+import { apiInit } from '$lib/core/plugins/api-init/index.server';
 import { cache } from '$lib/core/plugins/cache/index.server.js';
-import { mailer } from '$lib/core/plugins/mailer/index.server.js';
+import { mailer } from '$lib/core/plugins/mailer/index.server';
 import { sse } from '$lib/core/plugins/sse/index.server.js';
-import type { Plugin } from '$lib/types.js';
-import { hasProp } from '$lib/util/object';
 
-export type WithPluginsServer<T> = T & { $plugins: ReturnType<Plugin>[] };
+// export type WithPluginsServer<T> = T & { $plugins: ReturnType<Plugin>[] };
 
-export const augmentPluginsServer = <const T extends Config>(config: T): WithPluginsServer<T> => {
+export const augmentPluginsServer = <const T extends Config>(config: T) => {
 	//
 	const corePluginsServer = [
-		// Cache plugin with default isEnabled : event => !event.locals.user
-		cache(config.$cache || {}),
 		// Server Sent Event
 		sse(),
+		// Cache plugin with default isEnabled : event => !event.locals.user
+		cache(config.$cache || {}),
 		// Add init plugins in dev mode
 		...(dev ? [apiInit()] : []),
 		// Mailer plugin
-		...(hasProp('$smtp', config) ? [mailer(config.$smtp)] : [])
-	];
+		mailer(config.$smtp)
+	] as const;
 
-	const plugins = [...corePluginsServer, ...(config.$plugins || [])];
+	const plugins = [...corePluginsServer, ...(config.$plugins || [])] as const;
 
+	// const plugins = [cache()] as const;
+
+	let configWithPlugins = config;
 	for (const plugin of plugins) {
 		if ('configure' in plugin && typeof plugin.configure === 'function') {
-			config = plugin.configure(config);
+			configWithPlugins = plugin.configure(configWithPlugins);
 		}
 
 		// Register routes
 		if ('routes' in plugin && typeof plugin.routes === 'object') {
-			config.$routes = {
-				...(config.$routes || {}),
-				...plugin.routes
+			configWithPlugins = {
+				...configWithPlugins,
+				$routes: {
+					...(configWithPlugins.$routes || {}),
+					...plugin.routes
+				}
 			};
 		}
 	}
 
 	return {
-		...config,
-		$plugins: config.plugins || []
+		...configWithPlugins,
+		$plugins: plugins
 	} as const;
 };

@@ -1,9 +1,7 @@
 import type { Config } from '$lib/core/config/types.js';
 import { hasProp } from '$lib/util/object';
 
-export type WithCORS<T> = T & { $trustedOrigins: string[] };
-
-export const augmentCORS = <const T extends Config>(config: T): WithCORS<T> => {
+export const augmentCORS = <const T extends Config>(config: T) => {
 	const trustedOrigins =
 		hasProp('$trustedOrigins', config) && Array.isArray(config.$trustedOrigins)
 			? config.$trustedOrigins

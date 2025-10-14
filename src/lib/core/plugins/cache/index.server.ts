@@ -1,6 +1,6 @@
-import type { Plugin } from '$lib/types.js';
 import { toHash } from '$lib/util/string.js';
 import { json, type RequestEvent, type RequestHandler } from '@sveltejs/kit';
+import { definePlugin, type Plugin } from '../index.js';
 import { Cache } from './cache.server.js';
 import { handler } from './handler.server.js';
 import HeaderButton from './HeaderButton.svelte';
@@ -24,7 +24,7 @@ type CacheOptions = {
 	isEnabled?: (event: RequestEvent) => boolean;
 };
 
-export const cache: Plugin<CacheOptions> = (options) => {
+export const cache = definePlugin((options?: CacheOptions) => {
 	//
 	async function getAction<T>(key: string, get: () => Promise<T>): Promise<T> {
 		return await Cache.get<T>(key, get);
@@ -98,5 +98,5 @@ export const cache: Plugin<CacheOptions> = (options) => {
 
 		actions,
 		handler
-	};
-};
+	} as const satisfies Plugin;
+});

@@ -1,8 +1,8 @@
-import type { Plugin } from '$lib/types.js';
 import { error, type RequestHandler } from '@sveltejs/kit';
+import { definePlugin, type Plugin } from '../index.js';
 import { broadcast, registerWriter } from './broadcast.js';
 
-export const sse: Plugin<never> = () => {
+export const sse = definePlugin(() => {
 	const requestHandler: RequestHandler = async ({ request, locals }) => {
 		if (!locals.user || !locals.user.isStaff) return error(404);
 
@@ -54,8 +54,8 @@ export const sse: Plugin<never> = () => {
 				GET: requestHandler
 			}
 		}
-	};
-};
+	} as const satisfies Plugin;
+});
 
 export type SSEActions = {
 	broadcast: typeof broadcast;

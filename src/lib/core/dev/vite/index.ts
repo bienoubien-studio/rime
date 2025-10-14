@@ -2,8 +2,8 @@ import dotenv from 'dotenv';
 import { existsSync, rmSync } from 'node:fs';
 import path from 'node:path';
 import type { Plugin, UserConfig } from 'vite';
+import { ensureHasInit } from '../../ensure.server.js';
 import { logger } from '../../logger/index.server.js';
-import { ensureHasInit } from '../cli/util.server.js';
 import { INPUT_DIR, OUTPUT_DIR } from '../constants.js';
 import { sanitize } from '../generate/sanitize/index.js';
 

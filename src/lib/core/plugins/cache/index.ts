@@ -1,7 +1,7 @@
-import type { PluginClient } from '$lib/core/types/plugins.js';
+import { type PluginClient, definePluginClient } from '../index.js';
 import HeaderButton from './HeaderButton.svelte';
 
-export const cacheClient: PluginClient = () => {
+export const cacheClient = definePluginClient(() => {
 	return {
 		name: 'cache/client',
 		type: 'client',
@@ -18,5 +18,5 @@ export const cacheClient: PluginClient = () => {
 			};
 			return config;
 		}
-	};
-};
+	} as const satisfies PluginClient;
+});

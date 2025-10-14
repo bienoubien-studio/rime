@@ -18,7 +18,12 @@ export const registerWriter = (writer: WritableStreamDefaultWriter<string>): (()
 /**
  * Sends an SSE event to all connected clients.
  * @example
- * broadcast({  collection: 'events', id: '1', operation: 'update', timestamp: new Date().toISOString() });
+ * broadcast({
+ *    documentType: 'events',
+ *    id: '12345',
+ *    operation: 'update',
+ *    timestamp: new Date().toISOString()
+ * });
  */
 export const broadcast = (data: ContentUpdatePayload): void => {
 	const frame = `event: rime:${data.operation}\ndata: ${JSON.stringify(data)}\n\n`;

@@ -57,6 +57,19 @@ export type WithoutBuilders<T> =
 					: { [K in keyof T]: WithoutBuilders<T[K]> }
 				: T;
 
+type Entry<K extends PropertyKey, V> = readonly [K, V];
+
+/**
+ * Typed version of Object.fromEntries.
+ * Keeps literal keys if the entries are const tuples.
+ */
+export function fromEntriesTyped<const E extends readonly Entry<PropertyKey, unknown>[]>(
+	entries: E
+): { [P in E[number] as P[0]]: P[1] } {
+	return Object.fromEntries(entries as unknown as Iterable<readonly [PropertyKey, unknown]>) as {
+		[P in E[number] as P[0]]: P[1];
+	};
+}
 // export type WithoutBuilders<T> =
 // 	T extends Array<infer U>
 // 		? U extends FieldBuilder<any>

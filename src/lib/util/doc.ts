@@ -1,5 +1,5 @@
 import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
-import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
+import type { FieldBuilder } from '$lib/core/fields/builders/field-builder.js';
 import type { GenericDoc } from '$lib/core/types/doc.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import type { BuiltArea, BuiltCollection } from '$lib/types.js';
@@ -28,11 +28,11 @@ export const createBlankDocument = <
 	 * Recursively processes field definitions to create a blank document structure.
 	 * Handles special field types like tabs, blocks, relations, and nested fields.
 	 */
-	function reduceFieldsToBlankDocument(prev: Dic, curr: FormFieldBuilder<any>) {
+	function reduceFieldsToBlankDocument(prev: Dic, curr: FieldBuilder<any>) {
 		try {
 			if (curr instanceof TabsBuilder) {
-				curr.raw.tabs.forEach((tab: any) => {
-					prev[tab.name] = tab.fields.reduce(reduceFieldsToBlankDocument, {});
+				curr.raw.tabs.forEach((tab) => {
+					prev[tab.name] = tab.raw.fields.reduce(reduceFieldsToBlankDocument, {});
 				});
 			} else if (['blocks', 'relation', 'tree'].includes(curr.type)) {
 				prev[curr.raw.name] = [];
@@ -56,9 +56,8 @@ export const createBlankDocument = <
 		return prev;
 	}
 
-	const fields: GenericDoc['fields'] = config.fields
-		.filter((f) => f instanceof FormFieldBuilder)
-		.reduce(reduceFieldsToBlankDocument, {});
+	const fields: GenericDoc['fields'] = config.fields.reduce(reduceFieldsToBlankDocument, {});
+
 	const empty = {
 		...fields,
 		_type: config.slug,

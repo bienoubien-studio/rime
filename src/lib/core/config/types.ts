@@ -1,8 +1,8 @@
 import type { Adapter } from '$lib/adapter-sqlite/index.server.js';
 import type { PanelLanguage } from '$lib/core/i18n/index.js';
 import type { Hook, HookBeforeOperation } from '$lib/core/operations/hooks/index.server.js';
-import type { SMTPConfig } from '$lib/core/plugins/mailer/types.js';
-import type { Plugin, PluginClient } from '$lib/core/types/plugins.js';
+import type { Plugin, PluginClient } from '$lib/core/plugins/index.js';
+import type { SMTPConfig } from '$lib/core/plugins/mailer/index.server.js';
 import type { Field, Option } from '$lib/fields/types.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { DashboardEntry } from '$lib/panel/pages/dashboard/types.js';
@@ -83,9 +83,9 @@ export interface Config {
 	 */
 	$routes?: Record<string, RouteConfig>;
 	/** List of client plugins */
-	plugins?: ReturnType<PluginClient>[];
+	plugins?: PluginClient[];
 	/** List of server plugins */
-	$plugins?: ReturnType<Plugin>[];
+	$plugins?: Plugin[];
 	/** Custom object for server-only config additional values  */
 	$custom?: Record<string, any>;
 	/** Custom object for both client and server config additional values  */

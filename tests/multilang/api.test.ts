@@ -1,6 +1,7 @@
 import { filePathToBase64 } from '$lib/core/collections/upload/util/converter.js';
 import test, { expect } from '@playwright/test';
 import path from 'path';
+import { clearLog, logToFile } from '../../src/log.js';
 import { API_BASE_URL, signIn } from '../util.js';
 
 const signInSuperAdmin = signIn('admin@bienoubien.studio', 'a&1Aa&1A');
@@ -846,6 +847,15 @@ test('Should create page with multiple relations', async ({ request }) => {
 			ambassadors: [editor2Id]
 		}
 	};
+
+	clearLog();
+	logToFile({
+		title: 'Relations Test',
+		slug: 'relations-test',
+		author: [adminUserId],
+		contributors: [adminUserId, editor2Id],
+		ambassadors: [editor2Id]
+	});
 
 	const response = await request.post(`${API_BASE_URL}/pages`, {
 		headers: await signInSuperAdmin(request),

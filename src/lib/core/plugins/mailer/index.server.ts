@@ -1,10 +1,9 @@
 import { RimeError } from '$lib/core/errors/index.js';
-import type { Plugin } from '$lib/core/types/plugins.js';
 import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import type { SendMailArgs, SMTPConfig } from './types.js';
+import { type Plugin, definePlugin } from '../index.js';
 
-export const mailer: Plugin<SMTPConfig> = (smtpConfig) => {
+export const mailer = definePlugin((smtpConfig?: SMTPConfig) => {
 	if (!smtpConfig) {
 		throw new RimeError(RimeError.BAD_REQUEST, 'SMTP configuration is required');
 	}
@@ -35,5 +34,22 @@ export const mailer: Plugin<SMTPConfig> = (smtpConfig) => {
 		actions: {
 			sendMail
 		}
+	} as const satisfies Plugin;
+});
+
+export type MailerActions = ReturnType<typeof mailer>['actions'];
+export type SendMailArgs = {
+	to: string;
+	subject: string;
+	text: string;
+	html?: string;
+};
+export type SMTPConfig = {
+	from: string | undefined;
+	host: string | undefined;
+	port: number | undefined;
+	auth: {
+		user: string | undefined;
+		password: string | undefined;
 	};
 };

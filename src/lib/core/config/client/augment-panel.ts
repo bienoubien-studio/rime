@@ -1,13 +1,9 @@
 import type { PanelConfig } from '$lib/core/config/types.js';
 import { Book, BookCopy, BookType, SlidersVertical } from '@lucide/svelte';
 
-export type WithPanel<T> = T & {
-	panel: Omit<Required<PanelConfig>, '$access' | 'css'> & { css?: string };
-};
-
 export const augmentPanel = <const T extends { panel?: Omit<PanelConfig, '$access'> }>(
 	config: T
-): WithPanel<T> => {
+) => {
 	//
 	const panelNavigationGroups = [
 		...(config.panel?.navigation?.groups || []),

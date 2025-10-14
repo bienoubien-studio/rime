@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import type { MailerActions } from '$lib/core/plugins/mailer/types.js';
+import type { MailerActions } from '$lib/core/plugins/mailer/index.server.js';
 import type { Config } from '$lib/types.js';
 import { admin as adminPlugin, apiKey } from 'better-auth/plugins';
 import type { BuildConfig } from '../server/index.server.js';

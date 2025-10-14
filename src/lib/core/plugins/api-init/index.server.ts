@@ -1,14 +1,14 @@
 import { dev } from '$app/environment';
-
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { RimeError, RimeFormError } from '$lib/core/errors/index.js';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
-import type { FormErrors, Plugin } from '$lib/types.js';
+import type { FormErrors } from '$lib/types.js';
 import { trycatch, trycatchSync } from '$lib/util/function.js';
 import { email as validateEmail, password as validatePassword } from '$lib/util/validate.js';
 import { json, type RequestHandler } from '@sveltejs/kit';
+import { definePlugin, type Plugin } from '../index.js';
 
-export const apiInit: Plugin<never> = () => {
+export const apiInit = definePlugin(() => {
 	const requestHandler: RequestHandler = async (event) => {
 		if (!dev) throw new RimeError(RimeError.NOT_FOUND);
 
@@ -58,8 +58,8 @@ export const apiInit: Plugin<never> = () => {
 				POST: requestHandler
 			}
 		}
-	};
-};
+	} as const satisfies Plugin;
+});
 
 const validateForm = (
 	data: Record<string, string>

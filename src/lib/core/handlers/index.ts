@@ -7,8 +7,7 @@ import { createPluginsHandler } from './plugins.server.js';
 import { handleRoutes } from './routes.server.js';
 
 // C -> rime(C)
-//      |-> BuildConfig<C>
-//      |-> B -> async createRime<B>
+//      |-> BuildConfig<C> -> B -> async createRime<B> -> Promise<Rime<C>
 
 export default async function <const C extends Config>(rime: Promise<Rime<C>>) {
 	return [
