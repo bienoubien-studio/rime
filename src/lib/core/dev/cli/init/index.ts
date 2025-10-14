@@ -175,7 +175,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		setHooks();
 		configureVite();
 		await copyAssets();
-		!!skipInstall && installDependencies();
+		!skipInstall && installDependencies();
 		await generate({ force: true });
 	} else {
 		const name = await prompt(
@@ -195,7 +195,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		setHooks();
 		configureVite();
 		await copyAssets();
-		!!skipInstall && installDependencies();
+		!skipInstall && installDependencies();
 		await generate({ force: true });
 		logger.info('[✓] done');
 	}

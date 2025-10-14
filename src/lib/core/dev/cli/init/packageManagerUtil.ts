@@ -27,7 +27,7 @@ const packageManagerConfigs: PMConfig = {
 		command: 'yarn add -D drizzle-kit'
 	},
 	pnpm: {
-		command: 'pnpm add -D drizzle-kit && pnpm add drizzle-orm @lucide/svelte sharp better-sqlite3',
+		command: 'pnpm add -D drizzle-kit && pnpm add drizzle-orm @lucide/svelte sharp',
 		preInstall: updatePackageJsonForPnpm,
 		postInstall: () => {
 			execSync('pnpm rebuild');
@@ -40,7 +40,7 @@ const packageManagerConfigs: PMConfig = {
 		command: 'npm install -D drizzle-kit'
 	},
 	deno: {
-		command: 'deno install -D npm:drizzle-kit && deno install --allow-scripts=npm:sharp,npm:better-sqlite3'
+		command: 'deno install -D npm:drizzle-kit && deno install --allow-scripts=npm:sharp'
 	}
 };
 
@@ -91,7 +91,7 @@ function updatePackageJsonForPnpm(): void {
 
 		// Update onlyBuiltDependencies
 		const existingBuiltDeps = packageJson.pnpm.onlyBuiltDependencies || [];
-		const newBuiltDeps = ['better-sqlite3', 'esbuild', 'sharp'];
+		const newBuiltDeps = ['esbuild', 'sharp'];
 
 		// Merge and deduplicate
 		const mergedBuiltDeps = [...new Set([...existingBuiltDeps, ...newBuiltDeps])];
