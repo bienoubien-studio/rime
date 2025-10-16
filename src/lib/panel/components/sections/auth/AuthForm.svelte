@@ -27,7 +27,7 @@
 	.rz-auth {
 		display: grid;
 		grid-template-columns: 1fr;
-		@media (min-width: 768px) {
+		@media (min-width: 1024px) {
 			grid-template-columns: 0.8fr 1.2fr;
 		}
 		height: 100vh;
@@ -40,11 +40,18 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
-			width: min(500px, 90%);
+			width: 100%;
 			gap: var(--rz-size-4);
 			margin-bottom: 10vh;
-			padding: var(--rz-size-20);
-			border-left: var(--rz-border);
+			padding: var(--rz-size-12);
+			@media (min-width: 768px) {
+				padding: var(--rz-size-20);
+			}
+			@media (min-width: 1024px) {
+				width: min(500px, 90%);
+				border-left: var(--rz-border);
+			}
+			height: 100%;
 			h1 {
 				font-size: clamp(var(--rz-text-3xl), 2.5vw, var(--rz-text-5xl));
 				line-height: 1;
@@ -63,20 +70,21 @@
 
 	.rz-auth__left {
 		display: none;
-		@media (min-width: 768px) {
+		@media (min-width: 1024px) {
 			display: block;
 		}
 
-		background-size: 100% 100%;
+		background-size: cover;
 		background-position:
 			0px 0px,
 			0px 0px,
 			0px 0px,
 			0px 0px;
 		background-image:
-			radial-gradient(113% 91% at 17% -2%, #0f0721ff 1%, #ff000000 99%),
-			radial-gradient(142% 91% at 83% 7%, oklch(0.21 0.2 200) 1%, #00ff8e00 99%),
-			radial-gradient(142% 91% at 111% 84%, #0a0b26ff 0%, #1e1c4cff 100%);
+			url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='30.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.88'/%3E%3C/svg%3E"),
+			radial-gradient(113% 91% at 17% -2%, oklch(0.21 0.21 290) 1%, oklch(0 0 0 / 0) 99%),
+			radial-gradient(142% 91% at 83% 7%, oklch(0.21 0.12 80) 1%, oklch(0.85 0.23 155 / 0) 99%),
+			radial-gradient(142% 91% at 111% 84%, oklch(0.13 0.08 300) 0%, oklch(0.05 0.1 250) 100%);
 	}
 
 	.rz-auth__left.rz-auth__left--image {
