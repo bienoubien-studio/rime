@@ -20,7 +20,12 @@ export const mailer = definePlugin((smtpConfig: SMTPConfig) => {
 
 	const mailer = nodemailer.createTransport(options);
 
-	const sendMail = async (args: SendMailArgs) => {
+	const sendMail = async (args: {
+		to: string;
+		subject: string;
+		text: string;
+		html?: string;
+}) => {
 		try {
 			return await mailer.sendMail({ from: smtpConfig.from, ...args });
 		} catch {
@@ -38,12 +43,7 @@ export const mailer = definePlugin((smtpConfig: SMTPConfig) => {
 });
 
 export type MailerActions = ReturnType<typeof mailer>['actions'];
-export type SendMailArgs = {
-	to: string;
-	subject: string;
-	text: string;
-	html?: string;
-};
+
 export type SMTPConfig = {
 	from: string | undefined;
 	host: string | undefined;

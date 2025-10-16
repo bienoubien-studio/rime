@@ -6,9 +6,9 @@ import type { BuildConfig } from '../server/index.server.js';
 import { betterAuthAfterHook, betterAuthBeforeHook } from './better-auth-hooks.js';
 import { accessControl, admin, staff, user } from './better-auth-permissions.js';
 
-export function getBaseAuthConfig<const B extends BuildConfig<Config>>(ctx: {
+export function getBaseAuthConfig<const C extends Config>(ctx: {
 	mailer: MailerActions | undefined;
-	config: B;
+	config: BuildConfig<Config>;
 }) {
 	const betterAuthOptions = {
 		plugins: configurePlugins(ctx.config),

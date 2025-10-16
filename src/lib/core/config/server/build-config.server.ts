@@ -75,9 +75,10 @@ type InferAreasSlug<C> = C extends { areas?: readonly any[] }
 type InferCorePlugins<C extends Config> = {
 	cache: import('$lib/core/plugins/cache/index.server.js').CacheActions;
 	sse: import('$lib/core/plugins/sse/index.server.js').SSEActions;
-} & C['$smtp'] extends SMTPConfig ? {
-  mailer: import('$lib/core/plugins/mailer/index.server.js').MailerActions;
-}: Record<never, never>;
+} & (C['$smtp'] extends SMTPConfig
+	? { mailer: import('$lib/core/plugins/mailer/index.server.js').MailerActions; }
+	: Record<string, never>
+);
 
 // Helper type to extract custom plugins from original config
 type ExtractCustomPlugins<C> = C extends { $plugins: readonly (infer P)[] }
@@ -88,7 +89,7 @@ type ExtractCustomPlugins<C> = C extends { $plugins: readonly (infer P)[] }
 		: never
 	: Record<string, never>;
 
-type InferPluginsServer<C> = InferCorePlugins<C> & ExtractCustomPlugins<C>;
+type InferPluginsServer<C extends Config> = InferCorePlugins<C> & ExtractCustomPlugins<C>;
 
 export type BuildConfig<C extends Config = Config> = ReturnType<typeof augmentConfig<C>> & {
 	readonly $InferAuthPlugins: C['$auth'] extends { plugins: any } ? C['$auth']['plugins'] : [];
