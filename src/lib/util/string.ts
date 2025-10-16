@@ -157,3 +157,22 @@ export function toHash(str: string) {
  * isCamelCase("hello_world");
  */
 export const isCamelCase = (str: string) => /^[a-z][a-zA-Z0-9]*$/.test(str);
+
+/**
+ * Validates if a string is a valid slug format.
+ * Must start with a letter, contain only letters, numbers, hyphens, and underscores.
+ *
+ * @example
+ * // Returns true
+ * isValidSlug("hello-world");
+ *
+ * // Returns true
+ * isValidSlug("user_profile");
+ *
+ * // Returns false
+ * isValidSlug("123invalid");
+ *
+ * // Returns false
+ * isValidSlug("hello world");
+ */
+export const isValidSlug = (str: string): boolean => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(str);

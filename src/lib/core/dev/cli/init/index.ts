@@ -1,5 +1,6 @@
 import { logger } from '$lib/core/logger/index.server.js';
 import { randomId } from '$lib/util/random.js';
+import { isValidSlug, slugify } from '$lib/util/string.js';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { cp, mkdir } from 'fs/promises';
 import path from 'path';
@@ -178,10 +179,17 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		!skipInstall && installDependencies();
 		await generate({ force: true });
 	} else {
-		const name = await prompt(
-			'What is your project name (will be used as database name) ?',
-			packageName || 'app'
-		);
+	  let name = ''
+		const defaultName = slugify(packageName);
+		let tries = 0
+		while (!isValidSlug(name)){
+  		name = await prompt(
+  			tries > 0 ? 'Error: should contains only letters, numbers, hyphens, underscores\nWhat is your project name (will be used as database name) ?' :
+     'What is your project name (will be used as database name) ?',
+  			defaultName || 'app'
+  		);
+      tries ++
+		}
 
 		if (!name) {
 			logger.error('Operation cancelled');
