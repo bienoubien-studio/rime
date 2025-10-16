@@ -28,7 +28,7 @@ const Pages = Collection.create('pages', {
 });
 
 export default rime({
-  $adapter: '${name}.sqlite',
+  $adapter: adapterSqlite('${name}.sqlite'),
   collections: [Pages]
 });
 `;
