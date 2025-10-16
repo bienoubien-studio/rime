@@ -67,6 +67,7 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 		gap: var(--rz-size-4);
+		padding: var(--rz-size-4);
 	}
 
 	.rz-browse__folder {
