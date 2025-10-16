@@ -49,7 +49,7 @@
 <AuthForm image={data.image} title={t__('common.resetPassword')}>
 	{#if success}
 		<p>{t__('common.reset_password_success')}</p>
-		<Button size="xl" href="/panel/sign-in">{t__('common.login')}</Button>
+		<Button size="xl" href="/panel/sign-in">{t__('common.signin')}</Button>
 	{:else}
 		<Text type="password" config={passwordConfig} {form} />
 		<Text type="password" config={confirmPasswordConfig} {form} />
