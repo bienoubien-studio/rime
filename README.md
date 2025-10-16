@@ -55,14 +55,9 @@ cd my-app
 ### 2. Install Rime
 
 ```bash
-npm install @bienbien/rime sharp better-sqlite3
-npm install -D drizzle-kit
+npm install @bienbien/rime
 npx rime init
 ```
-
-> [!NOTE]
-> pnpm missed installation of needed dependencies @lucide/svelte and drizzle-orm
-> so you will need to install them manually
 
 The `rime init` command will automatically:
 
@@ -72,6 +67,7 @@ The `rime init` command will automatically:
 - Add a `drizzle.config.ts`
 - Create `src/hooks.server.ts` with the required initialization code
 - Add the Rime plugin to `vite.config.ts`
+- Install dependencies.
 - Push initial schema
 
 > [!NOTE]
@@ -90,12 +86,11 @@ export default defineConfig({
 
 ```typescript
 // src/hooks.server.ts (should be created)
-import { sequence } from '@sveltejs/kit/hooks';
+import config from '$lib/+rime.generated/rime.config.server.js';
 import { handlers } from '@bienbien/rime';
-import config from './lib/config.generated/rime.config.server.js';
-import * as schema from './lib/server/schema.js';
+import { sequence } from '@sveltejs/kit/hooks';
 
-export const handle = sequence(...handlers({ config, schema }));
+export const handle = sequence(...(await handlers(config)));
 ```
 
 ```
@@ -129,7 +124,8 @@ curl -v POST http://localhost:5173/api/init \
 
 ```typescript
 // ./src/lib/config/rime.config.ts
-import { buildConfig, Collection, Area } from '$rime/config';
+import { rime, Collection, Area } from '$rime/config';
+import { adapterSqlite } from '@bienbien/rime/sqlite';
 import { Settings2 } from '@lucide/svelte';
 import { relation, link, richText, text, toggle } from '@bienbien/rime/fields';
 import { access } from "@bienbien/rime/util";
@@ -172,8 +168,8 @@ const Medias = Collection.create('medias', {
 
 // Properties prefixed with "$" are server-only props, they will be stripped
 // in the generated client config
-export default buildConfig({
-  $database: 'my-db.sqlite'
+export default rime({
+  $adapter: adapterSqlite('my-db.sqlite'),
   collections: [Pages, Medias],
   areas: [Settings],
   staff: {
@@ -243,11 +239,9 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 - [x] Document status
 - [x] Tree field
 - [x] more tiptap integration
+- [x] more flexible better-auth integration
+- [~] Documentation
 - [ ] Live Edit system in practice
-- [ ] Documentation
-
-### TO v1
-
 - [x] Document version
 - [x] collection nested
 - [x] more better-auth integration
