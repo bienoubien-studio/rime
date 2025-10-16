@@ -59,15 +59,15 @@ export function rime(): Plugin {
 		config(): UserConfig {
 			return {
 				ssr: {
-					external: ['sharp', 'better-sqlite3']
+					external: ['sharp']
 				},
 				optimizeDeps: {
-					exclude: ['sharp', 'better-sqlite3'],
+					exclude: ['sharp'],
 					include: ['@lucide/svelte']
 				},
 				build: {
 					rollupOptions: {
-						external: ['better-sqlite3', 'sharp']
+						external: ['sharp']
 					},
 					target: 'es2022'
 				}
