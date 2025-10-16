@@ -36,13 +36,12 @@
 [x] page versions
 [x] Change the way the config is sanitize to allow better @tiptap integration
 [x] Add the ability to import data from the default locale
+[x] More better-auth integration
+[x] pnpm deps issue
 [ ] Change edited_by that should be currently_edited, and add last_edited_by, created_by for less confusion.
 [ ] Handle auto-save / confirm dialog if version not enabled.
 [ ] Add select feature to findById collection
 [ ] Batch offset/update
-[ ] more better-auth integration
-[ ] pnpm deps issue
 [ ] More tests
 [ ] Put bin commands in a separate package ex: @rime/kit ?
 [ ] configurable medias/config/panel path
-[ ] Better junction table naming

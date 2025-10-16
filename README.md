@@ -62,7 +62,7 @@ npx rime init
 The `rime init` command will automatically:
 
 - Create/populate `.env` file
-- Create `src/config/rime.config.ts` config file
+- Create `src/lib/+rime/rime.config.ts` config file
 - Create a `db/` folder
 - Add a `drizzle.config.ts`
 - Create `src/hooks.server.ts` with the required initialization code
@@ -123,7 +123,7 @@ curl -v POST http://localhost:5173/api/init \
 ## Configuration Example
 
 ```typescript
-// ./src/lib/config/rime.config.ts
+// ./src/lib/+rime/rime.config.ts
 import { rime, Collection, Area } from '$rime/config';
 import { adapterSqlite } from '@bienbien/rime/sqlite';
 import { Settings2 } from '@lucide/svelte';
@@ -240,11 +240,11 @@ It's doing bascically `vite build` under the hood and create the polka server fi
 - [x] Tree field
 - [x] more tiptap integration
 - [x] more flexible better-auth integration
-- [~] Documentation
-- [ ] Live Edit system in practice
 - [x] Document version
 - [x] collection nested
 - [x] more better-auth integration
+- [~] Documentation
+- [ ] Live Edit system in practice
 - [ ] auto-saved draft
 - [ ] Put bin commands in a separate package ex: @rime/kit
 - [ ] configurable medias/config path
