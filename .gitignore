@@ -46,3 +46,6 @@ pnpm-lock.yaml
 src/params
 /.zed
 rime.code-workspace
+
+# rime
++rime.generated

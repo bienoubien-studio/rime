@@ -47,9 +47,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 			Object.entries(envUpdates).forEach(([key, value]) => {
 				const exists = envContent.match(new RegExp(`^${key}=`, 'm'));
 
-				if (exists) {
-					// logger.info(`-> ${key} already defined (skip)`);
-				} else {
+				if (!exists) {
 					// Add new value if doesn't exist
 					envContent += `\n${key}=${value}`;
 					logger.info(`- ${key} added`);
@@ -87,6 +85,32 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		} else {
 			logger.info('[✓] Database folder already exists (skip)');
 		}
+	}
+
+	function addToGitignore() {
+		const gitignorePath = path.join(root, '.gitignore');
+		if (!existsSync(gitignorePath)) {
+			logger.warn('.gitignore not found (skip)');
+			return
+		}
+
+		let gitignoreContent = readFileSync(gitignorePath, 'utf-8');
+
+		const updates = [
+		  '\\.rime', '\\.cache', 'db', '\\+rime.generated'
+		]
+		if(!gitignoreContent.includes('# rime'))
+
+		gitignoreContent += '\n# rime'
+	  for(const line of updates){
+      const exists = gitignoreContent.match(new RegExp(`^${line}`, 'm'));
+      if (!exists) {
+     			// Add new value if doesn't exist
+ 			  gitignoreContent += `\n${line.replace('\\', '')}`;
+      }
+		}
+		writeFileSync(gitignorePath, gitignoreContent);
+		logger.info('[✓] .gitignore populated');
 	}
 
 	function setDrizzle(name: string) {
@@ -170,6 +194,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 	if (force || incomingName) {
 		const name = incomingName || packageName;
 		setEnv();
+		addToGitignore();
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
@@ -197,6 +222,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		}
 
 		setEnv();
+		addToGitignore();
 		setConfig(name);
 		setDatabase();
 		setDrizzle(name);
