@@ -4,7 +4,7 @@ import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import { withVersionsSuffix } from '$lib/core/naming.js';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { CollectionDocData } from '$lib/panel/index.js';
 import type { Route } from '$lib/panel/types.js';
 import { panelUrl } from '$lib/panel/util/url.js';
@@ -15,7 +15,7 @@ import { error, type ServerLoadEvent } from '@sveltejs/kit';
 /****************************************************/
 /* Document Load
 /****************************************************/
-export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
+export function docLoad(slug: string, withVersion?: boolean) {
 	//
 	const load = async <V extends boolean = boolean>(event: ServerLoadEvent) => {
 		const { locale, user, rime } = event.locals;
@@ -25,7 +25,13 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 
 		let doc: GenericDoc;
 		let readOnly = false;
-		const collection = rime.collection<any>(slug);
+
+
+		if(!rime.config.isCollection(slug)){
+		  throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'load' });
+		}
+
+		const collection = rime.collection(slug);
 		const operation = id === 'create' ? 'create' : 'update';
 
 		if (id === 'create') {
@@ -84,7 +90,7 @@ export function docLoad(slug: CollectionSlug, withVersion?: boolean) {
 			doc,
 			operation,
 			status: 200,
-			hasMailer: 'mailer' in rime.plugins,
+			hasMailer: 'mailer' in rime,
 			readOnly
 		};
 

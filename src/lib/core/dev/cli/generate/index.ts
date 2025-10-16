@@ -52,6 +52,7 @@ export const generate = async (args: { force?: boolean }) => {
 				hmr: false,
 				middlewareMode: true
 			},
+		  optimizeDeps: { disabled: true },
 			appType: 'custom',
 			logLevel: 'error'
 		});
@@ -66,6 +67,8 @@ export const generate = async (args: { force?: boolean }) => {
 		ensureUserConfigExist();
 		await sanitizeConfig();
 		const importPathJS = ensureGeneratedConfig();
+
+		logger.info('Generate')
 		const vite = await createServer();
 		await vite.ssrLoadModule(importPathJS);
 

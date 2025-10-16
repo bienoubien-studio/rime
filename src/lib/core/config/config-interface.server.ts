@@ -7,6 +7,16 @@ export function createConfigInterface<const C extends Config>(config: BuildConfi
 	//
 	ensureMedias(config);
 
+	const mapCollections = Object.fromEntries(
+		config.collections.map((c) => [c.slug, c])
+	) as typeof config.$InferCollections;
+	const mapCollectionsSlug = config.collections.map(c => c.slug)
+
+	const mapAreas = Object.fromEntries(
+		config.areas.map((a) => [a.slug, a])
+	) as typeof config.$InferAreas;
+	const mapAreasSlug = config.areas.map(a => a.slug)
+
 	const getLocalesCodes = () =>
 		config.localization ? config.localization.locales.map((l) => l.code) : [];
 
@@ -38,10 +48,10 @@ export function createConfigInterface<const C extends Config>(config: BuildConfi
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug =>
-		!!(config.collections || []).find((c) => c.slug === slug);
+	  !!mapCollectionsSlug.includes(slug as any)
 
 	const isArea = (slug: string): slug is AreaSlug =>
-		!!(config.areas || []).find((g) => g.slug === slug);
+	  !!mapAreasSlug.includes(slug as any)
 
 	return {
 		/**
@@ -55,14 +65,14 @@ export function createConfigInterface<const C extends Config>(config: BuildConfi
 		 * Gets all collections config
 		 */
 		get collections() {
-			return config.collections;
+			return mapCollections;
 		},
 
 		/**
 		 * Gets all areas config
 		 */
 		get areas() {
-			return config.areas;
+			return mapAreas;
 		},
 
 		/**

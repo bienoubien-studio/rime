@@ -1,16 +1,17 @@
 import { UPLOAD_PATH } from '$lib/core/constant.js';
 import { withDirectoriesSuffix } from '$lib/core/naming.js';
-import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
+import type { GenericDoc } from '$lib/core/types/doc.js';
 import type { Route } from '$lib/panel/types.js';
 import { redirect, type ServerLoadEvent } from '@sveltejs/kit';
 
 import type { Directory } from '$lib/core/collections/upload/upload.js';
 import {
-	buildUploadAria,
-	getParentPath,
-	removePathFromLastAria,
-	type UploadPath
+    buildUploadAria,
+    getParentPath,
+    removePathFromLastAria,
+    type UploadPath
 } from '$lib/core/collections/upload/util/path.js';
+import { RimeError } from '$lib/core/errors';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { panelUrl } from '$lib/panel/util/url.js';
@@ -28,11 +29,14 @@ type Data = {
 /* Layout load
 /****************************************************/
 
-export function collectionLoad(slug: CollectionSlug) {
+export function collectionLoad(slug: string) {
 	//
 	const load = async (event: ServerLoadEvent): Promise<Data> => {
 		const { rime, locale, user } = event.locals;
 
+		if(!rime.config.isCollection(slug)){
+		  throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'load' });
+		}
 		const collection = rime.collection(slug);
 		const authorizedCreate = collection.config.access.create(user, {});
 

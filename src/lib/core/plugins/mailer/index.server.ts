@@ -3,9 +3,9 @@ import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { type Plugin, definePlugin } from '../index.js';
 
-export const mailer = definePlugin((smtpConfig?: SMTPConfig) => {
+export const mailer = definePlugin((smtpConfig: SMTPConfig) => {
 	if (!smtpConfig) {
-		throw new RimeError(RimeError.BAD_REQUEST, 'SMTP configuration is required');
+		throw new RimeError(RimeError.CONFIG_ERROR, 'SMTP configuration is required');
 	}
 
 	const { password, ...restAuth } = smtpConfig.auth;

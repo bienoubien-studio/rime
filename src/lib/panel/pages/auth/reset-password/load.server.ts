@@ -5,7 +5,7 @@ import path from 'node:path';
 export const resetPasswordLoad = async ({ locals, url }: ServerLoadEvent) => {
 	const hasParams = url.searchParams.toString() !== '';
 
-	if (!('mailer' in locals.rime.plugins)) {
+	if (!('mailer' in locals.rime)) {
 		return error(404);
 	}
 

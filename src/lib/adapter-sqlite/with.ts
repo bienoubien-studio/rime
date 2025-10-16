@@ -243,7 +243,7 @@ export const buildWithParam = (args: {
 
 	// If withParam is empty
 	if (Object.keys(withParam).length === 0) {
-		return false;
+		return undefined;
 	}
 
 	return withParam;

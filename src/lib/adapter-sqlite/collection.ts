@@ -1,7 +1,7 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import {
-	VERSIONS_OPERATIONS,
-	VersionOperations
+    VERSIONS_OPERATIONS,
+    VersionOperations
 } from '$lib/core/collections/versions/operations.js';
 import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
@@ -19,7 +19,6 @@ import { buildOrderByParam } from './orderBy.js';
 import * as adapterUtil from './util.js';
 import { buildWhereParam } from './where.js';
 import { buildWithParam } from './with.js';
-
 type Schema = GetRegisterType<'Schema'>;
 
 /**
@@ -38,7 +37,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	 * returns either a specific version (if versionId is provided) or the latest/published version.
 	 */
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
-		const config = iConfig.getCollection(slug);
+		const config = iConfig.collections[slug];
 		const isVersioned = !!config.versions;
 		const table = tables[slug];
 
@@ -113,7 +112,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	 * a single document with the provided data.
 	 */
 	const insert: Insert = async ({ slug, data, locale }) => {
-		const config = iConfig.getCollection(slug);
+		const config = iConfig.collections[slug];
 		const isVersioned = !!config.versions;
 		const now = new Date();
 
@@ -240,7 +239,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	 */
 	const update: Update = async ({ slug, id, versionId, data, locale, versionOperation }) => {
 		const now = new Date();
-		const config = iConfig.getCollection(slug);
+		const config = iConfig.collections[slug];
 
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
@@ -360,7 +359,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 		locale,
 		draft
 	}) => {
-		const config = iConfig.getCollection(slug);
+		const config = iConfig.collections[slug];
 		const isVersioned = !!config.versions;
 
 		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined;

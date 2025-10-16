@@ -15,41 +15,34 @@ import writeMemo from './config/server/write.js';
 import generateRoutes from './dev/generate/routes/index.js';
 import generateTypes from './dev/generate/types/index.js';
 import { RimeError } from './errors/index.js';
-import { logger } from './logger/index.server.js';
-// import type { CorePlugins } from './plugins/plugins.js';
 
 export type Rime<C extends Config = Config> = Awaited<ReturnType<typeof createRime<C>>>;
 export type RimeContext<C extends Config = Config> = ReturnType<Rime<C>['createRimeContext']>;
 export type IConfig<C extends Config = Config> = ReturnType<typeof createConfigInterface<C>>;
 
 /**
- * Creates a configuration interface that provides access to the compiled Rime configuration
+ * Creates the main Rime object
+ * that provides access to cms API
  */
 export async function createRime<const C extends Config>(config: BuildConfig<C>) {
+	//
 	// Normalize plugins to a simple name->actions map
 	const serverPlugins = config.$plugins;
 	const plugins = Object.fromEntries(
 		serverPlugins.map((plugin) => [plugin.name, plugin.actions ?? {}])
 	) as typeof config.$InferPluginsServer;
 
-	// const getCache = () => plugins.cache;
-	// const getSse = () => plugins.sse;
-	// const getMailer = () => plugins.mailer;
-
+	// Creat config interface
 	const iConfig = createConfigInterface(config);
 
+	// Init adapter to get the generateSchema
 	const { createAdapter, generateSchema } = config.$adapter;
 
+	// Generate
 	if (dev) {
 		const changed = writeMemo(config);
-		if (changed) {
-			const valid = validate(config);
-			if (!valid) {
-				throw new RimeError('Config not valid');
-			}
-		}
-
-		logger.info('Generating...');
+		const valid = changed && validate(config);
+		if (changed && !valid) throw new RimeError('Config not valid');
 		devCache.set('.generating', new Date().toISOString());
 		generateRoutes(config);
 		await generateSchema(config);
@@ -57,9 +50,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		devCache.delete('.generating');
 	}
 
+	// Create adapter, consume the generated schema
 	const adapter = await createAdapter(iConfig);
-	const baseAuthconfig = getBaseAuthConfig({ mailer: plugins.mailer, config });
 
+	// Create auth
+	const baseAuthconfig = getBaseAuthConfig({ mailer: plugins.mailer, config });
 	type BetterAuthPlugins = typeof config.$InferAuthPlugins;
 	const betterAuthPlugins = Array.isArray(config.$auth?.plugins)
 		? [...baseAuthconfig.plugins, ...(config.$auth.plugins as BetterAuthPlugins)]
@@ -124,47 +119,58 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 			defineLocale(event);
 			return {
 				...plugins,
-				// get cache() {
-				// 	return getCache();
-				// },
 
-				// get sse() {
-				// 	return getSse();
-				// },
-
-				// get mailer() {
-				// 	return getMailer();
-				// },
-
+				/** The Better-auth instance */
 				get auth() {
 					return auth;
 				},
 
+				/**
+				 * Provides access to the drizzle instance and some
+				 * low level functionnalities
+				 *
+				 * @example
+				 * rime.adapter.db.query.pages.findFirst()
+				 * rime.adatpter.auth.getUserAttributes({ authUserId: '12345', slug: 'users' })
+				 */
 				get adapter() {
 					return adapter;
 				},
 
-				get plugins() {
-					return serverPlugins;
-				},
-
+				/**
+				 * The configuration interface
+				 *
+				 * @example
+				 * rime.config.raw // <- full config object
+				 * rime.config.getBySlug('posts') // <- Collection config
+				 * rime.config.areas // <- Areas config
+				 */
 				get config() {
 					return iConfig;
 				},
 
 				/**
-				 * This overrides the locale on the current event.
+				 * This overrides the event.locals.locale.
 				 */
 				setLocale(locale: string | undefined) {
 					event.locals.locale = locale;
 				},
 
+				/**
+				 * Get the current event.locals.locale
+				 */
 				getLocale() {
 					return event.locals.locale;
 				},
 
+				/**
+				 * Get a collection api
+				 * @example
+				 *
+				 * rime.collection('pages').find({ query: 'where[isHome][equals]=true' })
+				 */
 				collection<Slug extends keyof RegisterCollection>(slug: Slug) {
-					const collectionConfig = iConfig.getCollection(slug as unknown as string);
+					const collectionConfig = iConfig.collections[slug];
 					return new CollectionInterface<RegisterCollection[Slug]>({
 						event,
 						config: collectionConfig,
@@ -172,8 +178,12 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 					});
 				},
 
+				/**
+				 * Get an area api
+				 * rime.area('settings').find()
+				 */
 				area<Slug extends keyof RegisterArea>(slug: Slug) {
-					const areaConfig = iConfig.getArea(slug as unknown as string);
+					const areaConfig = iConfig.areas[slug];
 					return new AreaInterface<RegisterArea[Slug]>({
 						event,
 						config: areaConfig,

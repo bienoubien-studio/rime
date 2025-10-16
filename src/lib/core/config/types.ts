@@ -337,8 +337,8 @@ export type BuiltConfig = {
 	icons: Record<string, any>;
 	$trustedOrigins: string[];
 	$routes?: Record<string, RouteConfig>;
-	$plugins?: ReturnType<Plugin>[];
-	plugins?: ReturnType<PluginClient>[];
+	$plugins?: Plugin[];
+	plugins?: PluginClient[];
 	panel: {
 		routes: Record<string, CustomPanelRoute>;
 		navigation: NavigationConfig;

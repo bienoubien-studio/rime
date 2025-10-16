@@ -11,7 +11,7 @@ import { panelUrl } from './util/url.js';
  * @param user - Current user object (optional)
  * @returns Dictionary of navigation groups
  */
-const buildNavigation = (config: BuildConfig<Config>, user: User | undefined): Dic => {
+const buildNavigation = <C extends Config>(config: BuildConfig<C>, user: User | undefined): Dic => {
 	const groups: Dic = {};
 
 	/**

@@ -32,7 +32,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		}
 	};
 
-	const promiseEntries = rime.config.collections
+	const promiseEntries = rime.config.raw.collections
 		.filter((collection) => user && collection.access.read(user, {}))
 		.filter((collection) => collection.panel !== false)
 		.map(async (collection) => {
@@ -57,7 +57,7 @@ export const dashboardLoad = async (event: ServerLoadEvent) => {
 		console.error(err);
 	}
 
-	for (const area of rime.config.areas.filter((a) => a.panel !== false)) {
+	for (const area of rime.config.raw.areas.filter((a) => a.panel !== false)) {
 		if (user && area.access.read(user, {})) {
 			entries.push({
 				prototype: 'area',

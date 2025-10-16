@@ -1,7 +1,7 @@
 import { getRequestEvent } from '$app/server';
 import {
-	VERSIONS_OPERATIONS,
-	VersionOperations
+    VERSIONS_OPERATIONS,
+    VersionOperations
 } from '$lib/core/collections/versions/operations.js';
 import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
@@ -34,7 +34,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 * or the latest/published version.
 	 */
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
-		const areaConfig = iConfig.getArea(slug);
+		const areaConfig = iConfig.areas[slug];
 		if (!areaConfig) {
 			throw new RimeError(RimeError.INIT, slug + ' is not an area, should never happen');
 		}
@@ -149,7 +149,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 */
 	const createArea = async (slug: AreaSlug, values: Partial<GenericDoc>, locale?: string) => {
 		const now = new Date();
-		const config = iConfig.getArea(slug);
+		const config = iConfig.areas[slug];
 
 		const hasVersions = !!config.versions;
 
@@ -262,7 +262,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 */
 	const update: Update = async ({ slug, data, locale, versionId, versionOperation }) => {
 		const now = new Date();
-		const areaConfig = iConfig.getArea(slug);
+		const areaConfig = iConfig.areas[slug];
 
 		const rows = await db.select({ id: tables[slug].id }).from(tables[slug]);
 		const area = rows[0];

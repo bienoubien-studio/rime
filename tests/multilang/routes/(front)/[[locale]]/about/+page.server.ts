@@ -3,12 +3,7 @@ import { error, redirect, type ServerLoadEvent } from '@sveltejs/kit';
 export const load = async (event: ServerLoadEvent) => {
 	const { rime, user } = event.locals;
 
-	const locale = rime.defineLocale(event);
-	event.locals.locale = locale;
-	if (locale) {
-		event.cookies.set('Locale', locale, { path: '.' });
-	}
-
+	//@ts-ignore
 	const doc = await rime.area('infos').find({ locale, depth: 1 });
 
 	if (!doc) {

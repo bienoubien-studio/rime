@@ -11,7 +11,7 @@ export const signInLoad = async ({ locals }: ServerLoadEvent) => {
 		throw redirect(302, '/panel');
 	} else {
 		return {
-			forgotPasswordEnabled: 'mailer' in rime.plugins,
+			forgotPasswordEnabled: 'mailer' in rime,
 			image: imageExist ? '/panel/panel.jpg' : null,
 			form: {}
 		};

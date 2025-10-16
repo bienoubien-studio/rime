@@ -21,7 +21,7 @@ const PACKAGE = '@bienbien/rime';
 const root = process.cwd();
 
 export const init = async ({ force, name: incomingName, skipInstall }: Args) => {
-	const packageName = getPackageInfoByKey('name');
+  const packageName = getPackageInfoByKey('name');
 
 	function setEnv() {
 		const envPath = path.resolve(root, '.env');

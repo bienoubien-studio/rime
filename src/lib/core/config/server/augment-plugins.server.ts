@@ -17,12 +17,10 @@ export const augmentPluginsServer = <const T extends Config>(config: T) => {
 		// Add init plugins in dev mode
 		...(dev ? [apiInit()] : []),
 		// Mailer plugin
-		mailer(config.$smtp)
+		...(config.$smtp ? [mailer(config.$smtp)] : [])
 	] as const;
 
 	const plugins = [...corePluginsServer, ...(config.$plugins || [])] as const;
-
-	// const plugins = [cache()] as const;
 
 	let configWithPlugins = config;
 	for (const plugin of plugins) {

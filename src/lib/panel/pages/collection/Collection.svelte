@@ -21,7 +21,7 @@
 	import { getContext, setContext } from 'svelte';
 
 	type Props = {
-		slug: PrototypeSlug;
+		slug: string;
 		data: {
 			status: number;
 			docs: GenericDoc[];
@@ -77,7 +77,12 @@
 					<ButtonCreate size="sm" />
 					{#if collection.isUpload}
 						<Separator />
-						<Button onclick={() => (bulkDialogOpen = true)} icon={CopyPlus} size="sm" variant="text">
+						<Button
+							onclick={() => (bulkDialogOpen = true)}
+							icon={CopyPlus}
+							size="sm"
+							variant="text"
+						>
 							Bulk upload
 						</Button>
 					{/if}

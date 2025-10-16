@@ -1,14 +1,14 @@
 import { PARAMS, UPLOAD_PATH } from '$lib/core/constant.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
+import { RimeError } from '$lib/core/errors/index.js';
 import { extractData } from '$lib/core/operations/extract-data.server.js';
-import type { CollectionSlug } from '$lib/core/types/doc.js';
 import { panelUrl } from '$lib/panel/util/url.js';
 import { trycatch } from '$lib/util/function.js';
 import { toKebabCase } from '$lib/util/string.js';
 import { type Actions, type RequestEvent } from '@sveltejs/kit';
 import { t__ } from '../../../core/i18n/index.js';
 
-export default function (slug: CollectionSlug) {
+export default function (slug: string) {
 	const actions: Actions = {
 		/**
 		 * Create a document.
@@ -23,6 +23,9 @@ export default function (slug: CollectionSlug) {
 
 			const data = await extractData(event.request);
 
+			if(!rime.config.isCollection(slug)){
+			  throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'action' })
+			}
 			const collection = rime.collection(slug);
 
 			const [error, document] = await trycatch(() => collection.create({ data, locale }));
@@ -61,6 +64,9 @@ export default function (slug: CollectionSlug) {
 			const draft = event.url.searchParams.get(PARAMS.DRAFT) === 'true';
 			const data = await extractData(event.request);
 
+			if(!rime.config.isCollection(slug)){
+			  throw handleError(new RimeError(RimeError.NOT_FOUND), { context: 'action' })
+			}
 			const [error, document] = await trycatch(() =>
 				rime.collection(slug).updateById({
 					id,

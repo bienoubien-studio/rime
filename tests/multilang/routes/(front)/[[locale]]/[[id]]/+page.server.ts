@@ -4,7 +4,9 @@ export const load = async (event: ServerLoadEvent) => {
 	const { rime, user, locale } = event.locals;
 	let { id } = event.params;
 
+	//@ts-ignore
 	if (!id && event.params.locale && !rime.config.isValidLocale(event.params.locale)) {
+	  //@ts-ignore
 		id = event.params.locale;
 	}
 

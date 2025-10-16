@@ -1,11 +1,15 @@
-import type { CollectionSlug } from '$lib/core/types/doc.js';
+import { RimeError } from '$lib/core/errors';
+import { handleError } from '$lib/core/errors/handler.server';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 
-export default function (slug: CollectionSlug) {
+export default function (slug: string) {
 	//
 	async function POST(event: RequestEvent) {
 		const { rime } = event.locals;
 
+		if(!rime.config.isCollection(slug)){
+		  return handleError(new RimeError(RimeError.NOT_FOUND), { context: 'api' });
+		}
 		const collection = rime.collection(slug);
 		if (!event.params.id) throw error(404);
 

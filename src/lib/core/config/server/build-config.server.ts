@@ -1,3 +1,4 @@
+import type { SMTPConfig } from '$lib/core/plugins/mailer/index.server.js';
 import { createRime } from '../../rime.server.js';
 import { augmentPanel } from '../client/augment-panel.js';
 import { augmentPlugins } from '../client/augment-plugins.js';
@@ -35,11 +36,48 @@ function augmentConfig<T extends Config>(config: T) {
 	return output;
 }
 
-type InferCorePlugins = {
+type InferCollections<C> = C extends { collections?: readonly any[] }
+	? {
+			[K in NonNullable<C['collections']>[number] as K extends { slug: infer N }
+				? N extends string
+					? N
+					: never
+				: never]: K;
+		}
+	: Record<string, never>;
+
+type InferAreas<C> = C extends { areas?: readonly any[] }
+	? {
+			[K in NonNullable<C['areas']>[number] as K extends { slug: infer N }
+				? N extends string
+					? N
+					: never
+				: never]: K;
+		}
+	: Record<string, never>;
+
+type InferCollectionsSlug<C> = C extends { collections?: readonly any[] }
+	? NonNullable<C['collections']>[number] extends { slug: infer N }
+		? N extends string
+			? N
+			: never
+		: never
+	: Array<never>;
+
+type InferAreasSlug<C> = C extends { areas?: readonly any[] }
+	? NonNullable<C['areas']>[number] extends { slug: infer N }
+		? N extends string
+			? N
+			: never
+		: never
+	: Array<never>;
+
+type InferCorePlugins<C extends Config> = {
 	cache: import('$lib/core/plugins/cache/index.server.js').CacheActions;
 	sse: import('$lib/core/plugins/sse/index.server.js').SSEActions;
-	mailer?: import('$lib/core/plugins/mailer/index.server.js').MailerActions;
-};
+} & C['$smtp'] extends SMTPConfig ? {
+  mailer: import('$lib/core/plugins/mailer/index.server.js').MailerActions;
+}: Record<never, never>;
 
 // Helper type to extract custom plugins from original config
 type ExtractCustomPlugins<C> = C extends { $plugins: readonly (infer P)[] }
@@ -50,10 +88,14 @@ type ExtractCustomPlugins<C> = C extends { $plugins: readonly (infer P)[] }
 		: never
 	: Record<string, never>;
 
-type InferPluginsServer<C> = InferCorePlugins & ExtractCustomPlugins<C>;
+type InferPluginsServer<C> = InferCorePlugins<C> & ExtractCustomPlugins<C>;
 
 export type BuildConfig<C extends Config = Config> = ReturnType<typeof augmentConfig<C>> & {
 	readonly $InferAuthPlugins: C['$auth'] extends { plugins: any } ? C['$auth']['plugins'] : [];
 	readonly $InferRoutes: C['$routes'] extends Record<string, any> ? C['$routes'] : unknown;
 	readonly $InferPluginsServer: InferPluginsServer<C>;
+	readonly $InferCollections: InferCollections<C>;
+	readonly $InferAreas: InferAreas<C>;
+	readonly $InferAreasSlug: InferAreasSlug<C>;
+	readonly $InferCollectionsSlug: InferCollectionsSlug<C>;
 };
