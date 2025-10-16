@@ -1,4 +1,5 @@
 import { invalidateAll } from '$app/navigation';
+import { apiUrl } from '$lib/core/api/index.js';
 import type { Directory } from '$lib/core/collections/upload/upload.js';
 import { isUploadConfig } from '$lib/core/collections/upload/util/config.js';
 import type { BuiltCollection } from '$lib/core/config/types.js';
@@ -16,7 +17,6 @@ import { toNestedStructure } from '$lib/util/doc.js';
 import { trycatch, trycatchFetch } from '$lib/util/function.js';
 import { getValueAtPath, hasProp } from '$lib/util/object.js';
 import type { WithRequired } from '$lib/util/types.js';
-import { apiUrl } from '$lib/core/api/index.js';
 import { getContext, onMount, setContext, type Component } from 'svelte';
 import { toast } from 'svelte-sonner';
 //@ts-expect-error command-score has no types
@@ -298,7 +298,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 	}
 
 	function selectAll() {
-		if (config.upload) {
+		if (config.upload && displayMode === 'display_grid') {
 			selected = docs.filter((doc) => doc._path === upload.currentPath).map((doc) => doc.id);
 		} else {
 			selected = docs.map((doc) => doc.id);
@@ -441,7 +441,7 @@ function createCollectionStore<T extends GenericDoc = GenericDoc>(args: Args<T>)
 			selectMode = bool;
 		},
 		get isAllSelected() {
-			if (config.upload) {
+			if (config.upload && displayMode === 'display_grid') {
 				return selected.length === docs.filter((d) => d._path === upload.currentPath).length;
 			} else {
 				return selected.length === docs.length;
