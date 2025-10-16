@@ -97,7 +97,7 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		let gitignoreContent = readFileSync(gitignorePath, 'utf-8');
 
 		const updates = [
-		  '\\.rime', '\\.cache', 'db', '\\+rime.generated'
+		  '\\.rime', '\\.cache', '/logs', '/db', '\\+rime.generated'
 		]
 		if(!gitignoreContent.includes('# rime'))
 
