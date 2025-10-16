@@ -45,11 +45,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		const changed = writeMemo(config);
 		const valid = changed && validate(config);
 		if (changed && !valid) throw new RimeError('Config not valid');
-		devCache.set('.generating', new Date().toISOString());
+		devCache.set('.init', new Date().toISOString());
 		generateRoutes(config);
 		await generateSchema(config);
 		await generateTypes(config);
-		devCache.delete('.generating');
+
 	}
 
 	// Create adapter, consume the generated schema
@@ -72,6 +72,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 	// Register dictionaries for panel Language
   const dictionnaries = await registerTranslation(config.panel.language);
   i18n.init(dictionnaries);
+
+  if(dev){
+	  devCache.delete('.init');
+	}
+
 
 	/**
 	 * Function that define the locale to use in a request event

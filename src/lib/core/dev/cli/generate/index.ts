@@ -72,7 +72,7 @@ export const generate = async (args: { force?: boolean }) => {
 		const vite = await createServer();
 		await vite.ssrLoadModule(importPathJS);
 
-		while (cache.get('.generating')) {
+		while (cache.get('.init')) {
 			await new Promise((resolve) => setTimeout(resolve, 200));
 		}
 

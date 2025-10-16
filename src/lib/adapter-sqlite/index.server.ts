@@ -43,8 +43,6 @@ const createAdapter = async <const C extends Config>(args: {
 	)) as { tables: Tables; default: Schema; relationFieldsMap: any };
 
 	const dbPath = path.join(process.cwd(), 'db', database);
-	// const sqlite = new Database(dbPath);
-
 	const db = drizzle('file:' + dbPath, { schema: schema.default });
 	const tables = schema.tables;
 
@@ -60,13 +58,11 @@ const createAdapter = async <const C extends Config>(args: {
 		tables,
 		iConfig
 	});
-
 	const area = createAreaInterface({
 		db,
 		tables,
 		iConfig
 	});
-
 	const transform = databaseTransformInterface({
 		tables,
 		iConfig
