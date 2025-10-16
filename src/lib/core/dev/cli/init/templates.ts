@@ -51,8 +51,7 @@ export default defineConfig(config);
 
 export const hooks = `import { sequence } from '@sveltejs/kit/hooks';
 import { handlers } from '${PACKAGE}';
-import config from './lib/${OUTPUT_DIR}/rime.config.server.js';
-import * as schema from './lib/${OUTPUT_DIR}/schema.server.js';
+import config from '$lib/${OUTPUT_DIR}/rime.config.server.js';
 
 export const handle = sequence(...(await handlers(config)));
 `;
