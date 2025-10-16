@@ -11,7 +11,6 @@ program
 	.option('-f, --force', 'Force init with default package name', false)
 	.option('-s, --skip-install', 'Do not install dependencies', false)
 	.action(async (args) => {
-	console.log(args)
 		const init = await import('./init/index.js').then((m) => m.init);
 		init(args);
 	});
