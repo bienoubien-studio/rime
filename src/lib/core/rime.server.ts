@@ -15,6 +15,8 @@ import writeMemo from './config/server/write.js';
 import generateRoutes from './dev/generate/routes/index.js';
 import generateTypes from './dev/generate/types/index.js';
 import { RimeError } from './errors/index.js';
+import i18n from './i18n/index.js';
+import { registerTranslation } from './i18n/register.server.js';
 
 export type Rime<C extends Config = Config> = Awaited<ReturnType<typeof createRime<C>>>;
 export type RimeContext<C extends Config = Config> = ReturnType<Rime<C>['createRimeContext']>;
@@ -25,7 +27,7 @@ export type IConfig<C extends Config = Config> = ReturnType<typeof createConfigI
  * that provides access to cms API
  */
 export async function createRime<const C extends Config>(config: BuildConfig<C>) {
-	//
+
 	// Normalize plugins to a simple name->actions map
 	const serverPlugins = config.$plugins;
 	const plugins = Object.fromEntries(
@@ -38,7 +40,7 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 	// Init adapter to get the generateSchema
 	const { createAdapter, generateSchema } = config.$adapter;
 
-	// Generate
+	// Generate schema, types, routes
 	if (dev) {
 		const changed = writeMemo(config);
 		const valid = changed && validate(config);
@@ -65,6 +67,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		plugins: betterAuthPlugins,
 		database: adapter.auth.betterAuthAdapter
 	});
+
+	// Register translation
+	// Register dictionaries for panel Language
+  const dictionnaries = await registerTranslation(config.panel.language);
+  i18n.init(dictionnaries);
 
 	/**
 	 * Function that define the locale to use in a request event
