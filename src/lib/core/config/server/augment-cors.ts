@@ -1,5 +1,5 @@
 import type { Config } from '$lib/core/config/types.js';
-import { hasProp } from '$lib/util/object';
+import { hasProp } from '$lib/util/object.js';
 
 export const augmentCORS = <const T extends Config>(config: T) => {
 	const trustedOrigins =

@@ -1,5 +1,5 @@
-import { cacheClient } from '$lib/core/plugins/cache';
-import type { SanitizedConfigClient } from '../types';
+import { cacheClient } from '$lib/core/plugins/cache/index.js';
+import type { SanitizedConfigClient } from '../types.js';
 
 export const augmentPlugins = <const T extends SanitizedConfigClient>(config: T) => {
 	const plugins = [cacheClient(), ...(config.plugins || [])];

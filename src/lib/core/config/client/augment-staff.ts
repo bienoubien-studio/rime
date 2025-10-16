@@ -1,5 +1,5 @@
 import type { BuiltCollection, Config } from '$lib/core/config/types.js';
-import { getStaffCollection } from '../shared/get-staff-collection';
+import { getStaffCollection } from '../shared/get-staff-collection.js';
 import { Collection } from './index.js';
 
 export const augmentStaff = <

@@ -1,4 +1,4 @@
-import type { AreaSlug, CollectionSlug, Config, PrototypeSlug } from '$lib/types';
+import type { AreaSlug, CollectionSlug, Config, PrototypeSlug } from '$lib/types.js';
 import { ensureMedias } from '../ensure.server.js';
 import { RimeError } from '../errors/index.js';
 import type { BuildConfig } from './server/build-config.server.js';

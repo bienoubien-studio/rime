@@ -1,5 +1,5 @@
 import { randomId } from '$lib/util/random.js';
-import { OUTPUT_DIR } from '../../constants';
+import { OUTPUT_DIR } from '../../constants.js';
 
 const PACKAGE = '@bienbien/rime';
 

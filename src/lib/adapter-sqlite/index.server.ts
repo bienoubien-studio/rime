@@ -3,13 +3,14 @@ import { OUTPUT_DIR } from '$lib/core/dev/constants.js';
 import type { IConfig } from '$lib/core/rime.server.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
-import { drizzle } from 'drizzle-orm/libsql';
+import { drizzle, LibSQLDatabase } from 'drizzle-orm/libsql';
 import path from 'path';
 import createAreaInterface from './area.js';
 import createAuthInterface from './auth.server.js';
 import createBlocksInterface from './blocks.js';
 import createCollectionInterface from './collection.js';
 import generateSchema from './generate-schema/index.server.js';
+import type { RelationFieldsMap } from './generate-schema/relations/definition.server.js';
 import createRelationsInterface from './relations.js';
 import { databaseTransformInterface } from './transform.js';
 import createTreeInterface from './tree.js';
@@ -20,7 +21,10 @@ import { updateTableRecord } from './util.js';
 type Schema = GetRegisterType<'Schema'>;
 type Tables = GetRegisterType<'Tables'>;
 
-export function adapterSqlite(database: string) {
+export function adapterSqlite(database: string): {
+	createAdapter: <C extends Config>(iConfig: IConfig<C>) => Promise<Adapter>;
+	generateSchema: typeof generateSchema;
+} {
 	//
 	return {
 		createAdapter: <C extends Config>(iConfig: IConfig<C>) => createAdapter({ database, iConfig }),
@@ -108,4 +112,19 @@ const createAdapter = async <const C extends Config>(args: {
 	};
 };
 
-export type Adapter<C extends Config = Config> = Awaited<ReturnType<typeof createAdapter<C>>>;
+export type Adapter = {
+	collection: ReturnType<typeof createCollectionInterface>;
+	area: ReturnType<typeof createAreaInterface>;
+	blocks: ReturnType<typeof createBlocksInterface>;
+	tree: ReturnType<typeof createTreeInterface>;
+	relations: ReturnType<typeof createRelationsInterface>;
+	transform: ReturnType<typeof databaseTransformInterface>;
+	auth: ReturnType<typeof createAuthInterface>;
+	db: LibSQLDatabase<Schema>;
+	tables: GetRegisterType<'Tables'>;
+	getTable<T>(key: string): T extends any ? GenericTable : T;
+	updateRecord(id: string, tableName: string, data: Dic): Awaited<ReturnType<typeof updateTableRecord>>;
+	updateDocumentUrl: typeof updateDocumentUrl;
+	readonly schema: Schema;
+	readonly relationFieldsMap: RelationFieldsMap;
+};

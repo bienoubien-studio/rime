@@ -1,7 +1,7 @@
-import type { BuiltCollection } from '$lib/types';
+import type { BuiltCollection } from '$lib/types.js';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
-import { INPUT_DIR, OUTPUT_DIR } from './dev/constants';
+import { INPUT_DIR, OUTPUT_DIR } from './dev/constants.js';
 
 const projectRoot = process.cwd();
 

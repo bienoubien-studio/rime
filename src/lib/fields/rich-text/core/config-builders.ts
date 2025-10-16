@@ -1,5 +1,5 @@
 import { t__ } from '$lib/core/i18n/index.js';
-import type { RichTextEditorConfig, RichTextFeature } from '$lib/fields/rich-text/core/types';
+import type { RichTextEditorConfig, RichTextFeature } from '$lib/fields/rich-text/core/types.js';
 import type { EditorOptions } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
 import HardBreak from '@tiptap/extension-hard-break';

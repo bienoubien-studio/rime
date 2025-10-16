@@ -1,6 +1,6 @@
-import type { Config, RouteConfig } from '$lib/types';
+import type { Config, RouteConfig } from '$lib/types.js';
 import type { Handle } from '@sveltejs/kit';
-import type { SanitizedConfigClient } from '../config/types';
+import type { SanitizedConfigClient } from '../config/types.js';
 
 type MaybeAsyncFunction = (...args: any[]) => any | Promise<any>;
 

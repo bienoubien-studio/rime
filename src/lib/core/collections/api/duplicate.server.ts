@@ -1,5 +1,5 @@
-import { RimeError } from '$lib/core/errors';
-import { handleError } from '$lib/core/errors/handler.server';
+import { RimeError } from '$lib/core/errors/index.js';
+import { handleError } from '$lib/core/errors/handler.server.js';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 
 export default function (slug: string) {

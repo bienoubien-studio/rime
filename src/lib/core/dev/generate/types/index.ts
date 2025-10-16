@@ -17,11 +17,11 @@ import { getFieldPrivateModule } from '$lib/fields/index.server.js';
 import { TabsBuilder } from '$lib/fields/tabs/index.js';
 import { TreeBuilder } from '$lib/fields/tree/index.js';
 import type { Field } from '$lib/fields/types.js';
-import { trycatchSync } from '$lib/util/function';
+import { trycatchSync } from '$lib/util/function.js';
 import { capitalize, toPascalCase } from '$lib/util/string.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { OUTPUT_DIR } from '../../constants';
+import { OUTPUT_DIR } from '../../constants.js';
 
 const IS_PACKAGE_DEV = process.env.IS_PACKAGE_DEV === 'true';
 

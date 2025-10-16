@@ -1,7 +1,7 @@
 import type { Config } from '$lib/core/config/types.js';
-import type { FieldBuilder } from '$lib/core/fields/builders';
-import type { Field } from '$lib/types';
-import type { WithoutBuilders } from '$lib/util/types';
+import type { FieldBuilder } from '$lib/core/fields/builders/index.js';
+import type { Field } from '$lib/types.js';
+import type { WithoutBuilders } from '$lib/util/types.js';
 
 /**
  * Compile fields on the whole config for areaas and collections

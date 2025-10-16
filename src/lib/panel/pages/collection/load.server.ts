@@ -11,7 +11,7 @@ import {
     removePathFromLastAria,
     type UploadPath
 } from '$lib/core/collections/upload/util/path.js';
-import { RimeError } from '$lib/core/errors';
+import { RimeError } from '$lib/core/errors/index.js';
 import { handleError } from '$lib/core/errors/handler.server.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { panelUrl } from '$lib/panel/util/url.js';
