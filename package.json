@@ -1,6 +1,6 @@
 {
 	"name": "@bienbien/rime",
-	"version": "0.19.4",
+	"version": "0.19.5",
 	"homepage": "https://github.com/bienoubien-studio/rime",
 	"scripts": {
 		"dev": "vite dev",
