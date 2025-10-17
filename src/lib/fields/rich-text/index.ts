@@ -1,9 +1,9 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
+import type { JSONContent } from '@tiptap/core';
 import Cell from './component/Cell.svelte';
 import RichText from './component/RichText.svelte';
 import type { RichTextFeature } from './core/types.js';
-import type { JSONContent } from '@tiptap/core';
 
 const isEmpty = (value: unknown) => {
 	const reduceText = (prev: string, curr: any) => {
@@ -65,17 +65,22 @@ export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return this;
 	}
 
-	static readonly jsonParse = (value: string) => {
-		try {
-			value = JSON.parse(value);
-		} catch {
-			if (typeof value === 'string') {
-				return value;
-			}
-			return '';
-		}
-		return value;
-	};
+	static readonly jsonParse = (value:string) => {
+      try {
+          value = JSON.parse(value, (key, val) => {
+            if(key === 'text') return String(val)
+            return val
+          });
+      }
+      catch (err){
+          console.log(err)
+          if (typeof value === 'string') {
+              return value;
+          }
+          return '';
+      }
+      return value;
+  };
 
 	static readonly stringify = (value: string) => {
 		if (typeof value === 'string') return value;
