@@ -7,6 +7,8 @@ Headless CMS powered by SvelteKit.
 
 ![alt backend capture](https://github.com/bienoubien-studio/rime/blob/main/rime.png?raw=true)
 
+[Documentation (in progress)](https://github.com/bienoubien-studio/rime-doc/tree/master/docs)
+
 ## Features
 
 - Easy configuration

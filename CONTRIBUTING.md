@@ -2,11 +2,11 @@
 
 You can contribute to this project in many ways :
 - adding tests
-- improving documentation
+- improving [documentation](https://github.com/bienoubien-studio/rime-doc/tree/master/docs)
 - adding features
 - adding translation for the panel in your language
 - make it work for .js only
-- try other adapters and adjust the build command to handle these.
+- try other Sveltekit adapters and adjust the build command to handle these.
 
 ## Clone the repo
 
