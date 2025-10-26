@@ -9,11 +9,11 @@ import type { GenericTable } from './types.js';
 // import { configureBetterAuth } from './better-auth.server.js';
 
 /**
- * Creates and configures the authentication interface for the SQLite adapter
- * @param args Configuration parameters for the auth interface
+ * Creates and configures the authentication facade for the SQLite adapter
+ * @param args Configuration parameters for the auth facade
  * @returns Object containing all auth-related functions
  */
-const createAuthInterface = (args: {
+const createAuthFacade = (args: {
 	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	schema: GetRegisterType<'Schema'>;
 }) => {
@@ -105,7 +105,7 @@ const createAuthInterface = (args: {
 	};
 };
 
-export default createAuthInterface;
+export default createAuthFacade;
 
 type GetUserAttributesArgs = {
 	authUserId: string;

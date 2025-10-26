@@ -1,11 +1,11 @@
-import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
+import type { GenericAdapteFacadeArgs } from '$lib/adapter-sqlite/types.js';
 import type { Relation } from '$lib/fields/relation/index.js';
 import { omit } from '$lib/util/object.js';
 import type { Dic } from '$lib/util/types.js';
 import { and, eq, getTableColumns, inArray, isNull, or, type SQLWrapper } from 'drizzle-orm';
 import { transformDataToSchema } from './util.js';
 
-const createRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+const createRelationsFacade = ({ db, tables }: GenericAdapteFacadeArgs) => {
 	//
 	const deleteFromPaths: DeleteFromPaths = async ({ parentSlug, ownerId, paths, locale }) => {
 		if (paths.length === 0) return true;
@@ -144,7 +144,7 @@ const createRelationsInterface = ({ db, tables }: GenericAdapterInterfaceArgs) =
 	};
 };
 
-export default createRelationsInterface;
+export default createRelationsFacade;
 
 export type BeforeOperationRelation = Omit<Relation, 'ownerId'> & { ownerId?: string };
 

@@ -1,19 +1,19 @@
 import type { Config } from '$lib/core/config/types.js';
 import { OUTPUT_DIR } from '$lib/core/dev/constants.js';
-import type { IConfig } from '$lib/core/rime.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import type { GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
 import { drizzle, LibSQLDatabase } from 'drizzle-orm/libsql';
 import path from 'path';
-import createAreaInterface from './area.js';
-import createAuthInterface from './auth.server.js';
-import createBlocksInterface from './blocks.js';
-import createCollectionInterface from './collection.js';
+import createAreaFacade from './area.js';
+import createAuthFacade from './auth.server.js';
+import createBlocksFacade from './blocks.js';
+import createCollectionFacade from './collection.js';
 import generateSchema from './generate-schema/index.server.js';
 import type { RelationFieldsMap } from './generate-schema/relations/definition.server.js';
-import createRelationsInterface from './relations.js';
-import { databaseTransformInterface } from './transform.js';
-import createTreeInterface from './tree.js';
+import createRelationsFacade from './relations.js';
+import { transformerFacade } from './transform.js';
+import createTreeFacade from './tree.js';
 import type { GenericTable } from './types.js';
 import { updateDocumentUrl } from './url.server.js';
 import { updateTableRecord } from './util.js';
@@ -22,21 +22,22 @@ type Schema = GetRegisterType<'Schema'>;
 type Tables = GetRegisterType<'Tables'>;
 
 export function adapterSqlite(database: string): {
-	createAdapter: <C extends Config>(iConfig: IConfig<C>) => Promise<Adapter>;
+	createAdapter: <C extends Config>(configCtx: ConfigContext<C>) => Promise<Adapter>;
 	generateSchema: typeof generateSchema;
 } {
 	//
 	return {
-		createAdapter: <C extends Config>(iConfig: IConfig<C>) => createAdapter({ database, iConfig }),
+		createAdapter: <C extends Config>(configCtx: ConfigContext<C>) =>
+			createAdapter({ database, configCtx }),
 		generateSchema
 	};
 }
 
 const createAdapter = async <const C extends Config>(args: {
 	database: string;
-	iConfig: IConfig<C>;
+	configCtx: ConfigContext<C>;
 }) => {
-	const { database, iConfig } = args;
+	const { database, configCtx } = args;
 
 	const schema = (await import(
 		path.resolve(/* @vite-ignore */ process.cwd(), `src/lib/${OUTPUT_DIR}/schema.server.js`)
@@ -46,26 +47,26 @@ const createAdapter = async <const C extends Config>(args: {
 	const db = drizzle('file:' + dbPath, { schema: schema.default });
 	const tables = schema.tables;
 
-	const blocks = createBlocksInterface({ db, tables });
-	const tree = createTreeInterface({ db, tables });
-	const relations = createRelationsInterface({ db, tables });
-	const auth = createAuthInterface({
+	const blocks = createBlocksFacade({ db, tables });
+	const tree = createTreeFacade({ db, tables });
+	const relations = createRelationsFacade({ db, tables });
+	const auth = createAuthFacade({
 		db,
 		schema: schema.default
 	});
-	const collection = createCollectionInterface({
+	const collection = createCollectionFacade({
 		db,
 		tables,
-		iConfig
+		configCtx
 	});
-	const area = createAreaInterface({
+	const area = createAreaFacade({
 		db,
 		tables,
-		iConfig
+		configCtx
 	});
-	const transform = databaseTransformInterface({
+	const transform = transformerFacade({
 		tables,
-		iConfig
+		configCtx
 	});
 
 	return {
@@ -109,18 +110,25 @@ const createAdapter = async <const C extends Config>(args: {
 };
 
 export type Adapter = {
-	collection: ReturnType<typeof createCollectionInterface>;
-	area: ReturnType<typeof createAreaInterface>;
-	blocks: ReturnType<typeof createBlocksInterface>;
-	tree: ReturnType<typeof createTreeInterface>;
-	relations: ReturnType<typeof createRelationsInterface>;
-	transform: ReturnType<typeof databaseTransformInterface>;
-	auth: ReturnType<typeof createAuthInterface>;
+	collection: ReturnType<typeof createCollectionFacade>;
+	area: ReturnType<typeof createAreaFacade>;
+	blocks: ReturnType<typeof createBlocksFacade>;
+	tree: ReturnType<typeof createTreeFacade>;
+	relations: ReturnType<typeof createRelationsFacade>;
+	transform: ReturnType<typeof transformerFacade>;
+	auth: ReturnType<typeof createAuthFacade>;
 	db: LibSQLDatabase<Schema>;
 	tables: GetRegisterType<'Tables'>;
 	getTable<T>(key: string): T extends any ? GenericTable : T;
-	updateRecord(id: string, tableName: string, data: Dic): Awaited<ReturnType<typeof updateTableRecord>>;
-	updateDocumentUrl: typeof updateDocumentUrl;
+	updateRecord(
+		id: string,
+		tableName: string,
+		data: Dic
+	): Awaited<ReturnType<typeof updateTableRecord>>;
+	updateDocumentUrl: (
+		url: string,
+		params: Omit<Parameters<typeof updateDocumentUrl>[1], 'db' | 'tables'>
+	) => Promise<void>;
 	readonly schema: Schema;
 	readonly relationFieldsMap: RelationFieldsMap;
 };

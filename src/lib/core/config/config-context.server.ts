@@ -3,19 +3,19 @@ import { ensureMedias } from '../ensure.server.js';
 import { RimeError } from '../errors/index.js';
 import type { BuildConfig } from './server/build-config.server.js';
 
-export function createConfigInterface<const C extends Config>(config: BuildConfig<C>) {
+export function createConfigContext<const C extends Config>(config: BuildConfig<C>) {
 	//
 	ensureMedias(config);
 
 	const mapCollections = Object.fromEntries(
 		config.collections.map((c) => [c.slug, c])
 	) as typeof config.$InferCollections;
-	const mapCollectionsSlug = config.collections.map(c => c.slug)
+	const mapCollectionsSlug = config.collections.map((c) => c.slug);
 
 	const mapAreas = Object.fromEntries(
 		config.areas.map((a) => [a.slug, a])
 	) as typeof config.$InferAreas;
-	const mapAreasSlug = config.areas.map(a => a.slug)
+	const mapAreasSlug = config.areas.map((a) => a.slug);
 
 	const getLocalesCodes = () =>
 		config.localization ? config.localization.locales.map((l) => l.code) : [];
@@ -48,10 +48,9 @@ export function createConfigInterface<const C extends Config>(config: BuildConfi
 	};
 
 	const isCollection = (slug: string): slug is CollectionSlug =>
-	  !!mapCollectionsSlug.includes(slug as any)
+		!!mapCollectionsSlug.includes(slug as any);
 
-	const isArea = (slug: string): slug is AreaSlug =>
-	  !!mapAreasSlug.includes(slug as any)
+	const isArea = (slug: string): slug is AreaSlug => !!mapAreasSlug.includes(slug as any);
 
 	return {
 		/**

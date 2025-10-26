@@ -12,20 +12,20 @@ type Args = {
 };
 
 /**
- * Interface for interacting with area documents
+ * Facade for interacting with area documents
  *
  * Provides methods to create, retrieve, and update documents within an area.
  * Handles versioning, drafts, and localization according to the area configuration.
  *
  */
-class AreaInterface<Doc extends GenericDoc = GenericDoc> {
+class AreaAPI<Doc extends GenericDoc = GenericDoc> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
 	config: BuiltArea;
 	isSystemOperation: boolean;
 
 	/**
-	 * Creates a new AreaInterface instance
+	 * Creates a new AreaAPI instance
 	 *
 	 * @param args Constructor arguments
 	 * @param args.config The compiled area configuration
@@ -143,7 +143,7 @@ class AreaInterface<Doc extends GenericDoc = GenericDoc> {
 	}
 }
 
-export { AreaInterface };
+export { AreaAPI };
 
 /****************************************************
 /* Types

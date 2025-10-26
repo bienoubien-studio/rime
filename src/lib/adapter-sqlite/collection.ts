@@ -1,12 +1,12 @@
 import { getSegments } from '$lib/core/collections/upload/util/path.js';
 import {
-    VERSIONS_OPERATIONS,
-    VersionOperations
+	VERSIONS_OPERATIONS,
+	VersionOperations
 } from '$lib/core/collections/versions/operations.js';
 import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { withDirectoriesSuffix, withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
-import type { IConfig } from '$lib/core/rime.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import type { CollectionSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { OperationQuery } from '$lib/core/types/index.js';
 import type { GetRegisterType } from '$lib/index.js';
@@ -22,22 +22,22 @@ import { buildWithParam } from './with.js';
 type Schema = GetRegisterType<'Schema'>;
 
 /**
- * Creates a collection interface for SQLite adapter operations with CRUD functionality.
+ * Creates a collection facade for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned collections with support for localization.
  */
-const createCollectionInterface = <const C extends Config>(args: {
+const createCollectionFacade = <const C extends Config>(args: {
 	db: LibSQLDatabase<Schema>;
 	tables: any;
-	iConfig: IConfig<C>;
+	configCtx: ConfigContext<C>;
 }) => {
-	const { db, tables, iConfig } = args;
+	const { db, tables, configCtx } = args;
 
 	/**
 	 * Retrieves a document by its ID from a collection. For versioned collections,
 	 * returns either a specific version (if versionId is provided) or the latest/published version.
 	 */
 	const findById: FindById = async ({ slug, id, versionId, locale, draft }) => {
-		const config = iConfig.collections[slug];
+		const config = configCtx.collections[slug];
 		const isVersioned = !!config.versions;
 		const table = tables[slug];
 
@@ -112,7 +112,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	 * a single document with the provided data.
 	 */
 	const insert: Insert = async ({ slug, data, locale }) => {
-		const config = iConfig.collections[slug];
+		const config = configCtx.collections[slug];
 		const isVersioned = !!config.versions;
 		const now = new Date();
 
@@ -239,7 +239,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	 */
 	const update: Update = async ({ slug, id, versionId, data, locale, versionOperation }) => {
 		const now = new Date();
-		const config = iConfig.collections[slug];
+		const config = configCtx.collections[slug];
 
 		if (VersionOperations.isSimpleUpdate(versionOperation)) {
 			// Scenario 0: Non-versioned collections
@@ -359,7 +359,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 		locale,
 		draft
 	}) => {
-		const config = iConfig.collections[slug];
+		const config = configCtx.collections[slug];
 		const isVersioned = !!config.versions;
 
 		let query = incomingQuery ? adapterUtil.normalizeQuery(incomingQuery) : undefined;
@@ -375,7 +375,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 			};
 
 			if (query) {
-				params.where = buildWhereParam({ query, slug, locale, db, iConfig, tables });
+				params.where = buildWhereParam({ query, slug, locale, db, configCtx, tables });
 			}
 
 			// Remove undefined properties
@@ -418,7 +418,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 			}
 
 			const whereParam = query
-				? buildWhereParam({ query, slug: versionsTable, locale, db, iConfig, tables })
+				? buildWhereParam({ query, slug: versionsTable, locale, db, configCtx, tables })
 				: undefined;
 
 			// Build the query parameters for pagination and sorting of the root table
@@ -487,7 +487,7 @@ const createCollectionInterface = <const C extends Config>(args: {
 	};
 };
 
-export default createCollectionInterface;
+export default createCollectionFacade;
 
 type FindDocuments = (args: {
 	slug: CollectionSlug;

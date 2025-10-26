@@ -49,3 +49,5 @@ rime.code-workspace
 
 # rime
 +rime.generated
+
+/db

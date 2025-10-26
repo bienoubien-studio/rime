@@ -1,4 +1,4 @@
-import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
+import type { GenericAdapteFacadeArgs } from '$lib/adapter-sqlite/types.js';
 import { withLocalesSuffix } from '$lib/core/naming.js';
 import type { TreeBlock } from '$lib/core/types/doc.js';
 import { extractFieldName } from '$lib/fields/tree/util.js';
@@ -8,7 +8,7 @@ import { omit } from '../util/object.js';
 import { toPascalCase } from '../util/string.js';
 import { generatePK, transformDataToSchema } from './util.js';
 
-const createTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+const createTreeFacade = ({ db, tables }: GenericAdapteFacadeArgs) => {
 	//
 	const buildBlockTableName = (slug: string, blockPath: string) => {
 		const [fieldName] = extractFieldName(blockPath);
@@ -112,7 +112,7 @@ const createTreeInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	};
 };
 
-export default createTreeInterface;
+export default createTreeFacade;
 
 /****************************************************/
 /* Types

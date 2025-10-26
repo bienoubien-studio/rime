@@ -81,7 +81,9 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 			if (value.type && value.value) {
 				try {
 					const { type, value: id } = value;
-					const response = await fetch(`${apiUrl(toKebabCase(type), id)}?depth=1`).then((r) => r.json());
+					const response = await fetch(`${apiUrl(toKebabCase(type), id)}?depth=1`).then((r) =>
+						r.json()
+					);
 
 					if (response && response.doc && response.doc.url) {
 						return {
@@ -105,9 +107,9 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 				return value.livePreview;
 			} else {
 				try {
-					const response = await fetch(`${apiUrl(toKebabCase(value.relationTo), value.documentId)}?depth=1`).then((r) =>
-						r.json()
-					);
+					const response = await fetch(
+						`${apiUrl(toKebabCase(value.relationTo), value.documentId)}?depth=1`
+					).then((r) => r.json());
 
 					if (response && response.doc) {
 						return response.doc;
@@ -179,7 +181,7 @@ function createStore<T extends GenericDoc = GenericDoc>(href: string) {
 		callbacks.push(callback);
 	};
 
-	// Return public interface
+	// Return public facade
 	return {
 		beforeNavigate,
 		onMessage,

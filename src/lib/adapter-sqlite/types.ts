@@ -5,7 +5,7 @@ import type { SQLiteColumn, SQLiteTableWithColumns } from 'drizzle-orm/sqlite-co
 import type { PrototypeSlug } from '../types.js';
 
 // Basic types needed across multiple files
-export type GenericAdapterInterfaceArgs = {
+export type GenericAdapteFacadeArgs = {
 	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	tables: GenericTables;
 };

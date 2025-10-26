@@ -1,5 +1,6 @@
 import { dev } from '$app/environment';
 import type { MailerActions } from '$lib/core/plugins/mailer/index.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import type { Config } from '$lib/types.js';
 import { admin as adminPlugin, apiKey } from 'better-auth/plugins';
 import type { BuildConfig } from '../server/index.server.js';
@@ -8,16 +9,16 @@ import { accessControl, admin, staff, user } from './better-auth-permissions.js'
 
 export function getBaseAuthConfig<const C extends Config>(ctx: {
 	mailer: MailerActions | undefined;
-	config: BuildConfig<Config>;
+	config: ConfigContext<C>;
 }) {
 	const betterAuthOptions = {
-		plugins: configurePlugins(ctx.config),
+		plugins: configurePlugins(ctx.config.raw),
 		rateLimit: {
 			enabled: !dev,
 			window: 10,
 			max: 30
 		},
-		trustedOrigins: ctx.config.$trustedOrigins,
+		trustedOrigins: ctx.config.raw.$trustedOrigins,
 		session: {
 			modelName: 'authSessions'
 		},

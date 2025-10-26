@@ -1,13 +1,13 @@
 import { getRequestEvent } from '$app/server';
 import {
-    VERSIONS_OPERATIONS,
-    VersionOperations
+	VERSIONS_OPERATIONS,
+	VersionOperations
 } from '$lib/core/collections/versions/operations.js';
 import type { Config } from '$lib/core/config/types.js';
 import { VERSIONS_STATUS } from '$lib/core/constant.js';
 import { RimeError } from '$lib/core/errors/index.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
-import type { IConfig } from '$lib/core/rime.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import type { AreaSlug, GenericDoc, RawDoc } from '$lib/core/types/doc.js';
 import type { GetRegisterType } from '$lib/index.js';
 import { createBlankDocument } from '$lib/util/doc.js';
@@ -18,15 +18,15 @@ import * as adapterUtil from './util.js';
 import { buildWithParam } from './with.js';
 
 /**
- * Creates an area interface for SQLite adapter operations with CRUD functionality.
+ * Creates an area facade for SQLite adapter operations with CRUD functionality.
  * Handles both versioned and non-versioned areas with support for localization.
  */
-const createAreaInterface = <const C extends Config>(args: {
+const createAreaFacade = <const C extends Config>(args: {
 	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	tables: any;
-	iConfig: IConfig<C>;
+	configCtx: ConfigContext<C>;
 }) => {
-	const { db, tables, iConfig } = args;
+	const { db, tables, configCtx } = args;
 
 	/**
 	 * Retrieves an area document. If the area doesn't exist, it creates a blank one.
@@ -34,7 +34,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 * or the latest/published version.
 	 */
 	const get: Get = async ({ slug, locale, select, versionId, draft }) => {
-		const areaConfig = iConfig.areas[slug];
+		const areaConfig = configCtx.areas[slug];
 		if (!areaConfig) {
 			throw new RimeError(RimeError.INIT, slug + ' is not an area, should never happen');
 		}
@@ -149,7 +149,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 */
 	const createArea = async (slug: AreaSlug, values: Partial<GenericDoc>, locale?: string) => {
 		const now = new Date();
-		const config = iConfig.areas[slug];
+		const config = configCtx.areas[slug];
 
 		const hasVersions = !!config.versions;
 
@@ -262,7 +262,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	 */
 	const update: Update = async ({ slug, data, locale, versionId, versionOperation }) => {
 		const now = new Date();
-		const areaConfig = iConfig.areas[slug];
+		const areaConfig = configCtx.areas[slug];
 
 		const rows = await db.select({ id: tables[slug].id }).from(tables[slug]);
 		const area = rows[0];
@@ -362,7 +362,7 @@ const createAreaInterface = <const C extends Config>(args: {
 	};
 };
 
-export default createAreaInterface;
+export default createAreaFacade;
 
 /****************************************************/
 /* Types

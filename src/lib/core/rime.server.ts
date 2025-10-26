@@ -5,10 +5,10 @@ import devCache from '$lib/core/dev/cache/index.js';
 import type { RegisterArea, RegisterCollection } from '$lib/index.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { betterAuth } from 'better-auth';
-import { AreaInterface } from './areas/local-api.server.js';
-import { CollectionInterface } from './collections/local-api.server.js';
+import { AreaAPI } from './areas/local-api.server.js';
+import { CollectionAPI } from './collections/local-api.server.js';
 import { getBaseAuthConfig } from './config/auth/better-auth.server.js';
-import { createConfigInterface } from './config/config-interface.server.js';
+import { createConfigContext } from './config/config-context.server.js';
 import type { BuildConfig } from './config/server/index.server.js';
 import validate from './config/server/validate.js';
 import writeMemo from './config/server/write.js';
@@ -20,14 +20,13 @@ import { registerTranslation } from './i18n/register.server.js';
 
 export type Rime<C extends Config = Config> = Awaited<ReturnType<typeof createRime<C>>>;
 export type RimeContext<C extends Config = Config> = ReturnType<Rime<C>['createRimeContext']>;
-export type IConfig<C extends Config = Config> = ReturnType<typeof createConfigInterface<C>>;
+export type ConfigContext<C extends Config = Config> = ReturnType<typeof createConfigContext<C>>;
 
 /**
  * Creates the main Rime object
  * that provides access to cms API
  */
 export async function createRime<const C extends Config>(config: BuildConfig<C>) {
-
 	// Normalize plugins to a simple name->actions map
 	const serverPlugins = config.$plugins;
 	const plugins = Object.fromEntries(
@@ -35,7 +34,7 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 	) as typeof config.$InferPluginsServer;
 
 	// Creat config interface
-	const iConfig = createConfigInterface(config);
+	const configCtx = createConfigContext(config);
 
 	// Init adapter to get the generateSchema
 	const { createAdapter, generateSchema } = config.$adapter;
@@ -49,14 +48,13 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		generateRoutes(config);
 		await generateSchema(config);
 		await generateTypes(config);
-
 	}
 
 	// Create adapter, consume the generated schema
-	const adapter = await createAdapter(iConfig);
+	const adapter = await createAdapter(configCtx);
 
 	// Create auth
-	const baseAuthconfig = getBaseAuthConfig({ mailer: plugins.mailer, config });
+	const baseAuthconfig = getBaseAuthConfig({ mailer: plugins.mailer, config: configCtx });
 	type BetterAuthPlugins = typeof config.$InferAuthPlugins;
 	const betterAuthPlugins = Array.isArray(config.$auth?.plugins)
 		? [...baseAuthconfig.plugins, ...(config.$auth.plugins as BetterAuthPlugins)]
@@ -70,13 +68,12 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 
 	// Register translation
 	// Register dictionaries for panel Language
-  const dictionnaries = await registerTranslation(config.panel.language);
-  i18n.init(dictionnaries);
+	const dictionnaries = await registerTranslation(config.panel.language);
+	i18n.init(dictionnaries);
 
-  if(dev){
-	  devCache.delete('.init');
+	if (dev) {
+		devCache.delete('.init');
 	}
-
 
 	/**
 	 * Function that define the locale to use in a request event
@@ -99,10 +96,10 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 
 		// locale from the cookie
 		const cookieLocale = event.cookies.get('Locale');
-		const defaultLocale = iConfig.getDefaultLocale();
+		const defaultLocale = configCtx.getDefaultLocale();
 		const locale = paramLocale || searchParamLocale || cookieLocale;
 
-		if (locale && iConfig.getLocalesCodes().includes(locale)) {
+		if (locale && configCtx.getLocalesCodes().includes(locale)) {
 			return (event.locals.locale = locale);
 		}
 		return (event.locals.locale = defaultLocale);
@@ -120,7 +117,7 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		},
 
 		get config() {
-			return iConfig;
+			return configCtx;
 		},
 
 		get plugins() {
@@ -158,7 +155,7 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 				 * rime.config.areas // <- Areas config
 				 */
 				get config() {
-					return iConfig;
+					return configCtx;
 				},
 
 				/**
@@ -182,11 +179,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 				 * rime.collection('pages').find({ query: 'where[isHome][equals]=true' })
 				 */
 				collection<Slug extends keyof RegisterCollection>(slug: Slug) {
-					const collectionConfig = iConfig.collections[slug];
-					return new CollectionInterface<RegisterCollection[Slug]>({
+					const collectionConfig = configCtx.collections[slug];
+					return new CollectionAPI<RegisterCollection[Slug]>({
 						event,
 						config: collectionConfig,
-						defaultLocale: iConfig.getDefaultLocale()
+						defaultLocale: configCtx.getDefaultLocale()
 					});
 				},
 
@@ -195,11 +192,11 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 				 * rime.area('settings').find()
 				 */
 				area<Slug extends keyof RegisterArea>(slug: Slug) {
-					const areaConfig = iConfig.areas[slug];
-					return new AreaInterface<RegisterArea[Slug]>({
+					const areaConfig = configCtx.areas[slug];
+					return new AreaAPI<RegisterArea[Slug]>({
 						event,
 						config: areaConfig,
-						defaultLocale: iConfig.getDefaultLocale()
+						defaultLocale: configCtx.getDefaultLocale()
 					});
 				}
 			};

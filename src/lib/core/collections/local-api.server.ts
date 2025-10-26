@@ -21,19 +21,19 @@ type Args = {
 };
 
 /**
- * Interface for interacting with a collection
+ * Facade for interacting with a collection
  *
  * Provides methods to create, retrieve, update, and delete documents within a collection.
  * Handles versioning, drafts, authentication, and localization according to the collection configuration.
  */
-class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
+class CollectionAPI<Doc extends RegisterCollection[CollectionSlug]> {
 	#event: RequestEvent;
 	defaultLocale: string | undefined;
 	config: BuiltCollection;
 	isSystemOperation: boolean;
 
 	/**
-	 * Initializes the collection interface
+	 * Initializes the collection facade
 	 */
 	constructor({ config, defaultLocale, event }: Args) {
 		this.config = config;
@@ -50,7 +50,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	system(isSytem: boolean = true) {
 		if (isSytem === false) return this;
 		// Return a proxy or new instance with system flag
-		const systemCollection = new CollectionInterface({
+		const systemCollection = new CollectionAPI({
 			config: this.config,
 			defaultLocale: this.defaultLocale,
 			event: this.#event
@@ -328,7 +328,7 @@ class CollectionInterface<Doc extends RegisterCollection[CollectionSlug]> {
 	};
 }
 
-export { CollectionInterface };
+export { CollectionAPI };
 
 /****************************************************
 /* Types

@@ -4,7 +4,7 @@ import type { Config, User } from '$lib/types.js';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { BETTER_AUTH_ROLES } from '../collections/auth/constant.server.js';
 import { logger } from '../logger/index.server.js';
-import type { IConfig, RimeContext } from '../rime.server.js';
+import type { ConfigContext, RimeContext } from '../rime.server.js';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -39,7 +39,7 @@ function analyzeRoute(pathname: string): RouteInfo {
 /**
  * Ensures panel is properly set up before allowing access
  */
-async function ensureFirstAuthSetup <C extends Config>(rime: RimeContext<C>): Promise<void> {
+async function ensureFirstAuthSetup<C extends Config>(rime: RimeContext<C>): Promise<void> {
 	if ((await rime.adapter.auth.hasAuthUser()) && !dev) {
 		throw new RimeError(RimeError.NOT_FOUND);
 	}
@@ -126,7 +126,7 @@ async function handleApiKeyAuth(
 /**
  * Builds complete user data by combining auth and CMS information
  */
-async function buildUserData <C extends Config>(
+async function buildUserData<C extends Config>(
 	authResult: AuthResult,
 	rime: RimeContext<C>,
 	headers: Headers
@@ -148,10 +148,10 @@ async function buildUserData <C extends Config>(
 /**
  * Applies authorization rules based on route and user data
  */
-function authorizePanelUser <C extends Config>(
+function authorizePanelUser<C extends Config>(
 	userData: UserData,
 	routeInfo: RouteInfo,
-	config: IConfig<C>
+	config: ConfigContext<C>
 ): void {
 	const { user } = userData;
 

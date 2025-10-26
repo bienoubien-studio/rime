@@ -1,4 +1,4 @@
-import type { GenericAdapterInterfaceArgs } from '$lib/adapter-sqlite/types.js';
+import type { GenericAdapteFacadeArgs } from '$lib/adapter-sqlite/types.js';
 import { withLocalesSuffix } from '$lib/core/naming.js';
 import type { GenericBlock } from '$lib/core/types/doc.js';
 import type { WithOptional } from '$lib/util/types.js';
@@ -7,7 +7,7 @@ import { omit } from '../util/object.js';
 import { toPascalCase } from '../util/string.js';
 import { generatePK, transformDataToSchema } from './util.js';
 
-const createBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
+const createBlocksFacade = ({ db, tables }: GenericAdapteFacadeArgs) => {
 	const buildBlockTableName = (slug: string, blockName: string) =>
 		`${slug}Blocks${toPascalCase(blockName)}`;
 
@@ -110,7 +110,7 @@ const createBlocksInterface = ({ db, tables }: GenericAdapterInterfaceArgs) => {
 	};
 };
 
-export default createBlocksInterface;
+export default createBlocksFacade;
 
 /****************************************************/
 /* Types

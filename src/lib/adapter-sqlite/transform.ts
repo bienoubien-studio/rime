@@ -1,6 +1,6 @@
 import type { Config } from '$lib/core/config/types.js';
 import { withLocalesSuffix, withVersionsSuffix } from '$lib/core/naming.js';
-import type { IConfig } from '$lib/core/rime.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import type {
 	AreaSlug,
 	CollectionSlug,
@@ -26,21 +26,16 @@ import {
 } from './generate-schema/util.js';
 import { transformDatabaseColumnsToPaths } from './util.js';
 
-/****************************************************/
-/* Types
-/****************************************************/
-
-export type TransformInterface = ReturnType<typeof databaseTransformInterface>;
-
-/****************************************************/
-/* Interface
-/****************************************************/
-
-export const databaseTransformInterface = <const C extends Config>(args: {
-	iConfig: IConfig<C>;
+/**
+ * Facade responsible of converting raw database document
+ * with relations, blocks, locales,... related rows
+ * to a full document object
+ */
+export const transformerFacade = <const C extends Config>(args: {
+	configCtx: ConfigContext<C>;
 	tables: any;
 }) => {
-	const { iConfig, tables } = args;
+	const { configCtx, tables } = args;
 
 	const transformDoc = async <T extends GenericDoc = GenericDoc>(args: {
 		doc: RawDoc;
@@ -57,7 +52,7 @@ export const databaseTransformInterface = <const C extends Config>(args: {
 
 		let doc = args.doc;
 
-		const config = iConfig.getBySlug(slug);
+		const config = configCtx.getBySlug(slug);
 		const isVersioned = !!config.versions;
 		const tableName = isVersioned ? withVersionsSuffix(slug) : slug;
 		const tableNameRelationFields = `${tableName}Rels`;
@@ -67,7 +62,7 @@ export const databaseTransformInterface = <const C extends Config>(args: {
 		const isPanel = event.url.pathname.startsWith('/panel') || isLive;
 
 		let docAPI;
-		if (iConfig.isCollection(slug)) {
+		if (configCtx.isCollection(slug)) {
 			docAPI = rime.collection(slug);
 		} else {
 			docAPI = rime.area(slug);
@@ -262,5 +257,3 @@ export const databaseTransformInterface = <const C extends Config>(args: {
 		doc: transformDoc
 	};
 };
-
-export type AdapterTransformInterface = ReturnType<typeof databaseTransformInterface>;

@@ -2,7 +2,7 @@ import { RimeError } from '$lib/core/errors/index.js';
 import { getFieldConfigByPath } from '$lib/core/fields/util.js';
 import { logger } from '$lib/core/logger/index.server.js';
 import { hasVersionsSuffix, withLocalesSuffix } from '$lib/core/naming.js';
-import type { IConfig } from '$lib/core/rime.server.js';
+import type { ConfigContext } from '$lib/core/rime.server.js';
 import { isRelationField } from '$lib/fields/relation/index.js';
 import { type GetRegisterType } from '$lib/index.js';
 import type { Dic } from '$lib/util/types.js';
@@ -20,10 +20,10 @@ type BuildWhereArgs = {
 	db: LibSQLDatabase<GetRegisterType<'Schema'>>;
 	draft?: boolean;
 	tables: GetRegisterType<'Tables'>;
-	iConfig: IConfig;
+	configCtx: ConfigContext;
 };
 
-export const buildWhereParam = ({ query, slug, db, locale, tables, iConfig }: BuildWhereArgs) => {
+export const buildWhereParam = ({ query, slug, db, locale, tables, configCtx }: BuildWhereArgs) => {
 	function getTable<T>(key: string) {
 		return tables[key as keyof typeof tables] as T extends any ? GenericTable : T;
 	}
@@ -113,7 +113,7 @@ export const buildWhereParam = ({ query, slug, db, locale, tables, iConfig }: Bu
 
 		// Look for a relation field
 		// Get document config
-		const documentConfig = iConfig.getBySlug(slug);
+		const documentConfig = configCtx.getBySlug(slug);
 		if (!documentConfig) {
 			throw new Error(`${slug} not found (should never happen)`);
 		}
