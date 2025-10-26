@@ -22,7 +22,7 @@ const PACKAGE = '@bienbien/rime';
 const root = process.cwd();
 
 export const init = async ({ force, name: incomingName, skipInstall }: Args) => {
-  const packageName = getPackageInfoByKey('name');
+	const packageName = getPackageInfoByKey('name');
 
 	function setEnv() {
 		const envPath = path.resolve(root, '.env');
@@ -91,23 +91,19 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		const gitignorePath = path.join(root, '.gitignore');
 		if (!existsSync(gitignorePath)) {
 			logger.warn('.gitignore not found (skip)');
-			return
+			return;
 		}
 
 		let gitignoreContent = readFileSync(gitignorePath, 'utf-8');
 
-		const updates = [
-		  '\\.rime', '\\.cache', '/logs', '/db', '\\+rime.generated'
-		]
-		if(!gitignoreContent.includes('# rime'))
-
-		gitignoreContent += '\n# rime'
-	  for(const line of updates){
-      const exists = gitignoreContent.match(new RegExp(`^${line}`, 'm'));
-      if (!exists) {
-     			// Add new value if doesn't exist
- 			  gitignoreContent += `\n${line.replace('\\', '')}`;
-      }
+		const updates = ['\\.rime', '\\.cache', '/logs', '/db', '\\+rime.generated'];
+		if (!gitignoreContent.includes('# rime')) gitignoreContent += '\n# rime';
+		for (const line of updates) {
+			const exists = gitignoreContent.match(new RegExp(`^${line}`, 'm'));
+			if (!exists) {
+				// Add new value if doesn't exist
+				gitignoreContent += `\n${line.replace('\\', '')}`;
+			}
 		}
 		writeFileSync(gitignorePath, gitignoreContent);
 		logger.info('[✓] .gitignore populated');
@@ -204,16 +200,17 @@ export const init = async ({ force, name: incomingName, skipInstall }: Args) => 
 		!skipInstall && installDependencies();
 		await generate({ force: true });
 	} else {
-	  let name = ''
+		let name = '';
 		const defaultName = slugify(packageName);
-		let tries = 0
-		while (!isValidSlug(name)){
-  		name = await prompt(
-  			tries > 0 ? 'Error: should contains only letters, numbers, hyphens, underscores\nWhat is your project name (will be used as database name) ?' :
-     'What is your project name (will be used as database name) ?',
-  			defaultName || 'app'
-  		);
-      tries ++
+		let tries = 0;
+		while (!isValidSlug(name)) {
+			name = await prompt(
+				tries > 0
+					? 'Error: should contains only letters, numbers, hyphens, underscores\nWhat is your project name (will be used as database name) ?'
+					: 'What is your project name (will be used as database name) ?',
+				defaultName || 'app'
+			);
+			tries++;
 		}
 
 		if (!name) {

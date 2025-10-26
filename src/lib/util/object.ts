@@ -88,7 +88,10 @@ export function hasProps<T extends object, U extends Array<keyof T>>(
  *   sendEmail(user.email);
  * }
  */
-export function hasProp<T extends object, U extends keyof T>(prop: U, obj: T): obj is T & Required<Pick<T, U>> {
+export function hasProp<T extends object, U extends keyof T>(
+	prop: U,
+	obj: T
+): obj is T & Required<Pick<T, U>> {
 	return obj[prop] !== undefined;
 }
 
@@ -100,7 +103,12 @@ export function hasProp<T extends object, U extends keyof T>(prop: U, obj: T): o
  * isBuffer(Buffer.from('test'));
  */
 export function isBuffer(obj: any) {
-	return obj && obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj);
+	return (
+		obj &&
+		obj.constructor &&
+		typeof obj.constructor.isBuffer === 'function' &&
+		obj.constructor.isBuffer(obj)
+	);
 }
 
 /**
