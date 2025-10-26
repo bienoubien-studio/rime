@@ -8,45 +8,133 @@ if (!fs.existsSync(cachePath)) {
 	fs.mkdirSync(cachePath);
 }
 
+const IS_ENV_CACHE_ENABLED = process.env.RIME_CACHE_ENABLED === 'true';
+
+type CacheStrategy = 'memory' | 'disk';
+
 export class Cache {
-	//
-	static async get<T>(key: string, loadData: any): Promise<T> {
+	private static memoryCache = new Map<string, any>();
+	private static readonly MAX_MEMORY_ENTRIES = 1000;
+
+	private static getCacheStrategy(): CacheStrategy {
+		const strategy = process.env.RIME_CACHE_STRATEGY?.toLowerCase();
+		return strategy === 'memory' || strategy === 'disk' ? strategy : 'memory';
+	}
+
+	static async get<T>(key: string, loadData: () => Promise<T>): Promise<T> {
 		const event = getRequestEvent();
+		if (!event.locals.cacheEnabled || !IS_ENV_CACHE_ENABLED) {
+			logger.debug(`Cache disabled, loading ${key}`);
+			return loadData();
+		}
+
+		const strategy = this.getCacheStrategy();
+
+		logger.debug(`Cache enabled, loading ${key} with the ${strategy} strategy`);
+
+		if (strategy === 'memory') {
+			return this.getFromMemory(key, loadData);
+		} else {
+			return this.getFromDisk(key, loadData);
+		}
+	}
+
+	private static async getFromMemory<T>(key: string, loadData: () => Promise<T>): Promise<T> {
+		// Check memory cache only
+		if (this.memoryCache.has(key)) {
+			return this.memoryCache.get(key);
+		}
+
+		// Load fresh data and cache in memory only
+		const freshData = await loadData();
+		this.setMemoryCache(key, freshData);
+		return freshData;
+	}
+
+	private static async getFromDisk<T>(key: string, loadData: () => Promise<T>): Promise<T> {
+		// Check disk cache only
 		const keyPath = path.join(cachePath, key + '.txt');
-		const exist = event.locals.cacheEnabled && fs.existsSync(keyPath);
-
-		const setAndReturn = async () => {
-			const data = await loadData();
-			Cache.set(key, JSON.stringify(data));
-			return data;
-		};
-
-		if (exist) {
-			const data = fs.readFileSync(keyPath).toString();
-			try {
-				return JSON.parse(data);
-			} catch (err: any) {
+		try {
+			const data = await fs.promises.readFile(keyPath, 'utf8');
+			return JSON.parse(data);
+		} catch (err: any) {
+			if (err.code !== 'ENOENT') {
 				logger.error(err);
-				return setAndReturn();
 			}
 		}
-		return setAndReturn();
+
+		// Load fresh data and cache to disk only
+		const freshData = await loadData();
+		await this.setToDisk(key, JSON.stringify(freshData));
+		return freshData;
 	}
 
-	static set(key: string, value: string) {
-		const keyPath = path.join(cachePath, key + '.txt');
-		fs.writeFileSync(keyPath, value);
+	private static setMemoryCache(key: string, value: any) {
+		// Simple LRU: remove oldest entry if at limit
+		if (this.memoryCache.size >= this.MAX_MEMORY_ENTRIES) {
+			const firstKey = this.memoryCache.keys().next().value;
+			if (firstKey) {
+				this.memoryCache.delete(firstKey);
+			}
+		}
+		this.memoryCache.set(key, value);
 	}
 
-	static delete(key: string) {
+	private static async setToDisk(key: string, value: string) {
 		const keyPath = path.join(cachePath, key + '.txt');
-		if (fs.existsSync(keyPath)) {
-			fs.rmSync(keyPath);
+		await fs.promises.writeFile(keyPath, value);
+	}
+
+	static async set(key: string, value: any) {
+		if (!this.isCacheEnabled()) {
+			return;
+		}
+
+		const strategy = this.getCacheStrategy();
+
+		if (strategy === 'memory') {
+			this.setMemoryCache(key, value);
+		} else {
+			const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+			await this.setToDisk(key, stringValue);
+		}
+	}
+
+	static async delete(key: string) {
+		if (!this.isCacheEnabled()) {
+			return;
+		}
+
+		const strategy = this.getCacheStrategy();
+
+		if (strategy === 'memory') {
+			this.memoryCache.delete(key);
+		} else {
+			const keyPath = path.join(cachePath, key + '.txt');
+			try {
+				await fs.promises.rm(keyPath);
+			} catch (err: any) {
+				if (err.code !== 'ENOENT') {
+					logger.error('Failed to delete cache file:', err);
+				}
+			}
 		}
 	}
 
 	static clear() {
-		fs.rmSync(cachePath, { recursive: true });
-		fs.mkdirSync(cachePath);
+		if (!this.isCacheEnabled()) {
+			return;
+		}
+
+		const strategy = this.getCacheStrategy();
+
+		if (strategy === 'memory') {
+			this.memoryCache.clear();
+		} else {
+			if (fs.existsSync(cachePath)) {
+				fs.rmSync(cachePath, { recursive: true });
+				fs.mkdirSync(cachePath);
+			}
+		}
 	}
 }
