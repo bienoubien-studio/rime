@@ -85,26 +85,7 @@ export class Cache {
 		await fs.promises.writeFile(keyPath, value);
 	}
 
-	static async set(key: string, value: any) {
-		if (!this.isCacheEnabled()) {
-			return;
-		}
-
-		const strategy = this.getCacheStrategy();
-
-		if (strategy === 'memory') {
-			this.setMemoryCache(key, value);
-		} else {
-			const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
-			await this.setToDisk(key, stringValue);
-		}
-	}
-
 	static async delete(key: string) {
-		if (!this.isCacheEnabled()) {
-			return;
-		}
-
 		const strategy = this.getCacheStrategy();
 
 		if (strategy === 'memory') {
@@ -122,19 +103,11 @@ export class Cache {
 	}
 
 	static clear() {
-		if (!this.isCacheEnabled()) {
-			return;
-		}
+		this.memoryCache.clear();
 
-		const strategy = this.getCacheStrategy();
-
-		if (strategy === 'memory') {
-			this.memoryCache.clear();
-		} else {
-			if (fs.existsSync(cachePath)) {
-				fs.rmSync(cachePath, { recursive: true });
-				fs.mkdirSync(cachePath);
-			}
+		if (fs.existsSync(cachePath)) {
+			fs.rmSync(cachePath, { recursive: true });
+			fs.mkdirSync(cachePath);
 		}
 	}
 }
