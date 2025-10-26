@@ -194,7 +194,7 @@
 		}
 
 		.rz-relation__list {
-			background-color: hsl(var(--rz-color-input));
+			background-color: hsl(var(--rz-input-bg));
 			border: 1px solid var(--rz-input-border-color);
 			border-radius: var(--rz-radius-md);
 			display: flex;

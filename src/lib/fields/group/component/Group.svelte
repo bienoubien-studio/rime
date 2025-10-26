@@ -76,7 +76,10 @@
 
 	{#if !groupOpen}
 		<FieldsPreviewTrigger onclick={handleClick}>
-			<FieldsPreview fields={previewFields} getField={(field) => form.useField(basePath + field.name)} />
+			<FieldsPreview
+				fields={previewFields}
+				getField={(field) => form.useField(basePath + field.name)}
+			/>
 		</FieldsPreviewTrigger>
 	{:else}
 		<div class="rz-group-field__content">
@@ -87,7 +90,7 @@
 
 <style lang="postcss">
 	:root {
-		--rz-group-trigger-bg: hsl(var(--rz-row-color));
+		--rz-group-trigger-bg: hsl(var(--rz-row-bg));
 		--rz-group-preview-bg: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-3)));
 		--rz-group-content-bg: var(--rz-collapse-fields-content-bg);
 	}

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { GripVertical } from '@lucide/svelte';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
-	import CollectionTreeNode from './CollectionTreeNode.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
+	import { GripVertical } from '@lucide/svelte';
 	import StatusDot from '../StatusDot.svelte';
+	import CollectionTreeNode from './CollectionTreeNode.svelte';
 	import { countRows } from './util';
 
 	type Props = { parentId: string; doc: GenericDoc; collection: CollectionContext };
@@ -21,7 +21,11 @@
 				<StatusDot --rz-dot-size="0.3rem" status={doc.status} />
 			{/if}
 		</a>
-		<div class="rz-collection-sortable" style="--data-rows-count:{countRows(doc._children)}" data-id={doc.id}>
+		<div
+			class="rz-collection-sortable"
+			style="--data-rows-count:{countRows(doc._children)}"
+			data-id={doc.id}
+		>
 			{#if doc._children && doc._children.length > 0}
 				{#each doc._children as child (child.id)}
 					<CollectionTreeNode {collection} doc={child} parentId={doc.id} />
@@ -36,7 +40,7 @@
 		cursor: grab;
 	}
 	.rz-collection-node__row {
-		background-color: hsl(var(--rz-row-color));
+		background-color: hsl(var(--rz-row-bg));
 		display: flex;
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-lg);

@@ -73,7 +73,12 @@
 	});
 </script>
 
-<div data-path={path} data-tree-children={itemValue?._children.length || 0} data-sorting={sorting} class="rz-tree-item">
+<div
+	data-path={path}
+	data-tree-children={itemValue?._children.length || 0}
+	data-sorting={sorting}
+	class="rz-tree-item"
+>
 	<div class="rz-tree-item__grip">
 		<GripVertical size={15} />
 	</div>
@@ -98,7 +103,14 @@
 		<div data-path={path} data-tree-depth={depth} data-tree-key={treeKey} class="rz-tree__list">
 			{#if itemValue && itemValue._children && itemValue._children.length}
 				{#each itemValue._children as child, index (child.id)}
-					<TreeBlockComp {treeState} {form} {sorting} {treeKey} path="{path}._children.{index}" {config} />
+					<TreeBlockComp
+						{treeState}
+						{form}
+						{sorting}
+						{treeKey}
+						path="{path}._children.{index}"
+						{config}
+					/>
 				{/each}
 			{/if}
 		</div>
@@ -135,7 +147,7 @@
 		padding: var(--rz-size-2) var(--rz-size-2) var(--rz-size-2) var(--rz-size-4);
 		height: var(--rz-row-height);
 		flex-direction: row;
-		background-color: hsl(var(--rz-row-color));
+		background-color: hsl(var(--rz-row-bg));
 		width: 100%;
 	}
 

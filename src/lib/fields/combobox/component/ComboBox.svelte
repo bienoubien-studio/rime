@@ -32,11 +32,17 @@
 
 <fieldset class="rz-combobox-field {config.className || ''}" use:root={field}>
 	<Field.Label {config} for={path || config.name} />
-	
+
 	<Popover.Root bind:open>
 		<Popover.Trigger>
 			{#snippet child({ props })}
-				<Button variant="outline" role="combobox" aria-expanded={open} class="rz-combobox__trigger" {...props}>
+				<Button
+					variant="outline"
+					role="combobox"
+					aria-expanded={open}
+					class="rz-combobox__trigger"
+					{...props}
+				>
 					{#if selected}
 						{@render label(selected)}
 					{:else}
@@ -50,7 +56,11 @@
 			<Popover.Content class="rz-combobox__content">
 				<Command.Root>
 					{#if options.length > 4}
-						<Command.Input bind:value={search} placeholder={t__('common.search')} class="rz-combobox__search" />
+						<Command.Input
+							bind:value={search}
+							placeholder={t__('common.search')}
+							class="rz-combobox__search"
+						/>
 					{/if}
 					<Command.Empty>Nothing found.</Command.Empty>
 					<Command.Group>
@@ -78,7 +88,6 @@
 	</Popover.Root>
 	<Field.Hint {config} />
 	<Field.Error error={field.error} />
-	
 </fieldset>
 
 <style lang="postcss">
@@ -88,7 +97,7 @@
 			height: var(--rz-size-11);
 			justify-content: space-between;
 			border: 1px solid var(--rz-input-border-color);
-			background-color: hsl(var(--rz-color-input));
+			background-color: hsl(var(--rz-input-bg));
 		}
 	}
 </style>

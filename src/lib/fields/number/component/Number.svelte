@@ -55,7 +55,7 @@
 	}
 
 	.rz-number-field__input {
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		height: 100%;
 		width: 100%;
 		flex: 1;
@@ -81,7 +81,7 @@
 	}
 
 	.rz-number-field__chevron {
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		display: flex;
 		align-items: center;
 		justify-content: center;

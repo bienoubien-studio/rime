@@ -161,7 +161,7 @@
 	}
 
 	.rz-ressource-input__wrapper {
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		display: flex;
 		height: var(--rz-size-11);
 		flex-wrap: wrap;

@@ -2,7 +2,7 @@
 	margin-top: 0;
 	margin-bottom: 0;
 	padding-top: 0;
-	background-color: hsl(var(--rz-color-input));
+	background-color: hsl(var(--rz-input-bg));
 	padding-bottom: 0;
 	/*border-top-color: none;*/
 	border-left-color: none;

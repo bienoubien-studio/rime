@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { Check, Copy } from '@lucide/svelte';
 	import { t__ } from '../../../../core/i18n/index.js';
 	import Button from '../../ui/button/button.svelte';
-	import { dev } from '$app/environment';
 
 	type Props = { apiKey: string | null };
 
@@ -60,7 +60,7 @@
 		--rz-button-ghost-bg-hover: light-dark(hsl(var(--rz-gray-16)), hsl(var(--rz-gray-5)));
 		position: relative;
 		border: var(--rz-border);
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		min-height: var(--rz-input-height);
 		align-items: center;
 		display: flex;
@@ -72,9 +72,9 @@
 				position: absolute;
 				right: var(--rz-size-1);
 			}
-      .rz-dialog-api--copied{
-        color: hsl(var(--rz-color-success));
-      }
+			.rz-dialog-api--copied {
+				color: hsl(var(--rz-color-success));
+			}
 		}
 	}
 </style>

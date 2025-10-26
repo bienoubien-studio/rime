@@ -1,6 +1,6 @@
 :root {
 	--rz-switch-color-thumb: light-dark(hsl(var(--rz-gray-19)), hsl(var(--rz-gray-16)));
-	--rz-switch-color-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-color-input)));
+	--rz-switch-color-bg: light-dark(hsl(var(--rz-gray-13)), hsl(var(--rz-input-bg)));
 	--rz-switch-color-bg--active: hsl(var(--rz-color-spot));
 }
 

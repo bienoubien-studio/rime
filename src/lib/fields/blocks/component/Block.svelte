@@ -134,7 +134,7 @@
 		border-bottom: var(--rz-border);
 		padding-right: var(--rz-size-2);
 		height: var(--rz-row-height);
-		background-color: hsl(var(--rz-row-color));
+		background-color: hsl(var(--rz-row-bg));
 	}
 
 	.rz-block__title-button {

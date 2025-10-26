@@ -14,7 +14,7 @@
 
 .rz-radio-group-item {
 	border: 1px solid var(--rz-input-border-color);
-	background-color: var(--rz-color-input);
+	background-color: var(--rz-input-bg);
 	border-radius: var(--rz-radius-full);
 	transition: all 0.066s ease-in-out;
 	@mixin size var(--rz-size-5);

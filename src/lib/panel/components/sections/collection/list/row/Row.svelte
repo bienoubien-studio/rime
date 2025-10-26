@@ -26,7 +26,9 @@
 		gridTemplateColumn = `grid-template-columns: 2fr repeat(${columnLength - 1}, minmax(0, 1fr));`;
 	});
 
-	const formattedDate = $derived(doc.updatedAt ? locale.dateFormat(doc.updatedAt, { short: true }) : '');
+	const formattedDate = $derived(
+		doc.updatedAt ? locale.dateFormat(doc.updatedAt, { short: true }) : ''
+	);
 </script>
 
 <div style={gridTemplateColumn} class="rz-list-row">
@@ -84,7 +86,7 @@
 		align-items: center;
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
-		background-color: hsl(var(--rz-row-color));
+		background-color: hsl(var(--rz-row-bg));
 		.rz-list-row__icon {
 			height: var(--rz-size-10);
 			width: var(--rz-size-10);

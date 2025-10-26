@@ -1,5 +1,5 @@
 :root {
-	--rz-checkbox-bg: hsl(var(--rz-color-input));
+	--rz-checkbox-bg: hsl(var(--rz-input-bg));
 	--rz-checkbox-fg: hsl(var(--rz-gray-19));
 	--rz-checkbox-border: transparent;
 	--rz-checkbox--checked-bg: hsl(var(--rz-color-spot));

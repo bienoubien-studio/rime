@@ -15,7 +15,7 @@
 </script>
 
 <fieldset use:root={field} class="rz-textarea-field {config.className || ''}">
-	<Field.Label {config} for={path || config.name} />
+	<Field.Label {config} for={path || config.name} />
 	<textarea
 		use:dataError={!!field.error}
 		id={path || config.name}
@@ -32,7 +32,7 @@
 	textarea {
 		field-sizing: content;
 		border: 1px solid var(--rz-input-border-color);
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		display: flex;
 		width: 100%;
 		border-radius: var(--rz-radius-md);

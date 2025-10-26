@@ -168,7 +168,7 @@
 		}
 
 		:global(.rz-command-list) {
-			background-color: hsl(var(--rz-color-input));
+			background-color: hsl(var(--rz-input-bg));
 			border: var(--rz-border);
 			border-radius: var(--rz-radius-md);
 			position: absolute;
@@ -185,7 +185,7 @@
 	}
 
 	.rz-select__list {
-		background-color: hsl(var(--rz-color-input));
+		background-color: hsl(var(--rz-input-bg));
 		border: var(--rz-border);
 		border-radius: var(--rz-radius-md);
 		display: flex;
