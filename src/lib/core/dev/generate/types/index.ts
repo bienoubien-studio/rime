@@ -318,7 +318,7 @@ export async function generateTypesString<T extends Config>(config: T) {
 			/** Singleton providing access to auth, config and local-api */
       rime: ReturnType<
 				Awaited<
-					typeof import('$lib/${OUTPUT_DIR}/rime.config.server.ts').default
+					typeof import('./lib/${OUTPUT_DIR}/rime.config.server.ts').default
 				>['createRimeContext']
 			>;
       /** Flag enabled by the core plugin rime.cache when the API cache is ON */
