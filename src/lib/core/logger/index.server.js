@@ -31,7 +31,9 @@ let currentLogLevel = getLogLevelFromEnv();
 // Format message for logging
 const formatMessage = (args) => {
 	return args
-		.map((arg) => (typeof arg === 'string' ? arg : typeof arg === 'object' ? JSON.stringify(arg) : String(arg)))
+		.map((arg) =>
+			typeof arg === 'string' ? arg : typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+		)
 		.join(' ');
 };
 

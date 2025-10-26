@@ -17,6 +17,7 @@ import generateTypes from './dev/generate/types/index.js';
 import { RimeError } from './errors/index.js';
 import i18n from './i18n/index.js';
 import { registerTranslation } from './i18n/register.server.js';
+import { logger } from './logger/index.server.js';
 
 export type Rime<C extends Config = Config> = Awaited<ReturnType<typeof createRime<C>>>;
 export type RimeContext<C extends Config = Config> = ReturnType<Rime<C>['createRimeContext']>;
@@ -127,6 +128,8 @@ export async function createRime<const C extends Config>(config: BuildConfig<C>)
 		createRimeContext(event: RequestEvent) {
 			defineLocale(event);
 			return {
+				logger,
+
 				...plugins,
 
 				/** The Better-auth instance */
