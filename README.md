@@ -1,5 +1,5 @@
-![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-dark.png#gh-dark-mode-only?raw=true)
-![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-light.png#gh-light-mode-only?raw=true)
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-white.png#gh-dark-mode-only?raw=true)
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-black.png#gh-light-mode-only?raw=true)
 
 # Rime
 
