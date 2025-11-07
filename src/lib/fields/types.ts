@@ -63,7 +63,6 @@ export type Field = {
 export type FormField = Field & {
 	name: string;
 	hidden?: boolean;
-	readonly?: boolean;
 	validate?: FieldValidationFunc<any>;
 	required?: boolean;
 	localized?: boolean;
@@ -87,7 +86,7 @@ export type FieldHookContext<T extends FormField = FormField> = {
 	config: T;
 };
 
-export type FieldHookOnChange = (
+export type FieldHookClient = (
 	value: any,
 	context: {
 		siblings: Record<string, any>;
@@ -97,13 +96,16 @@ export type FieldHookOnChange = (
 	}
 ) => void;
 
-export type FieldHook<T extends FormField = any> = (value: any, context: FieldHookContext<T>) => any;
+export type FieldHook<T extends FormField = any> = (
+	value: any,
+	context: FieldHookContext<T>
+) => any;
 
 type FieldHooks = {
 	beforeRead?: FieldHook[];
-	beforeValidate?: FieldHook[];
 	beforeSave?: FieldHook[];
-	onChange?: FieldHookOnChange[];
+	beforeValidate?: FieldHookClient[];
+	onChange?: FieldHookClient[];
 };
 
 export type Option = {
@@ -117,6 +119,13 @@ export type OptionWithIcon = {
 	icon?: Component<IconProps>;
 };
 
-export type RelationValue<T> = T[] | { id?: string; relationTo: string; documentId: string }[] | string[] | string;
+export type RelationValue<T> =
+	| T[]
+	| { id?: string; relationTo: string; documentId: string }[]
+	| string[]
+	| string;
 
-export type SimplerField<T extends FormField> = WithRequired<Partial<T>, 'name' | 'isEmpty' | 'type'>;
+export type SimplerField<T extends FormField> = WithRequired<
+	Partial<T>,
+	'name' | 'isEmpty' | 'type'
+>;

@@ -487,7 +487,6 @@ function createDocumentFormState<T extends GenericDoc = GenericDoc>({
 
 			get editable() {
 				if (readOnly) return false;
-				if (config.readonly) return false;
 				if (!config.access) return false;
 				if (operation === 'create') {
 					return config.access.create(user.attributes);

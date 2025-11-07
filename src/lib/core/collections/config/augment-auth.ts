@@ -5,10 +5,16 @@ import type { Option } from '$lib/types.js';
 import { access } from '$lib/util/access/index.js';
 import { usersFields } from '../auth/fields.js';
 
-type Input = { slug: string; auth?: boolean | CollectionAuthConfig; fields: Collection<any>['fields'] };
+type Input = {
+	slug: string;
+	auth?: boolean | CollectionAuthConfig;
+	fields: Collection<any>['fields'];
+};
 export type WithNormalizedAuth<T> = Omit<T, 'auth'> & { auth?: CollectionAuthConfig };
 
-const withNormalizedAuth = <T extends { auth?: boolean | CollectionAuthConfig }>(config: T): WithNormalizedAuth<T> => {
+const withNormalizedAuth = <T extends { auth?: boolean | CollectionAuthConfig }>(
+	config: T
+): WithNormalizedAuth<T> => {
 	// Create a new object without the auth property
 	const { auth, ...rest } = config;
 	// Determine the normalized auth value
@@ -46,7 +52,9 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 	let normalizedRoles: Option[] = roles.map((r) => (typeof r === 'string' ? { value: r } : r));
 
 	// Filter out 'admin' roles for non staff collection
-	normalizedRoles = IS_GENERIC_COLLECTION ? normalizedRoles.filter((role) => role.value !== 'admin') : normalizedRoles;
+	normalizedRoles = IS_GENERIC_COLLECTION
+		? normalizedRoles.filter((role) => role.value !== 'admin')
+		: normalizedRoles;
 
 	const defaultRole = normalizedRoles.filter((r) => r.value !== 'admin')[0];
 
@@ -82,11 +90,19 @@ export const augmentAuth = <T extends Input>(config: T): WithNormalizedAuth<T> =
 		rolesField,
 		...normalizedAuthConfig.fields,
 		// Add apiKeyId for api key auth type.
-		...(IS_API_AUTH ? [text('apiKeyId').hidden().readonly()] : [])
+		...(IS_API_AUTH
+			? [
+					text('apiKeyId')
+						.hidden()
+						.access({ update: () => false })
+				]
+			: [])
 	];
 
 	if (IS_API_AUTH) {
-		const ownerIdField = text('ownerId').hidden().readonly();
+		const ownerIdField = text('ownerId')
+			.hidden()
+			.access({ update: () => false });
 		fields.push(ownerIdField);
 	}
 

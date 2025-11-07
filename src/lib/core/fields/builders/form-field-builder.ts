@@ -4,7 +4,7 @@ import cloneDeep from 'clone-deep';
 import type {
 	FieldAccess,
 	FieldHook,
-	FieldHookOnChange,
+	FieldHookClient,
 	FieldValidationFunc,
 	FieldWidth,
 	FormField
@@ -44,11 +44,6 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	readonly() {
-		this.field.readonly = true;
-		return this;
-	}
-
 	localized() {
 		this.field.localized = true;
 		return this;
@@ -80,8 +75,8 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	required() {
-		this.field.required = true;
+	required(bool?: boolean) {
+		this.field.required = typeof bool === 'undefined' ? true : bool;
 		return this;
 	}
 
@@ -90,7 +85,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	onChange(hook: FieldHookOnChange) {
+	onChange(hook: FieldHookClient) {
 		this.field.hooks!.onChange ??= [];
 		this.field.hooks!.onChange.push(hook);
 		return this;
@@ -134,7 +129,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	$beforeValidate(hook: FieldHook<T>) {
+	$beforeValidate(hook: FieldHookClient) {
 		this.field.hooks!.beforeValidate ??= [];
 		this.field.hooks!.beforeValidate.push(hook);
 		return this;
