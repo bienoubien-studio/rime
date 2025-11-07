@@ -102,10 +102,7 @@ export type Hook<
 	T extends Timing = Timing
 > = (context: HookContext<S, O, T>) => Promise<HookContext<S, O, T>>;
 
-type HookBeforeOperationParams<
-	S extends DocType = PrototypeSlug,
-	O extends Operation = Operation
-> = {
+type HookBeforeOperationArgs<S extends DocType = PrototypeSlug, O extends Operation = Operation> = {
 	event: RequestEvent;
 	context: OperationContext<S>;
 	config: S extends PrototypeSlug ? ConfigForSlug<S> : BuiltCollection | BuiltArea;
@@ -114,7 +111,7 @@ type HookBeforeOperationParams<
 export type HookBeforeOperation<
 	S extends DocType = PrototypeSlug,
 	O extends Operation = Operation
-> = (args: HookBeforeOperationParams<S, O>) => Promise<HookBeforeOperationParams<S, O>>;
+> = (args: HookBeforeOperationArgs<S, O>) => Promise<HookBeforeOperationArgs<S, O>>;
 
 /**
  * Helper object for creating hooks with specific operation and timing
@@ -222,6 +219,6 @@ export type OperationContext<S extends DocType = 'raw'> = Dic & {
 	originalConfigMap?: ConfigMap;
 	/** An map to get a field config by path on incoming data */
 	configMap?: ConfigMap;
-	/** Add super descriptive stuff here */
+	/** @TODO explain what it does */
 	isSystemOperation?: boolean;
 };

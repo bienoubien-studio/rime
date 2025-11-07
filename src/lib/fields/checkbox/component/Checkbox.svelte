@@ -49,7 +49,8 @@
 	}
 
 	:global {
-		.rz-render-fields__field[data-type='checkbox'] + .rz-render-fields__field[data-type='checkbox'] {
+		.rz-render-fields__field[data-type='checkbox']
+			+ .rz-render-fields__field[data-type='checkbox'] {
 			.rz-checkbox-field {
 				margin-top: 0;
 			}

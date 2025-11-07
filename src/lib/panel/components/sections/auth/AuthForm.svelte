@@ -62,7 +62,6 @@
 			border-radius: var(--rz-radius-xl);
 			background-color: hsl(var(--rz-color-bg) / 0.4);
 			backdrop-filter: blur(10px) brightness(180%);
-
 			@media (prefers-color-scheme: light) {
 				background-color: hsl(var(--rz-color-bg) / 0.1);
 				backdrop-filter: blur(4px) brightness(105%);
