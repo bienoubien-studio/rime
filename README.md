@@ -1,7 +1,5 @@
-![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-white.png#gh-dark-mode-only?raw=true)
-![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-black.png#gh-light-mode-only?raw=true)
-
-# Rime
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-white.png#gh-dark-mode-only)
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-black.png#gh-light-mode-only)
 
 Headless CMS powered by SvelteKit.
 
