@@ -36,5 +36,4 @@ export type TimeField = FormField & {
 	type: 'time';
 	defaultValue?: string | DefaultValueFn<string>;
 	unique?: boolean;
-	isTitle?: true;
 };

@@ -2,7 +2,7 @@
 	import type { DocumentFormContext } from '$lib/panel/context/documentForm.svelte';
 	import { Link } from '@lucide/svelte';
 
-	const { form }: { form: DocumentFormContext<any> } = $props();
+	const { form }: { form: DocumentFormContext } = $props();
 </script>
 
 {#if form.values.url}
@@ -18,9 +18,8 @@
 	}
 	.rz-comp-url {
 		background-color: var(--rz-comp-url-bg);
-		color: hsl(var(--rz-color-fg) / 1);
+		color: hsl(var(--rz-color-fg));
 		border-radius: var(--rz-radius-md);
-		border: var(--rz-border);
 		display: inline-flex;
 		gap: var(--rz-size-3);
 		justify-content: flex-start;

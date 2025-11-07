@@ -1,5 +1,5 @@
 import type { WithRequired } from 'better-auth/svelte';
-import type { Snippet } from 'svelte';
+import type { Component, Snippet } from 'svelte';
 import type { GenericDoc } from '../core/types/doc.js';
 export type { Navigation } from './navigation.js';
 
@@ -10,7 +10,7 @@ export type Route = {
 };
 
 export type FieldPanelTableConfig = {
-	cell?: any;
+	cell?: Component<{ value: any }>;
 	sort?: boolean;
 	position: number;
 };
