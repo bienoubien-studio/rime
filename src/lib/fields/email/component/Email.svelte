@@ -34,7 +34,7 @@
 			id={path || config.name}
 			name={path || config.name}
 			autocomplete="off"
-			placeholder={capitalize(config.label || config.name)}
+			placeholder={config.placeholder || capitalize(config.label || config.name)}
 			data-error={showError && field.error ? '' : null}
 			value={field.value}
 			onblur={onBlur}
@@ -64,7 +64,7 @@
 		display: flex;
 		align-items: center;
 		--rz-input-padding-x: 2rem;
-		
+
 		:global(.rz-button) {
 			position: absolute;
 			right: var(--rz-size-1-5);

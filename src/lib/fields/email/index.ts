@@ -43,6 +43,7 @@ export const email = (name: string) => new EmailFieldBuilder(name);
 export type EmailField = FormField & {
 	type: 'email';
 	defaultValue?: string | DefaultValueFn<string>;
+	placeholder?: string;
 	layout?: 'compact' | 'default';
 	unique?: boolean;
 	isTitle?: true;
