@@ -1,3 +1,6 @@
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-dark.png#gh-dark-mode-only?raw=true)
+![rime logo](https://github.com/bienbiendev/rime/blob/main/assets/logo-light.png#gh-light-mode-only?raw=true)
+
 # Rime
 
 Headless CMS powered by SvelteKit.
@@ -5,9 +8,9 @@ Headless CMS powered by SvelteKit.
 > [!NOTE]
 > Not ready for production
 
-![alt backend capture](https://github.com/bienoubien-studio/rime/blob/main/rime.png?raw=true)
+![alt backend capture](https://github.com/bienbiendev/rime/blob/main/assets/preview.png?raw=true)
 
-[Documentation (in progress)](https://github.com/bienoubien-studio/rime-doc/tree/master/docs)
+[Documentation (in progress)](https://github.com/bienbiendev/rime-doc/tree/master/docs)
 
 ## Features
 

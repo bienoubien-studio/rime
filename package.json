@@ -1,7 +1,7 @@
 {
 	"name": "@bienbien/rime",
 	"version": "0.20.1",
-	"homepage": "https://github.com/bienoubien-studio/rime",
+	"homepage": "https://github.com/bienbiendev/rime",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "bun ./src/lib/core/dev/cli/index.ts clear --force && vite build && npm run package && pnpm build:css",

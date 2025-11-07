@@ -2,7 +2,7 @@
 
 You can contribute to this project in many ways :
 - adding tests
-- improving [documentation](https://github.com/bienoubien-studio/rime-doc/tree/master/docs)
+- improving [documentation](https://github.com/bienbiendev/rime-doc/tree/master/docs)
 - adding features
 - adding translation for the panel in your language
 - make it work for .js only
@@ -11,7 +11,7 @@ You can contribute to this project in many ways :
 ## Clone the repo
 
 ```bash
-git clone https://github.com/bienoubien-studio/rime.git
+git clone https://github.com/bienbiendev/rime.git
 ```
 
 ## Install deps
