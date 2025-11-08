@@ -1,14 +1,19 @@
 <script lang="ts">
-	import { beforeNavigate } from '$app/navigation';
+	import { beforeNavigate, goto } from '$app/navigation';
 	import { isAuthConfig } from '$lib/core/collections/auth/util';
 	import { isUploadConfig } from '$lib/core/collections/upload/util/config';
 	import { t__ } from '$lib/core/i18n/index.js';
 	import type { GenericDoc } from '$lib/core/types/doc';
+	import * as Dialog from '$lib/panel/components/ui/dialog/index.js';
 	import { getConfigContext } from '$lib/panel/context/config.svelte';
-	import { setDocumentFormContext, type FormSuccessData } from '$lib/panel/context/documentForm.svelte';
+	import {
+		setDocumentFormContext,
+		type FormSuccessData
+	} from '$lib/panel/context/documentForm.svelte';
 	import { getLocaleContext } from '$lib/panel/context/locale.svelte';
 	import { getUserContext } from '$lib/panel/context/user.svelte';
 	import RenderFields from '../../fields/RenderFields.svelte';
+	import Button from '../../ui/button/button.svelte';
 	import AuthApiKeyDialog from './AuthAPIKeyDialog.svelte';
 	import AuthFooter from './AuthFooter.svelte';
 	import CurrentlyEdited from './CurrentlyEdited.svelte';
@@ -50,19 +55,16 @@
 
 	let formElement = $state<HTMLFormElement>();
 
-	beforeNavigate(async () => {
-		// if (
-		// 	operation === 'update' &&
-		// 	form.doc.editedBy.length &&
-		// 	form.doc.editedBy[0].id === user.attributes.id
-		// ) {
-		// 	await fetch(`/api/${config.slug}/${initial.id}`, {
-		// 		method: 'PATCH',
-		// 		body: JSON.stringify({
-		// 			editedBy: []
-		// 		})
-		// 	});
-		// }
+	let interceptedLeave = $state<{ url: string } | null>(null);
+	const isConfirmLeaveOpen = $derived(!!interceptedLeave);
+
+	beforeNavigate(async ({ cancel, complete, to, type }) => {
+		const hasCHanges = Object.keys(form.changes).length > 0;
+		if (!hasCHanges) return;
+		if (interceptedLeave) return;
+		if (!to) return;
+		cancel();
+		interceptedLeave = { url: to.url.href };
 	});
 
 	const form = setDocumentFormContext({
@@ -173,6 +175,23 @@
 	{#if !form.isLive && apiKey}
 		<AuthApiKeyDialog bind:apiKey />
 	{/if}
+
+	<Dialog.Root open={isConfirmLeaveOpen}>
+		<Dialog.Content>
+			<Dialog.Header>
+				{t__('common.leave_confirm_title')}
+			</Dialog.Header>
+			<p>{t__('common.leave_confirm_text')}</p>
+			<Dialog.Footer --rz-justify-content="space-between">
+				<Button onclick={() => interceptedLeave && goto(interceptedLeave.url)}
+					>{t__('common.confirm')}</Button
+				>
+				<Button onclick={() => (interceptedLeave = null)} variant="secondary"
+					>{t__('common.cancel')}</Button
+				>
+			</Dialog.Footer>
+		</Dialog.Content>
+	</Dialog.Root>
 </form>
 
 <style type="postcss">
