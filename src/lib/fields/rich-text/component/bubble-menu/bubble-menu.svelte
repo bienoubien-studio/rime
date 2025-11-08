@@ -33,7 +33,7 @@
 		nodes
 			.map((node) => ({
 				...node,
-				name: feature.extension?.name,
+				name: node.label,
 				options: feature.extension?.options
 			}))
 			.filter((node) => !!node.nodeSelector);
@@ -47,7 +47,7 @@
 		items
 			.map((item) => ({
 				...item,
-				name: feature.extension?.name,
+				name: item.label,
 				options: feature.extension?.options
 			}))
 			.filter((item) => !!item.name)

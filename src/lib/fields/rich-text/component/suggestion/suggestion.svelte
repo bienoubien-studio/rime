@@ -24,14 +24,14 @@
 	const markItems = $derived(
 		features
 			.map(augmentFeatureName)
-			.flatMap((feature) => feature.marks?.map((m) => ({ ...m, name: feature.name })) || [])
+			.flatMap((feature) => feature.marks?.map((m) => ({ ...m, name: m.label })) || [])
 			.filter((mark) => mark.suggestion && mark.suggestion.command)
 	);
 
 	const nodeItems = $derived(
 		features
 			.map(augmentFeatureName)
-			.flatMap((feature) => feature.nodes?.map((m) => ({ ...m, name: feature.name })) || [])
+			.flatMap((feature) => feature.nodes?.map((m) => ({ ...m, name: m.label })) || [])
 			.filter((node) => node.suggestion && node.suggestion.command)
 	);
 
