@@ -86,6 +86,11 @@ export type FieldHookContext<T extends FormField = FormField> = {
 	config: T;
 };
 
+export type FieldHookShared<T extends FormField = any> = (
+	value: any,
+	context: { config: T; data: Dic }
+) => any;
+
 export type FieldHookClient = (
 	value: any,
 	context: {
@@ -94,7 +99,7 @@ export type FieldHookClient = (
 		useBlocks: DocumentFormContext['useBlocks'];
 		useTree: DocumentFormContext['useTree'];
 	}
-) => void;
+) => any;
 
 export type FieldHook<T extends FormField = any> = (
 	value: any,
@@ -104,7 +109,7 @@ export type FieldHook<T extends FormField = any> = (
 type FieldHooks = {
 	beforeRead?: FieldHook[];
 	beforeSave?: FieldHook[];
-	beforeValidate?: FieldHookClient[];
+	beforeValidate?: FieldHookShared[];
 	onChange?: FieldHookClient[];
 };
 
