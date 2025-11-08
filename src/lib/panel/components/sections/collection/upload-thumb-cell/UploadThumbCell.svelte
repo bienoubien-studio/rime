@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { getMimeTypeFromExtension } from '$lib/core/collections/upload/util/mime';
 	import { mimeTypeToIcon } from '$lib/panel/util/upload.js';
 	import { FileText } from '@lucide/svelte';
 
@@ -8,16 +9,21 @@
 		class?: string;
 	};
 	const { url, class: className, mimeType }: Props = $props();
+	const mimeTypeResolved = $derived.by(() => {
+		if (mimeType) return mimeType;
+		if (url) return getMimeTypeFromExtension(url) || '';
+		return '';
+	});
 </script>
 
 <div class="rz-upload-preview-cell {className}">
 	<div>
-		{#if url && mimeType && mimeType.includes('image')}
+		{#if url && mimeTypeResolved.includes('image')}
 			<img class="rz-upload-preview-cell__image" src={url} alt="preview" />
 		{:else}
 			<div class="rz-upload-preview-cell__placeholder">
-				{#if mimeType}
-					{@const FileIcon = mimeTypeToIcon(mimeType)}
+				{#if mimeTypeResolved}
+					{@const FileIcon = mimeTypeToIcon(mimeTypeResolved)}
 					<FileIcon size={14} />
 				{:else}
 					<FileText size={14} />
