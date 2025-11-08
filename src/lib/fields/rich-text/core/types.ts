@@ -17,7 +17,7 @@ export type RichTextFeature = {
 
 export type RichTextFeatureMark = Omit<RichTextFeatureNode, 'nodeSelector'>;
 export type RichTextFeatureNode = {
-	label?: string;
+	label: string;
 	icon: Component<IconProps>;
 	isActive?: (args: { editor: Editor; range?: Range }) => boolean;
 	nodeSelector?: {
