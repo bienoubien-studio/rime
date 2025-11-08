@@ -26,7 +26,7 @@ export const Resource = Node.create({
 	},
 
 	addAttributes() {
-		return ['id', 'title', '_type'].reduce((acc: Dic, key) => {
+		return ['id', 'title', '_type', '_thumbnail'].reduce((acc: Dic, key) => {
 			acc[key] = { default: null };
 			return acc;
 		}, {});

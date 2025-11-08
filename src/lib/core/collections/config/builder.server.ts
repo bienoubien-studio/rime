@@ -12,6 +12,7 @@ import { Hooks } from '$lib/core/operations/hooks/index.server.js';
 import { toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
 import { augmentLabel } from './augment-label.js';
+import { augmentThumbnail } from './augment-thumbnail.js';
 
 export const create = <S extends string>(
 	slug: S,
@@ -28,7 +29,8 @@ export const create = <S extends string>(
 	const withAuth = augmentAuthServer(withUrl);
 	const withMetas = augmentMetas(withAuth);
 	const withHooks = augmentHooks(withMetas);
-	const augmented = augmentTitle(withHooks);
+	const withTitle = augmentTitle(withHooks);
+	const augmented = augmentThumbnail(withTitle);
 
 	return {
 		...augmented,

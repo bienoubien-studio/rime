@@ -17,7 +17,8 @@ export const validateFields = Hooks.beforeUpsert(async (args) => {
 
 	let output = { ...args.data };
 
-	if (!configMap) throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @validateFields');
+	if (!configMap)
+		throw new RimeError(RimeError.OPERATION_ERROR, 'missing configMap @validateFields');
 
 	// Get the skip parameter from the url
 	const paramSkip = event.url.searchParams.get(PARAMS.SKIP_VALIDATION) === 'true' || false;
@@ -66,7 +67,7 @@ export const validateFields = Hooks.beforeUpsert(async (args) => {
 		if (config.hooks?.beforeValidate) {
 			if (value) {
 				for (const hook of config.hooks.beforeValidate) {
-					value = await hook(value, { config, event, operation: args.context });
+					value = await hook(value, { config, data: args.data });
 					output = setValueAtPath(key, output, value);
 				}
 			}

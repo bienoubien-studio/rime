@@ -4,6 +4,7 @@ import { authorize } from '$lib/core/operations/hooks/before-operation/authorize
 import { populateURL } from '$lib/core/operations/hooks/before-read/populate-url.server.js';
 import { processDocumentFields } from '$lib/core/operations/hooks/before-read/process-document-fields.server.js';
 import { setDocumentLocale } from '$lib/core/operations/hooks/before-read/set-document-locale.server.js';
+import { setDocumentThumbnail } from '$lib/core/operations/hooks/before-read/set-document-thumbnail.server.js';
 import { setDocumentTitle } from '$lib/core/operations/hooks/before-read/set-document-title.server.js';
 import { setDocumentType } from '$lib/core/operations/hooks/before-read/set-document-type.server.js';
 import { sortDocumentProps } from '$lib/core/operations/hooks/before-read/sort-document-props.server.js';
@@ -38,7 +39,8 @@ type PartialConfig = {
  * upload, url, nesting, auth
  */
 export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
-	const IS_API_AUTH = collection.auth && typeof collection.auth !== 'boolean' && collection.auth.type === 'apiKey';
+	const IS_API_AUTH =
+		collection.auth && typeof collection.auth !== 'boolean' && collection.auth.type === 'apiKey';
 	//
 	const hooks = {
 		//
@@ -53,6 +55,7 @@ export const augmentHooks = <T extends PartialConfig>(collection: T): T => {
 			...(collection.$url ? [populateURL] : []),
 			...(collection.nested ? [addChildrenProperty] : []),
 			...(collection.auth ? [removePrivateFields] : []),
+			setDocumentThumbnail,
 			sortDocumentProps
 		],
 

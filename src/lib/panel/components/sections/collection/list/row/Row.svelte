@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { isUploadConfig } from '$lib/core/collections/upload/util/config';
 	import type { GenericDoc } from '$lib/core/types/doc.js';
 	import Checkbox from '$lib/panel/components/ui/checkbox/checkbox.svelte';
 	import type { CollectionContext } from '$lib/panel/context/collection.svelte.js';
@@ -34,21 +33,20 @@
 <div style={gridTemplateColumn} class="rz-list-row">
 	<div class="rz-list-row__main">
 		{#if collection.selectMode}
+			<!-- On select mode show the checkbox  -->
 			<Checkbox
 				id="checkbox-{doc.id}"
 				class="rz-list-row__checkbox"
 				{checked}
 				onCheckedChange={() => collection.toggleSelectOf(doc.id)}
 			/>
-			{#if isUploadConfig(collection.config)}
-				{#key doc.filename}
-					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
-				{/key}
+			{#if doc._thumbnail}
+				<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 			{/if}
 			<label for="checkbox-{doc.id}" class="rz-list-row__title">{doc.title || '[untitled]'}</label>
 		{:else}
 			<a class="rz-list-row__link" href="/panel/{collection.config.slug}/{doc.id}">
-				{#if isUploadConfig(collection.config)}
+				{#if doc._thumbnail}
 					<UploadThumbCell url={doc._thumbnail} mimeType={doc.mimeType} />
 				{:else}
 					{@const Icon = collection.config.icon}

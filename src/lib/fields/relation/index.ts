@@ -1,12 +1,67 @@
+import { browser } from '$app/environment';
+import { env } from '$env/dynamic/public';
+import { PARAMS } from '$lib/core/constant';
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { CollectionSlug, GenericDoc } from '$lib/core/types/doc.js';
-import type { DefaultValueFn, Field, FormField } from '$lib/fields/types.js';
+import type {
+	DefaultValueFn,
+	Field,
+	FieldHookShared,
+	FormField,
+	RelationValue
+} from '$lib/fields/types.js';
 import type { RegisterCollection } from '$lib/index.js';
+import { trycatchFetch } from '$lib/util/function';
 import { hasProps, isObjectLiteral } from '$lib/util/object.js';
 import Cell from './component/Cell.svelte';
 import RelationComponent from './component/Relation.svelte';
 
-export class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<RelationField<Doc>> {
+export const ensureRelationExists: FieldHookShared = async (
+	value: RelationValue<any>,
+	{ config }
+) => {
+	// Skip relation validation on panel as it will be done server-side
+	if (browser) return value;
+
+	const output = [];
+	const retrieveRelation = async (id: string) => {
+		const [err, response] = await trycatchFetch(
+			`${env.PUBLIC_RIME_URL}/api/${config.relationTo}/${id}?${PARAMS.SELECT}=id`
+		);
+		if (err) return null;
+		const { doc } = await response.json();
+		return doc;
+	};
+
+	if (value && Array.isArray(value)) {
+		for (const relation of value) {
+			let documentId;
+			if (typeof relation === 'string') {
+				documentId = relation;
+			} else {
+				documentId = relation.documentId;
+			}
+			if (!documentId) {
+				continue;
+			}
+			const doc = await retrieveRelation(documentId);
+			if (doc) {
+				output.push(relation);
+			}
+		}
+	} else if (typeof value === 'string') {
+		const doc = await retrieveRelation(value);
+		if (doc) {
+			output.push(doc.id);
+		}
+	}
+
+	return output;
+};
+
+export class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuilder<
+	RelationField<Doc>
+> {
 	//
 	_metaUrl = import.meta.url;
 
@@ -14,13 +69,9 @@ export class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuild
 		super(name, 'relation');
 		this.field.isEmpty = (value) => !value || (Array.isArray(value) && value.length === 0);
 		this.field.defaultValue = [];
-		if (import.meta.env.SSR) {
-			import('./index.server.js').then((module) => {
-				this.field.hooks = {
-					beforeValidate: [module.ensureRelationExists]
-				};
-			});
-		}
+		this.field.hooks = {
+			beforeValidate: [ensureRelationExists]
+		};
 	}
 
 	get component() {
@@ -29,6 +80,11 @@ export class RelationFieldBuilder<Doc extends GenericDoc> extends FormFieldBuild
 
 	get cell() {
 		return Cell;
+	}
+
+	isThumbnail(bool = true) {
+		this.field.isThumbnail = bool;
+		return this;
 	}
 
 	query(query: string | QueryResolver<Doc>) {
@@ -76,7 +132,9 @@ export const isRelationResolved = <T>(value: any): value is T => {
  * // Returns true for an unresolved relation
  * isRelationUnresolved({ relationTo: 'pages', documentId: '123' });
  */
-export const isRelationUnresolved = (value: any): value is Omit<Relation, 'path' | 'position' | 'ownerId'> => {
+export const isRelationUnresolved = (
+	value: any
+): value is Omit<Relation, 'path' | 'position' | 'ownerId'> => {
 	return value && isObjectLiteral(value) && hasProps(['relationTo', 'documentId'], value);
 };
 
@@ -108,6 +166,7 @@ export type RelationField<Doc extends GenericDoc = GenericDoc> = FormField & {
 	many?: boolean;
 	defaultValue?: string | string[] | DefaultValueFn<string | string[]>;
 	query?: string | ((doc: Doc) => string);
+	isThumbnail?: boolean;
 };
 
 export type Relation = {

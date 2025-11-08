@@ -29,11 +29,11 @@
 			selected = {
 				id: node.attrs.id,
 				title: node.attrs.title,
-				_type: node.attrs._type
+				_type: node.attrs._type,
+				_thumbnail: node.attrs._thumbnail
 			};
 		} else {
 			selected = null;
-			isDialogOpen = true;
 		}
 	});
 
@@ -77,7 +77,8 @@
 		updateAttributes({
 			id: null,
 			title: null,
-			slug: null
+			slug: null,
+			_thumbnail: null
 		});
 	}
 
@@ -88,15 +89,21 @@
 		updateAttributes({
 			id: selected.id,
 			title: selected.title,
-			_type: extension.options.slug
+			_type: extension.options.slug,
+			_thumbnail: selected._thumbnail
 		});
 	}
 </script>
 
 <NodeViewWrapper>
-	<div data-drag-handle class="rz-richtext-resource" class:rz-richtext-resource--selected={!!selected}>
+	<div
+		data-drag-handle
+		class="rz-richtext-resource"
+		class:rz-richtext-resource--selected={!!selected}
+	>
 		{#if !selected}
-			<Button class="rz-richtext-resource__add" variant="outline" size="sm" onclick={handleClick}>Add a resource</Button
+			<Button class="rz-richtext-resource__add" variant="outline" size="sm" onclick={handleClick}
+				>Add a resource</Button
 			>
 		{:else}
 			<CardResource resource={selected as RequiredNodeAttributes} onCloseClick={removeResource} />

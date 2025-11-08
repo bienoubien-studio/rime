@@ -289,6 +289,7 @@ export type BuiltCollection = Omit<Collection<string>, 'icon' | 'versions' | 'up
 	kebab: string;
 	label: CollectionLabel;
 	asTitle: string;
+	asThumbnail: string | null;
 	auth?: CollectionAuthConfig;
 	versions?: Required<VersionsConfig>;
 	upload?: UploadConfig;

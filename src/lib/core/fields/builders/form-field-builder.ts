@@ -5,6 +5,7 @@ import type {
 	FieldAccess,
 	FieldHook,
 	FieldHookClient,
+	FieldHookShared,
 	FieldValidationFunc,
 	FieldWidth,
 	FormField
@@ -129,7 +130,7 @@ export class FormFieldBuilder<T extends FormField> extends FieldBuilder<T> {
 		return this;
 	}
 
-	$beforeValidate(hook: FieldHookClient) {
+	beforeValidate(hook: FieldHookShared) {
 		this.field.hooks!.beforeValidate ??= [];
 		this.field.hooks!.beforeValidate.push(hook);
 		return this;

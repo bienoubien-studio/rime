@@ -10,20 +10,27 @@
 		filename?: string;
 		filesize?: string;
 		url?: string;
+		_thumbnail?: string;
 	};
 
 	type Props = { resource: Resource; onCloseClick: () => void };
 	const { resource, onCloseClick }: Props = $props();
 
 	const isUpload = $derived('mimeType' in resource);
-	const isImage = $derived(isUpload && resource.mimeType!.includes('image'));
+	const isImage = $derived(
+		resource._thumbnail || (isUpload && resource.mimeType!.includes('image'))
+	);
 	const Icon = $derived(isUpload ? mimeTypeToIcon(resource.mimeType!) : FileIcon);
 </script>
 
 <div class="rz-card-resource">
 	<div class="rz-card-resource__thumbnail">
 		{#if isImage}
-			<img class="rz-card-resource__image" src={resource.url} alt={resource.filename} />
+			<img
+				class="rz-card-resource__image"
+				src={resource._thumbnail || resource.url}
+				alt={resource.title}
+			/>
 		{:else}
 			<Icon class="rz-card-resource__icon" size={18} />
 		{/if}

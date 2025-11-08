@@ -11,6 +11,7 @@ import { access } from '$lib/util/index.js';
 import { toKebabCase } from '$lib/util/string.js';
 import { FileText } from '@lucide/svelte';
 import { augmentLabel } from './augment-label.js';
+import { augmentThumbnail } from './augment-thumbnail.js';
 
 export const create = <S extends string>(
 	slug: S,
@@ -26,7 +27,8 @@ export const create = <S extends string>(
 	const withUrl = augmentUrl(withVersions);
 	const withAuth = augmentAuth(withUrl);
 	const withMetas = augmentMetas(withAuth);
-	const augmented = augmentTitle(withMetas);
+	const withTitle = augmentTitle(withMetas);
+	const augmented = augmentThumbnail(withTitle);
 
 	return {
 		type: 'collection',
@@ -38,6 +40,7 @@ export const create = <S extends string>(
 		upload: augmented.upload,
 		fields: augmented.fields,
 		asTitle: augmented.asTitle,
+		asThumbnail: augmented.asThumbnail,
 		versions: augmented.versions,
 		icon: augmented.icon || FileText,
 		live: incomingConfig.live || false,
