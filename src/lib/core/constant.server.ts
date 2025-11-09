@@ -1,1 +1,1 @@
-export const PACKAGE_NAME = '@bienbien/rime';
+export const PACKAGE_NAME = 'rimecms';

@@ -8,18 +8,18 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'@bienbien/rime/panel/auth/client': './src/lib/panel/pages/auth/index.js',
-			'@bienbien/rime/panel/auth': './src/lib/panel/pages/auth/index.server.js',
-			'@bienbien/rime/panel/client': './src/lib/panel/index.js',
-			'@bienbien/rime/panel': './src/lib/panel/index.server.js',
-			'@bienbien/rime/panel/*': './src/lib/panel/*',
-			'@bienbien/rime/i18n': './src/lib/core/i18n',
-			'@bienbien/rime/api': './src/lib/core/api/index.server.js',
-			'@bienbien/rime/config/server': './src/lib/core/config/server/index.server.js',
-			'@bienbien/rime/config/client': './src/lib/core/config/client/index.js',
-			'@bienbien/rime/fields/rich-text': './src/lib/fields/rich-text/client.js',
+			'rimecms/panel/auth/client': './src/lib/panel/pages/auth/index.js',
+			'rimecms/panel/auth': './src/lib/panel/pages/auth/index.server.js',
+			'rimecms/panel/client': './src/lib/panel/index.js',
+			'rimecms/panel': './src/lib/panel/index.server.js',
+			'rimecms/panel/*': './src/lib/panel/*',
+			'rimecms/i18n': './src/lib/core/i18n',
+			'rimecms/api': './src/lib/core/api/index.server.js',
+			'rimecms/config/server': './src/lib/core/config/server/index.server.js',
+			'rimecms/config/client': './src/lib/core/config/client/index.js',
+			'rimecms/fields/rich-text': './src/lib/fields/rich-text/client.js',
 			$lib: './src/lib',
-			'@bienbien/rime': './src/lib'
+			rimecms: './src/lib'
 		}
 	}
 };

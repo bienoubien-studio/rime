@@ -1,7 +1,7 @@
 import { randomId } from '$lib/util/random.js';
 import { OUTPUT_DIR } from '../../constants.js';
 
-const PACKAGE = '@bienbien/rime';
+const PACKAGE = 'rimecms';
 
 export const env = () => `BETTER_AUTH_SECRET=${randomId(32)}
 PUBLIC_RIME_URL=http://localhost:5173

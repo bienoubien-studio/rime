@@ -34,13 +34,13 @@ export default ts.config(
 				{
 					paths: [
 						{
-							name: '@bienbien/rime',
+							name: 'rimecms',
 							message: 'Please use $lib/* imports instead of rime imports in source files'
 						}
 					],
 					patterns: [
 						{
-							group: ['@bienbien/rime/*', '@bienbien/rime/**'],
+							group: ['rimecms/*', 'rimecms/**'],
 							message: 'Please use $lib/* imports instead of rime imports in source files'
 						}
 					]

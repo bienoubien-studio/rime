@@ -58,7 +58,7 @@ cd my-app
 ### 2. Install Rime
 
 ```bash
-npm install @bienbien/rime
+npm install rimecms
 npx rime init
 ```
 
@@ -80,7 +80,7 @@ The `rime init` command will automatically:
 // vite.config.ts
 import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { rime } from '@bienbien/rime/vite';
+import { rime } from 'rimecms/vite';
 
 export default defineConfig({
   plugins: [rime(), sveltekit()]
@@ -90,7 +90,7 @@ export default defineConfig({
 ```typescript
 // src/hooks.server.ts (should be created)
 import config from '$lib/+rime.generated/rime.config.server.js';
-import { handlers } from '@bienbien/rime';
+import { handlers } from 'rimecms';
 import { sequence } from '@sveltejs/kit/hooks';
 
 export const handle = sequence(...(await handlers(config)));
@@ -128,10 +128,10 @@ curl -v POST http://localhost:5173/api/init \
 ```typescript
 // ./src/lib/+rime/rime.config.ts
 import { rime, Collection, Area } from '$rime/config';
-import { adapterSqlite } from '@bienbien/rime/sqlite';
+import { adapterSqlite } from 'rimecms/sqlite';
 import { Settings2 } from '@lucide/svelte';
-import { relation, link, richText, text, toggle } from '@bienbien/rime/fields';
-import { access } from "@bienbien/rime/util";
+import { relation, link, richText, text, toggle } from 'rimecms/fields';
+import { access } from "rimecms/util";
 
 const Pages = Collection.create('pages', {
   fields: [

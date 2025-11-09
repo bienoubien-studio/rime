@@ -5,7 +5,7 @@ export { definePlugin } from '$lib/core/plugins/index.js';
 
 export { handlers };
 
-declare module '@bienbien/rime' {
+declare module 'rimecms' {
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 	export interface RegisterCollection {}
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type

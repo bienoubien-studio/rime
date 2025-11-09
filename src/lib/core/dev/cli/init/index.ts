@@ -18,7 +18,7 @@ type Args = {
 	name?: string;
 };
 
-const PACKAGE = '@bienbien/rime';
+const PACKAGE = 'rimecms';
 const root = process.cwd();
 
 export const init = async ({ force, name: incomingName, skipInstall }: Args) => {

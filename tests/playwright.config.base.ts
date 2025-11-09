@@ -12,8 +12,8 @@ export function createPlaywrightConfig({ name }: Args): PlaywrightTestConfig {
 		webServer: {
 			command: `pnpm rime:use ${name} && pnpm vite dev`,
 			port: 5173,
-			stdout: 'ignore',
-			stderr: 'ignore'
+			stdout: 'pipe',
+			stderr: 'pipe'
 		},
 		expect: {
 			timeout: 30000

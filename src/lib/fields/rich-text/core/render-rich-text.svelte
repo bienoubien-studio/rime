@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { RichTextNodeRenderer } from '@bienbien/rime/fields/rich-text';
 	import type { JSONContent } from '@tiptap/core';
+	import type { RichTextNodeRenderer } from 'rimecms/fields/rich-text';
 	import RenderRichText from './render-rich-text.svelte';
 
 	type Props = {
@@ -96,7 +96,9 @@
 				</components.heading>
 			{:else}
 				{@const tag = `h${node.attrs?.level || 2}`}
-				<svelte:element this={tag} {...node.attrs}><RenderRichText {components} json={node} /></svelte:element>
+				<svelte:element this={tag} {...node.attrs}
+					><RenderRichText {components} json={node} /></svelte:element
+				>
 			{/if}
 			<!--  -->
 		{:else if node.type === 'blockquote'}

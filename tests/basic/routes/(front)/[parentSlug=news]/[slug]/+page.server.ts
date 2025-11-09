@@ -1,5 +1,5 @@
-import { checkLiveRedirect } from '@bienbien/rime/panel';
 import { error, type ServerLoadEvent } from '@sveltejs/kit';
+import { checkLiveRedirect } from 'rimecms/panel';
 
 export const load = async (event: ServerLoadEvent) => {
 	const { rime } = event.locals;
