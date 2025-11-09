@@ -56,11 +56,12 @@
 	let formElement = $state<HTMLFormElement>();
 
 	let interceptedLeave = $state<{ url: string } | null>(null);
-	const isConfirmLeaveOpen = $derived(!!interceptedLeave);
+	let isRedirect = $state(false);
 
 	beforeNavigate(async ({ cancel, complete, to, type }) => {
 		const hasCHanges = Object.keys(form.changes).length > 0;
 		if (!hasCHanges) return;
+		if (isRedirect) return;
 		if (interceptedLeave) return;
 		if (!to) return;
 		cancel();
@@ -79,6 +80,7 @@
 		beforeRedirect: beforeRedirect
 	});
 
+	const isConfirmLeaveOpen = $derived(!!interceptedLeave);
 	const locale = getLocaleContext();
 	const liveEditing = !!onDataChange;
 
@@ -113,6 +115,7 @@
 				const intervalId = setInterval(checkAndResolve, 100);
 			});
 		}
+		isRedirect = !!data?.redirectUrl;
 		return true;
 	}
 </script>
