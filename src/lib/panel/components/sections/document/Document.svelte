@@ -179,7 +179,14 @@
 		<AuthApiKeyDialog bind:apiKey />
 	{/if}
 
-	<Dialog.Root open={isConfirmLeaveOpen}>
+	<Dialog.Root
+		open={isConfirmLeaveOpen}
+		onOpenChange={(open) => {
+			if (!open) {
+				interceptedLeave = null;
+			}
+		}}
+	>
 		<Dialog.Content>
 			<Dialog.Header>
 				{t__('common.leave_confirm_title')}
