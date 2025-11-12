@@ -1,5 +1,6 @@
 import camelCase from 'camelcase';
 import DOMPurify from 'isomorphic-dompurify';
+import { createHash } from 'node:crypto';
 
 /**
  * Capitalizes the first letter of a string.
@@ -123,25 +124,16 @@ export const slugify = (text: string): string => {
 };
 
 /**
- * Generates a numeric hash from a string using a simple hashing algorithm.
+ * Generates a numeric hash from a string using sha256 hashing algorithm.
  * Useful for generating deterministic IDs from string content.
  *
  * @example
  * // Returns a consistent numeric hash string
  * toHash("hello");
  */
-export function toHash(str: string) {
-	const seed = 0;
-	let h1 = seed;
-
-	for (let i = 0; i < str.length; i++) {
-		h1 ^= str.charCodeAt(i);
-		h1 = Math.imul(h1, 0xcc9e2d51);
-		h1 = Math.imul((h1 >>> 13) | (h1 << 19), 0x1b873593);
-	}
-
-	return Math.abs(h1).toString();
-}
+export const toHash = (str: string): string => {
+	return createHash('sha256').update(str).digest('hex'); // Full 64-char hex string
+};
 
 /**
  * Checks if a string is in camelCase format.

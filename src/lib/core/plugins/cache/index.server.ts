@@ -9,7 +9,6 @@ export type CacheActions = {
 	get: <T>(name: string, get: () => Promise<T>) => Promise<T>;
 	clear: () => ReturnType<RequestHandler>;
 	isEnabled: (event: RequestEvent) => boolean;
-	toHashKey: (...params: unknown[]) => string;
 	createKey: (namespace: string, params: Record<string, unknown>) => string;
 };
 
@@ -38,25 +37,9 @@ export const cache = definePlugin((options?: CacheOptions) => {
 		return json({ message: 'Cache cleared' });
 	};
 
-	/**
-	 * Helper to convert any value to a string representation for cache keys
-	 */
-	const toKey = (value: unknown): string => {
-		if (value === undefined || value === null) {
-			return '0';
-		}
-		if (Array.isArray(value)) {
-			return value.map(toKey).join(',');
-		}
-		return String(value);
-	};
-
 	const actions: CacheActions = {
 		get: getAction,
 		clear: clearCache,
-		toHashKey: (...params) => {
-			return toHash(params.map(toKey).join('-'));
-		},
 		createKey: (namespace: string, params: Record<string, unknown>) => {
 			// Start with the namespace
 			const values = [namespace];
@@ -64,9 +47,8 @@ export const cache = definePlugin((options?: CacheOptions) => {
 			Object.keys(params)
 				.sort()
 				.forEach((key) => {
-					values.push(`${key}:${toKey(params[key])}`);
+					values.push(`${key}:${JSON.stringify(params[key])}`);
 				});
-
 			return toHash(values.join('-'));
 		},
 		isEnabled: options?.isEnabled || ((event) => !event.locals.user)
