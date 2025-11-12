@@ -46,7 +46,10 @@
 
 <NodeViewWrapper>
 	<FieldsPreviewTrigger class="rz-rich-text-fields-preview" onclick={() => (isSheetOpen = true)}>
-		<FieldsPreview fields={previewFields} getField={(field) => form.useField(field.name, field.raw)} />
+		<FieldsPreview
+			fields={previewFields}
+			getField={(field) => form.useField(field.name, field.raw)}
+		/>
 	</FieldsPreviewTrigger>
 </NodeViewWrapper>
 
@@ -54,7 +57,7 @@
 	<Sheet.Content side="right" class="rz-rich-text-sheet">
 		{#each previewFields || [] as field, index (index)}
 			{@const FieldComponent = field.component}
-			<FieldComponent config={field.raw} {form} />
+			<FieldComponent path={field.raw.name} config={field.raw} {form} />
 		{/each}
 	</Sheet.Content>
 </Sheet.Root>

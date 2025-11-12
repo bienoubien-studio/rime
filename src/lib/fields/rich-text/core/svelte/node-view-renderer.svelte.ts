@@ -1,4 +1,9 @@
-import type { DecorationWithType, NodeViewProps, NodeViewRenderer, NodeViewRendererOptions } from '@tiptap/core';
+import type {
+	DecorationWithType,
+	NodeViewProps,
+	NodeViewRenderer,
+	NodeViewRendererOptions
+} from '@tiptap/core';
 import { Editor, getRenderedAttributes, NodeView } from '@tiptap/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { NodeSelection } from '@tiptap/pm/state';
@@ -26,15 +31,23 @@ const invariant: Invariant = (condition: unknown, msg?: string) => {
 
 type AttrProps =
 	| Record<string, string>
-	| ((props: { node: ProseMirrorNode; HTMLAttributes: Record<string, any> }) => Record<string, string>);
+	| ((props: {
+			node: ProseMirrorNode;
+			HTMLAttributes: Record<string, any>;
+	  }) => Record<string, string>);
 
 export interface SvelteNodeViewRendererOptions extends NodeViewRendererOptions {
 	update: ((props: RendererUpdateProps) => boolean) | null;
 	as?: string;
 	attrs?: AttrProps;
+	context?: Map<string, any>;
 }
 
-class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNodeViewRendererOptions> {
+class SvelteNodeView extends NodeView<
+	Component<NodeViewProps>,
+	Editor,
+	SvelteNodeViewRendererOptions
+> {
 	declare renderer: SvelteRenderer;
 	declare contentDOMElement: HTMLElement | null;
 
@@ -55,7 +68,9 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 			deleteNode: () => this.deleteNode()
 		});
 
-		this.contentDOMElement = this.node.isLeaf ? null : document.createElement(this.node.isInline ? 'span' : 'div');
+		this.contentDOMElement = this.node.isLeaf
+			? null
+			: document.createElement(this.node.isInline ? 'span' : 'div');
 
 		if (this.contentDOMElement) {
 			// For some reason the whiteSpace prop is not inherited properly in Chrome and Safari
@@ -68,6 +83,12 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 		context.set(TIPTAP_NODE_VIEW, {
 			onDragStart: this.onDragStart.bind(this)
 		});
+		if (this.extension.options.contexts) {
+			for (const [key, ctx] of this.extension.options.contexts.entries()) {
+				context.set(key, ctx);
+			}
+		}
+		console.log(context);
 
 		const as = this.options.as ?? (this.node.isInline ? 'span' : 'div');
 		const target = document.createElement(as);
@@ -99,7 +120,11 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 	private appendContendDom() {
 		const contentElement = this.dom.querySelector('[data-node-view-content]');
 
-		if (this.contentDOMElement && contentElement && !contentElement.contains(this.contentDOMElement)) {
+		if (
+			this.contentDOMElement &&
+			contentElement &&
+			!contentElement.contains(this.contentDOMElement)
+		) {
 			contentElement.appendChild(this.contentDOMElement);
 		}
 	}
@@ -144,7 +169,11 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 		}
 	}
 
-	update(node: ProseMirrorNode, decorations: readonly Decoration[], innerDecorations: DecorationSource): boolean {
+	update(
+		node: ProseMirrorNode,
+		decorations: readonly Decoration[],
+		innerDecorations: DecorationSource
+	): boolean {
 		const updateProps = (props: Partial<NodeViewProps>) => {
 			this.renderer.updateProps(props);
 
@@ -182,7 +211,11 @@ class SvelteNodeView extends NodeView<Component<NodeViewProps>, Editor, SvelteNo
 			return false;
 		}
 
-		if (node === this.node && this.decorations === decorations && this.innerDecorations === innerDecorations) {
+		if (
+			node === this.node &&
+			this.decorations === decorations &&
+			this.innerDecorations === innerDecorations
+		) {
 			return true;
 		}
 

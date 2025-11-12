@@ -1,5 +1,6 @@
 import { t__ } from '$lib/core/i18n/index.js';
 import type { RichTextEditorConfig, RichTextFeature } from '$lib/fields/rich-text/core/types.js';
+import type { WithRequired } from '$lib/util/types.js';
 import type { EditorOptions } from '@tiptap/core';
 import Document from '@tiptap/extension-document';
 import HardBreak from '@tiptap/extension-hard-break';
@@ -7,6 +8,9 @@ import { ListItem } from '@tiptap/extension-list';
 import Text from '@tiptap/extension-text';
 import Typography from '@tiptap/extension-typography';
 import { Dropcursor, Gapcursor, Placeholder, UndoRedo } from '@tiptap/extensions';
+import { API_PROXY, getAPIProxyContext } from '../../../panel/context/api-proxy.svelte.js';
+import { CONFIG_CTX, getConfigContext } from '../../../panel/context/config.svelte.js';
+import { getUserContext, USER_CTX } from '../../../panel/context/user.svelte.js';
 import { hasSuggestion } from '../util.js';
 import { CurrentNodeAttribute } from './extensions/current-node/current-node.js';
 import { defaultFeatures } from './features/index.js';
@@ -23,7 +27,8 @@ type BuildEditorConfigArgs = {
 export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorConfig {
 	const { features: incommingFeatures = [] } = args;
 
-	const features: RichTextFeature[] = incommingFeatures.length === 0 ? defaultFeatures : incommingFeatures;
+	const features: RichTextFeature[] =
+		incommingFeatures.length === 0 ? defaultFeatures : incommingFeatures;
 
 	const withSuggestion = hasSuggestion(features);
 
@@ -65,13 +70,32 @@ export function buildEditorConfig(args: BuildEditorConfigArgs): RichTextEditorCo
 	// We need to track which extensions we've already added to avoid duplicates
 	const addedExtensions = new Set();
 
+	const hasExtension = (
+		f: (typeof features)[number]
+	): f is WithRequired<RichTextFeature, 'extension'> => !!f.extension;
+
 	features.forEach((feature) => {
-		if (feature.extension && !addedExtensions.has(feature.extension)) {
+		if (hasExtension(feature) && !addedExtensions.has(feature.extension)) {
+			// Populate contexts
+			if ('addNodeView' in feature.extension.config) {
+				const originalAddOption = feature.extension.config.addOptions || (() => ({}));
+				const contexts = new Map();
+				const configContext = getConfigContext();
+				const apiProxyContext = getAPIProxyContext(API_PROXY.DOCUMENT);
+				const userContext = getUserContext();
+				contexts.set(CONFIG_CTX, configContext);
+				contexts.set(API_PROXY.DOCUMENT, apiProxyContext);
+				contexts.set(USER_CTX, userContext);
+				feature.extension.config.addOptions = () => {
+					// @ts-expect-error
+					return { ...originalAddOption(), contexts };
+				};
+			}
+			// Push extension
 			baseEditorConfig.extensions?.push(feature.extension);
 			addedExtensions.add(feature.extension);
 		}
 	});
-
 
 	return {
 		tiptap: baseEditorConfig,

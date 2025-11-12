@@ -1,7 +1,5 @@
 import { getContext, setContext } from 'svelte';
 
-const API_PROXY_KEY = Symbol('api-proxy');
-
 // Define the Resource type explicitly to avoid circular references
 export type Resource<T = any> = {
 	data: T | null;
@@ -96,15 +94,16 @@ function createAPIProxy() {
 
 export function setAPIProxyContext(key = API_PROXY.ROOT) {
 	const apiProxy = createAPIProxy();
-	return setContext(`${API_PROXY_KEY.toString()}.${key}`, apiProxy);
+	return setContext(key, apiProxy);
 }
 
 export function getAPIProxyContext(key = API_PROXY.ROOT) {
-	return getContext<ReturnType<typeof setAPIProxyContext>>(`${API_PROXY_KEY.toString()}.${key}`);
+	return getContext<ReturnType<typeof setAPIProxyContext>>(key);
 }
 
+// @TODO why multiple APIProxy ROOT everywhere should work
 export const API_PROXY = {
-	DOCUMENT: 'document',
-	ROOT: 'root',
-	TIPTAP: 'tiptap'
+	DOCUMENT: Symbol('api-proxy.document'),
+	ROOT: Symbol('api-proxy.root'),
+	TIPTAP: Symbol('api-proxy.tiptap')
 };

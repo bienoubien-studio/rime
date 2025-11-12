@@ -11,13 +11,13 @@ function createUserStore(initial: User) {
 	};
 }
 
-const CONFIG_KEY = Symbol('rime.user');
+export const USER_CTX = Symbol('rime.user');
 
 export function setUserContext(initial: User) {
 	const user = createUserStore(initial);
-	return setContext(CONFIG_KEY, user);
+	return setContext(USER_CTX, user);
 }
 
 export function getUserContext() {
-	return getContext<ReturnType<typeof setUserContext>>(CONFIG_KEY);
+	return getContext<ReturnType<typeof setUserContext>>(USER_CTX);
 }

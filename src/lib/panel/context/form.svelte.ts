@@ -1,5 +1,7 @@
 import { applyAction } from '$app/forms';
 import type { FormField, SimplerField } from '$lib/fields/types.js';
+import { getValueAtPath } from '$lib/util/object';
+import { snapshot } from '$lib/util/state';
 import type { Dic } from '$lib/util/types.js';
 import type { SubmitFunction } from '@sveltejs/kit';
 import { diff } from 'deep-object-diff';
@@ -21,6 +23,23 @@ function createFormStore(initial: Dic, key: string) {
 			errors.value = {};
 		}
 	});
+
+	/**
+	 * Function that return an unreactive snapshot of a value given a path.
+	 *
+	 * @param path Field path ex: blocks.0.title
+	 * @returns an unreactive snapshot
+	 *
+	 * @example
+	 * const form = getDocumentFormContext()
+	 * const initialValue = form.getRawValue('blocks.0.title')
+	 *
+	 * // value will not update if doc.blocks.0.title update
+	 */
+	function getRawValue<T>(path: string) {
+		console.log(path);
+		return (snapshot(getValueAtPath(path, form)) as T) || null;
+	}
 
 	function setValue(path: string, value: any) {
 		status = undefined;
@@ -125,7 +144,7 @@ function createFormStore(initial: Dic, key: string) {
 		useField,
 		readOnly: false,
 		enhance,
-
+		getRawValue,
 		get canSubmit() {
 			return canSubmit;
 		},
