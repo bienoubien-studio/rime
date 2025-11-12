@@ -1,15 +1,24 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
 import { validate } from '$lib/util/index.js';
-import { slugify } from '$lib/util/string.js';
+import { sanitize, slugify } from '$lib/util/string.js';
 import Cell from './component/Cell.svelte';
 import Slug from './component/Slug.svelte';
 
-export const slug = (name: string) => new SlugFieldBuilder(name, 'slug');
+export const slug = (name: string) => new SlugFieldBuilder(name);
 
 export class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 	//
 	_metaUrl = import.meta.url;
+
+	constructor(name: string) {
+		super(name, 'slug');
+		this.field.validate = validate.slug;
+		this.field.isEmpty = (value) => !value;
+		this.field.hooks = {
+			beforeSave: [sanitize]
+		};
+	}
 
 	get component() {
 		return Slug;
@@ -50,17 +59,9 @@ export class SlugFieldBuilder extends FormFieldBuilder<SlugField> {
 	}
 
 	compile() {
-		if (!this.field.validate) {
-			this.field.validate = validate.slug;
-		}
-
 		if (!this.field.placeholder) {
 			this.field.placeholder = slugify(this.field.label || this.field.name);
 		}
-		if (!this.field.isEmpty) {
-			this.field.isEmpty = (value) => !value;
-		}
-
 		return super.compile();
 	}
 }

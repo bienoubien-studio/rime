@@ -1,4 +1,5 @@
 import camelCase from 'camelcase';
+import DOMPurify from 'isomorphic-dompurify';
 
 /**
  * Capitalizes the first letter of a string.
@@ -176,3 +177,11 @@ export const isCamelCase = (str: string) => /^[a-z][a-zA-Z0-9]*$/.test(str);
  * isValidSlug("hello world");
  */
 export const isValidSlug = (str: string): boolean => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(str);
+
+/**
+ * Sanitizing using DOMPurify
+ */
+export const sanitize = (value?: string) => {
+	if (!value) return value;
+	return DOMPurify.sanitize(value);
+};

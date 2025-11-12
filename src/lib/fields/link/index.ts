@@ -1,5 +1,6 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
+import { sanitize } from '$lib/util/string';
 import validate from '$lib/util/validate.js';
 import Cell from './component/Cell.svelte';
 import LinkComp from './component/Link.svelte';
@@ -16,10 +17,13 @@ export class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.validate = validate.link;
 		this.field.layout = 'default';
 		this.field.types = ['url'];
-
+		this.field.hooks = {
+			beforeSave: [LinkFieldBuilder.sanitize]
+		};
 		if (import.meta.env.SSR && import.meta.url) {
 			import('./index.server.js').then((module) => {
 				this.field.hooks = {
+					...this.field.hooks,
 					beforeRead: [module.populateRessourceURL]
 				};
 			});
@@ -48,6 +52,20 @@ export class LinkFieldBuilder extends FormFieldBuilder<LinkField> {
 		this.field.types = values;
 		return this;
 	}
+
+	static readonly sanitize = (link: unknown) => {
+		if (!link) return link;
+		const isLinkValue = (v: any): v is Link =>
+			typeof link === 'object' && !Array.isArray(link) && 'value' in link;
+		if (typeof link === 'string') return sanitize(link);
+		if (isLinkValue(link) && link.value) {
+			return {
+				...link,
+				url: link.url ? sanitize(link.url) : undefined,
+				value: sanitize(link.value)
+			};
+		}
+	};
 
 	compile() {
 		if (!this.field.defaultValue) {

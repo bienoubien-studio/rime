@@ -1,5 +1,6 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
+import { sanitize } from '$lib/util/string';
 import validate from '$lib/util/validate.js';
 import EmailComp from './component/Email.svelte';
 
@@ -10,6 +11,9 @@ class EmailFieldBuilder extends FormFieldBuilder<EmailField> {
 	constructor(name: string) {
 		super(name, 'email');
 		this.field.validate = validate.email;
+		this.field.hooks = {
+			beforeSave: [sanitize]
+		};
 	}
 
 	layout(layout: 'compact' | 'default') {

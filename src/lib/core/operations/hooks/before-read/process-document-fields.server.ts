@@ -18,12 +18,30 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 		let value = getValueAtPath(key, doc);
 		let isEmpty;
 
+		if (config.access && config.access.read) {
+			const authorized = config.access.read(event.locals.user);
+			if (!authorized) {
+				doc = deleteValueAtPath(doc, key);
+				continue;
+			}
+		}
+
+		if (config.hooks?.beforeRead) {
+			if (value) {
+				for (const hook of config.hooks.beforeRead) {
+					value = await hook(value, { event, config, operation: args.context, documentId: doc.id });
+					doc = setValueAtPath(key, doc, value);
+				}
+			}
+		}
+
 		try {
 			isEmpty = config.isEmpty(value);
 		} catch {
 			isEmpty = false;
 			logger.warn(`Error in config.isEmpty for field ${key}`);
 		}
+
 		if (isEmpty && hasProp('defaultValue', config)) {
 			value = await getDefaultValue({ key, config, adapter: args.event.locals.rime.adapter });
 			doc = setValueAtPath(key, doc, value);
@@ -47,24 +65,6 @@ export const processDocumentFields = Hooks.beforeRead(async (args) => {
 						position: index
 					}));
 				doc = setValueAtPath(key, doc, withoutResidualBlock);
-			}
-		}
-
-		if (config.access && config.access.read) {
-			const authorized = config.access.read(event.locals.user);
-			if (!authorized) {
-				doc = deleteValueAtPath(doc, key);
-				continue;
-			}
-		}
-
-		if (config.hooks?.beforeRead) {
-			let value = getValueAtPath(key, doc);
-			if (value) {
-				for (const hook of config.hooks.beforeRead) {
-					value = await hook(value, { event, config, operation: args.context, documentId: doc.id });
-					doc = setValueAtPath(key, doc, value);
-				}
 			}
 		}
 	}

@@ -1,12 +1,19 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { capitalize } from '$lib/util/string.js';
+import { capitalize, sanitize } from '$lib/util/string.js';
 import Text from './component/Text.svelte';
 
 /****************************************************/
 export class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	//
 	_metaUrl: string = import.meta.url;
+
+	constructor(name: string) {
+		super(name, 'text');
+		this.field.hooks = {
+			beforeSave: [sanitize]
+		};
+	}
 
 	unique(bool?: boolean) {
 		this.field.unique = typeof bool === 'boolean' ? bool : true;
@@ -61,7 +68,7 @@ export class TextFieldBuilder extends FormFieldBuilder<TextField> {
 	}
 }
 
-export const text = (name: string) => new TextFieldBuilder(name, 'text');
+export const text = (name: string) => new TextFieldBuilder(name);
 
 /****************************************************/
 /* Type

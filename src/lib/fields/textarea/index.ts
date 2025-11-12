@@ -1,13 +1,20 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
-import { capitalize } from '$lib/util/string.js';
+import { capitalize, sanitize } from '$lib/util/string.js';
 import TextArea from './component/TextArea.svelte';
 
-export const textarea = (name: string) => new TextAreaFieldBuilder(name, 'textarea');
+export const textarea = (name: string) => new TextAreaFieldBuilder(name);
 
 export class TextAreaFieldBuilder extends FormFieldBuilder<TextAreaField> {
 	//
 	_metaUrl: string = import.meta.url;
+
+	constructor(name: string) {
+		super(name, 'textarea');
+		this.field.hooks = {
+			beforeSave: [sanitize]
+		};
+	}
 
 	get component() {
 		return TextArea;

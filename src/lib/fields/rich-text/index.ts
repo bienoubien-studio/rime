@@ -1,28 +1,21 @@
 import { FormFieldBuilder } from '$lib/core/fields/builders/form-field-builder.js';
 import type { DefaultValueFn, FormField } from '$lib/fields/types.js';
+import { sanitize } from '$lib/util/string.js';
 import type { JSONContent } from '@tiptap/core';
 import Cell from './component/Cell.svelte';
 import RichText from './component/RichText.svelte';
 import type { RichTextFeature } from './core/types.js';
+import { sanitizeJSONContent } from './sanitize';
 
 const isEmpty = (value: unknown) => {
-	const reduceText = (prev: string, curr: any) => {
-		if ('text' in curr) {
-			prev += curr.text;
-		} else if ('content' in curr) {
-			return curr.content.reduce(reduceText, prev);
-		}
-		return prev;
-	};
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		!Array.isArray(value) &&
-		Object.getPrototypeOf(value) === Object.prototype &&
-		'content' in value &&
-		Array.isArray(value.content) &&
-		value.content.reduce(reduceText, '') === ''
-	);
+	if (!value) return true;
+	// Check for content length in pm object
+	if (typeof value === 'object' && !Array.isArray(value) && 'content' in value) {
+		return Array.isArray(value.content) && value.content.length === 0;
+	}
+	// Allow simple string
+	if (typeof value === 'string' && !!value) return false;
+	return true;
 };
 
 export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
@@ -34,7 +27,7 @@ export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		this.field.isEmpty = isEmpty;
 		this.field.hooks = {
 			beforeRead: [RichTextFieldBuilder.jsonParse],
-			beforeSave: [RichTextFieldBuilder.stringify],
+			beforeSave: [RichTextFieldBuilder.sanitize, RichTextFieldBuilder.stringify],
 			beforeValidate: []
 		};
 	}
@@ -65,22 +58,34 @@ export class RichTextFieldBuilder extends FormFieldBuilder<RichTextField> {
 		return this;
 	}
 
-	static readonly jsonParse = (value:string) => {
-      try {
-          value = JSON.parse(value, (key, val) => {
-            if(key === 'text') return String(val)
-            return val
-          });
-      }
-      catch (err){
-          console.log(err)
-          if (typeof value === 'string') {
-              return value;
-          }
-          return '';
-      }
-      return value;
-  };
+	static readonly jsonParse = (value: string) => {
+		try {
+			value = JSON.parse(value, (key, val) => {
+				if (key === 'text') return String(val);
+				return val;
+			});
+		} catch (err) {
+			console.log(err);
+			if (typeof value === 'string') {
+				return value;
+			}
+			return '';
+		}
+		return value;
+	};
+
+	static readonly sanitize = (value: unknown) => {
+		if (!value) return value;
+		// Handle string input - just sanitize as plain text
+		if (typeof value === 'string') {
+			return sanitize(value);
+		}
+		// Handle JSONContent object
+		if (typeof value === 'object' && value !== null && 'content' in value) {
+			return sanitizeJSONContent(value as JSONContent);
+		}
+		return value;
+	};
 
 	static readonly stringify = (value: string) => {
 		if (typeof value === 'string') return value;
